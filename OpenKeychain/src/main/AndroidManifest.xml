@@ -145,7 +145,11 @@
             android:name=".ui.EncryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with data Uri -->
@@ -174,7 +178,11 @@
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with text as extra -->
@@ -405,8 +413,7 @@
         <activity
             android:name=".ui.ViewKeyAdvancedActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_advanced_key_info">
-        </activity>
+            android:label="@string/title_advanced_key_info"></activity>
         <activity
             android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -652,8 +659,7 @@
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
             android:screenOrientation="user"
             android:theme="@style/Alp.42447968.Theme.Dialog.Light" />
-        <activity
-            android:name=".ui.PassphraseWizardActivity" />
+        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
