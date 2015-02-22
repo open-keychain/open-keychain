@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -110,11 +111,9 @@ public class ImportKeysCloudFragment extends Fragment {
         mConfigButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(mImportActivity, SettingsActivity.class);
-                // GRR, for some reason I can’t set the Action or I get an incomprehensible
-                //  exception about “modern two-pane layouts”
-                // i.setAction(PreferencesActivity.ACTION_PREFS_CLOUD);
-                startActivity(i);
+                Intent intent = new Intent(mImportActivity, SettingsActivity.class);
+                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, SettingsActivity.CloudSearchPrefsFragment.class.getName());
+                startActivity(intent);
             }
         });
 
