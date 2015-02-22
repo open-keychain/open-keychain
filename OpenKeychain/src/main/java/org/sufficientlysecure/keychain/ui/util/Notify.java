@@ -26,6 +26,8 @@ import com.nispok.snackbar.Snackbar.SnackbarDuration;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
+import org.sufficientlysecure.keychain.R;
+
 /**
  * Notify wrapper which allows a more easy use of different notification libraries
  */
@@ -52,10 +54,10 @@ public class Notify {
             case OK:
                 break;
             case WARN:
-                bar.textColor(Color.YELLOW);
+                bar.textColor(activity.getResources().getColor(R.color.android_orange_light));
                 break;
             case ERROR:
-                bar.textColor(Color.RED);
+                bar.textColor(activity.getResources().getColor(R.color.android_red_light));
                 break;
         }
 
@@ -74,13 +76,13 @@ public class Notify {
 
         switch (style) {
             case OK:
-                bar.actionColor(Color.GREEN);
+                bar.actionColor(activity.getResources().getColor(R.color.android_green_light));
                 break;
             case WARN:
-                bar.textColor(Color.YELLOW);
+                bar.textColor(activity.getResources().getColor(R.color.android_orange_light));
                 break;
             case ERROR:
-                bar.textColor(Color.RED);
+                bar.textColor(activity.getResources().getColor(R.color.android_red_light));
                 break;
         }
 
@@ -116,13 +118,13 @@ public class Notify {
 
         switch (style) {
             case OK:
-                bar.actionColor(Color.GREEN);
+                bar.actionColor(activity.getResources().getColor(R.color.android_green_light));
                 break;
             case WARN:
-                bar.textColor(Color.YELLOW);
+                bar.textColor(activity.getResources().getColor(R.color.android_orange_light));
                 break;
             case ERROR:
-                bar.textColor(Color.RED);
+                bar.textColor(activity.getResources().getColor(R.color.android_red_light));
                 break;
         }
 
