@@ -32,6 +32,11 @@
     <color name="holo_gray_light">#33999999</color>
     <color name="holo_gray_bright">#33CCCCCC</color>
 
+    <!-- tabs -->
+    <color name="tab_text">#70FFFFFF</color>
+    <color name="tab_text_selected">#FFFFFF</color>
+    <color name="tab_indicator">#FFFFFF</color>
+
 
     <!-- floating action buttons -->
     <color name="black_semi_transparent">#B2000000</color>
