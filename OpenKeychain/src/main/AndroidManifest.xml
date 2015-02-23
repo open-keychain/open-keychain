@@ -413,9 +413,9 @@
                 android:value=".ui.ViewKeyActivity" />
         </activity>
         <activity
-            android:name=".ui.ViewKeyAdvancedActivity"
+            android:name=".ui.ViewKeyAdvActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_advanced_key_info"></activity>
+            android:label="@string/title_advanced_key_info"/>
         <activity
             android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

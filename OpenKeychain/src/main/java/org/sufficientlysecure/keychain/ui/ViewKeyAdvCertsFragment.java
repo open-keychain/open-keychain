@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -39,7 +38,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -47,22 +45,15 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
-public class ViewKeyAdvancedFragment extends LoaderFragment implements
+public class ViewKeyAdvCertsFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     public static final String ARG_DATA_URI = "data_uri";
 
-    private ListView mSubkeysList;
-    private SubkeysAdapter mSubkeysAdapter;
-
     private StickyListHeadersListView mStickyList;
     private CertListAdapter mCertsAdapter;
 
-    private Uri mDataUriSubkeys;
     private Uri mDataUriCerts;
-
-    private static final int LOADER_SUBKEYS = 1;
-    private static final int LOADER_CERTS = 2;
 
     // These are the rows that we will retrieve.
     static final String[] CERTS_PROJECTION = new String[]{
@@ -86,8 +77,8 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyAdvancedFragment newInstance(Uri dataUri) {
-        ViewKeyAdvancedFragment frag = new ViewKeyAdvancedFragment();
+    public static ViewKeyAdvCertsFragment newInstance(Uri dataUri) {
+        ViewKeyAdvCertsFragment frag = new ViewKeyAdvCertsFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
@@ -99,9 +90,8 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_advanced_fragment, getContainer());
+        View view = inflater.inflate(R.layout.view_key_adv_certs_fragment, getContainer());
 
-        mSubkeysList = (ListView) view.findViewById(R.id.keys);
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.certs_list);
 
         return root;
@@ -122,7 +112,6 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
     }
 
     private void loadData(Uri dataUri) {
-        mDataUriSubkeys = KeychainContract.Keys.buildKeysUri(dataUri);
         mDataUriCerts = KeychainContract.Certs.buildCertsUri(dataUri);
 
         mStickyList.setAreHeadersSticky(true);
@@ -132,34 +121,23 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
         mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
 
         // Create an empty adapter we will use to display the loaded data.
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
-        mSubkeysList.setAdapter(mSubkeysAdapter);
-
         mCertsAdapter = new CertListAdapter(getActivity(), null);
         mStickyList.setAdapter(mCertsAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getLoaderManager().initLoader(LOADER_SUBKEYS, null, this);
-        getLoaderManager().initLoader(LOADER_CERTS, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
-        switch (id) {
-            case LOADER_SUBKEYS:
-                return new CursorLoader(getActivity(), mDataUriSubkeys,
-                        SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
 
-            case LOADER_CERTS:
-                // Now create and return a CursorLoader that will take care of
-                // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), mDataUriCerts,
-                        CERTS_PROJECTION, null, null, CERTS_SORT_ORDER);
 
-            default:
-                return null;
-        }
+        // Now create and return a CursorLoader that will take care of
+        // creating a Cursor for the data being displayed.
+        return new CursorLoader(getActivity(), mDataUriCerts,
+                CERTS_PROJECTION, null, null, CERTS_SORT_ORDER);
+
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -170,15 +148,8 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
 
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_SUBKEYS:
-                mSubkeysAdapter.swapCursor(data);
-                break;
-            case LOADER_CERTS:
-                mCertsAdapter.swapCursor(data);
-                mStickyList.setAdapter(mCertsAdapter);
-                break;
-        }
+        mCertsAdapter.swapCursor(data);
+        mStickyList.setAdapter(mCertsAdapter);
 
         // TODO: maybe show not before both are loaded!
         setContentShown(true);
@@ -189,14 +160,7 @@ public class ViewKeyAdvancedFragment extends LoaderFragment implements
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_SUBKEYS:
-                mSubkeysAdapter.swapCursor(null);
-                break;
-            case LOADER_CERTS:
-                mCertsAdapter.swapCursor(null);
-                break;
-        }
+        mCertsAdapter.swapCursor(null);
     }
 
     /**

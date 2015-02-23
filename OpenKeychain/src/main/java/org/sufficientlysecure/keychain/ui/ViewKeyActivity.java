@@ -162,13 +162,13 @@ public class ViewKeyActivity extends BaseActivity implements
         mViewPager.setAdapter(mTabsAdapter);
 
         Bundle mainBundle = new Bundle();
-        mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyMainFragment.class,
+        mainBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvMainFragment.class,
                 mainBundle, getString(R.string.key_view_tab_main));
 
         Bundle shareBundle = new Bundle();
-        shareBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyShareFragment.class,
+        shareBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
 
         // update layout after operations
@@ -202,7 +202,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     return true;
                 }
                 case R.id.menu_key_view_advanced: {
-                    Intent advancedIntent = new Intent(this, ViewKeyAdvancedActivity.class);
+                    Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
                     advancedIntent.setData(mDataUri);
                     startActivity(advancedIntent);
                 }

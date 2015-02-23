@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
 
-public class ViewKeyMainFragment extends LoaderFragment implements
+public class ViewKeyAdvMainFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";

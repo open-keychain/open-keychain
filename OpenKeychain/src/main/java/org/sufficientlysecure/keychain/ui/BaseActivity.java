@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
  */
 public abstract class BaseActivity extends ActionBarActivity {
     protected Toolbar mToolbar;
+    protected View mStatusBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        mStatusBar = findViewById(R.id.status_bar);
     }
 
     protected void setActionBarIcon(int iconRes) {

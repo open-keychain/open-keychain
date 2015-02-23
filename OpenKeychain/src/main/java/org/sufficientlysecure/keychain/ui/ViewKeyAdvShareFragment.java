@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.IOException;
 
 
-public class ViewKeyShareFragment extends LoaderFragment implements
+public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
@@ -81,9 +81,9 @@ public class ViewKeyShareFragment extends LoaderFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_share_fragment, getContainer());
+        View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        mProviderHelper = new ProviderHelper(ViewKeyShareFragment.this.getActivity());
+        mProviderHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
 
         mFingerprint = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mFingerprintQrCode = (ImageView) view.findViewById(R.id.view_key_fingerprint_qr_code_image);
@@ -358,7 +358,7 @@ public class ViewKeyShareFragment extends LoaderFragment implements
 
                     protected void onPostExecute(Bitmap qrCode) {
                         // only change view, if fragment is attached to activity
-                        if (ViewKeyShareFragment.this.isAdded()) {
+                        if (ViewKeyAdvShareFragment.this.isAdded()) {
 
                             // scale the image up to our actual size. we do this in code rather
                             // than let the ImageView do this because we don't require filtering.
