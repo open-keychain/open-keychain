@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AppsListFragment extends ListFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
     AppsAdapter mAdapter;
 
@@ -56,46 +56,7 @@ public class AppsListFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String selectedPackageName = mAdapter.getItemPackageName(position);
-                boolean installed = mAdapter.getItemIsInstalled(position);
-                boolean registered = mAdapter.getItemIsRegistered(position);
-
-                if (installed) {
-                    if (registered) {
-                        // Edit app settings
-                        Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
-                        startActivity(intent);
-                    } else {
-                        Intent i;
-                        PackageManager manager = getActivity().getPackageManager();
-                        try {
-                            i = manager.getLaunchIntentForPackage(selectedPackageName);
-                            if (i == null) {
-                                throw new PackageManager.NameNotFoundException();
-                            }
-                            // Start like the Android launcher would do
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                            i.addCategory(Intent.CATEGORY_LAUNCHER);
-                            startActivity(i);
-                        } catch (PackageManager.NameNotFoundException e) {
-                            Log.e(Constants.TAG, "startApp", e);
-                        }
-                    }
-                } else {
-                    try {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=" + selectedPackageName)));
-                    } catch (ActivityNotFoundException anfe) {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("https://play.google.com/store/apps/details?id=" + selectedPackageName)));
-                    }
-                }
-            }
-        });
+        getListView().setOnItemClickListener(this);
 
         // NOTE: No setEmptyText(), we always have the default entries
 
@@ -118,6 +79,45 @@ public class AppsListFragment extends ListFragment implements
 
         // After coming back from Google Play -> reload
         getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String selectedPackageName = mAdapter.getItemPackageName(position);
+        boolean installed = mAdapter.getItemIsInstalled(position);
+        boolean registered = mAdapter.getItemIsRegistered(position);
+
+        if (installed) {
+            if (registered) {
+                // Edit app settings
+                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
+                intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(selectedPackageName));
+                startActivity(intent);
+            } else {
+                Intent i;
+                PackageManager manager = getActivity().getPackageManager();
+                try {
+                    i = manager.getLaunchIntentForPackage(selectedPackageName);
+                    if (i == null) {
+                        throw new PackageManager.NameNotFoundException();
+                    }
+                    // Start like the Android launcher would do
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                    i.addCategory(Intent.CATEGORY_LAUNCHER);
+                    startActivity(i);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.e(Constants.TAG, "startApp", e);
+                }
+            }
+        } else {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=" + selectedPackageName)));
+            } catch (ActivityNotFoundException anfe) {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + selectedPackageName)));
+            }
+        }
     }
 
     private static final String TEMP_COLUMN_NAME = "NAME";
