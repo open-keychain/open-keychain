@@ -103,47 +103,6 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical" />
 
-                <TextView
-                    style="@style/SectionHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/api_settings_advanced" />
-
-                <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/icons"
-                    custom:foldedLabel="@string/api_settings_show_info"
-                    custom:unFoldedLabel="@string/api_settings_hide_info">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/api_settings_package_name"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                    <TextView
-                        android:id="@+id/api_app_settings_package_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="com.example"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/api_settings_package_signature"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                    <TextView
-                        android:id="@+id/api_app_settings_package_signature"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Base64 encoded hash of signature"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
-
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

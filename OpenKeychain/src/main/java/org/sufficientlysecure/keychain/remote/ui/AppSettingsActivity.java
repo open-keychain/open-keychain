@@ -40,7 +40,10 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.BaseActivity;
+import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.MessageDigest;
@@ -130,14 +133,38 @@ public class AppSettingsActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_api_settings_revoke:
-                revokeAccess();
-                return true;
-            case R.id.menu_api_save:
+            case R.id.menu_api_save: {
                 save();
                 return true;
+            }
+            case R.id.menu_api_settings_revoke: {
+                revokeAccess();
+                return true;
+            }
+            case R.id.menu_api_settings_advanced: {
+                showAdvancedInfo();
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAdvancedInfo() {
+        String signature = null;
+        // advanced info: package signature SHA-256
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(mAppSettings.getPackageSignature());
+            byte[] digest = md.digest();
+            signature = new String(Hex.encode(digest));
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(Constants.TAG, "Should not happen!", e);
+        }
+
+        AdvancedAppSettingsDialogFragment dialogFragment =
+                AdvancedAppSettingsDialogFragment.newInstance(mAppSettings.getPackageName(), signature);
+
+        dialogFragment.show(getSupportFragmentManager(), "advancedDialog");
     }
 
     private void startApp() {
@@ -174,21 +201,6 @@ public class AppSettingsActivity extends BaseActivity {
         }
         mAppNameView.setText(appName);
         mAppIconView.setImageDrawable(appIcon);
-
-        // advanced info: package name
-        mPackageName.setText(mAppSettings.getPackageName());
-
-        // advanced info: package signature SHA-256
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(mAppSettings.getPackageSignature());
-            byte[] digest = md.digest();
-            String signature = new String(Hex.encode(digest));
-
-            mPackageSignature.setText(signature);
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(Constants.TAG, "Should not happen!", e);
-        }
 
         Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
         Log.d(Constants.TAG, "accountsUri: " + accountsUri);
