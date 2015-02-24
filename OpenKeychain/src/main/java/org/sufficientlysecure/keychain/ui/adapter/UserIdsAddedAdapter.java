@@ -64,7 +64,7 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
     public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             // Not recycled, inflate a new view
-            convertView = mInflater.inflate(R.layout.view_key_user_id_item, null);
+            convertView = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
             final ViewHolder holder = new ViewHolder();
             holder.vAddress = (TextView) convertView.findViewById(R.id.user_id_item_address);
             holder.vName = (TextView) convertView.findViewById(R.id.user_id_item_name);

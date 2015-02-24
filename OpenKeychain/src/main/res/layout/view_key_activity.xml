@@ -47,21 +47,18 @@
             android:visibility="gone"
             android:id="@+id/view_key_status_divider" />
 
-        <com.astuetz.PagerSlidingTabStrip
-            android:id="@+id/view_key_sliding_tab_layout"
+        <FrameLayout
+            android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:textColor="@color/tab_text"
-            app:pstsTextColorSelected="@color/tab_text_selected"
-            app:pstsIndicatorColor="@color/tab_indicator" />
+            android:layout_height="match_parent">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/view_key_pager"
-            android:layout_width="match_parent"
-            android:layout_height="0px"
-            android:layout_weight="1"
-            android:background="@android:color/white" />
+            <FrameLayout
+                android:id="@+id/view_key_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+
+        </FrameLayout>
 
     </LinearLayout>
 </RelativeLayout>

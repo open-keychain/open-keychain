@@ -301,7 +301,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_subkey_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
         if (mDefaultTextColor == null) {
             TextView keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();

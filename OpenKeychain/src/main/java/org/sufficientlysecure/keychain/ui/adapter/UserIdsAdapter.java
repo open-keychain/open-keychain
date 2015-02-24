@@ -263,7 +263,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;

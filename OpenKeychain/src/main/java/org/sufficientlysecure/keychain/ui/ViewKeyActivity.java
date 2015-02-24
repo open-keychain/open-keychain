@@ -72,15 +72,6 @@ public class ViewKeyActivity extends BaseActivity implements
 
     protected Uri mDataUri;
 
-    public static final String EXTRA_SELECTED_TAB = "selected_tab";
-    public static final int TAB_MAIN = 0;
-    public static final int TAB_SHARE = 1;
-
-    // view
-    private ViewPager mViewPager;
-    private PagerSlidingTabStrip mSlidingTabLayout;
-    private PagerTabStripAdapter mTabsAdapter;
-
     private LinearLayout mStatusLayout;
     private TextView mStatusText;
     private ImageView mStatusImage;
@@ -113,14 +104,8 @@ public class ViewKeyActivity extends BaseActivity implements
         mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
         mStatusDivider = findViewById(R.id.view_key_status_divider);
 
-        mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
-        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.view_key_sliding_tab_layout);
 
-        int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
-        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
-            switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
-        }
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -146,10 +131,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
         initNfc(mDataUri);
 
-        initTabs(mDataUri);
-
-        // switch to tab selected by extra
-        mViewPager.setCurrentItem(switchToTab);
+        startFragment(savedInstanceState, mDataUri);
     }
 
     @Override
@@ -157,22 +139,24 @@ public class ViewKeyActivity extends BaseActivity implements
         setContentView(R.layout.view_key_activity);
     }
 
-    private void initTabs(Uri dataUri) {
-        mTabsAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(mTabsAdapter);
+    private void startFragment(Bundle savedInstanceState, Uri dataUri) {
+        // However, if we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return;
+        }
 
-        Bundle mainBundle = new Bundle();
-        mainBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvMainFragment.class,
-                mainBundle, getString(R.string.key_view_tab_main));
+        // Create an instance of the fragment
+        ViewKeyFragment frag = ViewKeyFragment.newInstance(dataUri);
 
-        Bundle shareBundle = new Bundle();
-        shareBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvShareFragment.class,
-                shareBundle, getString(R.string.key_view_tab_share));
-
-        // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
+        // Add the fragment to the 'fragment_container' FrameLayout
+        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.view_key_fragment, frag)
+                .commitAllowingStateLoss();
+        // do it immediately!
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override

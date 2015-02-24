@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class ViewKeyAdvKeysFragment extends LoaderFragment implements
+public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "data_uri";
@@ -47,8 +47,8 @@ public class ViewKeyAdvKeysFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyAdvKeysFragment newInstance(Uri dataUri) {
-        ViewKeyAdvKeysFragment frag = new ViewKeyAdvKeysFragment();
+    public static ViewKeyAdvSubkeysFragment newInstance(Uri dataUri) {
+        ViewKeyAdvSubkeysFragment frag = new ViewKeyAdvSubkeysFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);

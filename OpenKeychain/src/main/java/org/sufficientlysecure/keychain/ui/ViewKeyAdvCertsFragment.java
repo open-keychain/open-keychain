@@ -271,7 +271,7 @@ public class ViewKeyAdvCertsFragment extends LoaderFragment implements
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return mInflater.inflate(R.layout.view_key_certs_item, parent, false);
+            return mInflater.inflate(R.layout.view_key_adv_certs_item, parent, false);
         }
 
         /**
@@ -286,7 +286,7 @@ public class ViewKeyAdvCertsFragment extends LoaderFragment implements
             HeaderViewHolder holder;
             if (convertView == null) {
                 holder = new HeaderViewHolder();
-                convertView = mInflater.inflate(R.layout.view_key_certs_header, parent, false);
+                convertView = mInflater.inflate(R.layout.view_key_adv_certs_header, parent, false);
                 holder.text = (TextView) convertView.findViewById(R.id.stickylist_header_text);
                 holder.count = (TextView) convertView.findViewById(R.id.certs_num);
                 convertView.setTag(holder);

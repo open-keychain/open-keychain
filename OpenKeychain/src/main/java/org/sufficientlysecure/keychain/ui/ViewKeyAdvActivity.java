@@ -134,8 +134,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                 shareBundle, getString(R.string.key_view_tab_share));
 
         Bundle keysBundle = new Bundle();
-        keysBundle.putParcelable(ViewKeyAdvKeysFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvKeysFragment.class,
+        keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
 
         Bundle certsBundle = new Bundle();
