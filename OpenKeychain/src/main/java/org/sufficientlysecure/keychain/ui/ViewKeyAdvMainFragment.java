@@ -265,9 +265,10 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
                 }
             }
 
-            case LOADER_ID_USER_IDS:
+            case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(data);
                 break;
+            }
 
         }
         setContentShown(true);

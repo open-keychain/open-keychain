@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -87,7 +88,6 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
     private ImageButton mActionVerify;
-    private ImageButton mActionEdit;
     private ImageButton mActionNfc;
     private FloatingActionButton mFab;
     private AspectRatioImageView mPhoto;
@@ -103,8 +103,8 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private static final int LOADER_ID_UNIFIED = 0;
 
-    private boolean mIsSecret;
-    private boolean mHasEncrypt;
+    private boolean mIsSecret = false;
+    private boolean mHasEncrypt = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +123,6 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionVerify = (ImageButton) findViewById(R.id.view_key_action_verify);
-        mActionEdit = (ImageButton) findViewById(R.id.view_key_action_edit);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
@@ -163,11 +162,6 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionVerify.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 certify(mDataUri);
-            }
-        });
-        mActionEdit.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                editKey(mDataUri);
             }
         });
 
@@ -271,6 +265,10 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
                     return true;
                 }
+                case R.id.menu_key_view_edit: {
+                    editKey(mDataUri);
+                    return true;
+                }
             }
         } catch (ProviderHelper.NotFoundException e) {
             Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
@@ -279,13 +277,42 @@ public class ViewKeyActivity extends BaseActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem register = menu.findItem(R.id.menu_key_view_edit);
+        register.setVisible(mIsSecret);
+        return true;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void invokeNfcBeam() {
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter != null) {
-            mNfcAdapter.invokeBeam(this);
+        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
+            Notify.createNotify(this, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
+                @Override
+                public void onAction() {
+                    Intent intentSettings = new Intent(Settings.ACTION_NFC_SETTINGS);
+                    startActivity(intentSettings);
+                }
+            }, R.string.menu_nfc_preferences).show();
+
+            return;
         }
+
+        if (!mNfcAdapter.isNdefPushEnabled()) {
+            Notify.createNotify(this, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
+                @Override
+                public void onAction() {
+                    Intent intentSettings = new Intent(Settings.ACTION_NFCSHARING_SETTINGS);
+                    startActivity(intentSettings);
+                }
+            }, R.string.menu_beam_preferences).show();
+
+            return;
+        }
+
+        mNfcAdapter.invokeBeam(this);
     }
 
     private void scanQrCode() {
@@ -640,17 +667,14 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
                         mActionVerify.setVisibility(View.GONE);
-                        mActionEdit.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (isExpired) {
                         if (mIsSecret) {
                             mStatusText.setText(R.string.view_key_expired_secret);
-                            mActionEdit.setVisibility(View.VISIBLE);
                         } else {
                             mStatusText.setText(R.string.view_key_expired);
-                            mActionEdit.setVisibility(View.GONE);
                         }
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
@@ -664,6 +688,9 @@ public class ViewKeyActivity extends BaseActivity implements
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
+                        // re-create options menu to see edit button
+                        supportInvalidateOptionsMenu();
+
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
@@ -694,7 +721,6 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mActionVerify.setVisibility(View.GONE);
-                        mActionEdit.setVisibility(View.VISIBLE);
 
                         // invokeBeam is available from API 21
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -707,7 +733,6 @@ public class ViewKeyActivity extends BaseActivity implements
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
-                        mActionEdit.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.GONE);
 

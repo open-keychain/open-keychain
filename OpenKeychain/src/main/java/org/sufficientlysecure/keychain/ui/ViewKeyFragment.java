@@ -33,11 +33,14 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Date;
 
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -46,6 +49,9 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private ListView mUserIds;
 
+    boolean mIsSecret = false;
+
+    private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
 
     private UserIdsAdapter mUserIdsAdapter;
@@ -76,7 +82,6 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
 
-
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -84,22 +89,23 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
-
         return root;
     }
 
     private void showUserIdInfo(final int position) {
-        final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
-        final int isVerified = mUserIdsAdapter.getIsVerified(position);
+        if (!mIsSecret) {
+            final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
+            final int isVerified = mUserIdsAdapter.getIsVerified(position);
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                UserIdInfoDialogFragment dialogFragment =
-                        UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
+            DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+                public void run() {
+                    UserIdInfoDialogFragment dialogFragment =
+                            UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
-            }
-        });
+                    dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
+                }
+            });
+        }
     }
 
     @Override
@@ -116,28 +122,59 @@ public class ViewKeyFragment extends LoaderFragment implements
         loadData(dataUri);
     }
 
+
+    // These are the rows that we will retrieve.
+    static final String[] UNIFIED_PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT,
+            KeychainContract.KeyRings.HAS_ENCRYPT
+    };
+
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_USER_ID = 2;
+    static final int INDEX_IS_REVOKED = 3;
+    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_VERIFIED = 5;
+    static final int INDEX_HAS_ANY_SECRET = 6;
+    static final int INDEX_FINGERPRINT = 7;
+    static final int INDEX_HAS_ENCRYPT = 8;
+
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
-        mUserIds.setAdapter(mUserIdsAdapter);
-
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
 
     // don't show revoked user ids here, irrelevant for average users
-    public static final String WHERE = UserPackets.IS_REVOKED + " = 0";
+    public static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
-        Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
-        return new CursorLoader(getActivity(), baseUri,
-                UserIdsAdapter.USER_IDS_PROJECTION, WHERE, null, null);
+        switch (id) {
+            case LOADER_ID_UNIFIED: {
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
+            }
+            case LOADER_ID_USER_IDS: {
+                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
+                return new CursorLoader(getActivity(), baseUri,
+                        UserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_WHERE, null, null);
+            }
+
+            default:
+                return null;
+        }
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -150,8 +187,32 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
+        switch (loader.getId()) {
+            case LOADER_ID_UNIFIED: {
+                if (data.moveToFirst()) {
 
-        mUserIdsAdapter.swapCursor(data);
+                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    boolean hasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
+                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
+                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+                    // load user ids after we know if it's a secret key
+                    mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, false, !mIsSecret, null);
+                    mUserIds.setAdapter(mUserIdsAdapter);
+                    getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+
+                    break;
+                }
+            }
+
+            case LOADER_ID_USER_IDS: {
+                mUserIdsAdapter.swapCursor(data);
+                break;
+            }
+
+        }
         setContentShown(true);
     }
 
@@ -161,9 +222,10 @@ public class ViewKeyFragment extends LoaderFragment implements
      */
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case LOADER_ID_USER_IDS:
+            case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(null);
                 break;
+            }
         }
     }
 

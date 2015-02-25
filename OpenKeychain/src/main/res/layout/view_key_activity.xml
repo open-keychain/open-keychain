@@ -109,14 +109,6 @@
                 android:src="@drawable/ic_action_verified_cutout" />
 
             <ImageButton
-                android:id="@+id/view_key_action_edit"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:visibility="invisible"
-                style="?android:attr/borderlessButtonStyle"
-                android:src="@drawable/ic_mode_edit_white_24dp" />
-
-            <ImageButton
                 android:id="@+id/view_key_action_nfc"
                 android:layout_width="64dp"
                 android:layout_height="64dp"

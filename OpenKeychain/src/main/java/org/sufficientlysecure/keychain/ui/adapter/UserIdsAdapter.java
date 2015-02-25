@@ -43,6 +43,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
     private SaveKeyringParcel mSaveKeyringParcel;
+    private boolean mShowStatusImages;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets._ID,
@@ -60,24 +61,30 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private static final int INDEX_IS_REVOKED = 5;
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
-                          SaveKeyringParcel saveKeyringParcel) {
+                          boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
+        mShowStatusImages = showStatusImages;
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+                          SaveKeyringParcel saveKeyringParcel) {
+        this(context, c, flags, showCheckBoxes, false, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
-        this(context, c, flags, showCheckBoxes, null);
+        this(context, c, flags, showCheckBoxes, false, null);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, false, saveKeyringParcel);
+        this(context, c, flags, false, false, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false, null);
+        this(context, c, flags, false, false, null);
     }
 
     @Override
@@ -157,7 +164,12 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vVerifiedLayout.setVisibility(View.GONE);
         } else {
             vEditImage.setVisibility(View.GONE);
-            vVerifiedLayout.setVisibility(View.VISIBLE);
+
+            if (mShowStatusImages) {
+                vVerifiedLayout.setVisibility(View.VISIBLE);
+            } else {
+                vVerifiedLayout.setVisibility(View.GONE);
+            }
         }
 
         if (isRevoked) {

@@ -98,6 +98,7 @@
     <string name="menu_create_key">"Create my key"</string>
     <string name="menu_import_existing_key">"Import from file"</string>
     <string name="menu_search">"Search"</string>
+    <string name="menu_nfc_preferences">"NFC settings"</string>
     <string name="menu_beam_preferences">"Beam settings"</string>
     <string name="menu_key_edit_cancel">"Cancel"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
@@ -272,7 +273,8 @@
 
     <!-- errors without preceeding Error: -->
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
-    <string name="error_nfc_needed">"NFC is not available on your device!"</string>
+    <string name="error_nfc_needed">"NFC must be enabled!"</string>
+    <string name="error_beam_needed">"Beam must be enabled!"</string>
     <string name="error_nothing_import">"No keys found!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
