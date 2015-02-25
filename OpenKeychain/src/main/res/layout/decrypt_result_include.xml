@@ -24,7 +24,7 @@
                 android:id="@+id/result_encryption_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/status_lock_open"
+                android:src="@drawable/status_lock_open_24px"
                 android:layout_gravity="center_vertical" />
 
             <TextView
@@ -47,7 +47,7 @@
                 android:id="@+id/result_signature_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/status_signature_unverified_cutout"
+                android:src="@drawable/status_signature_unverified_cutout_24px"
                 android:layout_gravity="center_vertical" />
 
             <TextView

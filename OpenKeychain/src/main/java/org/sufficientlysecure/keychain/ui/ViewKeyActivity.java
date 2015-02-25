@@ -406,7 +406,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     if (isRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED, R.color.icons);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
@@ -416,7 +416,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     } else if (isExpired) {
                         mStatusText.setText(R.string.view_key_expired);
                         mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.INVISIBLE);
@@ -439,7 +439,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         if (isVerified) {
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_VERIFIED, R.color.icons);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
 
                             AsyncTask<String, Void, Bitmap> photoTask =
@@ -461,7 +461,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.android_orange_light);
 
                             mActionVerify.setVisibility(View.VISIBLE);
@@ -471,6 +471,8 @@ public class ViewKeyActivity extends BaseActivity implements
                     mToolbar.setBackgroundColor(color);
                     mStatusBar.setBackgroundColor(color);
                     mBigToolbar.setBackgroundColor(color);
+
+                    mStatusImage.setAlpha(80);
 
                     break;
                 }

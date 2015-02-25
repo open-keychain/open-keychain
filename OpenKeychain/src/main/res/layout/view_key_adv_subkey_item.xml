@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/status_signature_revoked_cutout"
+        android:src="@drawable/status_signature_revoked_cutout_24px"
         android:paddingLeft="8dp"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true" />
@@ -71,7 +71,7 @@
                 android:id="@+id/subkey_item_ic_certify"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/key_flag_certify"
+                android:src="@drawable/key_flag_certify_24px"
                 android:layout_marginLeft="8dp"
                 android:layout_gravity="center_vertical" />
 
@@ -79,7 +79,7 @@
                 android:id="@+id/subkey_item_ic_sign"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/key_flag_sign"
+                android:src="@drawable/key_flag_sign_24px"
                 android:layout_marginLeft="8dp"
                 android:layout_gravity="center_vertical" />
 
@@ -87,7 +87,7 @@
                 android:id="@+id/subkey_item_ic_encrypt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/key_flag_encrypt"
+                android:src="@drawable/key_flag_encrypt_24px"
                 android:layout_marginLeft="8dp"
                 android:layout_gravity="center_vertical" />
 
@@ -95,7 +95,7 @@
                 android:id="@+id/subkey_item_ic_authenticate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/key_flag_authenticate"
+                android:src="@drawable/key_flag_authenticate_24px"
                 android:layout_marginLeft="8dp"
                 android:layout_gravity="center_vertical" />
 
