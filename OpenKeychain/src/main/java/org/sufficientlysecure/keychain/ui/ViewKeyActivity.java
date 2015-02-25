@@ -36,6 +36,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,6 +88,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private FloatingActionButton mFab;
     private AspectRatioImageView mPhoto;
     private ImageButton mQrCode;
+    private CardView mQrCodeLayout;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -121,6 +123,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageButton) findViewById(R.id.view_key_qr_code);
+        mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -169,7 +172,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 if (mIsSecret) {
                     startSafeSlinger(mDataUri);
                 } else {
-                    certify(mDataUri);
+                    scanQrCode();
                 }
             }
         });
@@ -262,6 +265,12 @@ public class ViewKeyActivity extends BaseActivity implements
             Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void scanQrCode() {
+        Intent scanQrCode = new Intent(this, QrCodeScanActivity.class);
+        scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
+        startActivityForResult(scanQrCode, 0);
     }
 
     private void showQrCodeDialog() {
@@ -403,9 +412,6 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
-                        // only change view, if fragment is attached to activity
-//                        if (ViewKeyFragment.this.isAdded()) {
-
                         // scale the image up to our actual size. we do this in code rather
                         // than let the ImageView do this because we don't require filtering.
                         Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
@@ -418,7 +424,6 @@ public class ViewKeyActivity extends BaseActivity implements
                         anim.setDuration(200);
                         mQrCode.startAnimation(anim);
                     }
-//                    }
                 };
 
         loadTask.execute();
@@ -580,7 +585,6 @@ public class ViewKeyActivity extends BaseActivity implements
                             && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
                     boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
-
                     AsyncTask<String, Void, Bitmap> photoTask =
                             new AsyncTask<String, Void, Bitmap>() {
                                 protected Bitmap doInBackground(String... fingerprint) {
@@ -606,9 +610,15 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionVerify.setVisibility(View.GONE);
                         mActionEdit.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
-                        mQrCode.setVisibility(View.GONE);
+                        mQrCodeLayout.setVisibility(View.GONE);
                     } else if (isExpired) {
-                        mStatusText.setText(R.string.view_key_expired);
+                        if (mIsSecret) {
+                            mStatusText.setText(R.string.view_key_expired_secret);
+                            mActionEdit.setVisibility(View.VISIBLE);
+                        } else {
+                            mStatusText.setText(R.string.view_key_expired);
+                            mActionEdit.setVisibility(View.GONE);
+                        }
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
@@ -616,16 +626,15 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
                         mActionVerify.setVisibility(View.GONE);
-                        mActionEdit.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
-                        mQrCode.setVisibility(View.GONE);
+                        mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
                         photoTask.execute(fingerprint);
                         loadQrCode(fingerprint);
-                        mQrCode.setVisibility(View.VISIBLE);
+                        mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
@@ -637,7 +646,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mActionEdit.setVisibility(View.GONE);
-                        mQrCode.setVisibility(View.GONE);
+                        mQrCodeLayout.setVisibility(View.GONE);
 
                         if (isVerified) {
                             mStatusText.setText(R.string.view_key_verified);

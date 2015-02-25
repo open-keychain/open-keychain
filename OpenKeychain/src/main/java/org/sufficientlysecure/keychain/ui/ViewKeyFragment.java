@@ -88,7 +88,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         return root;
     }
 
-
     private void showUserIdInfo(final int position) {
         final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
         final int isVerified = mUserIdsAdapter.getIsVerified(position);
@@ -130,13 +129,15 @@ public class ViewKeyFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
     }
 
+    // don't show revoked user ids here, irrelevant for average users
+    public static final String WHERE = UserPackets.IS_REVOKED + " = 0";
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
         Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
         return new CursorLoader(getActivity(), baseUri,
-                UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
+                UserIdsAdapter.USER_IDS_PROJECTION, WHERE, null, null);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

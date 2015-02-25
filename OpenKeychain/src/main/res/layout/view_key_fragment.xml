@@ -8,6 +8,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
 
@@ -15,7 +16,10 @@
             android:id="@+id/card_view"
             android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
+            card_view:cardBackgroundColor="@android:color/white"
+            card_view:cardElevation="2sp"
+            card_view:cardUseCompatPadding="true"
             card_view:cardCornerRadius="4dp">
 
             <LinearLayout
@@ -24,10 +28,9 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/SectionHeader"
+                    style="@style/CardViewHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="@string/section_user_ids" />
 
                 <org.sufficientlysecure.keychain.ui.widget.FixedListView

@@ -584,6 +584,7 @@
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
     <string name="view_key_expired">"Expired: The contact needs to extend the keys validity!"</string>
+    <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Verified Key"</string>
     <string name="view_key_unverified">"Unverified: Scan QR Code to verify key!"</string>
