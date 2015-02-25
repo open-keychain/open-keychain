@@ -676,7 +676,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionVerify.setVisibility(View.GONE);
                         mActionEdit.setVisibility(View.VISIBLE);
                         mFab.setVisibility(View.VISIBLE);
-                        mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_swap_vert_white_24dp));
+                        mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
