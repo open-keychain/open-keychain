@@ -88,6 +88,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageButton mActionEncryptText;
     private ImageButton mActionVerify;
     private ImageButton mActionEdit;
+    private ImageButton mActionNfc;
     private FloatingActionButton mFab;
     private AspectRatioImageView mPhoto;
     private ImageButton mQrCode;
@@ -123,6 +124,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionVerify = (ImageButton) findViewById(R.id.view_key_action_verify);
         mActionEdit = (ImageButton) findViewById(R.id.view_key_action_edit);
+        mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageButton) findViewById(R.id.view_key_qr_code);
@@ -184,6 +186,13 @@ public class ViewKeyActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 showQrCodeDialog();
+            }
+        });
+
+        mActionNfc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                invokeNfcBeam();
             }
         });
 
@@ -268,6 +277,15 @@ public class ViewKeyActivity extends BaseActivity implements
             Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void invokeNfcBeam() {
+        // Check for available NFC Adapter
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter != null) {
+            mNfcAdapter.invokeBeam(this);
+        }
     }
 
     private void scanQrCode() {
@@ -623,6 +641,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptText.setVisibility(View.GONE);
                         mActionVerify.setVisibility(View.GONE);
                         mActionEdit.setVisibility(View.GONE);
+                        mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (isExpired) {
@@ -641,6 +660,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
                         mActionVerify.setVisibility(View.GONE);
+                        mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
@@ -675,6 +695,13 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mActionVerify.setVisibility(View.GONE);
                         mActionEdit.setVisibility(View.VISIBLE);
+
+                        // invokeBeam is available from API 21
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            mActionNfc.setVisibility(View.VISIBLE);
+                        } else {
+                            mActionNfc.setVisibility(View.GONE);
+                        }
                         mFab.setVisibility(View.VISIBLE);
                         mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
@@ -682,6 +709,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionEncryptText.setVisibility(View.VISIBLE);
                         mActionEdit.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
+                        mActionNfc.setVisibility(View.GONE);
 
                         if (isVerified) {
                             mStatusText.setText(R.string.view_key_verified);
