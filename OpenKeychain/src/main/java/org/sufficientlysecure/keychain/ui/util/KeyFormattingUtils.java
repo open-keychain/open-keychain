@@ -377,6 +377,8 @@ public class KeyFormattingUtils {
                 ((int) digest[2] + 256) % 256};
     }
 
+    public static final int DEFAULT_COLOR = -1;
+
     public static final int STATE_REVOKED = 1;
     public static final int STATE_EXPIRED = 2;
     public static final int STATE_VERIFIED = 3;
@@ -393,20 +395,22 @@ public class KeyFormattingUtils {
     }
 
     public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, int state) {
-        setStatusImage(context, statusIcon, statusText, state, false);
+        setStatusImage(context, statusIcon, statusText, state, KeyFormattingUtils.DEFAULT_COLOR);
     }
 
     /**
      * Sets status image based on constant
      */
     public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText,
-                                      int state, boolean unobtrusive) {
+                                      int state, int color) {
         switch (state) {
             /** GREEN: everything is good **/
             case STATE_VERIFIED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_verified_cutout));
-                int color = R.color.android_green_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_green_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -417,7 +421,9 @@ public class KeyFormattingUtils {
             case STATE_ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_closed));
-                int color = R.color.android_green_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_green_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -429,7 +435,9 @@ public class KeyFormattingUtils {
             case STATE_UNVERIFIED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout));
-                int color = R.color.android_orange_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_orange_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -440,7 +448,9 @@ public class KeyFormattingUtils {
             case STATE_UNKNOWN_KEY: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
-                int color = R.color.android_orange_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_orange_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -452,9 +462,8 @@ public class KeyFormattingUtils {
             case STATE_REVOKED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout));
-                int color = R.color.android_red_light;
-                if (unobtrusive) {
-                    color = R.color.bg_gray;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_red_light;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -466,9 +475,8 @@ public class KeyFormattingUtils {
             case STATE_EXPIRED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_expired_cutout));
-                int color = R.color.android_red_light;
-                if (unobtrusive) {
-                    color = R.color.bg_gray;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_red_light;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -480,7 +488,9 @@ public class KeyFormattingUtils {
             case STATE_NOT_ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_open));
-                int color = R.color.android_red_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_red_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -491,7 +501,9 @@ public class KeyFormattingUtils {
             case STATE_NOT_SIGNED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout));
-                int color = R.color.android_red_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_red_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -502,7 +514,9 @@ public class KeyFormattingUtils {
             case STATE_INVALID: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
-                int color = R.color.android_red_light;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.android_red_light;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {
@@ -514,7 +528,9 @@ public class KeyFormattingUtils {
             case STATE_UNAVAILABLE: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout));
-                int color = R.color.bg_gray;
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.bg_gray;
+                }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
                 if (statusText != null) {

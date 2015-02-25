@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -35,17 +36,20 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.astuetz.PagerSlidingTabStrip;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -54,9 +58,9 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -72,10 +76,16 @@ public class ViewKeyActivity extends BaseActivity implements
 
     protected Uri mDataUri;
 
-    private LinearLayout mStatusLayout;
+    private TextView mName;
     private TextView mStatusText;
     private ImageView mStatusImage;
-    private View mStatusDivider;
+    private RelativeLayout mBigToolbar;
+
+    private ImageButton mActionEncryptFile;
+    private ImageButton mActionEncryptText;
+    private ImageButton mActionVerify;
+    private FloatingActionButton mFab;
+    private AspectRatioImageView mPhoto;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -93,19 +103,18 @@ public class ViewKeyActivity extends BaseActivity implements
         mExportHelper = new ExportHelper(this);
         mProviderHelper = new ProviderHelper(this);
 
-        // let the actionbar look like Android's contact app
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setIcon(android.R.color.transparent);
-        actionBar.setHomeButtonEnabled(true);
+        setTitle(null);
 
-        mStatusLayout = (LinearLayout) findViewById(R.id.view_key_status_layout);
-        mStatusText = (TextView) findViewById(R.id.view_key_status_text);
+        mName = (TextView) findViewById(R.id.view_key_name);
+        mStatusText = (TextView) findViewById(R.id.view_key_status);
         mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
-        mStatusDivider = findViewById(R.id.view_key_status_divider);
+        mBigToolbar = (RelativeLayout) findViewById(R.id.toolbar_big);
 
-
-        Intent intent = getIntent();
+        mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
+        mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
+        mActionVerify = (ImageButton) findViewById(R.id.view_key_action_verify);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -329,25 +338,32 @@ public class ViewKeyActivity extends BaseActivity implements
         }
     };
 
-    static final String[] UNIFIED_PROJECTION = new String[]{
+    // These are the rows that we will retrieve.
+    static final String[] PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.EXPIRY,
-
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
+            KeychainContract.KeyRings.FINGERPRINT
     };
-    static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
-    static final int INDEX_UNIFIED_USER_ID = 2;
-    static final int INDEX_UNIFIED_IS_REVOKED = 3;
-    static final int INDEX_UNIFIED_EXPIRY = 4;
+
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_USER_ID = 2;
+    static final int INDEX_IS_REVOKED = 3;
+    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_VERIFIED = 5;
+    static final int INDEX_HAS_ANY_SECRET = 6;
+    static final int INDEX_FINGERPRINT = 7;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_UNIFIED: {
                 Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(this, baseUri, UNIFIED_PROJECTION, null, null, null);
+                return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
             }
 
             default:
@@ -370,36 +386,91 @@ public class ViewKeyActivity extends BaseActivity implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_UNIFIED_USER_ID));
+                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
                     if (mainUserId[0] != null) {
-                        setTitle(mainUserId[0]);
+                        mName.setText(mainUserId[0]);
                     } else {
-                        setTitle(R.string.user_id_no_name);
+                        mName.setText(R.string.user_id_no_name);
                     }
 
-                    // get key id from MASTER_KEY_ID
-                    long masterKeyId = data.getLong(INDEX_UNIFIED_MASTER_KEY_ID);
-                    getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
+                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
 
-                    boolean isRevoked = data.getInt(INDEX_UNIFIED_IS_REVOKED) > 0;
-                    boolean isExpired = !data.isNull(INDEX_UNIFIED_EXPIRY)
-                            && new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000).before(new Date());
+                    boolean isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
+                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // Note: order is important
+                    int color;
                     if (isRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED);
-                        mStatusDivider.setVisibility(View.VISIBLE);
-                        mStatusLayout.setVisibility(View.VISIBLE);
+                        mStatusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED, R.color.icons);
+                        color = getResources().getColor(R.color.android_red_light);
+
+                        mActionEncryptFile.setVisibility(View.INVISIBLE);
+                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        mActionVerify.setVisibility(View.INVISIBLE);
+                        mFab.setVisibility(View.INVISIBLE);
                     } else if (isExpired) {
                         mStatusText.setText(R.string.view_key_expired);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED);
-                        mStatusDivider.setVisibility(View.VISIBLE);
-                        mStatusLayout.setVisibility(View.VISIBLE);
+                        mStatusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons);
+                        color = getResources().getColor(R.color.android_red_light);
+
+                        mActionEncryptFile.setVisibility(View.INVISIBLE);
+                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        mActionVerify.setVisibility(View.INVISIBLE);
+                        mFab.setVisibility(View.INVISIBLE);
+                    } else if (isSecret) {
+                        mStatusText.setText(R.string.view_key_my_key);
+                        mStatusImage.setVisibility(View.INVISIBLE);
+                        color = getResources().getColor(R.color.primary);
+
+                        mActionEncryptFile.setVisibility(View.VISIBLE);
+                        mActionEncryptText.setVisibility(View.VISIBLE);
+                        mActionVerify.setVisibility(View.INVISIBLE);
+                        mFab.setVisibility(View.INVISIBLE); // TODO
                     } else {
-                        mStatusDivider.setVisibility(View.GONE);
-                        mStatusLayout.setVisibility(View.GONE);
+                        mActionEncryptFile.setVisibility(View.VISIBLE);
+                        mActionEncryptText.setVisibility(View.VISIBLE);
+
+                        if (isVerified) {
+                            mStatusText.setText(R.string.view_key_verified);
+                            mStatusImage.setVisibility(View.VISIBLE);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_VERIFIED, R.color.icons);
+                            color = getResources().getColor(R.color.primary);
+
+                            AsyncTask<String, Void, Bitmap> photoTask =
+                                    new AsyncTask<String, Void, Bitmap>() {
+                                        protected Bitmap doInBackground(String... fingerprint) {
+                                            return ContactHelper.photoFromFingerprint(getContentResolver(), fingerprint[0]);
+                                        }
+
+                                        protected void onPostExecute(Bitmap photo) {
+                                            mPhoto.setImageBitmap(photo);
+                                            mPhoto.setVisibility(View.VISIBLE);
+                                        }
+                                    };
+
+                            photoTask.execute(fingerprint);
+
+                            mActionVerify.setVisibility(View.INVISIBLE);
+                            mFab.setVisibility(View.INVISIBLE);
+                        } else {
+                            mStatusText.setText(R.string.view_key_unverified);
+                            mStatusImage.setVisibility(View.VISIBLE);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons);
+                            color = getResources().getColor(R.color.android_orange_light);
+
+                            mActionVerify.setVisibility(View.VISIBLE);
+                            mFab.setVisibility(View.VISIBLE);
+                        }
                     }
+                    mToolbar.setBackgroundColor(color);
+                    mStatusBar.setBackgroundColor(color);
+                    mBigToolbar.setBackgroundColor(color);
 
                     break;
                 }

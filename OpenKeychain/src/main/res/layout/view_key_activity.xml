@@ -9,10 +9,21 @@
     <RelativeLayout
         android:id="@+id/toolbar_big"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/big_toolbar"
+        android:layout_height="@dimen/huge_toolbar"
         android:elevation="4dp"
         android:background="?attr/colorPrimary"
         android:orientation="horizontal">
+
+        <org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView
+            android:id="@+id/view_key_photo"
+            app:aspectRatioEnabled="true"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/status_bar"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/first_time_1" />
 
         <ImageView
             android:id="@+id/status_bar"
@@ -26,7 +37,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
             android:overScrollMode="always"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -35,46 +45,84 @@
             android:touchscreenBlocksFocus="false" />
 
         <LinearLayout
-            android:layout_below="@+id/toolbar"
-            android:layout_marginLeft="48dp"
-            android:layout_marginRight="72dp"
+            android:id="@+id/name_layout"
+            android:orientation="horizontal"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_above="@+id/toolbar2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/view_key_status_layout"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/view_key_status_image"
+                android:layout_width="24dp"
+                android:visibility="invisible"
+                android:src="@drawable/status_signature_unverified_cutout"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:orientation="horizontal">
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp" />
 
-                <ImageView
-                    android:id="@+id/view_key_status_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/view_key_status_text"
+                    android:id="@+id/view_key_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="8dp" />
+                    android:text=""
+                    android:textColor="@color/icons"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
+                <TextView
+                    android:id="@+id/view_key_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/tab_text"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/api_app_settings_app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name (set in-code)longlong"
-                android:textColor="@color/icons"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:paddingLeft="8dp"
-                android:layout_gravity="center_vertical" />
         </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/toolbar2"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="32dp">
+
+            <ImageButton
+                android:id="@+id/view_key_action_encrypt_files"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                style="?android:attr/borderlessButtonStyle"
+                android:src="@drawable/ic_action_encrypt_file" />
+
+            <ImageButton
+                android:id="@+id/view_key_action_encrypt_text"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                style="?android:attr/borderlessButtonStyle"
+                android:src="@drawable/ic_action_encrypt_text" />
+
+            <ImageButton
+                android:id="@+id/view_key_action_verify"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:visibility="invisible"
+                style="?android:attr/borderlessButtonStyle"
+                android:src="@drawable/ic_action_verified_cutout" />
+        </LinearLayout>
+
     </RelativeLayout>
 
     <LinearLayout

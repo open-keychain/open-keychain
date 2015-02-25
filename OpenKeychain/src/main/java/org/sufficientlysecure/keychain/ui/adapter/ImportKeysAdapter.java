@@ -175,9 +175,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_REVOKED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_EXPIRED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
         }
 
         if (entry.isRevoked() || entry.isExpired()) {

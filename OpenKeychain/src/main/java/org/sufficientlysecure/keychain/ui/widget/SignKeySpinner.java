@@ -26,6 +26,7 @@ import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
@@ -83,15 +84,15 @@ public class SignKeySpinner extends KeySpinner {
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
             return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
             return false;
         }
         if (cursor.getInt(mIndexHasSign) == 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, R.color.bg_gray);
             return false;
         }
 

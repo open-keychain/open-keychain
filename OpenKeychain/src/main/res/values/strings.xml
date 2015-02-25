@@ -582,8 +582,11 @@
     <string name="create_key_edit">"Change key configuration"</string>
 
     <!-- View key -->
-    <string name="view_key_revoked">"This key has been revoked!"</string>
-    <string name="view_key_expired">"This key is expired!"</string>
+    <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
+    <string name="view_key_expired">"Expired: The contact needs to extend the keys validity!"</string>
+    <string name="view_key_my_key">"My Key"</string>
+    <string name="view_key_verified">"Verified Key"</string>
+    <string name="view_key_unverified">"Unverified: Scan QR Code to verify key!"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>

@@ -7,4 +7,5 @@
     <dimen name="statusbar_height">24dp</dimen>
     <!-- 120dp + statusbar_height -->
     <dimen name="big_toolbar">141dp</dimen>
+    <dimen name="huge_toolbar">233dp</dimen>
 </resources>

@@ -778,13 +778,13 @@ public class KeyListFragment extends LoaderFragment
 
                 // Note: order is important!
                 if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, true);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, true);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
