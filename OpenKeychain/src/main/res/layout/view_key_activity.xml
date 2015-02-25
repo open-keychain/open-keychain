@@ -44,40 +44,35 @@
             android:transitionGroup="false"
             android:touchscreenBlocksFocus="false" />
 
-        <LinearLayout
-            android:id="@+id/name_layout"
-            android:orientation="horizontal"
-            android:layout_marginLeft="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_above="@+id/toolbar2"
+        <TextView
+            android:id="@+id/view_key_name"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginEnd="48dp"
+            android:layout_above="@+id/view_key_status"
+            android:text=""
+            android:textColor="@color/icons"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_toLeftOf="@+id/view_key_qr_code"
+            android:layout_toStartOf="@+id/view_key_qr_code" />
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginLeft="32dp"
-                android:layout_marginStart="32dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/view_key_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/icons"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-                <TextView
-                    android:id="@+id/view_key_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="@color/tab_text"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-            </LinearLayout>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/view_key_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginEnd="48dp"
+            android:layout_above="@+id/toolbar2"
+            android:text=""
+            android:textColor="@color/tab_text"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_toLeftOf="@+id/view_key_qr_code"
+            android:layout_toStartOf="@+id/view_key_qr_code" />
 
 
         <LinearLayout
@@ -116,6 +111,15 @@
                 android:visibility="invisible"
                 style="?android:attr/borderlessButtonStyle"
                 android:src="@drawable/ic_action_verified_cutout" />
+
+            <ImageButton
+                android:id="@+id/view_key_action_edit"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:visibility="invisible"
+                style="?android:attr/borderlessButtonStyle"
+                android:src="@drawable/ic_mode_edit_white_24dp" />
+
         </LinearLayout>
 
         <ImageView
@@ -129,6 +133,18 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_marginRight="16dp" />
+
+        <ImageButton
+            android:id="@+id/view_key_qr_code"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:visibility="gone"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_gravity="center_vertical"
+            android:layout_above="@+id/toolbar2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="20dp" />
 
     </RelativeLayout>
 

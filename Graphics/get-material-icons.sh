@@ -7,6 +7,9 @@ python copy OpenKeychain navigation white check 24
 python copy OpenKeychain navigation black expand_less 24
 python copy OpenKeychain navigation black expand_more 24
 python copy OpenKeychain navigation white refresh 24
+python copy OpenKeychain action white swap_vert 24
+python copy OpenKeychain action white swap_vert_circle 24
+python copy OpenKeychain editor white mode_edit 24
 
 # navigation drawer sections
 python copy OpenKeychain communication black vpn_key 24

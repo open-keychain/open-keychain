@@ -36,13 +36,10 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -55,11 +52,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
@@ -84,8 +83,10 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
     private ImageButton mActionVerify;
+    private ImageButton mActionEdit;
     private FloatingActionButton mFab;
     private AspectRatioImageView mPhoto;
+    private ImageButton mQrCode;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -95,6 +96,9 @@ public class ViewKeyActivity extends BaseActivity implements
     private static final int NFC_SENT = 1;
 
     private static final int LOADER_ID_UNIFIED = 0;
+
+    private boolean mIsSecret;
+    private boolean mHasEncrypt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,8 +117,10 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionVerify = (ImageButton) findViewById(R.id.view_key_action_verify);
+        mActionEdit = (ImageButton) findViewById(R.id.view_key_action_edit);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
+        mQrCode = (ImageButton) findViewById(R.id.view_key_qr_code);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -133,6 +139,48 @@ public class ViewKeyActivity extends BaseActivity implements
         }
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
+        mActionEncryptFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encrypt(mDataUri, false);
+            }
+        });
+        mActionEncryptText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encrypt(mDataUri, true);
+            }
+        });
+        mActionVerify.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                certify(mDataUri);
+            }
+        });
+        mActionEdit.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                editKey(mDataUri);
+            }
+        });
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mIsSecret) {
+                    startSafeSlinger(mDataUri);
+                } else {
+                    certify(mDataUri);
+                }
+            }
+        });
+
+        mQrCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showQrCodeDialog();
+            }
+        });
+
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
@@ -199,12 +247,25 @@ public class ViewKeyActivity extends BaseActivity implements
                     advancedIntent.setData(mDataUri);
                     startActivity(advancedIntent);
                 }
+                case R.id.menu_key_view_refresh: {
+                    try {
+                        updateFromKeyserver(mDataUri, mProviderHelper);
+                    } catch (ProviderHelper.NotFoundException e) {
+                        Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+                    }
+                }
             }
         } catch (ProviderHelper.NotFoundException e) {
             Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
             Log.e(Constants.TAG, "Key not found", e);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showQrCodeDialog() {
+        Intent qrCodeIntent = new Intent(this, QrCodeViewActivity.class);
+        qrCodeIntent.setData(mDataUri);
+        startActivity(qrCodeIntent);
     }
 
     private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper)
@@ -246,6 +307,119 @@ public class ViewKeyActivity extends BaseActivity implements
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void encrypt(Uri dataUri, boolean text) {
+        // If there is no encryption key, don't bother.
+        if (!mHasEncrypt) {
+            Notify.showNotify(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
+            return;
+        }
+        try {
+            long keyId = new ProviderHelper(this)
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
+            long[] encryptionKeyIds = new long[]{keyId};
+            Intent intent;
+            if (text) {
+                intent = new Intent(this, EncryptTextActivity.class);
+                intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
+                intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            } else {
+                intent = new Intent(this, EncryptFilesActivity.class);
+                intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+                intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+            }
+            // used instead of startActivity set actionbar based on callingPackage
+            startActivityForResult(intent, 0);
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+    }
+
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+
+        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
+
+        startActivityForResult(queryIntent, 0);
+    }
+
+    private void certify(Uri dataUri) {
+        long keyId = 0;
+        try {
+            keyId = new ProviderHelper(this)
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+        Intent certifyIntent = new Intent(this, CertifyKeyActivity.class);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
+        startActivityForResult(certifyIntent, 0);
+    }
+
+    private void editKey(Uri dataUri) {
+        Intent editIntent = new Intent(this, EditKeyActivity.class);
+        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
+        startActivityForResult(editIntent, 0);
+    }
+
+    private void startSafeSlinger(Uri dataUri) {
+        long keyId = 0;
+        try {
+            keyId = new ProviderHelper(this)
+                    .getCachedPublicKeyRing(dataUri)
+                    .extractOrGetMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+        Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        startActivityForResult(safeSlingerIntent, 0);
+    }
+
+
+    /**
+     * Load QR Code asynchronously and with a fade in animation
+     *
+     * @param fingerprint
+     */
+    private void loadQrCode(final String fingerprint) {
+        AsyncTask<Void, Void, Bitmap> loadTask =
+                new AsyncTask<Void, Void, Bitmap>() {
+                    protected Bitmap doInBackground(Void... unused) {
+                        String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                        // render with minimal size
+                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+                    }
+
+                    protected void onPostExecute(Bitmap qrCode) {
+                        // only change view, if fragment is attached to activity
+//                        if (ViewKeyFragment.this.isAdded()) {
+
+                        // scale the image up to our actual size. we do this in code rather
+                        // than let the ImageView do this because we don't require filtering.
+                        Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
+                                mQrCode.getHeight(), mQrCode.getHeight(),
+                                false);
+                        mQrCode.setImageBitmap(scaled);
+
+                        // simple fade-in animation
+                        AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+                        anim.setDuration(200);
+                        mQrCode.startAnimation(anim);
+                    }
+//                    }
+                };
+
+        loadTask.execute();
     }
 
     /**
@@ -347,7 +521,8 @@ public class ViewKeyActivity extends BaseActivity implements
             KeychainContract.KeyRings.EXPIRY,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT
+            KeychainContract.KeyRings.FINGERPRINT,
+            KeychainContract.KeyRings.HAS_ENCRYPT
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -357,6 +532,7 @@ public class ViewKeyActivity extends BaseActivity implements
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;
+    static final int INDEX_HAS_ENCRYPT = 8;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -395,11 +571,25 @@ public class ViewKeyActivity extends BaseActivity implements
 
                     String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
 
-                    boolean isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !data.isNull(INDEX_EXPIRY)
                             && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
                     boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+
+                    AsyncTask<String, Void, Bitmap> photoTask =
+                            new AsyncTask<String, Void, Bitmap>() {
+                                protected Bitmap doInBackground(String... fingerprint) {
+                                    return ContactHelper.photoFromFingerprint(getContentResolver(), fingerprint[0]);
+                                }
+
+                                protected void onPostExecute(Bitmap photo) {
+                                    mPhoto.setImageBitmap(photo);
+                                    mPhoto.setVisibility(View.VISIBLE);
+                                }
+                            };
 
                     // Note: order is important
                     int color;
@@ -409,55 +599,53 @@ public class ViewKeyActivity extends BaseActivity implements
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
-                        mActionEncryptFile.setVisibility(View.INVISIBLE);
-                        mActionEncryptText.setVisibility(View.INVISIBLE);
-                        mActionVerify.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.INVISIBLE);
+                        mActionEncryptFile.setVisibility(View.GONE);
+                        mActionEncryptText.setVisibility(View.GONE);
+                        mActionVerify.setVisibility(View.GONE);
+                        mActionEdit.setVisibility(View.GONE);
+                        mFab.setVisibility(View.GONE);
+                        mQrCode.setVisibility(View.GONE);
                     } else if (isExpired) {
                         mStatusText.setText(R.string.view_key_expired);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
-                        mActionEncryptFile.setVisibility(View.INVISIBLE);
-                        mActionEncryptText.setVisibility(View.INVISIBLE);
-                        mActionVerify.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.INVISIBLE);
-                    } else if (isSecret) {
+                        mActionEncryptFile.setVisibility(View.GONE);
+                        mActionEncryptText.setVisibility(View.GONE);
+                        mActionVerify.setVisibility(View.GONE);
+                        mActionEdit.setVisibility(View.GONE);
+                        mFab.setVisibility(View.GONE);
+                        mQrCode.setVisibility(View.GONE);
+                    } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
-                        mStatusImage.setVisibility(View.INVISIBLE);
+                        mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
+                        photoTask.execute(fingerprint);
+                        loadQrCode(fingerprint);
+                        mQrCode.setVisibility(View.VISIBLE);
 
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
-                        mActionVerify.setVisibility(View.INVISIBLE);
-                        mFab.setVisibility(View.INVISIBLE); // TODO
+                        mActionVerify.setVisibility(View.GONE);
+                        mActionEdit.setVisibility(View.VISIBLE);
+                        mFab.setVisibility(View.VISIBLE);
+                        mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_swap_vert_white_24dp));
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
+                        mActionEdit.setVisibility(View.GONE);
+                        mQrCode.setVisibility(View.GONE);
 
                         if (isVerified) {
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
-
-                            AsyncTask<String, Void, Bitmap> photoTask =
-                                    new AsyncTask<String, Void, Bitmap>() {
-                                        protected Bitmap doInBackground(String... fingerprint) {
-                                            return ContactHelper.photoFromFingerprint(getContentResolver(), fingerprint[0]);
-                                        }
-
-                                        protected void onPostExecute(Bitmap photo) {
-                                            mPhoto.setImageBitmap(photo);
-                                            mPhoto.setVisibility(View.VISIBLE);
-                                        }
-                                    };
-
                             photoTask.execute(fingerprint);
 
-                            mActionVerify.setVisibility(View.INVISIBLE);
-                            mFab.setVisibility(View.INVISIBLE);
+                            mActionVerify.setVisibility(View.GONE);
+                            mFab.setVisibility(View.GONE);
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
