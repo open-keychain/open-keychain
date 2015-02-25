@@ -246,6 +246,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
                     advancedIntent.setData(mDataUri);
                     startActivity(advancedIntent);
+                    return true;
                 }
                 case R.id.menu_key_view_refresh: {
                     try {
@@ -253,6 +254,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     } catch (ProviderHelper.NotFoundException e) {
                         Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
                     }
+                    return true;
                 }
             }
         } catch (ProviderHelper.NotFoundException e) {
