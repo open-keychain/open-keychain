@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,6 +34,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -57,6 +59,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -275,8 +278,18 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(this, QrCodeViewActivity.class);
+
+        // create the transition animation - the images in the layouts
+        // of both activities are defined with android:transitionName="qr_code"
+        Bundle opts = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(this, mQrCodeLayout, "qr_code");
+            opts = options.toBundle();
+        }
+
         qrCodeIntent.setData(mDataUri);
-        startActivity(qrCodeIntent);
+        ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
     private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper)
@@ -602,7 +615,8 @@ public class ViewKeyActivity extends BaseActivity implements
                     if (isRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -620,7 +634,8 @@ public class ViewKeyActivity extends BaseActivity implements
                             mActionEdit.setVisibility(View.GONE);
                         }
                         mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -635,6 +650,26 @@ public class ViewKeyActivity extends BaseActivity implements
                         photoTask.execute(fingerprint);
                         loadQrCode(fingerprint);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
+
+                        // and place leftOf qr code
+                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
+                                mName.getLayoutParams();
+                        // remove right margin
+                        nameParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                            nameParams.setMarginEnd(0);
+                        }
+                        nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+                        mName.setLayoutParams(nameParams);
+
+                        RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
+                                mStatusText.getLayoutParams();
+                        statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                            statusParams.setMarginEnd(0);
+                        }
+                        statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+                        mStatusText.setLayoutParams(statusParams);
 
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
@@ -651,7 +686,8 @@ public class ViewKeyActivity extends BaseActivity implements
                         if (isVerified) {
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                    KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
                             photoTask.execute(fingerprint);
 
@@ -660,7 +696,8 @@ public class ViewKeyActivity extends BaseActivity implements
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText, KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
+                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                    KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.android_orange_light);
 
                             mActionVerify.setVisibility(View.VISIBLE);

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
@@ -48,7 +49,7 @@ public class QrCodeViewActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         // "Done"
-                        finish();
+                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
                     }
                 }
         );
@@ -56,7 +57,7 @@ public class QrCodeViewActivity extends BaseActivity {
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
-            finish();
+            ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             return;
         }
 
@@ -65,7 +66,7 @@ public class QrCodeViewActivity extends BaseActivity {
         mFingerprintQrCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             }
         });
 
@@ -77,7 +78,7 @@ public class QrCodeViewActivity extends BaseActivity {
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
                 Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
-                finish();
+                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             }
 
             String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
@@ -88,40 +89,24 @@ public class QrCodeViewActivity extends BaseActivity {
 
             mFingerprintQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
                     new OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    // create actual bitmap in display dimensions
-                    Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                            mFingerprintQrCode.getWidth(), mFingerprintQrCode.getWidth(), false);
-                    mFingerprintQrCode.setImageBitmap(scaled);
-                }
-            });
+                        @Override
+                        public void onGlobalLayout() {
+                            // create actual bitmap in display dimensions
+                            Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
+                                    mFingerprintQrCode.getWidth(), mFingerprintQrCode.getWidth(), false);
+                            mFingerprintQrCode.setImageBitmap(scaled);
+                        }
+                    });
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
             Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
-            finish();
+            ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
         }
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.qr_code_activity);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // custom activity transition to get zoom in effect
-        this.overridePendingTransition(R.anim.qr_code_zoom_enter, android.R.anim.fade_out);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // custom activity transition to get zoom out effect
-        this.overridePendingTransition(0, R.anim.qr_code_zoom_exit);
     }
 
 }
