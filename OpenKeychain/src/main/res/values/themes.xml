@@ -3,7 +3,6 @@
 
     <style name="KeychainTheme" parent="KeychainTheme.Base" />
 
-    <!--<style name="KeychainTheme.Base" parent="HoloKeychainTheme">-->
     <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
