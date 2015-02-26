@@ -473,7 +473,7 @@ public class ProviderHelper {
                             item.selfCert = cert;
                             item.isPrimary = cert.isPrimaryUserId();
                         } else {
-                            item.isRevoked = true;
+                            item.selfRevocation = cert;
                             log(LogType.MSG_IP_UID_REVOKED);
                         }
                         continue;
@@ -569,10 +569,11 @@ public class ProviderHelper {
 
                         // NOTE self-certificates are already verified during canonicalization,
                         // AND we know there is at most one cert plus at most one revocation
+                        // AND the revocation only exists if there is no newer certification
                         if (!cert.isRevocation()) {
                             item.selfCert = cert;
                         } else {
-                            item.isRevoked = true;
+                            item.selfRevocation = cert;
                             log(LogType.MSG_IP_UAT_REVOKED);
                         }
                         continue;
@@ -643,15 +644,20 @@ public class ProviderHelper {
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
                 UserPacketItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
-                if (item.selfCert != null) {
-                    // TODO get rid of "self verified" status? this cannot even happen anymore!
-                    operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
-                            selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
+
+                if (item.selfCert == null) {
+                    throw new AssertionError("User ids MUST be self-certified at this point!!");
                 }
-                // don't bother with trusted certs if the uid is revoked, anyways
-                if (item.isRevoked) {
+
+                if (item.selfRevocation != null) {
+                    operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
+                            Certs.VERIFIED_SELF));
+                    // don't bother with trusted certs if the uid is revoked, anyways
                     continue;
                 }
+
+                operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
+                        selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
 
                 // iterate over signatures
                 for (int i = 0; i < item.trustedCerts.size() ; i++) {
@@ -711,15 +717,16 @@ public class ProviderHelper {
         String userId;
         byte[] attributeData;
         boolean isPrimary = false;
-        boolean isRevoked = false;
         WrappedSignature selfCert;
+        WrappedSignature selfRevocation;
         LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<>();
 
         @Override
         public int compareTo(UserPacketItem o) {
             // revoked keys always come last!
-            if (isRevoked != o.isRevoked) {
-                return isRevoked ? 1 : -1;
+            //noinspection DoubleNegation
+            if ( (selfRevocation != null) != (o.selfRevocation != null)) {
+                return selfRevocation != null ? 1 : -1;
             }
             // if one is a user id, but the other isn't, the user id always comes first.
             // we compare for null values here, so != is the correct operator!
@@ -1353,7 +1360,7 @@ public class ProviderHelper {
         values.put(UserPackets.USER_ID, item.userId);
         values.put(UserPackets.ATTRIBUTE_DATA, item.attributeData);
         values.put(UserPackets.IS_PRIMARY, item.isPrimary);
-        values.put(UserPackets.IS_REVOKED, item.isRevoked);
+        values.put(UserPackets.IS_REVOKED, item.selfRevocation != null);
         values.put(UserPackets.RANK, rank);
 
         Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
