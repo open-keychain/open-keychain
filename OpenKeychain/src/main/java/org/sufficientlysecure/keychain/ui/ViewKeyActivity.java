@@ -87,11 +87,10 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
-    private ImageButton mActionVerify;
     private ImageButton mActionNfc;
     private FloatingActionButton mFab;
     private AspectRatioImageView mPhoto;
-    private ImageButton mQrCode;
+    private ImageView mQrCode;
     private CardView mQrCodeLayout;
 
     // NFC
@@ -105,6 +104,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private boolean mIsSecret = false;
     private boolean mHasEncrypt = false;
+    private boolean mIsVerified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,11 +122,10 @@ public class ViewKeyActivity extends BaseActivity implements
 
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
-        mActionVerify = (ImageButton) findViewById(R.id.view_key_action_verify);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
-        mQrCode = (ImageButton) findViewById(R.id.view_key_qr_code);
+        mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 
         mDataUri = getIntent().getData();
@@ -159,11 +158,6 @@ public class ViewKeyActivity extends BaseActivity implements
                 encrypt(mDataUri, true);
             }
         });
-        mActionVerify.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                certify(mDataUri);
-            }
-        });
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,7 +170,7 @@ public class ViewKeyActivity extends BaseActivity implements
             }
         });
 
-        mQrCode.setOnClickListener(new View.OnClickListener() {
+        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showQrCodeDialog();
@@ -269,6 +263,10 @@ public class ViewKeyActivity extends BaseActivity implements
                     editKey(mDataUri);
                     return true;
                 }
+                case R.id.menu_key_view_certify_fingerprint: {
+                    certifyFingeprint(mDataUri);
+                    return true;
+                }
             }
         } catch (ProviderHelper.NotFoundException e) {
             Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
@@ -279,8 +277,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem register = menu.findItem(R.id.menu_key_view_edit);
-        register.setVisible(mIsSecret);
+        MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
+        editKey.setVisible(mIsSecret);
+        MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
+        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified);
+
         return true;
     }
 
@@ -319,6 +320,12 @@ public class ViewKeyActivity extends BaseActivity implements
         Intent scanQrCode = new Intent(this, QrCodeScanActivity.class);
         scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
         startActivityForResult(scanQrCode, 0);
+    }
+
+    private void certifyFingeprint(Uri dataUri) {
+        Intent intent = new Intent(this, CertifyFingerprintActivity.class);
+        intent.setData(dataUri);
+        startActivityForResult(intent, 0);
     }
 
     private void showQrCodeDialog() {
@@ -418,20 +425,6 @@ public class ViewKeyActivity extends BaseActivity implements
         queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
 
         startActivityForResult(queryIntent, 0);
-    }
-
-    private void certify(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = new ProviderHelper(this)
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-        }
-        Intent certifyIntent = new Intent(this, CertifyKeyActivity.class);
-        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
-        startActivityForResult(certifyIntent, 0);
     }
 
     private void editKey(Uri dataUri) {
@@ -641,7 +634,10 @@ public class ViewKeyActivity extends BaseActivity implements
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
                     boolean isExpired = !data.isNull(INDEX_EXPIRY)
                             && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
-                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
+                    mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+                    // re-create options menu based on mIsSecret, mIsVerified
+                    supportInvalidateOptionsMenu();
 
                     AsyncTask<String, Void, Bitmap> photoTask =
                             new AsyncTask<String, Void, Bitmap>() {
@@ -666,7 +662,6 @@ public class ViewKeyActivity extends BaseActivity implements
 
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
-                        mActionVerify.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
@@ -683,14 +678,10 @@ public class ViewKeyActivity extends BaseActivity implements
 
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
-                        mActionVerify.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
-                        // re-create options menu to see edit button
-                        supportInvalidateOptionsMenu();
-
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
@@ -720,7 +711,6 @@ public class ViewKeyActivity extends BaseActivity implements
 
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
-                        mActionVerify.setVisibility(View.GONE);
 
                         // invokeBeam is available from API 21
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -736,7 +726,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mQrCodeLayout.setVisibility(View.GONE);
                         mActionNfc.setVisibility(View.GONE);
 
-                        if (isVerified) {
+                        if (mIsVerified) {
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
@@ -744,7 +734,6 @@ public class ViewKeyActivity extends BaseActivity implements
                             color = getResources().getColor(R.color.primary);
                             photoTask.execute(fingerprint);
 
-                            mActionVerify.setVisibility(View.GONE);
                             mFab.setVisibility(View.GONE);
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
@@ -753,7 +742,6 @@ public class ViewKeyActivity extends BaseActivity implements
                                     KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.android_orange_light);
 
-                            mActionVerify.setVisibility(View.VISIBLE);
                             mFab.setVisibility(View.VISIBLE);
                         }
                     }

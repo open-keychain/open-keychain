@@ -101,14 +101,6 @@
                 android:src="@drawable/ic_action_encrypt_text" />
 
             <ImageButton
-                android:id="@+id/view_key_action_verify"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:visibility="invisible"
-                style="?android:attr/borderlessButtonStyle"
-                android:src="@drawable/ic_action_verified_cutout" />
-
-            <ImageButton
                 android:id="@+id/view_key_action_nfc"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
@@ -139,15 +131,16 @@
             android:layout_marginRight="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
             card_view:cardBackgroundColor="@android:color/white"
             card_view:cardUseCompatPadding="true"
             card_view:cardCornerRadius="4dp">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/view_key_qr_code"
                 android:layout_width="96dp"
-                android:layout_height="96dp"
-                style="?android:attr/borderlessButtonStyle" />
+                android:layout_height="96dp" />
         </android.support.v7.widget.CardView>
 
     </RelativeLayout>

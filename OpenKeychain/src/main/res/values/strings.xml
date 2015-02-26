@@ -78,6 +78,8 @@
     <string name="btn_export_to_server">"Upload To Keyserver"</string>
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
+    <string name="btn_no">"No"</string>
+    <string name="btn_match">"Fingerprints are matching"</string>
     <string name="btn_lookup_key">"Lookup key"</string>
     <string name="btn_share_encrypted_signed">"Encrypt and share message"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
@@ -107,6 +109,7 @@
     <string name="menu_search_cloud">"Search cloud"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>
+    <string name="menu_certify_fingerprint">"Verify via fingerprint comparison"</string>
 
     <!-- label -->
     <string name="label_message">"Message"</string>
@@ -1124,6 +1127,8 @@
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for certification which match what you expected."</string>
+    <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
