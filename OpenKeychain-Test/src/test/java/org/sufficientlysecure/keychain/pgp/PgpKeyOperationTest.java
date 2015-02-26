@@ -533,7 +533,7 @@ public class PgpKeyOperationTest {
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
             Assert.assertEquals("modified key must have expected expiry date",
-                    expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime()/1000);
+                    expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime() / 1000);
             Assert.assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
         }
@@ -553,11 +553,23 @@ public class PgpKeyOperationTest {
         }
 
         { // expiry of 0 should be "no expiry"
+
+            // even if there is a non-expiring user id while all others are revoked, it doesn't count!
+            // for this purpose we revoke one while they still have expiry times
+            parcel.reset();
+            parcel.mRevokeUserIds.add("aloe");
+            modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
+
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, null, 0L));
             modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB);
 
-            Assert.assertNull("key must not expire anymore", modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
+            // for this check, it is relevant that we DON'T use the unsafe one!
+            Assert.assertNull("key must not expire anymore",
+                    modified.canonicalize(new OperationLog(), 0).getPublicKey().getExpiryTime());
+            // make sure the unsafe one behaves incorrectly as expected
+            Assert.assertNotNull("unsafe expiry must yield wrong result from revoked user id",
+                    modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
         }
 
         { // if we revoke everything, nothing is left to properly sign...
