@@ -439,8 +439,8 @@ public class PgpKeyOperation {
         // since this is the master key, this contains at least CERTIFY_OTHER
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
         int masterKeyFlags = readKeyFlags(masterPublicKey) | KeyFlags.CERTIFY_OTHER;
-        long masterKeyExpiry = masterPublicKey.getValidSeconds() == 0L ? 0L :
-                masterPublicKey.getCreationTime().getTime() / 1000 + masterPublicKey.getValidSeconds();
+        Date expiryTime = wsKR.getPublicKey().getExpiryTime();
+        long masterKeyExpiry = expiryTime != null ? expiryTime.getTime() / 1000 : 0L;
 
         return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, saveParcel, passphrase, log);
 

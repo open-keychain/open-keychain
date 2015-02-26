@@ -79,9 +79,8 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public boolean isExpired() {
         // Is the master key expired?
-        Date creationDate = getRing().getPublicKey().getCreationTime();
-        Date expiryDate = getRing().getPublicKey().getValidSeconds() > 0
-                ? new Date(creationDate.getTime() + getRing().getPublicKey().getValidSeconds() * 1000) : null;
+        Date creationDate = getPublicKey().getCreationTime();
+        Date expiryDate = getPublicKey().getExpiryTime();
 
         Date now = new Date();
         return creationDate.after(now) || (expiryDate != null && expiryDate.before(now));

@@ -60,24 +60,6 @@ public class UncachedPublicKey {
         return mPublicKey.getCreationTime();
     }
 
-    public Date getExpiryTime() {
-        long seconds = mPublicKey.getValidSeconds();
-        if (seconds > Integer.MAX_VALUE) {
-            Log.e(Constants.TAG, "error, expiry time too large");
-            return null;
-        }
-        if (seconds == 0) {
-            // no expiry
-            return null;
-        }
-        Date creationDate = getCreationTime();
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(creationDate);
-        calendar.add(Calendar.SECOND, (int) seconds);
-
-        return calendar.getTime();
-    }
-
     public boolean isExpired() {
         Date creationDate = mPublicKey.getCreationTime();
         Date expiryDate = mPublicKey.getValidSeconds() > 0
