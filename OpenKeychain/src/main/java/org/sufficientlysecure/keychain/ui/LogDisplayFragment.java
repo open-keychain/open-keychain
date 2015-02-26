@@ -23,8 +23,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,12 +37,26 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
 
 public class LogDisplayFragment extends ListFragment implements OnItemClickListener {
 
@@ -46,6 +65,12 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     OperationResult mResult;
 
     public static final String EXTRA_RESULT = "log";
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -70,6 +95,83 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
         getListView().setFastScrollEnabled(true);
         getListView().setDividerHeight(0);
+
+    }
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        Toast.makeText(this.getActivity(),"Options created",Toast.LENGTH_SHORT).show();
+        inflater.inflate(R.menu.log_display, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_log_display_export_log:
+                exportLog();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void exportLog() {
+        Toast.makeText(this.getActivity(),"Exporting log",Toast.LENGTH_LONG).show();
+        showExportLogDialog(new File(Constants.Path.APP_DIR, "export.log"));
+    }
+
+    private void writeToLogFile(final OperationResult.OperationLog operationLog, final File f) {
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(f);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        Iterator<LogEntryParcel> logIterator = operationLog.iterator();
+
+        while(logIterator.hasNext()) {
+
+            pw.println(getPrintableLogEntry(logIterator.next()));
+        }
+
+        pw.close();
+    }
+
+    /**
+     * returns an indented String of a LogEntryParcel
+     * @param entry log entry whose String representation is to be obtained
+     * @return the passed log entry in a readable format
+     */
+    private String getPrintableLogEntry(OperationResult.LogEntryParcel entry) {
+        String printable = "";
+
+        return entry.toString();
+    }
+
+    private void showExportLogDialog(final File exportFile) {
+
+        String title = this.getString(R.string.title_export_log);
+
+        String message = this.getString(R.string.specify_file_to_export_log_to);
+
+        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
+            @Override
+            public void onFileSelected(File file, boolean checked) {
+                writeToLogFile(getOperationLog(),file);
+            }
+        }, this.getActivity().getSupportFragmentManager(), title, message, exportFile, null);
+    }
+
+    private OperationResult.OperationLog getOperationLog(){
+        OperationResult operationResult = this.getActivity().getIntent().getParcelableExtra(
+                LogDisplayFragment.EXTRA_RESULT);
+        OperationResult.OperationLog operationResultLog = operationResult.getLog();
+
+        return operationResultLog;
     }
 
     @Override
