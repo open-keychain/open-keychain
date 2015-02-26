@@ -39,7 +39,7 @@ SRC_DIR=./drawables/
 # xhdpi: 64x64
 # xxhdpi: 96x96
 
-for NAME in "ic_action_nfc" "ic_action_qr_code" "ic_action_safeslinger" "ic_action_search_cloud" "ic_cloud_search_24px"
+for NAME in "ic_action_search_cloud" "ic_cloud_search_24px" "ic_action_encrypt_file" "ic_action_encrypt_text" "ic_action_verified_cutout"
 do
 echo $NAME
 inkscape -w 32 -h 32 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
@@ -48,13 +48,22 @@ inkscape -w 64 -h 64 -e "$XDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 96 -h 96 -e "$XXDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
 done
 
-for NAME in "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_expired" "status_signature_invalid_cutout" "status_signature_invalid" "status_signature_revoked_cutout" "status_signature_revoked" "status_signature_unknown_cutout" "status_signature_unknown" "status_signature_unverified_cutout" "status_signature_unverified" "status_signature_verified_cutout" "status_signature_verified" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign"
+for NAME in "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign"
 do
 echo $NAME
-inkscape -w 24 -h 24 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 32 -h 32 -e "$HDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 48 -h 48 -e "$XDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
-inkscape -w 64 -h 64 -e "$XXDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 24 -h 24 -e "$MDPI_DIR/${NAME}_24px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 32 -h 32 -e "$HDPI_DIR/${NAME}_24px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 48 -h 48 -e "$XDPI_DIR/${NAME}_24px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 64 -h 64 -e "$XXDPI_DIR/${NAME}_24px.png" "$SRC_DIR/$NAME.svg"
+done
+
+for NAME in "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout"
+do
+echo $NAME
+inkscape -w 96 -h 96 -e "$MDPI_DIR/${NAME}_96px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 128 -h 128 -e "$HDPI_DIR/${NAME}_96px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 192 -h 192 -e "$XDPI_DIR/${NAME}_96px.png" "$SRC_DIR/$NAME.svg"
+inkscape -w 256 -h 256 -e "$XXDPI_DIR/${NAME}_96px.png" "$SRC_DIR/$NAME.svg"
 done
 
 for NAME in "create_key_robot"

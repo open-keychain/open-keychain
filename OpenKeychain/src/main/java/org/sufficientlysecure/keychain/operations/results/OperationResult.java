@@ -555,6 +555,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_CLEAR_META_FILE (LogLevel.DEBUG, R.string.msg_dc_clear_meta_file),
         MSG_DC_CLEAR_META_MIME (LogLevel.DEBUG, R.string.msg_dc_clear_meta_mime),
         MSG_DC_CLEAR_META_SIZE (LogLevel.DEBUG, R.string.msg_dc_clear_meta_size),
+        MSG_DC_CLEAR_META_SIZE_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_clear_meta_size_unknown),
         MSG_DC_CLEAR_META_TIME (LogLevel.DEBUG, R.string.msg_dc_clear_meta_time),
         MSG_DC_CLEAR (LogLevel.DEBUG, R.string.msg_dc_clear),
         MSG_DC_CLEAR_SIGNATURE_BAD (LogLevel.WARN, R.string.msg_dc_clear_signature_bad),

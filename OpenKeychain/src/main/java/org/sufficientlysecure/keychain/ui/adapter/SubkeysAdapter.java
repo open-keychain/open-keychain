@@ -272,12 +272,12 @@ public class SubkeysAdapter extends CursorAdapter {
                     PorterDuff.Mode.SRC_IN);
 
             if (isRevoked) {
-                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout);
+                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24px);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
-                vStatus.setImageResource(R.drawable.status_signature_expired_cutout);
+                vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24px);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);
@@ -301,7 +301,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_subkey_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
         if (mDefaultTextColor == null) {
             TextView keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();

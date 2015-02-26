@@ -67,8 +67,10 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
+    <!-- tools:replace="android:allowBackup" is a workaround for https://github.com/geftimov/android-patternview/pull/2 -->
     <application
         android:name=".KeychainApplication"
+        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -145,7 +147,11 @@
             android:name=".ui.EncryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with data Uri -->
@@ -174,7 +180,11 @@
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with text as extra -->
@@ -403,10 +413,9 @@
                 android:value=".ui.ViewKeyActivity" />
         </activity>
         <activity
-            android:name=".ui.ViewKeyAdvancedActivity"
+            android:name=".ui.ViewKeyAdvActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_advanced_key_info">
-        </activity>
+            android:label="@string/title_advanced_key_info"/>
         <activity
             android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -427,6 +436,14 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.CertifyKeyActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_certify_key">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.CertifyFingerprintActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_certify_key">
             <meta-data
@@ -646,14 +663,7 @@
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity
-            android:name="com.haibison.android.lockpattern.LockPatternActivity"
-            android:label="@string/title_unlock"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-            android:screenOrientation="user"
-            android:theme="@style/Alp.42447968.Theme.Dialog.Light" />
-        <activity
-            android:name=".ui.PassphraseWizardActivity" />
+        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!

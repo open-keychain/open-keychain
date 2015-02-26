@@ -52,8 +52,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        fab:fab_addButtonColorNormal="@color/fab"
-        fab:fab_addButtonColorPressed="@color/fab_pressed"
+        fab:fab_addButtonColorNormal="@color/primary"
+        fab:fab_addButtonColorPressed="@color/primary_dark"
         fab:fab_addButtonSize="normal"
         fab:fab_addButtonPlusIconColor="@color/icons"
         fab:fab_expandDirection="up"
@@ -63,20 +63,22 @@
         android:layout_marginEnd="16dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_add_cloud"
+            android:id="@+id/fab_add_qr_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/fab"
-            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_icon="@drawable/ic_qrcode_white_24dp"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
             fab:fab_title="Scan QR Code"
             fab:fab_size="mini" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_add_qr_code"
+            android:id="@+id/fab_add_cloud"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/fab"
-            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_icon="@drawable/ic_cloud_search_24px"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
             fab:fab_title="Search Cloud"
             fab:fab_size="mini" />
 
@@ -84,8 +86,9 @@
             android:id="@+id/fab_add_file"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/fab"
-            fab:fab_colorPressed="@color/fab_pressed"
+            fab:fab_icon="@drawable/ic_folder_white_24dp"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
             fab:fab_title="Import from File"
             fab:fab_size="mini" />
 

@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:text="@string/import_qr_code_button"
             android:layout_weight="1"
-            android:drawableRight="@drawable/ic_action_qr_code"
+            android:drawableRight="@drawable/ic_qrcode_white_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:src="@drawable/ic_action_nfc"
+            android:src="@drawable/ic_nfc_white_24dp"
             android:layout_gravity="center_vertical"
             style="@style/SelectableItem" />
 

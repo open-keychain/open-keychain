@@ -26,13 +26,13 @@ public class CustomAlertDialogBuilder extends AlertDialog.Builder {
         int dividerId = dialog.getContext().getResources().getIdentifier("android:id/titleDivider", null, null);
         View divider = dialog.findViewById(dividerId);
         if (divider != null) {
-            divider.setBackgroundColor(dialog.getContext().getResources().getColor(R.color.emphasis));
+            divider.setBackgroundColor(dialog.getContext().getResources().getColor(R.color.header_text));
         }
 
         int textViewId = dialog.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
         TextView tv = (TextView) dialog.findViewById(textViewId);
         if (tv != null) {
-            tv.setTextColor(dialog.getContext().getResources().getColor(R.color.emphasis));
+            tv.setTextColor(dialog.getContext().getResources().getColor(R.color.header_text));
         }
 
         return dialog;

@@ -3,21 +3,22 @@
 
     <style name="KeychainTheme" parent="KeychainTheme.Base" />
 
-    <!--<style name="KeychainTheme.Base" parent="HoloKeychainTheme">-->
-    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 
         <item name="android:windowNoTitle">true</item>
         <!-- remove actionbar, we use toolbar! -->
         <item name="windowActionBar">false</item>
+        <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
+        <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
 
         <!-- Navigation Drawer library -->
         <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
         <!-- dark action bar... -->
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark</item>
         <!-- ...but light popup menu (white background) -->
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="drawerColor">#fafafa</item>

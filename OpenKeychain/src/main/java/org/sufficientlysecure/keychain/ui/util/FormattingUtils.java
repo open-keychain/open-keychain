@@ -24,18 +24,12 @@ import android.text.style.StrikethroughSpan;
 
 public class FormattingUtils {
 
-    public static SpannableStringBuilder strikeOutText(CharSequence text) {
-        SpannableStringBuilder sb = new SpannableStringBuilder(text);
-        sb.setSpan(new StrikethroughSpan(), 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        return sb;
-    }
-
     public static int dpToPx(Context context, int dp) {
-        return (int) ((dp * context.getResources().getDisplayMetrics().density) + 0.5);
+        return (int) ((dp * context.getResources().getDisplayMetrics().density) + 0.5f);
     }
 
     public static int pxToDp(Context context, int px) {
-        return (int) ((px / context.getResources().getDisplayMetrics().density) + 0.5);
+        return (int) ((px / context.getResources().getDisplayMetrics().density) + 0.5f);
     }
 
 }

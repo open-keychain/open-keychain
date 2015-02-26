@@ -1,0 +1,252 @@
+/*
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.ui;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Toast;
+
+import com.astuetz.PagerSlidingTabStrip;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Date;
+
+public class ViewKeyAdvActivity extends BaseActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    ExportHelper mExportHelper;
+    ProviderHelper mProviderHelper;
+
+    protected Uri mDataUri;
+
+    public static final String EXTRA_SELECTED_TAB = "selected_tab";
+    public static final int TAB_MAIN = 0;
+    public static final int TAB_SHARE = 1;
+
+    // view
+    private ViewPager mViewPager;
+    private PagerSlidingTabStrip mSlidingTabLayout;
+    private PagerTabStripAdapter mTabsAdapter;
+
+    private static final int LOADER_ID_UNIFIED = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        mExportHelper = new ExportHelper(this);
+        mProviderHelper = new ProviderHelper(this);
+
+        mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
+        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.view_key_sliding_tab_layout);
+
+        int switchToTab = TAB_MAIN;
+        Intent intent = getIntent();
+        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
+            switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+        }
+
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
+            finish();
+            return;
+        }
+        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            mDataUri = ContactHelper.dataUriFromContactUri(this, mDataUri);
+            if (mDataUri == null) {
+                Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
+                Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+        }
+
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
+        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+
+        initTabs(mDataUri);
+
+        // switch to tab selected by extra
+        mViewPager.setCurrentItem(switchToTab);
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.view_key_adv_activity);
+    }
+
+    private void initTabs(Uri dataUri) {
+        mTabsAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
+
+        Bundle mainBundle = new Bundle();
+        mainBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvMainFragment.class,
+                mainBundle, getString(R.string.key_view_tab_main));
+
+        Bundle shareBundle = new Bundle();
+        shareBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvShareFragment.class,
+                shareBundle, getString(R.string.key_view_tab_share));
+
+        Bundle keysBundle = new Bundle();
+        keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
+                keysBundle, getString(R.string.key_view_tab_keys));
+
+        Bundle certsBundle = new Bundle();
+        certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvCertsFragment.class,
+                certsBundle, getString(R.string.key_view_tab_certs));
+
+        // update layout after operations
+        mSlidingTabLayout.setViewPager(mViewPager);
+    }
+
+    // These are the rows that we will retrieve.
+    static final String[] PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET
+    };
+
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_USER_ID = 2;
+    static final int INDEX_IS_REVOKED = 3;
+    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_VERIFIED = 5;
+    static final int INDEX_HAS_ANY_SECRET = 6;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case LOADER_ID_UNIFIED: {
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
+            }
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        /* TODO better error handling? May cause problems when a key is deleted,
+         * because the notification triggers faster than the activity closes.
+         */
+        // Avoid NullPointerExceptions...
+        if (data.getCount() == 0) {
+            return;
+        }
+        // Swap the new cursor in. (The framework will take care of closing the
+        // old cursor once we return.)
+        switch (loader.getId()) {
+            case LOADER_ID_UNIFIED: {
+                if (data.moveToFirst()) {
+                    // get name, email, and comment from USER_ID
+                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
+                    if (mainUserId[0] != null) {
+                        setTitle(mainUserId[0]);
+                    } else {
+                        setTitle(R.string.user_id_no_name);
+                    }
+
+                    // get key id from MASTER_KEY_ID
+                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    getSupportActionBar().setSubtitle(KeyFormattingUtils.beautifyKeyIdWithPrefix(this, masterKeyId));
+
+                    boolean isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
+                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+                    // Note: order is important
+                    int color;
+                    if (isRevoked || isExpired) {
+                        color = getResources().getColor(R.color.android_red_light);
+                    } else if (isSecret) {
+                        color = getResources().getColor(R.color.primary);
+                    } else {
+                        if (isVerified) {
+                            color = getResources().getColor(R.color.primary);
+                        } else {
+                            color = getResources().getColor(R.color.android_orange_light);
+                        }
+                    }
+                    mToolbar.setBackgroundColor(color);
+                    mStatusBar.setBackgroundColor(color);
+                    mSlidingTabLayout.setBackgroundColor(color);
+
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+            result.createNotify(this).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+}

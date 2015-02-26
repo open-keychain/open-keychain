@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/ic_action_safeslinger"
+            android:src="@drawable/ic_repeat_grey_24dp"
             android:padding="12dp"
             style="@style/SelectableItem" />
 
@@ -69,7 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/status_signature_revoked_cutout"
+        android:src="@drawable/status_signature_revoked_cutout_24px"
         android:padding="16dp" />
 
 </LinearLayout>

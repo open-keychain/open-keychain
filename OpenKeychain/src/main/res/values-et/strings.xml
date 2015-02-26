@@ -4,10 +4,7 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Dekrüpteeri</string>
-  <string name="title_unlock">Salasõne</string>
   <string name="title_edit_key">Muuda võtit</string>
-  <string name="title_preferences">Seaded</string>
-  <string name="title_key_server_preference">Võtmeserveri seaded</string>
   <string name="title_import_keys">Impordi võtmeid</string>
   <string name="title_export_key">Ekspordi võti</string>
   <string name="title_export_keys">Ekspordi võtmed</string>
@@ -107,10 +104,17 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
   <!--PassphraseCache-->
-  <!--unsorted-->
   <!--First Time-->
+  <!--unsorted-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

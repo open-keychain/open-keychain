@@ -255,11 +255,11 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                     switch (subEntry.mType.mLevel) {
                         case DEBUG: ih.mSecondImg.setBackgroundColor(Color.GRAY); break;
                         case INFO: ih.mSecondImg.setBackgroundColor(Color.BLACK); break;
-                        case WARN: ih.mSecondImg.setBackgroundColor(Color.YELLOW); break;
-                        case ERROR: ih.mSecondImg.setBackgroundColor(Color.RED); break;
-                        case START: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.emphasis)); break;
-                        case OK: ih.mSecondImg.setBackgroundColor(Color.GREEN); break;
-                        case CANCELLED: ih.mSecondImg.setBackgroundColor(Color.RED); break;
+                        case WARN: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.android_orange_light)); break;
+                        case ERROR: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.android_red_light)); break;
+                        case START: ih.mSecondImg.setBackgroundColor(Color.BLACK); break;
+                        case OK: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.android_green_light)); break;
+                        case CANCELLED: ih.mSecondImg.setBackgroundColor(getResources().getColor(R.color.android_red_light)); break;
                     }
                 } else {
                     ih.mSecond.setVisibility(View.GONE);
@@ -286,11 +286,11 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             switch (entry.mType.mLevel) {
                 case DEBUG: ih.mImg.setBackgroundColor(Color.GRAY); break;
                 case INFO: ih.mImg.setBackgroundColor(Color.BLACK); break;
-                case WARN: ih.mImg.setBackgroundColor(Color.YELLOW); break;
-                case ERROR: ih.mImg.setBackgroundColor(Color.RED); break;
-                case START: ih.mImg.setBackgroundColor(getResources().getColor(R.color.emphasis)); break;
-                case OK: ih.mImg.setBackgroundColor(Color.GREEN); break;
-                case CANCELLED: ih.mImg.setBackgroundColor(Color.RED); break;
+                case WARN: ih.mImg.setBackgroundColor(getResources().getColor(R.color.android_orange_light)); break;
+                case ERROR: ih.mImg.setBackgroundColor(getResources().getColor(R.color.android_red_light)); break;
+                case START: ih.mImg.setBackgroundColor(Color.BLACK); break;
+                case OK: ih.mImg.setBackgroundColor(getResources().getColor(R.color.android_green_light)); break;
+                case CANCELLED: ih.mImg.setBackgroundColor(getResources().getColor(R.color.android_red_light)); break;
             }
 
             return convertView;

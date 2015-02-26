@@ -7,10 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!--
+        We always have windowTranslucentStatus=true to get under the status bar.
+        Thus this ImageView is the part under the status bar!
+    -->
     <ImageView
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statusbar_margin"
+        android:layout_height="@dimen/statusbar_height"
         android:background="?attr/colorPrimary" />
 
     <android.support.v7.widget.Toolbar

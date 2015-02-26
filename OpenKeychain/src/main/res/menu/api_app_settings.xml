@@ -12,4 +12,9 @@
         android:title="@string/api_settings_revoke"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/menu_api_settings_advanced"
+        android:title="@string/api_settings_advanced"
+        app:showAsAction="never" />
+
 </menu>

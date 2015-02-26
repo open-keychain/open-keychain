@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="statusbar_margin">0dp</dimen>
+    <!-- on Android < 5, we do not color the status bar, thus 0dp! -->
+    <dimen name="statusbar_height">0dp</dimen>
     <dimen name="big_toolbar">120dp</dimen>
+    <dimen name="huge_toolbar">222dp</dimen>
 </resources>

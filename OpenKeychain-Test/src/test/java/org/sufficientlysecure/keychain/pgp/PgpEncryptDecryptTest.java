@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.*;
 import org.robolectric.shadows.ShadowLog;
@@ -162,6 +163,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature should be an error", result.getSignatureResult());
+
+            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
         }
 
         { // decryption with a bad passphrase should fail
@@ -239,6 +244,11 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with provided passphrase should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature be empty", result.getSignatureResult());
+
+            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
+
         }
 
         // TODO how to test passphrase cache?
@@ -318,6 +328,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature should be empty", result.getSignatureResult());
+
+            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
         }
 
         { // decryption with passphrase cached should succeed for the first key
@@ -411,6 +425,10 @@ public class PgpEncryptDecryptTest {
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertEquals("signature should be verified and certified",
                     OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED, result.getSignatureResult().getStatus());
+
+            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
         }
 
         { // decryption with passphrase cached should succeed for the other key if first is gone

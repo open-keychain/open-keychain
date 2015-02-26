@@ -159,7 +159,7 @@
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_gravity="center_vertical" />
 
         <View
@@ -183,7 +183,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 

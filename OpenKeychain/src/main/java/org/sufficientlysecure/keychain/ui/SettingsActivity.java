@@ -183,7 +183,6 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    /* Called only on Honeycomb and later */
     @Override
     public void onBuildHeaders(List<Header> target) {
         super.onBuildHeaders(target);

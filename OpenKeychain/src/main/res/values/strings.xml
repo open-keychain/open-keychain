@@ -79,6 +79,8 @@
     <string name="btn_export_to_server">"Upload To Keyserver"</string>
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
+    <string name="btn_no">"No"</string>
+    <string name="btn_match">"Fingerprints are matching"</string>
     <string name="btn_lookup_key">"Lookup key"</string>
     <string name="btn_share_encrypted_signed">"Encrypt and share message"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
@@ -99,6 +101,7 @@
     <string name="menu_create_key">"Create my key"</string>
     <string name="menu_import_existing_key">"Import from file"</string>
     <string name="menu_search">"Search"</string>
+    <string name="menu_nfc_preferences">"NFC settings"</string>
     <string name="menu_beam_preferences">"Beam settings"</string>
     <string name="menu_key_edit_cancel">"Cancel"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
@@ -108,6 +111,7 @@
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>
     <string name="menu_export_log">"Export Log"</string>
+    <string name="menu_certify_fingerprint">"Verify via fingerprint comparison"</string>
 
     <!-- label -->
     <string name="label_message">"Message"</string>
@@ -276,7 +280,8 @@
 
     <!-- errors without preceeding Error: -->
     <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
-    <string name="error_nfc_needed">"NFC is not available on your device!"</string>
+    <string name="error_nfc_needed">"NFC must be enabled!"</string>
+    <string name="error_beam_needed">"Beam must be enabled!"</string>
     <string name="error_nothing_import">"No keys found!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
@@ -480,7 +485,6 @@
     <string name="intent_send_decrypt">"Decrypt with OpenKeychain"</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">"No registered apps!\n\nA list of supported third-party applications can be found in 'Help'!"</string>
     <string name="api_settings_show_info">"Show advanced information"</string>
     <string name="api_settings_hide_info">"Hide advanced information"</string>
     <string name="api_settings_show_advanced">"Show advanced settings"</string>
@@ -587,8 +591,12 @@
     <string name="create_key_edit">"Change key configuration"</string>
 
     <!-- View key -->
-    <string name="view_key_revoked">"This key has been revoked!"</string>
-    <string name="view_key_expired">"This key is expired!"</string>
+    <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
+    <string name="view_key_expired">"Expired: The contact needs to extend the keys validity!"</string>
+    <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
+    <string name="view_key_my_key">"My Key"</string>
+    <string name="view_key_verified">"Verified Key"</string>
+    <string name="view_key_unverified">"Unverified: Scan QR Code to verify key!"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
@@ -939,6 +947,7 @@
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>
     <string name="msg_dc_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_dc_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_dc_clear_meta_size_unknown">"Filesize is unknown"</string>
     <string name="msg_dc_clear_meta_time">"Modification time: %s"</string>
     <string name="msg_dc_clear_signature_bad">"Signature check NOT OK!"</string>
     <string name="msg_dc_clear_signature_check">"Verifying signature data"</string>
@@ -1122,6 +1131,8 @@
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for certification which match what you expected."</string>
+    <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
@@ -1143,6 +1154,7 @@
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
+    <string name="btn_start_exchange">"Start exchange"</string>
     <string name="user_id_none"><![CDATA[<none>]]></string>
 
     <!-- Passphrase wizard -->

@@ -43,6 +43,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
     private SaveKeyringParcel mSaveKeyringParcel;
+    private boolean mShowStatusImages;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets._ID,
@@ -60,24 +61,30 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     private static final int INDEX_IS_REVOKED = 5;
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
-                          SaveKeyringParcel saveKeyringParcel) {
+                          boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
+        mShowStatusImages = showStatusImages;
+    }
+
+    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+                          SaveKeyringParcel saveKeyringParcel) {
+        this(context, c, flags, showCheckBoxes, false, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
-        this(context, c, flags, showCheckBoxes, null);
+        this(context, c, flags, showCheckBoxes, false, null);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, false, saveKeyringParcel);
+        this(context, c, flags, false, false, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false, null);
+        this(context, c, flags, false, false, null);
     }
 
     @Override
@@ -157,12 +164,17 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             vVerifiedLayout.setVisibility(View.GONE);
         } else {
             vEditImage.setVisibility(View.GONE);
-            vVerifiedLayout.setVisibility(View.VISIBLE);
+
+            if (mShowStatusImages) {
+                vVerifiedLayout.setVisibility(View.VISIBLE);
+            } else {
+                vVerifiedLayout.setVisibility(View.GONE);
+            }
         }
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, true);
+            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
 
             // disable revoked user ids
             vName.setEnabled(false);
@@ -184,13 +196,13 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         }
@@ -263,7 +275,7 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;
