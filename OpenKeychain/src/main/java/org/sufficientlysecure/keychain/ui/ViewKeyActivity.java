@@ -883,9 +883,9 @@ public class ViewKeyActivity extends BaseActivity implements
                                 ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
 
-                        colorFade1.setDuration(800);
-                        colorFade2.setDuration(800);
-                        colorFade3.setDuration(800);
+                        colorFade1.setDuration(1200);
+                        colorFade2.setDuration(1200);
+                        colorFade3.setDuration(1200);
                         colorFade1.start();
                         colorFade2.start();
                         colorFade3.start();
