@@ -78,6 +78,10 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public void showProgressDialog(FragmentActivity activity) {
+        if (mProgressDialogFragment == null) {
+            return;
+        }
+
         // TODO: This is a hack!, see
         // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
@@ -94,7 +98,8 @@ public class KeychainIntentServiceHandler extends Handler {
         Bundle data = message.getData();
 
         if (mProgressDialogFragment == null) {
-            Log.e(Constants.TAG, "Progress has not been updated because mProgressDialogFragment was null!");
+            // Log.e(Constants.TAG,
+            // "Progress has not been updated because mProgressDialogFragment was null!");
             return;
         }
 
