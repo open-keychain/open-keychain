@@ -240,7 +240,6 @@
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
-  <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Ключ не знайдено!</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <!--results shown after decryption/verification-->
@@ -432,6 +431,8 @@
   <string name="user_id_info_uncertified_title">Несертифіковано</string>
   <string name="user_id_info_invalid_title">Недійсна</string>
   <string name="user_id_info_invalid_text">Щось неправильне у цій сутності!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Змінити пароль</string>
   <string name="edit_key_action_add_identity">Додати сутність</string>
@@ -451,8 +452,6 @@
   <string name="create_key_text">Введіть ваше повне ім\'я, електронну адреса та оберіть парольну фразу.</string>
   <string name="create_key_hint_full_name">Повне ім\'я, наприклад Степан Бандера</string>
   <!--View key-->
-  <string name="view_key_revoked">Цей ключ вже відкликано!</string>
-  <string name="view_key_expired">Термін дії цього ключа вже минув!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключі</string>
   <string name="nav_apps">Програми</string>
@@ -589,6 +588,7 @@
   <string name="msg_dc_clear_meta_time">Час зміни: %s</string>
   <string name="msg_dc_error_integrity_check">Помилка перевірки цілісності!</string>
   <string name="msg_dc_ok">Гаразд</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <plurals name="error_import_non_pgp_part">

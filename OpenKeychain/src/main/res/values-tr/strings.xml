@@ -237,7 +237,6 @@
   <string name="error_could_not_extract_private_key">özel anahtar çıkarılamadı</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Android\'in NFC Beam özelliğini kullanabilmek için Android 4.1 kullanmalısınız!</string>
-  <string name="error_nfc_needed">Cihazınız NFC desteklemiyor!</string>
   <string name="error_nothing_import">Anahtar bulunamadı!</string>
   <string name="error_contacts_key_id_missing">Kişilerden anahtar ID getirme işlemi başarısız!</string>
   <string name="error_generic_report_bug">Genel bir hata oluştu, lütfen OpenKeychain için yeni bir hata raporu oluşturun.</string>
@@ -426,6 +425,8 @@
   <string name="user_id_info_uncertified_text">Bu kimlik henüz tasdiklenmemiş. Bu kimliğin belirli bir kişiye ait olduğundan emin olamazsınız.</string>
   <string name="user_id_info_invalid_title">Geçersiz</string>
   <string name="user_id_info_invalid_text">Bu kimlikle ilgili yanlış olan bazı şeyler var!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Parolayı Değiştir</string>
   <string name="edit_key_action_add_identity">Kimlik Ekle</string>
@@ -452,8 +453,6 @@
   <string name="create_key_hint_full_name">Tam Ad, örneğin: Max Mustermann</string>
   <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->
-  <string name="view_key_revoked">Bu anahtar yürürlükten kaldırıldı!</string>
-  <string name="view_key_expired">Bu anahtarın son kullanma tarihi geçmiş!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="nav_apps">Uygulamalar</string>
@@ -495,6 +494,7 @@
   <string name="msg_dc_error_no_data">Akış içinde şifrelenmiş veri bulunamadı!</string>
   <string name="msg_dc_error_no_key">Akış içinde bilinen özel anahtar ile şifrelenmiş veri bulunamadı!</string>
   <string name="msg_dc_prep_streams">Çözümleme için akışlar hazırlanıyor</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_warn_not_found">Anahtar bulunamadı!</string>

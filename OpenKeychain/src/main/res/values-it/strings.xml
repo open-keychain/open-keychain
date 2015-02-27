@@ -240,7 +240,6 @@ Non potrai annullare!</string>
   <string name="error_could_not_extract_private_key">impossibile estrarre la chiave privata</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Devi avere Android 4.1 per usare Android NFC Beam!</string>
-  <string name="error_nfc_needed">NFC non disponibile nel tuo dispositivo!</string>
   <string name="error_nothing_import">Nessuna chiave trovata!</string>
   <string name="error_contacts_key_id_missing">Recupero dell\'ID della chiave dai contatti fallito!</string>
   <string name="error_generic_report_bug">Si è verificato un errore generico, si prega di creare una nuova segnalazione di errore per OpenKeychain.</string>
@@ -388,7 +387,6 @@ Non potrai annullare!</string>
   <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
   <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Nessuna applicazione registrata!\n\nUna lista di applicazioni di terze parti supportate è disponibile in \'Aiuto\'!</string>
   <string name="api_settings_show_info">Mostra informazioni dettagliate</string>
   <string name="api_settings_hide_info">Nascondi informazioni dettagliate</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
@@ -451,6 +449,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="user_id_info_uncertified_text">Questa identità non è stata ancora certificata. Non puoi esser sicuro che l\'identità corrisponda veramente ad una specifica persona.</string>
   <string name="user_id_info_invalid_title">Non valido</string>
   <string name="user_id_info_invalid_text">C\'è qualcosa che non va con questa identità!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambia Frase Di Accesso</string>
   <string name="edit_key_action_add_identity">Aggiungi Identità</string>
@@ -486,8 +486,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="create_key_hint_full_name">Nome completo, es: Mario Rossi</string>
   <string name="create_key_edit">Cambia configurazione della chiave</string>
   <!--View key-->
-  <string name="view_key_revoked">Questa chiave è stata revocata!</string>
-  <string name="view_key_expired">Questa chiave è scaduta</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
   <string name="nav_apps">Apps</string>
@@ -709,6 +707,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_dc">Inizio operazione di decodifica...</string>
   <string name="msg_dc_sym_skip">Dati simmetrici non permessi, proseguo...</string>
   <string name="msg_dc_unlocking">Sblocco chiave segreta</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_success">Identità certificata correttamente</string>

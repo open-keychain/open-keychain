@@ -213,6 +213,8 @@
   <string name="share_nfc_dialog">使用NFC分享</string>
   <!--Key list-->
   <!--Key view-->
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -231,6 +233,7 @@
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--PassphraseCache-->

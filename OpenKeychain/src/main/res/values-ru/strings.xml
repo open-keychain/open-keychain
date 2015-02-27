@@ -2,6 +2,7 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Выберите ключи</string>
   <string name="title_select_secret_key">Выберите Ваш ключ</string>
@@ -70,6 +71,8 @@
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_no">Нет</string>
+  <string name="btn_match">Отпечатки совпадают</string>
   <string name="btn_lookup_key">Найти ключ</string>
   <string name="btn_share_encrypted_signed">Зашифровать и отправить сообщение</string>
   <string name="btn_view_cert_key">Просмотр ключа</string>
@@ -89,6 +92,7 @@
   <string name="menu_create_key">Создать свой ключ</string>
   <string name="menu_import_existing_key">Импорт из файла</string>
   <string name="menu_search">Поиск</string>
+  <string name="menu_nfc_preferences">Настройки NFC</string>
   <string name="menu_beam_preferences">Настройки Beam</string>
   <string name="menu_key_edit_cancel">Отмена</string>
   <string name="menu_encrypt_to">Зашифровать....</string>
@@ -97,6 +101,7 @@
   <string name="menu_search_cloud">Поиск в облаке</string>
   <string name="menu_export_all_keys">Экспорт всех ключей</string>
   <string name="menu_advanced">Подробные данные</string>
+  <string name="menu_certify_fingerprint">Сверить отпечатки</string>
   <!--label-->
   <string name="label_message">Сообщение</string>
   <string name="label_file">Файл</string>
@@ -249,7 +254,8 @@
   <string name="error_could_not_extract_private_key">не удалось извлечь личный ключ</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Для использования NFC Beam требуется Android 4.1+ !</string>
-  <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
+  <string name="error_nfc_needed">Необходимо включить NFC!</string>
+  <string name="error_beam_needed">Необходимо включить Beam!</string>
   <string name="error_nothing_import">Ключи не найдены!</string>
   <string name="error_contacts_key_id_missing">Ошибка извлечения идентификатора ключа из контактов!</string>
   <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
@@ -386,7 +392,6 @@
   <string name="intent_send_encrypt">OpenKeychain: Зашифровать</string>
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нет связанных приложений!\n\nСписок приложений, поддерживающих интеграцию, доступен в разделе \'Помощь\'!</string>
   <string name="api_settings_show_info">Показать подробную информацию</string>
   <string name="api_settings_hide_info">Скрыть  подробную информацию</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
@@ -452,6 +457,8 @@
   <string name="user_id_info_uncertified_text">Этот идентификатор не был заверен. Нет гарантии, что он принадлежит этому человеку.</string>
   <string name="user_id_info_invalid_title">Недействительно</string>
   <string name="user_id_info_invalid_text">Что-то не так с идентификатором!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Изменить пароль</string>
   <string name="edit_key_action_add_identity">Добавить идентификатор</string>
@@ -487,8 +494,12 @@
   <string name="create_key_hint_full_name">Полное имя, напр. Иван Хлестаков</string>
   <string name="create_key_edit">Изменить конфигурацию ключа</string>
   <!--View key-->
-  <string name="view_key_revoked">Этот ключ был аннулирован!</string>
-  <string name="view_key_expired">Срок годности ключа истёк!</string>
+  <string name="view_key_revoked">Аннулирован: Ключ не должен использоваться когда-либо в будущем!</string>
+  <string name="view_key_expired">Срок годности истёк: Контакт должен продлить срок!</string>
+  <string name="view_key_expired_secret">Срок годности истёк: Вы можете продлить срок, изменив ключ!</string>
+  <string name="view_key_my_key">Мой ключ</string>
+  <string name="view_key_verified">Подтвержденный ключ</string>
+  <string name="view_key_unverified">Достоверность: Сканируйте QR код для проверки ключа!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключи</string>
   <string name="nav_encrypt_decrypt">Зашифровать/Расшифровать</string>
@@ -580,8 +591,8 @@
   <string name="msg_ip_uid_reorder">Переупорядочение пользовательских ID</string>
   <string name="msg_ip_uid_processing">Обработка id %s</string>
   <string name="msg_ip_uid_revoked">id аннулирован</string>
-  <string name="msg_ip_uat_processing_image">Обработка пользовательского атрибута типа изображения</string>
-  <string name="msg_ip_uat_processing_unknown">Обработка пользовательского атрибута неизвестного типа</string>
+  <string name="msg_ip_uat_processing_image">Обработка атрибута пользователя типа изображения</string>
+  <string name="msg_ip_uat_processing_unknown">Обработка атрибута пользователя неизвестного типа</string>
   <string name="msg_ip_uat_cert_bad">Плохой сертификат!</string>
   <string name="msg_ip_uat_cert_error">Ошибка обработки сертификата!</string>
   <string name="msg_ip_uat_cert_nonrevoke">Уже есть неотзываемый сертификат, пропускаем.</string>
@@ -629,14 +640,14 @@
   <string name="msg_kc_notation_dup">Удаление лишнего сертификата обозначения</string>
   <string name="msg_kc_notation_empty">Удаление пустого сертификата обозначения</string>
   <string name="msg_kc_sub">Обработка доп. ключа %s</string>
-  <string name="msg_kc_sub_bad">Удаление недопустимого сертификата связывания доп. ключа</string>
+  <string name="msg_kc_sub_bad">Удаление неверного сертификата связывания доп. ключа</string>
   <string name="msg_kc_sub_bad_err">Удаление плохого сертификата связывания доп. ключа</string>
   <string name="msg_kc_sub_bad_local">Удаление сертификата связывания доп. ключа с \"локальным\" флагом</string>
   <string name="msg_kc_sub_bad_keyid">Несоответствие id издателя связывания доп. ключа</string>
   <string name="msg_kc_sub_bad_time">Удаление сертификата связывания доп. ключа с отметкой времени, находящейся в будущем</string>
   <string name="msg_kc_sub_bad_type">Неизвестный тип сертификата доп. ключа: %s</string>
   <string name="msg_kc_sub_dup">Удаление лишнего сертификата связывания доп. ключа</string>
-  <string name="msg_kc_sub_primary_bad">Удаление сертификата связывания доп. ключа вследствие недопустимого основного сертификата связывания</string>
+  <string name="msg_kc_sub_primary_bad">Удаление сертификата связывания доп. ключа вследствие неверного основного сертификата связывания</string>
   <string name="msg_kc_sub_primary_bad_err">Удаление сертификата связывания доп. ключа вследствие плохого основного сертификата связывания</string>
   <string name="msg_kc_sub_primary_none">Удаление сертификата связывания доп. ключа вследствие отсутствующего основного сертификата связывания</string>
   <string name="msg_kc_sub_no_cert">Нет допустимого сертификата для %s, удаление из связки</string>
@@ -648,20 +659,85 @@
   <string name="msg_kc_sub_algo_bad_sign">Доп. ключ имеет флаг использования подписи, но алгоритм не подходит для подписи.</string>
   <string name="msg_kc_success">Связка нормализована успешно, нет изменений</string>
   <string name="msg_kc_success_bad_and_red">Связка нормализована успешно, удалено %1$s ошибочных и %2$s лишних сертификатов</string>
+  <string name="msg_kc_uid_bad_err">Удаление плохого самостоятельного сертификата для ID \'%s\'</string>
+  <string name="msg_kc_uid_bad_local">Удаление сертификата ID с \'локальным\' флагом</string>
+  <string name="msg_kc_uid_bad_time">Удаление ID с отметкой времени, находящейся в будущем</string>
+  <string name="msg_kc_uid_bad_type">Удаление сертификата ID неизвестного типа (%s)</string>
+  <string name="msg_kc_uid_bad">Удаление плохого самостоятельного сертификата для ID \'%s\'</string>
+  <string name="msg_kc_uid_cert_dup">Удаление устаревшего самостоятельного сертификата для ID \'%s\'</string>
+  <string name="msg_kc_uid_foreign">Удаление \'%s\' несоответствующего сертификата ID</string>
+  <string name="msg_kc_uid_revoke_dup">Удаление лишнего сертификата аннулирования для ID \'%s\'</string>
+  <string name="msg_kc_uid_revoke_old">Удаление устаревшего сертификата аннулирования для ID \'%s\'</string>
+  <string name="msg_kc_uid_no_cert">Нет допустимого самостоятельного сертификата для ID \'%s\', удаление из связки</string>
+  <string name="msg_kc_uid_remove">Удаление неверного ID \'%s\'</string>
+  <string name="msg_kc_uid_dup">Удаление повторяющегося ID \'%s\'. Связка содержит их два. Это может привести к отсутствию сертификатов!</string>
+  <string name="msg_kc_uid_warn_encoding">ID пользователя не соответствует UTF-8!</string>
+  <string name="msg_kc_uat_jpeg">Обработка атрибута пользователя типа JPEG</string>
+  <string name="msg_kc_uat_unknown">Обработка атрибута пользователя неизвестного типа</string>
+  <string name="msg_kc_uat_bad_err">Удаление плохого самостоятельного сертификата для атрибута пользователя</string>
+  <string name="msg_kc_uat_bad_local">Удаление сертификата атрибута пользователя с \'локальным\' флагом</string>
+  <string name="msg_kc_uat_bad_time">Удаление атрибута пользователя с отметкой времени, находящейся в будущем</string>
+  <string name="msg_kc_uat_bad_type">Удаление сертификата атрибута пользователя неизвестного типа (%s)</string>
+  <string name="msg_kc_uat_bad">Удаление плохого самостоятельного сертификата для атрибута пользователя</string>
+  <string name="msg_kc_uat_cert_dup">Удаление устаревшего самостоятельного сертификата для атрибута пользователя</string>
+  <string name="msg_kc_uat_dup">Удаление повторяющегося атрибута пользователя. Связка содержит их два. Это может привести к отсутствию сертификатов!</string>
+  <string name="msg_kc_uat_foreign">Удаление несоответствующего сертификата атрибута пользователя</string>
+  <string name="msg_kc_uat_revoke_dup">Удаление лишнего сертификата аннулирования для атрибута пользователя</string>
+  <string name="msg_kc_uat_revoke_old">Удаление устаревшего сертификата аннулирования для атрибута пользователя</string>
+  <string name="msg_kc_uat_no_cert">Нет допустимого самостоятельного сертификата для атрибута пользователя, удаление из связки</string>
+  <string name="msg_kc_uat_remove">Удаление неверного атрибута пользователя</string>
+  <string name="msg_kc_uat_warn_encoding">ID пользователя не соответствует UTF-8!</string>
   <!--Keyring merging log entries-->
+  <string name="msg_mg_error_secret_dummy">Найден новый публичный доп. ключ, но фиктивное создание секретного доп. ключа не поддерживается!</string>
+  <string name="msg_mg_error_heterogeneous">Попытка объединить связки с различными отпечатками!</string>
+  <string name="msg_mg_error_encode">Фатальная ошибка кодирования подписи!</string>
+  <string name="msg_mg_public">Объединение с публичной связкой %s</string>
+  <string name="msg_mg_secret">Объединение с секретной связкой %s</string>
+  <string name="msg_mg_new_subkey">Добавление нового доп. ключа %s</string>
+  <string name="msg_mg_found_new">Найдено %s новых сертификатов в связке</string>
+  <string name="msg_mg_unchanged">Нет данных для объединения</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">Создание нового основного ключа</string>
+  <string name="msg_cr_error_no_master">Ну заданы параметры основного ключа!</string>
+  <string name="msg_cr_error_no_user_id">Связки должны создаваться с хотя бы одним ID пользователя!</string>
+  <string name="msg_cr_error_no_certify">Основной ключ должен иметь флаг сертификата!</string>
+  <string name="msg_cr_error_null_expiry">Срок годности не может быть \'такой же как раньше\' при создании ключа. Это программная ошибка, пожалуйста, сообщите об этом!</string>
   <string name="msg_cr_error_keysize_512">Размер ключа должен быть больше или равен 512!</string>
+  <string name="msg_cr_error_no_curve">Не задан размер ключа! Это программная ошибка, пожалуйста, сообщите об этом!</string>
+  <string name="msg_cr_error_no_keysize">Не задана эллиптическая кривая! Это программная ошибка, пожалуйста, сообщите об этом!</string>
   <string name="msg_cr_error_internal_pgp">Внутренняя ошибка OpenPGP!</string>
+  <string name="msg_cr_error_unknown_algo">Выбран неизвестный алгоритм! Это программная ошибка, пожалуйста, сообщите об этом!</string>
+  <string name="msg_cr_error_flags_dsa">Выбраны плохие флаги ключа, DSA не может быть использован для шифрования!</string>
+  <string name="msg_cr_error_flags_elgamal">Выбраны плохие флаги ключа, ElGamal не может быть использован для подписи!</string>
+  <string name="msg_cr_error_flags_ecdsa">Выбраны плохие флаги ключа, ECDSA не может быть использован для шифрования!</string>
+  <string name="msg_cr_error_flags_ecdh">Выбраны плохие флаги ключа, ECDH не может быть использован для подписи!</string>
   <!--modifySecretKeyRing-->
+  <string name="msg_mr">Изменение связки %s</string>
   <string name="msg_mf_error_encode">Ошибка кодирования!</string>
+  <string name="msg_mf_error_fingerprint">Отпечаток ключа не совпадает с представленным!</string>
+  <string name="msg_mf_error_keyid">Нет ID ключа. Это программная ошибка. Пожалуйста, сообщите об этом!</string>
   <string name="msg_mf_error_integrity">Внутренняя ошибка, сбой проверки целостности!</string>
+  <string name="msg_mf_error_master_none">Не найден основной сертификат! (Все отозваны?)</string>
+  <string name="msg_mf_error_revoked_primary">Аннулированные идентификаторы не могут быть основными!</string>
   <string name="msg_mf_error_pgp">Внутренняя ошибка OpenPGP!</string>
   <string name="msg_mf_error_sig">Ошибка подписи!</string>
+  <string name="msg_mf_master">Изменение основного сертификата</string>
+  <string name="msg_mf_passphrase_key">Перешифрование доп. ключа %s новым паролем</string>
+  <string name="msg_mf_primary_new">Создание нового сертификата для основного идентификатора</string>
+  <string name="msg_mf_subkey_change">Изменение доп. ключа %s</string>
+  <string name="msg_mf_error_subkey_missing">Попытка работы с отсутствующим доп. ключом %s!</string>
+  <string name="msg_mf_subkey_new">Добавление нового доп. ключа типа %s</string>
+  <string name="msg_mf_subkey_new_id">Идентификатор нового доп. ключа: %s</string>
+  <string name="msg_mf_error_past_expiry">Срок годности не может быть в прошлом!</string>
+  <string name="msg_mf_subkey_revoke">Аннулирование доп. ключа %s</string>
   <string name="msg_mf_success">Связка успешно изменена</string>
+  <string name="msg_mf_uid_primary">Изменение основного идентификатора на %s</string>
+  <string name="msg_mf_uid_error_empty">Идентификатор пользователя не может быть пустой</string>
   <string name="msg_mf_unlock_error">Ошибка разблокирования связки!</string>
   <string name="msg_mf_unlock">Разблокирование связки</string>
   <!--Consolidate-->
+  <string name="msg_con">Консолидация базы данных</string>
+  <string name="msg_con_error_bad_state">Консолидация началась но база не кэширована! Это программная ошибка, пожалуйста, сообщите об этом.</string>
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <string name="msg_pr_error_key_not_found">Ключ не найден!</string>
@@ -669,26 +745,40 @@
   <string name="msg_ek_error_divert">Редактирование NFC ключей (еще) не поддерживается!</string>
   <string name="msg_ek_error_not_found">Ключ не найден!</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_ok">OK</string>
   <string name="msg_dc_unlocking">Разблокировка секретного ключа</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_compressing">Подготовка сжатия</string>
+  <string name="msg_pse_encrypting">Шифрование данных</string>
+  <string name="msg_pse_error_bad_passphrase">Неправильный пароль!</string>
+  <string name="msg_pse_error_nfc">Ошибка данных NFC!</string>
   <string name="msg_pse_error_pgp">Внутренняя ошибка OpenPGP!</string>
   <string name="msg_crt_saving">Сохранение связки</string>
   <string name="msg_crt_unlock">Разблокировка основного ключа</string>
   <string name="msg_crt_warn_not_found">Ключ не найден!</string>
+  <string name="msg_crt_warn_cert_failed">Создание сертификата не удалось!</string>
   <string name="msg_crt_upload_success">Ключ успешно загружен на сервер</string>
   <string name="msg_export_error_fopen">Ошибка открытия файла!</string>
   <string name="msg_export_error_db">Ошибка базы данных!</string>
   <string name="msg_export_error_io">Ошибка ввода/вывода!</string>
   <string name="msg_del_error_empty">Нет данных для удаления!</string>
+  <string name="msg_acc_saved">Аккаунт сохранен</string>
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">часть загруженного файла содержит данные OpenPGP, но это не ключ</item>
     <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
     <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
   </plurals>
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_keys">Кэшированные пароли:</string>
+  <string name="passp_cache_notif_clear">Очистить кэш</string>
+  <string name="passp_cache_notif_pwd">Пароль</string>
   <!--First Time-->
   <string name="first_time_text1">Верните вашу приватность с помощью OpenKeychain!</string>
+  <string name="first_time_create_key">Создать ключ</string>
+  <string name="first_time_import_key">Импорт из файла</string>
+  <string name="first_time_skip">Пропустить настройку</string>
   <!--unsorted-->
   <string name="section_certifier_id">Кем подписан</string>
   <string name="section_cert">Детали сертификации</string>
@@ -706,8 +796,18 @@
   <string name="can_sign_not">не для подписания</string>
   <string name="error_no_encrypt_subkey">Нет доп. ключа для шифрования!</string>
   <string name="contact_show_key">Показать ключ (%s)</string>
+  <string name="key_colon">Ключ:</string>
+  <string name="btn_start_exchange">Начать обмен</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
+  <string name="title_unlock_method">Выберите метод разблокировки</string>
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <string name="enter_passphrase">Введите пароль</string>
+  <string name="passphrase">Пароль</string>
+  <string name="passphrase_invalid">Неверный пароль</string>
+  <string name="passphrase_again">Еще раз</string>
+  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="unlocked">Разблокирован</string>
+  <string name="nfc_settings">Настройки</string>
 </resources>

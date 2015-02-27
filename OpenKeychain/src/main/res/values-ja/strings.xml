@@ -71,6 +71,8 @@
   <string name="btn_export_to_server">鍵サーバへアップロード</string>
   <string name="btn_next">次</string>
   <string name="btn_back">戻る</string>
+  <string name="btn_no">なし</string>
+  <string name="btn_match">指紋が一致</string>
   <string name="btn_lookup_key">鍵検出</string>
   <string name="btn_share_encrypted_signed">暗号化してメッセージを共有</string>
   <string name="btn_view_cert_key">検証した鍵を見る</string>
@@ -90,6 +92,7 @@
   <string name="menu_create_key">自分の鍵の生成</string>
   <string name="menu_import_existing_key">ファイルからインポート</string>
   <string name="menu_search">検索</string>
+  <string name="menu_nfc_preferences">NFC設定</string>
   <string name="menu_beam_preferences">Beamの設定</string>
   <string name="menu_key_edit_cancel">キャンセル</string>
   <string name="menu_encrypt_to">暗号化...</string>
@@ -98,6 +101,7 @@
   <string name="menu_search_cloud">クラウドを検索</string>
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
   <string name="menu_advanced">詳細情報を表示</string>
+  <string name="menu_certify_fingerprint">指紋比較による検証</string>
   <!--label-->
   <string name="label_message">メッセージ</string>
   <string name="label_file">ファイル</string>
@@ -257,7 +261,8 @@
   <string name="error_could_not_extract_private_key">秘密鍵を取り出すことができません</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Android NFC Beam機能を使うにはAndroid 4.1  が必要です!</string>
-  <string name="error_nfc_needed">あなたのデバイスにはNFCが存在しません!</string>
+  <string name="error_nfc_needed">NFCを有効にしてください!</string>
+  <string name="error_beam_needed">Beamを有効にしてください!</string>
   <string name="error_nothing_import">鍵が見当りません!</string>
   <string name="error_contacts_key_id_missing">連絡帳から鍵IDの回収が失敗しました!</string>
   <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
@@ -426,9 +431,6 @@
   <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
   <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
-  <string name="api_no_apps">未登録のアプリです!
-
-\'ヘルプ\'のサードパーティ製アプリケーションのサポートリストにあるかを見てください!</string>
   <string name="api_settings_show_info">詳細情報を表示</string>
   <string name="api_settings_hide_info">詳細情報を非表示</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
@@ -497,6 +499,8 @@
   <string name="user_id_info_uncertified_text">このIDはまだ検証されていません。IDが本当に特定の人に対応している場合を、あなたは確認することができません。</string>
   <string name="user_id_info_invalid_title">無効</string>
   <string name="user_id_info_invalid_text">このIDではなにかしら問題があります!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">パスフレーズの変更</string>
   <string name="edit_key_action_add_identity">ユーザIDの追加</string>
@@ -532,8 +536,12 @@
   <string name="create_key_hint_full_name">フルネーム、例えば Max Mustermann</string>
   <string name="create_key_edit">鍵の設定変更</string>
   <!--View key-->
-  <string name="view_key_revoked">この鍵は破棄されています!</string>
-  <string name="view_key_expired">この鍵は期限切れです!</string>
+  <string name="view_key_revoked">破棄: 鍵はもう使われません!</string>
+  <string name="view_key_expired">期限切れ: この連絡先は鍵の妥当性を拡張する必要があります!</string>
+  <string name="view_key_expired_secret">期限切れ: 編集で鍵の妥当性を拡張することができます!</string>
+  <string name="view_key_my_key">自分の鍵</string>
+  <string name="view_key_verified">検証済みの鍵</string>
+  <string name="view_key_unverified">未検証: QRコードをスキャンして鍵を検証!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">鍵</string>
   <string name="nav_encrypt_decrypt">暗号化/復号化</string>
@@ -889,6 +897,7 @@
   <string name="msg_dc_trail_sym">追跡で遭遇、対称暗号化されたデータ</string>
   <string name="msg_dc_trail_unknown">追跡で未知のタイプのデータに遭遇</string>
   <string name="msg_dc_unlocking">秘密鍵のロック解除</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">署名/暗号化操作を開始します</string>
   <string name="msg_se_input_bytes">バイト配列からの入力処理中</string>
@@ -1023,6 +1032,8 @@
   <string name="certs_text">あなたの検証された自己証明とあなたの鍵で生成された証明がここに表示されます</string>
   <string name="section_uids_to_certify">ユーザID</string>
   <string name="certify_text">インポートした鍵には\"アイデンティティ\": 名前とメールアドレス を含みます。正確に期待したものと一致しているか認定されているものを選択します。</string>
+  <string name="certify_fingerprint_text">表示している指紋を、文字対文字で、あなたのパートナーの表示しているものと比較</string>
+  <string name="certify_fingerprint_text2">表示している指紋は一致しましたか?</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_verify_status">検証ステータス</string>
   <string name="label_cert_type">種別</string>
@@ -1045,6 +1056,7 @@
   <string name="error_multi_not_supported">複数ファイルの保存はサポートされていません。これは現在のAndroidでの制限です。</string>
   <string name="key_colon">鍵:</string>
   <string name="exchange_description">鍵交換の開始は、右側の参加者の番号を選択し、その後、\"交換開始\"ボタンを推します。\n\n2つ以上の質問で交換にいる右の参加者とその指紋が正しいかを確認してください。</string>
+  <string name="btn_start_exchange">交換開始</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->

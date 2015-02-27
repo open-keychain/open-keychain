@@ -71,6 +71,8 @@
   <string name="btn_export_to_server">Отпреми на сервер кључева</string>
   <string name="btn_next">Следеће</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_no">Не</string>
+  <string name="btn_match">Отисци се поклапају</string>
   <string name="btn_lookup_key">Потражи кључ</string>
   <string name="btn_share_encrypted_signed">Шифруј и подели поруку</string>
   <string name="btn_view_cert_key">Прикажи кључ за оверавање</string>
@@ -90,6 +92,7 @@
   <string name="menu_create_key">Направи ми кључ</string>
   <string name="menu_import_existing_key">Увези из фајла</string>
   <string name="menu_search">Претрага</string>
+  <string name="menu_nfc_preferences">НФЦ поставке</string>
   <string name="menu_beam_preferences">Поставке Снопа</string>
   <string name="menu_key_edit_cancel">Одустани</string>
   <string name="menu_encrypt_to">Шифруј у…</string>
@@ -98,6 +101,7 @@
   <string name="menu_search_cloud">Клауд претрага</string>
   <string name="menu_export_all_keys">Извези све кључеве</string>
   <string name="menu_advanced">Прикажи напредне податке</string>
+  <string name="menu_certify_fingerprint">Овери поређењем отисака</string>
   <!--label-->
   <string name="label_message">Порука</string>
   <string name="label_file">Фајл</string>
@@ -252,7 +256,8 @@
   <string name="error_could_not_extract_private_key">нисам могао да извучем лични кључ</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Потребан вам је Андроид 4.1 да бисте користили Андроидову могућност НФЦ Снопа!</string>
-  <string name="error_nfc_needed">НФЦ није доступан на вашем уређају!</string>
+  <string name="error_nfc_needed">НФЦ мора бити укључен!</string>
+  <string name="error_beam_needed">Бим мора бити укључен</string>
   <string name="error_nothing_import">Нема нађених кључева!</string>
   <string name="error_contacts_key_id_missing">Добављање ИД кључа из контаката није успело!</string>
   <string name="error_generic_report_bug">Дошло је до опште грешке, направите нови извештај о грешци за Отворени кључарник.</string>
@@ -449,7 +454,6 @@
   <string name="intent_send_encrypt">Шифруј помоћу Отвореног кључарника</string>
   <string name="intent_send_decrypt">Дешифруј помоћу Отвореног кључарника</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нема регистрованих апликација!\n\nСписак подржаних апликација треће стране можете наћи у одељку „Помоћ“!</string>
   <string name="api_settings_show_info">Прикажи напредне податке</string>
   <string name="api_settings_hide_info">Сакриј напредне податке</string>
   <string name="api_settings_show_advanced">Прикажи напредне поставке</string>
@@ -507,6 +511,7 @@
   <string name="key_view_tab_share">Подели</string>
   <string name="key_view_tab_keys">Поткључеви</string>
   <string name="key_view_tab_certs">Сертификати</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Опозван</string>
   <string name="user_id_info_revoked_text">Власник кључа је опозвао овај идентитет. Више није исправан.</string>
   <string name="user_id_info_certified_title">Оверен</string>
@@ -515,6 +520,13 @@
   <string name="user_id_info_uncertified_text">Овај идентитет још није оверен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
   <string name="user_id_info_invalid_title">Неисправан</string>
   <string name="user_id_info_invalid_text">Нешто није у реду са овим идентитетом!</string>
+  <!--Key trust-->
+  <string name="key_trust_it_is_yours">Ово је један од ваших кључева!</string>
+  <string name="key_trust_revoked">Власни је опозвао овај кључ. Не бисте требали да се поуздате у њега.</string>
+  <string name="key_trust_expired">Овај кључ је истекао. Не бисте требали да се поуздате у њега.</string>
+  <string name="key_trust_start_cloud_search">Почни претрагу</string>
+  <!--keybase proof stuff-->
+  <string name="keybase_verify">Овери</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Измени лозинку</string>
   <string name="edit_key_action_add_identity">Додај идентитет</string>
@@ -550,8 +562,12 @@
   <string name="create_key_hint_full_name">Пуно име, нпр. Петар Петровић</string>
   <string name="create_key_edit">Промени конфигурацију кључа</string>
   <!--View key-->
-  <string name="view_key_revoked">Овај кључ је опозван!</string>
-  <string name="view_key_expired">Овај кључ је истекао!</string>
+  <string name="view_key_revoked">Опозван: кључ више не смије бити коришћен!</string>
+  <string name="view_key_expired">Истекао: контакт мора да продужи ваљаност кључа!</string>
+  <string name="view_key_expired_secret">Истекао: можете да уредите кључ и продужите му ваљаност!</string>
+  <string name="view_key_my_key">Мој кључ</string>
+  <string name="view_key_verified">Оверен кључ</string>
+  <string name="view_key_unverified">Неоверен: очитајте бар-код да бисте оверили кључ!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Кључеви</string>
   <string name="nav_encrypt_decrypt">Шифруј/дешифруј</string>
@@ -921,6 +937,15 @@
   <string name="msg_dc_trail_sym">Наиђох на пратеће симетрично шифроване податке</string>
   <string name="msg_dc_trail_unknown">Наиђох на пратеће податке непознатог типа</string>
   <string name="msg_dc_unlocking">Откључавам тајни кључ</string>
+  <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl">Почињем проверу потписа</string>
+  <string name="msg_vl_clear_meta_file">Име фајла: %s</string>
+  <string name="msg_vl_clear_meta_mime">МИМЕ тип: %s</string>
+  <string name="msg_vl_clear_meta_time">Време измене: %s</string>
+  <string name="msg_vl_clear_meta_size">Величина: %s</string>
+  <string name="msg_vl_clear_signature_check">Оверавам податке потписа</string>
+  <string name="msg_vl_error_integrity_check">Грешка провере интегритета!</string>
+  <string name="msg_vl_ok">У реду</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Почињем радњу потписивања/шифровања</string>
   <string name="msg_se_input_bytes">Обрађујем улаз низа бајтова</string>
@@ -1069,6 +1094,8 @@
   <string name="certs_text">Приказани су само потврђени сопствени сертификати и потврђени сертификати направљени вашим кључем.</string>
   <string name="section_uids_to_certify">Идентитети за</string>
   <string name="certify_text">Кључеви које увозите садрже „идентитете“: имена и е-адресе. Одредите за оверу само оне који одговарају ономе што очекујете.</string>
+  <string name="certify_fingerprint_text">Упоредите приказани отисак, знак по знак, са оним приказаним на другаревом уређају.</string>
+  <string name="certify_fingerprint_text2">Да ли се приказани отисци поклапају?</string>
   <string name="label_revocation">Разлог опозива</string>
   <string name="label_verify_status">Стање овере</string>
   <string name="label_cert_type">Тип</string>

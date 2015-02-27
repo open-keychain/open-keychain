@@ -219,7 +219,6 @@
   <string name="error_could_not_extract_private_key">ne morem izvleči zasebnega ključa</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Za uporabo storitve NFC Beam potrebujete najmanj Android 4.1!</string>
-  <string name="error_nfc_needed">NFC ni na voljo na vaši napravi!</string>
   <string name="error_nothing_import">Najden ni bil noben ključ!</string>
   <string name="error_generic_report_bug">Pripetila se je splošna napaka, prosimo ustvarite poročilo o \'hrošču\'.</string>
   <!--results shown after decryption/verification-->
@@ -381,6 +380,8 @@
   <string name="user_id_info_revoked_title">Preklican</string>
   <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
   <string name="user_id_info_invalid_title">Neveljaven</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Zamenjaj geslo</string>
   <string name="edit_key_action_add_identity">Dodaj identiteto</string>
@@ -396,7 +397,6 @@
   <string name="create_key_passphrases_not_equal">Gesli se ne ujemata</string>
   <string name="create_key_hint_full_name">Polno ime, npr. Janez Vzorec</string>
   <!--View key-->
-  <string name="view_key_expired">Ta ključ je pretekel!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
   <string name="nav_apps">Aplikacije</string>
@@ -459,6 +459,7 @@
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">Ključ ni bil najden!</string>
   <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_warn_not_found">Ključ ni bil najden!</string>

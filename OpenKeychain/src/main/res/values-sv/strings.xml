@@ -248,7 +248,6 @@
   <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
-  <string name="error_nfc_needed">NFC är inte tillgängligt på din enhet!</string>
   <string name="error_nothing_import">Inga nycklar hittades!</string>
   <string name="error_contacts_key_id_missing">Det gick inte att hämta nyckel-ID:t från kontakter!</string>
   <string name="error_generic_report_bug">Ett generiskt fel inträffade, skapa en ny buggrapport för OpenKeychain.</string>
@@ -430,7 +429,6 @@
   <string name="intent_send_encrypt">Kryptera med OpenKeychain</string>
   <string name="intent_send_decrypt">Dekryptera med OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Inga registrerade appar!\n\nEn lista med tredjepartsappar som stöds kan hittas under \'Hjälp\'! </string>
   <string name="api_settings_show_info">Visa avancerad information</string>
   <string name="api_settings_hide_info">Göm avancerad information</string>
   <string name="api_settings_show_advanced">Visa avancerade inställningar</string>
@@ -495,6 +493,8 @@
   <string name="user_id_info_uncertified_text">Den här identiteten har ännu inte certifierats. Du kan inte vara säker på att identiteten verkligen hänger ihop med en viss person.</string>
   <string name="user_id_info_invalid_title">Ogiltig</string>
   <string name="user_id_info_invalid_text">Något är fel med den här identiteten!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Ändra lösenordsfras</string>
   <string name="edit_key_action_add_identity">Lägg till identitet</string>
@@ -525,8 +525,6 @@
   <string name="create_key_hint_full_name">Fullständigt namn, t.ex. Kalle Svensson</string>
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <!--View key-->
-  <string name="view_key_revoked">Den här nyckeln har återkallats!</string>
-  <string name="view_key_expired">Den här nyckeln har gått ut!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Nycklar</string>
   <string name="nav_encrypt_decrypt">Kryptera/Dekryptera</string>
@@ -775,6 +773,7 @@
   <string name="msg_dc_sym_skip">Symmetrisk data inte tillåten, hoppar över…</string>
   <string name="msg_dc_sym">Hittade block med symmetriskt krypterad data</string>
   <string name="msg_dc_unlocking">Låser upp privat nyckel</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se_success">Signering/kryptering lyckades!</string>
   <!--Messages for PgpSignEncrypt operation-->

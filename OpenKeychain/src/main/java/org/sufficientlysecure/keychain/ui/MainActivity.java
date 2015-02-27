@@ -50,8 +50,6 @@ public class MainActivity extends MaterialNavigationDrawer {
         addBottomSection(newSection(getString(R.string.menu_preferences), R.drawable.ic_settings_black_24dp, new Intent(this, SettingsActivity.class)));
         addBottomSection(newSection(getString(R.string.menu_help), R.drawable.ic_help_black_24dp, new Intent(this, HelpActivity.class)));
 
-
-
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.isFirstTime()) {
