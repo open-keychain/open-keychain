@@ -33,6 +33,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -44,6 +45,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -54,11 +58,14 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -68,7 +75,9 @@ import org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -105,6 +114,10 @@ public class ViewKeyActivity extends BaseActivity implements
     private boolean mIsSecret = false;
     private boolean mHasEncrypt = false;
     private boolean mIsVerified = false;
+    private MenuItem mRefreshItem;
+    private boolean mIsRefreshing;
+    private Animation mRotate, mRotateSpin;
+    private View mRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +140,51 @@ public class ViewKeyActivity extends BaseActivity implements
         mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
+
+        mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
+        mRotateSpin.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mRefreshItem.getActionView().clearAnimation();
+                mRefreshItem.setActionView(null);
+                mRefreshItem.setEnabled(true);
+
+                // this is a deferred call
+                supportInvalidateOptionsMenu();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        mRotate =  AnimationUtils.loadAnimation(this, R.anim.rotate);
+        mRotate.setRepeatCount(Animation.INFINITE);
+        mRotate.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+                if (!mIsRefreshing) {
+                    mRefreshItem.getActionView().clearAnimation();
+                    mRefreshItem.getActionView().startAnimation(mRotateSpin);
+                }
+            }
+        });
+        mRefresh = getLayoutInflater().inflate(R.layout.indeterminate_progress, null);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -222,7 +280,7 @@ public class ViewKeyActivity extends BaseActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_view, menu);
-
+        mRefreshItem = menu.findItem(R.id.menu_key_view_refresh);
         return true;
     }
 
@@ -414,16 +472,72 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
             throws ProviderHelper.NotFoundException {
+
+        mIsRefreshing = true;
+        mRefreshItem.setEnabled(false);
+        mRefreshItem.setActionView(mRefresh);
+        mRefresh.startAnimation(mRotate);
+
         byte[] blob = (byte[]) providerHelper.getGenericData(
                 KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
                 KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
 
-        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
+        entries.add(keyEntry);
 
-        startActivityForResult(queryIntent, 0);
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    mIsRefreshing = false;
+
+                    if (returnData == null) {
+                        finish();
+                        return;
+                    }
+                    final ImportKeyResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    result.createNotify(ViewKeyActivity.this).show();
+                }
+            }
+        };
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(this);
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+        }
+
+        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, entries);
+
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(serviceHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        serviceHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
+
     }
 
     private void editKey(Uri dataUri) {
@@ -634,8 +748,12 @@ public class ViewKeyActivity extends BaseActivity implements
                             && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
-                    // re-create options menu based on mIsSecret, mIsVerified
-                    supportInvalidateOptionsMenu();
+                    // if the refresh animation isn't playing
+                    if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
+                        // re-create options menu based on mIsSecret, mIsVerified
+                        supportInvalidateOptionsMenu();
+                        // this is done at the end of the animation otherwise
+                    }
 
                     AsyncTask<String, Void, Bitmap> photoTask =
                             new AsyncTask<String, Void, Bitmap>() {
