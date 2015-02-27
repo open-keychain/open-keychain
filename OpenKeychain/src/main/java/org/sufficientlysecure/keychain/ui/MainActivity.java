@@ -25,10 +25,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.FabContainer;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 
-public class MainActivity extends MaterialNavigationDrawer {
+public class MainActivity extends MaterialNavigationDrawer implements FabContainer {
 
     @Override
     public void init(Bundle savedInstanceState) {
@@ -51,7 +52,6 @@ public class MainActivity extends MaterialNavigationDrawer {
         addBottomSection(newSection(getString(R.string.menu_help), R.drawable.ic_help_black_24dp, new Intent(this, HelpActivity.class)));
 
 
-
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.isFirstTime()) {
@@ -65,6 +65,22 @@ public class MainActivity extends MaterialNavigationDrawer {
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
+        }
+    }
+
+    @Override
+    public void fabMoveUp(int height) {
+        Object fragment = getCurrentSection().getTargetFragment();
+        if (fragment instanceof FabContainer) {
+            ((FabContainer) fragment).fabMoveUp(height);
+        }
+    }
+
+    @Override
+    public void fabRestorePosition() {
+        Object fragment = getCurrentSection().getTargetFragment();
+        if (fragment instanceof FabContainer) {
+            ((FabContainer) fragment).fabRestorePosition();
         }
     }
 
