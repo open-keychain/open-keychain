@@ -988,8 +988,8 @@
     <string name="msg_dc_clear_decompress">"Unpacking compressed data"</string>
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>
     <string name="msg_dc_clear_meta_mime">"MIME type: %s"</string>
-    <string name="msg_dc_clear_meta_size">"Filesize: %s"</string>
-    <string name="msg_dc_clear_meta_size_unknown">"Filesize is unknown"</string>
+    <string name="msg_dc_clear_meta_size">"File size: %s"</string>
+    <string name="msg_dc_clear_meta_size_unknown">"File size is unknown"</string>
     <string name="msg_dc_clear_meta_time">"Modification time: %s"</string>
     <string name="msg_dc_clear_signature_bad">"Signature check NOT OK!"</string>
     <string name="msg_dc_clear_signature_check">"Verifying signature data"</string>
