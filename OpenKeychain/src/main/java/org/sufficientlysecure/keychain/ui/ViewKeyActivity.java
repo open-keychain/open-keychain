@@ -18,11 +18,14 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -717,6 +720,8 @@ public class ViewKeyActivity extends BaseActivity implements
         }
     }
 
+    int mPreviousColor = 0;
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         /* TODO better error handling? May cause problems when a key is deleted,
@@ -861,9 +866,31 @@ public class ViewKeyActivity extends BaseActivity implements
                             mFab.setVisibility(View.VISIBLE);
                         }
                     }
-                    mToolbar.setBackgroundColor(color);
-                    mStatusBar.setBackgroundColor(color);
-                    mBigToolbar.setBackgroundColor(color);
+
+                    if (mPreviousColor == 0 || mPreviousColor == color) {
+                        mToolbar.setBackgroundColor(color);
+                        mStatusBar.setBackgroundColor(color);
+                        mBigToolbar.setBackgroundColor(color);
+                        mPreviousColor = color;
+                    } else {
+                        ObjectAnimator colorFade1 =
+                                ObjectAnimator.ofObject(mToolbar, "backgroundColor",
+                                        new ArgbEvaluator(), mPreviousColor, color);
+                        ObjectAnimator colorFade2 =
+                                ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
+                                        new ArgbEvaluator(), mPreviousColor, color);
+                        ObjectAnimator colorFade3 =
+                                ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
+                                        new ArgbEvaluator(), mPreviousColor, color);
+
+                        colorFade1.setDuration(800);
+                        colorFade2.setDuration(800);
+                        colorFade3.setDuration(800);
+                        colorFade1.start();
+                        colorFade2.start();
+                        colorFade3.start();
+                        mPreviousColor = color;
+                    }
 
                     mStatusImage.setAlpha(80);
 
