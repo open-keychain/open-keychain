@@ -7,8 +7,14 @@
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
+    <!--
+        fitsSystemWindows and layout_marginTop from
+        https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
+    -->
     <FrameLayout
         android:layout_below="@id/toolbar_include"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="-25dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
