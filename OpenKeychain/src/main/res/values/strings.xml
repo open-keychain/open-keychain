@@ -564,6 +564,7 @@
     <string name="key_trust_no_cloud_evidence">"No evidence from the cloud on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
+    <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to verifying them."</string>
 
     <!-- keybase proof stuff -->
     <string name="keybase_narrative_twitter">"Posts to Twitter as"</string>

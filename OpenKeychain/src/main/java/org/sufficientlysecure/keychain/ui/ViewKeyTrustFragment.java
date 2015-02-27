@@ -80,7 +80,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_trust_fragment, getContainer());
+        View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, getContainer());
         mInflater = inflater;
 
         mTrustReadout = (TextView) view.findViewById(R.id.view_key_trust_readout);
@@ -299,7 +299,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
             int rowNumber = 1;
             for (CharSequence s : result.mProofs) {
-                TableRow row = (TableRow) mInflater.inflate(R.layout.view_key_keybase_proof, null);
+                TableRow row = (TableRow) mInflater.inflate(R.layout.view_key_adv_keybase_proof, null);
                 TextView number = (TextView) row.findViewById(R.id.proof_number);
                 TextView text = (TextView) row.findViewById(R.id.proof_text);
                 number.setText(Integer.toString(rowNumber++) + ". ");
