@@ -213,8 +213,24 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // destroyLoader view from holder
             holder.userIdsList.removeAllViews();
 
+            // we want conventional gpg UserIDs first, then Keybase ”proofs”
             HashMap<String, HashSet<String>> mergedUserIds = entry.getMergedUserIds();
-            for (Map.Entry<String, HashSet<String>> pair : mergedUserIds.entrySet()) {
+            ArrayList<Map.Entry<String, HashSet<String>>> sortedIds = new ArrayList<Map.Entry<String, HashSet<String>>>(mergedUserIds.entrySet());
+            java.util.Collections.sort(sortedIds, new java.util.Comparator<Map.Entry<String, HashSet<String>>>() {
+                @Override
+                public int compare(Map.Entry<String, HashSet<String>> entry1, Map.Entry<String, HashSet<String>> entry2) {
+
+                    // sort keybase UserIds after non-Keybase
+                    boolean e1IsKeybase = entry1.getKey().contains(":");
+                    boolean e2IsKeybase = entry2.getKey().contains(":");
+                    if (e1IsKeybase != e2IsKeybase) {
+                        return (e1IsKeybase) ? 1 : -1;
+                    }
+                    return entry1.getKey().compareTo(entry2.getKey());
+                }
+            });
+
+            for (Map.Entry<String, HashSet<String>> pair : sortedIds) {
                 String cUserId = pair.getKey();
                 HashSet<String> cEmails = pair.getValue();
 
