@@ -83,8 +83,8 @@ public class CertifyFingerprintActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(this).show();
+            setResult(RESULT_OK, data);
+            finish();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
