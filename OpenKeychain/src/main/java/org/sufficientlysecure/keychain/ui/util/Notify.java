@@ -24,6 +24,7 @@ import android.graphics.Color;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.Snackbar.SnackbarDuration;
 import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.sufficientlysecure.keychain.R;
@@ -48,6 +49,7 @@ public class Notify {
 
         Snackbar bar = Snackbar.with(activity)
                 .text(text)
+                .type(SnackbarType.MULTI_LINE)
                 .duration(SnackbarDuration.LENGTH_LONG);
 
         switch (style) {
@@ -67,7 +69,8 @@ public class Notify {
 
     public static Showable createNotify (Activity activity, int resId, int duration, Style style) {
         final Snackbar bar = Snackbar.with(activity)
-                .text(resId);
+                .text(resId)
+                .type(SnackbarType.MULTI_LINE);
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
         } else {
@@ -104,6 +107,7 @@ public class Notify {
         final Snackbar bar = Snackbar.with(activity)
                 .text(msg)
                 .actionLabel(resIdAction)
+                .type(SnackbarType.MULTI_LINE)
                 .actionListener(new ActionClickListener() {
                     @Override
                     public void onActionClicked(Snackbar snackbar) {

@@ -95,7 +95,7 @@
         <activity
             android:name=".ui.CreateKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:label="@string/title_create_key"
             android:parentActivityName=".ui.MainActivity">
             <meta-data

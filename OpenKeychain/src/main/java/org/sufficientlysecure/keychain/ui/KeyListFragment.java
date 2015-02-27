@@ -36,8 +36,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
@@ -45,7 +43,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -73,7 +70,6 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -97,7 +93,6 @@ public class KeyListFragment extends LoaderFragment
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
-    private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
@@ -152,71 +147,8 @@ public class KeyListFragment extends LoaderFragment
             }
         });
 
-        mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
-                    public void handleMessage(Message message) {
-                        if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                };
-                // new KeyUpdateHelper().updateAllKeys(getActivity(), finishedHandler);
-                updateActionbarForSwipe(false);
-            }
-        });
-        mSwipeRefreshLayout.setColorScheme(
-                R.color.android_purple_dark,
-                R.color.android_purple_light,
-                R.color.android_purple_dark,
-                R.color.android_purple_light);
-        mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
-        mSwipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    updateActionbarForSwipe(true);
-                } else {
-                    updateActionbarForSwipe(false);
-                }
-                return false;
-            }
-        });
-        // Just disable for now
-        mSwipeRefreshLayout.setIsLocked(true);
 
         return root;
-    }
-
-    private void updateActionbarForSwipe(boolean show) {
-        ActionBarActivity activity = (ActionBarActivity) getActivity();
-        ActionBar bar = activity.getSupportActionBar();
-
-        if (show) {
-            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-            bar.setDisplayUseLogoEnabled(false);
-            bar.setCustomView(R.layout.custom_actionbar);
-            TextView title = (TextView) getActivity().findViewById(R.id.custom_actionbar_text);
-            title.setText(R.string.swipe_to_update);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//                hideMenu = true;
-//                activity.invalidateOptionsMenu();
-            }
-        } else {
-            bar.setTitle(getActivity().getTitle());
-            bar.setDisplayHomeAsUpEnabled(true);
-            bar.setDisplayShowTitleEnabled(true);
-            bar.setDisplayUseLogoEnabled(true);
-            bar.setDisplayShowHomeEnabled(true);
-            bar.setDisplayShowCustomEnabled(false);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//                hideMenu = false;
-//                activity.invalidateOptionsMenu();
-            }
-        }
     }
 
     /**

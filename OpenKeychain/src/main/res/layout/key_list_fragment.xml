@@ -4,46 +4,39 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/key_list_swipe_container"
+    <!--rebuild functionality of ListFragment -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <!--rebuild functionality of ListFragment -->
-        <FrameLayout
+        android:layout_height="match_parent">
+
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+            android:id="@+id/key_list_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="true"
+            android:fastScrollEnabled="true"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="32dp"
+            android:scrollbarStyle="outsideOverlay" />
 
-            <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-                android:id="@+id/key_list_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:drawSelectorOnTop="true"
-                android:fastScrollEnabled="true"
-                android:paddingBottom="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="32dp"
-                android:scrollbarStyle="outsideOverlay" />
+        <LinearLayout
+            android:id="@+id/key_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-            <LinearLayout
-                android:id="@+id/key_list_empty"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:text="@string/key_list_empty_text1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/key_list_empty_text1"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-            </LinearLayout>
-        </FrameLayout>
-    </org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout>
+        </LinearLayout>
+    </FrameLayout>
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab_main"
