@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             card_view:cardBackgroundColor="@android:color/white"
-            card_view:cardElevation="2sp"
+            card_view:cardElevation="2dp"
             card_view:cardUseCompatPadding="true"
             card_view:cardCornerRadius="4dp">
 
