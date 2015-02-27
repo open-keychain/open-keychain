@@ -184,7 +184,6 @@ public class ViewKeyActivity extends BaseActivity implements
             }
         });
 
-
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
@@ -446,7 +445,6 @@ public class ViewKeyActivity extends BaseActivity implements
         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
         startActivityForResult(safeSlingerIntent, 0);
     }
-
 
     /**
      * Load QR Code asynchronously and with a fade in animation
