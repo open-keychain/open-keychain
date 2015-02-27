@@ -23,13 +23,34 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class MainActivity extends NavDrawerActivity {
+import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
+
+public class MainActivity extends MaterialNavigationDrawer {
 
     @Override
     public void init(Bundle savedInstanceState) {
-        super.init(savedInstanceState);
+        // don't open drawer on first run
+        disableLearningPattern();
+
+//        addMultiPaneSupport();
+
+        // set the header image
+        // create and set the header
+        setDrawerHeaderImage(R.drawable.drawer_header);
+
+        // create sections
+        addSection(newSection(getString(R.string.nav_keys), R.drawable.ic_vpn_key_black_24dp, new KeyListFragment()));
+        addSection(newSection(getString(R.string.nav_encrypt_decrypt), R.drawable.ic_lock_black_24dp, new EncryptDecryptOverviewFragment()));
+        addSection(newSection(getString(R.string.title_api_registered_apps), R.drawable.ic_apps_black_24dp, new AppsListFragment()));
+
+        // create bottom section
+        addBottomSection(newSection(getString(R.string.menu_preferences), R.drawable.ic_settings_black_24dp, new Intent(this, SettingsActivity.class)));
+        addBottomSection(newSection(getString(R.string.menu_help), R.drawable.ic_help_black_24dp, new Intent(this, HelpActivity.class)));
+
+
 
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
