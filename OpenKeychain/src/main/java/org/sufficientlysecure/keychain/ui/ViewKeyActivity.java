@@ -316,8 +316,8 @@ public class ViewKeyActivity extends BaseActivity implements
     }
 
     private void scanQrCode() {
-        Intent scanQrCode = new Intent(this, QrCodeScanActivity.class);
-        scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
+        Intent scanQrCode = new Intent(this, ImportKeysProxyActivity.class);
+        scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_WITH_RESULT);
         startActivityForResult(scanQrCode, 0);
     }
 

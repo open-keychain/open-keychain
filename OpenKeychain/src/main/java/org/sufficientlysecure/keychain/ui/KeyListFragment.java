@@ -602,8 +602,8 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void scanQrCode() {
-        Intent scanQrCode = new Intent(getActivity(), QrCodeScanActivity.class);
-        scanQrCode.setAction(QrCodeScanActivity.ACTION_SCAN_WITH_RESULT);
+        Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
+        scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_WITH_RESULT);
         startActivityForResult(scanQrCode, 0);
     }
 

@@ -17,12 +17,17 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
@@ -48,7 +53,7 @@ import java.util.Locale;
 /**
  * Proxy activity (just a transparent content view) to scan QR Codes using the Barcode Scanner app
  */
-public class QrCodeScanActivity extends FragmentActivity {
+public class ImportKeysProxyActivity extends FragmentActivity {
 
     public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
     public static final String ACTION_SCAN_WITH_RESULT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_WITH_RESULT";
@@ -88,6 +93,15 @@ public class QrCodeScanActivity extends FragmentActivity {
 
             returnResult = false;
             new IntentIntegrator(this).initiateScan();
+        } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            // Check to see if the Activity started due to an Android Beam
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                returnResult = false;
+                handleActionNdefDiscovered(getIntent());
+            } else {
+                Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
+                finish();
+            }
         } else {
             Log.e(Constants.TAG, "No valid scheme or action given!");
             finish();
@@ -116,6 +130,7 @@ public class QrCodeScanActivity extends FragmentActivity {
             returnResult(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+            finish();
         }
     }
 
@@ -146,7 +161,28 @@ public class QrCodeScanActivity extends FragmentActivity {
         }
     }
 
+    public void importKeys(byte[] keyringData) {
+
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
+        selectedEntries.add(keyEntry);
+
+        startImportService(selectedEntries);
+
+    }
+
     public void importKeys(String fingerprint) {
+
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
+        selectedEntries.add(keyEntry);
+
+        startImportService(selectedEntries);
+
+    }
+
+    private void startImportService (ArrayList<ParcelableKeyRing> keyRings) {
+
         // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(
                 this,
@@ -180,34 +216,32 @@ public class QrCodeScanActivity extends FragmentActivity {
                         return;
                     }
 
-                    Intent certifyIntent = new Intent(QrCodeScanActivity.this, CertifyKeyActivity.class);
+                    Intent certifyIntent = new Intent(ImportKeysProxyActivity.this,
+                            CertifyKeyActivity.class);
                     certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
-                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS,
+                            result.getImportedMasterKeyIds());
                     startActivityForResult(certifyIntent, 0);
                 }
             }
         };
 
-        // search config
-        Preferences prefs = Preferences.getPreferences(this);
-        Preferences.CloudSearchPrefs cloudPrefs = new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-
-        // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
-
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(this);
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+        }
 
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-        ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
-        selectedEntries.add(keyEntry);
+        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyRings);
 
-        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
-
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(this, KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
@@ -219,6 +253,20 @@ public class QrCodeScanActivity extends FragmentActivity {
 
         // start service with intent
         startService(intent);
+
+    }
+
+    /**
+     * NFC: Parses the NDEF Message from the intent and prints to the TextView
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    void handleActionNdefDiscovered(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+        importKeys(receivedKeyringBytes);
     }
 
 }

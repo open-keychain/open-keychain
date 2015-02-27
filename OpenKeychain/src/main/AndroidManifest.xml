@@ -451,7 +451,7 @@
                 android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.QrCodeScanActivity"
+            android:name=".ui.ImportKeysProxyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoDisplay"
@@ -478,6 +478,14 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <!-- NFC: Handle NFC tags detected from outside our application -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- MIME type as defined in http://tools.ietf.org/html/rfc3156 -->
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -501,14 +509,6 @@
                   when the key file has been manually attached
                 -->
                 <data android:mimeType="text/plain" />
-            </intent-filter>
-            <!-- NFC: Handle NFC tags detected from outside our application -->
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <!-- MIME type as defined in http://tools.ietf.org/html/rfc3156 -->
-                <data android:mimeType="application/pgp-keys" />
             </intent-filter>
             <!-- VIEW with file endings: *.gpg (e.g. to import from OI File Manager) -->
             <intent-filter android:label="@string/intent_import_key">
