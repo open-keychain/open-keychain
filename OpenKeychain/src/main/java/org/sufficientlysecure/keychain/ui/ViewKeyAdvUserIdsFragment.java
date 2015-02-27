@@ -18,9 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -30,30 +28,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Date;
-
-public class ViewKeyAdvMainFragment extends LoaderFragment implements
+public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
-
-    private View mActionCertify;
-    private View mActionCertifyText;
-    private ImageView mActionCertifyImage;
 
     private ListView mUserIds;
 
@@ -70,12 +59,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_main_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
-        mActionCertify = view.findViewById(R.id.view_key_action_certify);
-        mActionCertifyText = view.findViewById(R.id.view_key_action_certify_text);
-        mActionCertifyImage = (ImageView) view.findViewById(R.id.view_key_action_certify_image);
-        // make certify image gray, like action icons
-        mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
-                PorterDuff.Mode.SRC_IN);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -119,12 +102,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
-        mActionCertify.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                certify(mDataUri);
-            }
-        });
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);
@@ -178,21 +155,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
 
-                    // If this key is revoked, it cannot be used for anything!
-                    if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
-                        mActionCertify.setEnabled(false);
-                        mActionCertifyText.setEnabled(false);
-                    } else {
-
-                        Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
-                        if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
-                            mActionCertify.setEnabled(false);
-                            mActionCertifyText.setEnabled(false);
-                        } else {
-                            mActionCertify.setEnabled(true);
-                            mActionCertifyText.setEnabled(true);
-                        }
-                    }
 
                     break;
                 }
@@ -217,20 +179,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
                 mUserIdsAdapter.swapCursor(null);
                 break;
         }
-    }
-
-    private void certify(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-        }
-        Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
-        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
-        startActivityForResult(certifyIntent, 0);
     }
 
 }
