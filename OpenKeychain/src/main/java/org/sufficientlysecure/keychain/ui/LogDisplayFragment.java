@@ -118,7 +118,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     }
 
     private void exportLog() {
-        Toast.makeText(this.getActivity(),"Exporting log",Toast.LENGTH_LONG).show();
+
         showExportLogDialog(new File(Constants.Path.APP_DIR, "export.log"));
     }
 
@@ -149,7 +149,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     private String getPrintableLogEntry(OperationResult.LogEntryParcel entry) {
         String subLogText=null;
         if (entry instanceof SubLogEntryParcel) {
-            Log.d("ADI DisplayFragment",entry.toString());
 
             OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
             LogEntryParcel subEntry = result.getLog().getLast();
@@ -158,7 +157,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 for(int i=0;i<entry.mIndent;i++) subPadding+="  ";//2 spaces = 1 Indent
 
                 subLogText=subPadding+"[SUB]";
-                
+
                 switch (subEntry.mType.mLevel) {
                     case DEBUG: subLogText+="[DEBUG]"; break;
                     case INFO: subLogText+="[INFO]"; break;
@@ -180,11 +179,15 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 }
             }
 
-        } else {
-            Log.d("ADIExportLogDisplayFragment","NOTSUBLOG:"+entry.toString());
         }
 
         String logText = "";
+
+        String padding = "";
+        for(int i =0;i<entry.mIndent;i++) {
+            padding +="    "; //4 spaces = 1 Indent level
+        }
+
         switch (entry.mType.mLevel) {
             case DEBUG: logText="[DEBUG]"; break;
             case INFO: logText="[INFO]"; break;
@@ -206,10 +209,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                     entry.mParameters);
         }
 
-        String padding = "";
-        for(int i =0;i<entry.mIndent;i++) {
-            padding +="    "; //4 spaces = 1 Indent level
-        }
         logText = padding + logText;
 
         if(subLogText!=null) //subLog exists
@@ -227,17 +226,9 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         FileHelper.saveFile(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
-                writeToLogFile(getOperationLog(),file);
+                writeToLogFile(mResult.getLog(),file);
             }
         }, this.getActivity().getSupportFragmentManager(), title, message, exportFile, null);
-    }
-
-    private OperationResult.OperationLog getOperationLog(){
-        OperationResult operationResult = this.getActivity().getIntent().getParcelableExtra(
-                LogDisplayFragment.EXTRA_RESULT);
-        OperationResult.OperationLog operationResultLog = operationResult.getLog();
-
-        return operationResultLog;
     }
 
     @Override
@@ -300,7 +291,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             if (entry instanceof SubLogEntryParcel) {
                 ih.mSub.setVisibility(View.VISIBLE);
                 convertView.setClickable(false);
-                Log.d("ADI DisplayFragment",entry.toString());
                 convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
 
                 OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
@@ -332,7 +322,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 }
 
             } else {
-                Log.d("ADI DisplayFragment","NOT:"+entry.toString());
                 ih.mSub.setVisibility(View.GONE);
                 ih.mSecond.setVisibility(View.GONE);
                 convertView.setClickable(true);
