@@ -47,7 +47,7 @@
     <string name="section_user_ids">"Identities"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
-    <string name="section_cloud_evidence">"Evidence from the cloud"</string>
+    <string name="section_cloud_evidence">"Proofs from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_general">"General"</string>
@@ -82,7 +82,7 @@
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
-    <string name="btn_match">"Fingerprints are matching"</string>
+    <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_lookup_key">"Lookup key"</string>
     <string name="btn_share_encrypted_signed">"Encrypt and share message"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
@@ -561,7 +561,7 @@
     <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
     <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
     <string name="key_trust_old_keys">" It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
-    <string name="key_trust_no_cloud_evidence">"No evidence from the cloud on this key’s trustworthiness."</string>
+    <string name="key_trust_no_cloud_evidence">"No proof from the cloud on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
     <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to verifying them."</string>
@@ -577,12 +577,12 @@
     <string name="keybase_narrative_unknown">"Unknown proof type"</string>
     <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
     <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
-    <string name="keybase_problem_fetching_evidence">"Problem with proof evidence"</string>
+    <string name="keybase_problem_fetching_evidence">"Problem with proof"</string>
     <string name="keybase_key_mismatch">"Key fingerprint doesn’t match that in proof post"</string>
     <string name="keybase_dns_query_failure">"DNS TXT Record retrieval failed"</string>
     <string name="keybase_no_prover_found">"No proof checker found for"</string>
     <string name="keybase_message_payload_mismatch">"Decrypted proof post does not match expected value"</string>
-    <string name="keybase_message_fetching_data">"Fetching proof evidence"</string>
+    <string name="keybase_message_fetching_data">"Fetching proof"</string>
     <string name="keybase_proof_succeeded">"This proof has been verified!"</string>
     <string name="keybase_a_post">"A post"</string>
     <string name="keybase_fetched_from">"fetched from"</string>
@@ -621,7 +621,7 @@
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
 
     <!-- Create key -->
-    <string name="create_key_upload">"Upload key to keyserver"</string>
+    <string name="create_key_upload">"Synchronize with the cloud"</string>
     <string name="create_key_empty">"This field is required"</string>
     <string name="create_key_passphrases_not_equal">"Passphrases do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
@@ -634,7 +634,7 @@
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
-    <string name="view_key_expired">"Expired: The contact needs to extend the keys validity!"</string>
+    <string name="view_key_expired">"Expired: The contact needs to extend the key's validity!"</string>
     <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Verified Key"</string>
@@ -791,19 +791,19 @@
     <string name="msg_kc_error_dup_key">"Subkey %s occurs twice in keyring. Keyring is malformed, not importing!"</string>
     <string name="msg_kc_master">"Processing master key"</string>
     <string name="msg_kc_master_bad_type">"Removing master key certificate of unknown type (%s)"</string>
-    <string name="msg_kc_master_bad_local">"Removing master key certificate with "local" flag"</string>
+    <string name="msg_kc_master_bad_local">"Removing master key certificate with 'local' flag"</string>
     <string name="msg_kc_master_bad_err">"Removing bad master key certificate"</string>
     <string name="msg_kc_master_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
     <string name="msg_kc_master_bad_type_uid">"Removing user ID certificate in bad position"</string>
     <string name="msg_kc_master_bad">"Removing bad master key certificate"</string>
-    <string name="msg_kc_master_local">"Removing master key certificate with "local" flag"</string>
+    <string name="msg_kc_master_local">"Removing master key certificate with 'local' flag"</string>
     <string name="msg_kc_revoke_dup">"Removing redundant keyring revocation certificate"</string>
     <string name="msg_kc_notation_dup">"Removing redundant notation certificate"</string>
     <string name="msg_kc_notation_empty">"Removing empty notation certificate"</string>
     <string name="msg_kc_sub">"Processing subkey %s"</string>
     <string name="msg_kc_sub_bad">"Removing invalid subkey binding certificate"</string>
     <string name="msg_kc_sub_bad_err">"Removing bad subkey binding certificate"</string>
-    <string name="msg_kc_sub_bad_local">"Removing subkey binding certificate with "local" flag"</string>
+    <string name="msg_kc_sub_bad_local">"Removing subkey binding certificate with 'local' flag"</string>
     <string name="msg_kc_sub_bad_keyid">"Subkey binding issuer id mismatch"</string>
     <string name="msg_kc_sub_bad_time">"Removing subkey binding certificate with future timestamp"</string>
     <string name="msg_kc_sub_bad_type">"Unknown subkey certificate type: %s"</string>
@@ -1036,10 +1036,10 @@
     <!-- Messages for SignEncrypt operation -->
     <string name="msg_se">"Starting sign/encrypt operation"</string>
     <string name="msg_se_input_bytes">"Processing input from byte array"</string>
-    <string name="msg_se_input_uri">"Processing input from uri"</string>
+    <string name="msg_se_input_uri">"Processing input from URI"</string>
     <string name="msg_se_error_no_input">"No input given!"</string>
-    <string name="msg_se_error_input_uri_not_found">"Error opening Uri for reading!"</string>
-    <string name="msg_se_error_output_uri_not_found">"Error opening Uri for writing!"</string>
+    <string name="msg_se_error_input_uri_not_found">"Error opening URI for reading!"</string>
+    <string name="msg_se_error_output_uri_not_found">"Error opening URI for writing!"</string>
     <string name="msg_se_error_too_many_inputs">"More inputs than outputs specified! This is probably a programming error, please report!"</string>
     <string name="msg_se_warn_output_left">"Got outputs left but no inputs. This is probably a programming error, please report!"</string>
     <string name="msg_se_success">"Sign/encrypt operation successful"</string>
