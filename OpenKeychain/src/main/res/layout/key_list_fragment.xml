@@ -15,7 +15,6 @@
             android:layout_height="match_parent"
             android:drawSelectorOnTop="true"
             android:fastScrollEnabled="true"
-            android:paddingBottom="16dp"
             android:paddingLeft="16dp"
             android:paddingRight="32dp"
             android:scrollbarStyle="outsideOverlay" />
@@ -51,7 +50,7 @@
         fab:fab_addButtonPlusIconColor="@color/icons"
         fab:fab_expandDirection="up"
         fab:fab_labelStyle="@style/FabMenuStyle"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp">
 
