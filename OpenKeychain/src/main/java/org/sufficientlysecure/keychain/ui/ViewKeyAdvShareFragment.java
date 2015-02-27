@@ -17,16 +17,20 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +62,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private TextView mFingerprint;
-    private ImageView mFingerprintQrCode;
+    private ImageView mQrCode;
+    private CardView mQrCodeLayout;
     private View mFingerprintShareButton;
     private View mFingerprintClipboardButton;
     private View mKeyShareButton;
@@ -80,7 +85,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mProviderHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
 
         mFingerprint = (TextView) view.findViewById(R.id.view_key_fingerprint);
-        mFingerprintQrCode = (ImageView) view.findViewById(R.id.view_key_fingerprint_qr_code_image);
+        mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
+        mQrCodeLayout = (CardView) view.findViewById(R.id.view_key_qr_code_layout);
         mFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         mFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
@@ -91,7 +97,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        mFingerprintQrCode.setOnClickListener(new View.OnClickListener() {
+        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showQrCodeDialog();
@@ -213,8 +219,18 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeViewActivity.class);
+
+        // create the transition animation - the images in the layouts
+        // of both activities are defined with android:transitionName="qr_code"
+        Bundle opts = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(getActivity(), mQrCodeLayout, "qr_code");
+            opts = options.toBundle();
+        }
+
         qrCodeIntent.setData(mDataUri);
-        startActivity(qrCodeIntent);
+        ActivityCompat.startActivity(getActivity(), qrCodeIntent, opts);
     }
 
     @Override
@@ -325,14 +341,14 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                             // scale the image up to our actual size. we do this in code rather
                             // than let the ImageView do this because we don't require filtering.
                             Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                    mFingerprintQrCode.getHeight(), mFingerprintQrCode.getHeight(),
+                                    mQrCode.getHeight(), mQrCode.getHeight(),
                                     false);
-                            mFingerprintQrCode.setImageBitmap(scaled);
+                            mQrCode.setImageBitmap(scaled);
 
                             // simple fade-in animation
                             AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
                             anim.setDuration(200);
-                            mFingerprintQrCode.startAnimation(anim);
+                            mQrCode.startAnimation(anim);
                         }
                     }
                 };
