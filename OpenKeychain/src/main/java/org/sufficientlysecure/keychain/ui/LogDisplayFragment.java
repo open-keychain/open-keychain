@@ -147,9 +147,75 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
      * @return the passed log entry in a readable format
      */
     private String getPrintableLogEntry(OperationResult.LogEntryParcel entry) {
-        String printable = "";
+        String subLogText=null;
+        if (entry instanceof SubLogEntryParcel) {
+            Log.d("ADI DisplayFragment",entry.toString());
 
-        return entry.toString();
+            OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
+            LogEntryParcel subEntry = result.getLog().getLast();
+            if (subEntry != null) {
+                String subPadding="";
+                for(int i=0;i<entry.mIndent;i++) subPadding+="  ";//2 spaces = 1 Indent
+
+                subLogText=subPadding+"[SUB]";
+                
+                switch (subEntry.mType.mLevel) {
+                    case DEBUG: subLogText+="[DEBUG]"; break;
+                    case INFO: subLogText+="[INFO]"; break;
+                    case WARN: subLogText+="[WARN]"; break;
+                    case ERROR: subLogText+="[WARN]"; break;
+                    case START: subLogText+="[START]"; break;
+                    case OK: subLogText+="[OK]"; break;
+                    case CANCELLED: subLogText+="[CANCELLED]"; break;
+                }
+                // special case: first parameter may be a quantity
+                if (subEntry.mParameters != null && subEntry.mParameters.length > 0
+                        && subEntry.mParameters[0] instanceof Integer) {
+                    subLogText+=getResources().getQuantityString(subEntry.mType.getMsgId(),
+                            (Integer) subEntry.mParameters[0],
+                            subEntry.mParameters);
+                } else {
+                    subLogText+=getResources().getString(subEntry.mType.getMsgId(),
+                            subEntry.mParameters);
+                }
+            }
+
+        } else {
+            Log.d("ADIExportLogDisplayFragment","NOTSUBLOG:"+entry.toString());
+        }
+
+        String logText = "";
+        switch (entry.mType.mLevel) {
+            case DEBUG: logText="[DEBUG]"; break;
+            case INFO: logText="[INFO]"; break;
+            case WARN: logText="[WARN]"; break;
+            case ERROR: logText="[WARN]"; break;
+            case START: logText="[START]"; break;
+            case OK: logText="[OK]"; break;
+            case CANCELLED: logText="[CANCELLED]"; break;
+        }
+
+        // special case: first parameter may be a quantity
+        if (entry.mParameters != null && entry.mParameters.length > 0
+                && entry.mParameters[0] instanceof Integer) {
+            logText += getResources().getQuantityString(entry.mType.getMsgId(),
+                    (Integer) entry.mParameters[0],
+                    entry.mParameters);
+        } else {
+            logText += getResources().getString(entry.mType.getMsgId(),
+                    entry.mParameters);
+        }
+
+        String padding = "";
+        for(int i =0;i<entry.mIndent;i++) {
+            padding +="    "; //4 spaces = 1 Indent level
+        }
+        logText = padding + logText;
+
+        if(subLogText!=null) //subLog exists
+            logText = logText+"\n"+padding+subLogText;
+
+        return logText;
     }
 
     private void showExportLogDialog(final File exportFile) {
@@ -211,7 +277,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 mSecondImg = secondImg;
             }
         }
-
+        //adithyaphilip: Check if convertView.setPadding is redundant
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LogEntryParcel entry = getItem(position);
@@ -234,7 +300,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             if (entry instanceof SubLogEntryParcel) {
                 ih.mSub.setVisibility(View.VISIBLE);
                 convertView.setClickable(false);
-
+                Log.d("ADI DisplayFragment",entry.toString());
                 convertView.setPadding((entry.mIndent) * dipFactor, 0, 0, 0);
 
                 OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
@@ -266,6 +332,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 }
 
             } else {
+                Log.d("ADI DisplayFragment","NOT:"+entry.toString());
                 ih.mSub.setVisibility(View.GONE);
                 ih.mSecond.setVisibility(View.GONE);
                 convertView.setClickable(true);
