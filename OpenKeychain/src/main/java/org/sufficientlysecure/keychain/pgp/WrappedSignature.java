@@ -78,6 +78,10 @@ public class WrappedSignature {
         return mSig.getCreationTime();
     }
 
+    public long getKeyExpirySeconds() {
+        return mSig.getHashedSubPackets().getKeyExpirationTime();
+    }
+
     public ArrayList<WrappedSignature> getEmbeddedSignatures() {
         ArrayList<WrappedSignature> sigs = new ArrayList<>();
         if (!mSig.hasSubpackets()) {

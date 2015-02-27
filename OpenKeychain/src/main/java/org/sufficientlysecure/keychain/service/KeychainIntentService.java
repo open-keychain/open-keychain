@@ -26,7 +26,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import com.textuality.keybase.lib.Proof;
+import com.textuality.keybase.lib.prover.Prover;
+
+import org.json.JSONObject;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -44,6 +50,7 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -62,9 +69,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import de.measite.minidns.Client;
+import de.measite.minidns.DNSMessage;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.Data;
+import de.measite.minidns.record.TXT;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -81,6 +97,8 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String ACTION_SIGN_ENCRYPT = Constants.INTENT_PREFIX + "SIGN_ENCRYPT";
 
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
+
+    public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
 
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
@@ -106,6 +124,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // encrypt, decrypt, import export
     public static final String TARGET = "target";
     public static final String SOURCE = "source";
+
     // possible targets:
     public static final int IO_BYTES = 1;
     public static final int IO_URI = 2;
@@ -119,6 +138,10 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_PASSPHRASE = "passphrase";
     public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
+
+    // keybase proof
+    public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
+    public static final String KEYBASE_PROOF = "keybase_proof";
 
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
@@ -240,7 +263,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 break;
             }
-            case ACTION_DECRYPT_METADATA:
+            case ACTION_DECRYPT_METADATA: {
 
                 try {
                 /* Input */
@@ -271,7 +294,106 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 break;
-            case ACTION_DECRYPT_VERIFY:
+            }
+            case ACTION_VERIFY_KEYBASE_PROOF: {
+
+                try {
+                    Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
+                    setProgress(R.string.keybase_message_fetching_data, 0, 100);
+
+                    Prover prover = Prover.findProverFor(proof);
+
+                    if (prover == null) {
+                        sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof.getPrettyName());
+                        return;
+                    }
+
+                    if (!prover.fetchProofData()) {
+                        sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
+                        return;
+                    }
+                    String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
+                    if (!prover.checkFingerprint(requiredFingerprint)) {
+                        sendProofError(getString(R.string.keybase_key_mismatch));
+                        return;
+                    }
+
+                    String domain = prover.dnsTxtCheckRequired();
+                    if (domain != null) {
+                        DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
+                        if (dnsQuery == null) {
+                            sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
+                            return;
+                        }
+                        Record[] records = dnsQuery.getAnswers();
+                        List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                        for (Record r : records) {
+                            Data d = r.getPayload();
+                            if (d instanceof TXT) {
+                                extents.add(((TXT) d).getExtents());
+                            }
+                        }
+                        if (!prover.checkDnsTxt(extents)) {
+                            sendProofError(prover.getLog(), null);
+                            return;
+                        }
+                    }
+
+                    byte[] messageBytes = prover.getPgpMessage().getBytes();
+                    if (prover.rawMessageCheckRequired()) {
+                        InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream(messageBytes));
+                        if (!prover.checkRawMessageBytes(messageByteStream)) {
+                            sendProofError(prover.getLog(), null);
+                            return;
+                        }
+                    }
+
+                    // kind of awkward, but this whole class wants to pull bytes out of “data”
+                    data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
+                    data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, messageBytes);
+
+                    InputData inputData = createDecryptInputData(data);
+                    OutputStream outStream = createCryptOutputStream(data);
+
+                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                            this, new ProviderHelper(this), this,
+                            inputData, outStream
+                    );
+                    builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
+
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    outStream.close();
+
+                    if (!decryptVerifyResult.success()) {
+                        OperationLog log = decryptVerifyResult.getLog();
+                        OperationResult.LogEntryParcel lastEntry = null;
+                        for (OperationResult.LogEntryParcel entry : log) {
+                            lastEntry = entry;
+                        }
+                        sendProofError(getString(lastEntry.mType.getMsgId()));
+                        return;
+                    }
+
+                    if (!prover.validate(outStream.toString())) {
+                        sendProofError(getString(R.string.keybase_message_payload_mismatch));
+                        return;
+                    }
+
+                    Bundle resultData = new Bundle();
+                    resultData.putString(KeychainIntentServiceHandler.DATA_MESSAGE, "OK");
+
+                    // these help the handler construct a useful human-readable message
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
+                }
+
+                break;
+            }
+            case ACTION_DECRYPT_VERIFY: {
 
                 try {
                 /* Input */
@@ -313,6 +435,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 break;
+            }
             case ACTION_DELETE: {
 
                 // Input
@@ -403,7 +526,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 break;
 
             }
-            case ACTION_SIGN_ENCRYPT:
+            case ACTION_SIGN_ENCRYPT: {
 
                 // Input
                 SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
@@ -417,16 +540,15 @@ public class KeychainIntentService extends IntentService implements Progressable
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
                 break;
-
-            case ACTION_UPLOAD_KEYRING:
-
+            }
+            case ACTION_UPLOAD_KEYRING: {
                 try {
 
-                /* Input */
+                    /* Input */
                     String keyServer = data.getString(UPLOAD_KEY_SERVER);
                     // and dataUri!
 
-                /* Operation */
+                    /* Operation */
                     HkpKeyserver server = new HkpKeyserver(keyServer);
 
                     CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
@@ -443,8 +565,24 @@ public class KeychainIntentService extends IntentService implements Progressable
                     sendErrorToHandler(e);
                 }
                 break;
+            }
         }
+    }
 
+    private void sendProofError(List<String> log, String label) {
+        String msg = null;
+        label = (label == null) ? "" : label + ": ";
+        for (String m : log) {
+            Log.e(Constants.TAG, label + m);
+            msg = m;
+        }
+        sendProofError(label + msg);
+    }
+
+    private void sendProofError(String msg) {
+        Bundle bundle = new Bundle();
+        bundle.putString(KeychainIntentServiceHandler.DATA_ERROR, msg);
+        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, bundle);
     }
 
     private void sendErrorToHandler(Exception e) {
@@ -457,7 +595,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         } else {
             message = e.getMessage();
         }
-
         Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
 
         Bundle data = new Bundle();

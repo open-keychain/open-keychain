@@ -50,7 +50,7 @@ public class UncachedPublicKey {
     }
 
     /** The revocation signature is NOT checked here, so this may be false! */
-    public boolean isRevoked() {
+    public boolean isMaybeRevoked() {
         return mPublicKey.getSignaturesOfType(isMasterKey()
                 ? PGPSignature.KEY_REVOCATION
                 : PGPSignature.SUBKEY_REVOCATION).hasNext();
@@ -60,25 +60,8 @@ public class UncachedPublicKey {
         return mPublicKey.getCreationTime();
     }
 
-    public Date getExpiryTime() {
-        long seconds = mPublicKey.getValidSeconds();
-        if (seconds > Integer.MAX_VALUE) {
-            Log.e(Constants.TAG, "error, expiry time too large");
-            return null;
-        }
-        if (seconds == 0) {
-            // no expiry
-            return null;
-        }
-        Date creationDate = getCreationTime();
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(creationDate);
-        calendar.add(Calendar.SECOND, (int) seconds);
-
-        return calendar.getTime();
-    }
-
-    public boolean isExpired() {
+    /** The revocation signature is NOT checked here, so this may be false! */
+    public boolean isMaybeExpired() {
         Date creationDate = mPublicKey.getCreationTime();
         Date expiryDate = mPublicKey.getValidSeconds() > 0
                 ? new Date(creationDate.getTime() + mPublicKey.getValidSeconds() * 1000) : null;
@@ -358,4 +341,24 @@ public class UncachedPublicKey {
         return mCacheUsage;
     }
 
+    // this method relies on UNSAFE assumptions about the keyring, and should ONLY be used for
+    // TEST CASES!!
+    Date getUnsafeExpiryTimeForTesting () {
+        long valid = mPublicKey.getValidSeconds();
+
+        if (valid > Integer.MAX_VALUE) {
+            Log.e(Constants.TAG, "error, expiry time too large");
+            return null;
+        }
+        if (valid == 0) {
+            // no expiry
+            return null;
+        }
+        Date creationDate = getCreationTime();
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(creationDate);
+        calendar.add(Calendar.SECOND, (int) valid);
+
+        return calendar.getTime();
+    }
 }

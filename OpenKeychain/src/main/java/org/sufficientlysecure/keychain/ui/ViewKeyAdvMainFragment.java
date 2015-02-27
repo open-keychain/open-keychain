@@ -37,15 +37,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -55,23 +51,14 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
 
     public static final String ARG_DATA_URI = "uri";
 
-    private View mActionEdit;
-    private View mActionEditDivider;
-    private View mActionEncryptFiles;
-    private View mActionEncryptText;
-    private View mActionEncryptTextText;
     private View mActionCertify;
     private View mActionCertifyText;
     private ImageView mActionCertifyImage;
-    private View mActionUpdate;
 
     private ListView mUserIds;
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
-
-    // conservative attitude
-    private boolean mHasEncrypt = true;
 
     private UserIdsAdapter mUserIdsAdapter;
 
@@ -83,18 +70,12 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_main_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
-        mActionEdit = view.findViewById(R.id.view_key_action_edit);
-        mActionEditDivider = view.findViewById(R.id.view_key_action_edit_divider);
-        mActionEncryptText = view.findViewById(R.id.view_key_action_encrypt_text);
-        mActionEncryptTextText = view.findViewById(R.id.view_key_action_encrypt_text_text);
-        mActionEncryptFiles = view.findViewById(R.id.view_key_action_encrypt_files);
         mActionCertify = view.findViewById(R.id.view_key_action_certify);
         mActionCertifyText = view.findViewById(R.id.view_key_action_certify_text);
         mActionCertifyImage = (ImageView) view.findViewById(R.id.view_key_action_certify_image);
         // make certify image gray, like action icons
         mActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
-        mActionUpdate = view.findViewById(R.id.view_key_action_update);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -139,35 +120,9 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        mActionEncryptFiles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encrypt(mDataUri, false);
-            }
-        });
-        mActionEncryptText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encrypt(mDataUri, true);
-            }
-        });
         mActionCertify.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 certify(mDataUri);
-            }
-        });
-        mActionEdit.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                editKey(mDataUri);
-            }
-        });
-        mActionUpdate.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                try {
-                    updateFromKeyserver(mDataUri, new ProviderHelper(getActivity()));
-                } catch (NotFoundException e) {
-                    Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
-                }
             }
         });
 
@@ -222,44 +177,22 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
-                    if (data.getInt(INDEX_UNIFIED_HAS_ANY_SECRET) != 0) {
-                        // edit button
-                        mActionEdit.setVisibility(View.VISIBLE);
-                        mActionEditDivider.setVisibility(View.VISIBLE);
-                    } else {
-                        // edit button
-                        mActionEdit.setVisibility(View.GONE);
-                        mActionEditDivider.setVisibility(View.GONE);
-                    }
 
                     // If this key is revoked, it cannot be used for anything!
                     if (data.getInt(INDEX_UNIFIED_IS_REVOKED) != 0) {
-                        mActionEdit.setEnabled(false);
                         mActionCertify.setEnabled(false);
                         mActionCertifyText.setEnabled(false);
-                        mActionEncryptText.setEnabled(false);
-                        mActionEncryptTextText.setEnabled(false);
-                        mActionEncryptFiles.setEnabled(false);
                     } else {
-                        mActionEdit.setEnabled(true);
 
                         Date expiryDate = new Date(data.getLong(INDEX_UNIFIED_EXPIRY) * 1000);
                         if (!data.isNull(INDEX_UNIFIED_EXPIRY) && expiryDate.before(new Date())) {
                             mActionCertify.setEnabled(false);
                             mActionCertifyText.setEnabled(false);
-                            mActionEncryptText.setEnabled(false);
-                            mActionEncryptTextText.setEnabled(false);
-                            mActionEncryptFiles.setEnabled(false);
                         } else {
                             mActionCertify.setEnabled(true);
                             mActionCertifyText.setEnabled(true);
-                            mActionEncryptText.setEnabled(true);
-                            mActionEncryptTextText.setEnabled(true);
-                            mActionEncryptFiles.setEnabled(true);
                         }
                     }
-
-                    mHasEncrypt = data.getInt(INDEX_UNIFIED_HAS_ENCRYPT) != 0;
 
                     break;
                 }
@@ -286,48 +219,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         }
     }
 
-    private void encrypt(Uri dataUri, boolean text) {
-        // If there is no encryption key, don't bother.
-        if (!mHasEncrypt) {
-            Notify.showNotify(getActivity(), R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
-            return;
-        }
-        try {
-            long keyId = new ProviderHelper(getActivity())
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[]{keyId};
-            Intent intent;
-            if (text) {
-                intent = new Intent(getActivity(), EncryptTextActivity.class);
-                intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
-                intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            } else {
-                intent = new Intent(getActivity(), EncryptFilesActivity.class);
-                intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-                intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            }
-            // used instead of startActivity set actionbar based on callingPackage
-            startActivityForResult(intent, 0);
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-        }
-    }
-
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-
-        Intent queryIntent = new Intent(getActivity(), ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
-
-        startActivityForResult(queryIntent, 0);
-    }
-
     private void certify(Uri dataUri) {
         long keyId = 0;
         try {
@@ -340,12 +231,6 @@ public class ViewKeyAdvMainFragment extends LoaderFragment implements
         Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
         startActivityForResult(certifyIntent, 0);
-    }
-
-    private void editKey(Uri dataUri) {
-        Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
-        startActivityForResult(editIntent, 0);
     }
 
 }

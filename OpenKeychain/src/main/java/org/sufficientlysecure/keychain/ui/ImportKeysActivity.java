@@ -17,17 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,9 +58,6 @@ public class ImportKeysActivity extends BaseActivity {
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE";
-    public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_NFC";
-
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
@@ -210,15 +202,6 @@ public class ImportKeysActivity extends BaseActivity {
             case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
                 // NOTE: this only displays the appropriate fragment, no actions are taken
                 startFileFragment(savedInstanceState);
-
-                // no immediate actions!
-                startListFragment(savedInstanceState, null, null, null);
-                break;
-            }
-            case ACTION_IMPORT_KEY_FROM_NFC: {
-                // NOTE: this only displays the appropriate fragment, no actions are taken
-                startFileFragment(savedInstanceState);
-                // TODO!!!!!
 
                 // no immediate actions!
                 startListFragment(savedInstanceState, null, null, null);
@@ -431,52 +414,6 @@ public class ImportKeysActivity extends BaseActivity {
         } else {
             Notify.showNotify(this, R.string.error_nothing_import, Notify.Style.ERROR);
         }
-    }
-
-    /**
-     * NFC
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Check to see if the Activity started due to an Android Beam
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-                handleActionNdefDiscovered(getIntent());
-            } else {
-                Log.d(Constants.TAG, "NFC: No NDEF discovered!");
-            }
-        } else {
-            Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
-        }
-    }
-
-    /**
-     * NFC
-     */
-    @Override
-    public void onNewIntent(Intent intent) {
-        // onResume gets called after this to handle the intent
-        setIntent(intent);
-    }
-
-    /**
-     * NFC: Parses the NDEF Message from the intent and prints to the TextView
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    void handleActionNdefDiscovered(Intent intent) {
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-        // only one message sent during the beam
-        NdefMessage msg = (NdefMessage) rawMsgs[0];
-        // record 0 contains the MIME type, record 1 is the AAR, if present
-        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
-
-        Intent importIntent = new Intent(this, ImportKeysActivity.class);
-        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, receivedKeyringBytes);
-
-        handleActions(null, importIntent);
     }
 
 }

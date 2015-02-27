@@ -18,26 +18,28 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
-            android:text="@string/section_user_ids"
+            android:text="@string/section_should_you_trust"
             android:layout_weight="1" />
 
-        <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/view_key_user_ids"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/view_key_trust_readout"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1" />
+            android:layout_marginTop="14dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            style="?android:attr/textAppearanceMedium"/>
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="14dp"
-            android:text="@string/section_actions"
+            android:text="@string/section_cloud_evidence"
             android:layout_weight="1" />
 
         <LinearLayout
-            android:id="@+id/view_key_action_certify"
+            android:id="@+id/view_key_trust_search_cloud"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
@@ -46,30 +48,57 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/view_key_action_certify_text"
                 android:paddingLeft="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="@string/key_view_action_certify"
+                android:text="@string/key_trust_start_cloud_search"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 
             <ImageView
-                android:id="@+id/view_key_action_certify_image"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:padding="8dp"
-                android:src="@drawable/status_signature_verified_cutout_24px"
+                android:src="@drawable/ic_action_search_cloud"
                 android:layout_gravity="center_vertical" />
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/view_key_action_certify_divider"
+
+        <TextView
+            android:id="@+id/view_key_trust_cloud_narrative"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="14dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            style="?android:attr/textAppearanceMedium" />
+
+        <TableLayout
+            android:id="@+id/view_key_proof_list"
             android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/view_key_proof_verify_header"
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/section_proof_details"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/view_key_proof_verify_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            style="?android:attr/textAppearanceMedium"/>
+
 
     </LinearLayout>
 

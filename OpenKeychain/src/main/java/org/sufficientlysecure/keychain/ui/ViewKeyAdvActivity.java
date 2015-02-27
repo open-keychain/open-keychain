@@ -144,6 +144,11 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mTabsAdapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
 
+        Bundle trustBundle = new Bundle();
+        trustBundle.putParcelable(ViewKeyTrustFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyTrustFragment.class,
+                trustBundle, getString(R.string.key_view_tab_keybase));
+
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
     }

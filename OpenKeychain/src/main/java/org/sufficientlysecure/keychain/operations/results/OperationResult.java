@@ -586,6 +586,15 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_TRAIL_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_trail_unknown),
         MSG_DC_UNLOCKING (LogLevel.INFO, R.string.msg_dc_unlocking),
 
+        // verify signed literal data
+        MSG_VL (LogLevel.INFO, R.string.msg_vl),
+        MSG_VL_ERROR_MISSING_SIGLIST (LogLevel.ERROR, R.string.msg_vl_error_no_siglist),
+        MSG_VL_ERROR_MISSING_LITERAL (LogLevel.ERROR, R.string.msg_vl_error_missing_literal),
+        MSG_VL_ERROR_MISSING_KEY (LogLevel.ERROR, R.string.msg_vl_error_wrong_key),
+        MSG_VL_CLEAR_SIGNATURE_CHECK (LogLevel.DEBUG, R.string.msg_vl_clear_signature_check),
+        MSG_VL_ERROR_INTEGRITY_CHECK (LogLevel.ERROR, R.string.msg_vl_error_integrity_check),
+        MSG_VL_OK (LogLevel.OK, R.string.msg_vl_ok),
+
         // signencrypt
         MSG_SE (LogLevel.START, R.string.msg_se),
         MSG_SE_INPUT_BYTES (LogLevel.INFO, R.string.msg_se_input_bytes),

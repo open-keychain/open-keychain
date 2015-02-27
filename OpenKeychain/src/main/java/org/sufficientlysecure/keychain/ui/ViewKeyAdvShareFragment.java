@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -26,10 +26,11 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -62,14 +62,13 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private TextView mFingerprint;
-    private ImageView mFingerprintQrCode;
+    private ImageView mQrCode;
+    private CardView mQrCodeLayout;
     private View mFingerprintShareButton;
     private View mFingerprintClipboardButton;
     private View mKeyShareButton;
     private View mKeyClipboardButton;
     private ImageButton mKeySafeSlingerButton;
-    private View mNfcHelpButton;
-    private View mNfcPrefsButton;
     private View mKeyUploadButton;
 
     ProviderHelper mProviderHelper;
@@ -86,26 +85,19 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mProviderHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
 
         mFingerprint = (TextView) view.findViewById(R.id.view_key_fingerprint);
-        mFingerprintQrCode = (ImageView) view.findViewById(R.id.view_key_fingerprint_qr_code_image);
+        mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
+        mQrCodeLayout = (CardView) view.findViewById(R.id.view_key_qr_code_layout);
         mFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         mFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         mKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
-        mNfcHelpButton = view.findViewById(R.id.view_key_action_nfc_help);
-        mNfcPrefsButton = view.findViewById(R.id.view_key_action_nfc_prefs);
         mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
 
         mKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mNfcPrefsButton.setVisibility(View.VISIBLE);
-        } else {
-            mNfcPrefsButton.setVisibility(View.GONE);
-        }
-
-        mFingerprintQrCode.setOnClickListener(new View.OnClickListener() {
+        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showQrCodeDialog();
@@ -140,18 +132,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 startSafeSlinger(mDataUri);
-            }
-        });
-        mNfcHelpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNfcHelpDialog();
-            }
-        });
-        mNfcPrefsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNfcPrefs();
             }
         });
         mKeyUploadButton.setOnClickListener(new View.OnClickListener() {
@@ -239,20 +219,18 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeViewActivity.class);
+
+        // create the transition animation - the images in the layouts
+        // of both activities are defined with android:transitionName="qr_code"
+        Bundle opts = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(getActivity(), mQrCodeLayout, "qr_code");
+            opts = options.toBundle();
+        }
+
         qrCodeIntent.setData(mDataUri);
-        startActivity(qrCodeIntent);
-    }
-
-    private void showNfcHelpDialog() {
-        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
-        dialog.show(getActivity().getSupportFragmentManager(), "shareNfcDialog");
-    }
-
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void showNfcPrefs() {
-        Intent intentSettings = new Intent(
-                Settings.ACTION_NFCSHARING_SETTINGS);
-        startActivity(intentSettings);
+        ActivityCompat.startActivity(getActivity(), qrCodeIntent, opts);
     }
 
     @Override
@@ -363,14 +341,14 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                             // scale the image up to our actual size. we do this in code rather
                             // than let the ImageView do this because we don't require filtering.
                             Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                    mFingerprintQrCode.getHeight(), mFingerprintQrCode.getHeight(),
+                                    mQrCode.getHeight(), mQrCode.getHeight(),
                                     false);
-                            mFingerprintQrCode.setImageBitmap(scaled);
+                            mQrCode.setImageBitmap(scaled);
 
                             // simple fade-in animation
                             AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
                             anim.setDuration(200);
-                            mFingerprintQrCode.startAnimation(anim);
+                            mQrCode.startAnimation(anim);
                         }
                     }
                 };
