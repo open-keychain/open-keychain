@@ -19,15 +19,16 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.Color;
 
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.Snackbar.SnackbarDuration;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.nispok.snackbar.listeners.EventListener;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.FabContainer;
 
 /**
  * Notify wrapper which allows a more easy use of different notification libraries
@@ -45,12 +46,46 @@ public class Notify {
      * @param text     Text to show
      * @param style    Notification styling
      */
-    public static void showNotify(Activity activity, CharSequence text, Style style) {
+    public static void showNotify(final Activity activity, CharSequence text, Style style) {
 
         Snackbar bar = Snackbar.with(activity)
                 .text(text)
                 .type(SnackbarType.MULTI_LINE)
                 .duration(SnackbarDuration.LENGTH_LONG);
+
+        if (activity instanceof FabContainer) {
+            bar.eventListener(new EventListener() {
+                @Override
+                public void onShow(Snackbar snackbar) {
+                    ((FabContainer) activity).fabMoveUp(snackbar.getHeight());
+                }
+
+                @Override
+                public void onShowByReplace(Snackbar snackbar) {
+                    
+                }
+
+                @Override
+                public void onShown(Snackbar snackbar) {
+
+                }
+
+                @Override
+                public void onDismiss(Snackbar snackbar) {
+                    ((FabContainer) activity).fabRestorePosition();
+                }
+
+                @Override
+                public void onDismissByReplace(Snackbar snackbar) {
+
+                }
+
+                @Override
+                public void onDismissed(Snackbar snackbar) {
+
+                }
+            });
+        }
 
         switch (style) {
             case OK:

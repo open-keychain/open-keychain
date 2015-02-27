@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    >
 
     <!--rebuild functionality of ListFragment -->
     <FrameLayout
@@ -52,7 +53,8 @@
         fab:fab_labelStyle="@style/FabMenuStyle"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp">
+        android:layout_marginEnd="16dp"
+        >
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_add_qr_code"

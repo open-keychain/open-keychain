@@ -46,14 +46,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -71,6 +76,7 @@ import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -87,7 +93,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
 
     ExportHelper mExportHelper;
 
@@ -101,6 +107,8 @@ public class KeyListFragment extends LoaderFragment
 
     private String mQuery;
     private SearchView mSearchView;
+
+    private FloatingActionsMenu mFab;
 
     private FloatingActionButton mFabQrCode;
     private FloatingActionButton mFabCloud;
@@ -123,6 +131,8 @@ public class KeyListFragment extends LoaderFragment
 
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
+
+        mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
         mFabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
         mFabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
@@ -607,6 +617,25 @@ public class KeyListFragment extends LoaderFragment
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    LayoutParams mFabOrigin = null;
+    @Override
+    public void fabMoveUp(int height) {
+        if (mFabOrigin == null) {
+            mFabOrigin = mFab.getLayoutParams();
+        }
+
+        // TODO reposition properly!
+        MarginLayoutParams marginParams = new MarginLayoutParams(mFabOrigin);
+        marginParams.setMargins(0, 0, 16, 16+height);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(marginParams);
+        mFab.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public void fabRestorePosition() {
+        mFab.setLayoutParams(mFabOrigin);
     }
 
     /**
