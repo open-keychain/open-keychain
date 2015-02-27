@@ -17,16 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -47,7 +44,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -68,8 +64,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private View mKeyShareButton;
     private View mKeyClipboardButton;
     private ImageButton mKeySafeSlingerButton;
-    private View mNfcHelpButton;
-    private View mNfcPrefsButton;
     private View mKeyUploadButton;
 
     ProviderHelper mProviderHelper;
@@ -92,18 +86,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         mKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
-        mNfcHelpButton = view.findViewById(R.id.view_key_action_nfc_help);
-        mNfcPrefsButton = view.findViewById(R.id.view_key_action_nfc_prefs);
         mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
 
         mKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mNfcPrefsButton.setVisibility(View.VISIBLE);
-        } else {
-            mNfcPrefsButton.setVisibility(View.GONE);
-        }
 
         mFingerprintQrCode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,18 +126,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 startSafeSlinger(mDataUri);
-            }
-        });
-        mNfcHelpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNfcHelpDialog();
-            }
-        });
-        mNfcPrefsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNfcPrefs();
             }
         });
         mKeyUploadButton.setOnClickListener(new View.OnClickListener() {
@@ -241,18 +215,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         Intent qrCodeIntent = new Intent(getActivity(), QrCodeViewActivity.class);
         qrCodeIntent.setData(mDataUri);
         startActivity(qrCodeIntent);
-    }
-
-    private void showNfcHelpDialog() {
-        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
-        dialog.show(getActivity().getSupportFragmentManager(), "shareNfcDialog");
-    }
-
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void showNfcPrefs() {
-        Intent intentSettings = new Intent(
-                Settings.ACTION_NFCSHARING_SETTINGS);
-        startActivity(intentSettings);
     }
 
     @Override
