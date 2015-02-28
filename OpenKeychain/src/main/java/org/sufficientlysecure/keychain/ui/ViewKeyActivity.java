@@ -88,6 +88,8 @@ import java.util.HashMap;
 public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    static final int REQUEST_QR_FINGERPRINT = 1;
+
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
 
@@ -122,6 +124,8 @@ public class ViewKeyActivity extends BaseActivity implements
     private boolean mIsRefreshing;
     private Animation mRotate, mRotateSpin;
     private View mRefresh;
+    private String mFingerprint;
+    private long mMasterKeyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -380,13 +384,24 @@ public class ViewKeyActivity extends BaseActivity implements
     private void scanQrCode() {
         Intent scanQrCode = new Intent(this, ImportKeysProxyActivity.class);
         scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_WITH_RESULT);
-        startActivityForResult(scanQrCode, 0);
+        startActivityForResult(scanQrCode, REQUEST_QR_FINGERPRINT);
     }
 
     private void certifyFingeprint(Uri dataUri) {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
         intent.setData(dataUri);
 
+        startCertifyIntent(intent);
+    }
+
+    private void certifyImmediate() {
+        Intent intent = new Intent(this, CertifyKeyActivity.class);
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{ mMasterKeyId });
+
+        startCertifyIntent(intent);
+    }
+
+    private void startCertifyIntent (Intent intent) {
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this) {
             public void handleMessage(Message message) {
@@ -456,7 +471,31 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
+        if (requestCode == REQUEST_QR_FINGERPRINT && resultCode == Activity.RESULT_OK) {
+
+            // If there is an EXTRA_RESULT, that's an error. Just show it.
+            if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                result.createNotify(this).show();
+                return;
+            }
+
+            String fp = data.getStringExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
+            if (fp == null) {
+                Notify.createNotify(this, "Error scanning fingerprint!",
+                        Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+                return;
+            }
+            if (mFingerprint.equalsIgnoreCase(fp)) {
+                certifyImmediate();
+            } else {
+                Notify.createNotify(this, "Fingerprints did not match!",
+                        Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            }
+
+            return;
+        }
+
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
@@ -764,7 +803,8 @@ public class ViewKeyActivity extends BaseActivity implements
                         mName.setText(R.string.user_id_no_name);
                     }
 
-                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
+                    mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
@@ -826,8 +866,8 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
-                        photoTask.execute(fingerprint);
-                        loadQrCode(fingerprint);
+                        photoTask.execute(mFingerprint);
+                        loadQrCode(mFingerprint);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code
@@ -873,7 +913,7 @@ public class ViewKeyActivity extends BaseActivity implements
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
-                            photoTask.execute(fingerprint);
+                            photoTask.execute(mFingerprint);
 
                             mFab.setVisibility(View.GONE);
                         } else {

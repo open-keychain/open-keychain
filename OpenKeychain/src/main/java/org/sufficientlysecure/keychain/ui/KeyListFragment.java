@@ -527,7 +527,7 @@ public class KeyListFragment extends LoaderFragment
 
     private void scanQrCode() {
         Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
-        scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_WITH_RESULT);
+        scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_IMPORT);
         startActivityForResult(scanQrCode, 0);
     }
 

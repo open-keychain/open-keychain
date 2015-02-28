@@ -57,6 +57,9 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
     public static final String ACTION_SCAN_WITH_RESULT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_WITH_RESULT";
+    public static final String ACTION_SCAN_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";
+
+    public static final String EXTRA_FINGERPRINT = "fingerprint";
 
     boolean returnResult;
 
@@ -78,10 +81,15 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             // Scanning a fingerprint directly with Barcode Scanner, thus we already have scanned
 
             returnResult = false;
-            startCertify(dataUri);
+            processScannedContent(dataUri);
+        } else if (ACTION_SCAN_IMPORT.equals(action)) {
+            returnResult = false;
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+                    .setPrompt(getString(R.string.import_qr_code_text))
+                    .setResultDisplayDuration(0)
+                    .initiateScan();
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)) {
-            // scan using xzing's Barcode Scanner and return result parcel in OpenKeychain
-
             returnResult = true;
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
@@ -113,15 +121,15 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
             IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
                     resultCode, data);
-            if (scanResult != null && scanResult.getFormatName() != null) {
-                String scannedContent = scanResult.getContents();
-                Log.d(Constants.TAG, "scannedContent: " + scannedContent);
 
-                startCertify(Uri.parse(scanResult.getContents()));
-            } else {
+            if (scanResult == null || scanResult.getFormatName() == null) {
                 Log.e(Constants.TAG, "scanResult or formatName null! Should not happen!");
                 finish();
+                return;
             }
+
+            String scannedContent = scanResult.getContents();
+            processScannedContent(scannedContent);
 
             return;
         }
@@ -131,6 +139,41 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
             finish();
+        }
+    }
+
+    private void processScannedContent(String content) {
+        Uri uri = Uri.parse(content);
+        processScannedContent(uri);
+    }
+
+    private void processScannedContent(Uri uri) {
+
+        Log.d(Constants.TAG, "scanned: " + uri.toString());
+
+        String fingerprint = null;
+
+        // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
+        if (uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
+            fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
+        }
+
+        if (fingerprint == null) {
+            SingletonResult result = new SingletonResult(
+                    SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_WRONG_QR_CODE);
+            Intent intent = new Intent();
+            intent.putExtra(SingletonResult.EXTRA_RESULT, result);
+            returnResult(intent);
+            return;
+        }
+
+        if (returnResult) {
+            Intent result = new Intent();
+            result.putExtra(EXTRA_FINGERPRINT, fingerprint);
+            setResult(RESULT_OK, result);
+            finish();
+        } else {
+            importKeys(fingerprint);
         }
     }
 
@@ -144,20 +187,6 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             String str = getString(result.getLog().getLast().mType.getMsgId());
             Toast.makeText(this, str, Toast.LENGTH_LONG).show();
             finish();
-        }
-    }
-
-    public void startCertify(Uri dataUri) {
-        // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
-        if (dataUri.getScheme().equals(Constants.FINGERPRINT_SCHEME)) {
-            String fingerprint = dataUri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
-            importKeys(fingerprint);
-        } else {
-            SingletonResult result = new SingletonResult(
-                    SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_WRONG_QR_CODE);
-            Intent intent = new Intent();
-            intent.putExtra(SingletonResult.EXTRA_RESULT, result);
-            returnResult(intent);
         }
     }
 
