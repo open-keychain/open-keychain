@@ -8,6 +8,11 @@ buildscript {
         classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
+ext {
+    compileSdkVersion = 21
+    buildToolsVersion = "21.1.2"
+}
+
 
 allprojects {
     repositories {
