@@ -47,24 +47,8 @@ public class Notify {
      */
     public static void showNotify(final Activity activity, CharSequence text, Style style) {
 
-        Snackbar bar = Snackbar.with(activity)
-                .text(text)
-                .type(SnackbarType.MULTI_LINE)
-                .duration(SnackbarDuration.LENGTH_LONG);
-
-        if (activity instanceof FabContainer) {
-            bar.eventListener(new EventListenerAdapter() {
-                @Override
-                public void onShow(Snackbar snackbar) {
-                    ((FabContainer) activity).fabMoveUp(snackbar.getHeight());
-                }
-
-                @Override
-                public void onDismiss(Snackbar snackbar) {
-                    ((FabContainer) activity).fabRestorePosition();
-                }
-            });
-        }
+        Snackbar bar = getSnackbar(activity)
+                .text(text);
 
         switch (style) {
             case OK:
@@ -82,9 +66,9 @@ public class Notify {
     }
 
     public static Showable createNotify (Activity activity, int resId, int duration, Style style) {
-        final Snackbar bar = Snackbar.with(activity)
-                .text(resId)
-                .type(SnackbarType.MULTI_LINE);
+        final Snackbar bar = getSnackbar(activity)
+                .text(resId);
+
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
         } else {
@@ -118,16 +102,17 @@ public class Notify {
 
     public static Showable createNotify(Activity activity, String msg, int duration, Style style,
                                         final ActionListener listener, int resIdAction) {
-        final Snackbar bar = Snackbar.with(activity)
+
+        final Snackbar bar = getSnackbar(activity)
                 .text(msg)
                 .actionLabel(resIdAction)
-                .type(SnackbarType.MULTI_LINE)
                 .actionListener(new ActionClickListener() {
                     @Override
                     public void onActionClicked(Snackbar snackbar) {
                         listener.onAction();
                     }
                 });
+
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
         } else {
@@ -163,6 +148,27 @@ public class Notify {
      */
     public static void showNotify(Activity activity, int resId, Style style) throws Resources.NotFoundException {
         showNotify(activity, activity.getResources().getText(resId), style);
+    }
+
+    private static Snackbar getSnackbar(final Activity activity) {
+        Snackbar bar = Snackbar.with(activity)
+                .type(SnackbarType.MULTI_LINE)
+                .duration(SnackbarDuration.LENGTH_LONG);
+
+        if (activity instanceof FabContainer) {
+            bar.eventListener(new EventListenerAdapter() {
+                @Override
+                public void onShow(Snackbar snackbar) {
+                    ((FabContainer) activity).fabMoveUp(snackbar.getHeight());
+                }
+
+                @Override
+                public void onDismiss(Snackbar snackbar) {
+                    ((FabContainer) activity).fabRestorePosition();
+                }
+            });
+        }
+        return bar;
     }
 
     public interface Showable {
