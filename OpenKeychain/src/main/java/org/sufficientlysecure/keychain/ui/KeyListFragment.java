@@ -142,18 +142,21 @@ public class KeyListFragment extends LoaderFragment
         mFabQrCode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                mFab.collapse();
                 scanQrCode();
             }
         });
         mFabCloud.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                mFab.collapse();
                 searchCloud();
             }
         });
         mFabFile.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                mFab.collapse();
                 importFile();
             }
         });
