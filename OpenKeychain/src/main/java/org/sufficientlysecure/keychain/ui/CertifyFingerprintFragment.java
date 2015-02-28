@@ -41,6 +41,8 @@ import org.sufficientlysecure.keychain.util.Log;
 public class CertifyFingerprintFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    static final int REQUEST_CERTIFY = 1;
+
     public static final String ARG_DATA_URI = "uri";
 
     private TextView mFingerprint;
@@ -177,8 +179,20 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
             Log.e(Constants.TAG, "key not found!", e);
         }
         Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
+        certifyIntent.putExtras(getActivity().getIntent());
         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
-        startActivityForResult(certifyIntent, 0);
+        startActivityForResult(certifyIntent, REQUEST_CERTIFY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // always just pass this one through
+        if (requestCode == REQUEST_CERTIFY) {
+            getActivity().setResult(resultCode, data);
+            getActivity().finish();
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
