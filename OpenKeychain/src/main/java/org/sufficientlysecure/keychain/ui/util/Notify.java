@@ -100,18 +100,25 @@ public class Notify {
         return createNotify(activity, activity.getString(resId), duration, style, listener, resIdAction);
     }
 
+    public static Showable createNotify(Activity activity, String msg, int duration, Style style) {
+        return createNotify(activity, msg, duration, style, null, 0);
+    }
+
     public static Showable createNotify(Activity activity, String msg, int duration, Style style,
                                         final ActionListener listener, int resIdAction) {
 
         final Snackbar bar = getSnackbar(activity)
-                .text(msg)
-                .actionLabel(resIdAction)
-                .actionListener(new ActionClickListener() {
-                    @Override
-                    public void onActionClicked(Snackbar snackbar) {
-                        listener.onAction();
-                    }
-                });
+                .text(msg);
+
+        if (listener != null) {
+            bar.actionLabel(resIdAction);
+            bar.actionListener(new ActionClickListener() {
+                @Override
+                public void onActionClicked(Snackbar snackbar) {
+                    listener.onAction();
+                }
+            });
+        }
 
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
