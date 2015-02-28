@@ -25,7 +25,7 @@ import com.nispok.snackbar.Snackbar.SnackbarDuration;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
-import com.nispok.snackbar.listeners.EventListener;
+import com.nispok.snackbar.listeners.EventListenerAdapter;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -42,7 +42,6 @@ public class Notify {
 
     /**
      * Shows a simple in-layout notification with the CharSequence given as parameter
-     * @param activity
      * @param text     Text to show
      * @param style    Notification styling
      */
@@ -54,35 +53,15 @@ public class Notify {
                 .duration(SnackbarDuration.LENGTH_LONG);
 
         if (activity instanceof FabContainer) {
-            bar.eventListener(new EventListener() {
+            bar.eventListener(new EventListenerAdapter() {
                 @Override
                 public void onShow(Snackbar snackbar) {
                     ((FabContainer) activity).fabMoveUp(snackbar.getHeight());
                 }
 
                 @Override
-                public void onShowByReplace(Snackbar snackbar) {
-                    
-                }
-
-                @Override
-                public void onShown(Snackbar snackbar) {
-
-                }
-
-                @Override
                 public void onDismiss(Snackbar snackbar) {
                     ((FabContainer) activity).fabRestorePosition();
-                }
-
-                @Override
-                public void onDismissByReplace(Snackbar snackbar) {
-
-                }
-
-                @Override
-                public void onDismissed(Snackbar snackbar) {
-
                 }
             });
         }
@@ -178,7 +157,6 @@ public class Notify {
 
     /**
      * Shows a simple in-layout notification with the resource text from given id
-     * @param activity
      * @param resId    ResourceId of notification text
      * @param style    Notification styling
      * @throws Resources.NotFoundException
