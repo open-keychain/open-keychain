@@ -8,9 +8,37 @@ buildscript {
         classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
+
+String[] buildToolsAvailable() {
+    def command = 'locate -b build-tools'
+    def path = command.execute().text.trim()
+    def buildToolsDir = new File(path)
+    buildToolsDir.list().sort { a, b -> b <=> a }
+}
+
+String latestBuildTools(String defaultBuildTools) {
+    try {
+        def buildToolsVersions = buildToolsAvailable()
+        def latestBuildTools = buildToolsVersions[0]
+        if (latestBuildTools != null) {
+            println "Using latest found build tools " + latestBuildTools
+            latestBuildTools
+        } else {
+            println "No installed build tools found. Using default build tools " +
+                    defaultBuildTools
+            defaultBuildTools
+        }
+    } catch (any) {
+        println "Exception while determining latest build tools. Using default build tools " +
+                defaultBuildTools
+
+        defaultBuildTools
+    }
+}
+
 ext {
     compileSdkVersion = 21
-    buildToolsVersion = "21.1.2"
+    buildToolsVersion = latestBuildTools("19.0.0")
 }
 
 
