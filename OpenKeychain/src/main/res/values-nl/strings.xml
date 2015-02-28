@@ -39,6 +39,9 @@
   <string name="title_keys">Sleutels</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
+  <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
+  <string name="section_proof_details">Bewijs van verificatie</string>
+  <string name="section_cloud_evidence">Bewijs van de cloud</string>
   <string name="section_keys">Subsleutels</string>
   <string name="section_cloud_search">Cloud zoeken</string>
   <string name="section_general">Algemeen</string>
@@ -71,6 +74,8 @@
   <string name="btn_export_to_server">Upload Naar Sleutelserver</string>
   <string name="btn_next">Volgende</string>
   <string name="btn_back">Terug</string>
+  <string name="btn_no">Nee</string>
+  <string name="btn_match">Vingerafdrukken komen overeen</string>
   <string name="btn_lookup_key">Opzoeksleutel</string>
   <string name="btn_share_encrypted_signed">Bericht versleutelen en delen</string>
   <string name="btn_view_cert_key">Toon certificatiesleutel</string>
@@ -90,6 +95,7 @@
   <string name="menu_create_key">Mijn sleutel aanmaken</string>
   <string name="menu_import_existing_key">Importeren van bestand</string>
   <string name="menu_search">Zoeken</string>
+  <string name="menu_nfc_preferences">NFC-instellingen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
   <string name="menu_key_edit_cancel">Annuleren</string>
   <string name="menu_encrypt_to">Versleutelen naar…</string>
@@ -98,6 +104,7 @@
   <string name="menu_search_cloud">Zoeken</string>
   <string name="menu_export_all_keys">Alle sleutels exporteren</string>
   <string name="menu_advanced">Geavanceerde info tonen</string>
+  <string name="menu_certify_fingerprint">Verifiëren door vingerafdrukken te vergelijken</string>
   <!--label-->
   <string name="label_message">Bericht</string>
   <string name="label_file">Bestand</string>
@@ -249,7 +256,8 @@
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">U heeft minstens Android 4.1 nodig om Androids NFC Beam eigenschap te gebruiken!</string>
-  <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
+  <string name="error_nfc_needed">NFC moet aangezet zijn!</string>
+  <string name="error_beam_needed">Beam moet aangezet zijn!</string>
   <string name="error_nothing_import">Geen sleutels gevonden!</string>
   <string name="error_contacts_key_id_missing">Sleutel-ID van contacten ophalen mislukt!</string>
   <string name="error_generic_report_bug">Een algemene fout is opgetreden, gelieve een nieuw bug-verslag te maken voor OpenKeychain.</string>
@@ -432,7 +440,6 @@
   <string name="intent_send_encrypt">Codeer met OpenKeychain</string>
   <string name="intent_send_decrypt">Decodeer met OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Geen geregistreerde apps!\n\nEen lijst van ondersteunde derde-partij applicaties kan gevonden worden in \'Help\'!</string>
   <string name="api_settings_show_info">Toon geavanceerde informatie</string>
   <string name="api_settings_hide_info">Verberg geavanceerde informatie</string>
   <string name="api_settings_show_advanced">Toon geavanceerde instellingen</string>
@@ -489,6 +496,7 @@
   <string name="key_view_tab_share">Delen</string>
   <string name="key_view_tab_keys">Subsleutels</string>
   <string name="key_view_tab_certs">Certificaten</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Ingetrokken</string>
   <string name="user_id_info_revoked_text">Deze identiteit is door de sleuteleigenaar ingetrokken. Ze is niet langer geldig.</string>
   <string name="user_id_info_certified_title">Gecertificeerd</string>
@@ -497,6 +505,45 @@
   <string name="user_id_info_uncertified_text">Deze identiteit is nog niet gecertificeerd. Je kan niet zeker zijn dat deze identiteit echt overeenkomt met een bepaald persoon.</string>
   <string name="user_id_info_invalid_title">Ongeldig</string>
   <string name="user_id_info_invalid_text">Er is iets mis met deze identiteit!</string>
+  <!--Key trust-->
+  <string name="key_trust_already_verified">Je hebt deze sleutel al gecertificeerd!</string>
+  <string name="key_trust_it_is_yours">Dit is een van jouw sleutels!</string>
+  <string name="key_trust_maybe">Deze sleutel is ingetrokken noch verlopen.\nJe hebt ze niet gecertificeerd, maar je kan kiezen ze te vertrouwen.</string>
+  <string name="key_trust_revoked">Deze sleutel is door de eigenaar ingetrokken. Je zou ze niet moeten vertrouwen.</string>
+  <string name="key_trust_expired">Deze sleutel is verlopen. Je zou ze niet moeten vertrouwen.</string>
+  <string name="key_trust_old_keys">Het kan oké zijn deze sleutel te gebruiken om een oud bericht te ontsleutelen van een moment waarop de sleutel nog geldig was.</string>
+  <string name="key_trust_no_cloud_evidence">Geen bewijs van de cloud voor de betrouwbaarheid van deze sleutel.</string>
+  <string name="key_trust_start_cloud_search">Zoeken starten</string>
+  <string name="key_trust_results_prefix">Keybase.io geeft “bewijzen” die stellen dat de eigenaar van deze sleutel:</string>
+  <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">Post op Twitter als</string>
+  <string name="keybase_narrative_github">Bekend is op GitHub als</string>
+  <string name="keybase_narrative_dns">De volgende domeinnamen beheert</string>
+  <string name="keybase_narrative_web_site">Kan posten op de website(s)</string>
+  <string name="keybase_narrative_reddit">Post op Reddit als</string>
+  <string name="keybase_narrative_coinbase">Bekend is op Coinbase als</string>
+  <string name="keybase_narrative_hackernews">Post op Hacker News als</string>
+  <string name="keybase_narrative_unknown">Onbekend bewijstype</string>
+  <string name="keybase_proof_failure">Helaas kan dit bewijs niet geverifieerd worden.</string>
+  <string name="keybase_unknown_proof_failure">Niet-herkend probleem met de bewijschecker</string>
+  <string name="keybase_problem_fetching_evidence">Probleem met bewijs van bewijs</string>
+  <string name="keybase_key_mismatch">Sleutelvingerafdruk komt niet overeen met die in bewijspost</string>
+  <string name="keybase_dns_query_failure">DNS TXT record ophalen mislukt</string>
+  <string name="keybase_no_prover_found">Geen bewijschecker gevonden voor</string>
+  <string name="keybase_message_payload_mismatch">Ontsleuteld bewijs komt niet overeen met verwachte waarde</string>
+  <string name="keybase_message_fetching_data">Bezig met ophalen van bewijs van bewijs</string>
+  <string name="keybase_proof_succeeded">Dit bewijs is geverifieerd!</string>
+  <string name="keybase_a_post">Een post</string>
+  <string name="keybase_fetched_from">opgehaald van</string>
+  <string name="keybase_for_the_domain">voor het domein</string>
+  <string name="keybase_contained_signature">bevat een bericht dat enkel gemaakt kan zijn door de eigenaar van deze sleutel.</string>
+  <string name="keybase_twitter_proof">Een tweet</string>
+  <string name="keybase_dns_proof">Een DNS TXT record</string>
+  <string name="keybase_web_site_proof">Een tekstbestand</string>
+  <string name="keybase_github_proof">Een gist</string>
+  <string name="keybase_reddit_proof">Een JSON-bestand</string>
+  <string name="keybase_reddit_attribution">toegeschreven door Reddit aan</string>
+  <string name="keybase_verify">Verifiëren</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Wachtwoord wijzigen</string>
   <string name="edit_key_action_add_identity">Identiteit toevoegen</string>
@@ -532,8 +579,12 @@
   <string name="create_key_hint_full_name">Volledige naam, bv. Max Mustermann</string>
   <string name="create_key_edit">Sleutelconfiguratie wijzigen</string>
   <!--View key-->
-  <string name="view_key_revoked">Deze sleutel is ingetrokken!</string>
-  <string name="view_key_expired">Deze sleutel is verlopen!</string>
+  <string name="view_key_revoked">Ingetrokken: sleutel mag niet meer gebruikt worden!</string>
+  <string name="view_key_expired">Verlopen: het contact moet de geldigheid van de sleutels verlengen!</string>
+  <string name="view_key_expired_secret">Verlopen: je kan de geldigheid van de sleutels verlengen door ze te bewerken!</string>
+  <string name="view_key_my_key">Mijn sleutel</string>
+  <string name="view_key_verified">Geverifieerde sleutels</string>
+  <string name="view_key_unverified">Niet geverifieerd: scan QR-code om de sleutel te verifiëren!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Sleutels</string>
   <string name="nav_encrypt_decrypt">Versleutelen/Ontsleutelen</string>
@@ -896,6 +947,18 @@
   <string name="msg_dc_trail_sym">Achterlopende, symmetrisch versleutelde gegevens tegengekomen</string>
   <string name="msg_dc_trail_unknown">Achterlopende gegevens van onbekend type tegengekomen</string>
   <string name="msg_dc_unlocking">Bezig met ontgrendelen van geheime sleutel</string>
+  <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl">Ondertekeningscontrole wordt gestart</string>
+  <string name="msg_vl_error_no_siglist">Geen ondertekeningslijst in ondertekende letterlijke gegevens</string>
+  <string name="msg_vl_error_wrong_key">Bericht niet ondertekend met de juiste sleutel</string>
+  <string name="msg_vl_error_missing_literal">Geen payload in ondertekende letterlijke gegevens</string>
+  <string name="msg_vl_clear_meta_file">Bestandsnaam: %s</string>
+  <string name="msg_vl_clear_meta_mime">MIME-type: %s</string>
+  <string name="msg_vl_clear_meta_time">Wijzigingstijd: %s</string>
+  <string name="msg_vl_clear_meta_size">Bestandsgrootte: %s</string>
+  <string name="msg_vl_clear_signature_check">Bezig met verifiëren van ondertekeningsgegevens</string>
+  <string name="msg_vl_error_integrity_check">Fout bij integriteitscontrole!</string>
+  <string name="msg_vl_ok">Oké</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Ondertekening/versleuteling wordt gestart</string>
   <string name="msg_se_input_bytes">Bezig met verwerken van input van byte array</string>
@@ -1037,6 +1100,8 @@
   <string name="certs_text">Enkel gevalideerde self-certificaten en gevalideerde certificaten gemaakt met jouw sleutels worden hier weergegeven.</string>
   <string name="section_uids_to_certify">Identiteiten voor</string>
   <string name="certify_text">De sleutels die je importeert bevatten \'identiteiten\': namen en e-mailadressen. Selecteer precies die voor certificatie die overeenkomen met wat je had verwacht.</string>
+  <string name="certify_fingerprint_text">Vergelijk de weergegeven vingerafdruk, karakter per karakter, met die weergegeven op het toestel van je partner.</string>
+  <string name="certify_fingerprint_text2">Komen de weergegeven vingerafdrukken overeen?</string>
   <string name="label_revocation">Intrek Reden</string>
   <string name="label_verify_status">Verificatie Status</string>
   <string name="label_cert_type">Type</string>
@@ -1058,6 +1123,7 @@
   <string name="error_multi_not_supported">Opslaan van meerdere bestanden wordt niet ondersteund. Dit is een beperking van Android.</string>
   <string name="key_colon">Sleutel:</string>
   <string name="exchange_description">Selecteer om een sleuteluitwisseling te starten het aantal deelnemers aan de rechterkant, en klik vervolgens op de knop \'Start uitwisseling\'.\n\nJe zal twee vragne gesteld worden om zeker te zijn dat enkel de juiste deelnemers zich in de uitwisseling bevinden en dat hun vingerafdrukken correct zijn.</string>
+  <string name="btn_start_exchange">Uitwisseling starten</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->

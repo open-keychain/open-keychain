@@ -39,6 +39,9 @@
   <string name="title_keys">Clefs</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
+  <string name="section_should_you_trust">Devriez-vous faire confiance à cette clef ?</string>
+  <string name="section_proof_details">Vérification de preuve</string>
+  <string name="section_cloud_evidence">Preuve provenant du nuage</string>
   <string name="section_keys">Sous-clefs</string>
   <string name="section_cloud_search">Recherche nuagique</string>
   <string name="section_general">Général</string>
@@ -71,6 +74,8 @@
   <string name="btn_export_to_server">Téléverser vers le serveur de clefs</string>
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
+  <string name="btn_no">Non</string>
+  <string name="btn_match">Les empreintes correspondent</string>
   <string name="btn_lookup_key">Rechercher la clef</string>
   <string name="btn_share_encrypted_signed">Chiffrer et partager le message</string>
   <string name="btn_view_cert_key">Voir la clef de certification</string>
@@ -90,6 +95,7 @@
   <string name="menu_create_key">Créer ma clef</string>
   <string name="menu_import_existing_key">Importer depuis un fichier</string>
   <string name="menu_search">Rechercher</string>
+  <string name="menu_nfc_preferences">Paramètres NFC</string>
   <string name="menu_beam_preferences">Paramètres Beam</string>
   <string name="menu_key_edit_cancel">Annuler</string>
   <string name="menu_encrypt_to">Chiffrer vers...</string>
@@ -98,6 +104,7 @@
   <string name="menu_search_cloud">Rechercher dans le nuage</string>
   <string name="menu_export_all_keys">Exporter toutes les clefs</string>
   <string name="menu_advanced">Afficher les infos avancées</string>
+  <string name="menu_certify_fingerprint">Vérifier par comparaison d\'empreintes</string>
   <!--label-->
   <string name="label_message">Message</string>
   <string name="label_file">Fichier</string>
@@ -249,7 +256,8 @@
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction Beam NFC d\'Android !</string>
-  <string name="error_nfc_needed">La NFC n\'est pas proposée sur votre appareil !</string>
+  <string name="error_nfc_needed">La NFC doit être activée !</string>
+  <string name="error_beam_needed">Beam doit être activé !</string>
   <string name="error_nothing_import">Aucune clef trouvée !</string>
   <string name="error_contacts_key_id_missing">Échec lors de la récupération de l\'ID de clef à partir des contacts !</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
@@ -432,7 +440,6 @@
   <string name="intent_send_encrypt">Chiffrer avec OpenKeychain</string>
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Aucune application enregistrée !\n\nUne liste d\'applications tierces prises en charge peut être trouvée dans l\'« Aide » !</string>
   <string name="api_settings_show_info">Afficher les informations avancées</string>
   <string name="api_settings_hide_info">Masquer les informations avancées</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
@@ -489,6 +496,7 @@
   <string name="key_view_tab_share">Partager</string>
   <string name="key_view_tab_keys">Sous-clefs</string>
   <string name="key_view_tab_certs">Certificats</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Révoquée</string>
   <string name="user_id_info_revoked_text">Cette identité a été révoquée par le propriétaire de la clef. Elle n\'est plus valide.</string>
   <string name="user_id_info_certified_title">Certifié</string>
@@ -497,6 +505,43 @@
   <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne spécifique.</string>
   <string name="user_id_info_invalid_title">Invalide</string>
   <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
+  <!--Key trust-->
+  <string name="key_trust_already_verified">Vous avez déjà certifié cette clef !</string>
+  <string name="key_trust_it_is_yours">C\'est une de vos clefs !</string>
+  <string name="key_trust_maybe">Cette clef n\'est ni révoquée, ni expirée.\nVous ne l\'avez pas certifiée, mais vous pourriez décider de lui faire confiance.</string>
+  <string name="key_trust_revoked">Cette clef a été révoquée par son propriétaire. Vous ne devriez pas lui faire confiance.</string>
+  <string name="key_trust_expired">Cette clef est expirée. Vous ne devriez pas lui faire confiance.</string>
+  <string name="key_trust_old_keys">Vous pourriez l\'utiliser pour déchiffrer un ancien message datant de la période de validité de la clef.</string>
+  <string name="key_trust_no_cloud_evidence">Aucune preuve de fiabilité provenant du nuage pour cette clef.</string>
+  <string name="key_trust_start_cloud_search">Lancer la recherche</string>
+  <string name="key_trust_results_prefix">Keybase.io offre des « preuves » affirmant que le propriétaire de cette clef : </string>
+  <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">Publie vers Twitter en tant que</string>
+  <string name="keybase_narrative_github">Est connu sur GitHub en tant que</string>
+  <string name="keybase_narrative_dns">Contrôle le/les nom(s) de domaine</string>
+  <string name="keybase_narrative_web_site">Peut publier vers le/les site(s) Web</string>
+  <string name="keybase_narrative_reddit">Publie sur Reddit en tant que</string>
+  <string name="keybase_narrative_coinbase">Est connu sur Coinbase en tant que</string>
+  <string name="keybase_narrative_hackernews">Publie sur « Hacker News » en tant que</string>
+  <string name="keybase_narrative_unknown">Type de preuve inconnu</string>
+  <string name="keybase_proof_failure">Malheureusement cette preuve ne peut pas être vérifiée.</string>
+  <string name="keybase_unknown_proof_failure">Problème inconnu avec le vérificateur de preuve</string>
+  <string name="keybase_key_mismatch">L\'empreinte de clef ne correspondant pas à celle du billet de preuve</string>
+  <string name="keybase_dns_query_failure">Échec lors de la récupération de l\'enregistrement DNS TXT</string>
+  <string name="keybase_no_prover_found">Aucun vérificateur de preuve trouvé pour</string>
+  <string name="keybase_message_payload_mismatch">Le billet de preuve déchiffré ne correspond pas à la valeur attendue</string>
+  <string name="keybase_proof_succeeded">Cette preuve a été vérifié !</string>
+  <string name="keybase_a_post">Un billet</string>
+  <string name="keybase_fetched_from">récupéré de</string>
+  <string name="keybase_for_the_domain">pour le domaine</string>
+  <string name="keybase_contained_signature">contient un message qui a seulement pu être créé par le propriétaire de cette clef.</string>
+  <string name="keybase_twitter_proof">Un gazouillis</string>
+  <string name="keybase_dns_proof">Un enregistrement DNS TXT</string>
+  <string name="keybase_web_site_proof">Un fichier texte</string>
+  <string name="keybase_github_proof">Un gist</string>
+  <string name="keybase_reddit_proof">Un fichier JSON</string>
+  <string name="keybase_reddit_attribution">attribué par Reddit à</string>
+  <string name="keybase_verify">Vérifier</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Changer la phrase de passe</string>
   <string name="edit_key_action_add_identity">Ajouter une identité</string>
@@ -532,8 +577,12 @@
   <string name="create_key_hint_full_name">Nom complet, p. ex. Marc-Olivier Lagacé</string>
   <string name="create_key_edit">Changer la configuration de la clef</string>
   <!--View key-->
-  <string name="view_key_revoked">Cette clef a été révoquée !</string>
-  <string name="view_key_expired">Cette clef est expirée !</string>
+  <string name="view_key_revoked">Révoquée : la clef ne doit plus être utilisée !</string>
+  <string name="view_key_expired">Expirée : le contact doit prolonger la validité de la clef !</string>
+  <string name="view_key_expired_secret">Expirée : vous pouvez prolonger la validité de la clef en la modifiant !</string>
+  <string name="view_key_my_key">Ma clef</string>
+  <string name="view_key_verified">Clef vérifiée</string>
+  <string name="view_key_unverified">Non vérifiée : balayez le code QR pour vérifier la clef !</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
   <string name="nav_encrypt_decrypt">Chiffrer/déchiffrer</string>
@@ -896,6 +945,8 @@
   <string name="msg_dc_trail_sym">Des données traînantes chiffrées symétriquement ont été rencontrées</string>
   <string name="msg_dc_trail_unknown">Des données traînantes de type inconnu ont été rencontrées</string>
   <string name="msg_dc_unlocking">Déverrouillage de la clef secrète</string>
+  <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl">Lancement de la vérification de la signature</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Début de l\'opération de signature/chiffrement</string>
   <string name="msg_se_input_bytes">Traitement de l\'entrée du tableau de bytes</string>
@@ -1037,6 +1088,8 @@
   <string name="certs_text">Seuls les auto-certificats et les certificats validés créés avec vos clefs sont affichés ici.</string>
   <string name="section_uids_to_certify">Identités pour</string>
   <string name="certify_text">Les clefs que vous importez contiennent des « identités » : des noms et des adresses courriel. Choisissez exactement ceux qui correspondent à ce que vous attendiez.</string>
+  <string name="certify_fingerprint_text">Comparez l\'empreinte affichée, caractère par caractère, à celle affichée sur l\'appareil de l\'autre personne.</string>
+  <string name="certify_fingerprint_text2">Est-ce que les empreintes affichées correspondent ?</string>
   <string name="label_revocation">Raison de la révocation</string>
   <string name="label_verify_status">État de vérification</string>
   <string name="label_cert_type">Type</string>
@@ -1058,6 +1111,7 @@
   <string name="error_multi_not_supported">L\'enregistrement des fichiers multiples n\'est pas pris en charge. Ceci est actuellement une limitation d\'Android.</string>
   <string name="key_colon">Clef :</string>
   <string name="exchange_description">Pour démarrer un échange de clef, choisir le nombre de participants du côté droit, puis cliquer sur le bouton « Démarrer l\'échange ».\n\Deux questions de plus seront posées pour s\'assurer que seuls les bons participants sont dans l\'échange et que les empreintes sont correctes.</string>
+  <string name="btn_start_exchange">Démarrer l\'échange</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->

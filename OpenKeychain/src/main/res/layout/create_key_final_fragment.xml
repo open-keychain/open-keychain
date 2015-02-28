@@ -66,6 +66,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:checked="true"
                 android:text="@string/create_key_upload"
                 android:id="@+id/create_key_upload" />
 

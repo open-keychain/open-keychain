@@ -72,19 +72,19 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
                           SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, showCheckBoxes, false, saveKeyringParcel);
+        this(context, c, flags, showCheckBoxes, true, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
-        this(context, c, flags, showCheckBoxes, false, null);
+        this(context, c, flags, showCheckBoxes, true, null);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, false, false, saveKeyringParcel);
+        this(context, c, flags, false, true, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false, false, null);
+        this(context, c, flags, false, true, null);
     }
 
     @Override

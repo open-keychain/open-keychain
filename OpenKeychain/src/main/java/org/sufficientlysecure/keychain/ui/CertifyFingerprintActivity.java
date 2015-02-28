@@ -17,14 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class CertifyFingerprintActivity extends BaseActivity {
@@ -79,14 +77,4 @@ public class CertifyFingerprintActivity extends BaseActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(this).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
 }

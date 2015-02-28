@@ -19,14 +19,16 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.Color;
 
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.Snackbar.SnackbarDuration;
 import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.nispok.snackbar.listeners.EventListenerAdapter;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.FabContainer;
 
 /**
  * Notify wrapper which allows a more easy use of different notification libraries
@@ -40,15 +42,13 @@ public class Notify {
 
     /**
      * Shows a simple in-layout notification with the CharSequence given as parameter
-     * @param activity
      * @param text     Text to show
      * @param style    Notification styling
      */
-    public static void showNotify(Activity activity, CharSequence text, Style style) {
+    public static void showNotify(final Activity activity, CharSequence text, Style style) {
 
-        Snackbar bar = Snackbar.with(activity)
-                .text(text)
-                .duration(SnackbarDuration.LENGTH_LONG);
+        Snackbar bar = getSnackbar(activity)
+                .text(text);
 
         switch (style) {
             case OK:
@@ -66,8 +66,9 @@ public class Notify {
     }
 
     public static Showable createNotify (Activity activity, int resId, int duration, Style style) {
-        final Snackbar bar = Snackbar.with(activity)
+        final Snackbar bar = getSnackbar(activity)
                 .text(resId);
+
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
         } else {
@@ -101,7 +102,8 @@ public class Notify {
 
     public static Showable createNotify(Activity activity, String msg, int duration, Style style,
                                         final ActionListener listener, int resIdAction) {
-        final Snackbar bar = Snackbar.with(activity)
+
+        final Snackbar bar = getSnackbar(activity)
                 .text(msg)
                 .actionLabel(resIdAction)
                 .actionListener(new ActionClickListener() {
@@ -110,6 +112,7 @@ public class Notify {
                         listener.onAction();
                     }
                 });
+
         if (duration == LENGTH_INDEFINITE) {
             bar.duration(SnackbarDuration.LENGTH_INDEFINITE);
         } else {
@@ -139,13 +142,33 @@ public class Notify {
 
     /**
      * Shows a simple in-layout notification with the resource text from given id
-     * @param activity
      * @param resId    ResourceId of notification text
      * @param style    Notification styling
      * @throws Resources.NotFoundException
      */
     public static void showNotify(Activity activity, int resId, Style style) throws Resources.NotFoundException {
         showNotify(activity, activity.getResources().getText(resId), style);
+    }
+
+    private static Snackbar getSnackbar(final Activity activity) {
+        Snackbar bar = Snackbar.with(activity)
+                .type(SnackbarType.MULTI_LINE)
+                .duration(SnackbarDuration.LENGTH_LONG);
+
+        if (activity instanceof FabContainer) {
+            bar.eventListener(new EventListenerAdapter() {
+                @Override
+                public void onShow(Snackbar snackbar) {
+                    ((FabContainer) activity).fabMoveUp(snackbar.getHeight());
+                }
+
+                @Override
+                public void onDismiss(Snackbar snackbar) {
+                    ((FabContainer) activity).fabRestorePosition();
+                }
+            });
+        }
+        return bar;
     }
 
     public interface Showable {

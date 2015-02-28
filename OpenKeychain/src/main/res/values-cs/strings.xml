@@ -238,7 +238,6 @@
   <string name="error_could_not_extract_private_key">nebylo možné extrahovat privátní klíč</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Musíte mít Android 4.1 abyste mohli používat Androidí NFC Beam technologii!</string>
-  <string name="error_nfc_needed">NFC není na vašem zařízení k dispozici!</string>
   <string name="error_nothing_import">Žádný klíč nenalezen!</string>
   <string name="error_contacts_key_id_missing">Příjem ID klíče od kontatktu selhal!</string>
   <string name="error_generic_report_bug">Nastala obecná chyba, prosím vytvořte nový bug report pro OpenKeychain.</string>
@@ -432,6 +431,8 @@
   <string name="user_id_info_uncertified_text">Tato identita nebyla ještě ověřena. Nemůžete si být jisti, že identita skutečně odpovídá konkrétní osobě.</string>
   <string name="user_id_info_invalid_title">Neplatná</string>
   <string name="user_id_info_invalid_text">S touto identitou je něco v nepořádku!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Změnit heslo</string>
   <string name="edit_key_action_add_identity">Přidat identitu</string>
@@ -467,8 +468,6 @@
   <string name="create_key_hint_full_name">Celé jméno, např. Jan Novák</string>
   <string name="create_key_edit">Změnit konfiguraci klíče</string>
   <!--View key-->
-  <string name="view_key_revoked">Tento klíč byl zneplatněn!</string>
-  <string name="view_key_expired">Tento klíč vyexpiroval!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Klíče</string>
   <string name="nav_apps">Aplikace</string>
@@ -510,6 +509,7 @@
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">Klíč nenalezen!</string>
   <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_acc_saved">Účet uložen</string>

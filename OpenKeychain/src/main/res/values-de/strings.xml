@@ -249,7 +249,6 @@
   <string name="error_could_not_extract_private_key">Privater Schlüssel konnte nicht extrahiert werden</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Android 4.1 wird benötigt um Androids NFC Beam nutzen zu können!</string>
-  <string name="error_nfc_needed">NFC steht auf diesem Gerät nicht zur Verfügung!</string>
   <string name="error_nothing_import">Keine Schlüssel gefunden!</string>
   <string name="error_contacts_key_id_missing">Abrufen der Schlüsselkennung von den Kontakten ist fehlgeschlagen!</string>
   <string name="error_generic_report_bug">Ein allgemeiner Fehler trat auf, bitte schreiben Sie einen neuen Bugreport für OpenKeychain.</string>
@@ -432,7 +431,6 @@
   <string name="intent_send_encrypt">Verschlüsseln mit OpenKeychain </string>
   <string name="intent_send_decrypt">Entschlüsseln mit OpenKeychain </string>
   <!--Remote API-->
-  <string name="api_no_apps">Keine registrierten Apps!\n\nEine Liste der unterstützten Anwendungen ist in der \'Hilfe\' verfügbar.</string>
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
@@ -497,6 +495,8 @@
   <string name="user_id_info_uncertified_text">Diese Identität wurde noch nicht beglaubigt. Sie können nicht sicher sein, ob diese Identität wirklich zu einer bestimmten Person gehört.</string>
   <string name="user_id_info_invalid_title">Ungültig</string>
   <string name="user_id_info_invalid_text">Irgend etwas ist mit dieser Identität nicht in Ordnung!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Passwort ändern</string>
   <string name="edit_key_action_add_identity">Identität hinzufügen</string>
@@ -532,8 +532,6 @@
   <string name="create_key_hint_full_name">Vollständiger Name, z.B. Max Mustermann</string>
   <string name="create_key_edit">Schlüsselkonfiguration ändern</string>
   <!--View key-->
-  <string name="view_key_revoked">Dieser Schlüssel wurde widerrufen!</string>
-  <string name="view_key_expired">Dieser Schlüssel ist nicht mehr gültig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
   <string name="nav_encrypt_decrypt">Verschlüsseln/Entschlüsseln</string>
@@ -885,6 +883,7 @@
   <string name="msg_dc_trail_sym">Anhang gefunden, symmetrisch verschlüsselte Daten</string>
   <string name="msg_dc_trail_unknown">Anhängende Daten unbekannter Art gefunden</string>
   <string name="msg_dc_unlocking">Geheimer Schlüssel wird entsperrt</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Starte Signier-/Verschlüsselungsvorgang</string>
   <string name="msg_se_error_no_input">Keine Eingabe gegeben!</string>

@@ -196,7 +196,6 @@
   <string name="error_could_not_extract_private_key">無法抽取私鑰</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">需要Android 4.1以上才能使用NFC Beam功能！</string>
-  <string name="error_nfc_needed">您的裝置不支援NFC!</string>
   <string name="error_nothing_import">找不到金鑰！</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">尚未簽名</string>
@@ -313,7 +312,6 @@
   <string name="intent_send_encrypt">使用OpenKeychain加密</string>
   <string name="intent_send_decrypt">使用OpenKeychain解密</string>
   <!--Remote API-->
-  <string name="api_no_apps">沒有已註冊的應用程式！\n\n支援的第三方應用程式請參考說明文件。</string>
   <string name="api_settings_show_info">顯示進階資訊</string>
   <string name="api_settings_hide_info">隱藏進階資訊</string>
   <string name="api_settings_show_advanced">顯示進階設定</string>
@@ -356,6 +354,8 @@
   <string name="user_id_info_uncertified_title">未認證</string>
   <string name="user_id_info_uncertified_text">這個身分識別尚未經過認證，你不能確認這個身分識別是否屬於真的某個人。</string>
   <string name="user_id_info_invalid_title">無效</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">變更口令</string>
   <string name="edit_key_action_add_identity">新增身分識別</string>
@@ -379,8 +379,6 @@
   <string name="create_key_final_robot_text">建立金鑰可能需要一點時間，來杯咖啡吧…</string>
   <string name="create_key_text">輸入你的全名、電子郵件，並選擇一組口令。</string>
   <!--View key-->
-  <string name="view_key_revoked">這把金鑰已被撤銷！</string>
-  <string name="view_key_expired">這把金鑰已經過期！</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">金鑰</string>
   <string name="nav_apps">應用程式</string>
@@ -408,6 +406,7 @@
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_error_invalid_siglist">找不到有效的簽名資訊！</string>
   <string name="msg_dc">開始解密…</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_crt_warn_not_found">找不到金鑰！</string>

@@ -124,15 +124,15 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mTabsAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabsAdapter);
 
-        Bundle mainBundle = new Bundle();
-        mainBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvMainFragment.class,
-                mainBundle, getString(R.string.key_view_tab_main));
-
         Bundle shareBundle = new Bundle();
-        shareBundle.putParcelable(ViewKeyAdvMainFragment.ARG_DATA_URI, dataUri);
+        shareBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
         mTabsAdapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
+
+        Bundle userIdsBundle = new Bundle();
+        userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
+        mTabsAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
+                userIdsBundle, getString(R.string.section_user_ids));
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
