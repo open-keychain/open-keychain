@@ -22,9 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.v4.app.ListFragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +36,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -45,16 +43,11 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Iterator;
 
@@ -100,7 +93,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-        Toast.makeText(this.getActivity(),"Options created",Toast.LENGTH_SHORT).show();
         inflater.inflate(R.menu.log_display, menu);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -123,24 +115,64 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     }
 
     private void writeToLogFile(final OperationResult.OperationLog operationLog, final File f) {
+        OperationResult.OperationLog currLog = new OperationResult.OperationLog();
+        currLog.add(OperationResult.LogType.MSG_EXPORT_LOG,0);
+
+        boolean error = false;
 
         PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(f);
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
 
         Iterator<LogEntryParcel> logIterator = operationLog.iterator();
+        try {
+                pw = new PrintWriter(f);
 
-        while(logIterator.hasNext()) {
+            while(logIterator.hasNext()) {
 
-            pw.println(getPrintableLogEntry(logIterator.next()));
+                pw.println(getPrintableLogEntry(logIterator.next()));
+                if(pw.checkError()) {//IOException
+                    Log.e(Constants.TAG, "Log Export I/O Exception "+f.getAbsolutePath());
+                    currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING,1);
+                    error = true;
+                    break;
+                }
+            }
+        } catch(FileNotFoundException e) {
+            Log.e(Constants.TAG, "File not found for exporting log "+f.getAbsolutePath());
+            currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN, 1);
+            error = true;
+        }
+        if(pw!=null) {
+            pw.close();
+            error = error && pw.checkError();//check for errors on closing PrintWriter object too
         }
 
-        pw.close();
-    }
+        if(!error)  currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS,1);
 
+        int opResultCode = error?OperationResult.RESULT_ERROR:OperationResult.RESULT_OK;
+        OperationResult opResult = new LogExportResult(opResultCode,currLog);
+        opResult.createNotify(getActivity()).show();
+    }
+    private static class LogExportResult extends OperationResult {
+
+        public LogExportResult(int result, OperationLog log) {
+            super(result, log);
+        }
+
+        /** trivial but necessary to implement the Parcelable protocol. */
+        public LogExportResult(Parcel source) {
+            super(source);
+        }
+
+        public static Creator<LogExportResult> CREATOR = new Creator<LogExportResult>() {
+            public LogExportResult createFromParcel(final Parcel source) {
+                return new LogExportResult(source);
+            }
+
+            public LogExportResult[] newArray(final int size) {
+                return new LogExportResult[size];
+            }
+        };
+    }
     /**
      * returns an indented String of a LogEntryParcel
      * @param entry log entry whose String representation is to be obtained
@@ -162,7 +194,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                     case DEBUG: subLogText+="[DEBUG]"; break;
                     case INFO: subLogText+="[INFO]"; break;
                     case WARN: subLogText+="[WARN]"; break;
-                    case ERROR: subLogText+="[WARN]"; break;
+                    case ERROR: subLogText+="[ERROR]"; break;
                     case START: subLogText+="[START]"; break;
                     case OK: subLogText+="[OK]"; break;
                     case CANCELLED: subLogText+="[CANCELLED]"; break;
@@ -192,7 +224,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             case DEBUG: logText="[DEBUG]"; break;
             case INFO: logText="[INFO]"; break;
             case WARN: logText="[WARN]"; break;
-            case ERROR: logText="[WARN]"; break;
+            case ERROR: logText="[ERROR]"; break;
             case START: logText="[START]"; break;
             case OK: logText="[OK]"; break;
             case CANCELLED: logText="[CANCELLED]"; break;
