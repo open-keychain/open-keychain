@@ -37,7 +37,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -47,15 +46,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -104,16 +99,9 @@ public class KeyListFragment extends LoaderFragment
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
 
-    private boolean mShowAllKeys = true;
-
     private String mQuery;
-    private SearchView mSearchView;
 
     private FloatingActionsMenu mFab;
-
-    private FloatingActionButton mFabQrCode;
-    private FloatingActionButton mFabCloud;
-    private FloatingActionButton mFabFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,25 +123,25 @@ public class KeyListFragment extends LoaderFragment
 
         mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
-        mFabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
-        mFabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
-        mFabFile = (FloatingActionButton) view.findViewById(R.id.fab_add_file);
+        FloatingActionButton fabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
+        FloatingActionButton fabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
+        FloatingActionButton fabFile = (FloatingActionButton) view.findViewById(R.id.fab_add_file);
 
-        mFabQrCode.setOnClickListener(new OnClickListener() {
+        fabQrCode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFab.collapse();
                 scanQrCode();
             }
         });
-        mFabCloud.setOnClickListener(new OnClickListener() {
+        fabCloud.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFab.collapse();
                 searchCloud();
             }
         });
-        mFabFile.setOnClickListener(new OnClickListener() {
+        fabFile.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFab.collapse();
@@ -221,7 +209,7 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_export: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                        ExportHelper mExportHelper = new ExportHelper(getActivity());
                         mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
                                 mAdapter.isAnySecretSelected());
                         break;
@@ -247,7 +235,7 @@ public class KeyListFragment extends LoaderFragment
             public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                                                   boolean checked) {
                 if (checked) {
-                    mAdapter.setNewSelection(position, checked);
+                    mAdapter.setNewSelection(position, true);
                 } else {
                     mAdapter.removeSelection(position);
                 }
@@ -316,14 +304,6 @@ public class KeyListFragment extends LoaderFragment
                 whereArgs[i] = "%" + words[i] + "%";
             }
         }
-        if (!mShowAllKeys) {
-            if (where == null) {
-                where = "";
-            } else {
-                where += " AND ";
-            }
-            where += KeyRings.VERIFIED + " != 0";
-        }
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -387,7 +367,6 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Show dialog to delete key
      *
-     * @param masterKeyIds
      * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
      */
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
@@ -439,10 +418,10 @@ public class KeyListFragment extends LoaderFragment
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
 
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
-        mSearchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(this);
 
         // Erase search result without focus
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
@@ -539,7 +518,6 @@ public class KeyListFragment extends LoaderFragment
         }
         return true;
     }
-
 
     private void searchCloud() {
         Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
