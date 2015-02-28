@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -619,23 +620,21 @@ public class KeyListFragment extends LoaderFragment
         }
     }
 
-    LayoutParams mFabOrigin = null;
     @Override
     public void fabMoveUp(int height) {
-        if (mFabOrigin == null) {
-            mFabOrigin = mFab.getLayoutParams();
-        }
-
-        // TODO reposition properly!
-        MarginLayoutParams marginParams = new MarginLayoutParams(mFabOrigin);
-        marginParams.setMargins(0, 0, 16, 16+height);
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(marginParams);
-        mFab.setLayoutParams(layoutParams);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, "translationY", 0, -height);
+        // we're a little behind, so skip 1/10 of the time
+        anim.setDuration(270);
+        anim.start();
     }
 
     @Override
     public void fabRestorePosition() {
-        mFab.setLayoutParams(mFabOrigin);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, "translationY", 0);
+        // we're a little ahead, so wait a few ms
+        anim.setStartDelay(70);
+        anim.setDuration(300);
+        anim.start();
     }
 
     /**
