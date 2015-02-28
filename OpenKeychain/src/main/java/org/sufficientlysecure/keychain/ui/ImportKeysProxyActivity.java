@@ -149,7 +149,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     private void processScannedContent(Uri uri) {
 
-        Log.d(Constants.TAG, "scanned: " + uri.toString());
+        Log.d(Constants.TAG, "scanned: " + uri);
 
         String fingerprint = null;
 

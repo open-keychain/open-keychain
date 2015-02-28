@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -127,6 +128,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private String mFingerprint;
     private long mMasterKeyId;
 
+    @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,7 +212,7 @@ public class ViewKeyActivity extends BaseActivity implements
             }
         }
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
         mActionEncryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -624,8 +626,6 @@ public class ViewKeyActivity extends BaseActivity implements
 
     /**
      * Load QR Code asynchronously and with a fade in animation
-     *
-     * @param fingerprint
      */
     private void loadQrCode(final String fingerprint) {
         AsyncTask<Void, Void, Bitmap> loadTask =
@@ -952,6 +952,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mPreviousColor = color;
                     }
 
+                    //noinspection deprecation
                     mStatusImage.setAlpha(80);
 
                     break;
