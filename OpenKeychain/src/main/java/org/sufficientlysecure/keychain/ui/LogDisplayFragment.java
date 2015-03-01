@@ -121,21 +121,14 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         boolean error = false;
 
         PrintWriter pw = null;
-
-        Iterator<LogEntryParcel> logIterator = operationLog.iterator();
         try {
                 pw = new PrintWriter(f);
-
-            while(logIterator.hasNext()) {
-
-                pw.println(getPrintableLogEntry(logIterator.next()));
+                pw.print(getPrintableOperationLog(operationLog,""));
                 if(pw.checkError()) {//IOException
                     Log.e(Constants.TAG, "Log Export I/O Exception "+f.getAbsolutePath());
                     currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING,1);
                     error = true;
-                    break;
                 }
-            }
         } catch(FileNotFoundException e) {
             Log.e(Constants.TAG, "File not found for exporting log "+f.getAbsolutePath());
             currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN, 1);
@@ -143,7 +136,10 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         }
         if(pw!=null) {
             pw.close();
-            error = error && pw.checkError();//check for errors on closing PrintWriter object too
+            if(!error && pw.checkError()) {//check if it is only pw.close() which generated error
+                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING,1);
+                error = true;
+            }
         }
 
         if(!error)  currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS,1);
@@ -173,78 +169,69 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             }
         };
     }
+
     /**
-     * returns an indented String of a LogEntryParcel
-     * @param entry log entry whose String representation is to be obtained
-     * @return the passed log entry in a readable format
+     * returns an indented String of an entire OperationLog
+     * @param operationLog log to be converted to indented, printable format
+     * @param basePadding padding to add at the start of all log entries, made for use with SubLogs
+     * @return printable, indented version of passed operationLog
      */
-    private String getPrintableLogEntry(OperationResult.LogEntryParcel entry) {
-        String subLogText=null;
-        if (entry instanceof SubLogEntryParcel) {
-
-            OperationResult result = ((SubLogEntryParcel) entry).getSubResult();
-            LogEntryParcel subEntry = result.getLog().getLast();
-            if (subEntry != null) {
-                String subPadding="";
-                for(int i=0;i<entry.mIndent;i++) subPadding+="  ";//2 spaces = 1 Indent
-
-                subLogText=subPadding+"[SUB]";
-
-                switch (subEntry.mType.mLevel) {
-                    case DEBUG: subLogText+="[DEBUG]"; break;
-                    case INFO: subLogText+="[INFO]"; break;
-                    case WARN: subLogText+="[WARN]"; break;
-                    case ERROR: subLogText+="[ERROR]"; break;
-                    case START: subLogText+="[START]"; break;
-                    case OK: subLogText+="[OK]"; break;
-                    case CANCELLED: subLogText+="[CANCELLED]"; break;
-                }
-                // special case: first parameter may be a quantity
-                if (subEntry.mParameters != null && subEntry.mParameters.length > 0
-                        && subEntry.mParameters[0] instanceof Integer) {
-                    subLogText+=getResources().getQuantityString(subEntry.mType.getMsgId(),
-                            (Integer) subEntry.mParameters[0],
-                            subEntry.mParameters);
-                } else {
-                    subLogText+=getResources().getString(subEntry.mType.getMsgId(),
-                            subEntry.mParameters);
-                }
-            }
-
+    private String getPrintableOperationLog(OperationResult.OperationLog operationLog, String basePadding) {
+        String log = "";
+        Iterator<LogEntryParcel> logIterator = operationLog.iterator();
+        while(logIterator.hasNext()) {
+            log += getPrintableLogEntry(logIterator.next(), basePadding)+"\n";
         }
+        log = log.substring(0,log.length()-1);//gets rid of extra new line
+        return log;
+    }
+    /**
+     * returns an indented String of a LogEntryParcel including any sub-logs it may contain
+     * @param entryParcel log entryParcel whose String representation is to be obtained
+     * @return indented version of passed log entryParcel in a readable format
+     */
+    private String getPrintableLogEntry(OperationResult.LogEntryParcel entryParcel,
+                                        String basePadding) {
 
         String logText = "";
+        final String indent = "    ";//4 spaces = 1 Indent level
 
-        String padding = "";
-        for(int i =0;i<entry.mIndent;i++) {
-            padding +="    "; //4 spaces = 1 Indent level
+        String padding = basePadding;
+        for(int i =0;i<entryParcel.mIndent;i++) {
+            padding +=indent;
         }
+        logText = padding;
 
-        switch (entry.mType.mLevel) {
-            case DEBUG: logText="[DEBUG]"; break;
-            case INFO: logText="[INFO]"; break;
-            case WARN: logText="[WARN]"; break;
-            case ERROR: logText="[ERROR]"; break;
-            case START: logText="[START]"; break;
-            case OK: logText="[OK]"; break;
-            case CANCELLED: logText="[CANCELLED]"; break;
+        switch (entryParcel.mType.mLevel) {
+            case DEBUG: logText+="[DEBUG]"; break;
+            case INFO: logText+="[INFO]"; break;
+            case WARN: logText+="[WARN]"; break;
+            case ERROR: logText+="[ERROR]"; break;
+            case START: logText+="[START]"; break;
+            case OK: logText+="[OK]"; break;
+            case CANCELLED: logText+="[CANCELLED]"; break;
         }
 
         // special case: first parameter may be a quantity
-        if (entry.mParameters != null && entry.mParameters.length > 0
-                && entry.mParameters[0] instanceof Integer) {
-            logText += getResources().getQuantityString(entry.mType.getMsgId(),
-                    (Integer) entry.mParameters[0],
-                    entry.mParameters);
+        if (entryParcel.mParameters != null && entryParcel.mParameters.length > 0
+                && entryParcel.mParameters[0] instanceof Integer) {
+            logText += getResources().getQuantityString(entryParcel.mType.getMsgId(),
+                    (Integer) entryParcel.mParameters[0],
+                    entryParcel.mParameters);
         } else {
-            logText += getResources().getString(entry.mType.getMsgId(),
-                    entry.mParameters);
+            logText += getResources().getString(entryParcel.mType.getMsgId(),
+                    entryParcel.mParameters);
         }
 
-        logText = padding + logText;
+        if (entryParcel instanceof SubLogEntryParcel) {
 
-        if(subLogText!=null) //subLog exists
-            logText = logText+"\n"+padding+subLogText;
+            OperationResult subResult = ((SubLogEntryParcel) entryParcel).getSubResult();
+            LogEntryParcel subEntry = subResult.getLog().getLast();
+            if (subEntry != null) {
+                //the first line of log of subResult is same as entryParcel, so replace logText
+                logText = getPrintableOperationLog(subResult.getLog(),padding);
+            }
+        }
 
         return logText;
     }
@@ -300,7 +287,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
                 mSecondImg = secondImg;
             }
         }
-        //adithyaphilip: Check if convertView.setPadding is redundant
+        // Check if convertView.setPadding is redundant
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LogEntryParcel entry = getItem(position);
