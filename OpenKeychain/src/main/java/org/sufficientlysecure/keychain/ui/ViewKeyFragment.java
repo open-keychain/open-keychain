@@ -34,7 +34,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -143,15 +142,13 @@ public class ViewKeyFragment extends LoaderFragment implements
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
+        // TODO Is this loader the same as the one in the activity?
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
-
-    // don't show revoked user ids here, irrelevant for average users
-    public static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
@@ -161,11 +158,8 @@ public class ViewKeyFragment extends LoaderFragment implements
                 Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
             }
-            case LOADER_ID_USER_IDS: {
-                Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri,
-                        UserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_WHERE, null, null);
-            }
+            case LOADER_ID_USER_IDS:
+                return UserIdsAdapter.yo(getActivity(), mDataUri);
 
             default:
                 return null;
@@ -187,11 +181,6 @@ public class ViewKeyFragment extends LoaderFragment implements
                 if (data.moveToFirst()) {
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    boolean hasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
-                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
-                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
