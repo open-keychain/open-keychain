@@ -184,7 +184,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
     // don't show revoked user ids, irrelevant for average users
     public static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
-    public static CursorLoader yo (Activity activity, Uri dataUri) {
+    public static CursorLoader createLoader(Activity activity, Uri dataUri) {
         Uri baseUri = UserPackets.buildUserIdsUri(dataUri);
         return new CursorLoader(activity, baseUri,
                 UserIdsAdapter.USER_IDS_PROJECTION, USER_IDS_WHERE, null, null);

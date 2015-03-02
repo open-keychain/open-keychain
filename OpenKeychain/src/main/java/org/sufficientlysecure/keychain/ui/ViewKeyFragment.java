@@ -38,8 +38,6 @@ import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Date;
-
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -159,7 +157,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                 return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
             }
             case LOADER_ID_USER_IDS:
-                return UserIdsAdapter.yo(getActivity(), mDataUri);
+                return UserIdsAdapter.createLoader(getActivity(), mDataUri);
 
             default:
                 return null;
