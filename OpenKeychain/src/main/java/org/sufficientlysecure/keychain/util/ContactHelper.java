@@ -20,15 +20,18 @@ package org.sufficientlysecure.keychain.util;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Patterns;
 
@@ -125,33 +128,33 @@ public class ContactHelper {
      * @return
      */
     private static Set<String> getContactNamesFromEmails(Context context, Set<String> emails) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Set<String> names = new HashSet<>();
-            for (String email : emails) {
-                ContentResolver resolver = context.getContentResolver();
-                Cursor profileCursor = resolver.query(
-                        ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-                        new String[]{ContactsContract.CommonDataKinds.Email.ADDRESS,
-                                ContactsContract.Contacts.DISPLAY_NAME},
-                        ContactsContract.CommonDataKinds.Email.ADDRESS + "=?",
-                        new String[]{email}, null
-                );
-                if (profileCursor == null) return null;
-
-                Set<String> currNames = new HashSet<>();
-                while (profileCursor.moveToNext()) {
-                    String name = profileCursor.getString(1);
-                    if (name != null) {
-                        currNames.add(name);
-                    }
-                }
-                profileCursor.close();
-                names.addAll(currNames);
+        Set<String> names = new HashSet<>();
+        for (String email : emails) {
+            ContentResolver resolver = context.getContentResolver();
+            Cursor profileCursor = resolver.query(
+                    ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                    new String[]{
+                            ContactsContract.CommonDataKinds.Email.ADDRESS,
+                            ContactsContract.Contacts.DISPLAY_NAME
+                    },
+                    ContactsContract.CommonDataKinds.Email.ADDRESS + "=?",
+                    new String[]{email}, null
+            );
+            if (profileCursor == null) {
+                return null;
             }
-            return names;
-        } else {
-            return new HashSet<>();
+
+            Set<String> currNames = new HashSet<>();
+            while (profileCursor.moveToNext()) {
+                String name = profileCursor.getString(1);
+                if (name != null) {
+                    currNames.add(name);
+                }
+            }
+            profileCursor.close();
+            names.addAll(currNames);
         }
+        return names;
     }
 
     /**
@@ -162,38 +165,37 @@ public class ContactHelper {
      * @return
      */
     private static Set<String> getMainProfileContactEmails(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ContentResolver resolver = context.getContentResolver();
-            Cursor profileCursor = resolver.query(
-                    Uri.withAppendedPath(
-                            ContactsContract.Profile.CONTENT_URI,
-                            ContactsContract.Contacts.Data.CONTENT_DIRECTORY),
-                    new String[]{ContactsContract.CommonDataKinds.Email.ADDRESS,
-                            ContactsContract.CommonDataKinds.Email.IS_PRIMARY},
-
-                    // Selects only email addresses
-                    ContactsContract.Contacts.Data.MIMETYPE + "=?",
-                    new String[]{
-                            ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
-                    },
-                    // Show primary rows first. Note that there won't be a primary email address if the
-                    // user hasn't specified one.
-                    ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
-            );
-            if (profileCursor == null) return null;
-
-            Set<String> emails = new HashSet<>();
-            while (profileCursor.moveToNext()) {
-                String email = profileCursor.getString(0);
-                if (email != null) {
-                    emails.add(email);
-                }
-            }
-            profileCursor.close();
-            return emails;
-        } else {
-            return new HashSet<>();
+        ContentResolver resolver = context.getContentResolver();
+        Cursor profileCursor = resolver.query(
+                Uri.withAppendedPath(
+                        ContactsContract.Profile.CONTENT_URI,
+                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY),
+                new String[]{
+                        ContactsContract.CommonDataKinds.Email.ADDRESS,
+                        ContactsContract.CommonDataKinds.Email.IS_PRIMARY
+                },
+                // Selects only email addresses
+                ContactsContract.Contacts.Data.MIMETYPE + "=?",
+                new String[]{
+                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+                },
+                // Show primary rows first. Note that there won't be a primary email address if the
+                // user hasn't specified one.
+                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC"
+        );
+        if (profileCursor == null) {
+            return null;
         }
+
+        Set<String> emails = new HashSet<>();
+        while (profileCursor.moveToNext()) {
+            String email = profileCursor.getString(0);
+            if (email != null) {
+                emails.add(email);
+            }
+        }
+        profileCursor.close();
+        return emails;
     }
 
     /**
@@ -204,26 +206,27 @@ public class ContactHelper {
      * @return
      */
     private static List<String> getMainProfileContactName(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ContentResolver resolver = context.getContentResolver();
-            Cursor profileCursor = resolver.query(ContactsContract.Profile.CONTENT_URI,
-                    new String[]{ContactsContract.Profile.DISPLAY_NAME},
-                    null, null, null);
-            if (profileCursor == null) return null;
-
-            Set<String> names = new HashSet<>();
-            // should only contain one entry!
-            while (profileCursor.moveToNext()) {
-                String name = profileCursor.getString(0);
-                if (name != null) {
-                    names.add(name);
-                }
-            }
-            profileCursor.close();
-            return new ArrayList<>(names);
-        } else {
-            return new ArrayList<>();
+        ContentResolver resolver = context.getContentResolver();
+        Cursor profileCursor = resolver.query(
+                ContactsContract.Profile.CONTENT_URI,
+                new String[]{
+                        ContactsContract.Profile.DISPLAY_NAME
+                },
+                null, null, null);
+        if (profileCursor == null) {
+            return null;
         }
+
+        Set<String> names = new HashSet<>();
+        // should only contain one entry!
+        while (profileCursor.moveToNext()) {
+            String name = profileCursor.getString(0);
+            if (name != null) {
+                names.add(name);
+            }
+        }
+        profileCursor.close();
+        return new ArrayList<>(names);
     }
 
     public static List<String> getContactMails(Context context) {
@@ -231,7 +234,9 @@ public class ContactHelper {
         Cursor mailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
                 new String[]{ContactsContract.CommonDataKinds.Email.DATA},
                 null, null, null);
-        if (mailCursor == null) return new ArrayList<>();
+        if (mailCursor == null) {
+            return new ArrayList<>();
+        }
 
         Set<String> mails = new HashSet<>();
         while (mailCursor.moveToNext()) {
@@ -249,7 +254,9 @@ public class ContactHelper {
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME},
                 null, null, null);
-        if (cursor == null) return new ArrayList<>();
+        if (cursor == null) {
+            return new ArrayList<>();
+        }
 
         Set<String> names = new HashSet<>();
         while (cursor.moveToNext()) {
@@ -276,7 +283,9 @@ public class ContactHelper {
     }
 
     public static Bitmap photoFromFingerprint(ContentResolver contentResolver, String fingerprint) {
-        if (fingerprint == null) return null;
+        if (fingerprint == null) {
+            return null;
+        }
         if (!photoCache.containsKey(fingerprint)) {
             photoCache.put(fingerprint, loadPhotoFromFingerprint(contentResolver, fingerprint));
         }
@@ -287,12 +296,16 @@ public class ContactHelper {
         if (fingerprint == null) return null;
         try {
             int rawContactId = findRawContactId(contentResolver, fingerprint);
-            if (rawContactId == -1) return null;
+            if (rawContactId == -1) {
+                return null;
+            }
             Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
             Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
             InputStream photoInputStream =
                     ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
-            if (photoInputStream == null) return null;
+            if (photoInputStream == null) {
+                return null;
+            }
             return BitmapFactory.decodeStream(photoInputStream);
         } catch (Throwable ignored) {
             return null;
@@ -304,7 +317,19 @@ public class ContactHelper {
      */
     public static void writeKeysToContacts(Context context) {
         ContentResolver resolver = context.getContentResolver();
-        Set<String> contactFingerprints = getRawContactFingerprints(resolver);
+        Set<String> deletedKeys = getRawContactFingerprints(resolver);
+
+//        ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY_URI);
+//        ContentValues values = new ContentValues();
+//        Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+//        values.put(ContactsContract.Settings.ACCOUNT_NAME, account.name);
+//        values.put(ContactsContract.Settings.ACCOUNT_TYPE, account.type);
+//        values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, true);
+//        try {
+//            client.insert(ContactsContract.Settings.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), values);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
 
         // Load all Keys from OK
         Cursor cursor = resolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(), KEYS_TO_CONTACT_PROJECTION,
@@ -313,7 +338,10 @@ public class ContactHelper {
             while (cursor.moveToNext()) {
                 String[] primaryUserId = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
                 String fingerprint = KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(INDEX_FINGERPRINT));
-                contactFingerprints.remove(fingerprint);
+                deletedKeys.remove(fingerprint);
+
+                Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+
                 String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_KEY_ID));
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
@@ -322,10 +350,11 @@ public class ContactHelper {
                 int rawContactId = findRawContactId(resolver, fingerprint);
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
-                Log.d(Constants.TAG, "raw contact id: "+rawContactId);
+                Log.d(Constants.TAG, "raw contact id: " + rawContactId);
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
+                    Log.d(Constants.TAG, "Expired or revoked: Deleting " + rawContactId);
                     if (rawContactId != -1) {
                         resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ID_SELECTION,
                                 new String[]{Integer.toString(rawContactId)});
@@ -334,6 +363,8 @@ public class ContactHelper {
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
+                        Log.d(Constants.TAG, "Insert new raw contact with fingerprint " + fingerprint);
+
                         insertContact(ops, context, fingerprint);
                         writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
                     }
@@ -353,11 +384,10 @@ public class ContactHelper {
         }
 
         // Delete fingerprints that are no longer present in OK
-        for (String fingerprint : contactFingerprints) {
+        for (String fingerprint : deletedKeys) {
             resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ACCOUNT_TYPE_AND_SOURCE_ID_SELECTION,
                     new String[]{Constants.ACCOUNT_TYPE, fingerprint});
         }
-
     }
 
     /**
