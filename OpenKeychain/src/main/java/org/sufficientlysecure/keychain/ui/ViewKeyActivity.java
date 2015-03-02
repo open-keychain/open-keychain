@@ -633,16 +633,15 @@ public class ViewKeyActivity extends BaseActivity implements
                     protected Bitmap doInBackground(Void... unused) {
                         String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
                         // render with minimal size
-                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+                        Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+                        // scale the image up to our actual size. we do this in code rather
+                        // than let the ImageView do this because we don't require filtering.
+                        return Bitmap.createScaledBitmap(qrCode, mQrCode.getHeight(),
+                                mQrCode.getHeight(), false);
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
-                        // scale the image up to our actual size. we do this in code rather
-                        // than let the ImageView do this because we don't require filtering.
-                        Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                mQrCode.getHeight(), mQrCode.getHeight(),
-                                false);
-                        mQrCode.setImageBitmap(scaled);
+                        mQrCode.setImageBitmap(qrCode);
 
                         // simple fade-in animation
                         AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
