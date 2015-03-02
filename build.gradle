@@ -38,34 +38,3 @@ project(':extern:spongycastle') {
         test.enabled = false
     }
 }
-
-// Copied from https://gitlab.com/fdroid/fdroidclient/blob/master/build.gradle#L144
-subprojects {
-
-    // This is the hacky way which we force the subprojects to use the same build tools:
-    // http://stackoverflow.com/a/21032272
-    afterEvaluate {
-        if ( it.hasProperty( 'android' ) ) {
-            android {
-
-                // The android build task only lets you configure the buildToolsVersion once, so if
-                // we execute the closure below to configure our subprojects, it will fail when it
-                // hits the second subproject. Therefore, we will only do it once, and I guess the
-                // android plugin will re-use the existing value I set.
-                // https://android.googlesource.com/platform/tools/build/+/master/gradle/src/main/groovy/com/android/build/gradle/BaseExtension.groovy
-                try {
-                    buildToolsVersion '21.1.2'
-                    logger.info("Set buildToolsVersion to '21.1.2'")
-                } catch (GradleException e) {
-                    logger.info("Tried to set the buildToolsVersion, however we were not allowed to: $e.message")
-                }
-
-                // don't abort build on lint errors
-                // http://stackoverflow.com/a/25149514
-                configure(android.lintOptions) {
-                    abortOnError false
-                }
-            }
-        }
-    }
-}
