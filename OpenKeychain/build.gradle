@@ -3,11 +3,25 @@ apply plugin: 'witness'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
+    // NOTE: libraries are pinned to a specific build, see below
 
+    // from local Android SDK
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:recyclerview-v7:21.0.3'
     compile 'com.android.support:cardview-v7:21.0.3'
+    
+    // JCenter etc.
+    compile 'com.eftimoff:android-patternview:1.0.0@aar'
+    compile 'com.journeyapps:zxing-android-embedded:2.0.1@aar'
+    compile 'com.journeyapps:zxing-android-integration:2.0.1@aar'
+    compile 'com.google.zxing:core:3.0.1'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.9'
+    compile 'it.neokree:MaterialNavigationDrawer:1.3.1'
+    compile 'com.nispok:snackbar:2.9.1'
+    compile 'com.getbase:floatingactionbutton:1.8.0'
+    
+    // libs as submodules
     compile project(':extern:openpgp-api-lib')
     compile project(':extern:openkeychain-api-lib')
     compile project(':extern:html-textview')
@@ -20,16 +34,6 @@ dependencies {
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:TokenAutoComplete:library')
     compile project(':extern:safeslinger-exchange')
-
-    // NOTE: libraries are pinned to a specific build, see below
-    compile 'com.eftimoff:android-patternview:1.0.0@aar'
-    compile 'com.journeyapps:zxing-android-embedded:2.0.1@aar'
-    compile 'com.journeyapps:zxing-android-integration:2.0.1@aar'
-    compile 'com.google.zxing:core:3.0.1'
-    compile 'com.jpardogo.materialtabstrip:library:1.0.9'
-    compile 'it.neokree:MaterialNavigationDrawer:1.3.1'
-    compile 'com.nispok:snackbar:2.9.1'
-    compile 'com.getbase:floatingactionbutton:1.8.0'
 }
 
 // Output of ./gradlew -q calculateChecksums
