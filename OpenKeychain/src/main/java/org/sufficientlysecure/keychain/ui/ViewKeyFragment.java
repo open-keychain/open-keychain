@@ -118,24 +118,10 @@ public class ViewKeyFragment extends LoaderFragment implements
     // These are the rows that we will retrieve.
     static final String[] UNIFIED_PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.EXPIRY,
-            KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-            KeychainContract.KeyRings.HAS_ENCRYPT
     };
 
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_USER_ID = 2;
-    static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
-    static final int INDEX_FINGERPRINT = 7;
-    static final int INDEX_HAS_ENCRYPT = 8;
+    static final int INDEX_HAS_ANY_SECRET = 1;
 
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
