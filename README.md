@@ -106,10 +106,7 @@ see
 * Mailinglist Archive at http://bouncy-castle.1462172.n4.nabble.com/Bouncy-Castle-Dev-f1462173.html
 * Commit changelog of pg subpackage: https://github.com/bcgit/bc-java/commits/master/pg
 
-
-## Notes
-
-### Build System
+## Build System
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 
@@ -141,17 +138,18 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 }
 ```
+* You can check for wrong ``compileSdkVersion`` by ``find -name build.gradle | xargs grep compileSdkVersion``
 
-### Slow Gradle?
+#### Slow Gradle?
 
 * https://www.timroes.de/2013/09/12/speed-up-gradle/
 * Disable Lint checking if it is enabled in build.gradle
 
-### Error:Configuration with name 'default' not found.
+#### Error:Configuration with name 'default' not found.
 
 Gradle project dependencies are missing. Do a ``git submodule init && git submodule update``
 
-### Translations
+## Translations
 
 Translations are hosted on Transifex, which is configured by ".tx/config".
 
