@@ -24,9 +24,9 @@ import android.support.v4.util.LongSparseArray;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -35,28 +35,15 @@ import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class ImportKeysListLoader
         extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
-    public static class NonPgpPartException extends Exception {
-        private int mCount;
-
-        public NonPgpPartException(int count) {
-            this.mCount = count;
-        }
-
-        public int getCount() {
-            return mCount;
-        }
-    }
-
     final Context mContext;
     final InputData mInputData;
 
-    ArrayList<ImportKeysListEntry> mData = new ArrayList<ImportKeysListEntry>();
-    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<ParcelableKeyRing>();
+    ArrayList<ImportKeysListEntry> mData = new ArrayList<>();
+    LongSparseArray<ParcelableKeyRing> mParcelableRings = new LongSparseArray<>();
     AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
@@ -73,7 +60,7 @@ public class ImportKeysListLoader
         }
 
         GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
-        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, getKeyResult);
+        mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
 
         if (mInputData == null) {
             Log.e(Constants.TAG, "Input data is null!");
@@ -140,7 +127,7 @@ public class ImportKeysListLoader
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+            mEntryListWrapper = new AsyncTaskResultWrapper<>
                     (mData, getKeyResult);
         }
     }

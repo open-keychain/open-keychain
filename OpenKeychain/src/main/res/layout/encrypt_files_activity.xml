@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.FixedDrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/drawer_layout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+
+    <!--
+        fitsSystemWindows and layout_marginTop from
+        https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
+    -->
+    <LinearLayout
+        android:layout_below="@id/toolbar_include"
+        android:id="@+id/content_frame"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="-25dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.EncryptFileActivity">
+        android:orientation="vertical">
 
-    <include layout="@layout/encrypt_files_content"/>
+        <include layout="@layout/notify_area" />
 
-    <include layout="@layout/drawer_list" />
+        <FrameLayout
+            android:id="@+id/encrypt_pager_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
 
-</android.support.v4.widget.FixedDrawerLayout>
+        <fragment
+            android:id="@+id/encrypt_file_fragment"
+            android:name="org.sufficientlysecure.keychain.ui.EncryptFilesFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</RelativeLayout>

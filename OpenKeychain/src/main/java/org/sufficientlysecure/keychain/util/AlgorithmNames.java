@@ -23,7 +23,6 @@ import android.app.Activity;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
 import java.util.HashMap;
@@ -32,9 +31,9 @@ import java.util.HashMap;
 public class AlgorithmNames {
     Activity mActivity;
 
-    HashMap<Integer, String> mEncryptionNames = new HashMap<Integer, String>();
-    HashMap<Integer, String> mHashNames = new HashMap<Integer, String>();
-    HashMap<Integer, String> mCompressionNames = new HashMap<Integer, String>();
+    HashMap<Integer, String> mEncryptionNames = new HashMap<>();
+    HashMap<Integer, String> mHashNames = new HashMap<>();
+    HashMap<Integer, String> mCompressionNames = new HashMap<>();
 
     public AlgorithmNames(Activity context) {
         super();

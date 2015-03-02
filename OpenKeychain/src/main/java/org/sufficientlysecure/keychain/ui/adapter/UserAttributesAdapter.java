@@ -34,6 +34,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
@@ -43,6 +46,7 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
     private SaveKeyringParcel mSaveKeyringParcel;
+    private boolean mShowStatusImages;
 
     public static final String[] USER_PACKETS_PROJECTION = new String[]{
             UserPackets._ID,
@@ -64,12 +68,13 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
     private static final int INDEX_IS_REVOKED = 7;
 
     public UserAttributesAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
-                                 SaveKeyringParcel saveKeyringParcel) {
+                          boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
+        mShowStatusImages = showStatusImages;
     }
 
     public UserAttributesAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
@@ -161,12 +166,17 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
             vVerifiedLayout.setVisibility(View.GONE);
         } else {
             vEditImage.setVisibility(View.GONE);
-            vVerifiedLayout.setVisibility(View.VISIBLE);
+
+            if (mShowStatusImages) {
+                vVerifiedLayout.setVisibility(View.VISIBLE);
+            } else {
+                vVerifiedLayout.setVisibility(View.GONE);
+            }
         }
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, true);
+            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
 
             // disable revoked user ids
             vName.setEnabled(false);
@@ -188,13 +198,13 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, false);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         }
@@ -225,7 +235,7 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
     }
 
     public ArrayList<String> getSelectedUserIds() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (int i = 0; i < mCheckStates.size(); i++) {
             if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
@@ -267,7 +277,7 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_user_id_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
         // only need to do this once ever, since mShowCheckBoxes is final
         view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;

@@ -21,9 +21,6 @@ import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.Constants;
 
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Set;
 

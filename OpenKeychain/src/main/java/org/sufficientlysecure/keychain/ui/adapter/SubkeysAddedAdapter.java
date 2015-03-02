@@ -31,8 +31,8 @@ import android.widget.TextView;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -68,7 +68,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
     public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             // Not recycled, inflate a new view
-            convertView = mInflater.inflate(R.layout.view_key_subkey_item, null);
+            convertView = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
             final ViewHolder holder = new ViewHolder();
             holder.vKeyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
             holder.vKeyDetails = (TextView) convertView.findViewById(R.id.subkey_item_details);

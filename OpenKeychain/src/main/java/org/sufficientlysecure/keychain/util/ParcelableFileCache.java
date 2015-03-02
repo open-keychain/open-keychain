@@ -32,9 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * When sending large data (over 1MB) through Androids Binder IPC you get
@@ -106,7 +104,6 @@ public class ParcelableFileCache<E extends Parcelable> {
             throw new IOException(e);
         }
 
-        // yes this is sloppy data flow. WE WOULDN'T NEED THIS WITH TUPLE RETURN TYPES
         final int numEntries = ois.readInt();
 
         return new IteratorWithSize<E>() {

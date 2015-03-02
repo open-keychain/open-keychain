@@ -1,41 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/notify_area" />
+    <RelativeLayout
+        android:id="@+id/toolbar_big"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/big_toolbar"
+        android:elevation="4dp"
+        android:background="?attr/colorPrimary"
+        android:orientation="horizontal">
 
-    <ScrollView
+        <ImageView
+            android:id="@+id/status_bar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/statusbar_height"
+            android:background="?attr/colorPrimary" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_below="@+id/status_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:overScrollMode="always"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            tools:ignore="UnusedAttribute"
+            android:transitionGroup="false"
+            android:touchscreenBlocksFocus="false" />
+
+        <LinearLayout
+            android:layout_below="@+id/toolbar"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="72dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/api_app_settings_app_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_launcher" />
+
+            <TextView
+                android:id="@+id/api_app_settings_app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name (set in-code)longlong"
+                android:textColor="@color/icons"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:paddingLeft="8dp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/body"
+        android:layout_below="@id/toolbar_big"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <fragment
-                android:id="@+id/api_app_settings_fragment"
-                android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsFragment"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:layout="@layout/api_app_settings_fragment" />
+                android:padding="16dp"
+                android:orientation="vertical">
 
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/api_settings_accounts" />
+                <TextView
+                    style="@style/SectionHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/api_settings_allowed_keys" />
 
-            <FrameLayout
-                android:id="@+id/api_accounts_list_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical" />
+                <FrameLayout
+                    android:id="@+id/api_allowed_keys_list_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
 
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                <TextView
+                    android:id="@+id/api_accounts_label"
+                    style="@style/SectionHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="@string/api_settings_accounts" />
+
+                <FrameLayout
+                    android:id="@+id/api_accounts_list_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_alignBottom="@id/toolbar_big"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="-40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        fab:fab_icon="@drawable/ic_play_arrow_white_24dp"
+        fab:fab_colorNormal="@color/fab"
+        fab:fab_colorPressed="@color/fab_pressed" />
+
+</RelativeLayout>

@@ -20,14 +20,13 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesActivity extends ActionBarActivity {
+public class DecryptFilesActivity extends BaseActivity {
 
     /* Intents */
     public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
@@ -41,10 +40,13 @@ public class DecryptFilesActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt_files_activity);
-
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.decrypt_files_activity);
     }
 
     /**
@@ -86,7 +88,7 @@ public class DecryptFilesActivity extends ActionBarActivity {
             loadFragment(savedInstanceState, null, true);
         } else if (ACTION_DECRYPT_DATA.equals(action)) {
             Log.e(Constants.TAG,
-                    "Include an Uri with setData() in your Intent!");
+                    "Include an Uri with setInputData() in your Intent!");
         }
     }
 

@@ -19,21 +19,18 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.ActionBarHelper;
 
-public class LogDisplayActivity extends ActionBarActivity {
+public class LogDisplayActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setOneButtonView(getSupportActionBar(),
-                R.string.btn_okay, R.drawable.ic_action_done,
+        setFullScreenDialogClose(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -42,7 +39,10 @@ public class LogDisplayActivity extends ActionBarActivity {
                     }
                 }
         );
+    }
 
+    @Override
+    protected void initLayout() {
         setContentView(R.layout.log_display_activity);
     }
 

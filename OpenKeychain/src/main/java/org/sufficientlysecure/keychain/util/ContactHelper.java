@@ -35,9 +35,9 @@ import android.util.Patterns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -73,20 +73,20 @@ public class ContactHelper {
             ContactsContract.Data.RAW_CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?";
     public static final String ID_SELECTION = ContactsContract.RawContacts._ID + "=?";
 
-    private static final Map<String, Bitmap> photoCache = new HashMap<String, Bitmap>();
+    private static final Map<String, Bitmap> photoCache = new HashMap<>();
 
     public static List<String> getPossibleUserEmails(Context context) {
         Set<String> accountMails = getAccountEmails(context);
         accountMails.addAll(getMainProfileContactEmails(context));
         // now return the Set (without duplicates) as a List
-        return new ArrayList<String>(accountMails);
+        return new ArrayList<>(accountMails);
     }
 
     public static List<String> getPossibleUserNames(Context context) {
         Set<String> accountMails = getAccountEmails(context);
         Set<String> names = getContactNamesFromEmails(context, accountMails);
         names.addAll(getMainProfileContactName(context));
-        return new ArrayList<String>(names);
+        return new ArrayList<>(names);
     }
 
     /**
@@ -97,7 +97,7 @@ public class ContactHelper {
      */
     private static Set<String> getAccountEmails(Context context) {
         final Account[] accounts = AccountManager.get(context).getAccounts();
-        final Set<String> emailSet = new HashSet<String>();
+        final Set<String> emailSet = new HashSet<>();
         for (Account account : accounts) {
             if (Patterns.EMAIL_ADDRESS.matcher(account.name).matches()) {
                 emailSet.add(account.name);
@@ -116,7 +116,7 @@ public class ContactHelper {
      */
     private static Set<String> getContactNamesFromEmails(Context context, Set<String> emails) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            Set<String> names = new HashSet<String>();
+            Set<String> names = new HashSet<>();
             for (String email : emails) {
                 ContentResolver resolver = context.getContentResolver();
                 Cursor profileCursor = resolver.query(
@@ -128,7 +128,7 @@ public class ContactHelper {
                 );
                 if (profileCursor == null) return null;
 
-                Set<String> currNames = new HashSet<String>();
+                Set<String> currNames = new HashSet<>();
                 while (profileCursor.moveToNext()) {
                     String name = profileCursor.getString(1);
                     if (name != null) {
@@ -140,7 +140,7 @@ public class ContactHelper {
             }
             return names;
         } else {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
     }
 
@@ -172,7 +172,7 @@ public class ContactHelper {
             );
             if (profileCursor == null) return null;
 
-            Set<String> emails = new HashSet<String>();
+            Set<String> emails = new HashSet<>();
             while (profileCursor.moveToNext()) {
                 String email = profileCursor.getString(0);
                 if (email != null) {
@@ -182,7 +182,7 @@ public class ContactHelper {
             profileCursor.close();
             return emails;
         } else {
-            return new HashSet<String>();
+            return new HashSet<>();
         }
     }
 
@@ -201,7 +201,7 @@ public class ContactHelper {
                     null, null, null);
             if (profileCursor == null) return null;
 
-            Set<String> names = new HashSet<String>();
+            Set<String> names = new HashSet<>();
             // should only contain one entry!
             while (profileCursor.moveToNext()) {
                 String name = profileCursor.getString(0);
@@ -210,9 +210,9 @@ public class ContactHelper {
                 }
             }
             profileCursor.close();
-            return new ArrayList<String>(names);
+            return new ArrayList<>(names);
         } else {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 
@@ -221,9 +221,9 @@ public class ContactHelper {
         Cursor mailCursor = resolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI,
                 new String[]{ContactsContract.CommonDataKinds.Email.DATA},
                 null, null, null);
-        if (mailCursor == null) return new ArrayList<String>();
+        if (mailCursor == null) return new ArrayList<>();
 
-        Set<String> mails = new HashSet<String>();
+        Set<String> mails = new HashSet<>();
         while (mailCursor.moveToNext()) {
             String email = mailCursor.getString(0);
             if (email != null) {
@@ -231,7 +231,7 @@ public class ContactHelper {
             }
         }
         mailCursor.close();
-        return new ArrayList<String>(mails);
+        return new ArrayList<>(mails);
     }
 
     public static List<String> getContactNames(Context context) {
@@ -239,9 +239,9 @@ public class ContactHelper {
         Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]{ContactsContract.Contacts.DISPLAY_NAME},
                 null, null, null);
-        if (cursor == null) return new ArrayList<String>();
+        if (cursor == null) return new ArrayList<>();
 
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         while (cursor.moveToNext()) {
             String name = cursor.getString(0);
             if (name != null) {
@@ -249,7 +249,7 @@ public class ContactHelper {
             }
         }
         cursor.close();
-        return new ArrayList<String>(names);
+        return new ArrayList<>(names);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -309,7 +309,7 @@ public class ContactHelper {
                 boolean isExpired = !cursor.isNull(4) && new Date(cursor.getLong(4) * 1000).before(new Date());
                 boolean isRevoked = cursor.getInt(5) > 0;
                 int rawContactId = findRawContactId(resolver, fingerprint);
-                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+                ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
@@ -351,7 +351,7 @@ public class ContactHelper {
      * @return a set of all key fingerprints currently present in the contact db
      */
     private static Set<String> getRawContactFingerprints(ContentResolver resolver) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         Cursor fingerprints = resolver.query(ContactsContract.RawContacts.CONTENT_URI, SOURCE_ID_PROJECTION,
                 ACCOUNT_TYPE_SELECTION, new String[]{Constants.ACCOUNT_TYPE}, null);
         if (fingerprints != null) {

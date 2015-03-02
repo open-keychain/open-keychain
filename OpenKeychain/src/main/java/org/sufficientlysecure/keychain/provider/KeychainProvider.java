@@ -32,6 +32,7 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -63,9 +64,10 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
 
     private static final int API_APPS = 301;
-    private static final int API_APPS_BY_PACKAGE_NAME = 303;
-    private static final int API_ACCOUNTS = 304;
-    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 306;
+    private static final int API_APPS_BY_PACKAGE_NAME = 302;
+    private static final int API_ACCOUNTS = 303;
+    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 304;
+    private static final int API_ALLOWED_KEYS = 305;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
@@ -162,6 +164,8 @@ public class KeychainProvider extends ContentProvider {
          *
          * api_apps/_/accounts
          * api_apps/_/accounts/_ (account name)
+         *
+         * api_apps/_/allowed_keys
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
@@ -171,6 +175,9 @@ public class KeychainProvider extends ContentProvider {
                 + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
+
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
+                + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
 
         return matcher;
     }
@@ -223,6 +230,9 @@ public class KeychainProvider extends ContentProvider {
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 return ApiAccounts.CONTENT_ITEM_TYPE;
 
+            case API_ALLOWED_KEYS:
+                return ApiAllowedKeys.CONTENT_TYPE;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -248,7 +258,7 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RINGS_UNIFIED:
             case KEY_RINGS_FIND_BY_EMAIL:
             case KEY_RINGS_FIND_BY_SUBKEY: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(KeyRings.KEY_ID, Tables.KEYS + "." + Keys.KEY_ID);
@@ -432,7 +442,7 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RING_KEYS: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Keys._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(Keys.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
                 projectionMap.put(Keys.RANK, Tables.KEYS + "." + Keys.RANK);
@@ -460,7 +470,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_USER_IDS:
             case KEY_RING_USER_IDS: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
                 projectionMap.put(UserPackets.TYPE, Tables.USER_PACKETS + "." + UserPackets.TYPE);
@@ -507,7 +517,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_PUBLIC:
             case KEY_RING_PUBLIC: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
@@ -525,7 +535,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RINGS_SECRET:
             case KEY_RING_SECRET: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
                 projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
                 projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
@@ -543,7 +553,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RING_CERTS:
             case KEY_RING_CERTS_SPECIFIC: {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
+                HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
                 projectionMap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
@@ -612,6 +622,12 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+                break;
+            case API_ALLOWED_KEYS:
+                qb.setTables(Tables.API_ALLOWED_KEYS);
+                qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
             default:
@@ -701,7 +717,7 @@ public class KeychainProvider extends ContentProvider {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
 
-                case API_ACCOUNTS:
+                case API_ACCOUNTS: {
                     // set foreign key automatically based on given uri
                     // e.g., api_apps/com.example.app/accounts/
                     String packageName = uri.getPathSegments().get(1);
@@ -709,12 +725,21 @@ public class KeychainProvider extends ContentProvider {
 
                     db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
                     break;
+                }
+                case API_ALLOWED_KEYS: {
+                    // set foreign key automatically based on given uri
+                    // e.g., api_apps/com.example.app/allowed_keys/
+                    String packageName = uri.getPathSegments().get(1);
+                    values.put(ApiAllowedKeys.PACKAGE_NAME, packageName);
 
+                    db.insertOrThrow(Tables.API_ALLOWED_KEYS, null, values);
+                    break;
+                }
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
 
-            if(keyId != null) {
+            if (keyId != null) {
                 uri = KeyRings.buildGenericKeyRingUri(keyId);
                 rowUri = uri;
             }
@@ -775,6 +800,10 @@ public class KeychainProvider extends ContentProvider {
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, additionalSelection),
+                        selectionArgs);
+                break;
+            case API_ALLOWED_KEYS:
+                count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
                         selectionArgs);
                 break;
             default:
@@ -867,6 +896,17 @@ public class KeychainProvider extends ContentProvider {
         return ApiAccounts.PACKAGE_NAME + "=" + packageName + " AND "
                 + ApiAccounts.ACCOUNT_NAME + "=" + accountName
                 + andSelection;
+    }
+
+    private String buildDefaultApiAllowedKeysSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
+
+        String andSelection = "";
+        if (!TextUtils.isEmpty(selection)) {
+            andSelection = " AND (" + selection + ")";
+        }
+
+        return ApiAllowedKeys.PACKAGE_NAME + "=" + packageName + andSelection;
     }
 
 }

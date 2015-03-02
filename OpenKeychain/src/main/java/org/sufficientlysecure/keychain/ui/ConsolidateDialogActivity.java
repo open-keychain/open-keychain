@@ -61,7 +61,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
                     /* don't care about the results (for now?)
 
                     // get returned data bundle
-                    Bundle returnData = message.getData();
+                    Bundle returnData = message.getInputData();
                     if (returnData == null) {
                         return;
                     }

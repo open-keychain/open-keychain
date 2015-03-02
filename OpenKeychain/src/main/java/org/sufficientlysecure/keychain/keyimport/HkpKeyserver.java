@@ -19,10 +19,10 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -234,7 +234,7 @@ public class HkpKeyserver extends Keyserver {
     @Override
     public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
             QueryNeedsRepairException {
-        ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
+        ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.length() < 3) {
             throw new QueryTooShortException();
@@ -305,7 +305,7 @@ public class HkpKeyserver extends Keyserver {
             entry.setRevoked(matcher.group(6).contains("r"));
             entry.setExpired(matcher.group(6).contains("e"));
 
-            ArrayList<String> userIds = new ArrayList<String>();
+            ArrayList<String> userIds = new ArrayList<>();
             final String uidLines = matcher.group(7);
             final Matcher uidMatcher = UID_LINE.matcher(uidLines);
             while (uidMatcher.find()) {

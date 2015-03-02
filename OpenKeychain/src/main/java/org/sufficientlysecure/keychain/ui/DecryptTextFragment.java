@@ -34,12 +34,14 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ShareHelper;
+
+import java.io.UnsupportedEncodingException;
 
 public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
@@ -111,7 +113,7 @@ public class DecryptTextFragment extends DecryptFragment {
         Intent prototype = createSendIntent(text);
         String title = getString(R.string.title_share_file);
 
-        // we don't want to decrypt the decypted, no inception ;)
+        // we don't want to decrypt the decrypted, no inception ;)
         String[] blacklist = new String[]{
                 Constants.PACKAGE_NAME + ".ui.DecryptTextActivity",
                 "org.thialfihar.android.apg.ui.DecryptActivity"
@@ -194,7 +196,18 @@ public class DecryptTextFragment extends DecryptFragment {
 
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
-                        mText.setText(new String(decryptedMessage));
+                        String displayMessage;
+                        if (pgpResult.getCharset() != null) {
+                            try {
+                                displayMessage = new String(decryptedMessage, pgpResult.getCharset());
+                            } catch (UnsupportedEncodingException e) {
+                                // if we can't decode properly, just fall back to utf-8
+                                displayMessage = new String(decryptedMessage);
+                            }
+                        } else {
+                            displayMessage = new String(decryptedMessage);
+                        }
+                        mText.setText(displayMessage);
 
                         pgpResult.createNotify(getActivity()).show();
 

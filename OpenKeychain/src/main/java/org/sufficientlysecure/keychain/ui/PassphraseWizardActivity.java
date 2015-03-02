@@ -43,10 +43,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.haibison.android.lockpattern.LockPatternFragment;
-import com.haibison.android.lockpattern.LockPatternFragmentOld;
-import com.haibison.android.lockpattern.widget.LockPatternView;
-
 import org.sufficientlysecure.keychain.R;
 
 import java.io.IOException;
@@ -56,7 +52,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class PassphraseWizardActivity extends FragmentActivity implements LockPatternView.OnPatternListener {
+public class PassphraseWizardActivity extends FragmentActivity {
+//public class PassphraseWizardActivity extends FragmentActivity implements LockPatternView.OnPatternListener {
     //create or authenticate
     public String selectedAction;
     //for lockpattern
@@ -117,10 +114,10 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
             getActionBar().setTitle(R.string.draw_lockpattern);
         }
 //        LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
-        LockPatternFragment lpf = LockPatternFragment.newInstance("asd");
+//        LockPatternFragment lpf = LockPatternFragment.newInstance("asd");
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
+//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
     }
 
     public void cancel(View view) {
@@ -205,13 +202,11 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
                         writeNFC = false;   //just write once
                         Toast.makeText(this, R.string.nfc_write_succesful, Toast.LENGTH_SHORT).show();
                         //advance to lockpattern
-                        LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
+//                        LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
+//                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (FormatException e) {
+                } catch (IOException | FormatException e) {
                     e.printStackTrace();
                 }
 
@@ -226,9 +221,9 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
                             //passwort matches, go to next view
                             Toast.makeText(this, R.string.passphrases_match + "!", Toast.LENGTH_SHORT).show();
 
-                            LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
+//                            LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
+//                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                            transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                             readNFC = false;    //just once
                         } else {
                             //passwort doesnt match
@@ -236,9 +231,7 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
                             nfc.setText(R.string.nfc_wrong_tag);
                         }
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (FormatException e) {
+                } catch (IOException | FormatException e) {
                     e.printStackTrace();
                 }
             }
@@ -354,26 +347,6 @@ public class PassphraseWizardActivity extends FragmentActivity implements LockPa
         //disable nfc for this view
         writeMode = false;
         adapter.disableForegroundDispatch(this);
-    }
-
-    @Override
-    public void onPatternStart() {
-
-    }
-
-    @Override
-    public void onPatternCleared() {
-
-    }
-
-    @Override
-    public void onPatternCellAdded(List<LockPatternView.Cell> pattern) {
-
-    }
-
-    @Override
-    public void onPatternDetected(List<LockPatternView.Cell> pattern) {
-
     }
 
     public static class SelectMethods extends Fragment {

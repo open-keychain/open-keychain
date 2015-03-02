@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,62 +32,54 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.NoScrollableSwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ExportHelper;
-import org.sufficientlysecure.keychain.util.KeyUpdateHelper;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.FabContainer;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
-import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -96,21 +89,26 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
+
+    ExportHelper mExportHelper;
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
-    private ListAwareSwipeRefreshLayout mSwipeRefreshLayout;
 
     // saves the mode object for multiselect, needed for reset at some point
     private ActionMode mActionMode = null;
 
-    private boolean mShowAllKeys = true;
-
     private String mQuery;
-    private SearchView mSearchView;
 
-    boolean hideMenu = false;
+    private FloatingActionsMenu mFab;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(getActivity());
+    }
 
     /**
      * Load custom layout with StickyListView from library
@@ -123,71 +121,36 @@ public class KeyListFragment extends LoaderFragment
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
 
-        mSwipeRefreshLayout = (ListAwareSwipeRefreshLayout) view.findViewById(R.id.key_list_swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(new NoScrollableSwipeRefreshLayout.OnRefreshListener() {
+        mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
+
+        FloatingActionButton fabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
+        FloatingActionButton fabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
+        FloatingActionButton fabFile = (FloatingActionButton) view.findViewById(R.id.fab_add_file);
+
+        fabQrCode.setOnClickListener(new OnClickListener() {
             @Override
-            public void onRefresh() {
-                KeychainIntentServiceHandler finishedHandler = new KeychainIntentServiceHandler(getActivity()) {
-                    public void handleMessage(Message message) {
-                        if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    }
-                };
-                // new KeyUpdateHelper().updateAllKeys(getActivity(), finishedHandler);
-                updateActionbarForSwipe(false);
+            public void onClick(View v) {
+                mFab.collapse();
+                scanQrCode();
             }
         });
-        mSwipeRefreshLayout.setColorScheme(
-                R.color.android_purple_dark,
-                R.color.android_purple_light,
-                R.color.android_purple_dark,
-                R.color.android_purple_light);
-        mSwipeRefreshLayout.setStickyListHeadersListView(mStickyList);
-        mSwipeRefreshLayout.setOnTouchListener(new View.OnTouchListener() {
+        fabCloud.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    updateActionbarForSwipe(true);
-                } else {
-                    updateActionbarForSwipe(false);
-                }
-                return false;
+            public void onClick(View v) {
+                mFab.collapse();
+                searchCloud();
             }
         });
-        // Just disable for now
-        mSwipeRefreshLayout.setIsLocked(true);
+        fabFile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mFab.collapse();
+                importFile();
+            }
+        });
+
 
         return root;
-    }
-
-    private void updateActionbarForSwipe(boolean show) {
-        ActionBarActivity activity = (ActionBarActivity) getActivity();
-        ActionBar bar = activity.getSupportActionBar();
-
-        if (show) {
-            bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-            bar.setDisplayUseLogoEnabled(false);
-            bar.setCustomView(R.layout.custom_actionbar);
-            TextView title = (TextView) getActivity().findViewById(R.id.custom_actionbar_text);
-            title.setText(R.string.swipe_to_update);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = true;
-                activity.invalidateOptionsMenu();
-            }
-        } else {
-            bar.setTitle(getActivity().getTitle());
-            bar.setDisplayHomeAsUpEnabled(true);
-            bar.setDisplayShowTitleEnabled(true);
-            bar.setDisplayUseLogoEnabled(true);
-            bar.setDisplayShowHomeEnabled(true);
-            bar.setDisplayShowCustomEnabled(false);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                hideMenu = false;
-                activity.invalidateOptionsMenu();
-            }
-        }
     }
 
     /**
@@ -198,90 +161,91 @@ public class KeyListFragment extends LoaderFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // show app name instead of "keys" from nav drawer
+        getActivity().setTitle(R.string.app_name);
+
         mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
 
         /*
-         * Multi-selection is only available for Android >= 3.0
+         * Multi-selection
          */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mStickyList.setFastScrollAlwaysVisible(true);
+        mStickyList.setFastScrollAlwaysVisible(true);
 
-            mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-            mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
+        mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-                @Override
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    android.view.MenuInflater inflater = getActivity().getMenuInflater();
-                    inflater.inflate(R.menu.key_list_multi, menu);
-                    mActionMode = mode;
-                    return true;
-                }
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                android.view.MenuInflater inflater = getActivity().getMenuInflater();
+                inflater.inflate(R.menu.key_list_multi, menu);
+                mActionMode = mode;
+                return true;
+            }
 
-                @Override
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                }
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
 
-                @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-                    // get IDs for checked positions as long array
-                    long[] ids;
+                // get IDs for checked positions as long array
+                long[] ids;
 
-                    switch (item.getItemId()) {
-                        case R.id.menu_key_list_multi_encrypt: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            encrypt(mode, ids);
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_delete: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_export: {
-                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
-                                    mAdapter.isAnySecretSelected());
-                            break;
-                        }
-                        case R.id.menu_key_list_multi_select_all: {
-                            // select all
-                            for (int i = 0; i < mStickyList.getCount(); i++) {
-                                mStickyList.setItemChecked(i, true);
-                            }
-                            break;
-                        }
+                switch (item.getItemId()) {
+                    case R.id.menu_key_list_multi_encrypt: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        encrypt(mode, ids);
+                        break;
                     }
-                    return true;
-                }
-
-                @Override
-                public void onDestroyActionMode(ActionMode mode) {
-                    mActionMode = null;
-                    mAdapter.clearSelection();
-                }
-
-                @Override
-                public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                                                      boolean checked) {
-                    if (checked) {
-                        mAdapter.setNewSelection(position, checked);
-                    } else {
-                        mAdapter.removeSelection(position);
+                    case R.id.menu_key_list_multi_delete: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
+                        break;
                     }
-                    int count = mStickyList.getCheckedItemCount();
-                    String keysSelected = getResources().getQuantityString(
-                            R.plurals.key_list_selected_keys, count, count);
-                    mode.setTitle(keysSelected);
+                    case R.id.menu_key_list_multi_export: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        ExportHelper mExportHelper = new ExportHelper(getActivity());
+                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                mAdapter.isAnySecretSelected());
+                        break;
+                    }
+                    case R.id.menu_key_list_multi_select_all: {
+                        // select all
+                        for (int i = 0; i < mStickyList.getCount(); i++) {
+                            mStickyList.setItemChecked(i, true);
+                        }
+                        break;
+                    }
                 }
+                return true;
+            }
 
-            });
-        }
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                mActionMode = null;
+                mAdapter.clearSelection();
+            }
+
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
+                                                  boolean checked) {
+                if (checked) {
+                    mAdapter.setNewSelection(position, true);
+                } else {
+                    mAdapter.removeSelection(position);
+                }
+                int count = mStickyList.getCheckedItemCount();
+                String keysSelected = getResources().getQuantityString(
+                        R.plurals.key_list_selected_keys, count, count);
+                mode.setTitle(keysSelected);
+            }
+
+        });
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -340,14 +304,6 @@ public class KeyListFragment extends LoaderFragment
                 whereArgs[i] = "%" + words[i] + "%";
             }
         }
-        if (!mShowAllKeys) {
-            if (where == null) {
-                where = "";
-            } else {
-                where += " AND ";
-            }
-            where += KeyRings.VERIFIED + " != 0";
-        }
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -368,9 +324,7 @@ public class KeyListFragment extends LoaderFragment
 
         // end action mode, if any
         if (mActionMode != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mActionMode.finish();
-            }
+            mActionMode.finish();
         }
 
         // The list should now be shown.
@@ -400,7 +354,6 @@ public class KeyListFragment extends LoaderFragment
         startActivity(viewIntent);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
         intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
@@ -414,10 +367,8 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Show dialog to delete key
      *
-     * @param masterKeyIds
      * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if (hasSecret && masterKeyIds.length > 1) {
@@ -455,25 +406,27 @@ public class KeyListFragment extends LoaderFragment
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+        inflater.inflate(R.menu.key_list, menu);
+
+        if (Constants.DEBUG) {
+            menu.findItem(R.id.menu_key_list_debug_cons).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
+        }
+
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
 
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
-        mSearchView.setOnQueryTextListener(this);
-
-        View searchPlate = mSearchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
-        searchPlate.setBackgroundResource(R.drawable.keychaintheme_searchview_holo_light);
+        searchView.setOnQueryTextListener(this);
 
         // Erase search result without focus
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = true;
-                    getActivity().invalidateOptionsMenu();
-                }
 
                 // disable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(true);
@@ -485,23 +438,63 @@ public class KeyListFragment extends LoaderFragment
                 mQuery = null;
                 getLoaderManager().restartLoader(0, null, KeyListFragment.this);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    hideMenu = false;
-                    getActivity().invalidateOptionsMenu();
-                }
                 // enable swipe-to-refresh
                 // mSwipeRefreshLayout.setIsLocked(false);
                 return true;
             }
         });
 
-        if (hideMenu) {
-            for (int i = 0; i < menu.size(); i++) {
-                menu.getItem(i).setVisible(false);
-            }
-        }
-
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.menu_key_list_create:
+                createKey();
+                return true;
+
+            case R.id.menu_key_list_export:
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                return true;
+
+            case R.id.menu_key_list_debug_cons:
+                consolidate();
+                return true;
+
+            case R.id.menu_key_list_debug_read:
+                try {
+                    KeychainDatabase.debugBackup(getActivity(), true);
+                    Notify.showNotify(getActivity(), "Restored debug_backup.db", Notify.Style.INFO);
+                    getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IO Error", e);
+                    Notify.showNotify(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR);
+                }
+                return true;
+
+            case R.id.menu_key_list_debug_write:
+                try {
+                    KeychainDatabase.debugBackup(getActivity(), false);
+                    Notify.showNotify(getActivity(), "Backup to debug_backup.db completed", Notify.Style.INFO);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IO Error", e);
+                    Notify.showNotify(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR);
+                }
+                return true;
+
+            case R.id.menu_key_list_debug_first_time:
+                Preferences prefs = Preferences.getPreferences(getActivity());
+                prefs.setFirstTime(true);
+                Intent intent = new Intent(getActivity(), FirstTimeActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -526,6 +519,105 @@ public class KeyListFragment extends LoaderFragment
         return true;
     }
 
+    private void searchCloud() {
+        Intent importIntent = new Intent(getActivity(), ImportKeysActivity.class);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_QUERY, (String) null); // hack to show only cloud tab
+        startActivity(importIntent);
+    }
+
+    private void scanQrCode() {
+        Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
+        scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_IMPORT);
+        startActivityForResult(scanQrCode, 0);
+    }
+
+    private void importFile() {
+        Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
+        intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+        startActivityForResult(intentImportExisting, 0);
+    }
+
+    private void createKey() {
+        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        startActivityForResult(intent, 0);
+    }
+
+    private void consolidate() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                getActivity(),
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ConsolidateResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        return;
+                    }
+
+                    result.createNotify(getActivity()).show();
+                }
+            }
+        };
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if a result has been returned, display a notify
+        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+            result.createNotify(getActivity()).show();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void fabMoveUp(int height) {
+        ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, "translationY", 0, -height);
+        // we're a little behind, so skip 1/10 of the time
+        anim.setDuration(270);
+        anim.start();
+    }
+
+    @Override
+    public void fabRestorePosition() {
+        ObjectAnimator anim = ObjectAnimator.ofFloat(mFab, "translationY", 0);
+        // we're a little ahead, so wait a few ms
+        anim.setStartDelay(70);
+        anim.setDuration(300);
+        anim.start();
+    }
+
     /**
      * Implements StickyListHeadersAdapter from library
      */
@@ -533,7 +625,7 @@ public class KeyListFragment extends LoaderFragment
         private String mQuery;
         private LayoutInflater mInflater;
 
-        private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
+        private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
         public KeyListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
@@ -624,13 +716,13 @@ public class KeyListFragment extends LoaderFragment
 
                 // Note: order is important!
                 if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, true);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, true);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));

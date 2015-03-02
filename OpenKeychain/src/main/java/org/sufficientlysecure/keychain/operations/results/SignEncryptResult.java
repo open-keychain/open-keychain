@@ -19,74 +19,42 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 public class SignEncryptResult extends OperationResult {
 
-    // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
+    ArrayList<PgpSignEncryptResult> mResults;
+    byte[] mResultBytes;
+
     public static final int RESULT_PENDING = RESULT_ERROR + 8;
 
-    // fifth to sixth bit in addition indicate specific type of pending
-    public static final int RESULT_PENDING_PASSPHRASE = RESULT_PENDING + 16;
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 32;
-
-    long mKeyIdPassphraseNeeded;
-
-    long mNfcKeyId;
-    byte[] mNfcHash;
-    int mNfcAlgo;
-    Date mNfcTimestamp;
-    String mNfcPassphrase;
-
-    public long getKeyIdPassphraseNeeded() {
-        return mKeyIdPassphraseNeeded;
+    public PgpSignEncryptResult getPending() {
+        for (PgpSignEncryptResult sub : mResults) {
+            if (sub.isPending()) {
+                return sub;
+            }
+        }
+        return null;
     }
 
-    public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
-        mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
-    }
-
-    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, String passphrase) {
-        mNfcKeyId = nfcKeyId;
-        mNfcHash = nfcHash;
-        mNfcAlgo = nfcAlgo;
-        mNfcTimestamp = nfcTimestamp;
-        mNfcPassphrase = passphrase;
-    }
-
-    public long getNfcKeyId() {
-        return mNfcKeyId;
-    }
-
-    public byte[] getNfcHash() {
-        return mNfcHash;
-    }
-
-    public int getNfcAlgo() {
-        return mNfcAlgo;
-    }
-
-    public Date getNfcTimestamp() {
-        return mNfcTimestamp;
-    }
-
-    public String getNfcPassphrase() {
-        return mNfcPassphrase;
-    }
-
-    public boolean isPending() {
-        return (mResult & RESULT_PENDING) == RESULT_PENDING;
-    }
-
-    public SignEncryptResult(int result, OperationLog log) {
+    public SignEncryptResult(int result, OperationLog log, ArrayList<PgpSignEncryptResult> results) {
         super(result, log);
+        mResults = results;
+    }
+
+    public SignEncryptResult(int result, OperationLog log, ArrayList<PgpSignEncryptResult> results, byte[] resultBytes) {
+        super(result, log);
+        mResults = results;
+        mResultBytes = resultBytes;
     }
 
     public SignEncryptResult(Parcel source) {
         super(source);
-        mNfcHash = source.readInt() != 0 ? source.createByteArray() : null;
-        mNfcAlgo = source.readInt();
-        mNfcTimestamp = source.readInt() != 0 ? new Date(source.readLong()) : null;
+        mResults = source.createTypedArrayList(PgpSignEncryptResult.CREATOR);
+    }
+
+    public byte[] getResultBytes() {
+        return mResultBytes;
     }
 
     public int describeContents() {
@@ -95,19 +63,7 @@ public class SignEncryptResult extends OperationResult {
 
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        if (mNfcHash != null) {
-            dest.writeInt(1);
-            dest.writeByteArray(mNfcHash);
-        } else {
-            dest.writeInt(0);
-        }
-        dest.writeInt(mNfcAlgo);
-        if (mNfcTimestamp != null) {
-            dest.writeInt(1);
-            dest.writeLong(mNfcTimestamp.getTime());
-        } else {
-            dest.writeInt(0);
-        }
+        dest.writeTypedList(mResults);
     }
 
     public static final Creator<SignEncryptResult> CREATOR = new Creator<SignEncryptResult>() {

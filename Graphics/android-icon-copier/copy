@@ -1,0 +1,162 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import shutil
+import requests
+from os.path import expanduser
+import classic
+
+resolutions = {
+    'material': ("m", "h", "xh", "xxh", "xxxh"),
+    'fa': ("l", "m", "h", "xh", "xxh"),
+    'classic': ("m", "h", "xh", "xxh"),
+}
+
+
+class AppError(Exception):
+    pass
+
+
+def make_filename(filename_format, cat, name, color, size):
+    args = {
+        'cat': cat or '',
+        'name': name,
+        'color': color,
+        'size': size,
+    }
+    bg = {'white': 'dark', 'grey': 'light', 'black': 'bright'}.get(color) or ''
+    bg_suffix = '_dark' if bg == 'dark' else ''
+    args['bgSuffix'] = bg_suffix
+    args['bg'] = bg
+    return filename_format.format(**args)
+
+
+def download_url(url, target_path):
+    print("Downloading {} to {} ...".format(url, target_path))
+    print("")
+    #r = requests.get(url, stream=True)
+    r = requests.get(url)
+    if r.status_code != 200:
+        raise AppError("url not found, perhaps invalid name, size or color")
+    with open(target_path, 'wb') as fd:
+        for chunk in r.iter_content(4096):
+            fd.write(chunk)
+
+
+def make_material_icon_url(cat, res, name, color, size):
+    if color == 'grey':
+        color = 'grey600'
+    elif color not in ('white', 'black'):
+        raise AppError('invalid color')
+    return ('https://raw.githubusercontent.com/google/material-design-icons/master/' +
+            '{}/drawable-{}dpi/ic_{}_{}_{}dp.png').format(cat, res, name, color, size)
+
+
+def make_fa_icon_url(res, name, color):
+    if color == 'white':
+        holo = 'dark'
+    elif color == 'grey':
+        holo = 'light'
+    else:
+        raise AppError('invalid color')
+    return ('https://raw.githubusercontent.com/svenkapudija/Android-Action-Bar-Icons/' +
+            'master/Font Awesome/holo_{2}/ic_fa_{1}/drawable-{0}dpi/ic_fa_{1}.png').format(res, name, holo)
+
+
+def make_classic_icon_url(res, name, color):
+    dirname = classic.CLASSIC_MAP.get(name)
+    if not dirname:
+        raise AppError('invalid name')
+    if color == 'white':
+        holo = 'dark'
+    elif color == 'grey':
+        holo = 'light'
+    else:
+        raise AppError('invalid color')
+    return ('https://raw.githubusercontent.com/svenkapudija/Android-Action-Bar-Icons/' +
+            'master/Android Stock/holo_{2}/{3}/drawable-{0}dpi/ic_action_{1}.png').format(res, name, holo, dirname)
+
+
+def make_target_path(base_path, proj, res, filename):
+    res_path1 = os.path.join(base_path, proj, 'src', 'main', 'res')
+    res_path2 = os.path.join(base_path, proj, 'res')
+    if os.path.isdir(res_path1):
+        res_path = res_path1
+    elif os.path.isdir(res_path2):
+        res_path = res_path2
+    else:
+        raise AppError('missing res dir')
+    res_specific_path = os.path.join(res_path, 'drawable-' + res + 'dpi')
+    try:
+        os.mkdir(res_specific_path)
+    except OSError:
+        pass
+    return os.path.join(res_specific_path, filename)
+
+
+def do_material(options, proj_path, cat, name, color, size):
+    base_path = expanduser(options['basePath'])
+    filename_map = options['filenameMap']
+
+    for res in resolutions['material']:
+        filename = make_filename(filename_map['material'], cat, name, color, size)
+        target_path = make_target_path(base_path, proj_path, res, filename)
+        url = make_material_icon_url(cat, res, name, color, size)
+        download_url(url, target_path)
+
+
+def do_classic_or_fa(options, proj_path, cat, name, color):
+    base_path = expanduser(options['basePath'])
+    filename_map = options['filenameMap']
+
+    for res in resolutions[cat]:
+        filename = make_filename(filename_map[cat], cat, name, color, size=32)
+        target_path = make_target_path(base_path, proj_path, res, filename)
+        url = globals()['make_' + cat + '_icon_url'](res, name, color)
+        download_url(url, target_path)
+
+
+def print_usage():
+    print("Usage:")
+    print("Material    : ./copy <proj path> <category> <color> <icon name> [size]")
+    print("Classic & FA: ./copy <proj path> <fa/classic> <color> <icon name>")
+    print("")
+
+
+def main():
+    import json
+
+    if len(sys.argv) < 5:
+        print_usage()
+        return
+
+    option_filename = 'options.json'
+    if not os.path.exists(option_filename):
+        option_filename = 'options.templ.json'
+        print("WARNING: using the template options file")
+        print("You should create your own options.json")
+
+    with open(option_filename, 'r') as fd:
+        options = json.load(fd)
+
+    proj_path = sys.argv[1]
+    cat = sys.argv[2]
+    color = sys.argv[3]
+    name = sys.argv[4]
+
+    if cat == 'classic' or cat == 'fa':
+        do_classic_or_fa(options, proj_path, cat, name, color)
+    else:
+        size = sys.argv[5] if len(sys.argv) >= 6 else 0
+        size = int(size) or 24
+        do_material(options, proj_path, cat, name, color, size)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except AppError as e:
+        print(e.message)
+
+

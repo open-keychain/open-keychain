@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -94,6 +95,7 @@ public class CertifyKeyFragment extends LoaderFragment
     private static final int INDEX_IS_REVOKED = 4;
 
     private MultiUserIdsAdapter mUserIdsAdapter;
+    private Messenger mPassthroughMessenger;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -108,6 +110,9 @@ public class CertifyKeyFragment extends LoaderFragment
             getActivity().finish();
             return;
         }
+
+        mPassthroughMessenger = getActivity().getIntent().getParcelableExtra(
+                KeychainIntentService.EXTRA_MESSENGER);
 
         // preselect certify key id if given
         long certifyKeyId = getActivity().getIntent().getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
@@ -234,7 +239,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
         long lastMasterKeyId = 0;
         String lastName = "";
-        ArrayList<String> uids = new ArrayList<String>();
+        ArrayList<String> uids = new ArrayList<>();
 
         boolean header = true;
 
@@ -332,7 +337,6 @@ public class CertifyKeyFragment extends LoaderFragment
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -362,51 +366,63 @@ public class CertifyKeyFragment extends LoaderFragment
             return;
         }
 
+        Bundle data = new Bundle();
+        {
+            // fill values for this action
+            CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
+            parcel.mCertifyActions.addAll(certifyActions);
+
+            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
+            if (mUploadKeyCheckbox.isChecked()) {
+                String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+                data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
+            }
+        }
+
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-
         intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
-
-        // fill values for this action
-        CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
-        parcel.mCertifyActions.addAll(certifyActions);
-
-        Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
-        if (mUploadKeyCheckbox.isChecked()) {
-            String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-            data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
-        }
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after signing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
+        if (mPassthroughMessenger != null) {
+            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, mPassthroughMessenger);
+        } else {
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+            // Message is received after signing is done in KeychainIntentService
+            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
+                    getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard KeychainIntentServiceHandler first
+                    super.handleMessage(message);
 
-                    Intent intent = new Intent();
-                    intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-                    getActivity().setResult(Activity.RESULT_OK, intent);
-                    getActivity().finish();
+                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                        Bundle data = message.getData();
+                        CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+
+                        Intent intent = new Intent();
+                        intent.putExtra(CertifyResult.EXTRA_RESULT, result);
+                        getActivity().setResult(Activity.RESULT_OK, intent);
+                        getActivity().finish();
+                    }
                 }
-            }
-        };
+            };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
+            // show progress dialog
+            saveHandler.showProgressDialog(getActivity());
+        }
 
         // start service with intent
         getActivity().startService(intent);
+
+        if (mPassthroughMessenger != null) {
+            getActivity().setResult(Activity.RESULT_OK);
+            getActivity().finish();
+        }
+
     }
 
 }

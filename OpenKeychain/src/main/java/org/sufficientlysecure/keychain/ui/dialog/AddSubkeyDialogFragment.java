@@ -145,20 +145,20 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         }
 
         {
-            ArrayList<Choice<Algorithm>> choices = new ArrayList<Choice<Algorithm>>();
-            choices.add(new Choice<Algorithm>(Algorithm.DSA, getResources().getString(
+            ArrayList<Choice<Algorithm>> choices = new ArrayList<>();
+            choices.add(new Choice<>(Algorithm.DSA, getResources().getString(
                     R.string.dsa)));
             if (!mWillBeMasterKey) {
-                choices.add(new Choice<Algorithm>(Algorithm.ELGAMAL, getResources().getString(
+                choices.add(new Choice<>(Algorithm.ELGAMAL, getResources().getString(
                         R.string.elgamal)));
             }
-            choices.add(new Choice<Algorithm>(Algorithm.RSA, getResources().getString(
+            choices.add(new Choice<>(Algorithm.RSA, getResources().getString(
                     R.string.rsa)));
-            choices.add(new Choice<Algorithm>(Algorithm.ECDSA, getResources().getString(
+            choices.add(new Choice<>(Algorithm.ECDSA, getResources().getString(
                     R.string.ecdsa)));
-            choices.add(new Choice<Algorithm>(Algorithm.ECDH, getResources().getString(
+            choices.add(new Choice<>(Algorithm.ECDH, getResources().getString(
                     R.string.ecdh)));
-            ArrayAdapter<Choice<Algorithm>> adapter = new ArrayAdapter<Choice<Algorithm>>(context,
+            ArrayAdapter<Choice<Algorithm>> adapter = new ArrayAdapter<>(context,
                     android.R.layout.simple_spinner_item, choices);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mAlgorithmSpinner.setAdapter(adapter);
@@ -172,20 +172,20 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         }
 
         // dynamic ArrayAdapter must be created (instead of ArrayAdapter.getFromResource), because it's content may change
-        ArrayAdapter<CharSequence> keySizeAdapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_item,
+        ArrayAdapter<CharSequence> keySizeAdapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item,
                 new ArrayList<CharSequence>(Arrays.asList(getResources().getStringArray(R.array.rsa_key_size_spinner_values))));
         keySizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeySizeSpinner.setAdapter(keySizeAdapter);
         mKeySizeSpinner.setSelection(1); // Default to 4096 for the key length
 
         {
-            ArrayList<Choice<Curve>> choices = new ArrayList<Choice<Curve>>();
+            ArrayList<Choice<Curve>> choices = new ArrayList<>();
 
-            choices.add(new Choice<Curve>(Curve.NIST_P256, getResources().getString(
+            choices.add(new Choice<>(Curve.NIST_P256, getResources().getString(
                     R.string.key_curve_nist_p256)));
-            choices.add(new Choice<Curve>(Curve.NIST_P384, getResources().getString(
+            choices.add(new Choice<>(Curve.NIST_P384, getResources().getString(
                     R.string.key_curve_nist_p384)));
-            choices.add(new Choice<Curve>(Curve.NIST_P521, getResources().getString(
+            choices.add(new Choice<>(Curve.NIST_P521, getResources().getString(
                     R.string.key_curve_nist_p521)));
 
             /* @see SaveKeyringParcel
@@ -197,7 +197,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     R.string.key_curve_bp_p512)));
             */
 
-            ArrayAdapter<Choice<Curve>> adapter = new ArrayAdapter<Choice<Curve>>(context,
+            ArrayAdapter<Choice<Curve>> adapter = new ArrayAdapter<>(context,
                     android.R.layout.simple_spinner_item, choices);
             mCurveSpinner.setAdapter(adapter);
             // make NIST P-256 the default

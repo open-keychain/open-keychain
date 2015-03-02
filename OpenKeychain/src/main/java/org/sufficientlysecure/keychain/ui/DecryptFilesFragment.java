@@ -35,13 +35,13 @@ import android.widget.TextView;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 
@@ -310,7 +310,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                         // A future open after decryption feature
                         if () {
                             Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                            viewFile.setData(mOutputUri);
+                            viewFile.setInputData(mOutputUri);
                             startActivity(viewFile);
                         }
                         */

@@ -27,13 +27,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-import android.widget.Spinner;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -50,13 +46,12 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class SafeSlingerActivity extends ActionBarActivity {
+public class SafeSlingerActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_SAFE_SLINGER = 211;
 
@@ -69,51 +64,17 @@ public class SafeSlingerActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.safe_slinger_activity);
-
         mMasterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
-        // NOTE: there are two versions of this layout, for API >= 11 and one for < 11
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            NumberPicker picker = (NumberPicker) findViewById(R.id.safe_slinger_picker);
-            picker.setMinValue(2);
-            picker.setMaxValue(10);
-            picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                @Override
-                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                    mSelectedNumber = newVal;
-                }
-            });
-        } else {
-            Spinner spinner = (Spinner) findViewById(R.id.safe_slinger_spinner);
-
-            List<String> list = new ArrayList<String>();
-            list.add("2");
-            list.add("3");
-            list.add("4");
-            list.add("5");
-            list.add("6");
-            list.add("7");
-            list.add("8");
-            list.add("9");
-            list.add("10");
-
-            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_spinner_item, list);
-            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(dataAdapter);
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    mSelectedNumber = position + 2;
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-        }
+        NumberPicker picker = (NumberPicker) findViewById(R.id.safe_slinger_picker);
+        picker.setMinValue(2);
+        picker.setMaxValue(10);
+        picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                mSelectedNumber = newVal;
+            }
+        });
 
         ImageView buttonIcon = (ImageView) findViewById(R.id.safe_slinger_button_image);
         buttonIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
@@ -126,6 +87,11 @@ public class SafeSlingerActivity extends ActionBarActivity {
                 startExchange(mMasterKeyId, mSelectedNumber);
             }
         });
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.safe_slinger_activity);
     }
 
     private void startExchange(long masterKeyId, int number) {
@@ -197,7 +163,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
                         certifyIntent.putExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
-                        startActivityForResult(certifyIntent, KeyListActivity.REQUEST_CODE_RESULT_TO_LIST);
+                        startActivityForResult(certifyIntent, 0);
 
 //                        mExchangeMasterKeyId = null;
                     }
@@ -221,7 +187,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<ParcelableKeyRing>(activity, "key_import.pcl");
+                        new ParcelableFileCache<>(activity, "key_import.pcl");
                 cache.writeCache(it.size(), it.iterator());
 
                 // fill values for this action
@@ -249,7 +215,7 @@ public class SafeSlingerActivity extends ActionBarActivity {
     }
 
     private static ArrayList<ParcelableKeyRing> getSlingedKeys(Bundle extras) {
-        ArrayList<ParcelableKeyRing> list = new ArrayList<ParcelableKeyRing>();
+        ArrayList<ParcelableKeyRing> list = new ArrayList<>();
 
         if (extras != null) {
             byte[] d;

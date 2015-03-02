@@ -20,8 +20,16 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 /** Wrapper for a PGPPublicKey.
  *
@@ -53,7 +61,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canSign() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.SIGN_DATA) != 0;
         }
 
@@ -66,7 +74,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canCertify() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.CERTIFY_OTHER) != 0;
         }
 
@@ -79,7 +87,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canEncrypt() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0;
         }
 
@@ -93,11 +101,77 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     public boolean canAuthenticate() {
         // if key flags subpacket is available, honor it!
-        if (getKeyUsage() != null) {
+        if (getKeyUsage() != 0) {
             return (getKeyUsage() & KeyFlags.AUTHENTICATION) != 0;
         }
 
         return false;
+    }
+
+    public boolean isRevoked() {
+        return mPublicKey.getSignaturesOfType(isMasterKey()
+                ? PGPSignature.KEY_REVOCATION
+                : PGPSignature.SUBKEY_REVOCATION).hasNext();
+    }
+
+    public boolean isExpired () {
+        Date expiry = getExpiryTime();
+        return expiry != null && expiry.before(new Date());
+    }
+
+    public long getValidSeconds() {
+
+        long seconds;
+
+        // the getValidSeconds method is unreliable for master keys. we need to iterate all
+        // user ids, then use the most recent certification from a non-revoked user id
+        if (isMasterKey()) {
+            Date latestCreation = null;
+            seconds = 0;
+
+            for (byte[] rawUserId : getUnorderedRawUserIds()) {
+                Iterator<WrappedSignature> sigs = getSignaturesForRawId(rawUserId);
+
+                // there is always a certification, so this call is safe
+                WrappedSignature sig = sigs.next();
+
+                // we know a user id has at most two sigs: one certification, one revocation.
+                // if the sig is a revocation, or there is another sig (which is a revocation),
+                // the data in this uid is not relevant
+                if (sig.isRevocation() || sigs.hasNext()) {
+                    continue;
+                }
+
+                // this is our revocation, UNLESS there is a newer certificate!
+                if (latestCreation == null || latestCreation.before(sig.getCreationTime())) {
+                    latestCreation = sig.getCreationTime();
+                    seconds = sig.getKeyExpirySeconds();
+                }
+            }
+        } else {
+            seconds = mPublicKey.getValidSeconds();
+        }
+
+        return seconds;
+    }
+
+    public Date getExpiryTime() {
+        long seconds = getValidSeconds();
+
+        if (seconds > Integer.MAX_VALUE) {
+            Log.e(Constants.TAG, "error, expiry time too large");
+            return null;
+        }
+        if (seconds == 0) {
+            // no expiry
+            return null;
+        }
+        Date creationDate = getCreationTime();
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(creationDate);
+        calendar.add(Calendar.SECOND, (int) seconds);
+
+        return calendar.getTime();
     }
 
     /** Same method as superclass, but we make it public. */

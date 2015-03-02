@@ -3,14 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_api_settings_start"
-        android:title="@string/api_settings_start"
-        android:icon="@drawable/ic_action_play"
+        android:id="@+id/menu_api_save"
+        android:title="@string/api_settings_save"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_api_settings_revoke"
         android:title="@string/api_settings_revoke"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_api_settings_advanced"
+        android:title="@string/api_settings_advanced"
         app:showAsAction="never" />
 
 </menu>

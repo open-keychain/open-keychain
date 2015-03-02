@@ -89,7 +89,7 @@ public class CreateKeyInputFragment extends Fragment {
 
         mEmailEdit.setThreshold(1); // Start working from first character
         mEmailEdit.setAdapter(
-                new ArrayAdapter<String>
+                new ArrayAdapter<>
                         (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                 ContactHelper.getPossibleUserEmails(getActivity())
                         )
@@ -124,7 +124,7 @@ public class CreateKeyInputFragment extends Fragment {
 
         mNameEdit.setThreshold(1); // Start working from first character
         mNameEdit.setAdapter(
-                new ArrayAdapter<String>
+                new ArrayAdapter<>
                         (getActivity(), android.R.layout.simple_spinner_dropdown_item,
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )

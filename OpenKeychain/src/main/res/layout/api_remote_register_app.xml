@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+
+    <ScrollView
+        android:layout_below="@id/toolbar_include"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/api_register_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="3dip"
-            android:text="@string/api_register_text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <fragment
-            android:id="@+id/api_app_settings_fragment"
-            android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsFragment"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/api_app_settings_fragment" />
+            android:padding="16dp"
+            android:orientation="vertical">
 
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:id="@+id/api_register_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="3dip"
+                android:text="@string/api_register_text"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <fragment
+                android:id="@+id/api_app_settings_fragment"
+                android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsHeaderFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/api_app_settings_fragment" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

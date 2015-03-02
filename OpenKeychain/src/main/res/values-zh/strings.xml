@@ -7,11 +7,8 @@
   <string name="title_encrypt_text">加密文本</string>
   <string name="title_encrypt_files">加密文件</string>
   <string name="title_decrypt">解密</string>
-  <string name="title_unlock">密码</string>
   <string name="title_edit_key">编辑密钥</string>
-  <string name="title_preferences">参数</string>
   <string name="title_api_registered_apps">已注册应用</string>
-  <string name="title_key_server_preference">密钥服务器偏好</string>
   <string name="title_change_passphrase">变更密码</string>
   <string name="title_share_fingerprint_with">分享签名</string>
   <string name="title_share_key">分享密钥</string>
@@ -57,7 +54,6 @@
   <string name="btn_create_key">创建密钥</string>
   <string name="btn_add_files">添加密钥</string>
   <string name="btn_add_share_decrypted_text">添加并分享加密后的文本</string>
-  <string name="btn_decrypt_clipboard">从剪贴板复制并解密</string>
   <string name="btn_decrypt_and_verify">解密并验证</string>
   <string name="btn_decrypt_files">解密文件</string>
   <!--menu-->
@@ -217,6 +213,8 @@
   <string name="share_nfc_dialog">使用NFC分享</string>
   <!--Key list-->
   <!--Key view-->
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -231,10 +229,18 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
   <!--PassphraseCache-->
-  <!--unsorted-->
   <!--First Time-->
+  <!--unsorted-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

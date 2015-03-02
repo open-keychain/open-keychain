@@ -18,27 +18,19 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.S2K;
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 
 public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
@@ -94,7 +86,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
 
     public IterableIterator<CanonicalizedSecretKey> secretKeyIterator() {
         final Iterator<PGPSecretKey> it = mRing.getSecretKeys();
-        return new IterableIterator<CanonicalizedSecretKey>(new Iterator<CanonicalizedSecretKey>() {
+        return new IterableIterator<>(new Iterator<CanonicalizedSecretKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
@@ -114,7 +106,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
 
     public IterableIterator<CanonicalizedPublicKey> publicKeyIterator() {
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
-        return new IterableIterator<CanonicalizedPublicKey>(new Iterator<CanonicalizedPublicKey>() {
+        return new IterableIterator<>(new Iterator<CanonicalizedPublicKey>() {
             @Override
             public boolean hasNext() {
                 return it.hasNext();
@@ -133,7 +125,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
     }
 
     public HashMap<String,String> getLocalNotationData() {
-        HashMap<String,String> result = new HashMap<String,String>();
+        HashMap<String,String> result = new HashMap<>();
         Iterator<PGPSignature> it = getRing().getPublicKey().getKeySignatures();
         while (it.hasNext()) {
             WrappedSignature sig = new WrappedSignature(it.next());

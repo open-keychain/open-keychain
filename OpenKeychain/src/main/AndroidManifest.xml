@@ -31,10 +31,7 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <!-- Specified in build.gradle -->
-    <!--<uses-sdk-->
-    <!--android:minSdkVersion="9"-->
-    <!--android:targetSdkVersion="19" />-->
+    <!-- SDK levels are specified in build.gradle -->
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -70,15 +67,17 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
+    <!-- tools:replace="android:allowBackup" is a workaround for https://github.com/geftimov/android-patternview/pull/2 -->
     <application
         android:name=".KeychainApplication"
+        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:theme="@style/KeychainTheme"
         android:label="@string/app_name">
         <activity
-            android:name=".ui.KeyListActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:launchMode="singleTop">
@@ -96,33 +95,33 @@
         <activity
             android:name=".ui.CreateKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:label="@string/title_create_key"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
+        <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
         <activity
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create" />
         <activity
             android:name=".ui.QrCodeViewActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/share_qr_code_dialog_title" />
         <activity
             android:name=".ui.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -143,21 +142,20 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.KeyListActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
-        <activity
-            android:name=".ui.SelectPublicKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_select_recipients"
-            android:launchMode="singleTop" />
         <activity
             android:name=".ui.EncryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with data Uri -->
@@ -186,7 +184,11 @@
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:parentActivityName=".ui.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- ENCRYPT with text as extra -->
@@ -206,19 +208,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DecryptActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name=".ui.DecryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.DecryptActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.DecryptActivity" />
+                android:value=".ui.MainActivity" />
 
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
@@ -242,10 +239,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.DecryptActivity">
+            android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.DecryptActivity" />
+                android:value=".ui.MainActivity" />
 
             <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -420,12 +417,11 @@
                 android:value=".ui.ViewKeyActivity" />
         </activity>
         <activity
-            android:name=".ui.ViewKeyAdvancedActivity"
+            android:name=".ui.ViewKeyAdvActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_advanced_key_info">
-        </activity>
+            android:label="@string/title_advanced_key_info"/>
         <activity
-            android:name=".ui.PreferencesActivity"
+            android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_preferences">
             <intent-filter>
@@ -438,7 +434,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.PreferencesKeyServerActivity"
+            android:name=".ui.SettingsKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_server_preference"
             android:windowSoftInputMode="stateHidden" />
@@ -448,10 +444,18 @@
             android:label="@string/title_certify_key">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".ui.QrCodeScanActivity"
+            android:name=".ui.CertifyFingerprintActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_certify_key">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.ImportKeysProxyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoDisplay"
@@ -478,6 +482,14 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <!-- NFC: Handle NFC tags detected from outside our application -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- MIME type as defined in http://tools.ietf.org/html/rfc3156 -->
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -501,14 +513,6 @@
                   when the key file has been manually attached
                 -->
                 <data android:mimeType="text/plain" />
-            </intent-filter>
-            <!-- NFC: Handle NFC tags detected from outside our application -->
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <!-- MIME type as defined in http://tools.ietf.org/html/rfc3156 -->
-                <data android:mimeType="application/pgp-keys" />
             </intent-filter>
             <!-- VIEW with file endings: *.gpg (e.g. to import from OI File Manager) -->
             <intent-filter android:label="@string/intent_import_key">
@@ -655,7 +659,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.KeyListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.ConsolidateDialogActivity"
@@ -663,14 +667,7 @@
         <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity
-            android:name="com.haibison.android.lockpattern.LockPatternActivity"
-            android:label="@string/title_unlock"
-            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-            android:screenOrientation="user"
-            android:theme="@style/Alp.42447968.Theme.Dialog.Light" />
-        <activity
-            android:name=".ui.PassphraseWizardActivity" />
+        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
@@ -721,18 +718,13 @@
             android:launchMode="singleTop"
             android:process=":remote_api" />
         <activity
-            android:name=".remote.ui.AppsListActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:exported="false"
-            android:label="@string/title_api_registered_apps" />
-        <activity
             android:name=".remote.ui.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".remote.ui.AppsListActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".remote.ui.AccountSettingsActivity"

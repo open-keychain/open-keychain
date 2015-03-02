@@ -22,17 +22,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.view.View;
-
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
-import com.github.johnpersano.supertoasts.util.OnClickWrapper;
-import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -195,58 +193,44 @@ public abstract class OperationResult implements Parcelable {
 
     }
 
-    public SuperCardToast createNotify(final Activity activity) {
-
-        int color;
+    public Showable createNotify(final Activity activity) {
 
         Log.d(Constants.TAG, "mLog.getLast()"+mLog.getLast());
         Log.d(Constants.TAG, "mLog.getLast().mType"+mLog.getLast().mType);
         Log.d(Constants.TAG, "mLog.getLast().mType.getMsgId()"+mLog.getLast().mType.getMsgId());
 
         // Take the last message as string
-        String str = activity.getString(mLog.getLast().mType.getMsgId());
+        int msgId = mLog.getLast().mType.getMsgId();
+
+        Style style;
 
         // Not an overall failure
         if (cancelled()) {
-            color = Style.RED;
+            style = Style.ERROR;
         } else if (success()) {
             if (getLog().containsWarnings()) {
-                color = Style.ORANGE;
+                style = Style.WARN;
             } else {
-                color = Style.GREEN;
+                style = Style.OK;
             }
         } else {
-            color = Style.RED;
+            style = Style.ERROR;
         }
 
-        boolean button = getLog() != null && !getLog().isEmpty();
-        SuperCardToast toast = new SuperCardToast(activity,
-                button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
-                Style.getStyle(color, SuperToast.Animations.POPUP));
-        toast.setText(str);
-        toast.setDuration(SuperToast.Duration.EXTRA_LONG);
-        toast.setIndeterminate(false);
-        toast.setSwipeToDismiss(true);
-        // If we have a log and it's non-empty, show a View Log button
-        if (button) {
-            toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                    activity.getResources().getString(R.string.view_log));
-            toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
-            toast.setTextColor(activity.getResources().getColor(R.color.black));
-            toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
-                    new SuperToast.OnClickListener() {
-                        @Override
-                        public void onClick(View view, Parcelable token) {
-                            Intent intent = new Intent(
-                                    activity, LogDisplayActivity.class);
-                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                            activity.startActivity(intent);
-                        }
-                    }
-            ));
+        if (getLog() == null || getLog().isEmpty()) {
+            return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style);
         }
 
-        return toast;
+        return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style,
+            new ActionListener() {
+                @Override
+                public void onAction() {
+                    Intent intent = new Intent(
+                            activity, LogDisplayActivity.class);
+                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                    activity.startActivity(intent);
+                }
+            }, R.string.view_log);
 
     }
 
@@ -473,6 +457,7 @@ public abstract class OperationResult implements Parcelable {
 
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
+        MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (LogLevel.ERROR, R.string.msg_mf_error_fingerprint),
         MSG_MF_ERROR_KEYID (LogLevel.ERROR, R.string.msg_mf_error_keyid),
@@ -485,6 +470,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_PASSPHRASE_MASTER(LogLevel.ERROR, R.string.msg_mf_error_passphrase_master),
         MSG_MF_ERROR_PAST_EXPIRY(LogLevel.ERROR, R.string.msg_mf_error_past_expiry),
         MSG_MF_ERROR_PGP (LogLevel.ERROR, R.string.msg_mf_error_pgp),
+        MSG_MF_ERROR_RESTRICTED(LogLevel.ERROR, R.string.msg_mf_error_restricted),
         MSG_MF_ERROR_REVOKED_PRIMARY (LogLevel.ERROR, R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
@@ -527,6 +513,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_CON_ERROR_PUBLIC (LogLevel.ERROR, R.string.msg_con_error_public),
         MSG_CON_ERROR_SECRET (LogLevel.ERROR, R.string.msg_con_error_secret),
         MSG_CON_RECOVER (LogLevel.DEBUG, R.string.msg_con_recover),
+        MSG_CON_RECURSIVE (LogLevel.OK, R.string.msg_con_recursive),
         MSG_CON_REIMPORT_PUBLIC (LogLevel.DEBUG, R.plurals.msg_con_reimport_public),
         MSG_CON_REIMPORT_PUBLIC_SKIP (LogLevel.DEBUG, R.string.msg_con_reimport_public_skip),
         MSG_CON_REIMPORT_SECRET (LogLevel.DEBUG, R.plurals.msg_con_reimport_secret),
@@ -546,6 +533,13 @@ public abstract class OperationResult implements Parcelable {
         MSG_ED_FETCHING (LogLevel.DEBUG, R.string.msg_ed_fetching),
         MSG_ED_SUCCESS (LogLevel.OK, R.string.msg_ed_success),
 
+        // promote key
+        MSG_PR (LogLevel.START, R.string.msg_pr),
+        MSG_PR_ERROR_ALREADY_SECRET (LogLevel.ERROR, R.string.msg_pr_error_already_secret),
+        MSG_PR_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_pr_error_key_not_found),
+        MSG_PR_FETCHING (LogLevel.DEBUG, R.string.msg_pr_fetching),
+        MSG_PR_SUCCESS (LogLevel.OK, R.string.msg_pr_success),
+
         // messages used in UI code
         MSG_EK_ERROR_DIVERT (LogLevel.ERROR, R.string.msg_ek_error_divert),
         MSG_EK_ERROR_DUMMY (LogLevel.ERROR, R.string.msg_ek_error_dummy),
@@ -555,11 +549,13 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_ASKIP_NO_KEY (LogLevel.DEBUG, R.string.msg_dc_askip_no_key),
         MSG_DC_ASKIP_NOT_ALLOWED (LogLevel.DEBUG, R.string.msg_dc_askip_not_allowed),
         MSG_DC_ASYM (LogLevel.DEBUG, R.string.msg_dc_asym),
+        MSG_DC_CHARSET (LogLevel.DEBUG, R.string.msg_dc_charset),
         MSG_DC_CLEAR_DATA (LogLevel.DEBUG, R.string.msg_dc_clear_data),
         MSG_DC_CLEAR_DECOMPRESS (LogLevel.DEBUG, R.string.msg_dc_clear_decompress),
         MSG_DC_CLEAR_META_FILE (LogLevel.DEBUG, R.string.msg_dc_clear_meta_file),
         MSG_DC_CLEAR_META_MIME (LogLevel.DEBUG, R.string.msg_dc_clear_meta_mime),
         MSG_DC_CLEAR_META_SIZE (LogLevel.DEBUG, R.string.msg_dc_clear_meta_size),
+        MSG_DC_CLEAR_META_SIZE_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_clear_meta_size_unknown),
         MSG_DC_CLEAR_META_TIME (LogLevel.DEBUG, R.string.msg_dc_clear_meta_time),
         MSG_DC_CLEAR (LogLevel.DEBUG, R.string.msg_dc_clear),
         MSG_DC_CLEAR_SIGNATURE_BAD (LogLevel.WARN, R.string.msg_dc_clear_signature_bad),
@@ -590,29 +586,52 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_TRAIL_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_trail_unknown),
         MSG_DC_UNLOCKING (LogLevel.INFO, R.string.msg_dc_unlocking),
 
+        // verify signed literal data
+        MSG_VL (LogLevel.INFO, R.string.msg_vl),
+        MSG_VL_ERROR_MISSING_SIGLIST (LogLevel.ERROR, R.string.msg_vl_error_no_siglist),
+        MSG_VL_ERROR_MISSING_LITERAL (LogLevel.ERROR, R.string.msg_vl_error_missing_literal),
+        MSG_VL_ERROR_MISSING_KEY (LogLevel.ERROR, R.string.msg_vl_error_wrong_key),
+        MSG_VL_CLEAR_SIGNATURE_CHECK (LogLevel.DEBUG, R.string.msg_vl_clear_signature_check),
+        MSG_VL_ERROR_INTEGRITY_CHECK (LogLevel.ERROR, R.string.msg_vl_error_integrity_check),
+        MSG_VL_OK (LogLevel.OK, R.string.msg_vl_ok),
+
         // signencrypt
-        MSG_SE_ASYMMETRIC (LogLevel.INFO, R.string.msg_se_asymmetric),
-        MSG_SE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_se_clearsign_only),
-        MSG_SE_COMPRESSING (LogLevel.DEBUG, R.string.msg_se_compressing),
-        MSG_SE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_se_encrypting),
-        MSG_SE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_se_error_bad_passphrase),
-        MSG_SE_ERROR_IO (LogLevel.ERROR, R.string.msg_se_error_io),
-        MSG_SE_ERROR_SIGN_KEY(LogLevel.ERROR, R.string.msg_se_error_sign_key),
-        MSG_SE_ERROR_KEY_SIGN (LogLevel.ERROR, R.string.msg_se_error_key_sign),
-        MSG_SE_ERROR_NFC (LogLevel.ERROR, R.string.msg_se_error_nfc),
-        MSG_SE_ERROR_PGP (LogLevel.ERROR, R.string.msg_se_error_pgp),
-        MSG_SE_ERROR_SIG (LogLevel.ERROR, R.string.msg_se_error_sig),
-        MSG_SE_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_se_error_unlock),
-        MSG_SE_KEY_OK (LogLevel.OK, R.string.msg_se_key_ok),
-        MSG_SE_KEY_UNKNOWN (LogLevel.DEBUG, R.string.msg_se_key_unknown),
-        MSG_SE_KEY_WARN (LogLevel.WARN, R.string.msg_se_key_warn),
-        MSG_SE_OK (LogLevel.OK, R.string.msg_se_ok),
-        MSG_SE_PENDING_NFC (LogLevel.INFO, R.string.msg_se_pending_nfc),
-        MSG_SE_PENDING_PASSPHRASE (LogLevel.INFO, R.string.msg_se_pending_passphrase),
-        MSG_SE (LogLevel.DEBUG, R.string.msg_se),
-        MSG_SE_SIGNING (LogLevel.DEBUG, R.string.msg_se_signing),
-        MSG_SE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_se_sigcrypting),
-        MSG_SE_SYMMETRIC (LogLevel.INFO, R.string.msg_se_symmetric),
+        MSG_SE (LogLevel.START, R.string.msg_se),
+        MSG_SE_INPUT_BYTES (LogLevel.INFO, R.string.msg_se_input_bytes),
+        MSG_SE_INPUT_URI (LogLevel.INFO, R.string.msg_se_input_uri),
+        MSG_SE_ERROR_NO_INPUT (LogLevel.DEBUG, R.string.msg_se_error_no_input),
+        MSG_SE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
+        MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
+        MSG_SE_ERROR_TOO_MANY_INPUTS (LogLevel.ERROR, R.string.msg_se_error_too_many_inputs),
+        MSG_SE_WARN_OUTPUT_LEFT (LogLevel.WARN, R.string.msg_se_warn_output_left),
+        MSG_SE_SUCCESS (LogLevel.OK, R.string.msg_se_success),
+
+        // pgpsignencrypt
+        MSG_PSE_ASYMMETRIC (LogLevel.INFO, R.string.msg_pse_asymmetric),
+        MSG_PSE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_pse_clearsign_only),
+        MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
+        MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),
+        MSG_PSE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pse_error_bad_passphrase),
+        MSG_PSE_ERROR_HASH_ALGO (LogLevel.ERROR, R.string.msg_pse_error_hash_algo),
+        MSG_PSE_ERROR_IO (LogLevel.ERROR, R.string.msg_pse_error_io),
+        MSG_PSE_ERROR_SIGN_KEY(LogLevel.ERROR, R.string.msg_pse_error_sign_key),
+        MSG_PSE_ERROR_KEY_SIGN (LogLevel.ERROR, R.string.msg_pse_error_key_sign),
+        MSG_PSE_ERROR_NFC (LogLevel.ERROR, R.string.msg_pse_error_nfc),
+        MSG_PSE_ERROR_PGP (LogLevel.ERROR, R.string.msg_pse_error_pgp),
+        MSG_PSE_ERROR_SIG (LogLevel.ERROR, R.string.msg_pse_error_sig),
+        MSG_PSE_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_pse_error_unlock),
+        MSG_PSE_KEY_OK (LogLevel.OK, R.string.msg_pse_key_ok),
+        MSG_PSE_KEY_UNKNOWN (LogLevel.DEBUG, R.string.msg_pse_key_unknown),
+        MSG_PSE_KEY_WARN (LogLevel.WARN, R.string.msg_pse_key_warn),
+        MSG_PSE_OK (LogLevel.OK, R.string.msg_pse_ok),
+        MSG_PSE_PENDING_NFC (LogLevel.INFO, R.string.msg_pse_pending_nfc),
+        MSG_PSE_PENDING_PASSPHRASE (LogLevel.INFO, R.string.msg_pse_pending_passphrase),
+        MSG_PSE (LogLevel.DEBUG, R.string.msg_pse),
+        MSG_PSE_SIGNING (LogLevel.DEBUG, R.string.msg_pse_signing),
+        MSG_PSE_SIGNING_CLEARTEXT (LogLevel.DEBUG, R.string.msg_pse_signing_cleartext),
+        MSG_PSE_SIGNING_DETACHED (LogLevel.DEBUG, R.string.msg_pse_signing_detached),
+        MSG_PSE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_pse_sigcrypting),
+        MSG_PSE_SYMMETRIC (LogLevel.INFO, R.string.msg_pse_symmetric),
 
         MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
         MSG_CRT_CERTIFY_ALL (LogLevel.DEBUG, R.string.msg_crt_certify_all),
@@ -645,6 +664,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_import_fingerprint_error),
         MSG_IMPORT_FINGERPRINT_OK (LogLevel.DEBUG, R.string.msg_import_fingerprint_ok),
         MSG_IMPORT_ERROR (LogLevel.ERROR, R.string.msg_import_error),
+        MSG_IMPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_import_error_io),
         MSG_IMPORT_PARTIAL (LogLevel.ERROR, R.string.msg_import_partial),
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
 
@@ -742,7 +762,7 @@ public abstract class OperationResult implements Parcelable {
 
     public static class OperationLog implements Iterable<LogEntryParcel> {
 
-        private final List<LogEntryParcel> mParcels = new ArrayList<LogEntryParcel>();
+        private final List<LogEntryParcel> mParcels = new ArrayList<>();
 
         /// Simple convenience method
         public void add(LogType type, int indent, Object... parameters) {
@@ -767,7 +787,7 @@ public abstract class OperationResult implements Parcelable {
         }
 
         public boolean containsType(LogType type) {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<>(mParcels.iterator())) {
                 if (entry.mType == type) {
                     return true;
                 }
@@ -776,7 +796,7 @@ public abstract class OperationResult implements Parcelable {
         }
 
         public boolean containsWarnings() {
-            for(LogEntryParcel entry : new IterableIterator<LogEntryParcel>(mParcels.iterator())) {
+            for(LogEntryParcel entry : new IterableIterator<>(mParcels.iterator())) {
                 if (entry.mType.mLevel == LogLevel.WARN || entry.mType.mLevel == LogLevel.ERROR) {
                     return true;
                 }

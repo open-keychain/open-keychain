@@ -4,228 +4,228 @@
 
 <h2>3.1.2</h2>
 <ul>
-<li>Fix key export to files (now for real)</li>
+<li>Oplossing voor exporteren van sleutels naar bestanden (deze keer echt)</li>
 </ul>
 <h2>3.1.1</h2>
 <ul>
-<li>Fix key export to files (they were written partially)</li>
-<li>Fix crash on Android 2.3</li>
+<li>Oplossing voor exporteren van sleutels naar bestanden (ze werden maar gedeeltelijk geschreven)</li>
+<li>Oplossing voor crash op Android 2.3</li>
 </ul>
 <h2>3.1</h2>
 <ul>
-<li>Fix crash on Android 5</li>
-<li>New certify screen</li>
-<li>Secure Exchange directly from key list (SafeSlinger library)</li>
-<li>New QR Code program flow</li>
-<li>Redesigned decrypt screen</li>
-<li>New icon usage and colors</li>
-<li>Fix import of secret keys from Symantec Encryption Desktop</li>
-<li>Subkey IDs on Yubikeys are now checked correctly</li>
+<li>Oplossing voor crash op Android 5</li>
+<li>Nieuw certificeerscherm</li>
+<li>Veilig uitwisselen vanuit sleutellijst (SafeSlinger bibliotheek)</li>
+<li>Nieuwe QR code programma flow</li>
+<li>Nieuw design voor ontcijferingsscherm</li>
+<li>Nieuw icoon en kleuren</li>
+<li>Oplossing voor importeren van geheime sleutels van Symantec Encryption Desktop</li>
+<li>Subsleutel-ID's op Yubikeys worden nu currect gecontroleerd</li>
 </ul>
 <h2>3.0.1</h2>
 <ul>
-<li>Better handling of large key imports</li>
-<li>Improved subkey selection</li>
+<li>Grote sleutelimportaties worden beter behandeld</li>
+<li>Subsleutelselectie verbeterd</li>
 </ul>
 <h2>3.0</h2>
 <ul>
-<li>Full support for Yubikey signature generation and decryption!</li>
-<li>Propose installable compatible apps in apps list</li>
-<li>New design for decryption screens</li>
-<li>Many fixes for key import, also fixes stripped keys</li>
-<li>Honor and display key authenticate flags</li>
-<li>User interface to generate custom keys</li>
-<li>Fixing user id revocation certificates</li>
-<li>New cloud search (searches over traditional keyservers and keybase.io)</li>
-<li>Support for stripping keys inside OpenKeychain</li>
+<li>Volledige ondersteuning voor Yubikey ondertekeningsgeneratie en ontcijfering!</li>
+<li>Stel installeerbare compatibele apps voor in apps-lijst</li>
+<li>Nieuw design voor ontcijferingsschermen</li>
+<li>Veel oplossingen voor sleutelimporteren, lost ook gestripte sleutels op</li>
+<li>Eer en toon sleutelauthenticatievlaggen</li>
+<li>Gebruikersinterface om eigen sleutels aan te maken</li>
+<li>Oplossing voor gebruikers-ID-intrekkingscertificaten</li>
+<li>Nieuwe cloud search (zoekt op traditionele sleutelservers en keybase.io)</li>
+<li>Ondersteuning voor strippen van sleutels in OpenKeychain</li>
 </ul>
 <h2>2.9.2</h2>
 <ul>
-<li>Fix keys broken in 2.9.1</li>
-<li>Yubikey decryption now working via API</li>
+<li>Oplossing voor gebroken sleutels in 2.9.1</li>
+<li>Yubikey ontsleuteling werkt nu via API</li>
 </ul>
 <h2>2.9.1</h2>
 <ul>
-<li>Split encrypt screen into two</li>
-<li>Fix key flags handling (now supporting Mailvelope 0.7 keys)</li>
-<li>Improved passphrase handling</li>
-<li>Key sharing via SafeSlinger</li>
-<li>Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain</li>
-<li>Fix usage of stripped keys</li>
-<li>SHA256 as default for compatibility</li>
-<li>Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
-<li>OpenPGP API now handles revoked/expired keys and returns all user ids</li>
+<li>Deel versleutelingsscherm in twee</li>
+<li>Oplossing voor sleutelvlaggen (ondersteunt nu Mailvelope 0.7 sleutels)</li>
+<li>Verbeterde behandeling van wachtwoorden</li>
+<li>Sleutels delen via SafeSlinger</li>
+<li>Yubikey: optie om andere PINs toe te staan, momenteel werkt enkel ondertekenen via de OpenPGP API, niet in OpenKeychain zelf</li>
+<li>Oplossing voor gestripte sleutels</li>
+<li>SHA256 als standaard voor compatibiliteit</li>
+<li>Intent API is veranderd, zie https://github.com/open-keychain/open-keychain/wiki/Intent-API</li>
+<li>OpenPGP API behandelt nu ingetrokken/verlopen sleutels en geeft alle gebruikers-ID's weer</li>
 </ul>
 <h2>2.9</h2>
 <ul>
-<li>Fixing crashes introduced in v2.8</li>
-<li>Experimental ECC support</li>
-<li>Experimental Yubikey support (signing-only with imported keys)</li>
+<li>Oplossing voor crashes geïntroduceerd in v2.8</li>
+<li>Experimentele ondersteuning voor ECC</li>
+<li>Experimentele ondersteuning voor Yubikey (alleen ondertekenen met geïmporteerde sleutels)</li>
 </ul>
 <h2>2.8</h2>
 <ul>
-<li>So many bugs have been fixed in this release that we focus on the main new features</li>
-<li>Key edit: awesome new design, key revocation</li>
-<li>Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records</li>
-<li>New first time screen</li>
-<li>New key creation screen: autocompletion of name and email based on your personal Android accounts</li>
-<li>File encryption: awesome new design, support for encrypting multiple files</li>
-<li>New icons to show status of key (by Brennan Novak)</li>
-<li>Important bug fix: Importing of large key collections from a file is now possible</li>
-<li>Notification showing cached passphrases</li>
-<li>Keys are connected to Android's contacts</li>
+<li>Er zijn zoveel bugs opgelost in deze release dat we kunnen focussen op de belangrijke nieuwe mogelijkheden</li>
+<li>Sleutels wijzigen: nieuw design, sleutels intrekken</li>
+<li>Sleutels importeren: nieuw design, veilige verbindingen met sleutelservers via hkps, sleutelserver resolving via DNS SRV records</li>
+<li>Nieuw eerste gebruiksscherm</li>
+<li>Nieuw scherm voor sleutels aanmaken: automatisch aanvullen van naam en e-mailadres gebaseerd op persoonlijke Android-accounts</li>
+<li>Bestandsversleuteling: nieuw design, ondersteuning voor versleutelen van meerdere bestanden</li>
+<li>Nieuwe iconen om sleutelstatus weer te geven (door Brennan Novak)</li>
+<li>Belangrijke bugfix: importeren van grote sleutelbossen uit een bestand is nu mogelijk</li>
+<li>Melding om gecachete wachtwoorden weer te geven</li>
+<li>Sleutels worden verbonden aan Android's contacten</li>
 </ul>
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+<p>Deze release zou niet mogelijk zijn zonder het werkt van Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
 
 <h2>2.7</h2>
 <ul>
-<li>Purple! (Dominik, Vincent)</li>
-<li>New key view design (Dominik, Vincent)</li>
-<li>New flat Android buttons (Dominik, Vincent)</li>
-<li>API fixes (Dominik)</li>
-<li>Keybase.io import (Tim Bray)</li>
+<li>Paars! (Dominik, Vincent)</li>
+<li>Nieuw design voor bekijken van sleutels (Dominik, Vincent)</li>
+<li>Nieuwe platte Android-knoppen (Dominik, Vincent)</li>
+<li>API-oplossingen (Dominik)</li>
+<li>Importeren uit keybase.io (Tim Bray)</li>
 </ul>
 <h2>2.6.1</h2>
 <ul>
-<li>Some fixes for regression bugs</li>
+<li>Enkele oplossingen voor regressies</li>
 </ul>
 <h2>2.6</h2>
 <ul>
-<li>Key certifications (thanks to Vincent Breitmoser)</li>
-<li>Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)</li>
-<li>New design for signature verification</li>
-<li>Custom key length (thanks to Greg Witczak)</li>
-<li>Fix share-functionality from other apps</li>
+<li>Sleutelcertificaties (dank aan Vincent Breitmoser)</li>
+<li>Ondersteuning voor GnuPG gedeeltelijke geheime sleutels (dank aan Vincent Breitmoser)</li>
+<li>Nieuw design voor ondertekeningsverificatie</li>
+<li>Aangepaste sleutellengte (dank aan Greg Witczak)</li>
+<li>Oplossing voor delen vanuit andere apps</li>
 </ul>
 <h2>2.5</h2>
 <ul>
-<li>Fix decryption of symmetric pgp messages/files</li>
-<li>Refactored key edit screen (thanks to Ash Hughes)</li>
-<li>New modern design for encrypt/decrypt screens</li>
-<li>OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)</li>
+<li>Oplossing voor ontcijfering van symmetrische OpenPGP berichten/bestanden</li>
+<li>Nieuw ontwerp voor sleutelbewerkingsscherm (dank aan Ash Hughes)</li>
+<li>Nieuw modern design voor versleutelings/ontcijferingsschermen</li>
+<li>OpenPGP API versie 3 (meerdere API accounts, interne fixes, zoeken naar sleutels)</li>
 </ul>
 <h2>2.4</h2>
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+<p>Dank aan alle deelnemers aan Google Summer of Code 2014 die deze release zo vol mogelijkheden en zonder bugs hebben gemaakt!
+Buiten verschillende kleine patches, werden een groot aantal patches gemaakt door volgende personen (alfabetisch gerangschikt):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
 <ul>
-<li>New unified key list</li>
-<li>Colorized key fingerprint</li>
-<li>Support for keyserver ports</li>
-<li>Deactivate possibility to generate weak keys</li>
-<li>Much more internal work on the API</li>
-<li>Certify user ids</li>
-<li>Keyserver query based on machine-readable output</li>
-<li>Lock navigation drawer on tablets</li>
-<li>Suggestions for emails on creation of keys</li>
-<li>Search in public key lists</li>
-<li>And much more improvements and fixes…</li>
+<li>Nieuwe geünificeerde sleutellijst</li>
+<li>Gekleurde sleutelvingerafdruk</li>
+<li>Ondersteuning voor sleutelserver-poorten</li>
+<li>Zet mogelijkheid om zwakke sleutels aan te maken uit</li>
+<li>Veel meer intern werk aan API</li>
+<li>Certificeer gebruikers-ID's</li>
+<li>Sleutelserverzoekopdracht gebaseerd op machine-leesbare output</li>
+<li>Zet navigatiedrawer op tablets vast</li>
+<li>Suggesties voor e-mailadress bij aanmaken van sleutels</li>
+<li>Zoeken in publieke sleutellijsten</li>
+<li>En veel more verbeteringen en fixes...</li>
 </ul>
 <h2>2.3.1</h2>
 <ul>
-<li>Hotfix for crash when upgrading from old versions</li>
+<li>Hotfix voor crash bij upgraden van oude versies</li>
 </ul>
 <h2>2.3</h2>
 <ul>
-<li>Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)</li>
-<li>Fix setting expiry dates on keys (thanks to Ash Hughes)</li>
-<li>More internal fixes when editing keys (thanks to Ash Hughes)</li>
-<li>Querying keyservers directly from the import screen</li>
-<li>Fix layout and dialog style on Android 2.2-3.0</li>
-<li>Fix crash on keys with empty user ids</li>
-<li>Fix crash and empty lists when coming back from signing screen</li>
-<li>Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source</li>
-<li>Fix upload of key from signing screen</li>
+<li>Verwijder onnodige export van publieke sleutels bij exporteren van geheime sleutel (dank aan Ash Hughes)</li>
+<li>Oplossing voor verloopdata op sleutels (dank aan Ash Hughes)</li>
+<li>Meer interne fixes by bewerken van sleutels (dank aan Ash Hughes)</li>
+<li>Zoeken op sleutelservers rechtstreeks van importscherm</li>
+<li>Oplossing voor layout en dialoogstijl op Android 2.2-3.0</li>
+<li>Oplossing voor crash op sleutels met lege gebruikers-ID's</li>
+<li>Oplossing voor crash en lege lijsten bij terugkeren van ondertekeningsscherm</li>
+<li>Bouncy Castle (cryptografie-bibliotheek) geüpdatet van 1.47 naar 1.50 en built from source</li>
+<li>Oplossing voor uploaden van sleutel van ondertekeningsscherm</li>
 </ul>
 <h2>2.2</h2>
 <ul>
-<li>New design with navigation drawer</li>
-<li>New public key list design</li>
-<li>New public key view</li>
-<li>Bug fixes for importing of keys</li>
-<li>Key cross-certification (thanks to Ash Hughes)</li>
-<li>Handle UTF-8 passwords properly (thanks to Ash Hughes)</li>
-<li>First version with new languages (thanks to the contributors on Transifex)</li>
-<li>Sharing of keys via QR Codes fixed and improved</li>
-<li>Package signature verification for API</li>
+<li>Nieuw design met navigatiebalk</li>
+<li>Nieuw publieke sleutellijst design</li>
+<li>Nieuwe publieke sleutel view</li>
+<li>Bugfixes voor importeren van sleutels</li>
+<li>Sleutel certificatie (dank aan Ash Hughes)</li>
+<li>Behandel UTF-8 wachtwoorden correct (dank aan Ash Hughes)</li>
+<li>Eerste versie met nieuwe talen (dank aan de medewerkers op Transifex)</li>
+<li>Delen van sleutels via QR codes opgelost en verbeterd</li>
+<li>Pakketondertekeningsverificatie voor API</li>
 </ul>
 <h2>2.1.1</h2>
 <ul>
-<li>API Updates, preparation for K-9 Mail integration</li>
+<li>API updates, voorbereiding voor K-9 Mail integratie</li>
 </ul>
 <h2>2.1</h2>
 <ul>
-<li>Lots of bug fixes</li>
-<li>New API for developers</li>
-<li>PRNG bug fix by Google</li>
+<li>Veel bugfixes</li>
+<li>Nieuwe API voor ontwikkelaars</li>
+<li>PRNG bug fix door Google</li>
 </ul>
 <h2>2.0</h2>
 <ul>
-<li>Complete redesign</li>
-<li>Share public keys via QR codes, NFC beam</li>
-<li>Sign keys</li>
-<li>Upload keys to server</li>
-<li>Fixes import issues</li>
-<li>New AIDL API</li>
+<li>Volledig nieuw design</li>
+<li>Publieke sleutels delen via QR codes, NFC beam</li>
+<li>Sleutels ondertekenen</li>
+<li>Upload sleutels naar server</li>
+<li>Importeerproblemen opgelost</li>
+<li>Nieuwe AIDL API</li>
 </ul>
 <h2>1.0.8</h2>
 <ul>
-<li>Basic keyserver support</li>
-<li>App2sd</li>
-<li>More choices for passphrase cache: 1, 2, 4, 8, hours</li>
-<li>Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)</li>
+<li>Basisondersteuning voor sleutelservers</li>
+<li>App2SD</li>
+<li>Meer keuzes voor wachtwoordcache: 1, 2, 4, 8 uur</li>
+<li>Vertalingen: Noors (bedankt, Sander Danielsen), Chinees (bedankt, Zhang Fredrick)</li>
 <li>Bugfixes</li>
-<li>Optimizations</li>
+<li>Optimalisaties</li>
 </ul>
 <h2>1.0.7</h2>
 <ul>
-<li>Fixed problem with signature verification of texts with trailing newline</li>
-<li>More options for passphrase cache time to live (20, 40, 60 mins)</li>
+<li>Probleem met ondertekeningsverificatie van text met achterlopende newline opgelost</li>
+<li>Meer opties voor wachtwoord cachetijd (20, 40, 60 min.)</li>
 </ul>
 <h2>1.0.6</h2>
 <ul>
-<li>Account adding crash on Froyo fixed</li>
-<li>Secure file deletion</li>
-<li>Option to delete key file after import</li>
-<li>Stream encryption/decryption (gallery, etc.)</li>
-<li>New options (language, force v3 signatures)</li>
-<li>Interface changes</li>
+<li>Crash bij toevoegen van account op Froyo opgelost</li>
+<li>Veilige bestandsverwijdering</li>
+<li>Optie om sleutelbestand na importeren te verwijderen</li>
+<li>Stream versleuteling/ontcijfering (galerij, enz.)</li>
+<li>Nieuwe opties (taal, forceer v3 ondertekeningen)</li>
+<li>Wijzigingen in interface</li>
 <li>Bugfixes</li>
 </ul>
 <h2>1.0.5</h2>
 <ul>
-<li>German and Italian translation</li>
-<li>Much smaller package, due to reduced BC sources</li>
-<li>New preferences GUI</li>
-<li>Layout adjustment for localization</li>
-<li>Signature bugfix</li>
+<li>Duitse en Italiaanse vertaling</li>
+<li>Veel kleiner pakket, door verminderde BC bronnen</li>
+<li>Nieuwe GUI voor voorkeuren</li>
+<li>Layout wijzigingen voor localisatie</li>
+<li>Bugfix voor ondertekeningen</li>
 </ul>
 <h2>1.0.4</h2>
 <ul>
-<li>Fixed another crash caused by some SDK bug with query builder</li>
+<li>Een andere crash veroorzaakt door een SDK bug met de query builder opgelost</li>
 </ul>
 <h2>1.0.3</h2>
 <ul>
-<li>Fixed crashes during encryption/signing and possibly key export</li>
+<li>Crashes tijdens versleuteling/ondertekenen en mogelijk sleutelexportatie opgelost</li>
 </ul>
 <h2>1.0.2</h2>
 <ul>
-<li>Filterable key lists</li>
-<li>Smarter pre-selection of encryption keys</li>
-<li>New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers</li>
-<li>Fixes and additional features (key preselection) for K-9 Mail, new beta build available</li>
+<li>Filterbare sleutellijsten</li>
+<li>Slimmere preselectie van cryptosleutels</li>
+<li>Nieuwe Intents voor VIEW en SEND, laat toe bestanden te versleutelen/ontcijferen vanuit bestandsbeheerders</li>
+<li>Oplossingen en nieuwe functies (sleutel preselectie) voor K-9 Mail, nieuwe beta build beschikbaar</li>
 </ul>
 <h2>1.0.1</h2>
 <ul>
-<li>GMail account listing was broken in 1.0.0, fixed again</li>
+<li>Oplijsten van GMail accounts werkte niet in 1.0.0, opgelost</li>
 </ul>
 <h2>1.0.0</h2>
 <ul>
-<li>K-9 Mail integration, APG supporting beta build of K-9 Mail</li>
-<li>Support of more file managers (including ASTRO)</li>
-<li>Slovenian translation</li>
-<li>New database, much faster, less memory usage</li>
-<li>Defined Intents and content provider for other apps</li>
+<li>K-9 Mail integratie, APG ondersteuning voor beta build van K-9 Mail</li>
+<li>Ondersteuning voor meer bestandsbeheerders (waaronder ASTRO)</li>
+<li>Sloveense vertaling</li>
+<li>Nieuwe database, veel sneller, minder geheugengebruik</li>
+<li>Intents en content provider voor andere apps gedefinieerd</li>
 <li>Bugfixes</li>
 </ul>
 </body>

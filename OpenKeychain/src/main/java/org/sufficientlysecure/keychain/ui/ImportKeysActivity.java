@@ -17,19 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -51,7 +45,7 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ImportKeysActivity extends ActionBarActivity {
+public class ImportKeysActivity extends BaseActivity {
     public static final String ACTION_IMPORT_KEY = OpenKeychainIntents.IMPORT_KEY;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
@@ -64,9 +58,6 @@ public class ImportKeysActivity extends ActionBarActivity {
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE";
-    public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_NFC";
-
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
@@ -90,8 +81,6 @@ public class ImportKeysActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.import_keys_activity);
-
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -101,6 +90,11 @@ public class ImportKeysActivity extends ActionBarActivity {
         });
 
         handleActions(savedInstanceState, getIntent());
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.import_keys_activity);
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
@@ -113,104 +107,113 @@ public class ImportKeysActivity extends ActionBarActivity {
             extras = new Bundle();
         }
 
+        if (action == null) {
+            startCloudFragment(savedInstanceState, null, false);
+            startListFragment(savedInstanceState, null, null, null);
+            return;
+        }
+
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
             // delegate action to ACTION_IMPORT_KEY
             action = ACTION_IMPORT_KEY;
         }
 
-        if (ACTION_IMPORT_KEY.equals(action)) {
-            /* Keychain's own Actions */
-            startFileFragment(savedInstanceState);
+        switch (action) {
+            case ACTION_IMPORT_KEY: {
+                /* Keychain's own Actions */
+                startFileFragment(savedInstanceState);
 
-            if (dataUri != null) {
-                // action: directly load data
-                startListFragment(savedInstanceState, null, dataUri, null);
-            } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
-                byte[] importData = extras.getByteArray(EXTRA_KEY_BYTES);
+                if (dataUri != null) {
+                    // action: directly load data
+                    startListFragment(savedInstanceState, null, dataUri, null);
+                } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
+                    byte[] importData = extras.getByteArray(EXTRA_KEY_BYTES);
 
-                // action: directly load data
-                startListFragment(savedInstanceState, importData, null, null);
-            }
-        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)
-                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(action)
-                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(action)) {
-
-            // only used for OpenPgpService
-            if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
-                mPendingIntentData = extras.getParcelable(EXTRA_PENDING_INTENT_DATA);
-            }
-            if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
-                /* simple search based on query or key id */
-
-                String query = null;
-                if (extras.containsKey(EXTRA_QUERY)) {
-                    query = extras.getString(EXTRA_QUERY);
-                } else if (extras.containsKey(EXTRA_KEY_ID)) {
-                    long keyId = extras.getLong(EXTRA_KEY_ID, 0);
-                    if (keyId != 0) {
-                        query = KeyFormattingUtils.convertKeyIdToHex(keyId);
-                    }
+                    // action: directly load data
+                    startListFragment(savedInstanceState, importData, null, null);
                 }
+                break;
+            }
+            case ACTION_IMPORT_KEY_FROM_KEYSERVER:
+            case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE:
+            case ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT: {
 
-                if (query != null && query.length() > 0) {
-                    // display keyserver fragment with query
-                    startCloudFragment(savedInstanceState, query, false);
+                // only used for OpenPgpService
+                if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
+                    mPendingIntentData = extras.getParcelable(EXTRA_PENDING_INTENT_DATA);
+                }
+                if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
+                    /* simple search based on query or key id */
 
-                    // action: search immediately
-                    startListFragment(savedInstanceState, null, null, query);
+                    String query = null;
+                    if (extras.containsKey(EXTRA_QUERY)) {
+                        query = extras.getString(EXTRA_QUERY);
+                    } else if (extras.containsKey(EXTRA_KEY_ID)) {
+                        long keyId = extras.getLong(EXTRA_KEY_ID, 0);
+                        if (keyId != 0) {
+                            query = KeyFormattingUtils.convertKeyIdToHex(keyId);
+                        }
+                    }
+
+                    if (query != null && query.length() > 0) {
+                        // display keyserver fragment with query
+                        startCloudFragment(savedInstanceState, query, false);
+
+                        // action: search immediately
+                        startListFragment(savedInstanceState, null, null, query);
+                    } else {
+                        Log.e(Constants.TAG, "Query is empty!");
+                        return;
+                    }
+                } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
+                    /*
+                     * search based on fingerprint, here we can enforce a check in the end
+                     * if the right key has been downloaded
+                     */
+
+                    String fingerprint = extras.getString(EXTRA_FINGERPRINT);
+                    if (isFingerprintValid(fingerprint)) {
+                        String query = "0x" + fingerprint;
+
+                        // display keyserver fragment with query
+                        startCloudFragment(savedInstanceState, query, true);
+
+                        // action: search immediately
+                        startListFragment(savedInstanceState, null, null, query);
+                    }
                 } else {
-                    Log.e(Constants.TAG, "Query is empty!");
+                    Log.e(Constants.TAG,
+                            "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
+                                    "'fingerprint' extra!"
+                    );
                     return;
                 }
-            } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
-                /*
-                 * search based on fingerprint, here we can enforce a check in the end
-                 * if the right key has been downloaded
-                 */
-
-                String fingerprint = extras.getString(EXTRA_FINGERPRINT);
-                if (isFingerprintValid(fingerprint)) {
-                    String query = "0x" + fingerprint;
-
-                    // display keyserver fragment with query
-                    startCloudFragment(savedInstanceState, query, true);
-
-                    // action: search immediately
-                    startListFragment(savedInstanceState, null, null, query);
-                }
-            } else {
-                Log.e(Constants.TAG,
-                        "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
-                                "'fingerprint' extra!"
-                );
-                return;
+                break;
             }
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
-            // NOTE: this only displays the appropriate fragment, no actions are taken
-            startFileFragment(savedInstanceState);
+            case ACTION_IMPORT_KEY_FROM_FILE: {
+                // NOTE: this only displays the appropriate fragment, no actions are taken
+                startFileFragment(savedInstanceState);
 
-            // no immediate actions!
-            startListFragment(savedInstanceState, null, null, null);
-        } else if (ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(action)) {
-            // NOTE: this only displays the appropriate fragment, no actions are taken
-            startFileFragment(savedInstanceState);
+                // no immediate actions!
+                startListFragment(savedInstanceState, null, null, null);
+                break;
+            }
+            case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
+                // NOTE: this only displays the appropriate fragment, no actions are taken
+                startFileFragment(savedInstanceState);
 
-            // no immediate actions!
-            startListFragment(savedInstanceState, null, null, null);
-        } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
-            // NOTE: this only displays the appropriate fragment, no actions are taken
-            startFileFragment(savedInstanceState);
-            // TODO!!!!!
-
-            // no immediate actions!
-            startListFragment(savedInstanceState, null, null, null);
-        } else {
-            startCloudFragment(savedInstanceState, null, false);
-            startListFragment(savedInstanceState, null, null, null);
+                // no immediate actions!
+                startListFragment(savedInstanceState, null, null, null);
+                break;
+            }
+            default: {
+                startCloudFragment(savedInstanceState, null, false);
+                startListFragment(savedInstanceState, null, null, null);
+                break;
+            }
         }
     }
-
 
     private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
         // However, if we're being restored from a previous state,
@@ -353,7 +356,7 @@ public class ImportKeysActivity extends ActionBarActivity {
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
+                        new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -385,7 +388,7 @@ public class ImportKeysActivity extends ActionBarActivity {
             data.putString(KeychainIntentService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
 
             // get selected key entries
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<ParcelableKeyRing>();
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
             {
                 // change the format into ParcelableKeyRing
                 ArrayList<ImportKeysListEntry> entries = mListFragment.getSelectedEntries();
@@ -411,52 +414,6 @@ public class ImportKeysActivity extends ActionBarActivity {
         } else {
             Notify.showNotify(this, R.string.error_nothing_import, Notify.Style.ERROR);
         }
-    }
-
-    /**
-     * NFC
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Check to see if the Activity started due to an Android Beam
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-                handleActionNdefDiscovered(getIntent());
-            } else {
-                Log.d(Constants.TAG, "NFC: No NDEF discovered!");
-            }
-        } else {
-            Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
-        }
-    }
-
-    /**
-     * NFC
-     */
-    @Override
-    public void onNewIntent(Intent intent) {
-        // onResume gets called after this to handle the intent
-        setIntent(intent);
-    }
-
-    /**
-     * NFC: Parses the NDEF Message from the intent and prints to the TextView
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    void handleActionNdefDiscovered(Intent intent) {
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-        // only one message sent during the beam
-        NdefMessage msg = (NdefMessage) rawMsgs[0];
-        // record 0 contains the MIME type, record 1 is the AAR, if present
-        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
-
-        Intent importIntent = new Intent(this, ImportKeysActivity.class);
-        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, receivedKeyringBytes);
-
-        handleActions(null, importIntent);
     }
 
 }

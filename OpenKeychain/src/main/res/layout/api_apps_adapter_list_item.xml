@@ -13,16 +13,6 @@
         android:layout_centerVertical="true"
         android:src="@drawable/ic_launcher" />
 
-    <TextView
-        android:id="@+id/api_apps_adapter_item_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:text="Application Name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/api_apps_adapter_item_icon" />
-
     <ImageView
         android:id="@+id/api_apps_adapter_install_icon"
         android:layout_width="wrap_content"
@@ -33,5 +23,15 @@
         android:layout_alignParentEnd="true"
         android:padding="8dp" />
 
+    <TextView
+        android:id="@+id/api_apps_adapter_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:text="Application Name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/api_apps_adapter_install_icon"
+        android:layout_toRightOf="@+id/api_apps_adapter_item_icon" />
 
 </RelativeLayout>

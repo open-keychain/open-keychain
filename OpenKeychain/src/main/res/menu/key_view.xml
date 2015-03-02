@@ -3,8 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_key_view_edit"
+        android:icon="@drawable/ic_mode_edit_white_24dp"
+        android:visible="false"
+        app:showAsAction="always"
+        android:title="@string/key_view_action_edit" />
+
+    <item
+        android:id="@+id/menu_key_view_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        app:showAsAction="always"
+        android:title="@string/key_view_action_update" />
+
+    <item
         android:id="@+id/menu_key_view_export_file"
-        android:icon="@drawable/ic_action_import_export"
         app:showAsAction="never"
         android:title="@string/menu_export_key" />
 
@@ -18,5 +30,11 @@
         android:id="@+id/menu_key_view_advanced"
         app:showAsAction="never"
         android:title="@string/menu_advanced" />
+
+    <item
+        android:id="@+id/menu_key_view_certify_fingerprint"
+        app:showAsAction="never"
+        android:visible="false"
+        android:title="@string/menu_certify_fingerprint" />
 
 </menu>

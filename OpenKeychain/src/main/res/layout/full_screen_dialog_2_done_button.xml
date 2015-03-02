@@ -1,0 +1,27 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/actionbar_done"
+    style="@style/Widget.AppCompat.ActionButton"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1">
+
+    <!--
+        android:filterTouchesWhenObscured="true" to prevent Touch-Event Hijacking
+        https://blog.lookout.com/blog/2010/12/09/android-touch-event-hijacking/
+    -->
+    <TextView
+        android:id="@+id/actionbar_done_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawableLeft="@drawable/ic_check_white_24dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical"
+        android:paddingRight="20dp"
+        android:filterTouchesWhenObscured="true"
+        style="@style/Widget.AppCompat.Light.ActionBar.TabText"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:text="Done (set in-code!)" />
+
+</FrameLayout>

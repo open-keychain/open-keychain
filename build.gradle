@@ -12,6 +12,11 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+
+        maven {
+            // for https://github.com/journeyapps/zxing-android-embedded
+            url "http://dl.bintray.com/journeyapps/maven"
+        }
     }
 }
 

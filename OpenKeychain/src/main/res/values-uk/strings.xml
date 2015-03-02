@@ -2,16 +2,17 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">Вибрати ключі</string>
   <string name="title_select_secret_key">Виберіть ваш ключ</string>
+  <string name="title_encrypt_text">Зашифрувати текст…</string>
+  <string name="title_encrypt_files">Зашифрувати файли</string>
   <string name="title_decrypt">Розшифрувати</string>
-  <string name="title_unlock">Парольна фраза</string>
   <string name="title_add_subkey">Додати підключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
-  <string name="title_preferences">Налаштування</string>
+  <string name="title_cloud_search_preferences">Налаштування хмарного пошуку</string>
   <string name="title_api_registered_apps">Програми</string>
-  <string name="title_key_server_preference">Налаштування сервера ключів</string>
   <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_share_fingerprint_with">Поділитися відбитком із…</string>
   <string name="title_share_key">Поділитися ключем з…</string>
@@ -20,6 +21,7 @@
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
+  <string name="title_add_keys">Додати ключі</string>
   <string name="title_export_key">Експортувати ключ</string>
   <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
@@ -29,17 +31,27 @@
   <string name="title_help">Довідка</string>
   <string name="title_log_display">Журнал</string>
   <string name="title_create_key">Створити ключ</string>
+  <string name="title_exchange_keys">Обміняти ключі</string>
+  <string name="title_advanced_key_info">Додаткова інформація про ключ</string>
   <!--section-->
   <string name="section_user_ids">Сутності</string>
   <string name="section_keys">Підключі</string>
+  <string name="section_cloud_search">Хмарний пошук</string>
   <string name="section_general">Загальне</string>
   <string name="section_defaults">Типове</string>
   <string name="section_advanced">Додаткове</string>
+  <string name="section_passphrase_cache">Кеш парольної фрази</string>
+  <string name="section_certify">Сертифікувати</string>
   <string name="section_actions">Дії</string>
+  <string name="section_share_key">Ключ</string>
   <string name="section_certification_key">Ваш ключ використаний для сертифікації</string>
+  <string name="section_upload_key">Синхронізувати ключ</string>
   <string name="section_key_server">Сервер ключів</string>
   <string name="section_fingerprint">Відбиток</string>
   <string name="section_key_to_certify">Ключ для сертикації</string>
+  <string name="section_decrypt_files">Файли</string>
+  <string name="section_decrypt_text">Текст</string>
+  <string name="section_certs">Сертифікати</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Розшифрувати, перевірити та зберегти файл</string>
   <string name="btn_decrypt_verify_message">Розшифрувати і перевірити повідомлення</string>
@@ -58,12 +70,16 @@
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
+  <string name="btn_add_share_decrypted_text">Поширити розшифрований текст</string>
+  <string name="btn_decrypt_and_verify">і перевірити підписи</string>
+  <string name="btn_decrypt_files">Розшифрувати файли</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_create_key">Створити мій ключ</string>
+  <string name="menu_import_existing_key">Імпорт з файлу</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
   <string name="menu_key_edit_cancel">Скасувати</string>
@@ -79,11 +95,27 @@
   <string name="label_file_colon">Файл:</string>
   <string name="label_no_passphrase">Без парольної фрази</string>
   <string name="label_passphrase">Парольна фраза</string>
+  <string name="label_unlock">Розблоковується…</string>
   <string name="label_passphrase_again">Повторити пароль</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">Файл ASCII Armor</string>
+  <string name="label_file_ascii_armor">Увімкнути ASCII Armor</string>
   <string name="label_write_version_header">Нехай інші дізнаються, що ви користуєтеся OpenKeychain</string>
   <string name="label_write_version_header_summary">Напишіть \'OpenKeychain v2.7\' для підписів, зашифрованого тексту та експортованих ключів  OpenPGP</string>
+  <string name="label_use_default_yubikey_pin">Вживати типовий YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Вживати цифрову клавіатуру для YubiKey PIN</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Вживається типовий PIN (123456) для доступу до YubiKey чреез NFC</string>
+  <string name="label_asymmetric_from">Підписано:</string>
+  <string name="label_to">Зашифрувати до:</string>
+  <string name="label_delete_after_encryption">Вилучити файл після шифрування</string>
+  <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
+  <string name="label_encryption_algorithm">Алгоритм шифрування</string>
+  <string name="label_hash_algorithm">Хеш алгоритм</string>
+  <string name="label_symmetric">Зашифрувати з парольною фразою</string>
+  <string name="label_passphrase_cache_ttl">Кешувати час</string>
+  <string name="label_passphrase_cache_subs">Кешувати парольні фрази за підключем</string>
+  <string name="label_message_compression">Стиснення повідомлення</string>
+  <string name="label_file_compression">Стиснення файлу</string>
   <string name="label_keyservers">Сервери ключів</string>
   <string name="label_key_id">ІД ключа</string>
   <string name="label_creation">Створення</string>
@@ -95,8 +127,11 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_send_key">Синхронізувати із хмарою</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
+  <string name="label_first_keyserver_is_used">(Перший наведений сервер ключів є бажаний)</string>
+  <string name="label_preferred">бажаний</string>
   <string name="user_id_no_name">&lt;без імені&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <string name="no_key">&lt;без ключа&gt;</string>
@@ -152,6 +187,7 @@
   <string name="passphrase_must_not_be_empty">Будь ласка, введіть парольну фразу.</string>
   <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="passphrase_for">Введіть парольну фразу для \'%s\'</string>
+  <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
   <string name="file_delete_successful">Успішно вилучено.</string>
   <string name="no_file_selected">Виберіть спершу файл.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
@@ -159,18 +195,33 @@
   <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
+  <string name="specify_file_to_encrypt_to">Будь ласка, виберіть файл для шифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="specify_file_to_decrypt_to">Будь ласка, виберіть файл для розшифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані відкриті ключі?\nВи не зможете це відмінити!</string>
+  <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
+  <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: лише підключі підтримують ElGamal.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n
+ --export-secret-subkeys\nЗробіть ваш експорт з   --export-secret-keys\n натомість.</item>
+    <item quantity="few">%d погані секретні ключі проігноровані. Можливо ви експортували з параметром\n
+ --export-secret-subkeys\nЗробіть ваш експорт з   --export-secret-keys\n натомість.</item>
+    <item quantity="other">%d поганих секретних ключів проігноровано. Можливо ви експортували з параметром\n
+ --export-secret-subkeys\nЗробіть ваш експорт з   --export-secret-keys\n натомість.</item>
+  </plurals>
   <string name="list_empty">Цей список - порожній!</string>
   <string name="nfc_successful">Успішно надіслано ключ через промінь NFC!</string>
   <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
   <string name="fingerprint_copied_to_clipboard">Відбиток вже скопійовано до буфера обміну!</string>
   <string name="select_key_to_certify">Будь ласка, виберіть ключ для використання у сертифікації!</string>
   <string name="key_too_big_for_sharing">Ключ надто великий для цього способу поширення!</string>
+  <string name="text_copied_to_clipboard">Текст вже скопійовано у буфер обміну!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -189,12 +240,21 @@
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 для використання функції Androids NFC промінь!</string>
-  <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Ключ не знайдено!</string>
   <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Не підписано</string>
   <string name="decrypt_result_invalid_signature">Невірний підпис!</string>
+  <string name="decrypt_result_signature_uncertified">Підписано (не сертифіковано)</string>
+  <string name="decrypt_result_signature_expired_key">Термін дії ключа минув!</string>
+  <string name="decrypt_result_signature_revoked_key">Ключ вже відкликано!</string>
+  <string name="decrypt_result_signature_missing_key">Невідомий відкритий ключ</string>
+  <string name="decrypt_result_encrypted">Зашифровано</string>
+  <string name="decrypt_result_not_encrypted">Незашифровано</string>
+  <string name="decrypt_result_action_show">Показати</string>
+  <string name="decrypt_result_action_Lookup">Шукати</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">Мій ключ:</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">Готово.</string>
   <string name="progress_cancel">Скасувати</string>
@@ -284,7 +344,6 @@
   <string name="import_qr_code_wrong">Невірний штрих-код! Спробуйте знову!</string>
   <string name="import_qr_code_too_short_fingerprint">Відбиток надто короткий (&lt; 16 символів)</string>
   <!--Generic result toast-->
-  <string name="view_log">Переглянути журнал</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Успішно імпортовано ключ.</item>
@@ -307,7 +366,10 @@
     <item quantity="other">Успішно оновлено %1$d ключів%2$s.</item>
   </plurals>
   <string name="import_error_nothing">Нема що імпортувати.</string>
+  <string name="import_error_nothing_cancelled">Імпорт скасовано.</string>
   <!--Delete result toast-->
+  <string name="delete_nothing">Нема що вилучати.</string>
+  <string name="delete_cancelled">Операція вилучення скасована.</string>
   <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
@@ -329,7 +391,7 @@
   <string name="api_settings_delete_account">Видалити профіль</string>
   <string name="api_settings_package_name">Назва пакунку</string>
   <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
-  <string name="api_settings_accounts">Облікові записи</string>
+  <string name="api_settings_settings">Параметри</string>
   <string name="api_settings_accounts_empty">Немає облікового запису приєднаного до цієї програми.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
@@ -348,19 +410,29 @@
     <item quantity="few">%d ключі вибрано.</item>
     <item quantity="other">%d ключів вибрано.</item>
   </plurals>
+  <string name="key_list_empty_text1">Ключ не знайдено!</string>
+  <string name="key_list_filter_show_all">Показати усі ключі</string>
   <!--Key view-->
   <string name="key_view_action_edit">Редагувати ключ</string>
+  <string name="key_view_action_encrypt">Зашифрувати текст</string>
+  <string name="key_view_action_encrypt_files">файли</string>
   <string name="key_view_action_certify">Сертифікувати сутності</string>
   <string name="key_view_action_update">Оновити із сервера ключів</string>
   <string name="key_view_action_share_with">Поділитися із…</string>
+  <string name="key_view_action_share_nfc">Поділитися через NFC</string>
+  <string name="key_view_action_upload">Вивантажити на сервер ключів</string>
   <string name="key_view_tab_main">Основна інформація</string>
   <string name="key_view_tab_share">Поділитися</string>
   <string name="key_view_tab_keys">Підключі</string>
   <string name="key_view_tab_certs">Сертифікати</string>
   <string name="user_id_info_revoked_title">Відхилено</string>
   <string name="user_id_info_revoked_text">Ця сутність вже відкликана власником ключа. Вона більше не дійсна.</string>
+  <string name="user_id_info_certified_title">Сертифіковано</string>
+  <string name="user_id_info_uncertified_title">Несертифіковано</string>
   <string name="user_id_info_invalid_title">Недійсна</string>
   <string name="user_id_info_invalid_text">Щось неправильне у цій сутності!</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Змінити пароль</string>
   <string name="edit_key_action_add_identity">Додати сутність</string>
@@ -368,7 +440,10 @@
   <string name="edit_key_edit_user_id_title">Виберіть дію!</string>
   <string name="edit_key_edit_user_id_revoked">Ця сутність вже відкликана. Це не можна скасувати.</string>
   <string name="edit_key_edit_subkey_title">Виберіть дію!</string>
+  <string name="edit_key_new_subkey">новий підключ</string>
   <string name="edit_key_select_flag">Будь ласка, виберіть хоча б один прапор!</string>
+  <string name="edit_key_error_add_identity">Додати хоча б одну сутність!</string>
+  <string name="edit_key_error_add_subkey">Додати хоча б один підключ!</string>
   <!--Create key-->
   <string name="create_key_upload">Відвантажити ключ на сервер ключів</string>
   <string name="create_key_empty">Це поле - обов\'язкове</string>
@@ -377,8 +452,6 @@
   <string name="create_key_text">Введіть ваше повне ім\'я, електронну адреса та оберіть парольну фразу.</string>
   <string name="create_key_hint_full_name">Повне ім\'я, наприклад Степан Бандера</string>
   <!--View key-->
-  <string name="view_key_revoked">Цей ключ вже відкликано!</string>
-  <string name="view_key_expired">Термін дії цього ключа вже минув!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключі</string>
   <string name="nav_apps">Програми</string>
@@ -386,6 +459,7 @@
   <string name="drawer_close">Закрити панель навігації</string>
   <string name="my_keys">Мої ключі</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Набрати текст</string>
   <!--certs-->
   <string name="cert_default">типово</string>
   <string name="cert_none">жоден</string>
@@ -397,12 +471,17 @@
   <string name="cert_verify_error">Помилка!</string>
   <string name="cert_verify_unavailable">Недоступний ключ</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">Внутрішня помилка!</string>
+  <string name="msg_cancelled">Операція скасована.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Застосовується пакетна операція вставки.</string>
   <string name="msg_ip_bad_type_secret">Спробували імпортувати секретну в\'язку як публічну. Це вада. Будь ласка, відправте звіт!</string>
   <string name="msg_ip_delete_old_fail">Нема вилученого старого ключа (створюється новий?)</string>
   <string name="msg_ip_delete_old_ok">Вилучений старий ключ з бази даних</string>
   <string name="msg_ip_encode_fail">Операція не вдалася через помилку кодування</string>
+  <string name="msg_ip_error_io_exc">Операція не вдалася через помилку введення/виведення</string>
+  <string name="msg_ip_error_op_exc">Операція не вдалася через помилку бази даних</string>
+  <string name="msg_ip_error_remote_ex">Операція не вдалася через внутрішню помилку</string>
   <string name="msg_ip">Імпортується публічна в\'язка %s</string>
   <string name="msg_ip_insert_keyring">Шифруються дані із в\'язки</string>
   <string name="msg_ip_insert_keys">Аналізуються ключі</string>
@@ -423,12 +502,14 @@
     <item quantity="few">Ігнорується %s сертифікати, виданих невідомими відкритими ключами</item>
     <item quantity="other">Ігнорується %s сертифікатів, виданих невідомими відкритими ключами</item>
   </plurals>
+  <string name="msg_ip_uid_revoked">ІД користувача відхилене</string>
   <string name="msg_is_bad_type_public">Спробували імпортувати публічну в\'язку як секретну. Це вада. Будь ласка, відправте звіт!</string>
   <string name="msg_is_bad_type_uncanon">Спробували імпортувати в\'язку без канонізації. Це вада. Будь ласка, відправте звіт!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Імпортується секретний ключ %s</string>
   <string name="msg_is_db_exception">Помилка бази даних!</string>
   <string name="msg_is_importing_subkeys">Опрацьовуються секретні підключі</string>
+  <string name="msg_is_error_io_exc">Помилка шифрування в’язки</string>
   <string name="msg_is_pubring_generate">Генерується публічна в\'язка із секретної</string>
   <string name="msg_is_success_identical">В\'язка не містить нових даних. Нема що робити.</string>
   <string name="msg_is_success">Успішно імпортована секретна в\'язка</string>
@@ -456,12 +537,12 @@
   <string name="msg_mg_secret">Злиття у секретну в\'язку %s</string>
   <string name="msg_mg_new_subkey">Додається новий підключ %s</string>
   <string name="msg_mg_found_new">Знайдено %s нових сертифікатів у в\'язці</string>
+  <string name="msg_mg_unchanged">Нема що зливати</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">Генерується новий основний ключ</string>
   <string name="msg_cr_error_no_master">Не вказано параметрів основного ключа!</string>
   <string name="msg_cr_error_no_certify">Основний ключ повинен мати прапорець certify!</string>
   <string name="msg_cr_error_keysize_512">Розмір ключа має бути більшим або рівним 512!</string>
-  <string name="msg_cr_error_internal_pgp">Внутрішня помилка PGP!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Змінюється в\'язка %s</string>
   <string name="msg_mf_error_encode">Виняток шифрування!</string>
@@ -469,23 +550,47 @@
   <string name="msg_mf_error_keyid">Немає ІД ключа. Це внутрішня помилка! Будь ласка, надішліть звіт про ваду!</string>
   <string name="msg_mf_error_integrity">Внутрішня помилка - збій перевірки цілісності!</string>
   <string name="msg_mf_error_master_none">Не знайдено основного сертифікату для операцій! (Усе відкликано?)</string>
+  <string name="msg_mf_error_noexist_primary">Вказаний поганий ІД первинного користувача!</string>
+  <string name="msg_mf_error_noexist_revoke">Вказаний поганий ІД первинного користувача!</string>
+  <string name="msg_mf_error_revoked_primary">ІД відхилених користувачів не може бути первинним!</string>
   <string name="msg_mf_error_sig">Виняток підпису!</string>
   <string name="msg_mf_master">Змінюються основі сертифікації</string>
+  <string name="msg_mf_primary_replace_old">Замінюється сертифікат ІД попереднього первинного користувача</string>
+  <string name="msg_mf_primary_new">Генерується новий сертифікат для ІД нового первинного користувача</string>
   <string name="msg_mf_subkey_change">Змінюється підключ %s</string>
   <string name="msg_mf_error_subkey_missing">Спробували працювати із втраченим підключем %s!</string>
+  <string name="msg_mf_subkey_new">Додається новий підключ типу %s</string>
   <string name="msg_mf_subkey_new_id">Новий ід підключа: %s</string>
   <string name="msg_mf_error_past_expiry">Дата завершення дії не може бути у минулому!</string>
   <string name="msg_mf_subkey_revoke">Відкликається підключ %s</string>
   <string name="msg_mf_success">Успішно модифіковано в\'язку</string>
+  <string name="msg_mf_uid_add">Додається ід користувача %s</string>
+  <string name="msg_mf_uid_primary">Змінюється первинне ІД користувача на %s</string>
+  <string name="msg_mf_uid_revoke">Відхилення ІД користувача %s</string>
   <string name="msg_mf_uid_error_empty">ІД користувача не повинно бути порожнім!</string>
   <string name="msg_mf_unlock_error">Помилка розблокування в\'язки!</string>
   <string name="msg_mf_unlock">Розблоковується в\'язка</string>
   <!--Consolidate-->
+  <string name="msg_con_save_secret">Збереження секретних  в\'язок</string>
+  <string name="msg_con_save_public">Збереження публічних в\'язок</string>
+  <string name="msg_con_db_clear">Очищення бази даних</string>
+  <string name="msg_con_error_db">Помилка відкриття бази даних!</string>
   <string name="msg_con_error_public">Помилка повторного імпорту публічних ключів!</string>
   <string name="msg_con_error_secret">Помилка повторного імпорту секретних ключів!</string>
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">Ключ не знайдено!</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_file">Назва файла: %s</string>
+  <string name="msg_dc_clear_meta_mime">Тип MIME: %s</string>
+  <string name="msg_dc_clear_meta_size">Розмір файла: %s</string>
+  <string name="msg_dc_clear_meta_time">Час зміни: %s</string>
+  <string name="msg_dc_error_integrity_check">Помилка перевірки цілісності!</string>
+  <string name="msg_dc_ok">Гаразд</string>
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
     <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
@@ -496,6 +601,10 @@
   <string name="passp_cache_notif_n_keys">OpenKeychain має %d кешованих парольних фраз</string>
   <string name="passp_cache_notif_keys">Кешовані парольні фрази:</string>
   <string name="passp_cache_notif_clear">Очистити кеш</string>
+  <!--First Time-->
+  <string name="first_time_text1">Заберіть вашу приватність із OpenKeychain!</string>
+  <string name="first_time_create_key">Створити мій ключ</string>
+  <string name="first_time_skip">Пропустити установку</string>
   <!--unsorted-->
   <string name="section_certifier_id">Ким підписаний</string>
   <string name="section_cert">Дані сертифікату</string>
@@ -514,8 +623,8 @@
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
-  <!--First Time-->
-  <string name="first_time_text1">Заберіть вашу приватність із OpenKeychain!</string>
-  <string name="first_time_create_key">Створити мій ключ</string>
-  <string name="first_time_skip">Пропустити установку</string>
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

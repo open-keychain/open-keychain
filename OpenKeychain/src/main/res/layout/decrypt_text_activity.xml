@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/notify_area" />
-
-    <FrameLayout
-        android:id="@+id/decrypt_text_fragment_container"
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+    
+    <!--
+        fitsSystemWindows and layout_marginTop from
+        https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
+    -->
+    <LinearLayout
+        android:layout_below="@id/toolbar_include"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="-25dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-</LinearLayout>
+        <include layout="@layout/notify_area" />
+
+        <FrameLayout
+            android:id="@+id/decrypt_text_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</RelativeLayout>

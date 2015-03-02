@@ -33,17 +33,16 @@ import org.sufficientlysecure.keychain.R;
 /**
  * Class representing a LinearLayout that can fold and hide it's content when pressed
  * To use just add the following to your xml layout
-
- <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     custom:foldedLabel="@string/TEXT_TO_DISPLAY_WHEN_FOLDED"
-     custom:unFoldedLabel="@string/TEXT_TO_DISPLAY_WHEN_UNFOLDED">
-
-    <include layout="@layout/ELEMENTS_TO_BE_FOLDED"/>
-
- </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
-
+ * <p/>
+ * <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
+ * android:layout_width="wrap_content"
+ * android:layout_height="wrap_content"
+ * custom:foldedLabel="@string/TEXT_TO_DISPLAY_WHEN_FOLDED"
+ * custom:unFoldedLabel="@string/TEXT_TO_DISPLAY_WHEN_UNFOLDED">
+ * <p/>
+ * <include layout="@layout/ELEMENTS_TO_BE_FOLDED"/>
+ * <p/>
+ * </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
  */
 public class FoldableLinearLayout extends LinearLayout {
 
@@ -75,6 +74,7 @@ public class FoldableLinearLayout extends LinearLayout {
 
     /**
      * Load given attributes to inner variables,
+     *
      * @param context
      * @param attrs
      */
@@ -87,8 +87,8 @@ public class FoldableLinearLayout extends LinearLayout {
             a.recycle();
         }
         // If any attribute isn't found then set a default one
-        mFoldedLabel = (mFoldedLabel == null) ? context.getString(R.id.none) : mFoldedLabel;
-        mUnFoldedLabel = (mUnFoldedLabel == null) ? context.getString(R.id.none) : mUnFoldedLabel;
+        mFoldedLabel = (mFoldedLabel == null) ? context.getString(R.string.none) : mFoldedLabel;
+        mUnFoldedLabel = (mUnFoldedLabel == null) ? context.getString(R.string.none) : mUnFoldedLabel;
     }
 
     @Override
@@ -138,7 +138,7 @@ public class FoldableLinearLayout extends LinearLayout {
 
     private void initialiseInnerViews() {
         mFoldableIcon = (ImageView) mFoldableLayout.findViewById(R.id.foldableIcon);
-        mFoldableIcon.setImageResource(R.drawable.ic_action_expand);
+        mFoldableIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
         mFoldableTextView = (TextView) mFoldableLayout.findViewById(R.id.foldableText);
         mFoldableTextView.setText(mFoldedLabel);
 
@@ -151,7 +151,7 @@ public class FoldableLinearLayout extends LinearLayout {
             public void onClick(View view) {
                 mFolded = !mFolded;
                 if (mFolded) {
-                    mFoldableIcon.setImageResource(R.drawable.ic_action_collapse);
+                    mFoldableIcon.setImageResource(R.drawable.ic_expand_less_black_24dp);
                     mFoldableContainer.setVisibility(View.VISIBLE);
                     AlphaAnimation animation = new AlphaAnimation(0f, 1f);
                     animation.setDuration(mShortAnimationDuration);
@@ -159,12 +159,13 @@ public class FoldableLinearLayout extends LinearLayout {
                     mFoldableTextView.setText(mUnFoldedLabel);
 
                 } else {
-                    mFoldableIcon.setImageResource(R.drawable.ic_action_expand);
+                    mFoldableIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
                     AlphaAnimation animation = new AlphaAnimation(1f, 0f);
                     animation.setDuration(mShortAnimationDuration);
                     animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
-                        public void onAnimationStart(Animation animation) { }
+                        public void onAnimationStart(Animation animation) {
+                        }
 
                         @Override
                         public void onAnimationEnd(Animation animation) {
@@ -173,7 +174,8 @@ public class FoldableLinearLayout extends LinearLayout {
                         }
 
                         @Override
-                        public void onAnimationRepeat(Animation animation) { }
+                        public void onAnimationRepeat(Animation animation) {
+                        }
                     });
                     mFoldableContainer.startAnimation(animation);
                     mFoldableTextView.setText(mFoldedLabel);
@@ -185,6 +187,7 @@ public class FoldableLinearLayout extends LinearLayout {
 
     /**
      * Adds provided child view to foldableContainer View
+     *
      * @param child
      */
     @Override

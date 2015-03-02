@@ -172,7 +172,7 @@ public class Preferences {
     }
 
     public boolean useDefaultYubikeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, true);
+        return mSharedPreferences.getBoolean(Pref.USE_DEFAULT_YUBIKEY_PIN, false);
     }
 
     public void setUseDefaultYubikeyPin(boolean useDefaultYubikeyPin) {
@@ -182,7 +182,7 @@ public class Preferences {
     }
 
     public boolean useNumKeypadForYubikeyPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, false);
+        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN, true);
     }
 
     public void setUseNumKeypadForYubikeyPin(boolean useNumKeypadForYubikeyPin) {
@@ -200,7 +200,7 @@ public class Preferences {
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
-        Vector<String> servers = new Vector<String>();
+        Vector<String> servers = new Vector<>();
         String chunks[] = rawData.split(",");
         for (String c : chunks) {
             String tmp = c.trim();
@@ -281,7 +281,7 @@ public class Preferences {
                 case 3: {
                     // migrate keyserver to hkps
                     String[] serversArray = getKeyServers();
-                    ArrayList<String> servers = new ArrayList<String>(Arrays.asList(serversArray));
+                    ArrayList<String> servers = new ArrayList<>(Arrays.asList(serversArray));
                     ListIterator<String> it = servers.listIterator();
                     while (it.hasNext()) {
                         String server = it.next();

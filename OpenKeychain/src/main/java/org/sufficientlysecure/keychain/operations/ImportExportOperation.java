@@ -30,7 +30,12 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -40,13 +45,12 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedOutputStream;
@@ -58,6 +62,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** An operation class which implements high level import and export
@@ -123,6 +128,35 @@ public class ImportExportOperation extends BaseOperation {
         }
     }
 
+    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries, String keyServerUri) {
+
+        Iterator<ParcelableKeyRing> it = entries.iterator();
+        int numEntries = entries.size();
+
+        return importKeyRings(it, numEntries, keyServerUri);
+
+    }
+
+    public ImportKeyResult importKeyRings(ParcelableFileCache<ParcelableKeyRing> cache, String keyServerUri) {
+
+        // get entries from cached file
+        try {
+            IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
+            int numEntries = it.getSize();
+
+            return importKeyRings(it, numEntries, keyServerUri);
+        } catch (IOException e) {
+
+            // Special treatment here, we need a lot
+            OperationLog log = new OperationLog();
+            log.add(LogType.MSG_IMPORT, 0, 0);
+            log.add(LogType.MSG_IMPORT_ERROR_IO, 0, 0);
+
+            return new ImportKeyResult(ImportKeyResult.RESULT_ERROR, log);
+        }
+
+    }
+
     public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num, String keyServerUri) {
         updateProgress(R.string.progress_importing, 0, 100);
 
@@ -131,13 +165,11 @@ public class ImportExportOperation extends BaseOperation {
 
         // If there aren't even any keys, do nothing here.
         if (entries == null || !entries.hasNext()) {
-            return new ImportKeyResult(
-                    ImportKeyResult.RESULT_FAIL_NOTHING, log, 0, 0, 0, 0,
-                    new long[]{});
+            return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, log);
         }
 
         int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
-        ArrayList<Long> importedMasterKeyIds = new ArrayList<Long>();
+        ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
 
         boolean cancelled = false;
         int position = 0;
@@ -292,6 +324,16 @@ public class ImportExportOperation extends BaseOperation {
             // update progress
             position++;
         }
+
+        // Special: consolidate on secret key import (cannot be cancelled!)
+        if (secret > 0) {
+            setPreventCancel();
+            ConsolidateResult result = mProviderHelper.consolidateDatabaseStep1(mProgressable);
+            log.add(result, 1);
+        }
+
+        // Special: make sure new data is synced into contacts
+        ContactSyncAdapterService.requestSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];

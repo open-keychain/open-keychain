@@ -33,7 +33,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     private final Context mContext;
     private final ActionBar mActionBar;
     private final ViewPager mViewPager;
-    private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    private final ArrayList<TabInfo> mTabs = new ArrayList<>();
 
     static final class TabInfo {
         public final Class<?> clss;

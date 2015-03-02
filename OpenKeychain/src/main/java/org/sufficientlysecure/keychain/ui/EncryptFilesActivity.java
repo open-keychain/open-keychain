@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,14 +28,14 @@ import android.view.MenuItem;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -122,13 +121,13 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
     @Override
     public ArrayList<Uri> getInputUris() {
-        if (mInputUris == null) mInputUris = new ArrayList<Uri>();
+        if (mInputUris == null) mInputUris = new ArrayList<>();
         return mInputUris;
     }
 
     @Override
     public ArrayList<Uri> getOutputUris() {
-        if (mOutputUris == null) mOutputUris = new ArrayList<Uri>();
+        if (mOutputUris == null) mOutputUris = new ArrayList<>();
         return mOutputUris;
     }
 
@@ -170,7 +169,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     }
 
     @Override
-    public void onEncryptSuccess(Message message, SignEncryptResult pgpResult) {
+    public void onEncryptSuccess(SignEncryptResult result) {
         if (mDeleteAfterEncrypt) {
             for (Uri inputUri : mInputUris) {
                 DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
@@ -182,29 +181,25 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file
-            startActivity(sendWithChooserExcludingEncrypt(message));
+            startActivity(sendWithChooserExcludingEncrypt());
         } else {
             // Save encrypted file
-            pgpResult.createNotify(EncryptFilesActivity.this).show();
+            result.createNotify(EncryptFilesActivity.this).show();
         }
     }
 
     @Override
-    protected Bundle createEncryptBundle() {
+    protected SignEncryptParcel createEncryptBundle() {
         // fill values for this action
-        Bundle data = new Bundle();
+        SignEncryptParcel data = new SignEncryptParcel();
 
-        data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URIS);
-        data.putParcelableArrayList(KeychainIntentService.ENCRYPT_INPUT_URIS, mInputUris);
+        data.addInputUris(mInputUris);
+        data.addOutputUris(mOutputUris);
 
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URIS);
-        data.putParcelableArrayList(KeychainIntentService.ENCRYPT_OUTPUT_URIS, mOutputUris);
-
-        data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID,
-                Preferences.getPreferences(this).getDefaultFileCompression());
+        data.setCompressionId(Preferences.getPreferences(this).getDefaultMessageCompression());
 
         // Always use armor for messages
-        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, mUseArmor);
+        data.setEnableAsciiArmorOutput(mUseArmor);
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -212,13 +207,12 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             if (passphrase.length() == 0) {
                 passphrase = null;
             }
-            data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
+            data.setSymmetricPassphrase(passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_MASTER_ID, mSigningKeyId);
-            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptionKeyIds);
-            data.putString(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_PASSPHRASE, mSigningKeyPassphrase);
-            data.putSerializable(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_TIMESTAMP, mNfcTimestamp);
-            data.putByteArray(KeychainIntentService.ENCRYPT_SIGNATURE_NFC_HASH, mNfcHash);
+            data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
+            data.setSignatureMasterKeyId(mSigningKeyId);
+            data.setSignaturePassphrase(mSigningKeyPassphrase);
+            data.setNfcState(mNfcHash, mNfcTimestamp);
         }
         return data;
     }
@@ -226,8 +220,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     /**
      * Create Intent Chooser but exclude OK's EncryptActivity.
      */
-    private Intent sendWithChooserExcludingEncrypt(Message message) {
-        Intent prototype = createSendIntent(message);
+    private Intent sendWithChooserExcludingEncrypt() {
+        Intent prototype = createSendIntent();
         String title = getString(R.string.title_share_file);
 
         // we don't want to encrypt the encrypted, no inception ;)
@@ -239,7 +233,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         return new ShareHelper(this).createChooserExcluding(prototype, title, blacklist);
     }
 
-    private Intent createSendIntent(Message message) {
+    private Intent createSendIntent() {
         Intent sendIntent;
         // file
         if (mOutputUris.size() == 1) {
@@ -252,7 +246,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         sendIntent.setType("application/octet-stream");
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
-            Set<String> users = new HashSet<String>();
+            Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
                 String[] userId = KeyRing.splitUserId(user);
                 if (userId[1] != null) {
@@ -309,15 +303,13 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt_files_activity);
-
         // if called with an intent action, do not init drawer navigation
         if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
             // lock drawer
-            deactivateDrawerNavigation();
+//            deactivateDrawerNavigation();
             // TODO: back button to key?
         } else {
-            activateDrawerNavigation(savedInstanceState);
+//            activateDrawerNavigation(savedInstanceState);
         }
 
         // Handle intent actions
@@ -325,6 +317,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         updateModeFragment();
 
         mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_files_activity);
     }
 
     @Override
@@ -379,7 +376,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         String type = intent.getType();
-        ArrayList<Uri> uris = new ArrayList<Uri>();
+        ArrayList<Uri> uris = new ArrayList<>();
 
         if (extras == null) {
             extras = new Bundle();

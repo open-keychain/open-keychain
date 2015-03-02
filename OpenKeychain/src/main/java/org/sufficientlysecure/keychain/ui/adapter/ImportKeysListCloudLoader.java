@@ -21,13 +21,13 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.keyimport.CloudSearch;
+import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.keyimport.CloudSearch;
-import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public class ImportKeysListCloudLoader
     Preferences.CloudSearchPrefs mCloudPrefs;
     String mServerQuery;
 
-    private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<ImportKeysListEntry>();
+    private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
@@ -51,7 +51,7 @@ public class ImportKeysListCloudLoader
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
-        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
+        mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, null);
 
         if (mServerQuery == null) {
             Log.e(Constants.TAG, "mServerQuery is null!");
@@ -119,7 +119,7 @@ public class ImportKeysListCloudLoader
                 mEntryList.addAll(searchResult);
             }
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_OK, null);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, getKeyResult);
+            mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, getKeyResult);
         } catch (Keyserver.CloudSearchFailureException e) {
             // convert exception to result parcel
             int error = GetKeyResult.RESULT_ERROR;
@@ -140,7 +140,7 @@ public class ImportKeysListCloudLoader
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(logType, 0);
             GetKeyResult getKeyResult = new GetKeyResult(error, log);
-            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, getKeyResult);
+            mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, getKeyResult);
         }
     }
 }

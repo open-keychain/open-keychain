@@ -21,18 +21,14 @@ package org.sufficientlysecure.keychain.operations.results;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
-import android.os.Parcelable;
-import android.view.View;
-
-import com.github.johnpersano.supertoasts.SuperCardToast;
-import com.github.johnpersano.supertoasts.SuperToast;
-import com.github.johnpersano.supertoasts.SuperToast.Duration;
-import com.github.johnpersano.supertoasts.util.OnClickWrapper;
-import com.github.johnpersano.supertoasts.util.Style;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 public class DeleteResult extends OperationResult {
 
@@ -68,31 +64,32 @@ public class DeleteResult extends OperationResult {
         }
     };
 
-    public SuperCardToast createNotify(final Activity activity) {
+    public Showable createNotify(final Activity activity) {
 
         int resultType = getResult();
 
         String str;
-        int duration, color;
+        int duration;
+        Style style;
 
         // Not an overall failure
         if ((resultType & OperationResult.RESULT_ERROR) == 0) {
             String untilCancelled;
 
-            duration = Duration.EXTRA_LONG;
-            color = Style.GREEN;
+            duration = Notify.LENGTH_LONG;
+            style = Style.OK;
             untilCancelled = "";
 
             // Any warnings?
             if ((resultType & ImportKeyResult.RESULT_CANCELLED) > 0) {
                 duration = 0;
-                color = Style.ORANGE;
+                style = Style.WARN;
                 untilCancelled += activity.getString(R.string.with_cancelled);
             }
 
             // New and updated keys
             if (mOk > 0 && mFail > 0) {
-                color = Style.ORANGE;
+                style = Style.WARN;
                 duration = 0;
                 str = activity.getResources().getQuantityString(
                         R.plurals.delete_ok_but_fail_1, mOk, mOk);
@@ -105,13 +102,13 @@ public class DeleteResult extends OperationResult {
                 str = activity.getString(R.string.delete_cancelled);
             } else {
                 duration = 0;
-                color = Style.RED;
+                style = Style.ERROR;
                 str = "internal error";
             }
 
         } else {
             duration = 0;
-            color = Style.RED;
+            style = Style.ERROR;
             if (mFail == 0) {
                 str = activity.getString(R.string.delete_nothing);
             } else {
@@ -119,34 +116,15 @@ public class DeleteResult extends OperationResult {
             }
         }
 
-        boolean button = getLog() != null && !getLog().isEmpty();
-        SuperCardToast toast = new SuperCardToast(activity,
-                button ? SuperToast.Type.BUTTON : SuperToast.Type.STANDARD,
-                Style.getStyle(color, SuperToast.Animations.POPUP));
-        toast.setText(str);
-        toast.setDuration(duration);
-        toast.setIndeterminate(duration == 0);
-        toast.setSwipeToDismiss(true);
-        // If we have a log and it's non-empty, show a View Log button
-        if (button) {
-            toast.setButtonIcon(R.drawable.ic_action_view_as_list,
-                    activity.getResources().getString(R.string.view_log));
-            toast.setButtonTextColor(activity.getResources().getColor(R.color.black));
-            toast.setTextColor(activity.getResources().getColor(R.color.black));
-            toast.setOnClickWrapper(new OnClickWrapper("supercardtoast",
-                    new SuperToast.OnClickListener() {
-                        @Override
-                        public void onClick(View view, Parcelable token) {
-                            Intent intent = new Intent(
-                                    activity, LogDisplayActivity.class);
-                            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, DeleteResult.this);
-                            activity.startActivity(intent);
-                        }
-                    }
-            ));
-        }
-
-        return toast;
+        return Notify.createNotify(activity, str, duration, style, new ActionListener() {
+            @Override
+            public void onAction() {
+                Intent intent = new Intent(
+                        activity, LogDisplayActivity.class);
+                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, DeleteResult.this);
+                activity.startActivity(intent);
+            }
+        }, R.string.view_log);
 
     }
 

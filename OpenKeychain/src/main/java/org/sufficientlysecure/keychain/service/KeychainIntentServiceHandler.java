@@ -27,8 +27,8 @@ import android.support.v4.app.FragmentManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainIntentServiceHandler extends Handler {
 
@@ -44,6 +44,11 @@ public class KeychainIntentServiceHandler extends Handler {
     public static final String DATA_PROGRESS_MAX = "max";
     public static final String DATA_MESSAGE = "message";
     public static final String DATA_MESSAGE_ID = "message_id";
+
+    // keybase proof specific
+    public static final String KEYBASE_PROOF_URL = "keybase_proof_url";
+    public static final String KEYBASE_PRESENCE_URL = "keybase_presence_url";
+    public static final String KEYBASE_PRESENCE_LABEL = "keybase_presence_label";
 
     Activity mActivity;
     ProgressDialogFragment mProgressDialogFragment;
@@ -73,6 +78,10 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public void showProgressDialog(FragmentActivity activity) {
+        if (mProgressDialogFragment == null) {
+            return;
+        }
+
         // TODO: This is a hack!, see
         // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
@@ -89,7 +98,8 @@ public class KeychainIntentServiceHandler extends Handler {
         Bundle data = message.getData();
 
         if (mProgressDialogFragment == null) {
-            Log.e(Constants.TAG, "Progress has not been updated because mProgressDialogFragment was null!");
+            // Log.e(Constants.TAG,
+            // "Progress has not been updated because mProgressDialogFragment was null!");
             return;
         }
 
@@ -131,6 +141,7 @@ public class KeychainIntentServiceHandler extends Handler {
 
             case MESSAGE_PREVENT_CANCEL:
                 mProgressDialogFragment.setPreventCancel(true);
+                break;
 
             default:
                 Log.e(Constants.TAG, "unknown handler message!");

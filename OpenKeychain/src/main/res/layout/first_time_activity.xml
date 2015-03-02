@@ -4,6 +4,11 @@
     android:layout_height="wrap_content"
     android:paddingTop="16dp">
 
+    <ImageView
+        android:id="@+id/status_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statusbar_height" />
+
     <LinearLayout
         android:id="@+id/first_time_buttons"
         android:layout_width="match_parent"
@@ -91,6 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_below="@+id/status_bar"
         android:layout_above="@+id/first_time_buttons">
 
         <TextView
@@ -99,7 +105,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/app_name"
             android:drawableLeft="@drawable/ic_launcher"
-            android:drawablePadding="16dp"
+            android:drawablePadding="8dp"
             android:gravity="center"
             android:layout_gravity="center_horizontal" />
 
@@ -127,6 +133,5 @@
             android:layout_marginBottom="16dp" />
 
     </LinearLayout>
-
 
 </RelativeLayout>

@@ -20,14 +20,14 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+
+import com.astuetz.PagerSlidingTabStrip;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
-import org.sufficientlysecure.keychain.ui.widget.SlidingTabLayout;
 
-public class HelpActivity extends ActionBarActivity {
+public class HelpActivity extends BaseActivity {
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
 
     public static final int TAB_START = 0;
@@ -44,16 +44,16 @@ public class HelpActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-
-        setContentView(R.layout.help_activity);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        SlidingTabLayout slidingTabLayout =
-                (SlidingTabLayout) findViewById(R.id.sliding_tab_layout);
+        PagerSlidingTabStrip slidingTabLayout =
+                (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
 
         mTabsAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabsAdapter);
@@ -97,5 +97,10 @@ public class HelpActivity extends ActionBarActivity {
 
         // switch to tab selected by extra
         mViewPager.setCurrentItem(selectedTab);
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.help_activity);
     }
 }

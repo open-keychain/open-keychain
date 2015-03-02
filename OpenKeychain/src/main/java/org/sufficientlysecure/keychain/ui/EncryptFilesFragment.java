@@ -36,10 +36,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 
 import java.io.File;
 import java.util.HashMap;
@@ -59,7 +59,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     private View mShareFile;
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
-    private final Map<Uri, Bitmap> thumbnailCache = new HashMap<Uri, Bitmap>();
+    private final Map<Uri, Bitmap> thumbnailCache = new HashMap<>();
 
     @Override
     public void onAttach(Activity activity) {
@@ -224,7 +224,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     @Override
     public void onNotifyUpdate() {
         // Clear cache if needed
-        for (Uri uri : new HashSet<Uri>(thumbnailCache.keySet())) {
+        for (Uri uri : new HashSet<>(thumbnailCache.keySet())) {
             if (!mEncryptInterface.getInputUris().contains(uri)) {
                 thumbnailCache.remove(uri);
             }

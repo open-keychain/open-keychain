@@ -24,13 +24,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
-import android.widget.Toast;
+import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -42,9 +40,9 @@ import java.io.File;
 public class ExportHelper {
     protected File mExportFile;
 
-    ActionBarActivity mActivity;
+    FragmentActivity mActivity;
 
-    public ExportHelper(ActionBarActivity activity) {
+    public ExportHelper(FragmentActivity activity) {
         super();
         this.mActivity = activity;
     }

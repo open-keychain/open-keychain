@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/key_list_swipe_container"
-    android:layout_width="match_parent"
+<RelativeLayout xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    >
+
     <!--rebuild functionality of ListFragment -->
     <FrameLayout
         android:layout_width="match_parent"
@@ -13,10 +14,8 @@
             android:id="@+id/key_list_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clipToPadding="false"
             android:drawSelectorOnTop="true"
             android:fastScrollEnabled="true"
-            android:paddingBottom="16dp"
             android:paddingLeft="16dp"
             android:paddingRight="32dp"
             android:scrollbarStyle="outsideOverlay" />
@@ -38,4 +37,54 @@
 
         </LinearLayout>
     </FrameLayout>
-</org.sufficientlysecure.keychain.ui.widget.ListAwareSwipeRefreshLayout>
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fab_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        fab:fab_addButtonColorNormal="@color/primary"
+        fab:fab_addButtonColorPressed="@color/primary_dark"
+        fab:fab_addButtonSize="normal"
+        fab:fab_addButtonPlusIconColor="@color/icons"
+        fab:fab_expandDirection="up"
+        fab:fab_labelStyle="@style/FabMenuStyle"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        >
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_qr_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_qrcode_white_24dp"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
+            fab:fab_title="Scan QR Code"
+            fab:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_cloud_search_24px"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
+            fab:fab_title="Search Cloud"
+            fab:fab_size="mini" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/ic_folder_white_24dp"
+            fab:fab_colorNormal="@color/primary"
+            fab:fab_colorPressed="@color/primary_dark"
+            fab:fab_title="Import from File"
+            fab:fab_size="mini" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+</RelativeLayout>

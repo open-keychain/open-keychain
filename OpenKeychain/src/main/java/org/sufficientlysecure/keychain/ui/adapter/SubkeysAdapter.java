@@ -35,11 +35,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -160,7 +160,11 @@ public class SubkeysAdapter extends CursorAdapter {
                 cursor.getString(INDEX_KEY_CURVE_OID)
         ));
 
-        if (mSaveKeyringParcel != null && mSaveKeyringParcel.mStripSubKeys.contains(keyId)) {
+        SubkeyChange change = mSaveKeyringParcel != null
+                ? mSaveKeyringParcel.getSubkeyChange(keyId)
+                : null;
+
+        if (change != null && change.mDummyStrip) {
             algorithmStr.append(", ");
             final SpannableString boldStripped = new SpannableString(
                     context.getString(R.string.key_stripped)
@@ -268,12 +272,12 @@ public class SubkeysAdapter extends CursorAdapter {
                     PorterDuff.Mode.SRC_IN);
 
             if (isRevoked) {
-                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout);
+                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24px);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
-                vStatus.setImageResource(R.drawable.status_signature_expired_cutout);
+                vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24px);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);
@@ -297,7 +301,7 @@ public class SubkeysAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_subkey_item, null);
+        View view = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
         if (mDefaultTextColor == null) {
             TextView keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();

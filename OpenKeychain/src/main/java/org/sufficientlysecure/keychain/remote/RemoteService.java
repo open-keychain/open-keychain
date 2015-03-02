@@ -27,7 +27,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Binder;
-import android.text.TextUtils;
 
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -216,9 +215,7 @@ public abstract class RemoteService extends Service {
         String[] callingPackages = getPackageManager().getPackagesForUid(uid);
 
         // is calling package allowed to use this service?
-        for (int i = 0; i < callingPackages.length; i++) {
-            String currentPkg = callingPackages[i];
-
+        for (String currentPkg : callingPackages) {
             if (isPackageAllowed(currentPkg)) {
                 return true;
             }

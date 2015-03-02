@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.util;
 import android.content.res.AssetManager;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -50,7 +49,7 @@ public class TlsHelper {
         }
     }
 
-    private static Map<String, byte[]> sStaticCA = new HashMap<String, byte[]>();
+    private static Map<String, byte[]> sStaticCA = new HashMap<>();
 
     public static void addStaticCA(String domain, byte[] certificate) {
         sStaticCA.put(domain, certificate);
@@ -120,13 +119,7 @@ public class TlsHelper {
             urlConnection.setSSLSocketFactory(context.getSocketFactory());
 
             return urlConnection;
-        } catch (CertificateException e) {
-            throw new TlsHelperException(e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new TlsHelperException(e);
-        } catch (KeyStoreException e) {
-            throw new TlsHelperException(e);
-        } catch (KeyManagementException e) {
+        } catch (CertificateException | KeyManagementException | KeyStoreException | NoSuchAlgorithmException e) {
             throw new TlsHelperException(e);
         }
     }

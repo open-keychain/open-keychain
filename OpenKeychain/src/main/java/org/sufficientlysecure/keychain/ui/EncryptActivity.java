@@ -8,13 +8,15 @@ import android.os.Messenger;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 
 import java.util.Date;
 
-public abstract class EncryptActivity extends DrawerActivity {
+public abstract class EncryptActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
@@ -82,7 +84,10 @@ public abstract class EncryptActivity extends DrawerActivity {
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, createEncryptBundle());
+
+        Bundle data = new Bundle();
+        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, createEncryptBundle());
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
         KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this,
@@ -92,28 +97,31 @@ public abstract class EncryptActivity extends DrawerActivity {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    SignEncryptResult pgpResult =
+                    SignEncryptResult result =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
 
-                    if (pgpResult.isPending()) {
-                        if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-                                SignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+                    PgpSignEncryptResult pgpResult = result.getPending();
+
+                    if (pgpResult != null && pgpResult.isPending()) {
+                        if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+                                PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
                             startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-                        } else if ((pgpResult.getResult() & SignEncryptResult.RESULT_PENDING_NFC) ==
-                                SignEncryptResult.RESULT_PENDING_NFC) {
+                        } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
+                                PgpSignEncryptResult.RESULT_PENDING_NFC) {
 
                             mNfcTimestamp = pgpResult.getNfcTimestamp();
-                            startNfcSign(pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                            startNfcSign(pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(),
+                                    pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
                         return;
                     }
 
-                    if (pgpResult.success()) {
-                        onEncryptSuccess(message, pgpResult);
+                    if (result.success()) {
+                        onEncryptSuccess(result);
                     } else {
-                        pgpResult.createNotify(EncryptActivity.this).show();
+                        result.createNotify(EncryptActivity.this).show();
                     }
 
                     // no matter the result, reset parameters
@@ -136,8 +144,8 @@ public abstract class EncryptActivity extends DrawerActivity {
 
     protected abstract boolean inputIsValid();
 
-    protected abstract void onEncryptSuccess(Message message, SignEncryptResult result);
+    protected abstract void onEncryptSuccess(SignEncryptResult result);
 
-    protected abstract Bundle createEncryptBundle();
+    protected abstract SignEncryptParcel createEncryptBundle();
 
 }

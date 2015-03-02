@@ -26,10 +26,25 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import com.textuality.keybase.lib.Proof;
+import com.textuality.keybase.lib.prover.Prover;
+
+import org.json.JSONObject;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
+import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -41,34 +56,39 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import de.measite.minidns.Client;
+import de.measite.minidns.DNSMessage;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.Data;
+import de.measite.minidns.record.TXT;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -86,9 +106,13 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
+    public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
+
     public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
     public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
+
+    public static final String ACTION_PROMOTE_KEYRING = Constants.INTENT_PREFIX + "PROMOTE_KEYRING";
 
     public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
@@ -108,32 +132,24 @@ public class KeychainIntentService extends IntentService implements Progressable
     // encrypt, decrypt, import export
     public static final String TARGET = "target";
     public static final String SOURCE = "source";
+
     // possible targets:
     public static final int IO_BYTES = 1;
     public static final int IO_URI = 2;
-    public static final int IO_URIS = 3;
-
-    public static final String SELECTED_URI = "selected_uri";
 
     // encrypt
-    public static final String ENCRYPT_SIGNATURE_MASTER_ID = "secret_key_id";
-    public static final String ENCRYPT_SIGNATURE_KEY_PASSPHRASE = "secret_key_passphrase";
-    public static final String ENCRYPT_SIGNATURE_NFC_TIMESTAMP = "signature_nfc_timestamp";
-    public static final String ENCRYPT_SIGNATURE_NFC_HASH = "signature_nfc_hash";
-    public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
-    public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
-    public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
-    public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
     public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
-    public static final String ENCRYPT_INPUT_URIS = "input_uris";
     public static final String ENCRYPT_DECRYPT_OUTPUT_URI = "output_uri";
-    public static final String ENCRYPT_OUTPUT_URIS = "output_uris";
-    public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
+    public static final String SIGN_ENCRYPT_PARCEL = "sign_encrypt_parcel";
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_PASSPHRASE = "passphrase";
     public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
+
+    // keybase proof
+    public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
+    public static final String KEYBASE_PROOF = "keybase_proof";
 
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
@@ -160,6 +176,10 @@ public class KeychainIntentService extends IntentService implements Progressable
     // certify key
     public static final String CERTIFY_PARCEL = "certify_parcel";
 
+    // promote key
+    public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
+    public static final String PROMOTE_TYPE = "promote_type";
+
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
 
@@ -167,9 +187,6 @@ public class KeychainIntentService extends IntentService implements Progressable
     /*
      * possible data keys as result send over messenger
      */
-
-    // encrypt
-    public static final String RESULT_BYTES = "encrypted_data";
 
     // decrypt/verify
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
@@ -223,303 +240,357 @@ public class KeychainIntentService extends IntentService implements Progressable
         String action = intent.getAction();
 
         // executeServiceMethod action from extra bundle
-        if (ACTION_CERTIFY_KEYRING.equals(action)) {
+        switch (action) {
+            case ACTION_CERTIFY_KEYRING: {
 
-            // Input
-            CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
-            String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
+                // Input
+                CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
+                String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
 
-            // Operation
-            CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
-            CertifyResult result = op.certify(parcel, keyServerUri);
+                // Operation
+                CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
+                CertifyResult result = op.certify(parcel, keyServerUri);
 
-            // Result
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-        } else if (ACTION_CONSOLIDATE.equals(action)) {
-
-            // Operation
-            ConsolidateResult result;
-            if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
-                result = new ProviderHelper(this).consolidateDatabaseStep2(this);
-            } else {
-                result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+                break;
             }
+            case ACTION_CONSOLIDATE: {
 
-            // Result
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                // Operation
+                ConsolidateResult result;
+                if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                    result = new ProviderHelper(this).consolidateDatabaseStep2(this);
+                } else {
+                    result = new ProviderHelper(this).consolidateDatabaseStep1(this);
+                }
 
-        } else if (ACTION_DECRYPT_METADATA.equals(action)) {
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-            try {
+                break;
+            }
+            case ACTION_DECRYPT_METADATA: {
+
+                try {
                 /* Input */
-                String passphrase = data.getString(DECRYPT_PASSPHRASE);
-                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
-                InputData inputData = createDecryptInputData(data);
+                    InputData inputData = createDecryptInputData(data);
 
                 /* Operation */
 
-                Bundle resultData = new Bundle();
+                    Bundle resultData = new Bundle();
 
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        this, new ProviderHelper(this), this, inputData, null
-                );
-                builder.setAllowSymmetricDecryption(true)
-                        .setPassphrase(passphrase)
-                        .setDecryptMetadataOnly(true)
-                        .setNfcState(nfcDecryptedSessionKey);
+                    // verifyText and decrypt returning additional resultData values for the
+                    // verification of signatures
+                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                            this, new ProviderHelper(this), this, inputData, null
+                    );
+                    builder.setAllowSymmetricDecryption(true)
+                            .setPassphrase(passphrase)
+                            .setDecryptMetadataOnly(true)
+                            .setNfcState(nfcDecryptedSessionKey);
 
-                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, decryptVerifyResult);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, decryptVerifyResult);
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
+                }
+
+                break;
             }
+            case ACTION_VERIFY_KEYBASE_PROOF: {
 
-        } else if (ACTION_DECRYPT_VERIFY.equals(action)) {
+                try {
+                    Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
+                    setProgress(R.string.keybase_message_fetching_data, 0, 100);
 
-            try {
+                    Prover prover = Prover.findProverFor(proof);
+
+                    if (prover == null) {
+                        sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof.getPrettyName());
+                        return;
+                    }
+
+                    if (!prover.fetchProofData()) {
+                        sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
+                        return;
+                    }
+                    String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
+                    if (!prover.checkFingerprint(requiredFingerprint)) {
+                        sendProofError(getString(R.string.keybase_key_mismatch));
+                        return;
+                    }
+
+                    String domain = prover.dnsTxtCheckRequired();
+                    if (domain != null) {
+                        DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
+                        if (dnsQuery == null) {
+                            sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
+                            return;
+                        }
+                        Record[] records = dnsQuery.getAnswers();
+                        List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                        for (Record r : records) {
+                            Data d = r.getPayload();
+                            if (d instanceof TXT) {
+                                extents.add(((TXT) d).getExtents());
+                            }
+                        }
+                        if (!prover.checkDnsTxt(extents)) {
+                            sendProofError(prover.getLog(), null);
+                            return;
+                        }
+                    }
+
+                    byte[] messageBytes = prover.getPgpMessage().getBytes();
+                    if (prover.rawMessageCheckRequired()) {
+                        InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream(messageBytes));
+                        if (!prover.checkRawMessageBytes(messageByteStream)) {
+                            sendProofError(prover.getLog(), null);
+                            return;
+                        }
+                    }
+
+                    // kind of awkward, but this whole class wants to pull bytes out of “data”
+                    data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
+                    data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, messageBytes);
+
+                    InputData inputData = createDecryptInputData(data);
+                    OutputStream outStream = createCryptOutputStream(data);
+
+                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                            this, new ProviderHelper(this), this,
+                            inputData, outStream
+                    );
+                    builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
+
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    outStream.close();
+
+                    if (!decryptVerifyResult.success()) {
+                        OperationLog log = decryptVerifyResult.getLog();
+                        OperationResult.LogEntryParcel lastEntry = null;
+                        for (OperationResult.LogEntryParcel entry : log) {
+                            lastEntry = entry;
+                        }
+                        sendProofError(getString(lastEntry.mType.getMsgId()));
+                        return;
+                    }
+
+                    if (!prover.validate(outStream.toString())) {
+                        sendProofError(getString(R.string.keybase_message_payload_mismatch));
+                        return;
+                    }
+
+                    Bundle resultData = new Bundle();
+                    resultData.putString(KeychainIntentServiceHandler.DATA_MESSAGE, "OK");
+
+                    // these help the handler construct a useful human-readable message
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
+                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
+                }
+
+                break;
+            }
+            case ACTION_DECRYPT_VERIFY: {
+
+                try {
                 /* Input */
-                String passphrase = data.getString(DECRYPT_PASSPHRASE);
-                byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
-                InputData inputData = createDecryptInputData(data);
-                OutputStream outStream = createCryptOutputStream(data);
+                    InputData inputData = createDecryptInputData(data);
+                    OutputStream outStream = createCryptOutputStream(data);
 
                 /* Operation */
 
-                Bundle resultData = new Bundle();
+                    Bundle resultData = new Bundle();
 
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
-                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                        this, new ProviderHelper(this), this,
-                        inputData, outStream
-                );
-                builder.setAllowSymmetricDecryption(true)
-                        .setPassphrase(passphrase)
-                        .setNfcState(nfcDecryptedSessionKey);
+                    // verifyText and decrypt returning additional resultData values for the
+                    // verification of signatures
+                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
+                            this, new ProviderHelper(this), this,
+                            inputData, outStream
+                    );
+                    builder.setAllowSymmetricDecryption(true)
+                            .setPassphrase(passphrase)
+                            .setNfcState(nfcDecryptedSessionKey);
 
-                DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                outStream.close();
+                    outStream.close();
 
-                resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
+                    resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
                 /* Output */
 
-                finalizeDecryptOutputStream(data, resultData, outStream);
+                    finalizeDecryptOutputStream(data, resultData, outStream);
 
-                Log.logDebugBundle(resultData, "resultData");
+                    Log.logDebugBundle(resultData, "resultData");
 
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
+                }
+
+                break;
             }
+            case ACTION_DELETE: {
 
-        } else if (ACTION_DELETE.equals(action)) {
+                // Input
+                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
 
-            // Input
-            long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
-            boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+                // Operation
+                DeleteOperation op = new DeleteOperation(this, new ProviderHelper(this), this);
+                DeleteResult result = op.execute(masterKeyIds, isSecret);
 
-            // Operation
-            DeleteOperation op = new DeleteOperation(this, new ProviderHelper(this), this);
-            DeleteResult result = op.execute(masterKeyIds, isSecret);
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-            // Result
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-
-        } else if (ACTION_EDIT_KEYRING.equals(action)) {
-
-            // Input
-            SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-            String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
-
-            // Operation
-            EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
-            EditKeyResult result = op.execute(saveParcel, passphrase);
-
-            // Result
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-
-        } else if (ACTION_EXPORT_KEYRING.equals(action)) {
-
-            // Input
-            boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
-            String outputFile = data.getString(EXPORT_FILENAME);
-            Uri outputUri = data.getParcelable(EXPORT_URI);
-
-            boolean exportAll = data.getBoolean(EXPORT_ALL);
-            long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-
-            // Operation
-            ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
-            ExportResult result;
-            if (outputFile != null) {
-                result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
-            } else {
-                result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
+                break;
             }
+            case ACTION_EDIT_KEYRING: {
 
-            // Result
-            sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                // Input
+                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
+                String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
 
-        } else if (ACTION_IMPORT_KEYRING.equals(action)) {
+                // Operation
+                EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
+                EditKeyResult result = op.execute(saveParcel, passphrase);
 
-            try {
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+
+                break;
+            }
+            case ACTION_PROMOTE_KEYRING: {
+
+                // Input
+                long keyRingId = data.getInt(EXPORT_KEY_RING_MASTER_KEY_ID);
+
+                // Operation
+                PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
+                PromoteKeyResult result = op.execute(keyRingId);
+
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+
+                break;
+            }
+            case ACTION_EXPORT_KEYRING: {
+
+                // Input
+                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
+                String outputFile = data.getString(EXPORT_FILENAME);
+                Uri outputUri = data.getParcelable(EXPORT_URI);
+
+                boolean exportAll = data.getBoolean(EXPORT_ALL);
+                long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
+
+                // Operation
+                ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
+                ExportResult result;
+                if (outputFile != null) {
+                    result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
+                } else {
+                    result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
+                }
+
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+
+                break;
+            }
+            case ACTION_IMPORT_KEYRING: {
 
                 // Input
                 String keyServer = data.getString(IMPORT_KEY_SERVER);
-                Iterator<ParcelableKeyRing> entries;
-                int numEntries;
-                if (data.containsKey(IMPORT_KEY_LIST)) {
-                    // get entries from intent
-                    ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
-                    entries = list.iterator();
-                    numEntries = list.size();
-                } else {
-                    // get entries from cached file
-                    ParcelableFileCache<ParcelableKeyRing> cache =
-                            new ParcelableFileCache<ParcelableKeyRing>(this, "key_import.pcl");
-                    IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
-                    entries = it;
-                    numEntries = it.getSize();
-                }
+                ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                ParcelableFileCache<ParcelableKeyRing> cache =
+                        new ParcelableFileCache<>(this, "key_import.pcl");
 
                 // Operation
                 ImportExportOperation importExportOperation = new ImportExportOperation(
                         this, providerHelper, this, mActionCanceled);
-                ImportKeyResult result = importExportOperation.importKeyRings(entries, numEntries, keyServer);
-
-                // Special: consolidate on secret key import (cannot be cancelled!)
-                if (result.mSecret > 0) {
-                    // TODO move this into the import operation
-                    providerHelper.consolidateDatabaseStep1(this);
-                }
-
-                // Special: make sure new data is synced into contacts
-                ContactSyncAdapterService.requestSync();
+                // Either list or cache must be null, no guarantees otherwise.
+                ImportKeyResult result = list != null
+                        ? importExportOperation.importKeyRings(list, keyServer)
+                        : importExportOperation.importKeyRings(cache, keyServer);
 
                 // Result
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
+
+                break;
+
             }
+            case ACTION_SIGN_ENCRYPT: {
 
-        } else if (ACTION_SIGN_ENCRYPT.equals(action)) {
+                // Input
+                SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
 
-            try {
-                /* Input */
-                int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
-                Bundle resultData = new Bundle();
+                // Operation
+                SignEncryptOperation op = new SignEncryptOperation(
+                        this, new ProviderHelper(this), this, mActionCanceled);
+                SignEncryptResult result = op.execute(inputParcel);
 
-                long sigMasterKeyId = data.getLong(ENCRYPT_SIGNATURE_MASTER_ID);
-                String sigKeyPassphrase = data.getString(ENCRYPT_SIGNATURE_KEY_PASSPHRASE);
+                // Result
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
 
-                byte[] nfcHash = data.getByteArray(ENCRYPT_SIGNATURE_NFC_HASH);
-                Date nfcTimestamp = (Date) data.getSerializable(ENCRYPT_SIGNATURE_NFC_TIMESTAMP);
+                break;
+            }
+            case ACTION_UPLOAD_KEYRING: {
+                try {
 
-                String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
-
-                boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
-                long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
-                int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
-                int urisCount = data.containsKey(ENCRYPT_INPUT_URIS) ? data.getParcelableArrayList(ENCRYPT_INPUT_URIS).size() : 1;
-                for (int i = 0; i < urisCount; i++) {
-                    data.putInt(SELECTED_URI, i);
-                    InputData inputData = createEncryptInputData(data);
-                    OutputStream outStream = createCryptOutputStream(data);
-                    String originalFilename = getOriginalFilename(data);
+                    /* Input */
+                    String keyServer = data.getString(UPLOAD_KEY_SERVER);
+                    // and dataUri!
 
                     /* Operation */
-                    PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(
-                            this, new ProviderHelper(this), this, inputData, outStream
-                    );
-                    builder.setEnableAsciiArmorOutput(useAsciiArmor)
-                            .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                            .setCompressionId(compressionId)
-                            .setSymmetricEncryptionAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                            .setEncryptionMasterKeyIds(encryptionKeyIds)
-                            .setSymmetricPassphrase(symmetricPassphrase)
-                            .setOriginalFilename(originalFilename);
+                    HkpKeyserver server = new HkpKeyserver(keyServer);
+
+                    CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
+                    ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
 
                     try {
-
-                        // Find the appropriate subkey to sign with
-                        CachedPublicKeyRing signingRing =
-                                new ProviderHelper(this).getCachedPublicKeyRing(sigMasterKeyId);
-                        long sigSubKeyId = signingRing.getSecretSignId();
-
-                        // Set signature settings
-                        builder.setSignatureMasterKeyId(sigMasterKeyId)
-                                .setSignatureSubKeyId(sigSubKeyId)
-                                .setSignaturePassphrase(sigKeyPassphrase)
-                                .setSignatureHashAlgorithm(
-                                        Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                                .setAdditionalEncryptId(sigMasterKeyId);
-                        if (nfcHash != null && nfcTimestamp != null) {
-                            builder.setNfcState(nfcHash, nfcTimestamp);
-                        }
-
-                    } catch (PgpKeyNotFoundException e) {
-                        // encrypt-only
-                        // TODO Just silently drop the requested signature? Shouldn't we throw here?
+                        importExportOperation.uploadKeyRingToServer(server, keyring);
+                    } catch (Keyserver.AddKeyException e) {
+                        throw new PgpGeneralException("Unable to export key to selected server");
                     }
 
-                    // this assumes that the bytes are cleartext (valid for current implementation!)
-                    if (source == IO_BYTES) {
-                        builder.setCleartextInput(true);
-                    }
-
-                    SignEncryptResult result = builder.build().execute();
-                    resultData.putParcelable(SignEncryptResult.EXTRA_RESULT, result);
-
-                    outStream.close();
-
-                    /* Output */
-
-                    finalizeEncryptOutputStream(data, resultData, outStream);
-
+                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                } catch (Exception e) {
+                    sendErrorToHandler(e);
                 }
-
-                Log.logDebugBundle(resultData, "resultData");
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-        } else if (ACTION_UPLOAD_KEYRING.equals(action)) {
-
-            try {
-
-                /* Input */
-                String keyServer = data.getString(UPLOAD_KEY_SERVER);
-                // and dataUri!
-
-                /* Operation */
-                HkpKeyserver server = new HkpKeyserver(keyServer);
-
-                CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                ImportExportOperation importExportOperation = new ImportExportOperation(this, new ProviderHelper(this), this);
-
-                try {
-                    importExportOperation.uploadKeyRingToServer(server, keyring);
-                } catch (Keyserver.AddKeyException e) {
-                    throw new PgpGeneralException("Unable to export key to selected server");
-                }
-
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
+                break;
             }
         }
+    }
 
+    private void sendProofError(List<String> log, String label) {
+        String msg = null;
+        label = (label == null) ? "" : label + ": ";
+        for (String m : log) {
+            Log.e(Constants.TAG, label + m);
+            msg = m;
+        }
+        sendProofError(label + msg);
+    }
+
+    private void sendProofError(String msg) {
+        Bundle bundle = new Bundle();
+        bundle.putString(KeychainIntentServiceHandler.DATA_ERROR, msg);
+        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, bundle);
     }
 
     private void sendErrorToHandler(Exception e) {
@@ -532,7 +603,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         } else {
             message = e.getMessage();
         }
-
         Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
 
         Bundle data = new Bundle();
@@ -609,10 +679,6 @@ public class KeychainIntentService extends IntentService implements Progressable
         return createCryptInputData(data, DECRYPT_CIPHERTEXT_BYTES);
     }
 
-    private InputData createEncryptInputData(Bundle data) throws IOException, PgpGeneralException {
-        return createCryptInputData(data, ENCRYPT_MESSAGE_BYTES);
-    }
-
     private InputData createCryptInputData(Bundle data, String bytesName) throws PgpGeneralException, IOException {
         int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
         switch (source) {
@@ -625,33 +691,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // InputStream
                 return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
-
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                // InputStream
-                return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
-
-            default:
-                throw new PgpGeneralException("No target choosen!");
-        }
-    }
-
-    private String getOriginalFilename(Bundle data) throws PgpGeneralException, FileNotFoundException {
-        int target = data.getInt(TARGET);
-        switch (target) {
-            case IO_BYTES:
-                return "";
-
-            case IO_URI:
-                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
-
-                return FileHelper.getFilename(this, providerUri);
-
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_INPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                return FileHelper.getFilename(this, providerUri);
 
             default:
                 throw new PgpGeneralException("No target choosen!");
@@ -669,18 +708,9 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 return getContentResolver().openOutputStream(providerUri);
 
-            case IO_URIS:
-                providerUri = data.<Uri>getParcelableArrayList(ENCRYPT_OUTPUT_URIS).get(data.getInt(SELECTED_URI));
-
-                return getContentResolver().openOutputStream(providerUri);
-
             default:
                 throw new PgpGeneralException("No target choosen!");
         }
-    }
-
-    private void finalizeEncryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
-        finalizeCryptOutputStream(data, resultData, outStream, RESULT_BYTES);
     }
 
     private void finalizeDecryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
@@ -695,7 +725,6 @@ public class KeychainIntentService extends IntentService implements Progressable
                 resultData.putByteArray(bytesName, output);
                 break;
             case IO_URI:
-            case IO_URIS:
                 // nothing, output was written, just send okay and verification bundle
 
                 break;

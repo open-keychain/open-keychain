@@ -36,6 +36,8 @@
   <!--Share-->
   <!--Key list-->
   <!--Key view-->
+  <!--Key trust-->
+  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -50,10 +52,18 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
   <!--PassphraseCache-->
-  <!--unsorted-->
   <!--First Time-->
+  <!--unsorted-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

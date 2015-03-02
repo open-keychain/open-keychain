@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -100,14 +101,20 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                                 ProviderHelper.FIELD_TYPE_INTEGER
                         }
                 );
-                String userId = (String) data.get(KeyRings.USER_ID);
+                String name;
+                String[] mainUserId = KeyRing.splitUserId((String) data.get(KeyRings.USER_ID));
+                if (mainUserId[0] != null) {
+                    name = mainUserId[0];
+                } else {
+                    name = getString(R.string.user_id_no_name);
+                }
                 hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
 
                 // Set message depending on which key it is.
                 mMainMessage.setText(getString(
                         hasSecret ? R.string.secret_key_deletion_confirmation
                                 : R.string.public_key_deletetion_confirmation,
-                        userId
+                        name
                 ));
             } catch (ProviderHelper.NotFoundException e) {
                 dismiss();

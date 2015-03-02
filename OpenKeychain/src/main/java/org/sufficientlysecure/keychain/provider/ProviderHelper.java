@@ -37,6 +37,12 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -44,26 +50,27 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressFixedScaler;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.Utf8Util;
@@ -170,7 +177,7 @@ public class ProviderHelper {
         Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
 
         try {
-            HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
+            HashMap<String, Object> result = new HashMap<>(proj.length);
             if (cursor != null && cursor.moveToFirst()) {
                 int pos = 0;
                 for (String p : proj) {
@@ -221,7 +228,7 @@ public class ProviderHelper {
         }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
 
         try {
-            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<CanonicalizedPublicKey>();
+            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
 
             if (cursor != null && cursor.moveToFirst()) do {
                 long masterKeyId = cursor.getLong(0);
@@ -350,7 +357,7 @@ public class ProviderHelper {
             mIndent += 1;
 
             // save all keys and userIds included in keyRing object in database
-            operations = new ArrayList<ContentProviderOperation>();
+            operations = new ArrayList<>();
 
             log(LogType.MSG_IP_INSERT_KEYRING);
             { // insert keyring
@@ -440,7 +447,7 @@ public class ProviderHelper {
 
             // classify and order user ids. primary are moved to the front, revoked to the back,
             // otherwise the order in the keyfile is preserved.
-            List<UserPacketItem> uids = new ArrayList<UserPacketItem>();
+            List<UserPacketItem> uids = new ArrayList<>();
 
             if (trustedKeys.size() == 0) {
                 log(LogType.MSG_IP_UID_CLASSIFYING_ZERO);
@@ -460,7 +467,7 @@ public class ProviderHelper {
                 log(LogType.MSG_IP_UID_PROCESSING, userId);
                 mIndent += 1;
                 // look through signatures for this specific key
-                for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
+                for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForRawId(rawUserId))) {
                     long certId = cert.getKeyId();
                     // self signature
@@ -472,7 +479,7 @@ public class ProviderHelper {
                             item.selfCert = cert;
                             item.isPrimary = cert.isPrimaryUserId();
                         } else {
-                            item.isRevoked = true;
+                            item.selfRevocation = cert;
                             log(LogType.MSG_IP_UID_REVOKED);
                         }
                         continue;
@@ -560,7 +567,7 @@ public class ProviderHelper {
                 }
                 mIndent += 1;
                 // look through signatures for this specific key
-                for (WrappedSignature cert : new IterableIterator<WrappedSignature>(
+                for (WrappedSignature cert : new IterableIterator<>(
                         masterKey.getSignaturesForUserAttribute(userAttribute))) {
                     long certId = cert.getKeyId();
                     // self signature
@@ -568,10 +575,11 @@ public class ProviderHelper {
 
                         // NOTE self-certificates are already verified during canonicalization,
                         // AND we know there is at most one cert plus at most one revocation
+                        // AND the revocation only exists if there is no newer certification
                         if (!cert.isRevocation()) {
                             item.selfCert = cert;
                         } else {
-                            item.isRevoked = true;
+                            item.selfRevocation = cert;
                             log(LogType.MSG_IP_UAT_REVOKED);
                         }
                         continue;
@@ -642,15 +650,20 @@ public class ProviderHelper {
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
                 UserPacketItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
-                if (item.selfCert != null) {
-                    // TODO get rid of "self verified" status? this cannot even happen anymore!
-                    operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
-                            selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
+
+                if (item.selfCert == null) {
+                    throw new AssertionError("User ids MUST be self-certified at this point!!");
                 }
-                // don't bother with trusted certs if the uid is revoked, anyways
-                if (item.isRevoked) {
+
+                if (item.selfRevocation != null) {
+                    operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
+                            Certs.VERIFIED_SELF));
+                    // don't bother with trusted certs if the uid is revoked, anyways
                     continue;
                 }
+
+                operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
+                        selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
 
                 // iterate over signatures
                 for (int i = 0; i < item.trustedCerts.size() ; i++) {
@@ -710,12 +723,17 @@ public class ProviderHelper {
         String userId;
         byte[] attributeData;
         boolean isPrimary = false;
-        boolean isRevoked = false;
         WrappedSignature selfCert;
-        LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<WrappedSignature>();
+        WrappedSignature selfRevocation;
+        LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<>();
 
         @Override
         public int compareTo(UserPacketItem o) {
+            // revoked keys always come last!
+            //noinspection DoubleNegation
+            if ( (selfRevocation != null) != (o.selfRevocation != null)) {
+                return selfRevocation != null ? 1 : -1;
+            }
             // if one is a user id, but the other isn't, the user id always comes first.
             // we compare for null values here, so != is the correct operator!
             // noinspection NumberEquality
@@ -725,10 +743,6 @@ public class ProviderHelper {
             // if one key is primary but the other isn't, the primary one always comes first
             if (isPrimary != o.isPrimary) {
                 return isPrimary ? -1 : 1;
-            }
-            // revoked keys always come last!
-            if (isRevoked != o.isRevoked) {
-                return isRevoked ? 1 : -1;
             }
             return 0;
         }
@@ -1053,6 +1067,11 @@ public class ProviderHelper {
         log.add(LogType.MSG_CON, indent);
         indent += 1;
 
+        if (mConsolidateCritical) {
+            log.add(LogType.MSG_CON_RECURSIVE, indent);
+            return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
+        }
+
         progress.setProgress(R.string.progress_con_saving, 0, 100);
 
         // The consolidate operation can never be cancelled!
@@ -1075,7 +1094,7 @@ public class ProviderHelper {
             // No keys existing might be a legitimate option, we write an empty file in that case
             cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -1137,7 +1156,7 @@ public class ProviderHelper {
             // No keys existing might be a legitimate option, we write an empty file in that case
             cursor.moveToFirst();
             ParcelableFileCache<ParcelableKeyRing> cache =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+                    new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
             cache.writeCache(cursor.getCount(), new Iterator<ParcelableKeyRing>() {
                 ParcelableKeyRing ring;
 
@@ -1219,13 +1238,11 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
-            ParcelableFileCache<ParcelableKeyRing> cacheSecret =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_secret.pcl");
-            ParcelableFileCache<ParcelableKeyRing> cachePublic =
-                    new ParcelableFileCache<ParcelableKeyRing>(mContext, "consolidate_public.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cacheSecret, cachePublic;
 
             // Set flag that we have a cached consolidation here
             try {
+                cacheSecret = new ParcelableFileCache<>(mContext, "consolidate_secret.pcl");
                 IteratorWithSize<ParcelableKeyRing> itSecrets = cacheSecret.readCache(false);
                 int numSecrets = itSecrets.getSize();
 
@@ -1253,6 +1270,7 @@ public class ProviderHelper {
 
             try {
 
+                cachePublic = new ParcelableFileCache<>(mContext, "consolidate_public.pcl");
                 IteratorWithSize<ParcelableKeyRing> itPublics = cachePublic.readCache();
                 int numPublics = itPublics.getSize();
 
@@ -1308,7 +1326,6 @@ public class ProviderHelper {
 
             progress.setProgress(100, 100);
             log.add(LogType.MSG_CON_SUCCESS, indent);
-            indent -= 1;
 
             return new ConsolidateResult(ConsolidateResult.RESULT_OK, log);
 
@@ -1349,7 +1366,7 @@ public class ProviderHelper {
         values.put(UserPackets.USER_ID, item.userId);
         values.put(UserPackets.ATTRIBUTE_DATA, item.attributeData);
         values.put(UserPackets.IS_PRIMARY, item.isPrimary);
-        values.put(UserPackets.IS_REVOKED, item.isRevoked);
+        values.put(UserPackets.IS_REVOKED, item.selfRevocation != null);
         values.put(UserPackets.RANK, rank);
 
         Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
@@ -1380,7 +1397,7 @@ public class ProviderHelper {
     public ArrayList<String> getRegisteredApiApps() {
         Cursor cursor = mContentResolver.query(ApiApps.CONTENT_URI, null, null, null, null);
 
-        ArrayList<String> packageNames = new ArrayList<String>();
+        ArrayList<String> packageNames = new ArrayList<>();
         try {
             if (cursor != null) {
                 int packageNameCol = cursor.getColumnIndex(ApiApps.PACKAGE_NAME);
@@ -1485,7 +1502,7 @@ public class ProviderHelper {
     }
 
     public Set<Long> getAllKeyIdsForApp(Uri uri) {
-        Set<Long> keyIds = new HashSet<Long>();
+        Set<Long> keyIds = new HashSet<>();
 
         Cursor cursor = mContentResolver.query(uri, null, null, null, null);
         try {
@@ -1504,8 +1521,41 @@ public class ProviderHelper {
         return keyIds;
     }
 
+    public Set<Long> getAllowedKeyIdsForApp(Uri uri) {
+        Set<Long> keyIds = new HashSet<>();
+
+        Cursor cursor = mContentResolver.query(uri, null, null, null, null);
+        try {
+            if (cursor != null) {
+                int keyIdColumn = cursor.getColumnIndex(KeychainContract.ApiAllowedKeys.KEY_ID);
+                while (cursor.moveToNext()) {
+                    keyIds.add(cursor.getLong(keyIdColumn));
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return keyIds;
+    }
+
+    public void saveAllowedKeyIdsForApp(Uri uri, Set<Long> allowedKeyIds)
+            throws RemoteException, OperationApplicationException {
+        // wipe whole table of allowed keys for this account
+        mContentResolver.delete(uri, null, null);
+
+        // re-insert allowed key ids
+        for (Long keyId : allowedKeyIds) {
+            ContentValues values = new ContentValues();
+            values.put(ApiAllowedKeys.KEY_ID, keyId);
+            mContentResolver.insert(uri, values);
+        }
+    }
+
     public Set<String> getAllFingerprints(Uri uri) {
-         Set<String> fingerprints = new HashSet<String>();
+         Set<String> fingerprints = new HashSet<>();
          String[] projection = new String[]{KeyRings.FINGERPRINT};
          Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
          try {

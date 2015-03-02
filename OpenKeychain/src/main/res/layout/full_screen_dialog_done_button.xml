@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/full_screen_dialog_done"
+    style="@style/Widget.AppCompat.ActionButton"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
+    <!--
+        android:filterTouchesWhenObscured="true" to prevent Touch-Event Hijacking
+        https://blog.lookout.com/blog/2010/12/09/android-touch-event-hijacking/
+    -->
+    <TextView
+        android:id="@+id/full_screen_dialog_done_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        style="@style/Widget.AppCompat.Light.ActionBar.TabText"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:filterTouchesWhenObscured="true"
+        android:text="Done (set in-code!)" />
+
+</FrameLayout>

@@ -17,8 +17,8 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -32,10 +32,10 @@ public class CloudSearch {
 
     public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs)
             throws Keyserver.CloudSearchFailureException {
-        final ArrayList<Keyserver> servers = new ArrayList<Keyserver>();
+        final ArrayList<Keyserver> servers = new ArrayList<>();
 
         // it's a Vector for sync, multiple threads might report problems
-        final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<Keyserver.CloudSearchFailureException>();
+        final Vector<Keyserver.CloudSearchFailureException> problems = new Vector<>();
 
         if (cloudPrefs.searchKeyserver) {
             servers.add(new HkpKeyserver(cloudPrefs.keyserver));

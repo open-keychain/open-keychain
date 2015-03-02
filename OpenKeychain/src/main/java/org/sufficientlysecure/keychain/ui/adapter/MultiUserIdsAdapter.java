@@ -21,13 +21,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.support.v4.util.LongSparseArray;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.support.v4.widget.CursorAdapter;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -44,7 +44,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
     public MultiUserIdsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
-        mCheckStates = new ArrayList<Boolean>();
+        mCheckStates = new ArrayList<>();
     }
 
     @Override
@@ -148,7 +148,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
     }
 
     public ArrayList<CertifyAction> getSelectedCertifyActions() {
-        LongSparseArray<CertifyAction> actions = new LongSparseArray<CertifyAction>();
+        LongSparseArray<CertifyAction> actions = new LongSparseArray<>();
         for (int i = 0; i < mCheckStates.size(); i++) {
             if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
@@ -171,7 +171,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
             }
         }
 
-        ArrayList<CertifyAction> result = new ArrayList<CertifyAction>(actions.size());
+        ArrayList<CertifyAction> result = new ArrayList<>(actions.size());
         for (int i = 0; i < actions.size(); i++) {
             result.add(actions.valueAt(i));
         }

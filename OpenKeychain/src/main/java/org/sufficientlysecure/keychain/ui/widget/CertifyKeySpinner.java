@@ -27,9 +27,9 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 public class CertifyKeySpinner extends KeySpinner {
@@ -86,32 +86,33 @@ public class CertifyKeySpinner extends KeySpinner {
         super.onLoadFinished(loader, data);
 
         if (loader.getId() == LOADER_ID) {
-            // If there is only one choice, pick it by default
-            if (mAdapter.getCount() == 2) {
-                // preselect if key can certify
-                if (data.moveToPosition(1) && !data.isNull(mIndexHasCertify)) {
-                    setSelection(1);
-                }
-            }
             mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY);
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
             mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
+
+            // If there is only one choice, pick it by default
+            if (mAdapter.getCount() == 2) {
+                // preselect if key can certify
+                if (data.moveToPosition(0) && !data.isNull(mIndexHasCertify)) {
+                    setSelection(1);
+                }
+            }
         }
     }
 
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
             return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
             return false;
         }
         // don't invalidate the "None" entry, which is also null!
         if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, true);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, R.color.bg_gray);
             return false;
         }
 

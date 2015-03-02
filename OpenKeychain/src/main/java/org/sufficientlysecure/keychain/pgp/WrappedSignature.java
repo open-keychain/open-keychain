@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,8 +78,12 @@ public class WrappedSignature {
         return mSig.getCreationTime();
     }
 
+    public long getKeyExpirySeconds() {
+        return mSig.getHashedSubPackets().getKeyExpirationTime();
+    }
+
     public ArrayList<WrappedSignature> getEmbeddedSignatures() {
-        ArrayList<WrappedSignature> sigs = new ArrayList<WrappedSignature>();
+        ArrayList<WrappedSignature> sigs = new ArrayList<>();
         if (!mSig.hasSubpackets()) {
             return sigs;
         }
@@ -255,7 +258,7 @@ public class WrappedSignature {
     }
 
     public HashMap<String,String> getNotation() {
-        HashMap<String,String> result = new HashMap<String,String>();
+        HashMap<String,String> result = new HashMap<>();
 
         // If there is any notation data
         if (mSig.getHashedSubPackets() != null

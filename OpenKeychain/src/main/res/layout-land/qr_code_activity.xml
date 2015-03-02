@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+
+    <LinearLayout
+        android:layout_below="@id/toolbar_include"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/qr_code_image_layout"
+            android:transitionName="qr_code"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="32dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardUseCompatPadding="true"
+            app:cardCornerRadius="4dp">
+
+            <org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView
+                android:id="@+id/qr_code_image"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:dominantMeasurement="height"
+                app:aspectRatioEnabled="true" />
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+</RelativeLayout>

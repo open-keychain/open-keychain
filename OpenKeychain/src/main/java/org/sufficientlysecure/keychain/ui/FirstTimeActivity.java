@@ -19,17 +19,16 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
-public class FirstTimeActivity extends ActionBarActivity {
+public class FirstTimeActivity extends BaseActivity {
 
     View mCreateKey;
     View mImportKey;
@@ -42,8 +41,6 @@ public class FirstTimeActivity extends ActionBarActivity {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
 
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.first_time_activity);
 
         mCreateKey = findViewById(R.id.first_time_create_key);
         mImportKey = findViewById(R.id.first_time_import_key);
@@ -72,7 +69,11 @@ public class FirstTimeActivity extends ActionBarActivity {
                 startActivityForResult(intent, REQUEST_CODE_CREATE_OR_IMPORT_KEY);
             }
         });
+    }
 
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.first_time_activity);
     }
 
     @Override
@@ -91,7 +92,7 @@ public class FirstTimeActivity extends ActionBarActivity {
     private void finishSetup(Intent srcData) {
         Preferences prefs = Preferences.getPreferences(this);
         prefs.setFirstTime(false);
-        Intent intent = new Intent(this, KeyListActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         // give intent through to display notify
         if (srcData != null) {
             intent.putExtras(srcData);

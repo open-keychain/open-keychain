@@ -47,7 +47,7 @@ public class QrCodeUtils {
      */
     public static Bitmap getQRCodeBitmap(final String input, final int size) {
         try {
-            final Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
+            final Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
             hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
             final BitMatrix result = new QRCodeWriter().encode(input, BarcodeFormat.QR_CODE, size,
                     size, hints);
@@ -59,7 +59,7 @@ public class QrCodeUtils {
             for (int y = 0; y < height; y++) {
                 final int offset = y * width;
                 for (int x = 0; x < width; x++) {
-                    pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
+                    pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
                 }
             }
 
