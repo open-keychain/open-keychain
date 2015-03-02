@@ -79,14 +79,14 @@ public class LinkedIdentity {
         b.append(mSubUri);
 
         byte[] nonceBytes = Hex.decode(mNonce);
-        if (nonceBytes.length != 12) {
-            throw new AssertionError("nonce must be 12 bytes");
+        if (nonceBytes.length != 4) {
+            throw new AssertionError("nonce must be 4 bytes");
         }
         byte[] data = Strings.toUTF8ByteArray(b.toString());
 
-        byte[] result = new byte[data.length+12];
-        System.arraycopy(nonceBytes, 0, result, 0, 12);
-        System.arraycopy(data, 0, result, 12, data.length);
+        byte[] result = new byte[data.length+4];
+        System.arraycopy(nonceBytes, 0, result, 0, 4);
+        System.arraycopy(data, 0, result, 4, data.length);
 
         return result;
     }
@@ -100,10 +100,10 @@ public class LinkedIdentity {
         }
 
         byte[] data = subpacket.getData();
-        String nonce = Hex.toHexString(data, 0, 12);
+        String nonce = Hex.toHexString(data, 0, 4);
 
         try {
-            return parseUri(nonce, Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 12, data.length)));
+            return parseUri(nonce, Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 4, data.length)));
 
         } catch (IllegalArgumentException e) {
             Log.e(Constants.TAG, "error parsing uri in (suspected) linked id packet");
@@ -161,12 +161,12 @@ public class LinkedIdentity {
 
     public static String generateNonce() {
         // TODO make this actually random
-        // byte[] data = new byte[96];
+        // byte[] data = new byte[4];
         // new SecureRandom().nextBytes(data);
         // return Hex.toHexString(data);
 
         // debug for now
-        return "0123456789abcdef01234567";
+        return "01234567";
     }
 
 }
