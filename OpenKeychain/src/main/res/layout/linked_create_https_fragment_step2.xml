@@ -78,7 +78,7 @@
 
                 <ImageView
                     android:id="@+id/verify_image"
-                    android:src="@drawable/status_signature_unverified_cutout"
+                    android:src="@drawable/status_signature_unverified_cutout_24px"
                     android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

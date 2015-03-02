@@ -34,15 +34,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
 
-public class UserAttributesAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
+public abstract class UserAttributesAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
     private SaveKeyringParcel mSaveKeyringParcel;
@@ -75,18 +72,6 @@ public class UserAttributesAdapter extends CursorAdapter implements AdapterView.
         mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
         mShowStatusImages = showStatusImages;
-    }
-
-    public UserAttributesAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
-        this(context, c, flags, showCheckBoxes, null);
-    }
-
-    public UserAttributesAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, false, saveKeyringParcel);
-    }
-
-    public UserAttributesAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false, null);
     }
 
     @Override
