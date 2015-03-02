@@ -359,8 +359,7 @@
     <string name="progress_con_reimport">"consolidate: reimporting…"</string>
 
     <!-- action strings -->
-    <string name="hint_keyserver_search_hint">"Name/Email/Key ID…"</string>
-    <string name="hint_cloud_search_hint">"Name/Email/Proof/Key…"</string>
+    <string name="hint_cloud_search_hint">"Search via Name, Email…"</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">"512"</string>
