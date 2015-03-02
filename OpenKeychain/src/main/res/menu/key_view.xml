@@ -37,4 +37,9 @@
         android:visible="false"
         android:title="@string/menu_certify_fingerprint" />
 
+    <item
+        android:id="@+id/menu_key_view_add_linked_identity"
+        app:showAsAction="never"
+        android:title="@string/menu_linked_add_identity" />
+
 </menu>

@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -47,7 +48,14 @@ public class LinkedIdWizard extends ActionBarActivity {
 
         try {
             Uri uri = getIntent().getData();
+            uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(uri);
             CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(uri);
+            if (!ring.hasAnySecret()) {
+                Log.e(Constants.TAG, "Linked Identities can only be added to secret keys!");
+                finish();
+                return;
+            }
+
             mMasterKeyId = ring.extractOrGetMasterKeyId();
             mFingerprint = ring.getFingerprint();
         } catch (PgpKeyNotFoundException e) {

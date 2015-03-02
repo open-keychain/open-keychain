@@ -72,6 +72,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -334,6 +335,12 @@ public class ViewKeyActivity extends BaseActivity implements
                     certifyFingeprint(mDataUri);
                     return true;
                 }
+                case R.id.menu_key_view_add_linked_identity: {
+                    Intent intent = new Intent(this, LinkedIdWizard.class);
+                    intent.setData(mDataUri);
+                    startActivity(intent);
+                    return true;
+                }
             }
         } catch (ProviderHelper.NotFoundException e) {
             Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
@@ -346,6 +353,10 @@ public class ViewKeyActivity extends BaseActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
+
+        MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
+        addLinked.setVisible(mIsSecret);
+
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified);
 
