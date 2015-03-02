@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.widget.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 import java.util.regex.Matcher;
@@ -129,6 +130,28 @@ public class CreateKeyInputFragment extends Fragment {
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )
         );
+
+        final PasswordStrengthView passwordStrengthView =
+                (PasswordStrengthView) view.findViewById(R.id.passphrase_strength_indicator);
+
+        mPassphraseEdit.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                passwordStrengthView.setPassword(mPassphraseEdit.getText().toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
