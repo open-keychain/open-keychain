@@ -57,9 +57,19 @@ public class ContactHelper {
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.EXPIRY,
             KeychainContract.KeyRings.IS_REVOKED};
+
+    public static final int INDEX_USER_ID = 0;
+    public static final int INDEX_FINGERPRINT = 1;
+    public static final int INDEX_KEY_ID = 2;
+    public static final int INDEX_MASTER_KEY_ID = 3;
+    public static final int INDEX_EXPIRY = 4;
+    public static final int INDEX_IS_REVOKED = 5;
+
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets.USER_ID
     };
+
+    public static final int INDEX_USER_IDS_USER_ID = 0;
 
     public static final String NON_REVOKED_SELECTION = UserPackets.IS_REVOKED + "=0";
 
@@ -301,15 +311,18 @@ public class ContactHelper {
                 null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                String[] primaryUserId = KeyRing.splitUserId(cursor.getString(0));
-                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1));
+                String[] primaryUserId = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(INDEX_FINGERPRINT));
                 contactFingerprints.remove(fingerprint);
-                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(2));
-                long masterKeyId = cursor.getLong(3);
-                boolean isExpired = !cursor.isNull(4) && new Date(cursor.getLong(4) * 1000).before(new Date());
-                boolean isRevoked = cursor.getInt(5) > 0;
+                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_KEY_ID));
+                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
+                        && new Date(cursor.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 int rawContactId = findRawContactId(resolver, fingerprint);
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+                Log.d(Constants.TAG, "raw contact id: "+rawContactId);
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
@@ -317,7 +330,7 @@ public class ContactHelper {
                         resolver.delete(ContactsContract.RawContacts.CONTENT_URI, ID_SELECTION,
                                 new String[]{Integer.toString(rawContactId)});
                     }
-                } else {
+                } else if (primaryUserId[0] != null) {
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
