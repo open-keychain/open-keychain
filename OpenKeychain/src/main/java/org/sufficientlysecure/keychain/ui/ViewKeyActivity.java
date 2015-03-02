@@ -803,6 +803,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mName.setText(R.string.user_id_no_name);
                     }
 
+                    String oldFingerprint = mFingerprint;
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
 
@@ -866,8 +867,11 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
+                        // reload qr code only if the fingerprint changed
+                        if ( !mFingerprint.equals(oldFingerprint)) {
+                            loadQrCode(mFingerprint);
+                        }
                         photoTask.execute(mFingerprint);
-                        loadQrCode(mFingerprint);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code

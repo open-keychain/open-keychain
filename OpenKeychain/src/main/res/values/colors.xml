@@ -13,6 +13,8 @@
 
     <!-- Other colors -->
 
+    <color name="black">#000000</color>
+
     <color name="primary_light">#C8E6C9</color>
     <color name="fab">@color/accent</color>
     <color name="fab_pressed">#1976D2</color>
