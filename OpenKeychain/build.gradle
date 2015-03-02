@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'witness'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
@@ -20,7 +21,7 @@ dependencies {
     compile project(':extern:TokenAutoComplete:library')
     compile project(':extern:safeslinger-exchange')
 
-    // TODO: Pin!
+    // NOTE: libraries are pinned to a specific build, see below
     compile 'com.eftimoff:android-patternview:1.0.0@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.0.1@aar'
     compile 'com.journeyapps:zxing-android-integration:2.0.1@aar'
@@ -29,6 +30,39 @@ dependencies {
     compile 'it.neokree:MaterialNavigationDrawer:1.3.1'
     compile 'com.nispok:snackbar:2.9.1'
     compile 'com.getbase:floatingactionbutton:1.8.0'
+}
+
+// Output of ./gradlew -q calculateChecksums
+// Comment out the libs referenced as git submodules!
+dependencyVerification {
+    verify = [
+        'com.android.support:support-v4:703572d3015a088cc5604b7e38885af3d307c829d0c5ceaf8654ff41c71cd160',
+        'com.android.support:appcompat-v7:5dbeb5316d0a6027d646ae552804c3baa5e3bd53f7f33db50904d51505c8a0e5',
+        'com.android.support:recyclerview-v7:e525ad3f33c84bb12b73d2dc975b55364a53f0f2d0697e043efba59ba73e22d2',
+        'com.android.support:cardview-v7:45c48c2ab056bc7a8573970b10f8902742c5d443f180dae43c56557397ac39af',
+        //'OpenKeychain.extern:openpgp-api-lib:b17bb282321351e4b00b4cd6422a57aadc13decae264019a88707bcb556439ea',
+        //'OpenKeychain.extern:openkeychain-api-lib:5f95f01c066069d4bde68992fd8da5faac21510d009b1fdae7a2e28e43e82cf4',
+        //'OpenKeychain.extern:html-textview:b58e343cf4c145e91f888806d06a2a7770a9e9331a72f08cfcf1128db30dcff3',
+        //'OpenKeychain.extern.StickyListHeaders:library:24e25da422efc08e4e7a06efbe927fdf17f7a9aa722db2b983385e2bf0004da5',
+        //'com.madgag.spongycastle:core:a9e4f60afe6b2661e0713190ade92c099b3f74ebbc67c1bc3e3fced0144307f4',
+        //'com.madgag.spongycastle:pg:29d544ff289fcaafcf6c3904185f5a6fbdb623cf1a1e377fcb239edc31ee9c17',
+        //'com.madgag.spongycastle:pkix:950d6eac8205c6a24aa87066fbf9cd0af50b95858b8d2b18d53e2fada2dbb2e3',
+        //'com.madgag.spongycastle:prov:0b78ffd7a59b1b690a05ebe9bb31d43405046a44a18e0529d7c826acb56350b7',
+        //'OpenKeychain.extern:minidns:cf332e993d7fcdc0a3821f5b997944df40582dc6c9f0ea36b5e20c1e289cb19f',
+        //'OpenKeychain.extern.KeybaseLib:Lib:af9bff087148e0859430d0b99ece096c41b315c5dc1ed500a68580b9b0e5ab11',
+        //'OpenKeychain.extern.TokenAutoComplete:library:40d4212a95e947efdb02f2ca66c95a27d49fba848471a6317eca2b9cc18e8780',
+        //'OpenKeychain.extern:safeslinger-exchange:94a1ce68217af7499579a042758283b1530912c53241bdfa06d1a079a5ae3faf',
+        'com.eftimoff:android-patternview:a031eaed3b5cef8ea06c2d4a6e27693937f89ae483598d61b7027eeee0bed408',
+        'com.journeyapps:zxing-android-embedded:5d6ba3931bd0b999695e363b571e95bd6bc9956340c1e6ce740cd0bff3d89a50',
+        'com.journeyapps:zxing-android-integration:6f50bb07c057ac94319777ddfbb66f5d4f6190393418b2fc861e0e60d06f3c0d',
+        'com.google.zxing:core:38c49045765281e4c170062fa3f48e4e988629bf985cab850c7497be5eaa72a1',
+        'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
+        'it.neokree:MaterialNavigationDrawer:1174d751a54689fccf53c1fbcdf439745926ae19024f4f1017afb6b29643c57d',
+        'com.nispok:snackbar:59dc092a44c877e9ce5f9040c632d99e62d8932b0a4d67ba0ec9e35467d9047c',
+        'com.getbase:floatingactionbutton:e63966148212e9685afad2370780ea239b6dbd2a06f6a3f919b98882318e6a32',
+        'com.android.support:support-annotations:fdee2354787ef66b268e75958de3f7f6c4f8f325510a6dac9f49c929f83a63de',
+        'com.balysv:material-ripple:587f19c1e27f16c7dc67ff9ac73838aa1451086ef05a15cee38bee3e4e1454ae',
+    ]
 }
 
 android {
