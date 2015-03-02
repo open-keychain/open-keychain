@@ -38,3 +38,10 @@ project(':extern:spongycastle') {
         test.enabled = false
     }
 }
+
+// SDK Version and Build Tools used by all subprojects
+// See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
+ext {
+    compileSdkVersion = 21
+    buildToolsVersion = '21.1.2'
+}

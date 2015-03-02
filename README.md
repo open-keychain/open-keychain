@@ -109,23 +109,38 @@ see
 
 ## Notes
 
-### Gradle Build System
+### Build System
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
-When changing build files or dependencies, respect the following requirements:
-* No precompiled libraries (you never know what pre-compiled jar files really contain!). All libraries should be forked into the open-keychain Github project and then provided as git submodules in the "extern" folder.
-* No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
+
+#### Update Gradle version
 * Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
-* Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
-* In order to update the build system to a newer gradle version you need to:
-  * Update every build.gradle file with the new gradle version and/or gradle plugin version
+* Update every build.gradle file with the new gradle version and/or gradle plugin version
     * build.gradle
     * OpenKeychain/build.gradle
-    * OpenKeychain-API/build.gradle
-    * OpenKeychain-API/example-app/build.gradle
-    * OpenKeychain-API/libraries/keychain-api-library/build.gradle
-  * run ./gradlew wrapper twice to update gradle and download the new gradle jar file
-  * commit the new gradle jar and property files
+* run ./gradlew wrapper twice to update gradle and download the new gradle jar file
+* commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
+  
+#### Update SDK and Build Tools
+* Open build.gradle and change:
+```
+ext {
+    compileSdkVersion = 21
+    buildToolsVersion = '21.1.2'
+}
+```
+* Change SDK and Build Tools in git submodules "openkeychain-api-lib" and "openpgp-api-lib" manually. They should also build on their own without the ext variables.
+
+#### Add new library
+* You can add the library as a Maven dependency or as a git submodule (if patches are required) in the "extern" folder.
+* If added as a Maven dependency, pin the library using [Gradle Witness](https://github.com/WhisperSystems/gradle-witness)
+* If added as a git submodule, change the ``compileSdkVersion`` and ``buildToolsVersion`` in build.gradle to use the variables from the root project:
+```
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+}
+```
 
 ### Slow Gradle?
 
