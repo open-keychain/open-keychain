@@ -149,6 +149,10 @@ android {
 
 Gradle project dependencies are missing. Do a ``git submodule init && git submodule update``
 
+#### Build on Mac OS X fails?
+
+Try exporting JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+
 ## Translations
 
 Translations are hosted on Transifex, which is configured by ".tx/config".
