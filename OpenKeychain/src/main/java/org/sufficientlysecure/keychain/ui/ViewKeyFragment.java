@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -58,8 +57,6 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private Uri mDataUri;
 
-    ProviderHelper mProviderHelper;
-
     /**
      * Creates new instance of this fragment
      */
@@ -77,8 +74,6 @@ public class ViewKeyFragment extends LoaderFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
-
-        mProviderHelper = new ProviderHelper(getActivity());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
 
@@ -199,7 +194,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                     boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // load user ids after we know if it's a secret key
-                    mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, false, !mIsSecret, null);
+                    mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
                     getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 

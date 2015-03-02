@@ -20,90 +20,38 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-import java.util.ArrayList;
-
-public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemClickListener {
-    private LayoutInflater mInflater;
-    private final ArrayList<Boolean> mCheckStates;
+public class UserIdsAdapter extends UserAttributesAdapter {
+    protected LayoutInflater mInflater;
     private SaveKeyringParcel mSaveKeyringParcel;
     private boolean mShowStatusImages;
 
-    public static final String[] USER_IDS_PROJECTION = new String[]{
-            UserPackets._ID,
-            UserPackets.USER_ID,
-            UserPackets.RANK,
-            UserPackets.VERIFIED,
-            UserPackets.IS_PRIMARY,
-            UserPackets.IS_REVOKED
-    };
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_USER_ID = 1;
-    private static final int INDEX_RANK = 2;
-    private static final int INDEX_VERIFIED = 3;
-    private static final int INDEX_IS_PRIMARY = 4;
-    private static final int INDEX_IS_REVOKED = 5;
-
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
+    public UserIdsAdapter(Context context, Cursor c, int flags,
                           boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
 
-        mCheckStates = showCheckBoxes ? new ArrayList<Boolean>() : null;
         mSaveKeyringParcel = saveKeyringParcel;
         mShowStatusImages = showStatusImages;
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes,
-                          SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, showCheckBoxes, true, saveKeyringParcel);
-    }
-
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
-        this(context, c, flags, showCheckBoxes, true, null);
-    }
-
     public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, false, true, saveKeyringParcel);
+        this(context, c, flags, true, saveKeyringParcel);
     }
 
     public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, false, true, null);
-    }
-
-    @Override
-    public Cursor swapCursor(Cursor newCursor) {
-        if (mCheckStates != null) {
-            mCheckStates.clear();
-            if (newCursor != null) {
-                int count = newCursor.getCount();
-                mCheckStates.ensureCapacity(count);
-                // initialize to true (use case knowledge: we usually want to sign all uids)
-                for (int i = 0; i < count; i++) {
-                    newCursor.moveToPosition(i);
-                    int verified = newCursor.getInt(INDEX_VERIFIED);
-                    mCheckStates.add(verified != Certs.VERIFIED_SECRET);
-                }
-            }
-        }
-
-        return super.swapCursor(newCursor);
+        this(context, c, flags, true, null);
     }
 
     @Override
@@ -206,56 +154,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
                     break;
             }
         }
-
-        // don't care further if checkboxes aren't shown
-        if (mCheckStates == null) {
-            return;
-        }
-
-        final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.user_id_item_check_box);
-        final int position = cursor.getPosition();
-        vCheckBox.setOnCheckedChangeListener(null);
-        vCheckBox.setChecked(mCheckStates.get(position));
-        vCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mCheckStates.set(position, b);
-            }
-        });
-        vCheckBox.setClickable(false);
-    }
-
-    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        CheckBox box = ((CheckBox) view.findViewById(R.id.user_id_item_check_box));
-        if (box != null) {
-            box.toggle();
-        }
-    }
-
-    public ArrayList<String> getSelectedUserIds() {
-        ArrayList<String> result = new ArrayList<>();
-        for (int i = 0; i < mCheckStates.size(); i++) {
-            if (mCheckStates.get(i)) {
-                mCursor.moveToPosition(i);
-                result.add(mCursor.getString(INDEX_USER_ID));
-            }
-        }
-        return result;
-    }
-
-    public String getUserId(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getString(INDEX_USER_ID);
-    }
-
-    public boolean getIsRevoked(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getInt(INDEX_IS_REVOKED) > 0;
-    }
-
-    public int getIsVerified(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getInt(INDEX_VERIFIED);
     }
 
     public boolean getIsRevokedPending(int position) {
@@ -276,8 +174,6 @@ public class UserIdsAdapter extends CursorAdapter implements AdapterView.OnItemC
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
-        // only need to do this once ever, since mShowCheckBoxes is final
-        view.findViewById(R.id.user_id_item_check_box).setVisibility(mCheckStates != null ? View.VISIBLE : View.GONE);
         return view;
     }
 
