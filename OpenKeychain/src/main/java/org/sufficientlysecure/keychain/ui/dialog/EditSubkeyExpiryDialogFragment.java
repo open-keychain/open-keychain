@@ -173,8 +173,14 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                     long numDays = (selectedCal.getTimeInMillis() / 86400000)
                             - (expiryCal.getTimeInMillis() / 86400000);
                     if (numDays <= 0) {
-                        Log.e(Constants.TAG, "Should not happen! Expiry num of days <= 0!");
-                        throw new RuntimeException();
+                        try {
+                            Log.e(Constants.TAG, "Should not happen! Expiry num of days <= 0!");
+                            throw new RuntimeException();
+                        }
+                        catch(RuntimeException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                     expiry = selectedCal.getTime().getTime() / 1000;
                 }
