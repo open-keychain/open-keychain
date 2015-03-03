@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -79,6 +81,7 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         creationCal.setTime(new Date(creation * 1000));
         final Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        final Calendar todayCal = Calendar.getInstance(TimeZone.getDefault());
         expiryCal.setTime(new Date(expiry * 1000));
 
         // date picker works with default time zone, we need to convert from UTC to default timezone
@@ -113,8 +116,6 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         if (expiry == 0L) {
             noExpiry.setChecked(true);
             datePicker.setVisibility(View.GONE);
-
-            Calendar todayCal = Calendar.getInstance(TimeZone.getDefault());
             if (creationCal.after(todayCal)) {
                 // Note: This is just for the rare cases where creation is _after_ today
 
@@ -169,12 +170,23 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                     selectedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     long numDays = (selectedCal.getTimeInMillis() / 86400000)
-                            - (expiryCal.getTimeInMillis() / 86400000);
+                            - (todayCal.getTimeInMillis() / 86400000);
                     if (numDays <= 0) {
-                        Log.e(Constants.TAG, "Should not happen! Expiry num of days <= 0!");
-                        throw new RuntimeException();
+                        CharSequence text = "Invalid date! Please choose a valid one.";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(activity.getApplicationContext(), text, duration);
+                        toast.show();
+                        //set to previous expiry date
+                        datePicker.init(
+                                expiryCal.get(Calendar.YEAR),
+                                expiryCal.get(Calendar.MONTH),
+                                expiryCal.get(Calendar.DAY_OF_MONTH),
+                                null
+                        );
+
+                        expiry=expiryCal.getTime().getTime()/1000;
                     }
-                    expiry = selectedCal.getTime().getTime() / 1000;
+                    else expiry = selectedCal.getTime().getTime() / 1000;
                 }
 
                 Bundle data = new Bundle();
