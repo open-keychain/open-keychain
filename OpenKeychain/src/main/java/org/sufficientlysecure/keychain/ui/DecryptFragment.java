@@ -176,7 +176,7 @@ public abstract class DecryptFragment extends Fragment {
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     mSignatureAction.setText(R.string.decrypt_result_action_Lookup);
-                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_download, 0);
+                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_file_download_grey_24dp, 0);
                     mSignatureLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

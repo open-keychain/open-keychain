@@ -1,5 +1,5 @@
 {
-    "basePath": "~/Documents",
+    "basePath": "../../",
     "filenameMap": {
         "classic": "ic_action_{name}{bgSuffix}.png",
         "fa": "ic_action_fa_{name}{bgSuffix}.png",
