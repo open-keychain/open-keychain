@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/log_sub"
-            android:src="@drawable/ic_action_view_as_list"
+            android:src="@drawable/ic_view_list_grey_24dp"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"

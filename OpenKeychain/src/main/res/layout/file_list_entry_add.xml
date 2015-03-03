@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:text="@string/btn_add_files"
-            android:drawableLeft="@drawable/ic_action_collection"
+            android:drawableLeft="@drawable/ic_folder_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="center"/>
 </FrameLayout>

@@ -17,7 +17,7 @@
         android:id="@+id/api_apps_adapter_install_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_download"
+        android:src="@drawable/ic_file_download_grey_24dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
