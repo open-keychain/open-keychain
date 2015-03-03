@@ -53,7 +53,7 @@
             android:layout_alignParentRight="true"
             android:paddingRight="16dip"
             android:paddingLeft="16dip"
-            android:src="@drawable/ic_action_cancel"
+            android:src="@drawable/ic_close_grey_24dp"
             android:clickable="true"
             android:layout_centerVertical="true"
             style="@style/SelectableItem"/>

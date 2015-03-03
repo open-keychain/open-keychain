@@ -59,7 +59,7 @@
                     android:layout_height="match_parent"
                     android:text="@string/btn_export_to_server"
                     android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:drawableRight="@drawable/ic_action_upload"
+                    android:drawableRight="@drawable/ic_file_upload_grey_24dp"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
                     android:clickable="true"

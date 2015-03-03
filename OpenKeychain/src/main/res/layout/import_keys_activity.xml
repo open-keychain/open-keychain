@@ -73,7 +73,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/import_import"
                 android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_action_download"
+                android:drawableRight="@drawable/ic_file_download_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
                 android:clickable="true"

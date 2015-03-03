@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:text="@string/filemanager_title_open"
             android:layout_weight="1"
-            android:drawableRight="@drawable/ic_action_collection"
+            android:drawableRight="@drawable/ic_folder_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical" />
 
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:padding="8dp"
-            android:src="@drawable/ic_action_paste"
+            android:src="@drawable/ic_content_paste_grey_24dp"
             android:layout_gravity="center_vertical"
             style="@style/SelectableItem" />
 
