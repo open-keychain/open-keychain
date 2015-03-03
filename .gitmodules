@@ -19,11 +19,11 @@
 [submodule "extern/minidns"]
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
-	ignore = dirty
+  	ignore = dirty
 [submodule "extern/TokenAutoComplete"]
 	path = extern/TokenAutoComplete
 	url = https://github.com/open-keychain/TokenAutoComplete
 [submodule "extern/safeslinger-exchange"]
 	path = extern/safeslinger-exchange
-	url = https://github.com/open-keychain/exchange-android
+ 	url = https://github.com/open-keychain/exchange-android
 	ignore = dirty
