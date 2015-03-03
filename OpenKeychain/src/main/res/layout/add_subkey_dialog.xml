@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -90,42 +91,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
 
-        <TableRow
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:id="@+id/label_expiry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingRight="10dip"
-                android:text="@string/label_expiry" />
-
-            <CheckBox
-                android:id="@+id/add_subkey_no_expiry"
-                android:checked="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_no_date" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/add_subkey_expiry_row"
-            android:visibility="gone">
-
-            <DatePicker
-                android:id="@+id/add_subkey_expiry_date_picker"
-                android:layout_span="2"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:spinnersShown="true"
-                android:calendarViewShown="false" />
-
-        </TableRow>
-
         <TableRow>
 
             <TextView
@@ -188,6 +153,52 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/flag_authenticate" />
+        </TableRow>
+
+        <TableRow
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/label_expiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_expiry" />
+
+            <CheckBox
+                android:id="@+id/add_subkey_no_expiry"
+                android:checked="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_no_date" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/add_subkey_expiry_row"
+            android:visibility="gone">
+
+            <!--
+                Use Spinner style DatePicker, not the full calendar view
+                Android < 5:
+                    android:spinnersShown="true"
+                    android:calendarViewShown="false"
+                Android >= 5:
+                    android:datePickerMode="spinner"
+            -->
+            <DatePicker
+                android:id="@+id/add_subkey_expiry_date_picker"
+                android:layout_span="2"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:ignore="UnusedAttribute"
+                android:datePickerMode="spinner"
+                android:spinnersShown="true"
+                android:calendarViewShown="false" />
+
         </TableRow>
 
     </TableLayout>
