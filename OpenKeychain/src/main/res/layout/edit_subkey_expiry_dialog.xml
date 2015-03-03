@@ -16,23 +16,49 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_no_date" />
 
-    <!--
-        Use Spinner style DatePicker, not the full calendar view
-        Android < 5:
-            android:spinnersShown="true"
-            android:calendarViewShown="false"
-        Android >= 5:
+    <LinearLayout
+        android:id="@+id/edit_subkey_expiry_layout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_current_expiry" />
+
+        <TextView
+            android:id="@+id/edit_subkey_expiry_current_expiry"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:padding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/section_new_expiry" />
+
+        <!--
+            Use Spinner style DatePicker, not the full calendar view
+            Android < 5:
+                android:spinnersShown="true"
+                android:calendarViewShown="false"
+            Android >= 5:
+                android:datePickerMode="spinner"
+        -->
+        <!-- Hide calendarView in tablets because of the unix warparound bug. -->
+        <DatePicker
+            android:id="@+id/edit_subkey_expiry_date_picker"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="UnusedAttribute"
             android:datePickerMode="spinner"
-    -->
-    <!-- Hide calendarView in tablets because of the unix warparound bug. -->
-    <DatePicker
-        android:id="@+id/edit_subkey_expiry_date_picker"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:ignore="UnusedAttribute"
-        android:datePickerMode="spinner"
-        android:spinnersShown="true"
-        android:calendarViewShown="false" />
+            android:spinnersShown="true"
+            android:calendarViewShown="false" />
+    </LinearLayout>
 
 </LinearLayout>

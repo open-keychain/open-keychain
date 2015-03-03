@@ -67,6 +67,8 @@
     <string name="section_certs">"Certificates"</string>
     <string name="section_encrypt">"Encrypt"</string>
     <string name="section_decrypt">"Decrypt"</string>
+    <string name="section_current_expiry">"Current expiry"</string>
+    <string name="section_new_expiry">"New expiry"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
@@ -226,7 +228,6 @@
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
-    <string name="enter_passphrase_twice">"Enter the passphrase twice."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
     <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
@@ -1027,7 +1028,7 @@
     <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
     <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
-    <string name="msg_vl_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_vl_clear_meta_size">"File size: %s"</string>
     <string name="msg_vl_clear_signature_check">"Verifying signature data"</string>
     <string name="msg_vl_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_vl_ok">"OK"</string>

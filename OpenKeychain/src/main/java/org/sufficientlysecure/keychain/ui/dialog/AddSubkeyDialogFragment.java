@@ -137,12 +137,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             }
         });
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            // date picker works based on default time zone
-            Calendar minDateCal = Calendar.getInstance(TimeZone.getDefault());
-            minDateCal.add(Calendar.DAY_OF_YEAR, 1); // at least one day after creation (today)
-            mExpiryDatePicker.setMinDate(minDateCal.getTime().getTime());
-        }
+        // date picker works based on default time zone
+        Calendar minDateCal = Calendar.getInstance(TimeZone.getDefault());
+        minDateCal.add(Calendar.DAY_OF_YEAR, 1); // at least one day after creation (today)
+        mExpiryDatePicker.setMinDate(minDateCal.getTime().getTime());
 
         {
             ArrayList<Choice<Algorithm>> choices = new ArrayList<>();
@@ -283,7 +281,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     // For EC keys, add a curve
                     if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
                         curve = ((Choice<Curve>) mCurveSpinner.getSelectedItem()).getId();
-                    // Otherwise, get a keysize
+                        // Otherwise, get a keysize
                     } else {
                         keySize = getProperKeyLength(algorithm, getSelectedKeyLength());
                     }
