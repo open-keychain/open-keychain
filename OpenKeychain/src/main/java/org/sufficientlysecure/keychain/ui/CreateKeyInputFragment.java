@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 import java.util.regex.Matcher;
@@ -40,6 +41,7 @@ public class CreateKeyInputFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
 
+    PasswordStrengthView mPassphraseStrengthView;
     AutoCompleteTextView mNameEdit;
     AutoCompleteTextView mEmailEdit;
     EditText mPassphraseEdit;
@@ -68,6 +70,8 @@ public class CreateKeyInputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
 
+        mPassphraseStrengthView = (PasswordStrengthView) view.findViewById(R.id
+                .create_key_passphrase_strength);
         mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
         mEmailEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_email);
         mPassphraseEdit = (EditText) view.findViewById(R.id.create_key_passphrase);
@@ -129,6 +133,22 @@ public class CreateKeyInputFragment extends Fragment {
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )
         );
+
+        mPassphraseEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String passphrase = editable.toString();
+                mPassphraseStrengthView.setPassword(passphrase);
+            }
+        });
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
