@@ -169,19 +169,6 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                     selectedCal.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth());
                     // date picker uses default time zone, we need to convert to UTC
                     selectedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-                    long numDays = (selectedCal.getTimeInMillis() / 86400000)
-                            - (expiryCal.getTimeInMillis() / 86400000);
-                    if (numDays <= 0) {
-                        try {
-                            Log.e(Constants.TAG, "Should not happen! Expiry num of days <= 0!");
-                            throw new RuntimeException();
-                        }
-                        catch(RuntimeException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
                     expiry = selectedCal.getTime().getTime() / 1000;
                 }
 
