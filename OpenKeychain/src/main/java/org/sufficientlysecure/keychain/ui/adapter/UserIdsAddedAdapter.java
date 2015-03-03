@@ -24,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -73,10 +72,8 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
 
             // not used:
-            CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.user_id_item_check_box);
             View certifiedLayout = convertView.findViewById(R.id.user_id_item_certified_layout);
             ImageView editImage = (ImageView) convertView.findViewById(R.id.user_id_item_edit_image);
-            checkBox.setVisibility(View.GONE);
             certifiedLayout.setVisibility(View.GONE);
             editImage.setVisibility(View.GONE);
 
