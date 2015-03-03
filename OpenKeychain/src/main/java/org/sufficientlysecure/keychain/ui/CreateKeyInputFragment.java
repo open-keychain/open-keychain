@@ -134,6 +134,12 @@ public class CreateKeyInputFragment extends Fragment {
                         )
         );
 
+        // Edit text padding doesn't work via xml (http://code.google.com/p/android/issues/detail?id=77982)
+        // so we set the right padding programmatically.
+        mPassphraseEdit.setPadding(mPassphraseEdit.getPaddingLeft(),
+                mPassphraseEdit.getPaddingTop(),
+                (int) (56 * getResources().getDisplayMetrics().density),
+                mPassphraseEdit.getPaddingBottom());
         mPassphraseEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
