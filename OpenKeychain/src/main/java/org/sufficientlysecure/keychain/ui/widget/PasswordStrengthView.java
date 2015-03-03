@@ -26,9 +26,9 @@ import org.sufficientlysecure.keychain.R;
  */
 public class PasswordStrengthView extends View {
 
-    protected static final int      COLOR_FAIL = Color.parseColor("#e74c3c");
-    protected static final int      COLOR_WEAK = Color.parseColor("#e67e22");
-    protected static final int 		COLOR_STRONG = Color.parseColor("#2ecc71");
+    private final int      COLOR_FAIL = this.getContext().getResources().getColor(R.color.android_red_light);
+    private final int      COLOR_WEAK = this.getContext().getResources().getColor(R.color.android_orange_light);
+    private final int 		COLOR_STRONG = this.getContext().getResources().getColor(R.color.primary);
 
     protected int                   mMinWidth, mMinHeight;
     protected Paint                 mIndicatorPaint, mGuidePaint;
