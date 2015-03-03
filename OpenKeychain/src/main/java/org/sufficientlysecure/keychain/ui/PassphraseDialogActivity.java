@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -209,7 +210,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // above can't be statically verified to have been set in all cases because
                     // the catch clause doesn't return.
                     try {
-                        userId = mSecretRing.getPrimaryUserIdWithFallback();
+                        String mainUserId = mSecretRing.getPrimaryUserIdWithFallback();
+                        String[] mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        if (mainUserIdSplit[0] != null) {
+                            userId = mainUserIdSplit[0];
+                        } else {
+                            userId = getString(R.string.user_id_no_name);
+                        }
                     } catch (PgpKeyNotFoundException e) {
                         userId = null;
                     }
