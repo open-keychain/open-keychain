@@ -149,6 +149,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
         private EditText mPassphraseEditText;
+        private TextView mPassphraseText;
         private View mInput, mProgress;
 
         private CanonicalizedSecretKeyRing mSecretRing = null;
@@ -167,7 +168,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             // if the dialog is displayed from the application class, design is missing
             // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
             ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                    R.style.Theme_AppCompat_Light);
+                    R.style.Theme_AppCompat_Light_Dialog);
 
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
             mServiceIntent = getArguments().getParcelable(EXTRA_DATA);
@@ -176,13 +177,30 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             alert.setTitle(R.string.title_unlock);
 
+            LayoutInflater inflater = LayoutInflater.from(theme);
+            View view = inflater.inflate(R.layout.passphrase_dialog, null);
+            alert.setView(view);
+
+            mPassphraseText = (TextView) view.findViewById(R.id.passphrase_text);
+            mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
+            mInput = view.findViewById(R.id.input);
+            mProgress = view.findViewById(R.id.progress);
+
+            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
             String userId;
             CanonicalizedSecretKey.SecretKeyType keyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
 
+            String message;
             if (mSubKeyId == Constants.key.symmetric || mSubKeyId == Constants.key.none) {
-                alert.setMessage(R.string.passphrase_for_symmetric_encryption);
+                message = getString(R.string.passphrase_for_symmetric_encryption);
             } else {
-                String message;
                 try {
                     ProviderHelper helper = new ProviderHelper(activity);
                     mSecretRing = helper.getCanonicalizedSecretKeyRing(
@@ -228,33 +246,16 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     alert.setCancelable(false);
                     return alert.create();
                 }
-
-                alert.setMessage(message);
             }
 
-            LayoutInflater inflater = LayoutInflater.from(theme);
-            View view = inflater.inflate(R.layout.passphrase_dialog, null);
-            alert.setView(view);
-
-            mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
-            mInput = view.findViewById(R.id.input);
-            mProgress = view.findViewById(R.id.progress);
-
-            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int id) {
-                    dialog.cancel();
-                }
-            });
-
+            mPassphraseText.setText(message);
 
             if (keyType == CanonicalizedSecretKey.SecretKeyType.PATTERN) {
                 // start pattern dialog and show progress circle here...
 //                Intent patternActivity = new Intent(getActivity(), LockPatternActivity.class);
 //                patternActivity.putExtra(LockPatternActivity.EXTRA_PATTERN, "123");
 //                startActivityForResult(patternActivity, REQUEST_CODE_ENTER_PATTERN);
-                mInput.setVisibility(View.GONE);
+                mInput.setVisibility(View.INVISIBLE);
                 mProgress.setVisibility(View.VISIBLE);
             } else {
                 // Hack to open keyboard.
@@ -322,7 +323,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         return;
                     }
 
-                    mInput.setVisibility(View.GONE);
+                    mInput.setVisibility(View.INVISIBLE);
                     mProgress.setVisibility(View.VISIBLE);
                     positive.setEnabled(false);
 
@@ -364,7 +365,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 mPassphraseEditText.setText("");
                                 mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
                                 mInput.setVisibility(View.VISIBLE);
-                                mProgress.setVisibility(View.GONE);
+                                mProgress.setVisibility(View.INVISIBLE);
                                 positive.setEnabled(true);
                                 return;
                             }
