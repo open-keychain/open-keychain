@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -170,7 +172,18 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                     long numDays = (selectedCal.getTimeInMillis() / 86400000)
                             - (todayCal.getTimeInMillis() / 86400000);
                     if (numDays <= 0) {
+                        CharSequence text = "Invalid date! Please choose a valid one.";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(activity.getApplicationContext(), text, duration);
+                        toast.show();
                         //set to previous expiry date
+                        datePicker.init(
+                                expiryCal.get(Calendar.YEAR),
+                                expiryCal.get(Calendar.MONTH),
+                                expiryCal.get(Calendar.DAY_OF_MONTH),
+                                null
+                        );
+
                         expiry=expiryCal.getTime().getTime()/1000;
                     }
                     else expiry = selectedCal.getTime().getTime() / 1000;
