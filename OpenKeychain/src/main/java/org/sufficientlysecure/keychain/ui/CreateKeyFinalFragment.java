@@ -46,18 +46,28 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockPar
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
 
     CreateKeyActivity mCreateKeyActivity;
 
+    @InjectView(R.id.name)
     TextView mNameEdit;
+    @InjectView(R.id.email)
     TextView mEmailEdit;
+    @InjectView(R.id.create_key_upload)
     CheckBox mUploadCheckbox;
+    @InjectView(R.id.create_key_back_button)
     View mBackButton;
+    @InjectView(R.id.create_key_create_button)
     View mCreateButton;
+    @InjectView(R.id.create_key_edit_text)
     TextView mEditText;
+    @InjectView(R.id.create_key_edit_button)
     View mEditButton;
 
     public static final String ARG_NAME = "name";
@@ -90,14 +100,7 @@ public class CreateKeyFinalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_final_fragment, container, false);
 
-        mNameEdit = (TextView) view.findViewById(R.id.name);
-        mEmailEdit = (TextView) view.findViewById(R.id.email);
-        mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
-        mBackButton = view.findViewById(R.id.create_key_back_button);
-        mCreateButton = view.findViewById(R.id.create_key_create_button);
-        mEditText = (TextView) view.findViewById(R.id.create_key_edit_text);
-        mEditButton = view.findViewById(R.id.create_key_edit_button);
-
+        ButterKnife.inject(this, view);
         // get args
         mName = getArguments().getString(ARG_NAME);
         mEmail = getArguments().getString(ARG_EMAIL);
