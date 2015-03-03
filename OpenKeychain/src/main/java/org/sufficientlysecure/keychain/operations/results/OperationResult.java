@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Represent the result of an operation.
  *
@@ -51,6 +53,56 @@ import java.util.List;
 public abstract class OperationResult implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
+    public static final UUID NULL_UUID = new UUID(0,0);
+
+    /**
+     * A HashMap of UUID:OperationLog which contains logs that we don't need
+     * to care about. This is used such that when we become parceled, we are
+     * well below the 1Mbit boundary that is specified.
+     */
+    private static ConcurrentHashMap<UUID, OperationLog> dehydratedLogs;
+    static {
+        // Static initializer for ConcurrentHashMap
+        dehydratedLogs = new ConcurrentHashMap<UUID,OperationLog>();
+    }
+
+    /**
+     * Dehydrate a log (such that it is available after deparcelization)
+     *
+     * Returns the NULL uuid (0) if you hand it null.
+     * @param log An OperationLog to dehydrate
+     * @return a UUID, the ticket for your dehydrated log
+     *
+     */
+    private static UUID dehydrateLog(OperationLog log) {
+        if(log == null) {
+            return NULL_UUID;
+        }
+        else {
+            UUID ticket = UUID.randomUUID();
+            dehydratedLogs.put(ticket, log);
+            return ticket;
+        }
+    }
+
+    /***
+     * Rehydrate a log after going through parcelization, invalidating its place in the
+     * dehydration pool.
+     * This is used such that when parcelized, the parcel is no larger than 1mbit.
+     * @param ticket A UUID ticket that identifies the log in question.
+     * @return An OperationLog.
+     */
+    private static OperationLog rehydrateLog(UUID ticket) {
+        // UUID.equals isn't well documented; we use compareTo instead.
+        if( NULL_UUID.compareTo(ticket) == 0 ) {
+            return null;
+        }
+        else {
+            OperationLog log = dehydratedLogs.get(ticket);
+            dehydratedLogs.remove(ticket);
+            return log;
+        }
+    }
 
     /** Holds the overall result, the number specifying varying degrees of success:
      *  - The first bit is 0 on overall success, 1 on overall failure
@@ -65,7 +117,7 @@ public abstract class OperationResult implements Parcelable {
     public static final int RESULT_WARNINGS = 4;
 
     /// A list of log entries tied to the operation result.
-    final OperationLog mLog;
+    protected OperationLog mLog;
 
     public OperationResult(int result, OperationLog log) {
         mResult = result;
@@ -74,8 +126,11 @@ public abstract class OperationResult implements Parcelable {
 
     public OperationResult(Parcel source) {
         mResult = source.readInt();
-        mLog = new OperationLog();
-        mLog.addAll(source.createTypedArrayList(LogEntryParcel.CREATOR));
+        long mostSig = source.readLong();
+        long leastSig = source.readLong();
+        UUID mTicket = new UUID(mostSig, leastSig);
+        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
+        mLog = rehydrateLog(mTicket);
     }
 
     public int getResult() {
@@ -739,9 +794,11 @@ public abstract class OperationResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        if (mLog != null) {
-            dest.writeTypedList(mLog.toList());
-        }
+        // Get a ticket for our log.
+        UUID mTicket = dehydrateLog(mLog);
+        // And write out the UUID most and least significant bits.
+        dest.writeLong(mTicket.getMostSignificantBits());
+        dest.writeLong(mTicket.getLeastSignificantBits());
     }
 
     public static class OperationLog implements Iterable<LogEntryParcel> {
