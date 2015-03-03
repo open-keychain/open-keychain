@@ -100,7 +100,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
+        switch (item.getItemId()) {
             case R.id.menu_log_display_export_log:
                 exportLog();
                 break;
@@ -116,100 +116,94 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
     private void writeToLogFile(final OperationResult.OperationLog operationLog, final File f) {
         OperationResult.OperationLog currLog = new OperationResult.OperationLog();
-        currLog.add(OperationResult.LogType.MSG_EXPORT_LOG,0);
+        currLog.add(OperationResult.LogType.MSG_EXPORT_LOG, 0);
 
         boolean error = false;
 
         PrintWriter pw = null;
         try {
-                pw = new PrintWriter(f);
-                pw.print(getPrintableOperationLog(operationLog,""));
-                if(pw.checkError()) {//IOException
-                    Log.e(Constants.TAG, "Log Export I/O Exception "+f.getAbsolutePath());
-                    currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING,1);
-                    error = true;
-                }
-        } catch(FileNotFoundException e) {
-            Log.e(Constants.TAG, "File not found for exporting log "+f.getAbsolutePath());
+            pw = new PrintWriter(f);
+            pw.print(getPrintableOperationLog(operationLog, ""));
+            if (pw.checkError()) {//IOException
+                Log.e(Constants.TAG, "Log Export I/O Exception " + f.getAbsolutePath());
+                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING, 1);
+                error = true;
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(Constants.TAG, "File not found for exporting log " + f.getAbsolutePath());
             currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN, 1);
             error = true;
         }
-        if(pw!=null) {
+        if (pw != null) {
             pw.close();
-            if(!error && pw.checkError()) {//check if it is only pw.close() which generated error
-                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING,1);
+            if (!error && pw.checkError()) {//check if it is only pw.close() which generated error
+                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING, 1);
                 error = true;
             }
         }
 
-        if(!error)  currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS,1);
+        if (!error) currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS, 1);
 
-        int opResultCode = error?OperationResult.RESULT_ERROR:OperationResult.RESULT_OK;
-        OperationResult opResult = new LogExportResult(opResultCode,currLog);
+        int opResultCode = error ? OperationResult.RESULT_ERROR : OperationResult.RESULT_OK;
+        OperationResult opResult = new LogExportResult(opResultCode, currLog);
         opResult.createNotify(getActivity()).show();
-    }
-    private static class LogExportResult extends OperationResult {
-
-        public LogExportResult(int result, OperationLog log) {
-            super(result, log);
-        }
-
-        /** trivial but necessary to implement the Parcelable protocol. */
-        public LogExportResult(Parcel source) {
-            super(source);
-        }
-
-        public static Creator<LogExportResult> CREATOR = new Creator<LogExportResult>() {
-            public LogExportResult createFromParcel(final Parcel source) {
-                return new LogExportResult(source);
-            }
-
-            public LogExportResult[] newArray(final int size) {
-                return new LogExportResult[size];
-            }
-        };
     }
 
     /**
      * returns an indented String of an entire OperationLog
-     * @param operationLog log to be converted to indented, printable format
+     *
+     * @param opLog       log to be converted to indented, printable format
      * @param basePadding padding to add at the start of all log entries, made for use with SubLogs
      * @return printable, indented version of passed operationLog
      */
-    private String getPrintableOperationLog(OperationResult.OperationLog operationLog, String basePadding) {
+    private String getPrintableOperationLog(OperationResult.OperationLog opLog, String basePadding) {
         String log = "";
-        Iterator<LogEntryParcel> logIterator = operationLog.iterator();
-        while(logIterator.hasNext()) {
-            log += getPrintableLogEntry(logIterator.next(), basePadding)+"\n";
+        for (Iterator<LogEntryParcel> logIterator = opLog.iterator(); logIterator.hasNext(); ) {
+            log += getPrintableLogEntry(logIterator.next(), basePadding) + "\n";
         }
-        log = log.substring(0,log.length()-1);//gets rid of extra new line
+        log = log.substring(0, log.length() - 1);//gets rid of extra new line
         return log;
     }
+
     /**
      * returns an indented String of a LogEntryParcel including any sub-logs it may contain
+     *
      * @param entryParcel log entryParcel whose String representation is to be obtained
      * @return indented version of passed log entryParcel in a readable format
      */
     private String getPrintableLogEntry(OperationResult.LogEntryParcel entryParcel,
                                         String basePadding) {
 
-        String logText = "";
         final String indent = "    ";//4 spaces = 1 Indent level
 
         String padding = basePadding;
-        for(int i =0;i<entryParcel.mIndent;i++) {
-            padding +=indent;
+        for (int i = 0; i < entryParcel.mIndent; i++) {
+            padding += indent;
         }
-        logText = padding;
+        String logText = padding;
 
         switch (entryParcel.mType.mLevel) {
-            case DEBUG: logText+="[DEBUG]"; break;
-            case INFO: logText+="[INFO]"; break;
-            case WARN: logText+="[WARN]"; break;
-            case ERROR: logText+="[ERROR]"; break;
-            case START: logText+="[START]"; break;
-            case OK: logText+="[OK]"; break;
-            case CANCELLED: logText+="[CANCELLED]"; break;
+            case DEBUG:
+                logText += "[DEBUG]";
+                break;
+            case INFO:
+                logText += "[INFO]";
+                break;
+            case WARN:
+                logText += "[WARN]";
+                break;
+            case ERROR:
+                logText += "[ERROR]";
+                break;
+            case START:
+                logText += "[START]";
+                break;
+            case OK:
+                logText += "[OK]";
+                break;
+            case CANCELLED:
+                logText += "[CANCELLED]";
+                break;
         }
 
         // special case: first parameter may be a quantity
@@ -224,12 +218,11 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         }
 
         if (entryParcel instanceof SubLogEntryParcel) {
-
             OperationResult subResult = ((SubLogEntryParcel) entryParcel).getSubResult();
             LogEntryParcel subEntry = subResult.getLog().getLast();
             if (subEntry != null) {
                 //the first line of log of subResult is same as entryParcel, so replace logText
-                logText = getPrintableOperationLog(subResult.getLog(),padding);
+                logText = getPrintableOperationLog(subResult.getLog(), padding);
             }
         }
 
@@ -245,9 +238,33 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         FileHelper.saveFile(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
-                writeToLogFile(mResult.getLog(),file);
+                writeToLogFile(mResult.getLog(), file);
             }
         }, this.getActivity().getSupportFragmentManager(), title, message, exportFile, null);
+    }
+
+    private static class LogExportResult extends OperationResult {
+
+        public static Creator<LogExportResult> CREATOR = new Creator<LogExportResult>() {
+            public LogExportResult createFromParcel(final Parcel source) {
+                return new LogExportResult(source);
+            }
+
+            public LogExportResult[] newArray(final int size) {
+                return new LogExportResult[size];
+            }
+        };
+
+        public LogExportResult(int result, OperationLog log) {
+            super(result, log);
+        }
+
+        /**
+         * trivial but necessary to implement the Parcelable protocol.
+         */
+        public LogExportResult(Parcel source) {
+            super(source);
+        }
     }
 
     @Override
