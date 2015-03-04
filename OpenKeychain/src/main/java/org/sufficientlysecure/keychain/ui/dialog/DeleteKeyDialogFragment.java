@@ -83,8 +83,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
         mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
 
-        builder.setTitle(R.string.warning);
-
         final boolean hasSecret;
 
         // If only a single key has been selected
@@ -110,12 +108,14 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 }
                 hasSecret = ((Long) data.get(KeyRings.HAS_ANY_SECRET)) == 1;
 
-                // Set message depending on which key it is.
-                mMainMessage.setText(getString(
-                        hasSecret ? R.string.secret_key_deletion_confirmation
-                                : R.string.public_key_deletetion_confirmation,
-                        name
-                ));
+                if (hasSecret) {
+                    // show title only for secret key deletions,
+                    // see http://www.google.com/design/spec/components/dialogs.html#dialogs-behavior
+                    builder.setTitle(getString(R.string.title_delete_secret_key, name));
+                    mMainMessage.setText(getString(R.string.secret_key_deletion_confirmation, name));
+                } else {
+                    mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
+                }
             } catch (ProviderHelper.NotFoundException e) {
                 dismiss();
                 return null;
@@ -125,7 +125,6 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             hasSecret = false;
         }
 
-        builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

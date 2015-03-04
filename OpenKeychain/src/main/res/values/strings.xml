@@ -42,6 +42,7 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
     <string name="title_keys">"Keys"</string>
+    <string name="title_delete_secret_key">"Delete YOUR key \'%s\'?"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -203,7 +204,6 @@
     <string name="ecdh">"ECDH"</string>
     <string name="ecdsa">"ECDSA"</string>
     <string name="filemanager_title_open">"Open…"</string>
-    <string name="warning">"Warning"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
 
@@ -233,9 +233,9 @@
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
-    <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected public keys?\nYou can't undo this!"</string>
-    <string name="secret_key_deletion_confirmation">"Do you really want to delete the SECRET key '%s'?\nYou can't undo this!"</string>
-    <string name="public_key_deletetion_confirmation">"Do you really want to delete the public key '%s'?\nYou can't undo this!"</string>
+    <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
+    <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and loose all key verifications related to it!\nDo you really want to delete YOUR key '%s'?"</string>
+    <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
 

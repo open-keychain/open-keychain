@@ -62,12 +62,9 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-
-        alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
-        alert.setTitle(R.string.warning);
         alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFilename));
 
-        alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        alert.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
