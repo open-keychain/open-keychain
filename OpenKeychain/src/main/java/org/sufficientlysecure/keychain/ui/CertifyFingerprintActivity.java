@@ -19,7 +19,10 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -55,6 +58,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
     @Override
     protected void initLayout() {
         setContentView(R.layout.certify_fingerprint_activity);
+        changeToolbarColor();
     }
 
     private void startFragment(Bundle savedInstanceState, Uri dataUri) {
@@ -75,6 +79,23 @@ public class CertifyFingerprintActivity extends BaseActivity {
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
+    }
+
+    /**
+     * Changes the color of our ToolBar.
+     *
+     * Currently Set to ORANGE
+     */
+    private void changeToolbarColor() {
+        RelativeLayout mToolBarInclude = (RelativeLayout) findViewById(R.id.toolbar_include);
+
+        // Changes the color of the Status Bar strip
+        ImageView mStatusBar = (ImageView) mToolBarInclude.findViewById(R.id.status_bar);
+        mStatusBar.setBackgroundResource(getResources().getColor(R.color.android_orange_dark));
+
+        // Changes the color of our Tool Bar
+        Toolbar toolbar = (Toolbar) mToolBarInclude.findViewById(R.id.toolbar);
+        toolbar.setBackgroundResource(getResources().getColor(R.color.android_orange_light));
     }
 
 }
