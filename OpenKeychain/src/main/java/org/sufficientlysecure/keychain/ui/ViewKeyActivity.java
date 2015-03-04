@@ -76,7 +76,6 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -104,7 +103,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageButton mActionEncryptText;
     private ImageButton mActionNfc;
     private FloatingActionButton mFab;
-    private AspectRatioImageView mPhoto;
+    private ImageView mPhoto;
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
 
@@ -146,7 +145,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
+        mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 

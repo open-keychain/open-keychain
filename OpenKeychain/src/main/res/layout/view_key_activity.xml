@@ -15,12 +15,11 @@
         android:background="?attr/colorPrimary"
         android:orientation="horizontal">
 
-        <org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView
+        <ImageView
             android:id="@+id/view_key_photo"
-            app:aspectRatioEnabled="true"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_below="@+id/status_bar"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
@@ -29,7 +28,8 @@
             android:cropToPadding="false"
             android:focusable="false"
             android:adjustViewBounds="false"
-            android:layout_alignParentTop="false" />
+            android:layout_alignParentTop="false"
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/status_bar"
