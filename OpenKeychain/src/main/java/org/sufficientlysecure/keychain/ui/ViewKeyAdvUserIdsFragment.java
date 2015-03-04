@@ -133,7 +133,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = UserPackets.buildUserIdsUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri,
-                        UserIdsAdapter.USER_IDS_PROJECTION, null, null, null);
+                        UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
             }
 
             default:

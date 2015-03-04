@@ -29,7 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 
 public class LinkedIdCreateDnsStep1Fragment extends Fragment {
@@ -73,7 +73,7 @@ public class LinkedIdCreateDnsStep1Fragment extends Fragment {
                     return;
                 }
 
-                String proofNonce = LinkedIdentity.generateNonce();
+                String proofNonce = RawLinkedIdentity.generateNonce();
                 String proofText = DnsResource.generateText(getActivity(),
                         mLinkedIdWizard.mFingerprint, proofNonce);
 

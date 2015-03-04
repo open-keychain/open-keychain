@@ -1296,5 +1296,6 @@
     <string name="linked_verify_pending">Not yet verified</string>
     <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
     <string name="menu_linked_add_identity">"Add Linked Identity"</string>
+    <string name="section_linked_identities">Linked Identities</string>
 
 </resources>

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -49,10 +51,14 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
+    private static final int LOADER_ID_LINKED_IDS = 2;
 
     private UserIdsAdapter mUserIdsAdapter;
+    private LinkedIdsAdapter mLinkedIdsAdapter;
 
     private Uri mDataUri;
+    private ListView mLinkedIds;
+    private CardView mLinkedIdsCard;
 
     /**
      * Creates new instance of this fragment
@@ -73,6 +79,11 @@ public class ViewKeyFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
         mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
+
+        mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
+        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0);
+        mLinkedIds.setAdapter(mLinkedIdsAdapter);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -80,6 +91,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                 showUserIdInfo(position);
             }
         });
+        mLinkedIdsCard.setVisibility(View.GONE);
 
         return root;
     }
@@ -145,23 +157,23 @@ public class ViewKeyFragment extends LoaderFragment implements
             case LOADER_ID_USER_IDS:
                 return UserIdsAdapter.createLoader(getActivity(), mDataUri);
 
+            case LOADER_ID_LINKED_IDS:
+                return LinkedIdsAdapter.createLoader(getActivity(), mDataUri);
+
             default:
                 return null;
         }
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
-        // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
-            return;
-        }
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
+                // Avoid NullPointerExceptions...
+                if (data.getCount() == 0) {
+                    return;
+                }
                 if (data.moveToFirst()) {
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
@@ -180,6 +192,11 @@ public class ViewKeyFragment extends LoaderFragment implements
                 break;
             }
 
+            case LOADER_ID_LINKED_IDS: {
+                mLinkedIdsCard.setVisibility(data.getCount() > 0 ? View.VISIBLE : View.GONE);
+                mLinkedIdsAdapter.swapCursor(data);
+                break;
+            }
         }
         setContentShown(true);
     }
@@ -192,6 +209,11 @@ public class ViewKeyFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(null);
+                break;
+            }
+            case LOADER_ID_LINKED_IDS: {
+                mLinkedIdsCard.setVisibility(View.GONE);
+                mLinkedIdsAdapter.swapCursor(null);
                 break;
             }
         }

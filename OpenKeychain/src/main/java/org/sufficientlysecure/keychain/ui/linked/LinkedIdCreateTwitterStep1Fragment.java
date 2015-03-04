@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
@@ -92,7 +92,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                             return;
                         }
 
-                        String proofNonce = LinkedIdentity.generateNonce();
+                        String proofNonce = RawLinkedIdentity.generateNonce();
                         String proofText = TwitterResource.generateText(getActivity(),
                                 mLinkedIdWizard.mFingerprint, proofNonce);
 

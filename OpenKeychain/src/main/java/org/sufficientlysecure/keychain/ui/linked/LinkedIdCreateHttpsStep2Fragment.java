@@ -42,7 +42,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -73,7 +73,8 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
     TextView mVerifyStatus;
 
     String mResourceUri;
-    String mResourceNonce, mResourceString;
+    int mResourceNonce;
+    String mResourceString;
 
     // This is a resource, set AFTER it has been verified
     GenericHttpsResource mVerifiedResource = null;
@@ -100,7 +101,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
         final View view = inflater.inflate(R.layout.linked_create_https_fragment_step2, container, false);
 
         mResourceUri = getArguments().getString(URI);
-        mResourceNonce = getArguments().getString(NONCE);
+        mResourceNonce = getArguments().getInt(NONCE);
         mResourceString = getArguments().getString(TEXT);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
@@ -314,7 +315,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+                RawLinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 

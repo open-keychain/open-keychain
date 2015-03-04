@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.pgp.linked.resources;
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.net.URI;
@@ -21,7 +21,7 @@ import de.measite.minidns.Record.CLASS;
 import de.measite.minidns.Record.TYPE;
 import de.measite.minidns.record.TXT;
 
-public class DnsResource extends LinkedResource {
+public class DnsResource extends LinkedCookieResource {
 
     final static Pattern magicPattern =
             Pattern.compile("pgpid\\+cookie=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");

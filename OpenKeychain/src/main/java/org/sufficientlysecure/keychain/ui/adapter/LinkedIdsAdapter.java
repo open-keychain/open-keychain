@@ -32,31 +32,42 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-public class UserIdsAdapter extends UserAttributesAdapter {
+public class LinkedIdsAdapter extends UserAttributesAdapter {
     protected LayoutInflater mInflater;
-    private SaveKeyringParcel mSaveKeyringParcel;
-    private boolean mShowStatusImages;
 
-    public UserIdsAdapter(Context context, Cursor c, int flags,
-                          boolean showStatusImages, SaveKeyringParcel saveKeyringParcel) {
+    public LinkedIdsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
-
-        mSaveKeyringParcel = saveKeyringParcel;
-        mShowStatusImages = showStatusImages;
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, SaveKeyringParcel saveKeyringParcel) {
-        this(context, c, flags, true, saveKeyringParcel);
+    @Override
+    public int getItemViewType(int position) {
+        RawLinkedIdentity id = (RawLinkedIdentity) getItem(position);
+
+        // TODO return different ids by type
+
+        return 0;
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, true, null);
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
+
+    @Override
+    public Object getItem(int position) {
+        Cursor c = getCursor();
+        c.moveToPosition(position);
+
+        byte[] data = c.getBlob(INDEX_ATTRIBUTE_DATA);
+        RawLinkedIdentity identity = RawLinkedIdentity.fromSubpacketData(data);
+
+        return identity;
     }
 
     @Override
@@ -92,38 +103,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
         boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
         boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-
-        // for edit key
-        if (mSaveKeyringParcel != null) {
-            boolean changeAnyPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null);
-            boolean changeThisPrimaryUserId = (mSaveKeyringParcel.mChangePrimaryUserId != null
-                    && mSaveKeyringParcel.mChangePrimaryUserId.equals(userId));
-            boolean revokeThisUserId = (mSaveKeyringParcel.mRevokeUserIds.contains(userId));
-
-            // only if primary user id will be changed
-            // (this is not triggered if the user id is currently the primary one)
-            if (changeAnyPrimaryUserId) {
-                // change _all_ primary user ids and set new one to true
-                isPrimary = changeThisPrimaryUserId;
-            }
-
-            if (revokeThisUserId) {
-                if (!isRevoked) {
-                    isRevoked = true;
-                }
-            }
-
-            vEditImage.setVisibility(View.VISIBLE);
-            vVerifiedLayout.setVisibility(View.GONE);
-        } else {
-            vEditImage.setVisibility(View.GONE);
-
-            if (mShowStatusImages) {
-                vVerifiedLayout.setVisibility(View.VISIBLE);
-            } else {
-                vVerifiedLayout.setVisibility(View.GONE);
-            }
-        }
+        vVerifiedLayout.setVisibility(View.VISIBLE);
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
@@ -161,33 +141,18 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         }
     }
 
-    public boolean getIsRevokedPending(int position) {
-        mCursor.moveToPosition(position);
-        String userId = mCursor.getString(INDEX_USER_ID);
-
-        boolean isRevokedPending = false;
-        if (mSaveKeyringParcel != null) {
-            if (mSaveKeyringParcel.mRevokeUserIds.contains(userId)) {
-                isRevokedPending = true;
-            }
-
-        }
-
-        return isRevokedPending;
-    }
-
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
     }
 
     // don't show revoked user ids, irrelevant for average users
-    public static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
+    public static final String LINKED_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
     public static CursorLoader createLoader(Activity activity, Uri dataUri) {
-        Uri baseUri = UserPackets.buildUserIdsUri(dataUri);
+        Uri baseUri = UserPackets.buildLinkedIdsUri(dataUri);
         return new CursorLoader(activity, baseUri,
-                UserIdsAdapter.USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
+                UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
 }

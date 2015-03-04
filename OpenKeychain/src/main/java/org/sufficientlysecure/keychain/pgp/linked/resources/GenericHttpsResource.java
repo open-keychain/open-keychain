@@ -8,7 +8,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -22,14 +22,14 @@ import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class GenericHttpsResource extends LinkedResource {
+public class GenericHttpsResource extends LinkedCookieResource {
 
     GenericHttpsResource(Set<String> flags, HashMap<String,String> params, URI uri) {
         super(flags, params, uri);
     }
 
     public static String generateText (Context context, byte[] fingerprint, String nonce) {
-        String cookie = LinkedResource.generate(context, fingerprint, nonce);
+        String cookie = LinkedCookieResource.generate(context, fingerprint, nonce);
 
         return String.format(context.getResources().getString(R.string.linked_id_generic_text),
                 cookie, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));

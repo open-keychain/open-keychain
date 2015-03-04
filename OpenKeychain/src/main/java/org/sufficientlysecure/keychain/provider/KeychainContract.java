@@ -106,6 +106,7 @@ public class KeychainContract {
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
     public static final String PATH_USER_IDS = "user_ids";
+    public static final String PATH_LINKED_IDS = "linked_ids";
     public static final String PATH_KEYS = "keys";
     public static final String PATH_CERTS = "certs";
 
@@ -260,6 +261,10 @@ public class KeychainContract {
 
         public static Uri buildUserIdsUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_USER_IDS).build();
+        }
+
+        public static Uri buildLinkedIdsUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_LINKED_IDS).build();
         }
     }
 

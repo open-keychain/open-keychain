@@ -33,7 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,7 +41,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -71,7 +70,8 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
     TextView mVerifyStatus;
 
     String mResourceDomain;
-    String mResourceNonce, mResourceString;
+    int mResourceNonce;
+    String mResourceString;
 
     // This is a resource, set AFTER it has been verified
     DnsResource mVerifiedResource = null;
@@ -98,7 +98,7 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
         final View view = inflater.inflate(R.layout.linked_create_dns_fragment_step2, container, false);
 
         mResourceDomain = getArguments().getString(DOMAIN);
-        mResourceNonce = getArguments().getString(NONCE);
+        mResourceNonce = getArguments().getInt(NONCE);
         mResourceString = getArguments().getString(TEXT);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
@@ -308,7 +308,7 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+                RawLinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 
