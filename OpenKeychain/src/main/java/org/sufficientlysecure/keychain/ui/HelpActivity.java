@@ -32,10 +32,9 @@ public class HelpActivity extends BaseActivity {
 
     public static final int TAB_START = 0;
     public static final int TAB_FAQ = 1;
-    public static final int TAB_WOT = 2;
-    public static final int TAB_NFC = 3;
-    public static final int TAB_CHANGELOG = 4;
-    public static final int TAB_ABOUT = 5;
+    public static final int TAB_TRUST = 2;
+    public static final int TAB_CHANGELOG = 3;
+    public static final int TAB_ABOUT = 4;
 
     ViewPager mViewPager;
     private PagerTabStripAdapter mTabsAdapter;
@@ -69,20 +68,10 @@ public class HelpActivity extends BaseActivity {
         mTabsAdapter.addTab(HelpHtmlFragment.class, startBundle,
                 getString(R.string.help_tab_start));
 
-        Bundle faqBundle = new Bundle();
-        faqBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_faq);
-        mTabsAdapter.addTab(HelpHtmlFragment.class, faqBundle,
-                getString(R.string.help_tab_faq));
-
         Bundle wotBundle = new Bundle();
-        wotBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_wot);
+        wotBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_certification);
         mTabsAdapter.addTab(HelpHtmlFragment.class, wotBundle,
                 getString(R.string.help_tab_wot));
-
-        Bundle nfcBundle = new Bundle();
-        nfcBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_nfc_beam);
-        mTabsAdapter.addTab(HelpHtmlFragment.class, nfcBundle,
-                getString(R.string.help_tab_nfc_beam));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_changelog);

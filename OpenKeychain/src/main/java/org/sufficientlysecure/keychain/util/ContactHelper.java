@@ -475,7 +475,8 @@ public class ContactHelper {
      */
     private static void writeContactEmail(ArrayList<ContentProviderOperation> ops, ContentResolver resolver,
                                           long rawContactId, long masterKeyId) {
-        ops.add(selectByRawContactAndItemType(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
+        ops.add(selectByRawContactAndItemType(
+                ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
                 rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
         Cursor ids = resolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 new String[]{
@@ -487,7 +488,8 @@ public class ContactHelper {
             while (ids.moveToNext()) {
                 String[] userId = KeyRing.splitUserId(ids.getString(0));
                 if (userId[1] != null) {
-                    ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),
+                    ops.add(referenceRawContact(
+                            ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),
                             rawContactId)
                             .withValue(ContactsContract.Data.MIMETYPE,
                                     ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
