@@ -225,7 +225,7 @@
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
-    <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and loose all key verifications related to it!\nDo you really want to delete YOUR key '%s'?"</string>
+    <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and loose all key verifications related to it!"</string>
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
