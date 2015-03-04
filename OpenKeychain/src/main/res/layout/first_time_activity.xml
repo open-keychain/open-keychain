@@ -62,7 +62,7 @@
                 android:layout_weight="1"
                 android:text="@string/first_time_create_key"
                 android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_action_new_account"
+                android:drawableRight="@drawable/ic_key_plus_grey600_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
                 android:layout_gravity="center_vertical"

@@ -120,7 +120,7 @@
             android:id="@+id/view_key_status_image"
             android:layout_width="96dp"
             android:visibility="invisible"
-            android:src="@drawable/status_signature_unverified_cutout_96px"
+            android:src="@drawable/status_signature_unverified_cutout_96dp"
             android:layout_height="96dp"
             android:layout_above="@id/toolbar2"
             android:layout_alignParentRight="true"
