@@ -542,52 +542,10 @@ public class KeyListFragment extends LoaderFragment
         startActivityForResult(intent, 0);
     }
 
-    private void consolidate() {
-        // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                getActivity(),
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
+    public void consolidate() {
+        Intent consolidateIntent = new Intent(getActivity(), ConsolidateDialogActivity.class);
+        startActivity(consolidateIntent);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final ConsolidateResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        return;
-                    }
-
-                    result.createNotify(getActivity()).show();
-                }
-            }
-        };
-
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-
-        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
     }
 
     @Override

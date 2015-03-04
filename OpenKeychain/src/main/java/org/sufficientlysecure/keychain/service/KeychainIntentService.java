@@ -252,7 +252,9 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Operation
                 ConsolidateResult result;
-                if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                boolean isRecovery = data.getBoolean(CONSOLIDATE_RECOVERY, false);
+                Log.d("KeychainIntentService", "is recovery? "+isRecovery);
+                if (isRecovery) {
                     result = new ProviderHelper(this).consolidateDatabaseStep2(this);
                 } else {
                     result = new ProviderHelper(this).consolidateDatabaseStep1(this);
