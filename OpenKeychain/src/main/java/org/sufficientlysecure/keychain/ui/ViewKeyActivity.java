@@ -74,6 +74,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
@@ -839,7 +840,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
+                                State.REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -855,7 +856,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         }
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
+                                State.EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -915,7 +916,7 @@ public class ViewKeyActivity extends BaseActivity implements
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
+                                    State.VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
                             photoTask.execute(mMasterKeyId);
 
@@ -924,7 +925,7 @@ public class ViewKeyActivity extends BaseActivity implements
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
+                                    State.UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.android_orange_light);
 
                             mFab.setVisibility(View.VISIBLE);

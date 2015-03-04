@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -117,7 +118,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCreateKeyActivity.loadFragment(null, null, CreateKeyActivity.FRAG_ACTION_TO_LEFT);
+                mCreateKeyActivity.loadFragment(null, null, FragAction.TO_LEFT);
             }
         });
 

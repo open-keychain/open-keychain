@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 public class CertifyKeySpinner extends KeySpinner {
     private long mHiddenMasterKeyId = Constants.key.none;
@@ -103,16 +104,16 @@ public class CertifyKeySpinner extends KeySpinner {
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.REVOKED, R.color.bg_gray);
             return false;
         }
         if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.EXPIRED, R.color.bg_gray);
             return false;
         }
         // don't invalidate the "None" entry, which is also null!
         if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, KeyFormattingUtils.STATE_UNAVAILABLE, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.UNAVAILABLE, R.color.bg_gray);
             return false;
         }
 
