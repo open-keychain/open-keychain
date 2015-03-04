@@ -70,6 +70,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -716,13 +717,13 @@ public class KeyListFragment extends LoaderFragment
 
                 // Note: order is important!
                 if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.REVOKED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.EXPIRED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
@@ -735,10 +736,10 @@ public class KeyListFragment extends LoaderFragment
                 } else {
                     // this is a public key - show if it's verified
                     if (isVerified) {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.VERIFIED);
                         h.mStatus.setVisibility(View.VISIBLE);
                     } else {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_UNVERIFIED);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.UNVERIFIED);
                         h.mStatus.setVisibility(View.VISIBLE);
                     }
                     h.mSlinger.setVisibility(View.GONE);

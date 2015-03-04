@@ -379,27 +379,29 @@ public class KeyFormattingUtils {
 
     public static final int DEFAULT_COLOR = -1;
 
-    public static final int STATE_REVOKED = 1;
-    public static final int STATE_EXPIRED = 2;
-    public static final int STATE_VERIFIED = 3;
-    public static final int STATE_UNAVAILABLE = 4;
-    public static final int STATE_ENCRYPTED = 5;
-    public static final int STATE_NOT_ENCRYPTED = 6;
-    public static final int STATE_UNVERIFIED = 7;
-    public static final int STATE_UNKNOWN_KEY = 8;
-    public static final int STATE_INVALID = 9;
-    public static final int STATE_NOT_SIGNED = 10;
+    public static enum State {
+        REVOKED,
+        EXPIRED,
+        VERIFIED,
+        UNAVAILABLE,
+        ENCRYPTED,
+        NOT_ENCRYPTED,
+        UNVERIFIED,
+        UNKNOWN_KEY,
+        INVALID,
+        NOT_SIGNED
+    }
 
-    public static void setStatusImage(Context context, ImageView statusIcon, int state) {
+    public static void setStatusImage(Context context, ImageView statusIcon, State state) {
         setStatusImage(context, statusIcon, null, state);
     }
 
-    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, int state) {
+    public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText, State state) {
         setStatusImage(context, statusIcon, statusText, state, KeyFormattingUtils.DEFAULT_COLOR, false);
     }
 
     public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText,
-                                      int state, int color) {
+                                      State state, int color) {
         setStatusImage(context, statusIcon, statusText, state, color, false);
     }
 
@@ -407,10 +409,10 @@ public class KeyFormattingUtils {
      * Sets status image based on constant
      */
     public static void setStatusImage(Context context, ImageView statusIcon, TextView statusText,
-                                      int state, int color, boolean big) {
+                                      State state, int color, boolean big) {
         switch (state) {
             /** GREEN: everything is good **/
-            case STATE_VERIFIED: {
+            case VERIFIED: {
                 if (big) {
                     statusIcon.setImageDrawable(
                             context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_96px));
@@ -428,7 +430,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_ENCRYPTED: {
+            case ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_closed_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
@@ -442,7 +444,7 @@ public class KeyFormattingUtils {
                 break;
             }
             /** ORANGE: mostly bad... **/
-            case STATE_UNVERIFIED: {
+            case UNVERIFIED: {
                 if (big) {
                     statusIcon.setImageDrawable(
                             context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_96px));
@@ -460,7 +462,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_UNKNOWN_KEY: {
+            case UNKNOWN_KEY: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
@@ -474,7 +476,7 @@ public class KeyFormattingUtils {
                 break;
             }
             /** RED: really bad... **/
-            case STATE_REVOKED: {
+            case REVOKED: {
                 if (big) {
                     statusIcon.setImageDrawable(
                             context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_96px));
@@ -492,7 +494,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_EXPIRED: {
+            case EXPIRED: {
                 if (big) {
                     statusIcon.setImageDrawable(
                             context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_96px));
@@ -510,7 +512,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_NOT_ENCRYPTED: {
+            case NOT_ENCRYPTED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_open_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
@@ -523,7 +525,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_NOT_SIGNED: {
+            case NOT_SIGNED: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
@@ -536,7 +538,7 @@ public class KeyFormattingUtils {
                 }
                 break;
             }
-            case STATE_INVALID: {
+            case INVALID: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
@@ -550,7 +552,7 @@ public class KeyFormattingUtils {
                 break;
             }
             /** special **/
-            case STATE_UNAVAILABLE: {
+            case UNAVAILABLE: {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24px));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
