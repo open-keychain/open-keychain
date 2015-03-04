@@ -214,33 +214,7 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 
 ### Libraries
 
-* SpongyCastle  
-  https://github.com/rtyley/spongycastle  
-  MIT X11 License
-
-* Android Support Library v4  
-  http://developer.android.com/tools/support-library/index.html  
-  Apache License v2
-  
-* Android Support Library v7 'appcompat'  
-  http://developer.android.com/tools/support-library/index.html  
-  Apache License v2
-
-* HtmlTextView  
-  https://github.com/dschuermann/html-textview  
-  Apache License v2
-
-* ZXing  
-  https://github.com/zxing/zxing  
-  Apache License v2
-  
-* StickyListHeaders  
-  https://github.com/emilsjolander/StickyListHeaders  
-  Apache License v2
-  
-* https://github.com/jpardogo/PagerSlidingTabStrip
-
-* https://github.com/journeyapps/zxing-android-embedded
+See https://github.com/open-keychain/open-keychain/blob/development/OpenKeychain/src/main/res/raw/help_about.html
 
 ### Images
 * icon.svg  
