@@ -83,7 +83,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class ViewKeyActivity extends BaseActivity implements
@@ -750,7 +749,7 @@ public class ViewKeyActivity extends BaseActivity implements
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
@@ -760,7 +759,7 @@ public class ViewKeyActivity extends BaseActivity implements
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;
@@ -810,8 +809,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
-                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // if the refresh animation isn't playing
@@ -821,10 +819,10 @@ public class ViewKeyActivity extends BaseActivity implements
                         // this is done at the end of the animation otherwise
                     }
 
-                    AsyncTask<String, Void, Bitmap> photoTask =
-                            new AsyncTask<String, Void, Bitmap>() {
-                                protected Bitmap doInBackground(String... fingerprint) {
-                                    return ContactHelper.photoFromFingerprint(getContentResolver(), fingerprint[0]);
+                    AsyncTask<Long, Void, Bitmap> photoTask =
+                            new AsyncTask<Long, Void, Bitmap>() {
+                                protected Bitmap doInBackground(Long... mMasterKeyId) {
+                                    return ContactHelper.photoFromMasterKeyId(getContentResolver(), mMasterKeyId[0]);
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {
@@ -871,7 +869,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         if ( !mFingerprint.equals(oldFingerprint)) {
                             loadQrCode(mFingerprint);
                         }
-                        photoTask.execute(mFingerprint);
+                        photoTask.execute(mMasterKeyId);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code
@@ -917,7 +915,7 @@ public class ViewKeyActivity extends BaseActivity implements
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
-                            photoTask.execute(mFingerprint);
+                            photoTask.execute(mMasterKeyId);
 
                             mFab.setVisibility(View.GONE);
                         } else {

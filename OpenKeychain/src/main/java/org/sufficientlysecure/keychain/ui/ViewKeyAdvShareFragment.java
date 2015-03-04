@@ -260,7 +260,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     static final String[] UNIFIED_PROJECTION = new String[]{
             KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET,
             KeyRings.USER_ID, KeyRings.FINGERPRINT,
-            KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.EXPIRY,
+            KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.IS_EXPIRED,
 
     };
     static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
@@ -270,7 +270,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     static final int INDEX_UNIFIED_ALGORITHM = 5;
     static final int INDEX_UNIFIED_KEY_SIZE = 6;
     static final int INDEX_UNIFIED_CREATION = 7;
-    static final int INDEX_UNIFIED_EXPIRY = 8;
+    static final int INDEX_UNIFIED_ID_EXPIRED = 8;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);

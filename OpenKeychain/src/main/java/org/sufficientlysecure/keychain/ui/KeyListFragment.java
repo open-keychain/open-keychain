@@ -77,7 +77,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -268,7 +267,7 @@ public class KeyListFragment extends LoaderFragment
             KeyRings.MASTER_KEY_ID,
             KeyRings.USER_ID,
             KeyRings.IS_REVOKED,
-            KeyRings.EXPIRY,
+            KeyRings.IS_EXPIRED,
             KeyRings.VERIFIED,
             KeyRings.HAS_ANY_SECRET
     };
@@ -276,7 +275,7 @@ public class KeyListFragment extends LoaderFragment
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
 
@@ -708,8 +707,7 @@ public class KeyListFragment extends LoaderFragment
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
-                        && new Date(cursor.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
                 h.mMasterKeyId = masterKeyId;

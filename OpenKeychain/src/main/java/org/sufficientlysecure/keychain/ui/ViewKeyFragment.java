@@ -121,7 +121,7 @@ public class ViewKeyFragment extends LoaderFragment implements
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
@@ -131,7 +131,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;

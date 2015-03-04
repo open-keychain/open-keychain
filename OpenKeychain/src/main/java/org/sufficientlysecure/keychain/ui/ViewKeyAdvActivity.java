@@ -43,8 +43,6 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Date;
-
 public class ViewKeyAdvActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -159,7 +157,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET
     };
@@ -167,7 +165,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
 
@@ -212,8 +210,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
                     boolean isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
-                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // Note: order is important
