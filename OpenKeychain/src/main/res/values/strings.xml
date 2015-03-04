@@ -34,7 +34,7 @@
     <string name="title_export_keys">"Export Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
-    <string name="title_certify_key">"Certify Identities"</string>
+    <string name="title_certify_key">"Verify Key"</string>
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
@@ -58,11 +58,9 @@
     <string name="section_certify">"Certify"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
-    <string name="section_certification_key">"Your Key used for certification"</string>
     <string name="section_upload_key">"Synchronize Key"</string>
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
-    <string name="section_key_to_certify">"Key to be certified"</string>
     <string name="section_decrypt_files">"Files"</string>
     <string name="section_decrypt_text">"Text"</string>
     <string name="section_certs">"Certificates"</string>
@@ -164,13 +162,6 @@
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
-    <string name="no_key">"&lt;no key&gt;"</string>
-    <string name="can_encrypt">"can encrypt"</string>
-    <string name="can_sign">"can sign"</string>
-    <string name="can_certify">"can certify"</string>
-    <string name="can_certify_not">"cannot certify"</string>
-    <string name="expired">"expired"</string>
-    <string name="revoked">"revoked"</string>
 
     <plurals name="n_keys">
         <item quantity="one">"1 key"</item>
@@ -535,7 +526,7 @@
     <string name="key_view_action_edit">"Edit key"</string>
     <string name="key_view_action_encrypt">"Encrypt text"</string>
     <string name="key_view_action_encrypt_files">"files"</string>
-    <string name="key_view_action_certify">"Certify identities"</string>
+    <string name="key_view_action_certify">"Verify key"</string>
     <string name="key_view_action_update">"Update from keyserver"</string>
     <string name="key_view_action_share_with">"Share with…"</string>
     <string name="key_view_action_share_nfc">"Share over NFC"</string>
