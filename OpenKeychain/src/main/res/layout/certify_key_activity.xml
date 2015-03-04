@@ -5,7 +5,7 @@
 
     <include
         android:id="@+id/toolbar_include"
-        layout="@layout/toolbar_standalone" />
+        layout="@layout/toolbar_standalone_orange" />
 
     <LinearLayout
         android:layout_below="@id/toolbar_include"
