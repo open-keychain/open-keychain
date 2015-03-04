@@ -930,27 +930,21 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
 
                     if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mToolbar.setBackgroundColor(color);
                         mStatusBar.setBackgroundColor(color);
                         mBigToolbar.setBackgroundColor(color);
                         mPreviousColor = color;
                     } else {
                         ObjectAnimator colorFade1 =
-                                ObjectAnimator.ofObject(mToolbar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
-                        ObjectAnimator colorFade2 =
                                 ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
-                        ObjectAnimator colorFade3 =
+                        ObjectAnimator colorFade2 =
                                 ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
 
                         colorFade1.setDuration(1200);
                         colorFade2.setDuration(1200);
-                        colorFade3.setDuration(1200);
                         colorFade1.start();
                         colorFade2.start();
-                        colorFade3.start();
                         mPreviousColor = color;
                     }
 
