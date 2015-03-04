@@ -762,6 +762,13 @@ public abstract class OperationResult implements Parcelable {
         MSG_DEL_CONSOLIDATE (LogLevel.DEBUG, R.string.msg_del_consolidate),
         MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
+
+        //export log
+        MSG_EXPORT_LOG(LogLevel.START,R.string.msg_export_log_start),
+        MSG_EXPORT_LOG_EXPORT_ERROR_NO_FILE(LogLevel.ERROR,R.string.msg_export_log_error_no_file),
+        MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
+        MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
+        MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success),
         ;
 
         public final int mMsgId;
