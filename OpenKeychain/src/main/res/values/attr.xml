@@ -15,4 +15,16 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="PasswordStrengthView">
+
+        <attr name="strength" format="enum">
+            <enum name="weak" value="0" />
+            <enum name="medium" value="1" />
+            <enum name="strong" value="2" />
+        </attr>
+
+        <attr name="showGuides" format="boolean" />
+
+    </declare-styleable>
+
 </resources>
