@@ -316,11 +316,11 @@ public class Preferences {
                 }
                 // fall through
                 case 4: {
-                    // for compatibility: change from SHA512 to SHA256
+                    /* for compatibility: change from SHA512 to SHA256
                     if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0)
                             == HashAlgorithmTags.SHA512) {
                         setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
-                    }
+                    }*/
                 }
             }
 
