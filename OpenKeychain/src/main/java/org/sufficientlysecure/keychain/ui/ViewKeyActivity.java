@@ -119,6 +119,9 @@ public class ViewKeyActivity extends BaseActivity implements
     private boolean mIsSecret = false;
     private boolean mHasEncrypt = false;
     private boolean mIsVerified = false;
+    private boolean mIsRevoked = false;
+    private boolean mIsExpired = false;
+
     private MenuItem mRefreshItem;
     private boolean mIsRefreshing;
     private Animation mRotate, mRotateSpin;
@@ -171,7 +174,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
             }
         });
-        mRotate =  AnimationUtils.loadAnimation(this, R.anim.rotate);
+        mRotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
         mRotate.setRepeatCount(Animation.INFINITE);
         mRotate.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -345,7 +348,7 @@ public class ViewKeyActivity extends BaseActivity implements
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
-        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified);
+        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
 
         return true;
     }
@@ -396,12 +399,12 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{ mMasterKeyId });
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
         startCertifyIntent(intent);
     }
 
-    private void startCertifyIntent (Intent intent) {
+    private void startCertifyIntent(Intent intent) {
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this) {
             public void handleMessage(Message message) {
@@ -807,8 +810,8 @@ public class ViewKeyActivity extends BaseActivity implements
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // if the refresh animation isn't playing
@@ -832,7 +835,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
                     // Note: order is important
                     int color;
-                    if (isRevoked) {
+                    if (mIsRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
@@ -844,7 +847,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (isExpired) {
+                    } else if (mIsExpired) {
                         if (mIsSecret) {
                             mStatusText.setText(R.string.view_key_expired_secret);
                         } else {
@@ -865,7 +868,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
                         // reload qr code only if the fingerprint changed
-                        if ( !mFingerprint.equals(oldFingerprint)) {
+                        if (!mFingerprint.equals(oldFingerprint)) {
                             loadQrCode(mFingerprint);
                         }
                         photoTask.execute(mMasterKeyId);
