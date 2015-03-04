@@ -33,6 +33,7 @@ public final class Constants {
 
     public static final String ACCOUNT_NAME = "OpenKeychain";
     public static final String ACCOUNT_TYPE = PACKAGE_NAME + ".account";
+    public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
@@ -48,8 +49,6 @@ public final class Constants {
     // as described in http://developer.android.com/guide/components/intents-filters.html
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
     public static final String EXTRA_PREFIX = PACKAGE_NAME + ".";
-
-    public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
     public static final int TEMPFILE_TTL = 24 * 60 * 60 * 1000; // 1 day
 

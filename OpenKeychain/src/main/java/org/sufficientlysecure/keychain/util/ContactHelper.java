@@ -49,17 +49,6 @@ import java.util.Set;
 
 public class ContactHelper {
 
-    public static final String[] KEYS_TO_CONTACT_PROJECTION = new String[]{
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.IS_REVOKED};
-
-    public static final int INDEX_MASTER_KEY_ID = 0;
-    public static final int INDEX_USER_ID = 1;
-    public static final int INDEX_IS_EXPIRED = 2;
-    public static final int INDEX_IS_REVOKED = 3;
-
     private static final Map<Long, Bitmap> photoCache = new HashMap<>();
 
     public static List<String> getPossibleUserEmails(Context context) {
@@ -261,12 +250,12 @@ public class ContactHelper {
             return null;
         }
         if (!photoCache.containsKey(masterKeyId)) {
-            photoCache.put(masterKeyId, loadPhotoFromFingerprint(contentResolver, masterKeyId));
+            photoCache.put(masterKeyId, loadPhotoFromMasterKeyId(contentResolver, masterKeyId));
         }
         return photoCache.get(masterKeyId);
     }
 
-    private static Bitmap loadPhotoFromFingerprint(ContentResolver contentResolver, long masterKeyId) {
+    private static Bitmap loadPhotoFromMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
         }
@@ -288,6 +277,17 @@ public class ContactHelper {
         }
     }
 
+    public static final String[] KEYS_TO_CONTACT_PROJECTION = new String[]{
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.KeyRings.USER_ID,
+            KeychainContract.KeyRings.IS_EXPIRED,
+            KeychainContract.KeyRings.IS_REVOKED};
+
+    public static final int INDEX_MASTER_KEY_ID = 0;
+    public static final int INDEX_USER_ID = 1;
+    public static final int INDEX_IS_EXPIRED = 2;
+    public static final int INDEX_IS_REVOKED = 3;
+
     /**
      * Write/Update the current OpenKeychain keys to the contact db
      */
@@ -295,7 +295,7 @@ public class ContactHelper {
         ContentResolver resolver = context.getContentResolver();
         Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
 
-        debugDeleteRawContacts(resolver);
+//        debugDeleteRawContacts(resolver);
 
 //        ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY_URI);
 //        ContentValues values = new ContentValues();
@@ -315,7 +315,7 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                String[] primaryUserId = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
                 String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_MASTER_KEY_ID));
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
@@ -326,21 +326,17 @@ public class ContactHelper {
 
                 // get raw contact to this master key id
                 long rawContactId = findRawContactId(resolver, masterKeyId);
-                ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                Log.d(Constants.TAG, "rawContactId: " + rawContactId);
 
-                Log.d(Constants.TAG, "raw contact id: " + rawContactId);
+                ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
                     Log.d(Constants.TAG, "Expired or revoked: Deleting " + rawContactId);
                     if (rawContactId != -1) {
-                        resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
-                                ContactsContract.RawContacts._ID + "=?",
-                                new String[]{
-                                        Long.toString(rawContactId)
-                                });
+                        deleteRawContactById(resolver, rawContactId);
                     }
-                } else if (primaryUserId[0] != null) {
+                } else if (userIdSplit[0] != null) {
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
@@ -352,7 +348,7 @@ public class ContactHelper {
 
                     // We always update the display name (which is derived from primary user id)
                     // and email addresses from user id
-                    writeContactDisplayName(ops, rawContactId, primaryUserId[0]);
+                    writeContactDisplayName(ops, rawContactId, userIdSplit[0]);
                     writeContactEmail(ops, resolver, rawContactId, masterKeyId);
                     try {
                         resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -366,18 +362,14 @@ public class ContactHelper {
 
         // Delete master key ids that are no longer present in OK
         for (Long masterKeyId : deletedKeys) {
-            Log.d(Constants.TAG, "Delete raw contact with fingerprint " + masterKeyId);
-            resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
-                    ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?",
-                    new String[]{
-                            Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
-                    });
+            Log.d(Constants.TAG, "Delete raw contact with masterKeyId " + masterKeyId);
+            deleteRawContactByMasterKeyId(resolver, masterKeyId);
         }
     }
 
     /**
      * Delete all raw contacts associated to OpenKeychain.
-     *
+     * <p/>
      * TODO: Does this work?
      */
     private static int debugDeleteRawContacts(ContentResolver resolver) {
@@ -386,6 +378,22 @@ public class ContactHelper {
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE
+                });
+    }
+
+    private static int deleteRawContactById(ContentResolver resolver, long rawContactId) {
+        return resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts._ID + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE, Long.toString(rawContactId)
+                });
+    }
+
+    private static int deleteRawContactByMasterKeyId(ContentResolver resolver, long masterKeyId) {
+        return resolver.delete(ContactsContract.RawContacts.CONTENT_URI,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
                 });
     }
 
@@ -437,7 +445,7 @@ public class ContactHelper {
     }
 
     /**
-     * Creates a empty raw contact with a given fingerprint
+     * Creates a empty raw contact with a given masterKeyId
      */
     private static void insertContact(ArrayList<ContentProviderOperation> ops, Context context, long masterKeyId) {
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
