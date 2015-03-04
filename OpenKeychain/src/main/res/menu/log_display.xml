@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/menu_log_display_export_log"
-        android:icon="@drawable/ic_action_save_white"
+        android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/menu_export_log"
         app:showAsAction="ifRoom|withText" />
 

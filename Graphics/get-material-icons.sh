@@ -10,6 +10,7 @@ python copy OpenKeychain navigation white refresh 24
 python copy OpenKeychain av white repeat 24
 python copy OpenKeychain av grey repeat 24
 python copy OpenKeychain editor white mode_edit 24
+python copy OpenKeychain content white save 24
 
 python copy OpenKeychain action grey delete 24
 python copy OpenKeychain action grey done 24
