@@ -1025,7 +1025,7 @@ public class PgpKeyOperation {
 
                 // add packet with EMPTY notation data (updates old one, but will be stripped later)
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                        masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                        masterPrivateKey.getPublicKeyPacket().getAlgorithm(),SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 { // set subpackets
@@ -1051,7 +1051,7 @@ public class PgpKeyOperation {
 
             // add packet with "pin" notation data
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                    masterPrivateKey.getPublicKeyPacket().getAlgorithm(), SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
             { // set subpackets
@@ -1236,7 +1236,7 @@ public class PgpKeyOperation {
             int flags, long expiry)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
@@ -1279,7 +1279,7 @@ public class PgpKeyOperation {
             PGPUserAttributeSubpacketVector vector)
                 throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(),SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
@@ -1298,7 +1298,7 @@ public class PgpKeyOperation {
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId)
         throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), HashAlgorithmTags.SHA512)
+                masterPrivateKey.getPublicKeyPacket().getAlgorithm(), SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -1312,7 +1312,7 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey, PGPPublicKey pKey)
             throws IOException, PGPException, SignatureException {
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA512)
+                masterPublicKey.getAlgorithm(), SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -1356,7 +1356,7 @@ public class PgpKeyOperation {
             PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
             subHashedPacketsGen.setSignatureCreationTime(false, creationTime);
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    pKey.getAlgorithm(), HashAlgorithmTags.SHA512)
+                    pKey.getAlgorithm(), SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
             sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
@@ -1377,7 +1377,7 @@ public class PgpKeyOperation {
         }
 
         PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA512)
+                masterPublicKey.getAlgorithm(),SECRET_KEY_ENCRYPTOR_HASH_ALGO)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
