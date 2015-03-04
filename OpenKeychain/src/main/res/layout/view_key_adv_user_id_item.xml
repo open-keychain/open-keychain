@@ -55,7 +55,7 @@
             android:id="@+id/user_id_item_certified"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/status_signature_unverified_cutout_24px"
+            android:src="@drawable/status_signature_unverified_cutout_24dp"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>

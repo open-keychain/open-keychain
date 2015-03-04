@@ -96,7 +96,7 @@
                 android:layout_height="64dp"
                 android:visibility="invisible"
                 style="?android:attr/borderlessButtonStyle"
-                android:src="@drawable/ic_action_encrypt_file" />
+                android:src="@drawable/ic_action_encrypt_file_24dp" />
 
             <ImageButton
                 android:id="@+id/view_key_action_encrypt_text"
@@ -104,7 +104,7 @@
                 android:layout_height="64dp"
                 android:visibility="invisible"
                 style="?android:attr/borderlessButtonStyle"
-                android:src="@drawable/ic_action_encrypt_text" />
+                android:src="@drawable/ic_action_encrypt_text_24dp" />
 
             <ImageButton
                 android:id="@+id/view_key_action_nfc"

@@ -413,10 +413,10 @@ public class KeyFormattingUtils {
             case STATE_VERIFIED: {
                 if (big) {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_96px));
+                            context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_96dp));
                 } else {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_24px));
+                            context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_green_light;
@@ -430,7 +430,7 @@ public class KeyFormattingUtils {
             }
             case STATE_ENCRYPTED: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_lock_closed_24px));
+                        context.getResources().getDrawable(R.drawable.status_lock_closed_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_green_light;
                 }
@@ -445,10 +445,10 @@ public class KeyFormattingUtils {
             case STATE_UNVERIFIED: {
                 if (big) {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_96px));
+                            context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_96dp));
                 } else {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_24px));
+                            context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_orange_light;
@@ -462,7 +462,7 @@ public class KeyFormattingUtils {
             }
             case STATE_UNKNOWN_KEY: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24px));
+                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_orange_light;
                 }
@@ -477,10 +477,10 @@ public class KeyFormattingUtils {
             case STATE_REVOKED: {
                 if (big) {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_96px));
+                            context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_96dp));
                 } else {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_24px));
+                            context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_red_light;
@@ -495,10 +495,10 @@ public class KeyFormattingUtils {
             case STATE_EXPIRED: {
                 if (big) {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_96px));
+                            context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_96dp));
                 } else {
                     statusIcon.setImageDrawable(
-                            context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_24px));
+                            context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_red_light;
@@ -512,7 +512,7 @@ public class KeyFormattingUtils {
             }
             case STATE_NOT_ENCRYPTED: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_lock_open_24px));
+                        context.getResources().getDrawable(R.drawable.status_lock_open_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_red_light;
                 }
@@ -525,7 +525,7 @@ public class KeyFormattingUtils {
             }
             case STATE_NOT_SIGNED: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24px));
+                        context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_red_light;
                 }
@@ -538,7 +538,7 @@ public class KeyFormattingUtils {
             }
             case STATE_INVALID: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24px));
+                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.android_red_light;
                 }
@@ -552,7 +552,7 @@ public class KeyFormattingUtils {
             /** special **/
             case STATE_UNAVAILABLE: {
                 statusIcon.setImageDrawable(
-                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24px));
+                        context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.bg_gray;
                 }

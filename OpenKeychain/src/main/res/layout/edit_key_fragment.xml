@@ -30,7 +30,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
             style="@style/SectionHeader"
@@ -73,7 +73,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
             style="@style/SectionHeader"
@@ -115,7 +115,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
     </LinearLayout>
 

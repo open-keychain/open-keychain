@@ -34,6 +34,7 @@ python copy OpenKeychain navigation grey close 24
 python copy OpenKeychain social grey person 24
 python copy OpenKeychain social grey person_add 24
 python copy OpenKeychain social grey share 24
+python copy OpenKeychain action grey help 24
 
 # navigation drawer sections
 python copy OpenKeychain communication black vpn_key 24

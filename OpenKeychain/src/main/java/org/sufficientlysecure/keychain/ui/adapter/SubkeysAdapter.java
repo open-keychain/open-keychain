@@ -272,12 +272,12 @@ public class SubkeysAdapter extends CursorAdapter {
                     PorterDuff.Mode.SRC_IN);
 
             if (isRevoked) {
-                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24px);
+                vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24dp);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
-                vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24px);
+                vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24dp);
                 vStatus.setColorFilter(
                         mContext.getResources().getColor(R.color.bg_gray),
                         PorterDuff.Mode.SRC_IN);

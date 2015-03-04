@@ -22,23 +22,35 @@
             card_view:cardUseCompatPadding="true"
             card_view:cardCornerRadius="4dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/view_key_header"
                     style="@style/CardViewHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/section_user_ids" />
 
+                <ImageButton
+                    android:id="@+id/view_key_help"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="2dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:src="@drawable/ic_help_grey600_24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@+id/view_key_header" />
+
                 <org.sufficientlysecure.keychain.ui.widget.FixedListView
                     android:id="@+id/view_key_user_ids"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp" />
-            </LinearLayout>
+                    android:layout_below="@+id/view_key_header" />
+            </RelativeLayout>
         </android.support.v7.widget.CardView>
 
 
