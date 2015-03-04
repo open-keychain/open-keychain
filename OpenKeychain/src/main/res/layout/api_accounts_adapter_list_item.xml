@@ -14,7 +14,7 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp"
         android:id="@+id/imageView"
-        android:src="@drawable/ic_action_person" />
+        android:src="@drawable/ic_person_grey_24dp" />
 
     <TextView
         android:id="@+id/api_accounts_adapter_item_name"

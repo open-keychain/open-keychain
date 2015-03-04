@@ -53,7 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class OperationResult implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
-
+    public static final UUID NULL_UUID = new UUID(0,0);
 
     /**
      * A HashMap of UUID:OperationLog which contains logs that we don't need
@@ -76,7 +76,7 @@ public abstract class OperationResult implements Parcelable {
      */
     private static UUID dehydrateLog(OperationLog log) {
         if(log == null) {
-            return new UUID(0,0);
+            return NULL_UUID;
         }
         else {
             UUID ticket = UUID.randomUUID();
@@ -93,21 +93,14 @@ public abstract class OperationResult implements Parcelable {
      * @return An OperationLog.
      */
     private static OperationLog rehydrateLog(UUID ticket) {
-        if(ticket.getMostSignificantBits() == 0 && ticket.getLeastSignificantBits() == 0) {
+        // UUID.equals isn't well documented; we use compareTo instead.
+        if( NULL_UUID.compareTo(ticket) == 0 ) {
             return null;
         }
-        else
-        {
+        else {
             OperationLog log = dehydratedLogs.get(ticket);
-            invalidateDehydrateTicket(ticket);
-            return log;
-        }
-    }
-    private static void invalidateDehydrateTicket(UUID ticket) {
-        if(ticket.getLeastSignificantBits() != 0 && ticket.getMostSignificantBits() != 0
-                && dehydratedLogs.containsKey(ticket))
-        {
             dehydratedLogs.remove(ticket);
+            return log;
         }
     }
 

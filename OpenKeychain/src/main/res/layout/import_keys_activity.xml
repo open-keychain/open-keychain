@@ -14,7 +14,7 @@
     <LinearLayout
         android:layout_below="@id/toolbar_include"
         android:fitsSystemWindows="true"
-        android:layout_marginTop="-25dp"
+        android:layout_marginTop="@dimen/minus_statusbar_height"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -73,7 +73,7 @@
                 android:layout_height="match_parent"
                 android:text="@string/import_import"
                 android:minHeight="?android:attr/listPreferredItemHeight"
-                android:drawableRight="@drawable/ic_action_download"
+                android:drawableRight="@drawable/ic_file_download_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
                 android:clickable="true"

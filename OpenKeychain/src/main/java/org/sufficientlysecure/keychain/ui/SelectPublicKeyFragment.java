@@ -136,7 +136,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         mSearchView.setId(SEARCH_ID);
         mSearchView.setHint(R.string.menu_search);
         mSearchView.setCompoundDrawablesWithIntrinsicBounds(
-                getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
+                getResources().getDrawable(R.drawable.ic_search_grey_24dp), null, null, null);
 
         linearLayout.addView(mSearchView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

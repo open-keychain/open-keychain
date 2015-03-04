@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="24dp"
+    android:paddingRight="24dp"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/input">
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/passphrase_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:text="@string/enter_passphrase" />
 
         <EditText
             android:id="@+id/passphrase_passphrase"
@@ -26,11 +35,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/progress"
+        android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/progress"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <ProgressBar
             style="?android:attr/progressBarStyle"
@@ -42,11 +52,10 @@
             style="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
             android:padding="4dp"
             android:text="@string/label_unlock"
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

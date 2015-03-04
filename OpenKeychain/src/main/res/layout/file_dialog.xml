@@ -41,7 +41,7 @@
             android:layout_margin="4dp"
             android:contentDescription="@string/filemanager_title_open"
             android:background="@drawable/button_rounded"
-            android:src="@drawable/ic_action_collection"/>
+            android:src="@drawable/ic_folder_grey_24dp"/>
     </LinearLayout>
 
     <CheckBox

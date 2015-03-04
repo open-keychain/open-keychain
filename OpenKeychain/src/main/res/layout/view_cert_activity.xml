@@ -214,7 +214,7 @@
                 style="@style/SelectableItem"
                 android:text="@string/btn_view_cert_key"
                 android:layout_weight="1"
-                android:drawableRight="@drawable/ic_action_person"
+                android:drawableRight="@drawable/ic_person_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical" />
 

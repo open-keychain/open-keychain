@@ -73,6 +73,9 @@ Mapping vars:
 
 Options file
 ============
+
+*In this project, if you need to fetch new icons, rename options.templ.json to options.json. And then run script get-material-icons.sh*
+
 Named `options.json` in same dir. Sample:
 ```json
 {
