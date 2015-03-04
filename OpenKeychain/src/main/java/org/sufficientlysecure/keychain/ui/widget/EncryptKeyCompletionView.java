@@ -90,7 +90,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
     }
 
     private void setImageByKey(ImageView view, EncryptionKey key) {
-        Bitmap photo = ContactHelper.photoFromMasterKeyId(getContext().getContentResolver(), key.getKeyId());
+        Bitmap photo = ContactHelper.getCachedPhotoByMasterKeyId(getContext().getContentResolver(), key.getKeyId());
 
         if (photo != null) {
             view.setImageBitmap(photo);

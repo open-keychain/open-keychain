@@ -245,17 +245,18 @@ public class ContactHelper {
         return null;
     }
 
-    public static Bitmap photoFromMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
+    public static Bitmap getCachedPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
         }
         if (!photoCache.containsKey(masterKeyId)) {
-            photoCache.put(masterKeyId, loadPhotoFromMasterKeyId(contentResolver, masterKeyId));
+            photoCache.put(masterKeyId, loadPhotoByMasterKeyId(contentResolver, masterKeyId, false));
         }
         return photoCache.get(masterKeyId);
     }
 
-    private static Bitmap loadPhotoFromMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
+    public static Bitmap loadPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId,
+                                                 boolean highRes) {
         if (masterKeyId == -1) {
             return null;
         }
@@ -267,7 +268,7 @@ public class ContactHelper {
             Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
             Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
             InputStream photoInputStream =
-                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri);
+                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri, highRes);
             if (photoInputStream == null) {
                 return null;
             }

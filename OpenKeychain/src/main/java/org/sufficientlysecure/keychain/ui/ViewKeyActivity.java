@@ -821,7 +821,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     AsyncTask<Long, Void, Bitmap> photoTask =
                             new AsyncTask<Long, Void, Bitmap>() {
                                 protected Bitmap doInBackground(Long... mMasterKeyId) {
-                                    return ContactHelper.photoFromMasterKeyId(getContentResolver(), mMasterKeyId[0]);
+                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(), mMasterKeyId[0], true);
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {
