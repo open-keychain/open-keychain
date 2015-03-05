@@ -650,7 +650,7 @@ public class KeychainProvider extends ContentProvider {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
 
-        if (Constants.DEBUG) {
+        if (Constants.DEBUG && Constants.DEBUG_LOG_DB_QUERIES) {
             Log.d(Constants.TAG,
                     "Query: "
                             + qb.buildQuery(projection, selection, selectionArgs, null, null,

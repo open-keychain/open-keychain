@@ -28,6 +28,8 @@ import java.io.File;
 public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
+    public static final boolean DEBUG_LOG_DB_QUERIES = false;
+    public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
 
     public static final String TAG = "Keychain";
 
