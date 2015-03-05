@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -129,9 +130,9 @@ public class PgpKeyOperation {
      * we use 0x90, a good trade-off between usability and security against offline attacks
      */
     private static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
-    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
-    private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    private static final int SECRET_KEY_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
+    private static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = Preferences.sPreferences.getDefaultHashAlgorithm();
+    private static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = Preferences.sPreferences.getDefaultEncryptionAlgorithm();
+    private static final int SECRET_KEY_SIGNATURE_HASH_ALGO = Preferences.sPreferences.getDefaultHashAlgorithm();
 
     public PgpKeyOperation(Progressable progress) {
         super();

@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
 
@@ -12,10 +13,10 @@ public class PgpSignEncryptInput {
     protected int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
     protected String mSymmetricPassphrase = null;
-    protected int mSymmetricEncryptionAlgorithm = 0;
+    protected int mSymmetricEncryptionAlgorithm = Preferences.sPreferences.getDefaultEncryptionAlgorithm();
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
-    protected int mSignatureHashAlgorithm = 0;
+    protected int mSignatureHashAlgorithm = Preferences.sPreferences.getDefaultHashAlgorithm();
     protected String mSignaturePassphrase = null;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected byte[] mNfcSignedHash = null;
