@@ -34,7 +34,6 @@ import android.util.AttributeSet;
 /**
  * Created by matt on 04/07/2014.
  * https://github.com/matt-allen/android-password-strength-indicator
- *
  */
 public class PasswordStrengthBarView extends PasswordStrengthView {
 
@@ -65,12 +64,12 @@ public class PasswordStrengthBarView extends PasswordStrengthView {
         if (mShowGuides) {
             // TODO: Try and do this with a loop, for efficiency
             // Draw bottom guide border
-            float positionY = getHeight()-getPaddingBottom()-getPaddingTop();
-            float notchHeight = (float)(positionY * 0.8);
+            float positionY = getHeight() - getPaddingBottom() - getPaddingTop();
+            float notchHeight = (float) (positionY * 0.8);
             canvas.drawLine(
                     getPaddingLeft(),
                     positionY,
-                    getWidth()-getPaddingRight(),
+                    getWidth() - getPaddingRight(),
                     positionY,
                     mGuidePaint);
             // Show left-most notch
@@ -83,33 +82,33 @@ public class PasswordStrengthBarView extends PasswordStrengthView {
             );
             // Show middle-left notch
             canvas.drawLine(
-                    (float)(mIndicatorWidth*0.25)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.25) + getPaddingLeft(),
                     positionY,
-                    (float)(mIndicatorWidth*0.25)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.25) + getPaddingLeft(),
                     notchHeight,
                     mGuidePaint
             );
             // Show the middle notch
             canvas.drawLine(
-                    (float)(mIndicatorWidth*0.5)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.5) + getPaddingLeft(),
                     positionY,
-                    (float)(mIndicatorWidth*0.5)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.5) + getPaddingLeft(),
                     notchHeight,
                     mGuidePaint
             );
             // Show the middle-right notch
             canvas.drawLine(
-                    (float)(mIndicatorWidth*0.75)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.75) + getPaddingLeft(),
                     positionY,
-                    (float)(mIndicatorWidth*0.75)+getPaddingLeft(),
+                    (float) (mIndicatorWidth * 0.75) + getPaddingLeft(),
                     notchHeight,
                     mGuidePaint
             );
             // Show the right-most notch
             canvas.drawLine(
-                    mIndicatorWidth+getPaddingLeft(),
+                    mIndicatorWidth + getPaddingLeft(),
                     positionY,
-                    mIndicatorWidth+getPaddingLeft(),
+                    mIndicatorWidth + getPaddingLeft(),
                     notchHeight,
                     mGuidePaint
             );

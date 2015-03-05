@@ -38,15 +38,15 @@ import org.sufficientlysecure.keychain.R;
  * 01/07/14
  * http://www.mattallensoftware.co.uk
  * mattallen092@gmail.com
- *
- *  https://github.com/matt-allen/android-password-strength-indicator
- *
+ * <p/>
+ * https://github.com/matt-allen/android-password-strength-indicator
+ * <p/>
  * <p>
  * This View is designed to indicate how secure a user-entered password is in a visual way to
  * relay to the user if they need to make it stronger. The strength of the password can be set
  * at creation (or after) which will decide whether their password is strong enough.
  * </p>
- *
+ * <p/>
  * <p>
  * The password strength is decided by an index of 20. The minimum score needed to pass is 10
  * which means the String has met the conditions imposed by the strength test, but can be improved.
@@ -113,7 +113,7 @@ public class PasswordStrengthView extends View {
             mColorWeak = style.getColor(R.styleable.PasswordStrengthView_color_weak, COLOR_WEAK);
             mColorStrong = style.getColor(R.styleable.PasswordStrengthView_color_strong,
                     COLOR_STRONG);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // Create and style the paint used for drawing the guide on the indicator
@@ -128,6 +128,7 @@ public class PasswordStrengthView extends View {
     /**
      * This view can determine if the password entered by the user is acceptable for
      * use by your use case. This is based on the strength requirement you have set.
+     *
      * @return True if requirement has been met
      */
     public boolean isStrengthRequirementMet() {
@@ -137,10 +138,11 @@ public class PasswordStrengthView extends View {
     /**
      * Change the strength requirement of the password entered by the user. This will also
      * re-check the password already entered against these new requirements.
+     *
      * @param requiredStrength Use the public constants of this class to set
      */
     public void setStrengthRequirement(int requiredStrength) {
-        if(requiredStrength >= 0 && requiredStrength <= 2){
+        if (requiredStrength >= 0 && requiredStrength <= 2) {
             mStrengthRequirement = requiredStrength;
             if (mPassword != null && mPassword.length() > 0) {
                 generatePasswordScore();
@@ -155,10 +157,11 @@ public class PasswordStrengthView extends View {
 
     /**
      * Update the password string to check strength of
+     *
      * @param passwordString String representation of user-input
      */
     public void setPassword(String passwordString) {
-        if(passwordString != null && passwordString.length() > 0) {
+        if (passwordString != null && passwordString.length() > 0) {
             mPassword = passwordString;
             generatePasswordScore();
         } else {
@@ -173,13 +176,14 @@ public class PasswordStrengthView extends View {
 
     /**
      * Private convenience method for adding to the password score
+     *
      * @param score Amount to be added to current score
      */
     protected void addToPasswordScore(int score) {
         int newScore = mCurrentScore + score;
 
         // Limit max score
-        if (newScore > 20){
+        if (newScore > 20) {
             mCurrentScore = 20;
         } else {
             mCurrentScore = newScore;
@@ -188,6 +192,7 @@ public class PasswordStrengthView extends View {
 
     /**
      * Call this to determine the current strength requirement set on the algorithm
+     *
      * @return Int representation of the current strength set for the indicator
      */
     public int getStrengthRequirement() {
@@ -203,23 +208,23 @@ public class PasswordStrengthView extends View {
         int upperCase = getUppercaseCount(mPassword);
         int nonAlpha = getNonAlphanumericCount(mPassword);
         int numbers = getNumberCount(mPassword);
-        switch (mStrengthRequirement){
+        switch (mStrengthRequirement) {
             case STRENGTH_WEAK:
-                addToPasswordScore(mPassword.length()*2);
-                addToPasswordScore(upperCase*2);
-                addToPasswordScore(nonAlpha*2);
-                addToPasswordScore(numbers*2);
+                addToPasswordScore(mPassword.length() * 2);
+                addToPasswordScore(upperCase * 2);
+                addToPasswordScore(nonAlpha * 2);
+                addToPasswordScore(numbers * 2);
                 break;
 
             case STRENGTH_MEDIUM:
                 addToPasswordScore(mPassword.length());
                 addToPasswordScore(upperCase);
-                addToPasswordScore(nonAlpha*2);
+                addToPasswordScore(nonAlpha * 2);
                 addToPasswordScore(numbers);
                 break;
 
             case STRENGTH_STRONG:
-                addToPasswordScore(mPassword.length()/2);
+                addToPasswordScore(mPassword.length() / 2);
                 // Cut the score in half to make this a very high requirement
                 addToPasswordScore(upperCase);
                 addToPasswordScore(nonAlpha);
@@ -241,7 +246,8 @@ public class PasswordStrengthView extends View {
      * The standard parts of the onMeasure needed to create the password strength
      * indicator. Subclasses should call super.onMeasure, but also need to set
      * the minimum height and width in the constructor.
-     * @param widthMeasureSpec The measurement given by the system
+     *
+     * @param widthMeasureSpec  The measurement given by the system
      * @param heightMeasureSpec The measurement given by the system
      */
     @Override
@@ -264,8 +270,7 @@ public class PasswordStrengthView extends View {
         int color = mColorFail;
         if (mCurrentScore >= 18) {
             color = mColorStrong;
-        }
-        else if (mCurrentScore >= 10) {
+        } else if (mCurrentScore >= 10) {
             color = mColorWeak;
         }
         mIndicatorPaint.setColor(color);
@@ -273,14 +278,15 @@ public class PasswordStrengthView extends View {
 
     /**
      * Quick method to determine how many of the characters in a given string are upper case
+     *
      * @param stringToCheck The string to examine
      * @return Number of upper case characters
      */
     protected int getUppercaseCount(String stringToCheck) {
         int score = 0;
-        int loops = stringToCheck.length()-1;
-        for (int i=0;i<=loops;i++){
-            if(Character.isUpperCase(stringToCheck.charAt(i))) {
+        int loops = stringToCheck.length() - 1;
+        for (int i = 0; i <= loops; i++) {
+            if (Character.isUpperCase(stringToCheck.charAt(i))) {
                 score++;
             }
         }
@@ -290,15 +296,16 @@ public class PasswordStrengthView extends View {
     /**
      * A convenience method to determine how many characters in the given String aren't
      * letters or numbers.
+     *
      * @param stringToCheck
      * @return Number of characters that aren't numbers or letters
      */
     protected int getNonAlphanumericCount(String stringToCheck) {
         int score = 0;
-        int loops = stringToCheck.length()-1;
-        for (int i=0;i<=loops;i++) {
-            if(!Character.isLetter(stringToCheck.charAt(i)) &&
-                    !Character.isDigit(stringToCheck.charAt(i))){
+        int loops = stringToCheck.length() - 1;
+        for (int i = 0; i <= loops; i++) {
+            if (!Character.isLetter(stringToCheck.charAt(i)) &&
+                    !Character.isDigit(stringToCheck.charAt(i))) {
                 score++;
             }
         }
@@ -307,14 +314,15 @@ public class PasswordStrengthView extends View {
 
     /**
      * A convenience method for returning the count of numbers in a given String.
+     *
      * @param stringToCheck
      * @return The numbers of digits in the String
      */
     protected int getNumberCount(String stringToCheck) {
         int score = 0;
-        int loops = stringToCheck.length()-1;
-        for (int i=0;i<=loops;i++) {
-            if(Character.isDigit(stringToCheck.charAt(i))) {
+        int loops = stringToCheck.length() - 1;
+        for (int i = 0; i <= loops; i++) {
+            if (Character.isDigit(stringToCheck.charAt(i))) {
                 score++;
             }
         }
@@ -326,6 +334,7 @@ public class PasswordStrengthView extends View {
      * On the line style, the guides will show underneath<br />
      * On the rounded style, the guides will be shown on the outer edges.<br />
      * The view will be redrawn after the method is called.
+     *
      * @param showGuides True if you want the guides to be shown
      */
     public void setShowGuides(boolean showGuides) {
@@ -342,6 +351,7 @@ public class PasswordStrengthView extends View {
 
     /**
      * Determine whether the view is showing the guides for the password score
+     *
      * @return True if the guides are being shown
      */
     public boolean isShowingGuides() {
