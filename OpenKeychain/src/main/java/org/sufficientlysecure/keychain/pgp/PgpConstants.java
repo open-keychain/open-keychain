@@ -25,17 +25,9 @@ import java.util.LinkedList;
 
 public class PgpConstants {
 
-    public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static interface OpenKeychainCompressionAlgorithmTags extends CompressionAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
+    public static LinkedList<Integer> sPreferredSymmetricAlgorithms = new LinkedList<>();
+    public static LinkedList<Integer> sPreferredHashAlgorithms = new LinkedList<>();
+    public static LinkedList<Integer> sPreferredCompressionAlgorithms = new LinkedList<>();
 
     /*
      * Most preferred is first
@@ -45,11 +37,6 @@ public class PgpConstants {
      * These lists also define the only algorithms which are used in OpenKeychain.
      * We do not support algorithms such as MD5
      */
-
-    public static LinkedList<Integer> sPreferredSymmetricAlgorithms = new LinkedList<>();
-    public static LinkedList<Integer> sPreferredHashAlgorithms = new LinkedList<>();
-    public static LinkedList<Integer> sPreferredCompressionAlgorithms = new LinkedList<>();
-
     static {
         sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_256);
         sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_192);
@@ -67,14 +54,6 @@ public class PgpConstants {
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZLIB);
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.BZIP2);
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
-    }
-
-    public static int[] getAsArray(LinkedList<Integer> list) {
-        int[] array = new int[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i); // Watch out for NullPointerExceptions!
-        }
-        return array;
     }
 
     /*
@@ -103,4 +82,23 @@ public class PgpConstants {
     // see http://tools.ietf.org/html/rfc488 0#section-5.5.3
     public static final int SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO = HashAlgorithmTags.SHA1;
 
+    public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
+        public static final int USE_PREFERRED = -1;
+    }
+
+    public static interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
+        public static final int USE_PREFERRED = -1;
+    }
+
+    public static interface OpenKeychainCompressionAlgorithmTags extends CompressionAlgorithmTags {
+        public static final int USE_PREFERRED = -1;
+    }
+
+    public static int[] getAsArray(LinkedList<Integer> list) {
+        int[] array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
+    }
 }
