@@ -29,6 +29,8 @@ public class PgpConstants {
     public static ArrayList<Integer> sPreferredHashAlgorithms = new ArrayList<>();
     public static ArrayList<Integer> sPreferredCompressionAlgorithms = new ArrayList<>();
 
+    // TODO: use hashmaps for contains in O(1) and intersections!
+
     /*
      * Most preferred is first
      * These arrays are written as preferred algorithms into the keys on creation.
