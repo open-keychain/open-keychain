@@ -37,8 +37,8 @@
         android:id="@+id/user_id_item_certified_layout"
         android:layout_width="22dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginEnd="12dp"
         android:layout_gravity="center_vertical"
         android:orientation="vertical">
 

@@ -34,9 +34,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
@@ -48,59 +46,45 @@ import java.util.WeakHashMap;
 
 
 public class LinkedIdsAdapter extends UserAttributesAdapter {
+    private final boolean mShowCertification;
     protected LayoutInflater mInflater;
     WeakHashMap<Integer,RawLinkedIdentity> mLinkedIdentityCache = new WeakHashMap<>();
 
-    public LinkedIdsAdapter(Context context, Cursor c, int flags) {
+    public LinkedIdsAdapter(Context context, Cursor c, int flags, boolean showCertification) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
+        mShowCertification = showCertification;
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        RawLinkedIdentity id = getItem(cursor.getPosition());
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        int isVerified = cursor.getInt(INDEX_VERIFIED);
-        switch (isVerified) {
-            case Certs.VERIFIED_SECRET:
-                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                break;
-            case Certs.VERIFIED_SELF:
-                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                break;
-            default:
-                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
-                break;
-        }
-
-        if (holder instanceof ViewHolderNonRaw) {
-            ((ViewHolderNonRaw) holder).setData(mContext, (LinkedIdentity) id);
-        }
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        RawLinkedIdentity id = getItem(position);
-
-        if (id instanceof LinkedIdentity) {
-            LinkedResource res = ((LinkedIdentity) id).mResource;
-            if (res instanceof DnsResource) {
-                return 1;
+        if (mShowCertification) {
+            holder.vVerified.setVisibility(View.VISIBLE);
+            int isVerified = cursor.getInt(INDEX_VERIFIED);
+            switch (isVerified) {
+                case Certs.VERIFIED_SECRET:
+                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                            null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    break;
+                case Certs.VERIFIED_SELF:
+                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                            null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    break;
+                default:
+                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                            null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
+                    break;
             }
+        } else {
+            holder.vVerified.setVisibility(View.GONE);
         }
 
-        return 0;
-    }
+        RawLinkedIdentity id = getItem(cursor.getPosition());
+        holder.setData(mContext, id);
 
-    @Override
-    public int getViewTypeCount() {
-        return 2;
     }
 
     @Override
@@ -126,23 +110,10 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        int type = getItemViewType(cursor.getPosition());
-        switch(type) {
-            case 0: {
-                View v = mInflater.inflate(R.layout.linked_id_item_unknown, null);
-                ViewHolder holder = new ViewHolder(v);
-                v.setTag(holder);
-                return v;
-            }
-            case 1: {
-                View v = mInflater.inflate(R.layout.linked_id_item_dns, null);
-                ViewHolder holder = new ViewHolderDns(v);
-                v.setTag(holder);
-                return v;
-            }
-            default:
-                throw new AssertionError("all cases must be covered in LinkedIdsAdapter.newView!");
-        }
+        View v = mInflater.inflate(R.layout.linked_id_item, null);
+        ViewHolder holder = new ViewHolder(v);
+        v.setTag(holder);
+        return v;
     }
 
     // don't show revoked user ids, irrelevant for average users
@@ -162,35 +133,32 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
     static class ViewHolder {
         ImageView vVerified;
+        ImageView vIcon;
+        TextView vTitle;
+        TextView vComment;
 
         ViewHolder(View view) {
             vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
-        }
-    }
-
-    static abstract class ViewHolderNonRaw extends ViewHolder {
-        ViewHolderNonRaw(View view) {
-            super(view);
+            vIcon = (ImageView) view.findViewById(R.id.linked_id_type_icon);
+            vTitle = (TextView) view.findViewById(R.id.linked_id_title);
+            vComment = (TextView) view.findViewById(R.id.linked_id_comment);
         }
 
-        abstract void setData(Context context, LinkedIdentity id);
-    }
+        void setData(Context context, RawLinkedIdentity id) {
 
-    static class ViewHolderDns extends ViewHolderNonRaw {
-        TextView vFqdn;
+            vTitle.setText(id.getDisplayTitle(context));
 
-        ViewHolderDns(View view) {
-            super(view);
+            String comment = id.getDisplayComment(context);
+            if (comment != null) {
+                vComment.setVisibility(View.VISIBLE);
+                vComment.setText(comment);
+            } else {
+                vComment.setVisibility(View.GONE);
+            }
 
-            vFqdn = (TextView) view.findViewById(R.id.linked_id_dns_fqdn);
+            vIcon.setImageResource(id.getDisplayIcon());
+
         }
-
-        @Override
-        void setData(Context context, LinkedIdentity id) {
-            DnsResource res = (DnsResource) id.mResource;
-            vFqdn.setText(res.getFqdn());
-        }
-
     }
 
     @Override
@@ -198,4 +166,5 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         mLinkedIdentityCache.clear();
         super.notifyDataSetChanged();
     }
+
 }

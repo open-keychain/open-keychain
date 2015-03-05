@@ -6,18 +6,14 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.pgp.linked.resources.UnknownResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.net.URI;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class LinkedCookieResource extends LinkedResource {
 

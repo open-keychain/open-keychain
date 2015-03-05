@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.pgp.linked;
 import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -10,6 +11,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import android.content.Context;
+import android.support.annotation.DrawableRes;
+
 
 public class LinkedIdentity extends RawLinkedIdentity {
 
@@ -70,6 +75,19 @@ public class LinkedIdentity extends RawLinkedIdentity {
 
     public static RawLinkedIdentity fromResource (LinkedCookieResource res, int nonce) {
         return new RawLinkedIdentity(nonce, res.toUri());
+    }
+
+
+    public @DrawableRes int getDisplayIcon() {
+        return mResource.getDisplayIcon();
+    }
+
+    public String getDisplayTitle(Context context) {
+        return mResource.getDisplayTitle(context);
+    }
+
+    public String getDisplayComment(Context context) {
+        return mResource.getDisplayComment(context);
     }
 
 }

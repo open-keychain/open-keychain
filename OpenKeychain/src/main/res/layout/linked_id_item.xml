@@ -7,7 +7,7 @@
     android:singleLine="true">
 
     <ImageView
-        android:layout_width="wrap_content"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:id="@+id/linked_id_type_icon"
         android:layout_marginLeft="14dp"
@@ -26,14 +26,14 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/linked_id_dns_fqdn"
+            android:id="@+id/linked_id_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="www.example.com"
+            android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/user_id_item_comment"
+            android:id="@+id/linked_id_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/tertiary_text_light"

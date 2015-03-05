@@ -89,8 +89,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
 
         mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
-        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0);
-        mLinkedIds.setAdapter(mLinkedIdsAdapter);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -171,7 +169,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -210,6 +207,10 @@ public class ViewKeyFragment extends LoaderFragment implements
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
                     getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+
+                    mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, !mIsSecret);
+                    mLinkedIds.setAdapter(mLinkedIdsAdapter);
+                    getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
 
                     break;
                 }

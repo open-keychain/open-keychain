@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.pgp.linked;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.pgp.linked.resources.UnknownResource;
+import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.net.URI;
@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import android.content.Context;
+import android.support.annotation.DrawableRes;
 
 public abstract class LinkedResource {
 
@@ -58,8 +61,8 @@ public abstract class LinkedResource {
         String[] pieces = specific.split("@", 2);
         URI subUri = URI.create(pieces[1]);
 
-        Set<String> flags = new HashSet<String>();
-        HashMap<String,String> params = new HashMap<String,String>();
+        Set<String> flags = new HashSet<>();
+        HashMap<String,String> params = new HashMap<>();
         if (!pieces[0].isEmpty()) {
             String[] rawParams = pieces[0].split(";");
             for (String param : rawParams) {
@@ -90,9 +93,17 @@ public abstract class LinkedResource {
         if (res != null) {
             return res;
         }
+        res = TwitterResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
 
         return null;
 
     }
+
+    public abstract @DrawableRes int getDisplayIcon();
+    public abstract String getDisplayTitle(Context context);
+    public abstract String getDisplayComment(Context context);
 
 }

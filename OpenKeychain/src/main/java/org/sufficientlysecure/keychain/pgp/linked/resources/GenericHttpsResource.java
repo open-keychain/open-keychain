@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 
 import com.textuality.keybase.lib.Search;
 
@@ -98,6 +99,22 @@ public class GenericHttpsResource extends LinkedCookieResource {
             return null;
         }
         return new GenericHttpsResource(flags, params, uri);
+    }
+
+    @Override
+    public @DrawableRes
+    int getDisplayIcon() {
+        return R.drawable.ssl_lock;
+    }
+
+    @Override
+    public String getDisplayTitle(Context context) {
+        return "https";
+    }
+
+    @Override
+    public String getDisplayComment(Context context) {
+        return null;
     }
 
 }

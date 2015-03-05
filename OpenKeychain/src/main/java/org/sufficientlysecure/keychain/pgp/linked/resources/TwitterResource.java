@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
+import android.support.annotation.DrawableRes;
 import android.util.Base64;
 
 import com.textuality.keybase.lib.JWalk;
@@ -16,6 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 
@@ -121,4 +123,22 @@ public class TwitterResource extends LinkedCookieResource {
         return getTwitterStream("Valodim");
     }
 
+    @Override
+    public @DrawableRes int getDisplayIcon() {
+        return R.drawable.twitter;
+    }
+
+    @Override
+    public String getDisplayTitle(Context context) {
+        return "twitter";
+    }
+
+    @Override
+    public String getDisplayComment(Context context) {
+        return null;
+    }
+
+    public static LinkedCookieResource create(Set<String> flags, HashMap<String, String> params, URI subUri) {
+        return null;
+    }
 }
