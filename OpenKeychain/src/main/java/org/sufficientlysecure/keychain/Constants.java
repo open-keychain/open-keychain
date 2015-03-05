@@ -64,19 +64,12 @@ public final class Constants {
     }
 
     public static final class Pref {
-        public static final String DEFAULT_ENCRYPTION_ALGORITHM = "defaultEncryptionAlgorithm";
-        public static final String DEFAULT_HASH_ALGORITHM = "defaultHashAlgorithm";
-        public static final String DEFAULT_ASCII_ARMOR = "defaultAsciiArmor";
-        public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
-        public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
-        public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
-        public static final String SHOW_ADVANCED_TABS = "showAdvancedTabs";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
@@ -86,7 +79,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 5;
+        public static final int PREF_VERSION = 4;
     }
 
     public static final class key {
@@ -94,11 +87,4 @@ public final class Constants {
         public static final int symmetric = -1;
     }
 
-    public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
 }

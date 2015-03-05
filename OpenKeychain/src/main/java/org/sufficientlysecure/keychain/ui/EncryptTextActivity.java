@@ -25,12 +25,14 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -70,6 +72,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
+    private boolean mUseCompression;
 
     public boolean isModeSymmetric() {
         return MODE_SYMMETRIC == mCurrentMode;
@@ -78,6 +81,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     @Override
     public boolean isUseArmor() {
         return true;
+    }
+
+    @Override
+    public boolean isUseCompression() {
+        return mUseCompression;
     }
 
     @Override
@@ -189,9 +197,13 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         data.setBytes(mMessage.getBytes());
         data.setCleartextSignature(true);
 
-        data.setCompressionId(Preferences.getPreferences(this).getDefaultMessageCompression());
-        data.setSymmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm());
-        data.setSignatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm());
+        if (mUseCompression) {
+            data.setCompressionId(CompressionAlgorithmTags.ZLIB);
+        } else {
+            data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
+        }
+        data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+        data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(true);
@@ -330,13 +342,20 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             item.setChecked(!item.isChecked());
         }
         switch (item.getItemId()) {
-            case R.id.check_use_symmetric:
+            case R.id.check_use_symmetric: {
                 mCurrentMode = item.isChecked() ? MODE_SYMMETRIC : MODE_ASYMMETRIC;
                 updateModeFragment();
                 notifyUpdate();
                 break;
-            default:
+            }
+            case R.id.check_enable_compression: {
+                mUseCompression = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
         return true;
     }

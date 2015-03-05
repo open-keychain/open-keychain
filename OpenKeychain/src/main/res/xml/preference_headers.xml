@@ -4,5 +4,5 @@
         android:title="@string/section_cloud_search" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$AdvancedPrefsFragment"
-        android:title="@string/section_advanced" />
+        android:title="@string/section_passphrase_cache" />
 </preference-headers>

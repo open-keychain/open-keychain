@@ -91,12 +91,6 @@ public class SettingsActivity extends PreferenceActivity {
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
-            initializeEncryptionAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
-
-            initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM));
-
             int[] valueIds = new int[]{
                     CompressionAlgorithmTags.UNCOMPRESSED,
                     CompressionAlgorithmTags.ZIP,
@@ -112,20 +106,6 @@ public class SettingsActivity extends PreferenceActivity {
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
             }
-
-            initializeMessageCompression(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
-                    entries, values);
-
-            initializeFileCompression(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
-                    entries, values);
-
-            initializeAsciiArmor(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
-
-            initializeWriteVersionHeader(
-                    (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
 
             initializeUseDefaultYubikeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
@@ -263,12 +243,6 @@ public class SettingsActivity extends PreferenceActivity {
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
-            initializeEncryptionAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
-
-            initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM));
-
             int[] valueIds = new int[]{
                     CompressionAlgorithmTags.UNCOMPRESSED,
                     CompressionAlgorithmTags.ZIP,
@@ -287,20 +261,6 @@ public class SettingsActivity extends PreferenceActivity {
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
             }
-
-            initializeMessageCompression(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
-                    entries, values);
-
-            initializeFileCompression(
-                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
-                    entries, values);
-
-            initializeAsciiArmor(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
-
-            initializeWriteVersionHeader(
-                    (CheckBoxPreference) findPreference(Constants.Pref.WRITE_VERSION_HEADER));
 
             initializeUseDefaultYubikeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
@@ -340,131 +300,6 @@ public class SettingsActivity extends PreferenceActivity {
                         return false;
                     }
                 });
-    }
-
-    private static void initializeEncryptionAlgorithm(final IntegerListPreference mEncryptionAlgorithm) {
-        int valueIds[] = {
-                Constants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED,
-                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256,
-                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_192,
-                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128,
-                Constants.OpenKeychainSymmetricKeyAlgorithmTags.TWOFISH,
-        };
-        String entries[] = {
-                "Use preferred algorithm",
-                "AES-256",
-                "AES-192",
-                "AES-128",
-                "Twofish",
-        };
-        String values[] = new String[valueIds.length];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = "" + valueIds[i];
-        }
-        mEncryptionAlgorithm.setEntries(entries);
-        mEncryptionAlgorithm.setEntryValues(values);
-        mEncryptionAlgorithm.setValue("" + sPreferences.getDefaultEncryptionAlgorithm());
-        mEncryptionAlgorithm.setSummary(mEncryptionAlgorithm.getEntry());
-        mEncryptionAlgorithm
-                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        mEncryptionAlgorithm.setValue(newValue.toString());
-                        mEncryptionAlgorithm.setSummary(mEncryptionAlgorithm.getEntry());
-                        sPreferences.setDefaultEncryptionAlgorithm(Integer.parseInt(newValue
-                                .toString()));
-                        return false;
-                    }
-                });
-    }
-
-    private static void initializeHashAlgorithm(final IntegerListPreference mHashAlgorithm) {
-        int[] valueIds = new int[]{
-                Constants.OpenKeychainHashAlgorithmTags.USE_PREFERRED,
-                Constants.OpenKeychainHashAlgorithmTags.SHA512,
-                Constants.OpenKeychainHashAlgorithmTags.SHA384,
-                Constants.OpenKeychainHashAlgorithmTags.SHA256,
-                Constants.OpenKeychainHashAlgorithmTags.SHA224,
-                Constants.OpenKeychainHashAlgorithmTags.RIPEMD160,
-        };
-        String[] entries = new String[]{
-                "Use preferred algorithm",
-                "SHA-512",
-                "SHA-384",
-                "SHA-256",
-                "SHA-224",
-                "RIPEMD-160"};
-        String[] values = new String[valueIds.length];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = "" + valueIds[i];
-        }
-        mHashAlgorithm.setEntries(entries);
-        mHashAlgorithm.setEntryValues(values);
-        mHashAlgorithm.setValue("" + sPreferences.getDefaultHashAlgorithm());
-        mHashAlgorithm.setSummary(mHashAlgorithm.getEntry());
-        mHashAlgorithm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mHashAlgorithm.setValue(newValue.toString());
-                mHashAlgorithm.setSummary(mHashAlgorithm.getEntry());
-                sPreferences.setDefaultHashAlgorithm(Integer.parseInt(newValue.toString()));
-                return false;
-            }
-        });
-    }
-
-    private static void initializeMessageCompression(final IntegerListPreference mMessageCompression,
-                                                     String[] entries, String[] values) {
-        mMessageCompression.setEntries(entries);
-        mMessageCompression.setEntryValues(values);
-        mMessageCompression.setValue("" + sPreferences.getDefaultMessageCompression());
-        mMessageCompression.setSummary(mMessageCompression.getEntry());
-        mMessageCompression
-                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        mMessageCompression.setValue(newValue.toString());
-                        mMessageCompression.setSummary(mMessageCompression.getEntry());
-                        sPreferences.setDefaultMessageCompression(Integer.parseInt(newValue
-                                .toString()));
-                        return false;
-                    }
-                });
-    }
-
-    private static void initializeFileCompression
-            (final IntegerListPreference mFileCompression, String[] entries, String[] values) {
-        mFileCompression.setEntries(entries);
-        mFileCompression.setEntryValues(values);
-        mFileCompression.setValue("" + sPreferences.getDefaultFileCompression());
-        mFileCompression.setSummary(mFileCompression.getEntry());
-        mFileCompression.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mFileCompression.setValue(newValue.toString());
-                mFileCompression.setSummary(mFileCompression.getEntry());
-                sPreferences.setDefaultFileCompression(Integer.parseInt(newValue.toString()));
-                return false;
-            }
-        });
-    }
-
-    private static void initializeAsciiArmor(final CheckBoxPreference mAsciiArmor) {
-        mAsciiArmor.setChecked(sPreferences.getDefaultAsciiArmor());
-        mAsciiArmor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mAsciiArmor.setChecked((Boolean) newValue);
-                sPreferences.setDefaultAsciiArmor((Boolean) newValue);
-                return false;
-            }
-        });
-    }
-
-    private static void initializeWriteVersionHeader(final CheckBoxPreference mWriteVersionHeader) {
-        mWriteVersionHeader.setChecked(sPreferences.getWriteVersionHeader());
-        mWriteVersionHeader.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mWriteVersionHeader.setChecked((Boolean) newValue);
-                sPreferences.setWriteVersionHeader((Boolean) newValue);
-                return false;
-            }
-        });
     }
 
     private static void initializeSearchKeyserver(final CheckBoxPreference mSearchKeyserver) {

@@ -177,48 +177,16 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     /**
-     * Returns a list of all supported hash algorithms. This list is currently hardcoded to return
-     * a limited set of algorithms supported by Yubikeys.
-     *
-     * TODO: look into preferred algos of this key?
+     * Returns a list of all supported hash algorithms.
      */
     public LinkedList<Integer> getSupportedHashAlgorithms() {
         LinkedList<Integer> supported = new LinkedList<>();
 
-        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            // No support for MD5
-            supported.add(HashAlgorithmTags.RIPEMD160);
-            // don't allow SHA1
-            supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512);
-            supported.add(HashAlgorithmTags.SHA256); // preferred is latest
-        } else {
-            // NOTE: List of hash algorithms OpenKeychain wants to support!
-
-            // don't allow MD5
-            supported.add(HashAlgorithmTags.RIPEMD160);
-            // don't allow SHA1
-            supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512);
-            supported.add(HashAlgorithmTags.SHA256); // preferred is latest
-            // some application don't support SHA512, thus preferred is SHA-256 (Mailvelope?)
+        // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
+        // choose best algo
+        for (int currentInt : PgpConstants.PREFERRED_HASH_ALGORITHMS) {
+            supported.add(currentInt);
         }
-
-        return supported;
-    }
-
-    /**
-     * TODO: look into preferred algos of this key?
-     */
-    public static LinkedList<Integer> getSupportedEncryptionAlgorithms() {
-        LinkedList<Integer> supported = new LinkedList<>();
-
-        supported.add(SymmetricKeyAlgorithmTags.TWOFISH);
-        supported.add(SymmetricKeyAlgorithmTags.AES_128);
-        supported.add(SymmetricKeyAlgorithmTags.AES_192);
-        supported.add(SymmetricKeyAlgorithmTags.AES_256); // preferred is latest
 
         return supported;
     }

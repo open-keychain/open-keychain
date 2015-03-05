@@ -1,52 +1,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/section_defaults">
-        <CheckBoxPreference
-            android:key="writeVersionHeader"
-            android:persistent="false"
-            android:title="@string/label_write_version_header"
-            android:summary="@string/label_write_version_header_summary" />
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:key="defaultEncryptionAlgorithm"
-            android:persistent="false"
-            android:title="@string/label_encryption_algorithm" />
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:key="defaultHashAlgorithm"
-            android:persistent="false"
-            android:title="@string/label_hash_algorithm" />
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:key="defaultMessageCompression"
-            android:persistent="false"
-            android:title="@string/label_message_compression" />
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:key="defaultFileCompression"
-            android:persistent="false"
-            android:title="@string/label_file_compression" />
-        <CheckBoxPreference
-            android:key="defaultAsciiArmor"
-            android:persistent="false"
-            android:title="@string/label_ascii_armor" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/section_passphrase_cache">
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:entries="@array/passphrase_cache_ttl_entries"
-            android:entryValues="@array/passphrase_cache_ttl_values"
-            android:key="passphraseCacheTtl"
-            android:persistent="false"
-            android:title="@string/label_passphrase_cache_ttl" />
-        <CheckBoxPreference
-            android:key="passphraseCacheSubs"
-            android:persistent="false"
-            android:title="@string/label_passphrase_cache_subs" />
-        <CheckBoxPreference
-            android:key="useDefaultYubikeyPin"
-            android:persistent="false"
-            android:defaultValue="true"
-            android:title="@string/label_use_default_yubikey_pin"
-            android:summary="@string/label_label_use_default_yubikey_pin_summary" />
-        <CheckBoxPreference
-            android:key="useNumKeypadForYubikeyPin"
-            android:persistent="false"
-            android:defaultValue="false"
-            android:title="@string/label_use_num_keypad_for_yubikey_pin" />
-    </PreferenceCategory>
+    <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+        android:entries="@array/passphrase_cache_ttl_entries"
+        android:entryValues="@array/passphrase_cache_ttl_values"
+        android:key="passphraseCacheTtl"
+        android:persistent="false"
+        android:title="@string/label_passphrase_cache_ttl" />
+    <CheckBoxPreference
+        android:key="passphraseCacheSubs"
+        android:persistent="false"
+        android:title="@string/label_passphrase_cache_subs" />
+    <CheckBoxPreference
+        android:key="useDefaultYubikeyPin"
+        android:persistent="false"
+        android:defaultValue="true"
+        android:title="@string/label_use_default_yubikey_pin"
+        android:summary="@string/label_label_use_default_yubikey_pin_summary" />
+    <CheckBoxPreference
+        android:key="useNumKeypadForYubikeyPin"
+        android:persistent="false"
+        android:defaultValue="false"
+        android:title="@string/label_use_num_keypad_for_yubikey_pin" />
 </PreferenceScreen>

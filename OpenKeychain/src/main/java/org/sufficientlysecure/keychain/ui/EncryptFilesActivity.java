@@ -25,11 +25,13 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -66,6 +68,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
     private boolean mUseArmor;
+    private boolean mUseCompression;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
@@ -79,6 +82,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean isUseArmor() {
         return mUseArmor;
+    }
+
+    @Override
+    public boolean isUseCompression() {
+        return mUseCompression;
     }
 
     @Override
@@ -196,12 +204,13 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         data.addInputUris(mInputUris);
         data.addOutputUris(mOutputUris);
 
-        data.setCompressionId(Preferences.getPreferences(this).getDefaultMessageCompression());
-        data.setSymmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm());
-        data.setSignatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm());
-
-        // Always use armor for messages
-        data.setEnableAsciiArmorOutput(mUseArmor);
+        if (mUseCompression) {
+            data.setCompressionId(CompressionAlgorithmTags.ZLIB);
+        } else {
+            data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
+        }
+        data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+        data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -317,8 +326,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
-
-        mUseArmor = Preferences.getPreferences(this).getDefaultAsciiArmor();
     }
 
     @Override
@@ -329,7 +336,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
-        menu.findItem(R.id.check_use_armor).setChecked(mUseArmor);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -350,21 +356,30 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             item.setChecked(!item.isChecked());
         }
         switch (item.getItemId()) {
-            case R.id.check_use_symmetric:
+            case R.id.check_use_symmetric: {
                 mCurrentMode = item.isChecked() ? MODE_SYMMETRIC : MODE_ASYMMETRIC;
                 updateModeFragment();
                 notifyUpdate();
                 break;
-            case R.id.check_use_armor:
+            }
+            case R.id.check_use_armor: {
                 mUseArmor = item.isChecked();
                 notifyUpdate();
                 break;
-            case R.id.check_delete_after_encrypt:
+            }
+            case R.id.check_delete_after_encrypt: {
                 mDeleteAfterEncrypt = item.isChecked();
                 notifyUpdate();
                 break;
-            default:
+            }
+            case R.id.check_enable_compression: {
+                mUseCompression = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+            default: {
                 return super.onOptionsItemSelected(item);
+            }
         }
         return true;
     }
