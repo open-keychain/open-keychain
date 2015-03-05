@@ -30,6 +30,7 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -358,7 +359,7 @@ public class OpenPgpService extends RemoteService {
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                    .setCompressionId(Preferences.getPreferences(this).getDefaultFileCompression())
+                    .setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED)
                     .setSymmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                     .setEncryptionMasterKeyIds(keyIds)
                     .setFailOnMissingEncryptionKeyIds(true)
