@@ -39,7 +39,7 @@ public abstract class LinkedResource {
 
     protected static LinkedCookieResource fromUri (URI uri) {
 
-        if ("pgpid+cookie".equals(uri.getScheme())) {
+        if (!"pgpid+cookie".equals(uri.getScheme())) {
             Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
             return null;
         }
@@ -60,13 +60,10 @@ public abstract class LinkedResource {
 
         Set<String> flags = new HashSet<String>();
         HashMap<String,String> params = new HashMap<String,String>();
-        {
+        if (!pieces[0].isEmpty()) {
             String[] rawParams = pieces[0].split(";");
             for (String param : rawParams) {
                 String[] p = param.split("=", 2);
-                if ("".equals(p[0])) {
-                    continue;
-                }
                 if (p.length == 1) {
                     flags.add(param);
                 } else {
