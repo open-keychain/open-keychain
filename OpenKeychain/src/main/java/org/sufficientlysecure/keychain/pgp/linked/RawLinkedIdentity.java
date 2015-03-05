@@ -8,6 +8,7 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.DrawableRes;
 
 /** The RawLinkedIdentity contains raw parsed data from a Linked Identity subpacket. */

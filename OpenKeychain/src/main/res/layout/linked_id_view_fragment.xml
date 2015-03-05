@@ -29,28 +29,7 @@
                 android:layout_height="wrap_content"
                 android:text="Linked Identity" />
 
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:minHeight="?android:attr/listPreferredItemHeight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/linked_id_type_icon"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
-                    android:src="@drawable/dns" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginStart="14dp"
-                    android:text="This is a DNS linked identity~\nLorem ipsum\nmore text\neven more text\nyoooyoyo"
-                    android:layout_gravity="center_vertical" />
-
-            </LinearLayout>
+            <include layout="@layout/linked_id_item" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -65,11 +44,12 @@
                     style="?android:attr/borderlessButtonStyle" />
 
                 <Space
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1" />
 
                 <Button
+                    android:id="@+id/button_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="View"
@@ -78,6 +58,7 @@
                     />
 
                 <Button
+                    android:id="@+id/verify_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Verify"

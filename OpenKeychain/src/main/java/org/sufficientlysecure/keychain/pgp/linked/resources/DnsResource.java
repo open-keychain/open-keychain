@@ -110,11 +110,11 @@ public class DnsResource extends LinkedCookieResource {
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "dns";
+        return "Domain Name";
     }
 
     @Override
     public String getDisplayComment(Context context) {
-        return null;
+        return mFqdn;
     }
 }

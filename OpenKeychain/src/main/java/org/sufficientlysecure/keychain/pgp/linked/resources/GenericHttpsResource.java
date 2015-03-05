@@ -1,6 +1,8 @@
 package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 
 import com.textuality.keybase.lib.Search;
@@ -109,12 +111,23 @@ public class GenericHttpsResource extends LinkedCookieResource {
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "https";
+        return "Website (HTTPS)";
     }
 
     @Override
     public String getDisplayComment(Context context) {
-        return null;
+        return mSubUri.toString();
     }
 
+    @Override
+    public boolean isViewable() {
+        return true;
+    }
+
+    @Override
+    public Intent getViewIntent() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(mSubUri.toString()));
+        return intent;
+    }
 }

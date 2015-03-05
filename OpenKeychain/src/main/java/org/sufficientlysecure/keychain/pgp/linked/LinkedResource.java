@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.DrawableRes;
 
 public abstract class LinkedResource {
@@ -105,5 +106,11 @@ public abstract class LinkedResource {
     public abstract @DrawableRes int getDisplayIcon();
     public abstract String getDisplayTitle(Context context);
     public abstract String getDisplayComment(Context context);
+    public boolean isViewable() {
+        return false;
+    }
+    public Intent getViewIntent() {
+        return null;
+    }
 
 }

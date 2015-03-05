@@ -125,26 +125,35 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public Fragment getLinkedIdFragment(int position) {
+    public Fragment getLinkedIdFragment(int position) throws IOException {
         RawLinkedIdentity id = getItem(position);
 
-        return LinkedIdViewFragment.newInstance(id);
+        Integer isVerified;
+        if (mShowCertification) {
+            Cursor cursor = getCursor();
+            cursor.moveToPosition(position);
+            isVerified = cursor.getInt(INDEX_VERIFIED);
+        } else {
+            isVerified = null;
+        }
+
+        return LinkedIdViewFragment.newInstance(id, isVerified);
     }
 
-    static class ViewHolder {
-        ImageView vVerified;
-        ImageView vIcon;
-        TextView vTitle;
-        TextView vComment;
+    public static class ViewHolder {
+        final public ImageView vVerified;
+        final public ImageView vIcon;
+        final public TextView vTitle;
+        final public TextView vComment;
 
-        ViewHolder(View view) {
+        public ViewHolder(View view) {
             vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
             vIcon = (ImageView) view.findViewById(R.id.linked_id_type_icon);
             vTitle = (TextView) view.findViewById(R.id.linked_id_title);
             vComment = (TextView) view.findViewById(R.id.linked_id_comment);
         }
 
-        void setData(Context context, RawLinkedIdentity id) {
+        public void setData(Context context, RawLinkedIdentity id) {
 
             vTitle.setText(id.getDisplayTitle(context));
 

@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.io.IOException;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -45,6 +47,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyFragment extends LoaderFragment implements
@@ -107,7 +110,13 @@ public class ViewKeyFragment extends LoaderFragment implements
     }
 
     private void showLinkedId(final int position) {
-        Fragment frag = mLinkedIdsAdapter.getLinkedIdFragment(position);
+        Fragment frag;
+        try {
+            frag = mLinkedIdsAdapter.getLinkedIdFragment(position);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Transition trans = TransitionInflater.from(getActivity())
