@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -175,9 +176,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.REVOKED, R.color.bg_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.EXPIRED, R.color.bg_gray);
         }
 
         if (entry.isRevoked() || entry.isExpired()) {

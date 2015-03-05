@@ -64,7 +64,7 @@
                 android:layout_height="?android:attr/listPreferredItemHeight"
                 android:clickable="true"
                 android:paddingRight="4dp"
-                style="@style/SelectableItem"
+                style="?android:attr/borderlessButtonStyle"
                 android:orientation="horizontal">
 
                 <TextView

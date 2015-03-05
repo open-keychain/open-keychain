@@ -21,7 +21,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentTop="true"
             android:layout_marginRight="6dp"
-            android:src="@drawable/ic_action_person" />
+            android:src="@drawable/ic_person_grey_24dp" />
 
         <TextView
             android:id="@+id/api_account_settings_acc_name"
@@ -79,7 +79,7 @@
         android:layout_width="match_parent"
         android:text="@string/api_settings_create_key"
         android:layout_height="?android:attr/listPreferredItemHeight"
-        android:drawableRight="@drawable/ic_action_new_account"
+        android:drawableRight="@drawable/ic_key_plus_grey600_24dp"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:clickable="true" />

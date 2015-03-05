@@ -120,7 +120,7 @@
             android:layout_weight="1"
             android:text="@string/btn_next"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_play"
+            android:drawableRight="@drawable/ic_play_arrow_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"

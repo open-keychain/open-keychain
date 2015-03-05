@@ -115,12 +115,12 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     }
 
     static final String[] TRUST_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.FINGERPRINT, KeyRings.IS_REVOKED, KeyRings.EXPIRY,
+            KeyRings._ID, KeyRings.FINGERPRINT, KeyRings.IS_REVOKED, KeyRings.IS_EXPIRED,
             KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
     };
     static final int INDEX_TRUST_FINGERPRINT = 1;
     static final int INDEX_TRUST_IS_REVOKED = 2;
-    static final int INDEX_TRUST_EXPIRY = 3;
+    static final int INDEX_TRUST_IS_EXPIRED = 3;
     static final int INDEX_UNIFIED_HAS_ANY_SECRET = 4;
     static final int INDEX_VERIFIED = 5;
 
@@ -169,8 +169,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
                 nothingSpecial = false;
             } else {
-                Date expiryDate = new Date(data.getLong(INDEX_TRUST_EXPIRY) * 1000);
-                if (!data.isNull(INDEX_TRUST_EXPIRY) && expiryDate.before(new Date())) {
+                if (data.getInt(INDEX_TRUST_IS_EXPIRED) != 0) {
 
                     // if expired, don’t trust it!
                     message.append(getString(R.string.key_trust_expired)).

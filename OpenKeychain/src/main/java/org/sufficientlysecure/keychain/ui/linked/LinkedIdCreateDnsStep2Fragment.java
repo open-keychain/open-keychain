@@ -162,17 +162,17 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
         mVerifyImage.setVisibility(on ? View.GONE : View.VISIBLE);
         if (success == null) {
             mVerifyStatus.setText(R.string.linked_verifying);
-            mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout_24px);
+            mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout_24dp);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                     PorterDuff.Mode.SRC_IN);
         } else if (success) {
             mVerifyStatus.setText(R.string.linked_verify_success);
-            mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout_24px);
+            mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout_24dp);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_green_dark),
                     PorterDuff.Mode.SRC_IN);
         } else {
             mVerifyStatus.setText(R.string.linked_verify_error);
-            mVerifyImage.setImageResource(R.drawable.status_signature_unknown_cutout_24px);
+            mVerifyImage.setImageResource(R.drawable.status_signature_unknown_cutout_24dp);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
                     PorterDuff.Mode.SRC_IN);
         }

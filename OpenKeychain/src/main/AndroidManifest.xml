@@ -67,10 +67,8 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
-    <!-- tools:replace="android:allowBackup" is a workaround for https://github.com/geftimov/android-patternview/pull/2 -->
     <application
         android:name=".KeychainApplication"
-        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"

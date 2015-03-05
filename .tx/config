@@ -17,14 +17,9 @@ file_filter = OpenKeychain/src/main/res/raw-<lang>/help_changelog.html
 source_file = OpenKeychain/src/main/res/raw/help_changelog.html
 source_lang = en
 
-[open-keychain.help-wot]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_wot.html
-source_file = OpenKeychain/src/main/res/raw/help_wot.html
-source_lang = en
-
-[open-keychain.help-nfc-beam]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_nfc_beam.html
-source_file = OpenKeychain/src/main/res/raw/help_nfc_beam.html
+[open-keychain.help-certification]
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_certification.html
+source_file = OpenKeychain/src/main/res/raw/help_certification.html
 source_lang = en
 
 [open-keychain.help-start]
@@ -32,7 +27,3 @@ file_filter = OpenKeychain/src/main/res/raw-<lang>/help_start.html
 source_file = OpenKeychain/src/main/res/raw/help_start.html
 source_lang = en
 
-[open-keychain.nfc-beam-share]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/nfc_beam_share.html
-source_file = OpenKeychain/src/main/res/raw/nfc_beam_share.html
-source_lang = en

@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 import java.util.regex.Matcher;
@@ -161,7 +162,7 @@ public class CreateKeyInputFragment extends Fragment {
                     );
 
             hideKeyboard();
-            mCreateKeyActivity.loadFragment(null, frag, CreateKeyActivity.FRAG_ACTION_TO_RIGHT);
+            mCreateKeyActivity.loadFragment(null, frag, FragAction.TO_RIGHT);
         }
     }
 

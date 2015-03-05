@@ -92,7 +92,6 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
         alert.setTitle(title);
-        alert.setMessage(R.string.enter_passphrase_twice);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.passphrase_repeat_dialog, null);

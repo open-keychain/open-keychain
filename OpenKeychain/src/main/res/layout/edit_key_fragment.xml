@@ -26,11 +26,11 @@
             android:layout_height="match_parent"
             android:text="@string/edit_key_action_change_passphrase"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_edit"
+            android:drawableRight="@drawable/ic_mode_edit_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
             style="@style/SectionHeader"
@@ -69,11 +69,11 @@
             android:layout_height="match_parent"
             android:text="@string/edit_key_action_add_identity"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_add_person"
+            android:drawableRight="@drawable/ic_person_add_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
             style="@style/SectionHeader"
@@ -111,11 +111,11 @@
             android:layout_height="match_parent"
             android:text="@string/edit_key_action_add_subkey"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_action_new_account"
+            android:drawableRight="@drawable/ic_key_plus_grey600_24dp"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem" />
+            style="?android:attr/borderlessButtonStyle" />
 
     </LinearLayout>
 

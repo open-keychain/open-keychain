@@ -28,9 +28,11 @@ public class CreateKeyActivity extends BaseActivity {
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
 
-    public static final int FRAG_ACTION_START = 0;
-    public static final int FRAG_ACTION_TO_RIGHT = 1;
-    public static final int FRAG_ACTION_TO_LEFT = 2;
+    public static enum FragAction {
+        START,
+        TO_RIGHT,
+        TO_LEFT
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class CreateKeyActivity extends BaseActivity {
                         getIntent().getStringExtra(EXTRA_NAME),
                         getIntent().getStringExtra(EXTRA_EMAIL)
                 );
-        loadFragment(null, frag, FRAG_ACTION_START);
+        loadFragment(null, frag, FragAction.START);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class CreateKeyActivity extends BaseActivity {
         setContentView(R.layout.create_key_activity);
     }
 
-    public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {
+    public void loadFragment(Bundle savedInstanceState, Fragment fragment, FragAction action) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -63,15 +65,15 @@ public class CreateKeyActivity extends BaseActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         switch (action) {
-            case FRAG_ACTION_START:
+            case START:
                 transaction.setCustomAnimations(0, 0);
                 transaction.replace(R.id.create_key_fragment_container, fragment)
                         .commitAllowingStateLoss();
                 break;
-            case FRAG_ACTION_TO_LEFT:
+            case TO_LEFT:
                 getSupportFragmentManager().popBackStackImmediate();
                 break;
-            case FRAG_ACTION_TO_RIGHT:
+            case TO_RIGHT:
                 transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
                         R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
                 transaction.addToBackStack(null);

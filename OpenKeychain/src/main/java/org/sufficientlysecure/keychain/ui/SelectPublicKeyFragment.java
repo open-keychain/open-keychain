@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 import java.util.Vector;
 
@@ -136,7 +137,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         mSearchView.setId(SEARCH_ID);
         mSearchView.setHint(R.string.menu_search);
         mSearchView.setCompoundDrawablesWithIntrinsicBounds(
-                getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
+                getResources().getDrawable(R.drawable.ic_search_grey_24dp), null, null, null);
 
         linearLayout.addView(mSearchView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -376,15 +377,15 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                 // Check if key is viable for our purposes
                 if (cursor.getInt(mIndexHasEncrypt) == 0) {
                     h.statusIcon.setVisibility(View.VISIBLE);
-                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_UNAVAILABLE);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, State.UNAVAILABLE);
                     enabled = false;
                 } else if (cursor.getInt(mIndexIsVerified) != 0) {
                     h.statusIcon.setVisibility(View.VISIBLE);
-                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_VERIFIED);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, State.VERIFIED);
                     enabled = true;
                 } else {
                     h.statusIcon.setVisibility(View.VISIBLE);
-                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, KeyFormattingUtils.STATE_UNVERIFIED);
+                    KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, State.UNVERIFIED);
                     enabled = true;
                 }
             }

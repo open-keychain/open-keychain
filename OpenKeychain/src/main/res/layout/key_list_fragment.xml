@@ -70,7 +70,7 @@
             android:id="@+id/fab_add_cloud"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_icon="@drawable/ic_cloud_search_24px"
+            fab:fab_icon="@drawable/ic_cloud_search_24dp"
             fab:fab_colorNormal="@color/primary"
             fab:fab_colorPressed="@color/primary_dark"
             fab:fab_title="Search Cloud"

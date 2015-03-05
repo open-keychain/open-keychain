@@ -114,12 +114,12 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
     static final String[] UNIFIED_PROJECTION = new String[]{
             KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED, KeyRings.EXPIRY, KeyRings.HAS_ENCRYPT
+            KeyRings.HAS_ANY_SECRET, KeyRings.IS_REVOKED, KeyRings.IS_EXPIRED, KeyRings.HAS_ENCRYPT
     };
     static final int INDEX_UNIFIED_MASTER_KEY_ID = 1;
     static final int INDEX_UNIFIED_HAS_ANY_SECRET = 2;
     static final int INDEX_UNIFIED_IS_REVOKED = 3;
-    static final int INDEX_UNIFIED_EXPIRY = 4;
+    static final int INDEX_UNIFIED_IS_EXPIRED = 4;
     static final int INDEX_UNIFIED_HAS_ENCRYPT = 5;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

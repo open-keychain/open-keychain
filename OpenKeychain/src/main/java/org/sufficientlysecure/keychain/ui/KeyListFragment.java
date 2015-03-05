@@ -70,6 +70,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -77,7 +78,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -268,7 +268,7 @@ public class KeyListFragment extends LoaderFragment
             KeyRings.MASTER_KEY_ID,
             KeyRings.USER_ID,
             KeyRings.IS_REVOKED,
-            KeyRings.EXPIRY,
+            KeyRings.IS_EXPIRED,
             KeyRings.VERIFIED,
             KeyRings.HAS_ANY_SECRET
     };
@@ -276,7 +276,7 @@ public class KeyListFragment extends LoaderFragment
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
 
@@ -708,21 +708,20 @@ public class KeyListFragment extends LoaderFragment
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isExpired = !cursor.isNull(INDEX_EXPIRY)
-                        && new Date(cursor.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
                 h.mMasterKeyId = masterKeyId;
 
                 // Note: order is important!
                 if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.REVOKED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
                 } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, KeyFormattingUtils.STATE_EXPIRED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.EXPIRED, R.color.bg_gray);
                     h.mStatus.setVisibility(View.VISIBLE);
                     h.mSlinger.setVisibility(View.GONE);
                     h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
@@ -735,10 +734,10 @@ public class KeyListFragment extends LoaderFragment
                 } else {
                     // this is a public key - show if it's verified
                     if (isVerified) {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_VERIFIED);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.VERIFIED);
                         h.mStatus.setVisibility(View.VISIBLE);
                     } else {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, KeyFormattingUtils.STATE_UNVERIFIED);
+                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.UNVERIFIED);
                         h.mStatus.setVisibility(View.VISIBLE);
                     }
                     h.mSlinger.setVisibility(View.GONE);

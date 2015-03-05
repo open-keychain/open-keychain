@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 public abstract class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
@@ -141,16 +142,16 @@ public abstract class DecryptFragment extends Fragment {
 
             if (signatureResult.isSignatureOnly()) {
                 mEncryptionText.setText(R.string.decrypt_result_not_encrypted);
-                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_NOT_ENCRYPTED);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.NOT_ENCRYPTED);
             } else {
                 mEncryptionText.setText(R.string.decrypt_result_encrypted);
-                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_ENCRYPTED);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
             }
 
             switch (signatureResult.getStatus()) {
                 case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
                     mSignatureText.setText(R.string.decrypt_result_signature_certified);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_VERIFIED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.VERIFIED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     setShowAction(mSignatureKeyId);
@@ -161,7 +162,7 @@ public abstract class DecryptFragment extends Fragment {
 
                 case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
                     mSignatureText.setText(R.string.decrypt_result_signature_uncertified);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNVERIFIED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.UNVERIFIED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     setShowAction(mSignatureKeyId);
@@ -172,11 +173,11 @@ public abstract class DecryptFragment extends Fragment {
 
                 case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
                     mSignatureText.setText(R.string.decrypt_result_signature_missing_key);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_UNKNOWN_KEY);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.UNKNOWN_KEY);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     mSignatureAction.setText(R.string.decrypt_result_action_Lookup);
-                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_download, 0);
+                    mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_file_download_grey_24dp, 0);
                     mSignatureLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -190,7 +191,7 @@ public abstract class DecryptFragment extends Fragment {
 
                 case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
                     mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_EXPIRED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.EXPIRED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     setShowAction(mSignatureKeyId);
@@ -201,7 +202,7 @@ public abstract class DecryptFragment extends Fragment {
 
                 case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
                     mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_REVOKED);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.REVOKED);
 
                     setSignatureLayoutVisibility(View.VISIBLE);
                     setShowAction(mSignatureKeyId);
@@ -212,7 +213,7 @@ public abstract class DecryptFragment extends Fragment {
 
                 case OpenPgpSignatureResult.SIGNATURE_ERROR: {
                     mSignatureText.setText(R.string.decrypt_result_invalid_signature);
-                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_INVALID);
+                    KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.INVALID);
 
                     setSignatureLayoutVisibility(View.GONE);
 
@@ -224,9 +225,9 @@ public abstract class DecryptFragment extends Fragment {
             setSignatureLayoutVisibility(View.GONE);
 
             mSignatureText.setText(R.string.decrypt_result_no_signature);
-            KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, KeyFormattingUtils.STATE_NOT_SIGNED);
+            KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.NOT_SIGNED);
             mEncryptionText.setText(R.string.decrypt_result_encrypted);
-            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, KeyFormattingUtils.STATE_ENCRYPTED);
+            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
 
             valid = true;
         }

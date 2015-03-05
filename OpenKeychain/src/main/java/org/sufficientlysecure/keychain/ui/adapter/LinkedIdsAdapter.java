@@ -39,9 +39,9 @@ import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.ViewKeyFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 import java.io.IOException;
 import java.util.WeakHashMap;
@@ -66,15 +66,15 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         switch (isVerified) {
             case Certs.VERIFIED_SECRET:
                 KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                        null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                 break;
             case Certs.VERIFIED_SELF:
                 KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                        null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                 break;
             default:
                 KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
-                        null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
+                        null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                 break;
         }
 

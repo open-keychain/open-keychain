@@ -35,7 +35,7 @@
     <string name="title_export_keys">"Export Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
-    <string name="title_certify_key">"Certify Identities"</string>
+    <string name="title_certify_key">"Confirm Key"</string>
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
@@ -43,6 +43,8 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
     <string name="title_keys">"Keys"</string>
+    <string name="title_delete_secret_key">"Delete YOUR key \'%s\'?"</string>
+    <string name="title_export_log">"Export Log"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -55,19 +57,19 @@
     <string name="section_defaults">"Defaults"</string>
     <string name="section_advanced">"Advanced"</string>
     <string name="section_passphrase_cache">"Passphrase Cache"</string>
-    <string name="section_certify">"Certify"</string>
+    <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
-    <string name="section_certification_key">"Your Key used for certification"</string>
     <string name="section_upload_key">"Synchronize Key"</string>
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
-    <string name="section_key_to_certify">"Key to be certified"</string>
     <string name="section_decrypt_files">"Files"</string>
     <string name="section_decrypt_text">"Text"</string>
     <string name="section_certs">"Certificates"</string>
     <string name="section_encrypt">"Encrypt"</string>
     <string name="section_decrypt">"Decrypt"</string>
+    <string name="section_current_expiry">"Current expiry"</string>
+    <string name="section_new_expiry">"New expiry"</string>
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
@@ -113,7 +115,8 @@
     <string name="menu_search_cloud">"Search cloud"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>
-    <string name="menu_certify_fingerprint">"Verify via fingerprint comparison"</string>
+    <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
+    <string name="menu_export_log">"Export Log"</string>
 
     <!-- label -->
     <string name="label_message">"Message"</string>
@@ -162,13 +165,6 @@
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
-    <string name="no_key">"&lt;no key&gt;"</string>
-    <string name="can_encrypt">"can encrypt"</string>
-    <string name="can_sign">"can sign"</string>
-    <string name="can_certify">"can certify"</string>
-    <string name="can_certify_not">"cannot certify"</string>
-    <string name="expired">"expired"</string>
-    <string name="revoked">"revoked"</string>
 
     <plurals name="n_keys">
         <item quantity="one">"1 key"</item>
@@ -202,7 +198,6 @@
     <string name="ecdh">"ECDH"</string>
     <string name="ecdsa">"ECDSA"</string>
     <string name="filemanager_title_open">"Open…"</string>
-    <string name="warning">"Warning"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
 
@@ -227,15 +222,14 @@
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
-    <string name="enter_passphrase_twice">"Enter the passphrase twice."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
     <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
-    <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected public keys?\nYou can't undo this!"</string>
-    <string name="secret_key_deletion_confirmation">"Do you really want to delete the SECRET key '%s'?\nYou can't undo this!"</string>
-    <string name="public_key_deletetion_confirmation">"Do you really want to delete the public key '%s'?\nYou can't undo this!"</string>
+    <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
+    <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and lose all key confirmations done with it!"</string>
+    <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
     <string name="also_export_secret_keys">"Also export secret keys"</string>
     <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
 
@@ -244,6 +238,8 @@
     <string name="no_keys_exported">"No keys exported."</string>
     <string name="key_creation_el_gamal_info">"Note: only subkeys support ElGamal."</string>
     <string name="key_not_found">"Couldn't find key %08X."</string>
+
+    <string name="specify_file_to_export_log_to">"Please specify file to export to. \nWARNING: File will be overwritten if it exists."</string>
 
     <plurals name="bad_keys_encountered">"
         <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
@@ -254,7 +250,7 @@
     <string name="nfc_successful">"Successfully sent key with NFC Beam!"</string>
     <string name="key_copied_to_clipboard">"Key has been copied to the clipboard!"</string>
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
-    <string name="select_key_to_certify">"Please select a key to be used for certification!"</string>
+    <string name="select_key_to_certify">"Please select a key to be used for confirmation!"</string>
     <string name="key_too_big_for_sharing">"Key is too big to be shared this way!"</string>
     <string name="text_copied_to_clipboard">"Text has been copied to the clipboard!"</string>
 
@@ -393,7 +389,7 @@
     <!-- Help -->
     <string name="help_tab_start">"Start"</string>
     <string name="help_tab_faq">"FAQ"</string>
-    <string name="help_tab_wot">"Web of Trust"</string>
+    <string name="help_tab_wot">"Key Confirmation"</string>
     <string name="help_tab_nfc_beam">"NFC Beam"</string>
     <string name="help_tab_changelog">"Changelog"</string>
     <string name="help_tab_about">"About"</string>
@@ -535,7 +531,7 @@
     <string name="key_view_action_edit">"Edit key"</string>
     <string name="key_view_action_encrypt">"Encrypt text"</string>
     <string name="key_view_action_encrypt_files">"files"</string>
-    <string name="key_view_action_certify">"Certify identities"</string>
+    <string name="key_view_action_certify">"Confirm key"</string>
     <string name="key_view_action_update">"Update from keyserver"</string>
     <string name="key_view_action_share_with">"Share with…"</string>
     <string name="key_view_action_share_nfc">"Share over NFC"</string>
@@ -555,16 +551,16 @@
     <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 
     <!-- Key trust -->
-    <string name="key_trust_already_verified">"You have already certified this key!"</string>
+    <string name="key_trust_already_verified">"You have already confirmed this key!"</string>
     <string name="key_trust_it_is_yours">"This is one of your keys!"</string>
-    <string name="key_trust_maybe">"This key is neither revoked nor expired.\nYou haven’t certified it, but you may choose to trust it."</string>
+    <string name="key_trust_maybe">"This key is neither revoked nor expired.\nYou haven’t confirmed it, but you may choose to trust it."</string>
     <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
     <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
     <string name="key_trust_old_keys">" It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
     <string name="key_trust_no_cloud_evidence">"No proof from the cloud on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
-    <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to verifying them."</string>
+    <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to confirming them."</string>
 
     <!-- keybase proof stuff -->
     <string name="keybase_narrative_twitter">"Posts to Twitter as"</string>
@@ -637,8 +633,8 @@
     <string name="view_key_expired">"Expired: The contact needs to extend the key's validity!"</string>
     <string name="view_key_expired_secret">"Expired: You can extend the keys validity by editing it!"</string>
     <string name="view_key_my_key">"My Key"</string>
-    <string name="view_key_verified">"Verified Key"</string>
-    <string name="view_key_unverified">"Unverified: Scan QR Code to verify key!"</string>
+    <string name="view_key_verified">"Confirmed Key"</string>
+    <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
@@ -840,7 +836,7 @@
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user ID '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user ID '%s'"</string>
     <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The keyring contained two of them. This may result in missing certificates!"</string>
-    <string name="msg_kc_uid_warn_encoding">"User id does not verify as UTF-8!"</string>
+    <string name="msg_kc_uid_warn_encoding">"User ID does not verify as UTF-8!"</string>
     <string name="msg_kc_uat_jpeg">"Processing user attribute of type JPEG"</string>
     <string name="msg_kc_uat_unknown">"Processing user attribute of unknown type"</string>
     <string name="msg_kc_uat_bad_err">"Removing bad self certificate for user attribute"</string>
@@ -855,7 +851,7 @@
     <string name="msg_kc_uat_revoke_old">"Removing outdated revocation certificate for user attribute"</string>
     <string name="msg_kc_uat_no_cert">"No valid self-certificate found for user attribute, removing from ring"</string>
     <string name="msg_kc_uat_remove">"Removing invalid user attribute"</string>
-    <string name="msg_kc_uat_warn_encoding">"User id does not verify as UTF-8!"</string>
+    <string name="msg_kc_uat_warn_encoding">"User ID does not verify as UTF-8!"</string>
 
     <!-- Keyring merging log entries -->
     <string name="msg_mg_error_secret_dummy">"New public subkey found, but secret subkey dummy generation is not supported!"</string>
@@ -1028,7 +1024,7 @@
     <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
     <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
-    <string name="msg_vl_clear_meta_size">"Filesize: %s"</string>
+    <string name="msg_vl_clear_meta_size">"File size: %s"</string>
     <string name="msg_vl_clear_signature_check">"Verifying signature data"</string>
     <string name="msg_vl_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_vl_ok">"OK"</string>
@@ -1180,6 +1176,13 @@
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 
+    <!-- Messages for Export Log operation -->
+    <string name="msg_export_log_start">"Exporting log"</string>
+    <string name="msg_export_log_error_fopen">"Error opening file"</string>
+    <string name="msg_export_log_error_no_file">"No file name specified!"</string>
+    <string name="msg_export_log_error_writing">"I/O error writing to file!"</string>
+    <string name="msg_export_log_success">"Log exported successfully!"</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>
     <string name="passp_cache_notif_n_keys">"OpenKeychain has cached %d passphrases"</string>
@@ -1201,11 +1204,10 @@
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
-    <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for certification which match what you expected."</string>
+    <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for confirmation which match what you expected."</string>
     <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
     <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
-    <string name="label_verify_status">"Verification Status"</string>
     <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>

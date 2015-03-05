@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 public class UserIdsAdapter extends UserAttributesAdapter {
     protected LayoutInflater mInflater;
@@ -127,7 +128,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.REVOKED, R.color.bg_gray);
 
             // disable revoked user ids
             vName.setEnabled(false);
@@ -149,13 +150,13 @@ public class UserIdsAdapter extends UserAttributesAdapter {
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         }

@@ -25,11 +25,14 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -97,62 +100,63 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
 
         final CheckBox noExpiry = (CheckBox) view.findViewById(R.id.edit_subkey_expiry_no_expiry);
         final DatePicker datePicker = (DatePicker) view.findViewById(R.id.edit_subkey_expiry_date_picker);
+        final TextView currentExpiry = (TextView) view.findViewById(R.id.edit_subkey_expiry_current_expiry);
+        final LinearLayout expiryLayout = (LinearLayout) view.findViewById(R.id.edit_subkey_expiry_layout);
 
         noExpiry.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    datePicker.setVisibility(View.GONE);
+                    expiryLayout.setVisibility(View.GONE);
                 } else {
-                    datePicker.setVisibility(View.VISIBLE);
+                    expiryLayout.setVisibility(View.VISIBLE);
                 }
             }
         });
 
-        // init date picker with default selected date
         if (expiry == 0L) {
             noExpiry.setChecked(true);
-            datePicker.setVisibility(View.GONE);
+            expiryLayout.setVisibility(View.GONE);
 
-            Calendar todayCal = Calendar.getInstance(TimeZone.getDefault());
-            if (creationCal.after(todayCal)) {
-                // Note: This is just for the rare cases where creation is _after_ today
-
-                // set it to creation date +1 day (don't set it to creationCal, it would break crash
-                // datePicker.setMinDate() execution with IllegalArgumentException
-                Calendar creationCalPlusOne = (Calendar) creationCal.clone();
-                creationCalPlusOne.add(Calendar.DAY_OF_YEAR, 1);
-                datePicker.init(
-                        creationCalPlusOne.get(Calendar.YEAR),
-                        creationCalPlusOne.get(Calendar.MONTH),
-                        creationCalPlusOne.get(Calendar.DAY_OF_MONTH),
-                        null
-                );
-
-            } else {
-                // normally, just init with today
-                datePicker.init(
-                        todayCal.get(Calendar.YEAR),
-                        todayCal.get(Calendar.MONTH),
-                        todayCal.get(Calendar.DAY_OF_MONTH),
-                        null
-                );
-            }
+            currentExpiry.setText(R.string.btn_no_date);
         } else {
             noExpiry.setChecked(false);
-            datePicker.setVisibility(View.VISIBLE);
+            expiryLayout.setVisibility(View.VISIBLE);
 
-            // set date picker to current expiry
-            datePicker.init(
-                    expiryCal.get(Calendar.YEAR),
-                    expiryCal.get(Calendar.MONTH),
-                    expiryCal.get(Calendar.DAY_OF_MONTH),
-                    null
-            );
+            // convert from UTC to time zone of device
+            Calendar expiryCalTimeZone = (Calendar) expiryCal.clone();
+            expiryCalTimeZone.setTimeZone(TimeZone.getDefault());
+            currentExpiry.setText(DateFormat.getDateFormat(
+                    getActivity()).format(expiryCalTimeZone.getTime()));
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            datePicker.setMinDate(creationCal.getTime().getTime());
+        // date picker works based on default time zone
+        Calendar todayCal = Calendar.getInstance(TimeZone.getDefault());
+        if (creationCal.after(todayCal)) {
+            // NOTE: This is just for the rare cases where creation is _after_ today
+            // Min Date: Creation date + 1 day
+
+            Calendar creationCalPlusOne = (Calendar) creationCal.clone();
+            creationCalPlusOne.add(Calendar.DAY_OF_YEAR, 1);
+            datePicker.setMinDate(creationCalPlusOne.getTime().getTime());
+            datePicker.init(
+                    creationCalPlusOne.get(Calendar.YEAR),
+                    creationCalPlusOne.get(Calendar.MONTH),
+                    creationCalPlusOne.get(Calendar.DAY_OF_MONTH),
+                    null
+            );
+        } else {
+            // Min Date: today + 1 day
+
+            // at least one day after creation (today)
+            todayCal.add(Calendar.DAY_OF_YEAR, 1);
+            datePicker.setMinDate(todayCal.getTime().getTime());
+            datePicker.init(
+                    todayCal.get(Calendar.YEAR),
+                    todayCal.get(Calendar.MONTH),
+                    todayCal.get(Calendar.DAY_OF_MONTH),
+                    null
+            );
         }
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

@@ -22,7 +22,7 @@
 
     <item
         android:id="@+id/menu_key_view_delete"
-        android:icon="@drawable/ic_action_discard"
+        android:icon="@drawable/ic_delete_grey_24dp"
         app:showAsAction="never"
         android:title="@string/menu_delete_key" />
 

@@ -75,16 +75,15 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.ui.widget.AspectRatioImageView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 public class ViewKeyActivity extends BaseActivity implements
@@ -106,7 +105,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageButton mActionEncryptText;
     private ImageButton mActionNfc;
     private FloatingActionButton mFab;
-    private AspectRatioImageView mPhoto;
+    private ImageView mPhoto;
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
 
@@ -122,6 +121,9 @@ public class ViewKeyActivity extends BaseActivity implements
     private boolean mIsSecret = false;
     private boolean mHasEncrypt = false;
     private boolean mIsVerified = false;
+    private boolean mIsRevoked = false;
+    private boolean mIsExpired = false;
+
     private MenuItem mRefreshItem;
     private boolean mIsRefreshing;
     private Animation mRotate, mRotateSpin;
@@ -148,7 +150,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mPhoto = (AspectRatioImageView) findViewById(R.id.view_key_photo);
+        mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 
@@ -174,7 +176,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
             }
         });
-        mRotate =  AnimationUtils.loadAnimation(this, R.anim.rotate);
+        mRotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
         mRotate.setRepeatCount(Animation.INFINITE);
         mRotate.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -358,7 +360,7 @@ public class ViewKeyActivity extends BaseActivity implements
         addLinked.setVisible(mIsSecret);
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
-        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified);
+        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
 
         return true;
     }
@@ -409,12 +411,12 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{ mMasterKeyId });
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
         startCertifyIntent(intent);
     }
 
-    private void startCertifyIntent (Intent intent) {
+    private void startCertifyIntent(Intent intent) {
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this) {
             public void handleMessage(Message message) {
@@ -761,7 +763,7 @@ public class ViewKeyActivity extends BaseActivity implements
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.EXPIRY,
+            KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
             KeychainContract.KeyRings.FINGERPRINT,
@@ -771,7 +773,7 @@ public class ViewKeyActivity extends BaseActivity implements
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
     static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_EXPIRY = 4;
+    static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
     static final int INDEX_FINGERPRINT = 7;
@@ -820,9 +822,8 @@ public class ViewKeyActivity extends BaseActivity implements
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = !data.isNull(INDEX_EXPIRY)
-                            && new Date(data.getLong(INDEX_EXPIRY) * 1000).before(new Date());
+                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                     mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // if the refresh animation isn't playing
@@ -832,10 +833,10 @@ public class ViewKeyActivity extends BaseActivity implements
                         // this is done at the end of the animation otherwise
                     }
 
-                    AsyncTask<String, Void, Bitmap> photoTask =
-                            new AsyncTask<String, Void, Bitmap>() {
-                                protected Bitmap doInBackground(String... fingerprint) {
-                                    return ContactHelper.photoFromFingerprint(getContentResolver(), fingerprint[0]);
+                    AsyncTask<Long, Void, Bitmap> photoTask =
+                            new AsyncTask<Long, Void, Bitmap>() {
+                                protected Bitmap doInBackground(Long... mMasterKeyId) {
+                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(), mMasterKeyId[0], true);
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {
@@ -846,11 +847,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
                     // Note: order is important
                     int color;
-                    if (isRevoked) {
+                    if (mIsRevoked) {
                         mStatusText.setText(R.string.view_key_revoked);
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                KeyFormattingUtils.STATE_REVOKED, R.color.icons, true);
+                                State.REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -858,7 +859,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mActionNfc.setVisibility(View.GONE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (isExpired) {
+                    } else if (mIsExpired) {
                         if (mIsSecret) {
                             mStatusText.setText(R.string.view_key_expired_secret);
                         } else {
@@ -866,7 +867,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         }
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                KeyFormattingUtils.STATE_EXPIRED, R.color.icons, true);
+                                State.EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.android_red_light);
 
                         mActionEncryptFile.setVisibility(View.GONE);
@@ -879,10 +880,10 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
                         // reload qr code only if the fingerprint changed
-                        if ( !mFingerprint.equals(oldFingerprint)) {
+                        if (!mFingerprint.equals(oldFingerprint)) {
                             loadQrCode(mFingerprint);
                         }
-                        photoTask.execute(mFingerprint);
+                        photoTask.execute(mMasterKeyId);
                         mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code
@@ -926,16 +927,16 @@ public class ViewKeyActivity extends BaseActivity implements
                             mStatusText.setText(R.string.view_key_verified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    KeyFormattingUtils.STATE_VERIFIED, R.color.icons, true);
+                                    State.VERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.primary);
-                            photoTask.execute(mFingerprint);
+                            photoTask.execute(mMasterKeyId);
 
                             mFab.setVisibility(View.GONE);
                         } else {
                             mStatusText.setText(R.string.view_key_unverified);
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    KeyFormattingUtils.STATE_UNVERIFIED, R.color.icons, true);
+                                    State.UNVERIFIED, R.color.icons, true);
                             color = getResources().getColor(R.color.android_orange_light);
 
                             mFab.setVisibility(View.VISIBLE);
@@ -943,27 +944,21 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
 
                     if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mToolbar.setBackgroundColor(color);
                         mStatusBar.setBackgroundColor(color);
                         mBigToolbar.setBackgroundColor(color);
                         mPreviousColor = color;
                     } else {
                         ObjectAnimator colorFade1 =
-                                ObjectAnimator.ofObject(mToolbar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
-                        ObjectAnimator colorFade2 =
                                 ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
-                        ObjectAnimator colorFade3 =
+                        ObjectAnimator colorFade2 =
                                 ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
 
                         colorFade1.setDuration(1200);
                         colorFade2.setDuration(1200);
-                        colorFade3.setDuration(1200);
                         colorFade1.start();
                         colorFade2.start();
-                        colorFade3.start();
                         mPreviousColor = color;
                     }
 
