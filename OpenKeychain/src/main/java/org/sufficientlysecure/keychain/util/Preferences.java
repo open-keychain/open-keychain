@@ -59,12 +59,8 @@ public class Preferences {
     }
 
     public void updateSharedPreferences(Context context) {
-        // multi-process preferences
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
-        } else {
-            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
-        }
+        // multi-process safe preferences
+        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
     }
 
     public String getLanguage() {
