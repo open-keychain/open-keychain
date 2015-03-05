@@ -66,10 +66,8 @@ public abstract class LinkedCookieResource extends LinkedResource {
     }
 
     public static String generate (Context context, byte[] fingerprint, int nonce) {
-
-        return "[Verifying my PGP key: openpgp4fpr:"
-                + KeyFormattingUtils.convertFingerprintToHex(fingerprint) + "#" + Integer.toHexString(nonce) + "]";
-
+        return String.format("\"[Verifying my PGP key: openpgp4fpr:%s#%08x]\"",
+                KeyFormattingUtils.convertFingerprintToHex(fingerprint), nonce);
     }
 
     public static String generatePreview () {
