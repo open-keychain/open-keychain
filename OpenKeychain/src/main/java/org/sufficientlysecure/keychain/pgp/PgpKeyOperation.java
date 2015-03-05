@@ -1213,9 +1213,12 @@ public class PgpKeyOperation {
              * error than be ignored.
              */
             /* non-critical subpackets: */
-            hashedPacketsGen.setPreferredSymmetricAlgorithms(false, PgpConstants.PREFERRED_SYMMETRIC_ALGORITHMS);
-            hashedPacketsGen.setPreferredHashAlgorithms(false, PgpConstants.PREFERRED_HASH_ALGORITHMS);
-            hashedPacketsGen.setPreferredCompressionAlgorithms(false, PgpConstants.PREFERRED_COMPRESSION_ALGORITHMS);
+            hashedPacketsGen.setPreferredSymmetricAlgorithms(false,
+                    PgpConstants.getAsArray(PgpConstants.sPreferredSymmetricAlgorithms));
+            hashedPacketsGen.setPreferredHashAlgorithms(false,
+                    PgpConstants.getAsArray(PgpConstants.sPreferredHashAlgorithms));
+            hashedPacketsGen.setPreferredCompressionAlgorithms(false,
+                    PgpConstants.getAsArray(PgpConstants.sPreferredCompressionAlgorithms));
             hashedPacketsGen.setPrimaryUserID(false, primary);
 
             /* critical subpackets: we consider those important for a modern pgp implementation */

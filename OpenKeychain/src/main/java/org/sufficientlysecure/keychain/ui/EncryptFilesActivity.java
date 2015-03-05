@@ -205,7 +205,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         data.addOutputUris(mOutputUris);
 
         if (mUseCompression) {
-            data.setCompressionId(CompressionAlgorithmTags.ZLIB);
+            data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.getFirst());
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }

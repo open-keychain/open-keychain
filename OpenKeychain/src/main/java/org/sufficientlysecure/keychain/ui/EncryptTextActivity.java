@@ -198,7 +198,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         data.setCleartextSignature(true);
 
         if (mUseCompression) {
-            data.setCompressionId(CompressionAlgorithmTags.ZLIB);
+            data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.getFirst());
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }

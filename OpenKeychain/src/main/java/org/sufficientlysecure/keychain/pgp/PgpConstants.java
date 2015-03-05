@@ -4,6 +4,8 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 
+import java.util.LinkedList;
+
 public class PgpConstants {
 
     public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
@@ -18,27 +20,45 @@ public class PgpConstants {
         public static final int USE_PREFERRED = -1;
     }
 
-    // most preferred is first
-    public static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
-            SymmetricKeyAlgorithmTags.AES_256,
-            SymmetricKeyAlgorithmTags.AES_192,
-            SymmetricKeyAlgorithmTags.AES_128,
-            SymmetricKeyAlgorithmTags.TWOFISH
-    };
+    /*
+     * Most preferred is first
+     * These arrays are written as preferred algorithms into the keys on creation.
+     * Other implementations may choose to honor this selection.
+     *
+     * These lists also define the only algorithms which are used in OpenKeychain.
+     * We do not support algorithms such as MD5
+     */
 
-    public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
-            HashAlgorithmTags.SHA256,
-            HashAlgorithmTags.SHA512,
-            HashAlgorithmTags.SHA384,
-            HashAlgorithmTags.SHA224,
-            HashAlgorithmTags.RIPEMD160
-    };
+    public static LinkedList<Integer> sPreferredSymmetricAlgorithms = new LinkedList<>();
+    public static LinkedList<Integer> sPreferredHashAlgorithms = new LinkedList<>();
+    public static LinkedList<Integer> sPreferredCompressionAlgorithms = new LinkedList<>();
 
-    public static final int[] PREFERRED_COMPRESSION_ALGORITHMS = new int[]{
-            CompressionAlgorithmTags.ZLIB,
-            CompressionAlgorithmTags.BZIP2,
-            CompressionAlgorithmTags.ZIP
-    };
+    static {
+        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_256);
+        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_192);
+        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_128);
+        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.TWOFISH);
+
+        // NOTE: some implementations do not support SHA512, thus we choose SHA256 as default (Mailvelope?)
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA256);
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA512);
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA384);
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA224);
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA1);
+        sPreferredHashAlgorithms.add(HashAlgorithmTags.RIPEMD160);
+
+        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZLIB);
+        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.BZIP2);
+        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
+    }
+
+    public static int[] getAsArray(LinkedList<Integer> list) {
+        int[] array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i); // Watch out for NullPointerExceptions!
+        }
+        return array;
+    }
 
     /*
      * Note: s2kcount is a number between 0 and 0xff that controls the
@@ -55,15 +75,15 @@ public class PgpConstants {
      * from http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
      *
      * Bouncy Castle default: 0x60
-     * kbsriram proposes 0xc0
-     * we use 0x90, a good trade-off between usability and security against offline attacks
+     * kbsriram proposes: 0xc0
+     * OpenKeychain: 0x90
      */
     public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
     public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     public static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
     public static final int SECRET_KEY_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
-    // NOTE: only SHA1 is supported for key checksum calculations.
+    // NOTE: only SHA1 is supported for key checksum calculations in OpenPGP,
+    // see http://tools.ietf.org/html/rfc488 0#section-5.5.3
     public static final int SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO = HashAlgorithmTags.SHA1;
-
 
 }

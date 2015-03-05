@@ -227,7 +227,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
             if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED) {
                 // get most preferred
                 // TODO: get from recipients
-                algo = PgpConstants.PREFERRED_SYMMETRIC_ALGORITHMS[0];
+                algo = PgpConstants.sPreferredSymmetricAlgorithms.getFirst();
             }
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =

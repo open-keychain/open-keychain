@@ -180,15 +180,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * Returns a list of all supported hash algorithms.
      */
     public LinkedList<Integer> getSupportedHashAlgorithms() {
-        LinkedList<Integer> supported = new LinkedList<>();
-
         // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
         // choose best algo
-        for (int currentInt : PgpConstants.PREFERRED_HASH_ALGORITHMS) {
-            supported.add(currentInt);
-        }
 
-        return supported;
+        return PgpConstants.sPreferredHashAlgorithms;
     }
 
     private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo, byte[] nfcSignedHash,
