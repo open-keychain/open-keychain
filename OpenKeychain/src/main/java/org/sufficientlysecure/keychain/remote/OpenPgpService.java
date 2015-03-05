@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -259,7 +260,7 @@ public class OpenPgpService extends RemoteService {
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                    .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                    .setSignatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                     .setSignatureMasterKeyId(accSettings.getKeyId())
                     .setNfcState(nfcSignedHash, nfcCreationDate);
 
@@ -357,8 +358,8 @@ public class OpenPgpService extends RemoteService {
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                    .setCompressionId(accSettings.getCompression())
-                    .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
+                    .setCompressionId(Preferences.getPreferences(this).getDefaultFileCompression())
+                    .setSymmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                     .setEncryptionMasterKeyIds(keyIds)
                     .setFailOnMissingEncryptionKeyIds(true)
                     .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
@@ -374,7 +375,7 @@ public class OpenPgpService extends RemoteService {
                 }
 
                 // sign and encrypt
-                pseInput.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                pseInput.setSignatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setNfcState(nfcSignedHash, nfcCreationDate);
             }

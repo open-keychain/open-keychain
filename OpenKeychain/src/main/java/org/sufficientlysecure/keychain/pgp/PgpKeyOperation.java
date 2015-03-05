@@ -95,7 +95,7 @@ public class PgpKeyOperation {
             SymmetricKeyAlgorithmTags.AES_256,
             SymmetricKeyAlgorithmTags.AES_192,
             SymmetricKeyAlgorithmTags.AES_128,
-            SymmetricKeyAlgorithmTags.CAST5
+            SymmetricKeyAlgorithmTags.TWOFISH
     };
     private static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
             HashAlgorithmTags.SHA512,

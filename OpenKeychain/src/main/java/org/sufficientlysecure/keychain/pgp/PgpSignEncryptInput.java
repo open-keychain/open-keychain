@@ -12,10 +12,10 @@ public class PgpSignEncryptInput {
     protected int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
     protected String mSymmetricPassphrase = null;
-    protected int mSymmetricEncryptionAlgorithm = 0;
+    protected int mSymmetricEncryptionAlgorithm = Constants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED;
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
-    protected int mSignatureHashAlgorithm = 0;
+    protected int mSignatureHashAlgorithm = Constants.OpenKeychainHashAlgorithmTags.USE_PREFERRED;
     protected String mSignaturePassphrase = null;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected byte[] mNfcSignedHash = null;

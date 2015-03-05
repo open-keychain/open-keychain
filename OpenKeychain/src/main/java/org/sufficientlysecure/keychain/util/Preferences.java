@@ -210,6 +210,7 @@ public class Preferences {
         }
         return servers.toArray(chunks);
     }
+
     public String getPreferredKeyserver() {
         return getKeyServers()[0];
     }
@@ -246,6 +247,7 @@ public class Preferences {
         editor.putBoolean(Pref.SEARCH_KEYSERVER, searchKeyserver);
         editor.commit();
     }
+
     public void setSearchKeybase(boolean searchKeybase) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.SEARCH_KEYBASE, searchKeybase);
@@ -253,7 +255,7 @@ public class Preferences {
     }
 
     public CloudSearchPrefs getCloudSearchPrefs() {
-            return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
+        return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 getPreferredKeyserver());
     }
@@ -321,6 +323,12 @@ public class Preferences {
                             == HashAlgorithmTags.SHA512) {
                         setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
                     }
+                }
+                // fall through
+                case 5: {
+                    // use preferred hash and encryption algo setting
+                    setDefaultHashAlgorithm(Constants.OpenKeychainHashAlgorithmTags.USE_PREFERRED);
+                    setDefaultEncryptionAlgorithm(Constants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
                 }
             }
 

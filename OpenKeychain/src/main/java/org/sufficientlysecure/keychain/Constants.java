@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
@@ -77,16 +79,24 @@ public final class Constants {
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
-        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN="useNumKeypadForYubikeyPin";
+        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN = "useNumKeypadForYubikeyPin";
     }
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 4;
+        public static final int PREF_VERSION = 5;
     }
 
     public static final class key {
         public static final int none = 0;
         public static final int symmetric = -1;
+    }
+
+    public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
+        public static final int USE_PREFERRED = -1;
+    }
+
+    public static interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
+        public static final int USE_PREFERRED = -1;
     }
 }

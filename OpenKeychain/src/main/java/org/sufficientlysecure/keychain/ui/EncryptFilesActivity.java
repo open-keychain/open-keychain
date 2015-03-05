@@ -197,6 +197,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         data.addOutputUris(mOutputUris);
 
         data.setCompressionId(Preferences.getPreferences(this).getDefaultMessageCompression());
+        data.setSymmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm());
+        data.setSignatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm());
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(mUseArmor);

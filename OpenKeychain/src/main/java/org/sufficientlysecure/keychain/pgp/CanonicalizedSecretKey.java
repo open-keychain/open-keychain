@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -137,7 +138,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // It means the passphrase is empty
             return SecretKeyType.PASSPHRASE_EMPTY;
         } catch (PGPException e) {
-            HashMap<String,String> notation = getRing().getLocalNotationData();
+            HashMap<String, String> notation = getRing().getLocalNotationData();
             if (notation.containsKey("unlock.pin@sufficientlysecure.org")
                     && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
                 return SecretKeyType.PIN;
@@ -179,7 +180,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * Returns a list of all supported hash algorithms. This list is currently hardcoded to return
      * a limited set of algorithms supported by Yubikeys.
      *
-     * @return
+     * TODO: look into preferred algos of this key?
      */
     public LinkedList<Integer> getSupportedHashAlgorithms() {
         LinkedList<Integer> supported = new LinkedList<>();
@@ -187,20 +188,37 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // No support for MD5
             supported.add(HashAlgorithmTags.RIPEMD160);
-            supported.add(HashAlgorithmTags.SHA1);
+            // don't allow SHA1
             supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA256);
             supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
+            supported.add(HashAlgorithmTags.SHA512);
+            supported.add(HashAlgorithmTags.SHA256); // preferred is latest
         } else {
-            supported.add(HashAlgorithmTags.MD5);
+            // NOTE: List of hash algorithms OpenKeychain wants to support!
+
+            // don't allow MD5
             supported.add(HashAlgorithmTags.RIPEMD160);
-            supported.add(HashAlgorithmTags.SHA1);
+            // don't allow SHA1
             supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA256);
             supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
+            supported.add(HashAlgorithmTags.SHA512);
+            supported.add(HashAlgorithmTags.SHA256); // preferred is latest
+            // some application don't support SHA512, thus preferred is SHA-256 (Mailvelope?)
         }
+
+        return supported;
+    }
+
+    /**
+     * TODO: look into preferred algos of this key?
+     */
+    public static LinkedList<Integer> getSupportedEncryptionAlgorithms() {
+        LinkedList<Integer> supported = new LinkedList<>();
+
+        supported.add(SymmetricKeyAlgorithmTags.TWOFISH);
+        supported.add(SymmetricKeyAlgorithmTags.AES_128);
+        supported.add(SymmetricKeyAlgorithmTags.AES_192);
+        supported.add(SymmetricKeyAlgorithmTags.AES_256); // preferred is latest
 
         return supported;
     }
@@ -358,7 +376,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     // HACK, for TESTING ONLY!!
-    PGPPrivateKey getPrivateKey () {
+    PGPPrivateKey getPrivateKey() {
         return mPrivateKey;
     }
 

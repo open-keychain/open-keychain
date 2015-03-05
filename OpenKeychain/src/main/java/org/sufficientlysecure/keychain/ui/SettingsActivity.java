@@ -33,8 +33,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
@@ -345,12 +343,20 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private static void initializeEncryptionAlgorithm(final IntegerListPreference mEncryptionAlgorithm) {
-        int valueIds[] = {PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
-                PGPEncryptedData.AES_256, PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH,
-                PGPEncryptedData.CAST5, PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES,
-                PGPEncryptedData.IDEA,};
-        String entries[] = {"AES-128", "AES-192", "AES-256", "Blowfish", "Twofish", "CAST5",
-                "DES", "Triple DES", "IDEA",};
+        int valueIds[] = {
+                Constants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED,
+                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256,
+                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_192,
+                Constants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128,
+                Constants.OpenKeychainSymmetricKeyAlgorithmTags.TWOFISH,
+        };
+        String entries[] = {
+                "Use preferred algorithm",
+                "AES-256",
+                "AES-192",
+                "AES-128",
+                "Twofish",
+        };
         String values[] = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -372,11 +378,21 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private static void initializeHashAlgorithm(final IntegerListPreference mHashAlgorithm) {
-        int[] valueIds = new int[]{HashAlgorithmTags.RIPEMD160,
-                HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
-                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
-        String[] entries = new String[]{"RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
-                "SHA-512",};
+        int[] valueIds = new int[]{
+                Constants.OpenKeychainHashAlgorithmTags.USE_PREFERRED,
+                Constants.OpenKeychainHashAlgorithmTags.SHA512,
+                Constants.OpenKeychainHashAlgorithmTags.SHA384,
+                Constants.OpenKeychainHashAlgorithmTags.SHA256,
+                Constants.OpenKeychainHashAlgorithmTags.SHA224,
+                Constants.OpenKeychainHashAlgorithmTags.RIPEMD160,
+        };
+        String[] entries = new String[]{
+                "Use preferred algorithm",
+                "SHA-512",
+                "SHA-384",
+                "SHA-256",
+                "SHA-224",
+                "RIPEMD-160"};
         String[] values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
