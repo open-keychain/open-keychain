@@ -21,24 +21,35 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.ui.ViewKeyFragment;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+
+import java.io.IOException;
+import java.util.WeakHashMap;
+
 
 public class LinkedIdsAdapter extends UserAttributesAdapter {
     protected LayoutInflater mInflater;
+    WeakHashMap<Integer,RawLinkedIdentity> mLinkedIdentityCache = new WeakHashMap<>();
 
     public LinkedIdsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -46,104 +57,92 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
-        RawLinkedIdentity id = (RawLinkedIdentity) getItem(position);
+    public void bindView(View view, Context context, Cursor cursor) {
 
-        // TODO return different ids by type
+        RawLinkedIdentity id = getItem(cursor.getPosition());
+        ViewHolder holder = (ViewHolder) view.getTag();
+
+        int isVerified = cursor.getInt(INDEX_VERIFIED);
+        switch (isVerified) {
+            case Certs.VERIFIED_SECRET:
+                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                        null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                break;
+            case Certs.VERIFIED_SELF:
+                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                        null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                break;
+            default:
+                KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                        null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
+                break;
+        }
+
+        if (holder instanceof ViewHolderNonRaw) {
+            ((ViewHolderNonRaw) holder).setData(mContext, (LinkedIdentity) id);
+        }
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        RawLinkedIdentity id = getItem(position);
+
+        if (id instanceof LinkedIdentity) {
+            LinkedResource res = ((LinkedIdentity) id).mResource;
+            if (res instanceof DnsResource) {
+                return 1;
+            }
+        }
 
         return 0;
     }
 
     @Override
     public int getViewTypeCount() {
-        return 1;
+        return 2;
     }
 
     @Override
-    public Object getItem(int position) {
+    public RawLinkedIdentity getItem(int position) {
+        RawLinkedIdentity ret = mLinkedIdentityCache.get(position);
+        if (ret != null) {
+            return ret;
+        }
+
         Cursor c = getCursor();
         c.moveToPosition(position);
 
         byte[] data = c.getBlob(INDEX_ATTRIBUTE_DATA);
-        RawLinkedIdentity identity = RawLinkedIdentity.fromSubpacketData(data);
-
-        return identity;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        TextView vName = (TextView) view.findViewById(R.id.user_id_item_name);
-        TextView vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
-        TextView vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
-        ImageView vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
-        View vVerifiedLayout = view.findViewById(R.id.user_id_item_certified_layout);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.user_id_item_edit_image);
-        ImageView vDeleteButton = (ImageView) view.findViewById(R.id.user_id_item_delete_button);
-        vDeleteButton.setVisibility(View.GONE); // not used
-
-        String userId = cursor.getString(INDEX_USER_ID);
-        String[] splitUserId = KeyRing.splitUserId(userId);
-        if (splitUserId[0] != null) {
-            vName.setText(splitUserId[0]);
-        } else {
-            vName.setText(R.string.user_id_no_name);
-        }
-        if (splitUserId[1] != null) {
-            vAddress.setText(splitUserId[1]);
-            vAddress.setVisibility(View.VISIBLE);
-        } else {
-            vAddress.setVisibility(View.GONE);
-        }
-        if (splitUserId[2] != null) {
-            vComment.setText(splitUserId[2]);
-            vComment.setVisibility(View.VISIBLE);
-        } else {
-            vComment.setVisibility(View.GONE);
-        }
-
-        boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
-        boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-        vVerifiedLayout.setVisibility(View.VISIBLE);
-
-        if (isRevoked) {
-            // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_REVOKED, R.color.bg_gray);
-
-            // disable revoked user ids
-            vName.setEnabled(false);
-            vAddress.setEnabled(false);
-            vComment.setEnabled(false);
-        } else {
-            vName.setEnabled(true);
-            vAddress.setEnabled(true);
-            vComment.setEnabled(true);
-
-            if (isPrimary) {
-                vName.setTypeface(null, Typeface.BOLD);
-                vAddress.setTypeface(null, Typeface.BOLD);
-            } else {
-                vName.setTypeface(null, Typeface.NORMAL);
-                vAddress.setTypeface(null, Typeface.NORMAL);
-            }
-
-            int isVerified = cursor.getInt(INDEX_VERIFIED);
-            switch (isVerified) {
-                case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
-                case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
-                default:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, KeyFormattingUtils.STATE_INVALID, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
-            }
+        try {
+            ret = LinkedIdentity.fromAttributeData(data);
+            mLinkedIdentityCache.put(position, ret);
+            return ret;
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "could not read linked identity subpacket data", e);
+            return null;
         }
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
+        int type = getItemViewType(cursor.getPosition());
+        switch(type) {
+            case 0: {
+                View v = mInflater.inflate(R.layout.linked_id_item_unknown, null);
+                ViewHolder holder = new ViewHolder(v);
+                v.setTag(holder);
+                return v;
+            }
+            case 1: {
+                View v = mInflater.inflate(R.layout.linked_id_item_dns, null);
+                ViewHolder holder = new ViewHolderDns(v);
+                v.setTag(holder);
+                return v;
+            }
+            default:
+                throw new AssertionError("all cases must be covered in LinkedIdsAdapter.newView!");
+        }
     }
 
     // don't show revoked user ids, irrelevant for average users
@@ -155,4 +154,48 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
+    public Fragment getLinkedIdFragment(int position) {
+        RawLinkedIdentity id = getItem(position);
+
+        return LinkedIdViewFragment.newInstance(id);
+    }
+
+    static class ViewHolder {
+        ImageView vVerified;
+
+        ViewHolder(View view) {
+            vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
+        }
+    }
+
+    static abstract class ViewHolderNonRaw extends ViewHolder {
+        ViewHolderNonRaw(View view) {
+            super(view);
+        }
+
+        abstract void setData(Context context, LinkedIdentity id);
+    }
+
+    static class ViewHolderDns extends ViewHolderNonRaw {
+        TextView vFqdn;
+
+        ViewHolderDns(View view) {
+            super(view);
+
+            vFqdn = (TextView) view.findViewById(R.id.linked_id_dns_fqdn);
+        }
+
+        @Override
+        void setData(Context context, LinkedIdentity id) {
+            DnsResource res = (DnsResource) id.mResource;
+            vFqdn.setText(res.getFqdn());
+        }
+
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        mLinkedIdentityCache.clear();
+        super.notifyDataSetChanged();
+    }
 }

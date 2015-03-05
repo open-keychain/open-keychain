@@ -62,6 +62,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_SECRET = 204;
     private static final int KEY_RING_CERTS = 205;
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
+    private static final int KEY_RING_LINKED_IDS = 207;
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
@@ -127,6 +128,7 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/_/unified
          * key_rings/_/keys
          * key_rings/_/user_ids
+         * key_rings/_/linked_ids
          * key_rings/_/public
          * key_rings/_/secret
          * key_rings/_/certs
@@ -142,6 +144,9 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_USER_IDS,
                 KEY_RING_USER_IDS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_LINKED_IDS,
+                KEY_RING_LINKED_IDS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);
@@ -469,7 +474,8 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RINGS_USER_IDS:
-            case KEY_RING_USER_IDS: {
+            case KEY_RING_USER_IDS:
+            case KEY_RING_LINKED_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
@@ -494,13 +500,14 @@ public class KeychainProvider extends ContentProvider {
                 groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
                         + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
 
-                // for now, we only respect user ids here, so TYPE must be NULL
-                // TODO expand with KEY_RING_USER_PACKETS query type which lifts this restriction
-                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                if (match == KEY_RING_LINKED_IDS) {
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = 100");
+                } else {
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                }
 
                 // If we are searching for a particular keyring's ids, add where
-                if (match == KEY_RING_USER_IDS) {
-                    // TODO remove with the thing above
+                if (match == KEY_RING_USER_IDS || match == KEY_RING_LINKED_IDS) {
                     qb.appendWhere(" AND ");
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));

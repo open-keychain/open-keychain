@@ -48,4 +48,5 @@ public abstract class UserAttributesAdapter extends CursorAdapter {
         mCursor.moveToPosition(position);
         return mCursor.getInt(INDEX_VERIFIED);
     }
+
 }

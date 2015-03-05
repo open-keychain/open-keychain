@@ -114,6 +114,15 @@ public class WrappedUserAttribute implements Serializable {
 
     }
 
+    public byte[][] getSubpackets() {
+        UserAttributeSubpacket[] subpackets = mVector.toSubpacketArray();
+        byte[][] ret = new byte[subpackets.length][];
+        for (int i = 0; i < subpackets.length; i++) {
+            ret[i] = subpackets[i].getData();
+        }
+        return ret;
+    }
+
     private void readObjectNoData() throws ObjectStreamException {
     }
 

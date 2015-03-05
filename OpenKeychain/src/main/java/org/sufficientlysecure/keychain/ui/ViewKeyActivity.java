@@ -281,7 +281,7 @@ public class ViewKeyActivity extends BaseActivity implements
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.view_key_fragment, frag)
+                .replace(R.id.view_key_fragment, frag, "main")
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();

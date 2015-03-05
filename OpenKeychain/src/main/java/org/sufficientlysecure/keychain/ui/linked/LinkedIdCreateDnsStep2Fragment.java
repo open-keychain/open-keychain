@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -80,13 +81,13 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
      * Creates new instance of this fragment
      */
     public static LinkedIdCreateDnsStep2Fragment newInstance
-            (String uri, String proofNonce, String proofText) {
+            (String uri, int proofNonce, String proofText) {
 
         LinkedIdCreateDnsStep2Fragment frag = new LinkedIdCreateDnsStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(DOMAIN, uri);
-        args.putString(NONCE, proofNonce);
+        args.putInt(NONCE, proofNonce);
         args.putString(TEXT, proofText);
         frag.setArguments(args);
 
@@ -237,6 +238,7 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
                     mVerifiedResource = resource;
                 } else {
                     setVerifyProgress(false, false);
+                    mVerifiedResource = resource;
                     // on error, show error message
                     result.createNotify(getActivity()).show();
                 }
@@ -308,7 +310,7 @@ public class LinkedIdCreateDnsStep2Fragment extends Fragment {
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                RawLinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 

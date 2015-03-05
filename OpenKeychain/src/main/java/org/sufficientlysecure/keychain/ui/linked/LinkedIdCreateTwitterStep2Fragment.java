@@ -52,13 +52,13 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
      * Creates new instance of this fragment
      */
     public static LinkedIdCreateTwitterStep2Fragment newInstance
-            (String handle, String proofNonce, String proofText) {
+            (String handle, int proofNonce, String proofText) {
 
         LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(HANDLE, handle);
-        args.putString(NONCE, proofNonce);
+        args.putInt(NONCE, proofNonce);
         args.putString(TEXT, proofText);
         frag.setArguments(args);
 

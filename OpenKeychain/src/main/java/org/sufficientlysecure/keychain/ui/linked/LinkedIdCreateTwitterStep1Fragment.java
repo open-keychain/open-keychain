@@ -92,7 +92,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                             return;
                         }
 
-                        String proofNonce = RawLinkedIdentity.generateNonce();
+                        int proofNonce = RawLinkedIdentity.generateNonce();
                         String proofText = TwitterResource.generateText(getActivity(),
                                 mLinkedIdWizard.mFingerprint, proofNonce);
 

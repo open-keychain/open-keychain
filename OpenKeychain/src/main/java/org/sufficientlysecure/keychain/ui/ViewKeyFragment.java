@@ -20,15 +20,22 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -91,9 +98,32 @@ public class ViewKeyFragment extends LoaderFragment implements
                 showUserIdInfo(position);
             }
         });
-        mLinkedIdsCard.setVisibility(View.GONE);
+        mLinkedIds.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showLinkedId(position);
+            }
+        });
 
         return root;
+    }
+
+    private void showLinkedId(final int position) {
+        Fragment frag = mLinkedIdsAdapter.getLinkedIdFragment(position);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Transition trans = TransitionInflater.from(getActivity())
+                            .inflateTransition(R.transition.linked_id_card_trans);
+            // setSharedElementReturnTransition(trans);
+            setExitTransition(new Fade());
+            frag.setSharedElementEnterTransition(trans);
+        }
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.view_key_fragment, frag)
+                .addSharedElement(mLinkedIdsCard, "card_linked_ids")
+                .addToBackStack(null)
+                .commit();
     }
 
     private void showUserIdInfo(final int position) {
@@ -140,10 +170,8 @@ public class ViewKeyFragment extends LoaderFragment implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        // TODO Is this loader the same as the one in the activity?
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

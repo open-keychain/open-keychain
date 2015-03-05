@@ -72,7 +72,7 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
                     return;
                 }
 
-                String proofNonce = RawLinkedIdentity.generateNonce();
+                int proofNonce = RawLinkedIdentity.generateNonce();
                 String proofText = GenericHttpsResource.generateText(getActivity(),
                         mLinkedIdWizard.mFingerprint, proofNonce);
 

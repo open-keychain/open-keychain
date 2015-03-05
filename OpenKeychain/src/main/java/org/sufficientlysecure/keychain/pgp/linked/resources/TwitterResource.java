@@ -35,7 +35,7 @@ public class TwitterResource extends LinkedCookieResource {
         super(flags, params, uri);
     }
 
-    public static String generateText (Context context, byte[] fingerprint, String nonce) {
+    public static String generateText (Context context, byte[] fingerprint, int nonce) {
         // nothing special here for now, might change this later
         return LinkedCookieResource.generate(context, fingerprint, nonce);
     }

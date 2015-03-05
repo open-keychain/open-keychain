@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -83,13 +84,13 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
      * Creates new instance of this fragment
      */
     public static LinkedIdCreateHttpsStep2Fragment newInstance
-            (String uri, String proofNonce, String proofText) {
+            (String uri, int proofNonce, String proofText) {
 
         LinkedIdCreateHttpsStep2Fragment frag = new LinkedIdCreateHttpsStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(URI, uri);
-        args.putString(NONCE, proofNonce);
+        args.putInt(NONCE, proofNonce);
         args.putString(TEXT, proofText);
         frag.setArguments(args);
 
@@ -315,7 +316,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                RawLinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 
