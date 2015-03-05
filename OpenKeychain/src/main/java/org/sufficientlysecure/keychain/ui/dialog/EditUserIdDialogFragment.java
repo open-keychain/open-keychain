@@ -35,8 +35,7 @@ public class EditUserIdDialogFragment extends DialogFragment {
     private static final String ARG_IS_REVOKED = "is_revoked";
     private static final String ARG_IS_REVOKED_PENDING = "is_revoked_pending";
 
-    public static final int MESSAGE_CHANGE_PRIMARY_USER_ID = 1;
-    public static final int MESSAGE_REVOKE = 2;
+    public static enum MESSAGE{CHANGE_PRIMARY_USER_ID,REVOKE}
 
     private Messenger mMessenger;
 
@@ -76,7 +75,7 @@ public class EditUserIdDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            sendMessageToHandler(MESSAGE_REVOKE, null);
+                            sendMessageToHandler(MESSAGE.REVOKE, null);
                             break;
                         default:
                             break;
@@ -93,10 +92,10 @@ public class EditUserIdDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int which) {
                     switch (which) {
                         case 0:
-                            sendMessageToHandler(MESSAGE_CHANGE_PRIMARY_USER_ID, null);
+                            sendMessageToHandler(MESSAGE.CHANGE_PRIMARY_USER_ID, null);
                             break;
                         case 1:
-                            sendMessageToHandler(MESSAGE_REVOKE, null);
+                            sendMessageToHandler(MESSAGE.REVOKE, null);
                             break;
                         default:
                             break;
@@ -120,9 +119,9 @@ public class EditUserIdDialogFragment extends DialogFragment {
      *
      * @param what Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what, Bundle data) {
+    private void sendMessageToHandler(MESSAGE what, Bundle data) {
         Message msg = Message.obtain();
-        msg.what = what;
+        msg.what = what.ordinal()+1;
         if (data != null) {
             msg.setData(data);
         }

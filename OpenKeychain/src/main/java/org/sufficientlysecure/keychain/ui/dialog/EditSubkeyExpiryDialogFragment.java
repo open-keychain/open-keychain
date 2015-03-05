@@ -47,8 +47,8 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
     private static final String ARG_CREATION = "creation";
     private static final String ARG_EXPIRY = "expiry";
 
-    public static final int MESSAGE_NEW_EXPIRY = 1;
-    public static final int MESSAGE_CANCEL = 2;
+    public static enum MESSAGE{NEW_EXPIRY,CANCEL}
+
     public static final String MESSAGE_DATA_EXPIRY = "expiry";
 
     private Messenger mMessenger;
@@ -185,7 +185,7 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
 
                 Bundle data = new Bundle();
                 data.putSerializable(MESSAGE_DATA_EXPIRY, expiry);
-                sendMessageToHandler(MESSAGE_NEW_EXPIRY, data);
+                sendMessageToHandler(MESSAGE.NEW_EXPIRY, data);
             }
         });
 
@@ -204,7 +204,7 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         super.onCancel(dialog);
 
         dismiss();
-        sendMessageToHandler(MESSAGE_CANCEL, null);
+        sendMessageToHandler(MESSAGE.CANCEL, null);
     }
 
     /**
@@ -212,9 +212,9 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
      *
      * @param what Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what, Bundle data) {
+    private void sendMessageToHandler(MESSAGE what, Bundle data) {
         Message msg = Message.obtain();
-        msg.what = what;
+        msg.what = what.ordinal()+1;
         if (data != null) {
             msg.setData(data);
         }

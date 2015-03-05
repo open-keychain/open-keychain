@@ -55,8 +55,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_NAME = "name";
 
-    public static final int MESSAGE_OKAY = 1;
-    public static final int MESSAGE_CANCEL = 2;
+    public static enum MESSAGE{OKAY,CANCEL}
 
     public static final String MESSAGE_DATA_USER_ID = "user_id";
 
@@ -144,7 +143,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
                 String userId = KeyRing.createUserId(mName.getText().toString(),
                         mEmail.getText().toString(), mComment.getText().toString());
                 data.putString(MESSAGE_DATA_USER_ID, userId);
-                sendMessageToHandler(MESSAGE_OKAY, data);
+                sendMessageToHandler(MESSAGE.OKAY, data);
             }
         });
 
@@ -194,7 +193,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         super.onCancel(dialog);
 
         dismiss();
-        sendMessageToHandler(MESSAGE_CANCEL);
+        sendMessageToHandler(MESSAGE.CANCEL);
     }
 
     @Override
@@ -240,9 +239,9 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
      *
      * @param what Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what) {
+    private void sendMessageToHandler(MESSAGE what) {
         Message msg = Message.obtain();
-        msg.what = what;
+        msg.what = what.ordinal()+1;
 
         try {
             mMessenger.send(msg);
@@ -258,9 +257,9 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
      *
      * @param what Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what, Bundle data) {
+    private void sendMessageToHandler(MESSAGE what, Bundle data) {
         Message msg = Message.obtain();
-        msg.what = what;
+        msg.what = what.ordinal()+1;
         if (data != null) {
             msg.setData(data);
         }

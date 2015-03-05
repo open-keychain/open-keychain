@@ -32,9 +32,8 @@ import org.sufficientlysecure.keychain.util.Log;
 public class EditSubkeyDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
 
-    public static final int MESSAGE_CHANGE_EXPIRY = 1;
-    public static final int MESSAGE_REVOKE = 2;
-    public static final int MESSAGE_STRIP = 3;
+    public static enum MESSAGE{CHANGE_EXPIRY,REVOKE,STRIP}
+
 
     private Messenger mMessenger;
 
@@ -68,13 +67,13 @@ public class EditSubkeyDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-                        sendMessageToHandler(MESSAGE_CHANGE_EXPIRY, null);
+                        sendMessageToHandler(MESSAGE.CHANGE_EXPIRY, null);
                         break;
                     case 1:
-                        sendMessageToHandler(MESSAGE_REVOKE, null);
+                        sendMessageToHandler(MESSAGE.REVOKE, null);
                         break;
                     case 2:
-                        sendMessageToHandler(MESSAGE_STRIP, null);
+                        sendMessageToHandler(MESSAGE.STRIP, null);
                         break;
                     default:
                         break;
@@ -96,9 +95,9 @@ public class EditSubkeyDialogFragment extends DialogFragment {
      *
      * @param what Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what, Bundle data) {
+    private void sendMessageToHandler(MESSAGE what, Bundle data) {
         Message msg = Message.obtain();
-        msg.what = what;
+        msg.what = what.ordinal()+1;
         if (data != null) {
             msg.setData(data);
         }
