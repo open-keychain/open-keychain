@@ -21,13 +21,13 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class PgpConstants {
 
-    public static LinkedList<Integer> sPreferredSymmetricAlgorithms = new LinkedList<>();
-    public static LinkedList<Integer> sPreferredHashAlgorithms = new LinkedList<>();
-    public static LinkedList<Integer> sPreferredCompressionAlgorithms = new LinkedList<>();
+    public static ArrayList<Integer> sPreferredSymmetricAlgorithms = new ArrayList<>();
+    public static ArrayList<Integer> sPreferredHashAlgorithms = new ArrayList<>();
+    public static ArrayList<Integer> sPreferredCompressionAlgorithms = new ArrayList<>();
 
     /*
      * Most preferred is first
@@ -94,7 +94,7 @@ public class PgpConstants {
         public static final int USE_PREFERRED = -1;
     }
 
-    public static int[] getAsArray(LinkedList<Integer> list) {
+    public static int[] getAsArray(ArrayList<Integer> list) {
         int[] array = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
             array[i] = list.get(i);

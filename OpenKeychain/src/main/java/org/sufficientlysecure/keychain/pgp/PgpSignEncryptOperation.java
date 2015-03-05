@@ -57,6 +57,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -207,10 +208,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
             // Use preferred hash algo
             int requestedAlgorithm = input.getSignatureHashAlgorithm();
-            LinkedList<Integer> supported = signingKey.getSupportedHashAlgorithms();
+            ArrayList<Integer> supported = signingKey.getSupportedHashAlgorithms();
             if (requestedAlgorithm == PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED) {
                 // get most preferred
-                input.setSignatureHashAlgorithm(supported.getFirst());
+                input.setSignatureHashAlgorithm(supported.get(0));
             } else if (!supported.contains(requestedAlgorithm)) {
                 log.add(LogType.MSG_PSE_ERROR_HASH_ALGO, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -227,7 +228,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
             if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED) {
                 // get most preferred
                 // TODO: get from recipients
-                algo = PgpConstants.sPreferredSymmetricAlgorithms.getFirst();
+                algo = PgpConstants.sPreferredSymmetricAlgorithms.get(0);
             }
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =

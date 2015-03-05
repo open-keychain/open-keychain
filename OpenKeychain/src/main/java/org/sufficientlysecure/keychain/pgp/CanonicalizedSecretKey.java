@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -179,7 +180,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     /**
      * Returns a list of all supported hash algorithms.
      */
-    public LinkedList<Integer> getSupportedHashAlgorithms() {
+    public ArrayList<Integer> getSupportedHashAlgorithms() {
         // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
         // choose best algo
 
