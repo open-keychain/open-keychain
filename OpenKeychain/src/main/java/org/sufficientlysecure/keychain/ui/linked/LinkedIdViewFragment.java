@@ -202,7 +202,14 @@ public class LinkedIdViewFragment extends Fragment {
         }
     }
 
-    public void verifyResource() {
+    void showButton(int which) {
+        if (mButtonSwitcher.getDisplayedChild() == which) {
+            return;
+        }
+        mButtonSwitcher.setDisplayedChild(which);
+    }
+
+    void verifyResource() {
 
         // only one at a time
         synchronized (this) {
@@ -241,10 +248,10 @@ public class LinkedIdViewFragment extends Fragment {
             protected void onPostExecute(LinkedVerifyResult result) {
                 holder.setShowProgress(false);
                 if (result.success()) {
-                    mButtonSwitcher.setDisplayedChild(2);
+                    showButton(2);
                     holder.vText.setText("Ok");
                 } else {
-                    mButtonSwitcher.setDisplayedChild(1);
+                    showButton(1);
                     holder.vText.setText("Error");
                 }
                 mInProgress = false;

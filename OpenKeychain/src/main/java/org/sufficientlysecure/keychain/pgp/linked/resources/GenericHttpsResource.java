@@ -88,9 +88,9 @@ public class GenericHttpsResource extends LinkedCookieResource {
     }
 
     public static GenericHttpsResource createNew (URI uri) {
-        HashSet<String> flags = new HashSet<String>();
+        HashSet<String> flags = new HashSet<>();
         flags.add("generic");
-        HashMap<String,String> params = new HashMap<String,String>();
+        HashMap<String,String> params = new HashMap<>();
         return create(flags, params, uri);
     }
 

@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
@@ -73,12 +74,12 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
     View mVerifyProgress;
     TextView mVerifyStatus;
 
-    String mResourceUri;
     int mResourceNonce;
+    URI mResourceUri;
     String mResourceString;
 
     // This is a resource, set AFTER it has been verified
-    GenericHttpsResource mVerifiedResource = null;
+    LinkedCookieResource mVerifiedResource = null;
 
     /**
      * Creates new instance of this fragment
@@ -97,13 +98,15 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
         return frag;
     }
 
+    GenericHttpsResource getResource() {
+        return GenericHttpsResource.createNew(mResourceUri);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.linked_create_https_fragment_step2, container, false);
 
-        mResourceUri = getArguments().getString(URI);
         mResourceNonce = getArguments().getInt(NONCE);
-        mResourceString = getArguments().getString(TEXT);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -144,8 +147,10 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
             }
         });
 
+        mResourceString = getArguments().getString(TEXT);
+
         mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
-        mEditUri.setText(mResourceUri);
+        mEditUri.setText(mResourceUri.toString());
 
         setVerifyProgress(false, null);
         mVerifyStatus.setText(R.string.linked_verify_pending);
@@ -224,32 +229,28 @@ public class LinkedIdCreateHttpsStep2Fragment extends Fragment {
     public void proofVerify() {
         setVerifyProgress(true, null);
 
-        try {
-            final GenericHttpsResource resource = GenericHttpsResource.createNew(new URI(mResourceUri));
+        final LinkedCookieResource resource = getResource();
 
-            new AsyncTask<Void,Void,LinkedVerifyResult>() {
+        new AsyncTask<Void,Void,LinkedVerifyResult>() {
 
-                @Override
-                protected LinkedVerifyResult doInBackground(Void... params) {
-                    return resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+            @Override
+            protected LinkedVerifyResult doInBackground(Void... params) {
+                return resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+            }
+
+            @Override
+            protected void onPostExecute(LinkedVerifyResult result) {
+                super.onPostExecute(result);
+                if (result.success()) {
+                    setVerifyProgress(false, true);
+                    mVerifiedResource = resource;
+                } else {
+                    setVerifyProgress(false, false);
+                    // on error, show error message
+                    result.createNotify(getActivity()).show();
                 }
-
-                @Override
-                protected void onPostExecute(LinkedVerifyResult result) {
-                    super.onPostExecute(result);
-                    if (result.success()) {
-                        setVerifyProgress(false, true);
-                        mVerifiedResource = resource;
-                    } else {
-                        setVerifyProgress(false, false);
-                        // on error, show error message
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }.execute();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+            }
+        }.execute();
 
     }
 

@@ -44,7 +44,7 @@ public class RawLinkedIdentity {
         // return Hex.toHexString(data);
 
         // debug for now
-        return 1234567;
+        return 0x8a9bad32;
     }
 
     public @DrawableRes int getDisplayIcon() {
