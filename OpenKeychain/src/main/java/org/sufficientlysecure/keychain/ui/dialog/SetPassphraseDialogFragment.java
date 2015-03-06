@@ -33,19 +33,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.*;
 import android.widget.TextView.OnEditorActionListener;
-import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
-import org.sufficientlysecure.keychain.ui.widget.PasswordEditText;
-import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
