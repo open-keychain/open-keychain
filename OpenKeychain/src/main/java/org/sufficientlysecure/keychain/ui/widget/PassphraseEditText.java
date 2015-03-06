@@ -48,6 +48,8 @@ public class PassphraseEditText extends EditText {
                 getPaddingRight() + (int) barGap + mPasswordBarWidth, getPaddingBottom());
 
         mPasswordStrengthBarView = new PasswordStrengthBarView(context, attrs);
+        mPasswordStrengthBarView.setShowGuides(false);
+
         this.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
