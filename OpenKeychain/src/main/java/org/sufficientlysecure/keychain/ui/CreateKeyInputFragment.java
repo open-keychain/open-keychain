@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.ui.widget.PasswordEditText;
+import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
@@ -39,10 +42,9 @@ public class CreateKeyInputFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
 
-    PasswordStrengthView mPassphraseStrengthView;
     AutoCompleteTextView mNameEdit;
     EmailEditText mEmailEdit;
-    PasswordEditText mPassphraseEdit;
+    PassphraseEditText mPassphraseEdit;
     EditText mPassphraseEditAgain;
     View mCreateButton;
 
@@ -68,11 +70,9 @@ public class CreateKeyInputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
 
-        mPassphraseStrengthView = (PasswordStrengthView) view.findViewById(R.id
-                .create_key_passphrase_strength);
         mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
+        mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        mPassphraseEdit = (PasswordEditText) view.findViewById(R.id.create_key_passphrase);
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
         mCreateButton = view.findViewById(R.id.create_key_button);
 
@@ -105,15 +105,6 @@ public class CreateKeyInputFragment extends Fragment {
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )
         );
-
-        // Edit text padding doesn't work via xml (http://code.google.com/p/android/issues/detail?id=77982)
-        // so we set the right padding programmatically.
-        mPassphraseEdit.setPadding(mPassphraseEdit.getPaddingLeft(),
-                mPassphraseEdit.getPaddingTop(),
-                (int) (56 * getResources().getDisplayMetrics().density),
-                mPassphraseEdit.getPaddingBottom());
-
-       mPassphraseEdit.setPasswordStrengthView(mPassphraseStrengthView);
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
