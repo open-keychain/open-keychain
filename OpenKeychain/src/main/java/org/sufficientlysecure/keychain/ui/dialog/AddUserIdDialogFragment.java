@@ -91,7 +91,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
         mComment = (EditText) view.findViewById(R.id.add_user_id_comment);
 
-        mName.setText(predefinedName);  ;
+        mName.setText(predefinedName);
 
         alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
             @Override
