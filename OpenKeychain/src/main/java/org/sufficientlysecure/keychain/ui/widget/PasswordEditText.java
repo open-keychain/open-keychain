@@ -91,10 +91,6 @@ public class PasswordEditText extends EditText {
         }
     };
 
-//    public PasswordStrengthView getPasswordStrengthView() {
-//        return passwordStrengthView;
-//    }
-
     public void setPasswordStrengthView(PasswordStrengthView mPasswordStrengthView) {
         this.passwordStrengthView = mPasswordStrengthView;
     }
