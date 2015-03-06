@@ -99,9 +99,7 @@ public class ContactHelper {
         final Account[] accounts = AccountManager.get(context).getAccounts();
         final Set<String> emailSet = new HashSet<>();
         for (Account account : accounts) {
-            if (Patterns.EMAIL_ADDRESS.matcher(account.name).matches()) {
-                emailSet.add(account.name);
-            }
+            emailSet.add(account.name);
         }
         return emailSet;
     }
