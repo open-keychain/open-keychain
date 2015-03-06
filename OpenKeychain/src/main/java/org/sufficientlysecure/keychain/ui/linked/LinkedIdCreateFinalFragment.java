@@ -33,7 +33,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     public static final String ARG_NONCE = "nonce";
     protected static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
 
-    LinkedIdWizard mLinkedIdWizard;
+    private LinkedIdWizard mLinkedIdWizard;
 
     private ImageView mVerifyImage;
     private View mVerifyProgress;
