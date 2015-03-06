@@ -43,9 +43,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 public class ContactHelper {
 
@@ -54,6 +56,17 @@ public class ContactHelper {
     public static List<String> getPossibleUserEmails(Context context) {
         Set<String> accountMails = getAccountEmails(context);
         accountMails.addAll(getMainProfileContactEmails(context));
+
+        // remove items that are not an email
+        Iterator<String> it = accountMails.iterator();
+        while (it.hasNext()) {
+            String email = it.next();
+            Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
+            if (!emailMatcher.matches()) {
+                it.remove();
+            }
+        }
+
         // now return the Set (without duplicates) as a List
         return new ArrayList<>(accountMails);
     }
@@ -62,6 +75,17 @@ public class ContactHelper {
         Set<String> accountMails = getAccountEmails(context);
         Set<String> names = getContactNamesFromEmails(context, accountMails);
         names.addAll(getMainProfileContactName(context));
+
+        // remove items that are an email
+        Iterator<String> it = names.iterator();
+        while (it.hasNext()) {
+            String email = it.next();
+            Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
+            if (emailMatcher.matches()) {
+                it.remove();
+            }
+        }
+
         return new ArrayList<>(names);
     }
 
@@ -256,7 +280,7 @@ public class ContactHelper {
     }
 
     public static Bitmap loadPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId,
-                                                 boolean highRes) {
+                                                boolean highRes) {
         if (masterKeyId == -1) {
             return null;
         }
