@@ -32,66 +32,53 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.List;
 
-public class LinkedIdCreateTwitterStep3Fragment extends Fragment {
+public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragment {
 
-    public static final String HANDLE = "uri", NONCE = "nonce", TEXT = "text", CUSTOM = "custom";
-
-    LinkedIdWizard mLinkedIdWizard;
+    public static final String ARG_HANDLE = "uri", ARG_TEXT = "text", ARG_CUSTOM = "custom";
 
     EditText mEditTweetPreview;
-    ImageView mVerifyImage;
-    View mVerifyProgress;
-    TextView mVerifyStatus;
 
     String mResourceHandle, mCustom, mFullString;
-    String mResourceNonce, mResourceString;
+    String mResourceString;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static LinkedIdCreateTwitterStep3Fragment newInstance
             (String handle, String proofNonce, String proofText, String customText) {
 
         LinkedIdCreateTwitterStep3Fragment frag = new LinkedIdCreateTwitterStep3Fragment();
 
         Bundle args = new Bundle();
-        args.putString(HANDLE, handle);
-        args.putString(NONCE, proofNonce);
-        args.putString(TEXT, proofText);
-        args.putString(CUSTOM, customText);
+        args.putString(ARG_HANDLE, handle);
+        args.putString(ARG_NONCE, proofNonce);
+        args.putString(ARG_TEXT, proofText);
+        args.putString(ARG_CUSTOM, customText);
         frag.setArguments(args);
 
         return frag;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step3, container, false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        mResourceHandle = getArguments().getString(HANDLE);
-        mResourceNonce = getArguments().getString(NONCE);
-        mResourceString = getArguments().getString(TEXT);
-        mCustom = getArguments().getString(CUSTOM);
+        mResourceHandle = getArguments().getString(ARG_HANDLE);
+        mResourceString = getArguments().getString(ARG_TEXT);
+        mCustom = getArguments().getString(ARG_CUSTOM);
 
         mFullString = mCustom.isEmpty() ? mResourceString : (mCustom + " " + mResourceString);
 
-        mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
-        mVerifyProgress = view.findViewById(R.id.verify_progress);
-        mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
 
         mEditTweetPreview = (EditText) view.findViewById(R.id.linked_create_twitter_preview);
         mEditTweetPreview.setText(mFullString);
-
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
-            }
-        });
 
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override
@@ -106,17 +93,6 @@ public class LinkedIdCreateTwitterStep3Fragment extends Fragment {
                 proofShare();
             }
         });
-
-        view.findViewById(R.id.button_verify).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofVerify();
-            }
-        });
-
-        setVerifyProgress(false, null);
-        mVerifyStatus.setText(R.string.linked_verify_pending);
-
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -133,64 +109,13 @@ public class LinkedIdCreateTwitterStep3Fragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mLinkedIdWizard = (LinkedIdWizard) getActivity();
+    LinkedCookieResource getResource() {
+        return null;
     }
 
-    public void setVerifyProgress(boolean on, Boolean success) {
-        mVerifyProgress.setVisibility(on ? View.VISIBLE : View.GONE);
-        mVerifyImage.setVisibility(on ?  View.GONE : View.VISIBLE);
-        if (success == null) {
-            mVerifyStatus.setText(R.string.linked_verifying);
-            mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout_24dp);
-            mVerifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
-                    PorterDuff.Mode.SRC_IN);
-        } else if (success) {
-            mVerifyStatus.setText(R.string.linked_verify_success);
-            mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout_24dp);
-            mVerifyImage.setColorFilter(getResources().getColor(R.color.android_green_dark),
-                    PorterDuff.Mode.SRC_IN);
-        } else {
-            mVerifyStatus.setText(R.string.linked_verify_error);
-            mVerifyImage.setImageResource(R.drawable.status_signature_unknown_cutout_24dp);
-            mVerifyImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
-                    PorterDuff.Mode.SRC_IN);
-        }
-    }
-
-    public void proofVerify() {
-        setVerifyProgress(true, null);
-
-        /*
-        try {
-            final TwitterResource resource = TwitterResource.createNew(new URI(mResourceHandle));
-
-            new AsyncTask<Void,Void,LinkedVerifyResult>() {
-
-                @Override
-                protected LinkedVerifyResult doInBackground(Void... params) {
-                    return resource.verify(mAffirmationWizard.mFingerprint, mResourceNonce);
-                }
-
-                @Override
-                protected void onPostExecute(LinkedVerifyResult result) {
-                    super.onPostExecute(result);
-                    if (result.success()) {
-                        setVerifyProgress(false, true);
-                    } else {
-                        setVerifyProgress(false, false);
-                        // on error, show error message
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }.execute();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        */
-
+    @Override
+    protected View newView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.linked_create_twitter_fragment_step3, container, false);
     }
 
     private void proofShare() {
