@@ -214,13 +214,6 @@ public class KeyListFragment extends LoaderFragment
                                 mAdapter.isAnySecretSelected());
                         break;
                     }
-                    case R.id.menu_key_list_multi_import: {
-                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        ExportHelper mExportHelper = new ExportHelper(getActivity());
-                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
-                                mAdapter.isAnySecretSelected());
-                        break;
-                    }
                     case R.id.menu_key_list_multi_select_all: {
                         // select all
                         for (int i = 0; i < mStickyList.getCount(); i++) {
