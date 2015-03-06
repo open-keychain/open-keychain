@@ -28,9 +28,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,10 +43,9 @@ import android.widget.TextView.OnEditorActionListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.regex.Matcher;
 
 public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -62,7 +58,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
     private Messenger mMessenger;
     private AutoCompleteTextView mName;
-    private AutoCompleteTextView mEmail;
+    private EmailEditText mEmail;
     private EditText mComment;
 
     public static AddUserIdDialogFragment newInstance(Messenger messenger, String predefinedName) {
@@ -99,38 +95,12 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         alert.setView(view);
 
         mName = (AutoCompleteTextView) view.findViewById(R.id.add_user_id_name);
-        mEmail = (AutoCompleteTextView) view.findViewById(R.id.add_user_id_address);
+        mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
         mComment = (EditText) view.findViewById(R.id.add_user_id_comment);
 
         mName.setText(predefinedName);
 
-        mEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String email = editable.toString();
-                if (email.length() > 0) {
-                    Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
-                    if (emailMatcher.matches()) {
-                        mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_ok, 0);
-                    } else {
-                        mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_bad, 0);
-                    }
-                } else {
-                    // remove drawable if email is empty
-                    mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
-            }
-        });
         mEmail.setThreshold(1); // Start working from first character
         mEmail.setAdapter(autoCompleteEmailAdapter);
 

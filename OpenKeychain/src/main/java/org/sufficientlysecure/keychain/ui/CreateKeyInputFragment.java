@@ -20,9 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,10 +30,10 @@ import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
+import org.sufficientlysecure.keychain.ui.widget.PasswordEditText;
 import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-
-import java.util.regex.Matcher;
 
 public class CreateKeyInputFragment extends Fragment {
 
@@ -44,8 +41,8 @@ public class CreateKeyInputFragment extends Fragment {
 
     PasswordStrengthView mPassphraseStrengthView;
     AutoCompleteTextView mNameEdit;
-    AutoCompleteTextView mEmailEdit;
-    EditText mPassphraseEdit;
+    EmailEditText mEmailEdit;
+    PasswordEditText mPassphraseEdit;
     EditText mPassphraseEditAgain;
     View mCreateButton;
 
@@ -74,8 +71,8 @@ public class CreateKeyInputFragment extends Fragment {
         mPassphraseStrengthView = (PasswordStrengthView) view.findViewById(R.id
                 .create_key_passphrase_strength);
         mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
-        mEmailEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_email);
-        mPassphraseEdit = (EditText) view.findViewById(R.id.create_key_passphrase);
+        mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
+        mPassphraseEdit = (PasswordEditText) view.findViewById(R.id.create_key_passphrase);
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
         mCreateButton = view.findViewById(R.id.create_key_button);
 
@@ -99,33 +96,7 @@ public class CreateKeyInputFragment extends Fragment {
                                 ContactHelper.getPossibleUserEmails(getActivity())
                         )
         );
-        mEmailEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String email = editable.toString();
-                if (email.length() > 0) {
-                    Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
-                    if (emailMatcher.matches()) {
-                        mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_ok, 0);
-                    } else {
-                        mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                                R.drawable.uid_mail_bad, 0);
-                    }
-                } else {
-                    // remove drawable if email is empty
-                    mEmailEdit.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                }
-            }
-        });
 
         mNameEdit.setThreshold(1); // Start working from first character
         mNameEdit.setAdapter(
@@ -141,21 +112,8 @@ public class CreateKeyInputFragment extends Fragment {
                 mPassphraseEdit.getPaddingTop(),
                 (int) (56 * getResources().getDisplayMetrics().density),
                 mPassphraseEdit.getPaddingBottom());
-        mPassphraseEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String passphrase = editable.toString();
-                mPassphraseStrengthView.setPassword(passphrase);
-            }
-        });
+       mPassphraseEdit.setPasswordStrengthView(mPassphraseStrengthView);
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override

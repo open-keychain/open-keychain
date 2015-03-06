@@ -43,6 +43,8 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.widget.PasswordEditText;
+import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
@@ -55,9 +57,10 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
     public static final String MESSAGE_NEW_PASSPHRASE = "new_passphrase";
 
     private Messenger mMessenger;
-    private EditText mPassphraseEditText;
+    private PasswordEditText mPassphraseEditText;
     private EditText mPassphraseAgainEditText;
     private CheckBox mNoPassphraseCheckBox;
+    private PasswordStrengthView mPassphraseStrengthView;
 
     /**
      * Creates new instance of this dialog fragment
@@ -97,9 +100,12 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         View view = inflater.inflate(R.layout.passphrase_repeat_dialog, null);
         alert.setView(view);
 
-        mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
+        mPassphraseEditText = (PasswordEditText) view.findViewById(R.id.passphrase_passphrase);
         mPassphraseAgainEditText = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
         mNoPassphraseCheckBox = (CheckBox) view.findViewById(R.id.passphrase_no_passphrase);
+        mPassphraseStrengthView = (PasswordStrengthView) view.findViewById(R.id.passphrase_repeat_passphrase_strength);
+        mPassphraseEditText.setPasswordStrengthView(mPassphraseStrengthView);
+
 
         if (TextUtils.isEmpty(oldPassphrase)) {
             mNoPassphraseCheckBox.setChecked(true);
