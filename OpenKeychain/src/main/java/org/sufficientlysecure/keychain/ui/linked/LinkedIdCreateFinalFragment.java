@@ -183,18 +183,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
                         return;
                     }
 
-                    result.createNotify(getActivity()).show();
-
-                    // if good -> finish, return result to showkey and display there!
-                    // Intent intent = new Intent();
-                    // intent.putExtra(OperationResult.EXTRA_RESULT, result);
-                    // getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
-
-                    // AffirmationCreateHttpsStep3Fragment frag =
-                    // AffirmationCreateHttpsStep3Fragment.newInstance(
-                    // mResourceUri, mResourceNonce, mResourceString);
-
-                    // mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
+                    getActivity().finish();
 
                 }
             }
