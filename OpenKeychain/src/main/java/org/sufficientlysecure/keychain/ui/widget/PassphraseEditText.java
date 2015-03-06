@@ -26,9 +26,6 @@ import android.util.TypedValue;
 import android.widget.EditText;
 import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthBarView;
 
-/**
- * Created by abraham on 6/3/15.
- */
 public class PassphraseEditText extends EditText {
 
     PasswordStrengthBarView mPasswordStrengthBarView;
