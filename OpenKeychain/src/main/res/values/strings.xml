@@ -11,8 +11,8 @@
     <!-- title -->
     <string name="title_select_recipients">"Select Keys"</string>
     <string name="title_select_secret_key">"Select Your Key"</string>
-    <string name="title_encrypt_text">"Encrypt Text"</string>
-    <string name="title_encrypt_files">"Encrypt Files"</string>
+    <string name="title_encrypt_text">"Encrypt"</string>
+    <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
@@ -75,6 +75,7 @@
     <string name="btn_decrypt_verify_message">"Decrypt and verify message"</string>
     <string name="btn_encrypt_file">"Encrypt and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
+    <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
     <string name="btn_save">"Save"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
@@ -87,6 +88,7 @@
     <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_lookup_key">"Lookup key"</string>
     <string name="btn_share_encrypted_signed">"Encrypt and share message"</string>
+    <string name="btn_copy_encrypted_signed">"Encrypt and copy message"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>

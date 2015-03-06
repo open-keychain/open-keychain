@@ -45,7 +45,7 @@
         android:clickable="true"
         style="?android:attr/borderlessButtonStyle"
         android:text="@string/btn_encrypt_text"
-        android:drawableRight="@drawable/ic_content_copy_grey_24dp"
+        android:drawableRight="@drawable/ic_comment_text_grey600_24dp"
         android:drawablePadding="8dp"
         android:gravity="center_vertical" />
 
