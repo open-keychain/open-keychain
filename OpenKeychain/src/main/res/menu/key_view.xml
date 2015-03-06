@@ -21,6 +21,11 @@
         android:title="@string/menu_export_key" />
 
     <item
+        android:id="@+id/menu_key_view_import_file"
+        app:showAsAction="never"
+        android:title="@string/menu_import_key" />
+
+    <item
         android:id="@+id/menu_key_view_delete"
         android:icon="@drawable/ic_delete_grey_24dp"
         app:showAsAction="never"

@@ -13,6 +13,13 @@
         tools:ignore="AppCompatResource"
         android:title="@string/menu_export_key" />
 
+    <!--Not used anywhere, but still added for future refernce-->
+    <item
+        android:id="@+id/menu_key_list_multi_import"
+        android:showAsAction="never"
+        tools:ignore="AppCompatResource"
+        android:title="@string/menu_import_key" />
+
     <item
         android:id="@+id/menu_key_list_multi_delete"
         android:showAsAction="never"

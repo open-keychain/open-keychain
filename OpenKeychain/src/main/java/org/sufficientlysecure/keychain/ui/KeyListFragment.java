@@ -214,6 +214,13 @@ public class KeyListFragment extends LoaderFragment
                                 mAdapter.isAnySecretSelected());
                         break;
                     }
+                    case R.id.menu_key_list_multi_import: {
+                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
+                        ExportHelper mExportHelper = new ExportHelper(getActivity());
+                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                                mAdapter.isAnySecretSelected());
+                        break;
+                    }
                     case R.id.menu_key_list_multi_select_all: {
                         // select all
                         for (int i = 0; i < mStickyList.getCount(); i++) {
@@ -367,7 +374,7 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Show dialog to delete key
      *
-     * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
+     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
@@ -457,6 +464,10 @@ public class KeyListFragment extends LoaderFragment
 
             case R.id.menu_key_list_export:
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                return true;
+
+            case R.id.menu_key_list_import:
+                importFile();
                 return true;
 
             case R.id.menu_key_list_debug_cons:
@@ -903,7 +914,6 @@ public class KeyListFragment extends LoaderFragment
         }
 
     }
-
 
 
 }
