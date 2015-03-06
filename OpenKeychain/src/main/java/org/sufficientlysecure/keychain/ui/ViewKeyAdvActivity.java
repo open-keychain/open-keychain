@@ -76,8 +76,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mExportHelper = new ExportHelper(this);
         mProviderHelper = new ProviderHelper(this);
 
-        mViewPager = (ViewPager) findViewById(R.id.view_key_pager);
-        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.view_key_sliding_tab_layout);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
 
         int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
