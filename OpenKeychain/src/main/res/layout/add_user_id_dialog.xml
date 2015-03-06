@@ -8,13 +8,12 @@
     android:paddingLeft="24dp"
     android:paddingRight="24dp">
 
-    <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
+    <org.sufficientlysecure.keychain.ui.widget.EmailEditText
         android:id="@+id/add_user_id_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/label_email"
         android:imeOptions="actionNext"
-        android:inputType="textAutoCorrect|textEmailAddress"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
