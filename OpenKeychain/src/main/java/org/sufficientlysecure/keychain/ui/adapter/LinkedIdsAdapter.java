@@ -125,7 +125,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public Fragment getLinkedIdFragment(int position) throws IOException {
+    public Fragment getLinkedIdFragment(int position, byte[] fingerprint) throws IOException {
         RawLinkedIdentity id = getItem(position);
 
         Integer isVerified;
@@ -137,7 +137,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             isVerified = null;
         }
 
-        return LinkedIdViewFragment.newInstance(id, isVerified);
+        return LinkedIdViewFragment.newInstance(id, isVerified, fingerprint);
     }
 
     public static class ViewHolder {

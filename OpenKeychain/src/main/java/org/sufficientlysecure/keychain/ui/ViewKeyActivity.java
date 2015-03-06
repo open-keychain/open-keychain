@@ -261,32 +261,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
         initNfc(mDataUri);
 
-        startFragment(savedInstanceState, mDataUri);
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.view_key_activity);
-    }
-
-    private void startFragment(Bundle savedInstanceState, Uri dataUri) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        // Create an instance of the fragment
-        ViewKeyFragment frag = ViewKeyFragment.newInstance(dataUri);
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.view_key_fragment, frag, "main")
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override
@@ -807,166 +786,172 @@ public class ViewKeyActivity extends BaseActivity implements
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
-                    // get name, email, and comment from USER_ID
-                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
-                    if (mainUserId[0] != null) {
-                        mName.setText(mainUserId[0]);
-                    } else {
-                        mName.setText(R.string.user_id_no_name);
-                    }
-
-                    String oldFingerprint = mFingerprint;
-                    mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
-
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                    mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
-
-                    // if the refresh animation isn't playing
-                    if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
-                        // re-create options menu based on mIsSecret, mIsVerified
-                        supportInvalidateOptionsMenu();
-                        // this is done at the end of the animation otherwise
-                    }
-
-                    AsyncTask<Long, Void, Bitmap> photoTask =
-                            new AsyncTask<Long, Void, Bitmap>() {
-                                protected Bitmap doInBackground(Long... mMasterKeyId) {
-                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(), mMasterKeyId[0], true);
-                                }
-
-                                protected void onPostExecute(Bitmap photo) {
-                                    mPhoto.setImageBitmap(photo);
-                                    mPhoto.setVisibility(View.VISIBLE);
-                                }
-                            };
-
-                    // Note: order is important
-                    int color;
-                    if (mIsRevoked) {
-                        mStatusText.setText(R.string.view_key_revoked);
-                        mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                State.REVOKED, R.color.icons, true);
-                        color = getResources().getColor(R.color.android_red_light);
-
-                        mActionEncryptFile.setVisibility(View.GONE);
-                        mActionEncryptText.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
-                        mFab.setVisibility(View.GONE);
-                        mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (mIsExpired) {
-                        if (mIsSecret) {
-                            mStatusText.setText(R.string.view_key_expired_secret);
-                        } else {
-                            mStatusText.setText(R.string.view_key_expired);
-                        }
-                        mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                State.EXPIRED, R.color.icons, true);
-                        color = getResources().getColor(R.color.android_red_light);
-
-                        mActionEncryptFile.setVisibility(View.GONE);
-                        mActionEncryptText.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
-                        mFab.setVisibility(View.GONE);
-                        mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (mIsSecret) {
-                        mStatusText.setText(R.string.view_key_my_key);
-                        mStatusImage.setVisibility(View.GONE);
-                        color = getResources().getColor(R.color.primary);
-                        // reload qr code only if the fingerprint changed
-                        if (!mFingerprint.equals(oldFingerprint)) {
-                            loadQrCode(mFingerprint);
-                        }
-                        photoTask.execute(mMasterKeyId);
-                        mQrCodeLayout.setVisibility(View.VISIBLE);
-
-                        // and place leftOf qr code
-                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
-                                mName.getLayoutParams();
-                        // remove right margin
-                        nameParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            nameParams.setMarginEnd(0);
-                        }
-                        nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
-                        mName.setLayoutParams(nameParams);
-
-                        RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
-                                mStatusText.getLayoutParams();
-                        statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            statusParams.setMarginEnd(0);
-                        }
-                        statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
-                        mStatusText.setLayoutParams(statusParams);
-
-                        mActionEncryptFile.setVisibility(View.VISIBLE);
-                        mActionEncryptText.setVisibility(View.VISIBLE);
-
-                        // invokeBeam is available from API 21
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            mActionNfc.setVisibility(View.VISIBLE);
-                        } else {
-                            mActionNfc.setVisibility(View.GONE);
-                        }
-                        mFab.setVisibility(View.VISIBLE);
-                        mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
-                    } else {
-                        mActionEncryptFile.setVisibility(View.VISIBLE);
-                        mActionEncryptText.setVisibility(View.VISIBLE);
-                        mQrCodeLayout.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
-
-                        if (mIsVerified) {
-                            mStatusText.setText(R.string.view_key_verified);
-                            mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    State.VERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.primary);
-                            photoTask.execute(mMasterKeyId);
-
-                            mFab.setVisibility(View.GONE);
-                        } else {
-                            mStatusText.setText(R.string.view_key_unverified);
-                            mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
-                                    State.UNVERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.android_orange_light);
-
-                            mFab.setVisibility(View.VISIBLE);
-                        }
-                    }
-
-                    if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mStatusBar.setBackgroundColor(color);
-                        mBigToolbar.setBackgroundColor(color);
-                        mPreviousColor = color;
-                    } else {
-                        ObjectAnimator colorFade1 =
-                                ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
-                        ObjectAnimator colorFade2 =
-                                ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
-
-                        colorFade1.setDuration(1200);
-                        colorFade2.setDuration(1200);
-                        colorFade1.start();
-                        colorFade2.start();
-                        mPreviousColor = color;
-                    }
-
-                    //noinspection deprecation
-                    mStatusImage.setAlpha(80);
-
+                // if there is no data, just break
+                if (!data.moveToFirst()) {
                     break;
                 }
+
+                String oldFingerprint = mFingerprint;
+                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                byte[] fpData = data.getBlob(INDEX_FINGERPRINT);
+                mFingerprint = KeyFormattingUtils.convertFingerprintToHex(fpData);
+
+                mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
+                mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
+
+                startFragment(mIsSecret, fpData);
+
+                // get name, email, and comment from USER_ID
+                String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
+                if (mainUserId[0] != null) {
+                    mName.setText(mainUserId[0]);
+                } else {
+                    mName.setText(R.string.user_id_no_name);
+                }
+
+                // if the refresh animation isn't playing
+                if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
+                    // re-create options menu based on mIsSecret, mIsVerified
+                    supportInvalidateOptionsMenu();
+                    // this is done at the end of the animation otherwise
+                }
+
+                AsyncTask<Long, Void, Bitmap> photoTask =
+                        new AsyncTask<Long, Void, Bitmap>() {
+                            protected Bitmap doInBackground(Long... mMasterKeyId) {
+                                return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(), mMasterKeyId[0], true);
+                            }
+
+                            protected void onPostExecute(Bitmap photo) {
+                                mPhoto.setImageBitmap(photo);
+                                mPhoto.setVisibility(View.VISIBLE);
+                            }
+                        };
+
+                // Note: order is important
+                int color;
+                if (mIsRevoked) {
+                    mStatusText.setText(R.string.view_key_revoked);
+                    mStatusImage.setVisibility(View.VISIBLE);
+                    KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                            State.REVOKED, R.color.icons, true);
+                    color = getResources().getColor(R.color.android_red_light);
+
+                    mActionEncryptFile.setVisibility(View.GONE);
+                    mActionEncryptText.setVisibility(View.GONE);
+                    mActionNfc.setVisibility(View.GONE);
+                    mFab.setVisibility(View.GONE);
+                    mQrCodeLayout.setVisibility(View.GONE);
+                } else if (mIsExpired) {
+                    if (mIsSecret) {
+                        mStatusText.setText(R.string.view_key_expired_secret);
+                    } else {
+                        mStatusText.setText(R.string.view_key_expired);
+                    }
+                    mStatusImage.setVisibility(View.VISIBLE);
+                    KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                            State.EXPIRED, R.color.icons, true);
+                    color = getResources().getColor(R.color.android_red_light);
+
+                    mActionEncryptFile.setVisibility(View.GONE);
+                    mActionEncryptText.setVisibility(View.GONE);
+                    mActionNfc.setVisibility(View.GONE);
+                    mFab.setVisibility(View.GONE);
+                    mQrCodeLayout.setVisibility(View.GONE);
+                } else if (mIsSecret) {
+                    mStatusText.setText(R.string.view_key_my_key);
+                    mStatusImage.setVisibility(View.GONE);
+                    color = getResources().getColor(R.color.primary);
+                    // reload qr code only if the fingerprint changed
+                    if (!mFingerprint.equals(oldFingerprint)) {
+                        loadQrCode(mFingerprint);
+                    }
+                    photoTask.execute(mMasterKeyId);
+                    mQrCodeLayout.setVisibility(View.VISIBLE);
+
+                    // and place leftOf qr code
+                    RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
+                            mName.getLayoutParams();
+                    // remove right margin
+                    nameParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        nameParams.setMarginEnd(0);
+                    }
+                    nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+                    mName.setLayoutParams(nameParams);
+
+                    RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
+                            mStatusText.getLayoutParams();
+                    statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        statusParams.setMarginEnd(0);
+                    }
+                    statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+                    mStatusText.setLayoutParams(statusParams);
+
+                    mActionEncryptFile.setVisibility(View.VISIBLE);
+                    mActionEncryptText.setVisibility(View.VISIBLE);
+
+                    // invokeBeam is available from API 21
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mActionNfc.setVisibility(View.VISIBLE);
+                    } else {
+                        mActionNfc.setVisibility(View.GONE);
+                    }
+                    mFab.setVisibility(View.VISIBLE);
+                    mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
+                } else {
+                    mActionEncryptFile.setVisibility(View.VISIBLE);
+                    mActionEncryptText.setVisibility(View.VISIBLE);
+                    mQrCodeLayout.setVisibility(View.GONE);
+                    mActionNfc.setVisibility(View.GONE);
+
+                    if (mIsVerified) {
+                        mStatusText.setText(R.string.view_key_verified);
+                        mStatusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                State.VERIFIED, R.color.icons, true);
+                        color = getResources().getColor(R.color.primary);
+                        photoTask.execute(mMasterKeyId);
+
+                        mFab.setVisibility(View.GONE);
+                    } else {
+                        mStatusText.setText(R.string.view_key_unverified);
+                        mStatusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                                State.UNVERIFIED, R.color.icons, true);
+                        color = getResources().getColor(R.color.android_orange_light);
+
+                        mFab.setVisibility(View.VISIBLE);
+                    }
+                }
+
+                if (mPreviousColor == 0 || mPreviousColor == color) {
+                    mStatusBar.setBackgroundColor(color);
+                    mBigToolbar.setBackgroundColor(color);
+                    mPreviousColor = color;
+                } else {
+                    ObjectAnimator colorFade1 =
+                            ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
+                                    new ArgbEvaluator(), mPreviousColor, color);
+                    ObjectAnimator colorFade2 =
+                            ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
+                                    new ArgbEvaluator(), mPreviousColor, color);
+
+                    colorFade1.setDuration(1200);
+                    colorFade2.setDuration(1200);
+                    colorFade1.start();
+                    colorFade2.start();
+                    mPreviousColor = color;
+                }
+
+                //noinspection deprecation
+                mStatusImage.setAlpha(80);
+
+                break;
             }
         }
     }
@@ -975,4 +960,18 @@ public class ViewKeyActivity extends BaseActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
+
+    private void startFragment(boolean isSecret, byte[] fingerprint) {
+        // Create an instance of the fragment
+        ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri, isSecret, fingerprint);
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.view_key_fragment, frag, "main")
+                .commitAllowingStateLoss();
+        // do it immediately!
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
 }

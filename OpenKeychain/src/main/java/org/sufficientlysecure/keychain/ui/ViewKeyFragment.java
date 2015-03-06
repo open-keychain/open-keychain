@@ -29,7 +29,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
-import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
@@ -47,21 +46,21 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
+    private static final String ARG_FINGERPRINT = "fingerprint";
+    private static final String ARG_IS_SECRET = "is_secret";
 
     private ListView mUserIds;
 
     boolean mIsSecret = false;
 
-    private static final int LOADER_ID_UNIFIED = 0;
-    private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_LINKED_IDS = 2;
+    private static final int LOADER_ID_USER_IDS = 0;
+    private static final int LOADER_ID_LINKED_IDS = 1;
 
     private UserIdsAdapter mUserIdsAdapter;
     private LinkedIdsAdapter mLinkedIdsAdapter;
@@ -69,18 +68,38 @@ public class ViewKeyFragment extends LoaderFragment implements
     private Uri mDataUri;
     private ListView mLinkedIds;
     private CardView mLinkedIdsCard;
+    private byte[] mFingerprint;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyFragment newInstance(Uri dataUri) {
+    public static ViewKeyFragment newInstance(Uri dataUri, boolean isSecret, byte[] fingerprint) {
         ViewKeyFragment frag = new ViewKeyFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putBoolean(ARG_IS_SECRET, isSecret);
+        args.putByteArray(ARG_FINGERPRINT, fingerprint);
 
         frag.setArguments(args);
 
         return frag;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        Bundle args = getArguments();
+        Uri dataUri = args.getParcelable(ARG_DATA_URI);
+        if (dataUri == null) {
+            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            getActivity().finish();
+            return;
+        }
+        boolean isSecret = args.getBoolean(ARG_IS_SECRET);
+        byte[] fingerprint = args.getByteArray(ARG_FINGERPRINT);
+
+        loadData(dataUri, isSecret, fingerprint);
     }
 
     @Override
@@ -112,7 +131,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     private void showLinkedId(final int position) {
         Fragment frag;
         try {
-            frag = mLinkedIdsAdapter.getLinkedIdFragment(position);
+            frag = mLinkedIdsAdapter.getLinkedIdFragment(position, mFingerprint);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -149,45 +168,28 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
-            getActivity().finish();
-            return;
-        }
-
-        loadData(dataUri);
-    }
-
-
-    // These are the rows that we will retrieve.
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-    };
-
-    static final int INDEX_HAS_ANY_SECRET = 1;
-
-    private void loadData(Uri dataUri) {
+    private void loadData(Uri dataUri, boolean isSecret, byte[] fingerprint) {
         mDataUri = dataUri;
+        mIsSecret = isSecret;
+        mFingerprint = fingerprint;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        // load user ids after we know if it's a secret key
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
+        mUserIds.setAdapter(mUserIdsAdapter);
+        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+
+        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, !mIsSecret);
+        mLinkedIds.setAdapter(mLinkedIdsAdapter);
+        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
+
     }
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
         switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-            }
             case LOADER_ID_USER_IDS:
                 return UserIdsAdapter.createLoader(getActivity(), mDataUri);
 
@@ -203,28 +205,6 @@ public class ViewKeyFragment extends LoaderFragment implements
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                // Avoid NullPointerExceptions...
-                if (data.getCount() == 0) {
-                    return;
-                }
-                if (data.moveToFirst()) {
-
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-
-                    // load user ids after we know if it's a secret key
-                    mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
-                    mUserIds.setAdapter(mUserIdsAdapter);
-                    getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-
-                    mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, !mIsSecret);
-                    mLinkedIds.setAdapter(mLinkedIdsAdapter);
-                    getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
-
-                    break;
-                }
-            }
-
             case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(data);
                 break;

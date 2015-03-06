@@ -32,6 +32,14 @@
             <include layout="@layout/linked_id_item" />
 
             <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:animateLayoutChanges="true"
+                android:id="@+id/linked_id_certs">
+                </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -57,14 +65,34 @@
                     style="?android:attr/borderlessButtonStyle"
                     />
 
-                <Button
-                    android:id="@+id/verify_button"
+                <ViewAnimator
+                    android:id="@+id/button_animator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Verify"
-                    android:textColor="@color/link_text_material_light"
-                    style="?android:attr/borderlessButtonStyle"
-                    />
+                    android:inAnimation="@anim/fade_in"
+                    android:outAnimation="@anim/fade_out">
+                    <Button
+                        android:id="@+id/button_verify"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Verify"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                    <Button
+                        android:id="@+id/button_retry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Retry"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                    <Button
+                        android:id="@+id/button_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Confirm"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                </ViewAnimator>
 
             </LinearLayout>
 
