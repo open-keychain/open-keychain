@@ -2,10 +2,14 @@ package org.sufficientlysecure.keychain.ui.linked;
 
 import java.io.IOException;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -17,18 +21,26 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter.ViewHolder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class LinkedIdViewFragment extends Fragment {
@@ -36,6 +48,7 @@ public class LinkedIdViewFragment extends Fragment {
     private static final String ARG_ENCODED_LID = "encoded_lid";
     private static final String ARG_VERIFIED = "verified";
     private static final String ARG_FINGERPRINT = "fingerprint";
+    private static final String ARG_MASTER_KEY_ID = "fingerprint";
 
     private RawLinkedIdentity mLinkedId;
     private LinkedCookieResource mLinkedResource;
@@ -50,6 +63,7 @@ public class LinkedIdViewFragment extends Fragment {
     private View mCurrentCert;
     private boolean mInProgress;
     private ViewAnimator mButtonSwitcher;
+    private CertifyKeySpinner vKeySpinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +114,7 @@ public class LinkedIdViewFragment extends Fragment {
 
         vLinkedIdsCard = (CardView) root.findViewById(R.id.card_linked_ids);
         vLinkedCerts = (LinearLayout) root.findViewById(R.id.linked_id_certs);
+        vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
 
         View back = root.findViewById(R.id.back_button);
         back.setClickable(true);
@@ -180,7 +195,7 @@ public class LinkedIdViewFragment extends Fragment {
         button_confirm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Notify.createNotify(getActivity(), "confirmed!", Notify.LENGTH_LONG, Style.INFO).show();
+                certifyResource();
             }
         });
 
@@ -230,26 +245,33 @@ public class LinkedIdViewFragment extends Fragment {
             holder = (ViewHolderCert) mCurrentCert.getTag();
         }
 
+        vKeySpinner.setVisibility(View.GONE);
         holder.setShowProgress(true);
         holder.vText.setText("Verifying…");
 
         new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
-                try {
-                    Thread.sleep(1000);
+                long timer = System.currentTimeMillis();
+                LinkedVerifyResult result = mLinkedResource.verify(mFingerprint, mLinkedId.mNonce);
+
+                // ux flow: this operation should take at last a second
+                timer = System.currentTimeMillis() -timer;
+                if (timer < 1000) try {
+                    Thread.sleep(1000 -timer);
                 } catch (InterruptedException e) {
-                    // nvm
+                    // never mind
                 }
-                return mLinkedResource.verify(mFingerprint, mLinkedId.mNonce);
+
+                return result;
             }
 
             @Override
             protected void onPostExecute(LinkedVerifyResult result) {
                 holder.setShowProgress(false);
                 if (result.success()) {
-                    showButton(2);
                     holder.vText.setText("Ok");
+                    setupForConfirmation();
                 } else {
                     showButton(1);
                     holder.vText.setText("Error");
@@ -257,6 +279,68 @@ public class LinkedIdViewFragment extends Fragment {
                 mInProgress = false;
             }
         }.execute();
+
+    }
+
+    void setupForConfirmation() {
+
+        // button is 'confirm'
+        showButton(2);
+
+        vKeySpinner.setVisibility(View.VISIBLE);
+
+    }
+
+    private void certifyResource() {
+
+        Bundle data = new Bundle();
+        {
+            CertifyAction action = new CertifyAction();
+
+            // fill values for this action
+            CertifyActionsParcel parcel = new CertifyActionsParcel(vKeySpinner.getSelectedKeyId());
+            parcel.mCertifyActions.addAll(certifyActions);
+
+            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
+            /* if (mUploadKeyCheckbox.isChecked()) {
+                String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+                data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
+            } */
+        }
+
+        // Send all information needed to service to sign key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after signing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
+                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+
+                    Intent intent = new Intent();
+                    intent.putExtra(CertifyResult.EXTRA_RESULT, result);
+                    getActivity().setResult(Activity.RESULT_OK, intent);
+                    getActivity().finish();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
 
     }
 

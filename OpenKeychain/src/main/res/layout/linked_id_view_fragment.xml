@@ -21,6 +21,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
             android:orientation="vertical">
 
             <TextView
@@ -35,9 +36,17 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:animateLayoutChanges="true"
                 android:id="@+id/linked_id_certs">
                 </LinearLayout>
+
+            <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cert_key_spinner"
+                android:visibility="gone">
+            </org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner>
 
             <LinearLayout
                 android:layout_width="match_parent"
