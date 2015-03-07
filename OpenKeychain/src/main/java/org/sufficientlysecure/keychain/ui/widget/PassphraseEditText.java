@@ -24,6 +24,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.EditText;
+
 import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthBarView;
 
 public class PassphraseEditText extends EditText {
@@ -40,7 +41,7 @@ public class PassphraseEditText extends EditText {
 
         barGap = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
                 getContext().getResources().getDisplayMetrics());
-        
+
         this.setPadding(getPaddingLeft(), getPaddingTop(),
                 getPaddingRight() + (int) barGap + mPasswordBarWidth, getPaddingBottom());
 
