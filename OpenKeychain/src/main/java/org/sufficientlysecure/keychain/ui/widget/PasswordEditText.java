@@ -36,44 +36,44 @@ import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.Passw
  */
 public class PasswordEditText extends EditText {
 
-    PasswordEditText passwordEditText;
-    PasswordStrengthView passwordStrengthView;
+    PasswordEditText mPasswordEditText;
+    PasswordStrengthView mPasswordStrengthView;
 
     public PasswordEditText(Context context) {
         super(context);
-        passwordEditText = this;
+        mPasswordEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        this.addTextChangedListener(textWatcher);
+        this.addTextChangedListener(mTextWatcher);
     }
 
     public PasswordEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        passwordEditText = this;
+        mPasswordEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        this.addTextChangedListener(textWatcher);
+        this.addTextChangedListener(mTextWatcher);
     }
 
     public PasswordEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        passwordEditText = this;
+        mPasswordEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        this.addTextChangedListener(textWatcher);
+        this.addTextChangedListener(mTextWatcher);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public PasswordEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        passwordEditText = this;
+        mPasswordEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        this.addTextChangedListener(textWatcher);
+        this.addTextChangedListener(mTextWatcher);
     }
 
 
-    TextWatcher textWatcher = new TextWatcher() {
+    TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -87,15 +87,12 @@ public class PasswordEditText extends EditText {
         @Override
         public void afterTextChanged(Editable editable) {
             String passphrase = editable.toString();
-            passwordStrengthView.setPassword(passphrase);
+            if (null != mPasswordStrengthView)
+                mPasswordStrengthView.setPassword(passphrase);
         }
     };
 
-//    public PasswordStrengthView getPasswordStrengthView() {
-//        return passwordStrengthView;
-//    }
-
-    public void setPasswordStrengthView(PasswordStrengthView mPasswordStrengthView) {
-        this.passwordStrengthView = mPasswordStrengthView;
+    public void setPasswordStrengthView(PasswordStrengthView passwordStrengthView) {
+        this.mPasswordStrengthView = passwordStrengthView;
     }
 }

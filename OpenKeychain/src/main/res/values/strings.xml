@@ -1245,5 +1245,7 @@
     <string name="nfc_write_succesful">Successfully written on NFC tag</string>
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
+    <string name="menu_import_all_keys">Import all keys</string>
+    <string name="menu_import_key">Import from file</string>
 
 </resources>
