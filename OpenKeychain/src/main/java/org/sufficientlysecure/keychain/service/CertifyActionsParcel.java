@@ -23,6 +23,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 
@@ -81,17 +82,11 @@ public class CertifyActionsParcel implements Parcelable {
         final public ArrayList<String> mUserIds;
         final public ArrayList<WrappedUserAttribute> mUserAttributes;
 
-        public CertifyAction(long masterKeyId, ArrayList<String> userIds) {
+        public CertifyAction(long masterKeyId, List<String> userIds,
+                List<WrappedUserAttribute> attributes) {
             mMasterKeyId = masterKeyId;
-            mUserIds = userIds;
-            mUserAttributes = null;
-        }
-
-        public CertifyAction(long masterKeyId, ArrayList<String> userIds,
-                ArrayList<WrappedUserAttribute> attributes) {
-            mMasterKeyId = masterKeyId;
-            mUserIds = userIds;
-            mUserAttributes = attributes;
+            mUserIds = new ArrayList<>(userIds);
+            mUserAttributes = new ArrayList<>(attributes);
         }
     }
 

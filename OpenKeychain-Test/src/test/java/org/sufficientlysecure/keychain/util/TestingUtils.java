@@ -2,9 +2,6 @@ package org.sufficientlysecure.keychain.util;
 
 import java.util.Random;
 
-/**
- * Created by valodim on 9/15/14.
- */
 public class TestingUtils {
     public static String genPassphrase() {
         return genPassphrase(false);

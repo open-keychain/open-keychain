@@ -163,7 +163,7 @@ public class CertifyOperationTest {
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
         CertifyResult result = op.certify(actions, null);
 
         Assert.assertTrue("certification must succeed", result.success());
@@ -213,7 +213,7 @@ public class CertifyOperationTest {
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
         CertifyResult result = op.certify(actions, null);
 
@@ -231,7 +231,7 @@ public class CertifyOperationTest {
             CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
             ArrayList<String> uids = new ArrayList<String>();
             uids.add("nonexistent");
-            actions.add(new CertifyAction(1234L, uids));
+            actions.add(new CertifyAction(1234L, uids, null));
 
             CertifyResult result = op.certify(actions, null);
 
@@ -243,7 +243,7 @@ public class CertifyOperationTest {
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(1234L);
             actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                    mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                    mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
             CertifyResult result = op.certify(actions, null);
 

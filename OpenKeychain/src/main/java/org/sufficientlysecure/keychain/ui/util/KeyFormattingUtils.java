@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.nio.ByteBuffer;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -247,6 +248,10 @@ public class KeyFormattingUtils {
             hexString = "0" + hexString;
         }
         return hexString;
+    }
+
+    public static long convertFingerprintToKeyId(byte[] fingerprint) {
+        return ByteBuffer.wrap(fingerprint, 12, 8).getLong();
     }
 
     /**
