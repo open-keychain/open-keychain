@@ -24,6 +24,9 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+
+
 /**
  * This class is a a transferable representation for a number of keyrings to
  * be certified.
@@ -76,14 +79,19 @@ public class CertifyActionsParcel implements Parcelable {
         final public long mMasterKeyId;
 
         final public ArrayList<String> mUserIds;
-
-        public CertifyAction(long masterKeyId) {
-            this(masterKeyId, null);
-        }
+        final public ArrayList<WrappedUserAttribute> mUserAttributes;
 
         public CertifyAction(long masterKeyId, ArrayList<String> userIds) {
             mMasterKeyId = masterKeyId;
             mUserIds = userIds;
+            mUserAttributes = null;
+        }
+
+        public CertifyAction(long masterKeyId, ArrayList<String> userIds,
+                ArrayList<WrappedUserAttribute> attributes) {
+            mMasterKeyId = masterKeyId;
+            mUserIds = userIds;
+            mUserAttributes = attributes;
         }
     }
 
