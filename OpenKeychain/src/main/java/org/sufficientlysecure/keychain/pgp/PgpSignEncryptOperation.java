@@ -25,7 +25,6 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPLiteralData;
@@ -58,6 +57,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -206,12 +206,12 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 
-            // check if hash algo is supported
+            // Use preferred hash algo
             int requestedAlgorithm = input.getSignatureHashAlgorithm();
-            LinkedList<Integer> supported = signingKey.getSupportedHashAlgorithms();
-            if (requestedAlgorithm == 0) {
+            ArrayList<Integer> supported = signingKey.getSupportedHashAlgorithms();
+            if (requestedAlgorithm == PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED) {
                 // get most preferred
-                input.setSignatureHashAlgorithm(supported.getLast());
+                input.setSignatureHashAlgorithm(supported.get(0));
             } else if (!supported.contains(requestedAlgorithm)) {
                 log.add(LogType.MSG_PSE_ERROR_HASH_ALGO, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -222,9 +222,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
         /* Initialize PGPEncryptedDataGenerator for later usage */
         PGPEncryptedDataGenerator cPk = null;
         if (enableEncryption) {
+
+            // Use preferred encryption algo
             int algo = input.getSymmetricEncryptionAlgorithm();
-            if (algo == 0) {
-                algo = PGPEncryptedData.AES_128;
+            if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED) {
+                // get most preferred
+                // TODO: get from recipients
+                algo = PgpConstants.sPreferredSymmetricAlgorithms.get(0);
             }
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =

@@ -30,13 +30,16 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -52,6 +55,7 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -258,8 +262,8 @@ public class OpenPgpService extends RemoteService {
                     .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
-                    .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                    .setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                    .setVersionHeader(null)
+                    .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
                     .setSignatureMasterKeyId(accSettings.getKeyId())
                     .setNfcState(nfcSignedHash, nfcCreationDate);
 
@@ -356,9 +360,9 @@ public class OpenPgpService extends RemoteService {
 
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
-                    .setVersionHeader(PgpHelper.getVersionForHeader(this))
-                    .setCompressionId(accSettings.getCompression())
-                    .setSymmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
+                    .setVersionHeader(null)
+                    .setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED)
+                    .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED)
                     .setEncryptionMasterKeyIds(keyIds)
                     .setFailOnMissingEncryptionKeyIds(true)
                     .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
@@ -374,7 +378,7 @@ public class OpenPgpService extends RemoteService {
                 }
 
                 // sign and encrypt
-                pseInput.setSignatureHashAlgorithm(accSettings.getHashAlgorithm())
+                pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
                         .setSignatureMasterKeyId(accSettings.getKeyId())
                         .setNfcState(nfcSignedHash, nfcCreationDate);
             }

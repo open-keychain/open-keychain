@@ -101,18 +101,26 @@ public class CertifyOperation extends BaseOperation {
                     continue;
                 }
 
-                if (action.mUserIds == null) {
-                    log.add(LogType.MSG_CRT_CERTIFY_ALL, 2,
-                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
-                } else {
-                    log.add(LogType.MSG_CRT_CERTIFY_SOME, 2, action.mUserIds.size(),
-                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
-                }
-
                 CanonicalizedPublicKeyRing publicRing =
                         mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
-                UncachedKeyRing certifiedKey = certificationKey.certifyUserIds(publicRing, action.mUserIds, null, null);
+                UncachedKeyRing certifiedKey = null;
+                if (action.mUserIds != null) {
+                    log.add(LogType.MSG_CRT_CERTIFY_UIDS, 2, action.mUserIds.size(),
+                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
+
+                    certifiedKey = certificationKey.certifyUserIds(
+                            publicRing, action.mUserIds, null, null);
+                }
+
+                if (action.mUserAttributes != null) {
+                    log.add(LogType.MSG_CRT_CERTIFY_UATS, 2, action.mUserAttributes.size(),
+                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
+
+                    certifiedKey = certificationKey.certifyUserAttributes(
+                            publicRing, action.mUserAttributes, null, null);
+                }
+
                 if (certifiedKey == null) {
                     certifyError += 1;
                     log.add(LogType.MSG_CRT_WARN_CERT_FAILED, 3);

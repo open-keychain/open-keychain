@@ -47,26 +47,6 @@ public class PgpHelper {
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
 
-    public static String getVersion(Context context) {
-        String version;
-        try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
-            version = pi.versionName;
-            return version;
-        } catch (NameNotFoundException e) {
-            Log.e(Constants.TAG, "Version could not be retrieved!", e);
-            return "0.0";
-        }
-    }
-
-    public static String getVersionForHeader(Context context) {
-        if(Preferences.getPreferences(context).getWriteVersionHeader()){
-            return "OpenKeychain v" + getVersion(context);
-        } else {
-            return null;
-        }
-    }
-
     /**
      * Deletes file securely by overwriting it with random data before deleting it.
      * <p/>

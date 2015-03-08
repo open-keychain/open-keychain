@@ -28,6 +28,7 @@ public interface EncryptActivityInterface {
     }
 
     public boolean isUseArmor();
+    public boolean isUseCompression();
 
     public long getSignatureKey();
     public long[] getEncryptionKeys();

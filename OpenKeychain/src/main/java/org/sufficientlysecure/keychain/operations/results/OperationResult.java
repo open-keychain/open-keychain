@@ -626,6 +626,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_ERROR_NO_DATA (LogLevel.ERROR, R.string.msg_dc_error_no_data),
         MSG_DC_ERROR_NO_KEY (LogLevel.ERROR, R.string.msg_dc_error_no_key),
         MSG_DC_ERROR_PGP_EXCEPTION (LogLevel.ERROR, R.string.msg_dc_error_pgp_exception),
+        MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO (LogLevel.ERROR, R.string.msg_dc_error_unsupported_hash_algo),
         MSG_DC_INTEGRITY_CHECK_OK (LogLevel.INFO, R.string.msg_dc_integrity_check_ok),
         MSG_DC_OK_META_ONLY (LogLevel.OK, R.string.msg_dc_ok_meta_only),
         MSG_DC_OK (LogLevel.OK, R.string.msg_dc_ok),
@@ -640,6 +641,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_TRAIL_SYM (LogLevel.DEBUG, R.string.msg_dc_trail_sym),
         MSG_DC_TRAIL_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_trail_unknown),
         MSG_DC_UNLOCKING (LogLevel.INFO, R.string.msg_dc_unlocking),
+        MSG_DC_OLD_SYMMETRIC_ENCRYPTION_ALGO (LogLevel.WARN, R.string.msg_dc_old_symmetric_encryption_algo),
 
         // verify signed literal data
         MSG_VL (LogLevel.INFO, R.string.msg_vl),
@@ -689,8 +691,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_PSE_SYMMETRIC (LogLevel.INFO, R.string.msg_pse_symmetric),
 
         MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
-        MSG_CRT_CERTIFY_ALL (LogLevel.DEBUG, R.string.msg_crt_certify_all),
-        MSG_CRT_CERTIFY_SOME (LogLevel.DEBUG, R.plurals.msg_crt_certify_some),
+        MSG_CRT_CERTIFY_UIDS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uids),
+        MSG_CRT_CERTIFY_UATS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uats),
         MSG_CRT_ERROR_SELF (LogLevel.ERROR, R.string.msg_crt_error_self),
         MSG_CRT_ERROR_MASTER_NOT_FOUND (LogLevel.ERROR, R.string.msg_crt_error_master_not_found),
         MSG_CRT_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_crt_error_nothing),

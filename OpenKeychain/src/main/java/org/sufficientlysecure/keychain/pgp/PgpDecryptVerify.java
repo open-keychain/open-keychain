@@ -563,6 +563,7 @@ public class PgpDecryptVerify extends BaseOperation {
         log.add(LogType.MSG_DC_PREP_STREAMS, indent);
 
         // we made sure above one of these two would be true
+        int symmetricEncryptionAlgo;
         if (symmetricPacketFound) {
             currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
@@ -576,6 +577,7 @@ public class PgpDecryptVerify extends BaseOperation {
             clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
             encryptedData = encryptedDataSymmetric;
 
+            symmetricEncryptionAlgo = encryptedDataSymmetric.getSymmetricAlgorithm(decryptorFactory);
         } else if (asymmetricPacketFound) {
             currentProgress += 2;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
@@ -598,6 +600,8 @@ public class PgpDecryptVerify extends BaseOperation {
                 PublicKeyDataDecryptorFactory decryptorFactory
                         = secretEncryptionKey.getDecryptorFactory(mDecryptedSessionKey);
                 clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+
+                symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
             } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
                 log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
                 DecryptVerifyResult result =
@@ -612,6 +616,11 @@ public class PgpDecryptVerify extends BaseOperation {
             log.add(
                     anyPacketFound ? LogType.MSG_DC_ERROR_NO_KEY : LogType.MSG_DC_ERROR_NO_DATA, indent + 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        // Warn about old encryption algorithms!
+        if (!PgpConstants.sPreferredSymmetricAlgorithms.contains(symmetricEncryptionAlgo)) {
+            log.add(LogType.MSG_DC_OLD_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
         }
 
         JcaPGPObjectFactory plainFact = new JcaPGPObjectFactory(clear);
@@ -811,6 +820,13 @@ public class PgpDecryptVerify extends BaseOperation {
                 } else {
                     log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
                 }
+
+                // Don't allow verification of old hash algorithms!
+                if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
+                    validSignature = false;
+                    log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                }
+
                 signatureResultBuilder.setValidSignature(validSignature);
             }
 
@@ -936,6 +952,13 @@ public class PgpDecryptVerify extends BaseOperation {
                 } else {
                     log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
                 }
+
+                // Don't allow verification of old hash algorithms!
+                if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
+                    validSignature = false;
+                    log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                }
+
                 signatureResultBuilder.setValidSignature(validSignature);
 
             } catch (SignatureException e) {
@@ -1024,6 +1047,13 @@ public class PgpDecryptVerify extends BaseOperation {
             } else {
                 log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
             }
+
+            // Don't allow verification of old hash algorithms!
+            if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
+                validSignature = false;
+                log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+            }
+
             signatureResultBuilder.setValidSignature(validSignature);
         }
 

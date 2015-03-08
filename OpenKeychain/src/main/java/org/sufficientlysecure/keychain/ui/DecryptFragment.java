@@ -243,7 +243,7 @@ public abstract class DecryptFragment extends Fragment {
 
     private void setShowAction(final long signatureKeyId) {
         mSignatureAction.setText(R.string.decrypt_result_action_show);
-        mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_action_accounts, 0);
+        mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_vpn_key_grey_24dp, 0);
         mSignatureLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

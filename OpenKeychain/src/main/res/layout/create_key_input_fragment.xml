@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -42,13 +43,12 @@
                 android:hint="@string/create_key_hint_full_name"
                 android:ems="10" />
 
-            <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
+            <org.sufficientlysecure.keychain.ui.widget.EmailEditText
                 android:id="@+id/create_key_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
-                android:inputType="textAutoCorrect|textEmailAddress"
                 android:hint="@string/label_email"
                 android:ems="10" />
 
@@ -58,17 +58,33 @@
                 android:layout_height="wrap_content"
                 android:text="@string/label_passphrase" />
 
-            <EditText
-                android:id="@+id/create_key_passphrase"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:imeOptions="actionNext"
-                android:inputType="textPassword"
-                android:hint="@string/label_passphrase"
-                android:ems="10"
-                android:layout_gravity="center_horizontal" />
+                android:layout_marginBottom="8dp">
+
+                <org.sufficientlysecure.keychain.ui.widget.PasswordEditText
+                    android:id="@+id/create_key_passphrase"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:hint="@string/label_passphrase"
+                    android:ems="10"
+                    android:layout_gravity="center_horizontal" />
+
+                <org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthBarView
+                    android:id="@+id/create_key_passphrase_strength"
+                    android:layout_width="48dp"
+                    android:layout_height="8dp"
+                    android:layout_gravity="end|center_vertical"
+                    custom:strength="medium"
+                    custom:showGuides="false"
+                    custom:color_fail="@color/android_red_light"
+                    custom:color_weak="@color/android_orange_light"
+                    custom:color_strong="@color/android_green_light" />
+
+            </FrameLayout>
 
             <EditText
                 android:id="@+id/create_key_passphrase_again"

@@ -678,9 +678,6 @@ public class KeyListFragment extends LoaderFragment
 
         /**
          * Bind cursor data to the item list view
-         * <p/>
-         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method.
-         * Thus no ViewHolder is required here.
          */
         @Override
         public void bindView(View view, Context context, Cursor cursor) {

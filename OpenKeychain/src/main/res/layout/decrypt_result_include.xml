@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="Show"
-                android:drawableRight="@drawable/ic_action_accounts"
+                android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
                 style="@style/SelectableItem" />

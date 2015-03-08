@@ -20,11 +20,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 
@@ -59,12 +55,8 @@ public class Preferences {
     }
 
     public void updateSharedPreferences(Context context) {
-        // multi-process preferences
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
-        } else {
-            mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
-        }
+        // multi-process safe preferences
+        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
     }
 
     public String getLanguage() {
@@ -100,60 +92,6 @@ public class Preferences {
     public void setPassphraseCacheSubs(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.PASSPHRASE_CACHE_SUBS, value);
-        editor.commit();
-    }
-
-    public int getDefaultEncryptionAlgorithm() {
-        return mSharedPreferences.getInt(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM,
-                PGPEncryptedData.AES_256);
-    }
-
-    public void setDefaultEncryptionAlgorithm(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM, value);
-        editor.commit();
-    }
-
-    public int getDefaultHashAlgorithm() {
-        return mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM,
-                HashAlgorithmTags.SHA256);
-    }
-
-    public void setDefaultHashAlgorithm(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, value);
-        editor.commit();
-    }
-
-    public int getDefaultMessageCompression() {
-        return mSharedPreferences.getInt(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION,
-                CompressionAlgorithmTags.ZLIB);
-    }
-
-    public void setDefaultMessageCompression(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION, value);
-        editor.commit();
-    }
-
-    public int getDefaultFileCompression() {
-        return mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION,
-                CompressionAlgorithmTags.UNCOMPRESSED);
-    }
-
-    public void setDefaultFileCompression(int value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, value);
-        editor.commit();
-    }
-
-    public boolean getDefaultAsciiArmor() {
-        return mSharedPreferences.getBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, false);
-    }
-
-    public void setDefaultAsciiArmor(boolean value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, value);
         editor.commit();
     }
 
@@ -210,6 +148,7 @@ public class Preferences {
         }
         return servers.toArray(chunks);
     }
+
     public String getPreferredKeyserver() {
         return getKeyServers()[0];
     }
@@ -231,21 +170,12 @@ public class Preferences {
         editor.commit();
     }
 
-    public void setWriteVersionHeader(boolean conceal) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.WRITE_VERSION_HEADER, conceal);
-        editor.commit();
-    }
-
-    public boolean getWriteVersionHeader() {
-        return mSharedPreferences.getBoolean(Constants.Pref.WRITE_VERSION_HEADER, false);
-    }
-
     public void setSearchKeyserver(boolean searchKeyserver) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.SEARCH_KEYSERVER, searchKeyserver);
         editor.commit();
     }
+
     public void setSearchKeybase(boolean searchKeybase) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.SEARCH_KEYBASE, searchKeybase);
@@ -253,7 +183,7 @@ public class Preferences {
     }
 
     public CloudSearchPrefs getCloudSearchPrefs() {
-            return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
+        return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 getPreferredKeyserver());
     }
@@ -301,26 +231,9 @@ public class Preferences {
 
                     }
                     setKeyServers(servers.toArray(new String[servers.size()]));
-
-                    // migrate old uncompressed constant to new one
-                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_FILE_COMPRESSION, 0)
-                            == 0x21070001) {
-                        setDefaultFileCompression(CompressionAlgorithmTags.UNCOMPRESSED);
-                    }
-
-                    // migrate away from MD5
-                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0)
-                            == HashAlgorithmTags.MD5) {
-                        setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
-                    }
                 }
                 // fall through
                 case 4: {
-                    // for compatibility: change from SHA512 to SHA256
-                    if (mSharedPreferences.getInt(Constants.Pref.DEFAULT_HASH_ALGORITHM, 0)
-                            == HashAlgorithmTags.SHA512) {
-                        setDefaultHashAlgorithm(HashAlgorithmTags.SHA256);
-                    }
                 }
             }
 

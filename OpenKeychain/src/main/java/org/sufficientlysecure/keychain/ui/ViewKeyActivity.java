@@ -90,6 +90,8 @@ public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     static final int REQUEST_QR_FINGERPRINT = 1;
+    static final int REQUEST_DELETE= 2;
+    static final int REQUEST_EXPORT= 3;
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -278,54 +280,69 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        try {
-            switch (item.getItemId()) {
-                case android.R.id.home: {
-                    Intent homeIntent = new Intent(this, MainActivity.class);
-                    homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(homeIntent);
-                    return true;
-                }
-                case R.id.menu_key_view_export_file: {
-                    exportToFile(mDataUri, mExportHelper, mProviderHelper);
-                    return true;
-                }
-                case R.id.menu_key_view_delete: {
-                    deleteKey(mDataUri, mExportHelper);
-                    return true;
-                }
-                case R.id.menu_key_view_advanced: {
-                    Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
-                    advancedIntent.setData(mDataUri);
-                    startActivity(advancedIntent);
-                    return true;
-                }
-                case R.id.menu_key_view_refresh: {
-                    try {
-                        updateFromKeyserver(mDataUri, mProviderHelper);
-                    } catch (ProviderHelper.NotFoundException e) {
-                        Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
-                    }
-                    return true;
-                }
-                case R.id.menu_key_view_edit: {
-                    editKey(mDataUri);
-                    return true;
-                }
-                case R.id.menu_key_view_certify_fingerprint: {
-                    certifyFingeprint(mDataUri);
-                    return true;
-                }
-                case R.id.menu_key_view_add_linked_identity: {
-                    Intent intent = new Intent(this, LinkedIdWizard.class);
-                    intent.setData(mDataUri);
-                    startActivity(intent);
-                    return true;
-                }
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Intent homeIntent = new Intent(this, MainActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(homeIntent);
+                return true;
             }
-        } catch (ProviderHelper.NotFoundException e) {
-            Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
-            Log.e(Constants.TAG, "Key not found", e);
+            case R.id.menu_key_view_export_file: {
+                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
+                long keyId=0;
+                try {
+                    keyId = new ProviderHelper(this)
+                            .getCachedPublicKeyRing(mDataUri)
+                            .extractOrGetMasterKeyId();
+                } catch (PgpKeyNotFoundException e) {
+                    e.printStackTrace();
+                }
+                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
+                startActivityForResult(mIntent,REQUEST_EXPORT);
+                return true;
+            }
+            case R.id.menu_key_view_delete: {
+                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
+                long keyId=0;
+                try {
+                    keyId = new ProviderHelper(this)
+                            .getCachedPublicKeyRing(mDataUri)
+                            .extractOrGetMasterKeyId();
+                } catch (PgpKeyNotFoundException e) {
+                    e.printStackTrace();
+                }
+                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
+                startActivityForResult(mIntent,REQUEST_DELETE);
+                return true;
+            }
+            case R.id.menu_key_view_advanced: {
+                Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
+                advancedIntent.setData(mDataUri);
+                startActivity(advancedIntent);
+                return true;
+            }
+            case R.id.menu_key_view_refresh: {
+                try {
+                    updateFromKeyserver(mDataUri, mProviderHelper);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+                }
+                return true;
+            }
+            case R.id.menu_key_view_add_linked_identity: {
+                Intent intent = new Intent(this, LinkedIdWizard.class);
+                intent.setData(mDataUri);
+                startActivity(intent);
+                return true;
+            }
+            case R.id.menu_key_view_edit: {
+                editKey(mDataUri);
+                return true;
+            }
+            case R.id.menu_key_view_certify_fingerprint: {
+                certifyFingeprint(mDataUri);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -417,6 +434,12 @@ public class ViewKeyActivity extends BaseActivity implements
         startActivityForResult(intent, 0);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //Note:-Done due to the same weird crashes as for commitAllowingStateLoss()
+        //super.onSaveInstanceState(outState);
+    }
+
     private void showQrCodeDialog() {
         Intent qrCodeIntent = new Intent(this, QrCodeViewActivity.class);
 
@@ -489,6 +512,19 @@ public class ViewKeyActivity extends BaseActivity implements
 
             return;
         }
+
+        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK){
+            deleteKey(mDataUri, mExportHelper);
+        }
+        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
+            try {
+                exportToFile(mDataUri, mExportHelper, mProviderHelper);
+            } catch (ProviderHelper.NotFoundException e) {
+                Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+                Log.e(Constants.TAG, "Key not found", e);
+            }
+        }
+
 
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);

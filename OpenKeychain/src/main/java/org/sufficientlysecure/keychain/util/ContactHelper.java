@@ -296,7 +296,9 @@ public class ContactHelper {
         ContentResolver resolver = context.getContentResolver();
         Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
 
-//        debugDeleteRawContacts(resolver);
+        if (Constants.DEBUG_SYNC_REMOVE_CONTACTS) {
+            debugDeleteRawContacts(resolver);
+        }
 
 //        ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY_URI);
 //        ContentValues values = new ContentValues();

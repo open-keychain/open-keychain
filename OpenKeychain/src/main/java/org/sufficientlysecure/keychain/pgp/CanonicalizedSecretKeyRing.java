@@ -19,11 +19,11 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -45,7 +45,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
     public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
     {
         super(verified);
-        PGPObjectFactory factory = new PGPObjectFactory(blob);
+        JcaPGPObjectFactory factory = new JcaPGPObjectFactory(blob);
         PGPKeyRing keyRing = null;
         try {
             if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {

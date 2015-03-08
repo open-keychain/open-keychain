@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
@@ -26,6 +28,8 @@ import java.io.File;
 public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
+    public static final boolean DEBUG_LOG_DB_QUERIES = false;
+    public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
 
     public static final String TAG = "Keychain";
 
@@ -60,24 +64,17 @@ public final class Constants {
     }
 
     public static final class Pref {
-        public static final String DEFAULT_ENCRYPTION_ALGORITHM = "defaultEncryptionAlgorithm";
-        public static final String DEFAULT_HASH_ALGORITHM = "defaultHashAlgorithm";
-        public static final String DEFAULT_ASCII_ARMOR = "defaultAsciiArmor";
-        public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
-        public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_DEFAULT_VERSION = "keyServersDefaultVersion";
-        public static final String WRITE_VERSION_HEADER = "writeVersionHeader";
         public static final String FIRST_TIME = "firstTime";
-        public static final String SHOW_ADVANCED_TABS = "showAdvancedTabs";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
-        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN="useNumKeypadForYubikeyPin";
+        public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN = "useNumKeypadForYubikeyPin";
     }
 
     public static final class Defaults {
@@ -89,4 +86,5 @@ public final class Constants {
         public static final int none = 0;
         public static final int symmetric = -1;
     }
+
 }

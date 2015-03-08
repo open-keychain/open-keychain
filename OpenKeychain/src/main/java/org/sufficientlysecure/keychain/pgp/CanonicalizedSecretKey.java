@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -29,6 +30,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -44,6 +46,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -137,7 +140,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             // It means the passphrase is empty
             return SecretKeyType.PASSPHRASE_EMPTY;
         } catch (PGPException e) {
-            HashMap<String,String> notation = getRing().getLocalNotationData();
+            HashMap<String, String> notation = getRing().getLocalNotationData();
             if (notation.containsKey("unlock.pin@sufficientlysecure.org")
                     && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
                 return SecretKeyType.PIN;
@@ -176,33 +179,13 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     /**
-     * Returns a list of all supported hash algorithms. This list is currently hardcoded to return
-     * a limited set of algorithms supported by Yubikeys.
-     *
-     * @return
+     * Returns a list of all supported hash algorithms.
      */
-    public LinkedList<Integer> getSupportedHashAlgorithms() {
-        LinkedList<Integer> supported = new LinkedList<>();
+    public ArrayList<Integer> getSupportedHashAlgorithms() {
+        // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
+        // choose best algo
 
-        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            // No support for MD5
-            supported.add(HashAlgorithmTags.RIPEMD160);
-            supported.add(HashAlgorithmTags.SHA1);
-            supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA256);
-            supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
-        } else {
-            supported.add(HashAlgorithmTags.MD5);
-            supported.add(HashAlgorithmTags.RIPEMD160);
-            supported.add(HashAlgorithmTags.SHA1);
-            supported.add(HashAlgorithmTags.SHA224);
-            supported.add(HashAlgorithmTags.SHA256);
-            supported.add(HashAlgorithmTags.SHA384);
-            supported.add(HashAlgorithmTags.SHA512); // preferred is latest
-        }
-
-        return supported;
+        return PgpConstants.sPreferredHashAlgorithms;
     }
 
     private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo, byte[] nfcSignedHash,
@@ -286,7 +269,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * Certify the given pubkeyid with the given masterkeyid.
      *
      * @param publicKeyRing Keyring to add certification to.
-     * @param userIds       User IDs to certify, or all if null
+     * @param userIds       User IDs to certify
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
@@ -331,12 +314,75 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
 
         // fetch public key ring, add the certification and return it
-        Iterable<String> it = userIds != null ? userIds
-                : new IterableIterator<String>(publicKey.getUserIDs());
         try {
-            for (String userId : it) {
+            for (String userId : userIds) {
                 PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
                 publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
+            }
+        } catch (PGPException e) {
+            Log.e(Constants.TAG, "signing error", e);
+            return null;
+        }
+
+        PGPPublicKeyRing ring = PGPPublicKeyRing.insertPublicKey(publicKeyRing.getRing(), publicKey);
+
+        return new UncachedKeyRing(ring);
+    }
+
+    /**
+     * Certify the given user attributes with the given masterkeyid.
+     *
+     * @param publicKeyRing Keyring to add certification to.
+     * @param userAttributes       User IDs to certify, or all if null
+     * @return A keyring with added certifications
+     */
+    public UncachedKeyRing certifyUserAttributes(CanonicalizedPublicKeyRing publicKeyRing,
+            List<WrappedUserAttribute> userAttributes, byte[] nfcSignedHash, Date nfcCreationTimestamp) {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
+            throw new PrivateKeyNotUnlockedException();
+        }
+        if (!isMasterKey()) {
+            throw new AssertionError("tried to certify with non-master key, this is a programming error!");
+        }
+        if (publicKeyRing.getMasterKeyId() == getKeyId()) {
+            throw new AssertionError("key tried to self-certify, this is a programming error!");
+        }
+
+        // create a signatureGenerator from the supplied masterKeyId and passphrase
+        PGPSignatureGenerator signatureGenerator;
+        {
+            // TODO: SHA256 fixed?
+            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(PGPUtil.SHA256,
+                    nfcSignedHash, nfcCreationTimestamp);
+
+            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+            try {
+                signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
+            } catch (PGPException e) {
+                Log.e(Constants.TAG, "signing error", e);
+                return null;
+            }
+        }
+
+        { // supply signatureGenerator with a SubpacketVector
+            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            if (nfcCreationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            }
+            PGPSignatureSubpacketVector packetVector = spGen.generate();
+            signatureGenerator.setHashedSubpackets(packetVector);
+        }
+
+        // get the master subkey (which we certify for)
+        PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
+
+        // fetch public key ring, add the certification and return it
+        try {
+            for (WrappedUserAttribute userAttribute : userAttributes) {
+                PGPUserAttributeSubpacketVector vector = userAttribute.getVector();
+                PGPSignature sig = signatureGenerator.generateCertification(vector, publicKey);
+                publicKey = PGPPublicKey.addCertification(publicKey, vector, sig);
             }
         } catch (PGPException e) {
             Log.e(Constants.TAG, "signing error", e);
@@ -358,7 +404,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     // HACK, for TESTING ONLY!!
-    PGPPrivateKey getPrivateKey () {
+    PGPPrivateKey getPrivateKey() {
         return mPrivateKey;
     }
 

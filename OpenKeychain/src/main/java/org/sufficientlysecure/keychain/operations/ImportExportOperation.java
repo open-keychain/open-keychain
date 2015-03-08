@@ -505,10 +505,6 @@ public class ImportExportOperation extends BaseOperation {
                 // Create an output stream
                 try {
                     arOutStream = new ArmoredOutputStream(outStream);
-                    String version = PgpHelper.getVersionForHeader(mContext);
-                    if (version != null) {
-                        arOutStream.setHeader("Version", version);
-                    }
 
                     log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
@@ -533,10 +529,6 @@ public class ImportExportOperation extends BaseOperation {
                 if (exportSecret && cursor.getInt(3) > 0) {
                     try {
                         arOutStream = new ArmoredOutputStream(outStream);
-                        String version = PgpHelper.getVersionForHeader(mContext);
-                        if (version != null) {
-                            arOutStream.setHeader("Version", version);
-                        }
 
                         // export secret key part
                         log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
