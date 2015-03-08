@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
@@ -54,13 +55,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
+
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
 public class CertifyOperationTest {
-
-    static String mPassphrase = TestingUtils.genPassphrase(true);
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
     static String mKeyPhrase1 = TestingUtils.genPassphrase(true);
@@ -73,6 +75,8 @@ public class CertifyOperationTest {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         oldShadowStream = ShadowLog.stream;
         // ShadowLog.stream = System.out;
+
+        Random random = new Random();
 
         PgpKeyOperation op = new PgpKeyOperation(null);
 
@@ -102,8 +106,14 @@ public class CertifyOperationTest {
                     Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+
             parcel.mAddUserIds.add("ditz");
-            parcel.mNewUnlock = new ChangeUnlockParcel(null, "1234");
+            byte[] uatdata = new byte[random.nextInt(150)+10];
+            random.nextBytes(uatdata);
+            parcel.mAddUserAttribute.add(
+                    WrappedUserAttribute.fromSubpacket(random.nextInt(100)+1, uatdata));
+
+            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase2);
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());
@@ -140,7 +150,7 @@ public class CertifyOperationTest {
     }
 
     @Test
-    public void testCertify() throws Exception {
+    public void testCertifyId() throws Exception {
         CertifyOperation op = operationWithFakePassphraseCache(
                 mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
 
@@ -152,7 +162,8 @@ public class CertifyOperationTest {
         }
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-        actions.add(new CertifyAction(mStaticRing2.getMasterKeyId()));
+        actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
+                mStaticRing2.getPublicKey().getUnorderedUserIds()));
         CertifyResult result = op.certify(actions, null);
 
         Assert.assertTrue("certification must succeed", result.success());
@@ -167,12 +178,42 @@ public class CertifyOperationTest {
     }
 
     @Test
+    public void testCertifyAttribute() throws Exception {
+        CertifyOperation op = operationWithFakePassphraseCache(
+                mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
+
+        {
+            CanonicalizedPublicKeyRing ring = new ProviderHelper(Robolectric.application)
+                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+            Assert.assertEquals("public key must not be marked verified prior to certification",
+                    Certs.UNVERIFIED, ring.getVerified());
+        }
+
+        CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
+        actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(), null,
+                mStaticRing2.getPublicKey().getUnorderedUserAttributes()));
+        CertifyResult result = op.certify(actions, null);
+
+        Assert.assertTrue("certification must succeed", result.success());
+
+        {
+            CanonicalizedPublicKeyRing ring = new ProviderHelper(Robolectric.application)
+                    .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
+            Assert.assertEquals("new key must be verified now",
+                    Certs.VERIFIED_SECRET, ring.getVerified());
+        }
+
+    }
+
+
+    @Test
     public void testCertifySelf() throws Exception {
         CertifyOperation op = operationWithFakePassphraseCache(
                 mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-        actions.add(new CertifyAction(mStaticRing1.getMasterKeyId()));
+        actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
+                mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
         CertifyResult result = op.certify(actions, null);
 
@@ -188,7 +229,9 @@ public class CertifyOperationTest {
 
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
-            actions.add(new CertifyAction(1234L));
+            ArrayList<String> uids = new ArrayList<String>();
+            uids.add("nonexistent");
+            actions.add(new CertifyAction(1234L, uids));
 
             CertifyResult result = op.certify(actions, null);
 
@@ -199,7 +242,8 @@ public class CertifyOperationTest {
 
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(1234L);
-            actions.add(new CertifyAction(mStaticRing1.getMasterKeyId()));
+            actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
+                    mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
             CertifyResult result = op.certify(actions, null);
 
