@@ -128,10 +128,6 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
         }
     }
 
-    public long getSelectedKeyId() {
-        return mSelectedKeyId;
-    }
-
     public void setSelectedKeyId(long selectedKeyId) {
         this.mSelectedKeyId = selectedKeyId;
     }

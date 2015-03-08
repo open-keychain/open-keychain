@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
  */
 public class PassphraseDialogActivity extends FragmentActivity {
     public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
+    public static final String EXTRA_KEY_ID = "key_id";
 
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
 
@@ -413,6 +414,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
+                returnIntent.putExtra(EXTRA_KEY_ID, mSecretRing.getMasterKeyId());
+                returnIntent.putExtra(EXTRA_SUBKEY_ID, mSubKeyId);
                 getActivity().setResult(RESULT_OK, returnIntent);
             }
 

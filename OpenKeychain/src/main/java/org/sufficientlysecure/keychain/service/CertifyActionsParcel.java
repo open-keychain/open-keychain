@@ -85,8 +85,8 @@ public class CertifyActionsParcel implements Parcelable {
         public CertifyAction(long masterKeyId, List<String> userIds,
                 List<WrappedUserAttribute> attributes) {
             mMasterKeyId = masterKeyId;
-            mUserIds = new ArrayList<>(userIds);
-            mUserAttributes = new ArrayList<>(attributes);
+            mUserIds = userIds == null ? null : new ArrayList<>(userIds);
+            mUserAttributes = attributes == null ? null : new ArrayList<>(attributes);
         }
     }
 
