@@ -25,6 +25,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Patterns;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
@@ -41,6 +42,8 @@ public class EmailEditText extends AutoCompleteTextView {
         emailEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         this.addTextChangedListener(textWatcher);
+        removeFlag();
+        makeAdapter();
     }
 
     public EmailEditText(Context context, AttributeSet attrs) {
@@ -48,6 +51,8 @@ public class EmailEditText extends AutoCompleteTextView {
         emailEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         this.addTextChangedListener(textWatcher);
+        removeFlag();
+        makeAdapter();
     }
 
     public EmailEditText(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -55,6 +60,8 @@ public class EmailEditText extends AutoCompleteTextView {
         emailEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         this.addTextChangedListener(textWatcher);
+        removeFlag();
+        makeAdapter();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -63,6 +70,8 @@ public class EmailEditText extends AutoCompleteTextView {
         emailEditText = this;
         this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         this.addTextChangedListener(textWatcher);
+        removeFlag();
+        makeAdapter();
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -94,4 +103,16 @@ public class EmailEditText extends AutoCompleteTextView {
             }
         }
     };
+
+    private void makeAdapter() {
+        this.setThreshold(1); // Start working from first character
+        this.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
+                ContactHelper.getPossibleUserEmails(getContext())));
+    }
+
+    private void removeFlag() {
+        int inputType = getInputType();
+        inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
+        setRawInputType(inputType);
+    }
 }

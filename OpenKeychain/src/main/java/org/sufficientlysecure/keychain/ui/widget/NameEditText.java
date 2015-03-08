@@ -17,29 +17,35 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
-/**
- * Hack to re-enable keyboard auto correction in AutoCompleteTextView.
- * From http://stackoverflow.com/a/22512858
- */
-public class AutoCorrectAutoCompleteTextView extends AutoCompleteTextView {
+import org.sufficientlysecure.keychain.util.ContactHelper;
 
-    public AutoCorrectAutoCompleteTextView(Context context) {
+public class NameEditText extends AutoCompleteTextView {
+    public NameEditText(Context context) {
         super(context);
         removeFlag();
     }
 
-    public AutoCorrectAutoCompleteTextView(Context context, AttributeSet attrs) {
+    public NameEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         removeFlag();
     }
 
-    public AutoCorrectAutoCompleteTextView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public NameEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        removeFlag();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public NameEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         removeFlag();
     }
 
@@ -47,5 +53,12 @@ public class AutoCorrectAutoCompleteTextView extends AutoCompleteTextView {
         int inputType = getInputType();
         inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setRawInputType(inputType);
+    }
+
+    private void makeAdapter() {
+        this.setThreshold(1); // Start working from first character
+        this.setAdapter(new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_spinner_dropdown_item,
+                ContactHelper.getPossibleUserNames(getContext())));
     }
 }
