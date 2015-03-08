@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.ui.linked;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -22,9 +23,11 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.spongycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
@@ -34,21 +37,25 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter.ViewHolder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class LinkedIdViewFragment extends Fragment {
 
+    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
+
     private static final String ARG_ENCODED_LID = "encoded_lid";
     private static final String ARG_VERIFIED = "verified";
     private static final String ARG_FINGERPRINT = "fingerprint";
-    private static final String ARG_MASTER_KEY_ID = "fingerprint";
 
     private RawLinkedIdentity mLinkedId;
     private LinkedCookieResource mLinkedResource;
@@ -195,7 +202,7 @@ public class LinkedIdViewFragment extends Fragment {
         button_confirm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                certifyResource();
+                initiateCertifying();
             }
         });
 
@@ -291,15 +298,62 @@ public class LinkedIdViewFragment extends Fragment {
 
     }
 
-    private void certifyResource() {
+    private void initiateCertifying() {
+        // get the user's passphrase for this key (if required)
+        String passphrase;
+        long certifyKeyId = vKeySpinner.getSelectedItemId();
+        try {
+            passphrase = PassphraseCacheService.getCachedPassphrase(
+                    getActivity(), certifyKeyId, certifyKeyId);
+        } catch (PassphraseCacheService.KeyNotFoundException e) {
+            Log.e(Constants.TAG, "Key not found!", e);
+            getActivity().finish();
+            return;
+        }
+        if (passphrase == null) {
+            Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, certifyKeyId);
+            startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+            // bail out; need to wait until the user has entered the passphrase before trying again
+        } else {
+            certifyResource(certifyKeyId, "");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    String passphrase = data.getStringExtra(
+                            PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    long certifyKeyId = data.getLongExtra(PassphraseDialogActivity.EXTRA_KEY_ID, 0L);
+                    if (certifyKeyId == 0L) {
+                        throw new AssertionError("key id must not be 0");
+                    }
+                    certifyResource(certifyKeyId, passphrase);
+                }
+                return;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
+    private void certifyResource(long certifyKeyId, String passphrase) {
 
         Bundle data = new Bundle();
         {
-            CertifyAction action = new CertifyAction();
+
+            long masterKeyId = KeyFormattingUtils.convertFingerprintToKeyId(mFingerprint);
+            CertifyAction action = new CertifyAction(masterKeyId, null,
+                    Arrays.asList(mLinkedId.toUserAttribute()));
 
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(vKeySpinner.getSelectedKeyId());
-            parcel.mCertifyActions.addAll(certifyActions);
+            CertifyActionsParcel parcel = new CertifyActionsParcel(certifyKeyId);
+            parcel.mCertifyActions.addAll(Arrays.asList(action));
 
             data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
             /* if (mUploadKeyCheckbox.isChecked()) {
@@ -315,7 +369,7 @@ public class LinkedIdViewFragment extends Fragment {
 
         // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
+                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, false) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -324,10 +378,7 @@ public class LinkedIdViewFragment extends Fragment {
                     Bundle data = message.getData();
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 
-                    Intent intent = new Intent();
-                    intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-                    getActivity().setResult(Activity.RESULT_OK, intent);
-                    getActivity().finish();
+                    result.createNotify(getActivity()).show();
                 }
             }
         };

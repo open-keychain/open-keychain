@@ -148,7 +148,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         getFragmentManager().beginTransaction()
                 .replace(R.id.view_key_fragment, frag)
                 .addSharedElement(mLinkedIdsCard, "card_linked_ids")
-                .addToBackStack(null)
+                .addToBackStack("linked_id")
                 .commit();
     }
 

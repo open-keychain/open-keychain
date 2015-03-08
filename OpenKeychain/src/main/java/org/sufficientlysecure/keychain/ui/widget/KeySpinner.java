@@ -269,6 +269,7 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
             }
             return view;
         }
+
     }
 
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {

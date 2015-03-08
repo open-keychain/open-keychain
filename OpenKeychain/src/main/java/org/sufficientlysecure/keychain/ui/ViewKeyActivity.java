@@ -41,6 +41,7 @@ import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -999,15 +1000,21 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void startFragment(boolean isSecret, byte[] fingerprint) {
         // Create an instance of the fragment
-        ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri, isSecret, fingerprint);
+        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri, isSecret, fingerprint);
 
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.view_key_fragment, frag, "main")
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+
+                FragmentManager manager = getSupportFragmentManager();
+                manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                // Add the fragment to the 'fragment_container' FrameLayout
+                // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+                manager.beginTransaction()
+                        .replace(R.id.view_key_fragment, frag, "main")
+                        .commit();
+            }
+        });
     }
 
 }
