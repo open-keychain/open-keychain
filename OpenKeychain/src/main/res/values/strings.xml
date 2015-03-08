@@ -47,6 +47,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>

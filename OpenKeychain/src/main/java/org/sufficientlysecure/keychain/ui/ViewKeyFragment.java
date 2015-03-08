@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private ListView mUserIds;
+    private ListView mLinkedSystemContact;
 
     boolean mIsSecret = false;
 
@@ -81,6 +83,15 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
+        mLinkedSystemContact = (ListView) view.findViewById(R.id.view_key_linked_system_contact);
+
+        mLinkedSystemContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showSystemContact(position);
+            }
+        });
+
         return root;
     }
 
@@ -98,6 +109,10 @@ public class ViewKeyFragment extends LoaderFragment implements
                 }
             });
         }
+    }
+
+    private void showSystemContact(final int position) {
+
     }
 
     @Override
@@ -148,6 +163,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
 
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
@@ -164,6 +180,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         /* TODO better error handling? May cause problems when a key is deleted,
          * because the notification triggers faster than the activity closes.
@@ -202,6 +219,7 @@ public class ViewKeyFragment extends LoaderFragment implements
      * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
      * We need to make sure we are no longer using it.
      */
+    @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {
