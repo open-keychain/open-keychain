@@ -30,6 +30,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
@@ -268,7 +269,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * Certify the given pubkeyid with the given masterkeyid.
      *
      * @param publicKeyRing Keyring to add certification to.
-     * @param userIds       User IDs to certify, or all if null
+     * @param userIds       User IDs to certify
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
@@ -313,12 +314,75 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
 
         // fetch public key ring, add the certification and return it
-        Iterable<String> it = userIds != null ? userIds
-                : new IterableIterator<String>(publicKey.getUserIDs());
         try {
-            for (String userId : it) {
+            for (String userId : userIds) {
                 PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
                 publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
+            }
+        } catch (PGPException e) {
+            Log.e(Constants.TAG, "signing error", e);
+            return null;
+        }
+
+        PGPPublicKeyRing ring = PGPPublicKeyRing.insertPublicKey(publicKeyRing.getRing(), publicKey);
+
+        return new UncachedKeyRing(ring);
+    }
+
+    /**
+     * Certify the given user attributes with the given masterkeyid.
+     *
+     * @param publicKeyRing Keyring to add certification to.
+     * @param userAttributes       User IDs to certify, or all if null
+     * @return A keyring with added certifications
+     */
+    public UncachedKeyRing certifyUserAttributes(CanonicalizedPublicKeyRing publicKeyRing,
+            List<WrappedUserAttribute> userAttributes, byte[] nfcSignedHash, Date nfcCreationTimestamp) {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
+            throw new PrivateKeyNotUnlockedException();
+        }
+        if (!isMasterKey()) {
+            throw new AssertionError("tried to certify with non-master key, this is a programming error!");
+        }
+        if (publicKeyRing.getMasterKeyId() == getKeyId()) {
+            throw new AssertionError("key tried to self-certify, this is a programming error!");
+        }
+
+        // create a signatureGenerator from the supplied masterKeyId and passphrase
+        PGPSignatureGenerator signatureGenerator;
+        {
+            // TODO: SHA256 fixed?
+            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(PGPUtil.SHA256,
+                    nfcSignedHash, nfcCreationTimestamp);
+
+            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+            try {
+                signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
+            } catch (PGPException e) {
+                Log.e(Constants.TAG, "signing error", e);
+                return null;
+            }
+        }
+
+        { // supply signatureGenerator with a SubpacketVector
+            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            if (nfcCreationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            }
+            PGPSignatureSubpacketVector packetVector = spGen.generate();
+            signatureGenerator.setHashedSubpackets(packetVector);
+        }
+
+        // get the master subkey (which we certify for)
+        PGPPublicKey publicKey = publicKeyRing.getPublicKey().getPublicKey();
+
+        // fetch public key ring, add the certification and return it
+        try {
+            for (WrappedUserAttribute userAttribute : userAttributes) {
+                PGPUserAttributeSubpacketVector vector = userAttribute.getVector();
+                PGPSignature sig = signatureGenerator.generateCertification(vector, publicKey);
+                publicKey = PGPPublicKey.addCertification(publicKey, vector, sig);
             }
         } catch (PGPException e) {
             Log.e(Constants.TAG, "signing error", e);

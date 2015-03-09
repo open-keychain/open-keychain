@@ -691,8 +691,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_PSE_SYMMETRIC (LogLevel.INFO, R.string.msg_pse_symmetric),
 
         MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
-        MSG_CRT_CERTIFY_ALL (LogLevel.DEBUG, R.string.msg_crt_certify_all),
-        MSG_CRT_CERTIFY_SOME (LogLevel.DEBUG, R.plurals.msg_crt_certify_some),
+        MSG_CRT_CERTIFY_UIDS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uids),
+        MSG_CRT_CERTIFY_UATS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uats),
         MSG_CRT_ERROR_SELF (LogLevel.ERROR, R.string.msg_crt_error_self),
         MSG_CRT_ERROR_MASTER_NOT_FOUND (LogLevel.ERROR, R.string.msg_crt_error_master_not_found),
         MSG_CRT_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_crt_error_nothing),

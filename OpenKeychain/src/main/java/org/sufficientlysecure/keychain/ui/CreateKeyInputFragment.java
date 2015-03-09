@@ -31,23 +31,19 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
-import org.sufficientlysecure.keychain.ui.widget.PasswordEditText;
-import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthView;
+import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 public class CreateKeyInputFragment extends Fragment {
 
-    CreateKeyActivity mCreateKeyActivity;
-
-    PasswordStrengthView mPassphraseStrengthView;
-    AutoCompleteTextView mNameEdit;
-    EmailEditText mEmailEdit;
-    PasswordEditText mPassphraseEdit;
-    EditText mPassphraseEditAgain;
-    View mCreateButton;
-
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
+    CreateKeyActivity mCreateKeyActivity;
+    AutoCompleteTextView mNameEdit;
+    EmailEditText mEmailEdit;
+    PassphraseEditText mPassphraseEdit;
+    EditText mPassphraseEditAgain;
+    View mCreateButton;
 
     /**
      * Creates new instance of this fragment
@@ -64,15 +60,47 @@ public class CreateKeyInputFragment extends Fragment {
         return frag;
     }
 
+    /**
+     * Checks if text of given EditText is not empty. If it is empty an error is
+     * set and the EditText gets the focus.
+     *
+     * @param context
+     * @param editText
+     * @return true if EditText is not empty
+     */
+    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
+        boolean output = true;
+        if (editText.getText().toString().length() == 0) {
+            editText.setError(context.getString(R.string.create_key_empty));
+            editText.requestFocus();
+            output = false;
+        } else {
+            editText.setError(null);
+        }
+
+        return output;
+    }
+
+    private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
+        boolean output = true;
+        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
+            editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
+            editText2.requestFocus();
+            output = false;
+        } else {
+            editText2.setError(null);
+        }
+
+        return output;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
 
-        mPassphraseStrengthView = (PasswordStrengthView) view.findViewById(R.id
-                .create_key_passphrase_strength);
         mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
+        mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        mPassphraseEdit = (PasswordEditText) view.findViewById(R.id.create_key_passphrase);
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
         mCreateButton = view.findViewById(R.id.create_key_button);
 
@@ -105,15 +133,6 @@ public class CreateKeyInputFragment extends Fragment {
                                 ContactHelper.getPossibleUserNames(getActivity())
                         )
         );
-
-        // Edit text padding doesn't work via xml (http://code.google.com/p/android/issues/detail?id=77982)
-        // so we set the right padding programmatically.
-        mPassphraseEdit.setPadding(mPassphraseEdit.getPaddingLeft(),
-                mPassphraseEdit.getPaddingTop(),
-                (int) (56 * getResources().getDisplayMetrics().density),
-                mPassphraseEdit.getPaddingBottom());
-
-       mPassphraseEdit.setPasswordStrengthView(mPassphraseStrengthView);
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,40 +182,6 @@ public class CreateKeyInputFragment extends Fragment {
             return;
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
-
-    /**
-     * Checks if text of given EditText is not empty. If it is empty an error is
-     * set and the EditText gets the focus.
-     *
-     * @param context
-     * @param editText
-     * @return true if EditText is not empty
-     */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
-        boolean output = true;
-        if (editText.getText().toString().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
-            editText.requestFocus();
-            output = false;
-        } else {
-            editText.setError(null);
-        }
-
-        return output;
-    }
-
-    private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
-        boolean output = true;
-        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
-            editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
-            editText2.requestFocus();
-            output = false;
-        } else {
-            editText2.setError(null);
-        }
-
-        return output;
     }
 
 }
