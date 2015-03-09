@@ -16,7 +16,7 @@
         android:imeOptions="actionNext"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <org.sufficientlysecure.keychain.ui.widget.AutoCorrectAutoCompleteTextView
+    <org.sufficientlysecure.keychain.ui.widget.NameEditText
         android:id="@+id/add_user_id_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

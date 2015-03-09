@@ -31,22 +31,26 @@ public class NameEditText extends AutoCompleteTextView {
     public NameEditText(Context context) {
         super(context);
         removeFlag();
+        makeAdapter();
     }
 
     public NameEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         removeFlag();
+        makeAdapter();
     }
 
     public NameEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         removeFlag();
+        makeAdapter();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public NameEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         removeFlag();
+        makeAdapter();
     }
 
     private void removeFlag() {
