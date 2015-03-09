@@ -128,6 +128,7 @@
     <string name="label_passphrase">"Passphrase"</string>
     <string name="label_unlock">"Unlocking…"</string>
     <string name="label_passphrase_again">"Repeat Passphrase"</string>
+    <string name="label_show_passphrase">"Show Passphrase"</string>
     <string name="label_algorithm">"Algorithm"</string>
     <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>

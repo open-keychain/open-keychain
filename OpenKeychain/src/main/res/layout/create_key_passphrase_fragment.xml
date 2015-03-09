@@ -46,6 +46,13 @@
                 android:ems="10"
                 android:layout_gravity="center_horizontal" />
 
+            <CheckBox
+                android:id="@+id/create_key_show_passphrase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/label_show_passphrase" />
+
         </LinearLayout>
     </ScrollView>
 
