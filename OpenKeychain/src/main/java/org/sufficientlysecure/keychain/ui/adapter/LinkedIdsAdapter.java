@@ -126,7 +126,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public Fragment getLinkedIdFragment(Uri baseUri,
+    public LinkedIdViewFragment getLinkedIdFragment(Uri baseUri,
             int position, byte[] fingerprint) throws IOException {
 
         Cursor c = getCursor();

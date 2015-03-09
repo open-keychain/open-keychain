@@ -79,8 +79,9 @@ public class LinkedIdViewFragment extends Fragment implements
     private ViewHolder mViewHolder;
     private View mCurrentCert;
     private int mLidRank;
+    private OnIdentityLoadedListener mIdLoadedListener;
 
-    public static Fragment newInstance(Uri dataUri, int rank,
+    public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
             boolean showCertified, byte[] fingerprint) throws IOException {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
@@ -149,6 +150,12 @@ public class LinkedIdViewFragment extends Fragment implements
                     RawLinkedIdentity linkedId = LinkedIdentity.fromAttributeData(data);
 
                     loadIdentity(linkedId, certStatus);
+
+                    if (mIdLoadedListener != null) {
+                        mIdLoadedListener.onIdentityLoaded();
+                        mIdLoadedListener = null;
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     throw new AssertionError("reconstruction of user attribute must succeed!");
@@ -160,6 +167,14 @@ public class LinkedIdViewFragment extends Fragment implements
                 mCertAdapter.swapCursor(cursor);
                 break;
         }
+    }
+
+    public interface OnIdentityLoadedListener {
+        public void onIdentityLoaded();
+    }
+
+    public void setOnIdentityLoadedListener(OnIdentityLoadedListener listener) {
+        mIdLoadedListener = listener;
     }
 
     private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {

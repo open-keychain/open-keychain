@@ -24,9 +24,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.transition.Fade;
@@ -42,10 +41,11 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyFragment extends LoaderFragment implements
@@ -129,7 +129,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     }
 
     private void showLinkedId(final int position) {
-        Fragment frag;
+        final LinkedIdViewFragment frag;
         try {
             frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mFingerprint);
         } catch (IOException e) {
@@ -146,10 +146,27 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
 
         getFragmentManager().beginTransaction()
-                .replace(R.id.view_key_fragment, frag)
-                .addSharedElement(mLinkedIdsCard, "card_linked_ids")
-                .addToBackStack("linked_id")
+                .add(R.id.view_key_fragment, frag)
+                .hide(frag)
                 .commit();
+
+        frag.setOnIdentityLoadedListener(new OnIdentityLoadedListener() {
+            @Override
+            public void onIdentityLoaded() {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        getFragmentManager().beginTransaction()
+                                .show(frag)
+                                .addSharedElement(mLinkedIdsCard, "card_linked_ids")
+                                .remove(ViewKeyFragment.this)
+                                .addToBackStack("linked_id")
+                                .commit();
+                    }
+                });
+            }
+        });
+
     }
 
     private void showUserIdInfo(final int position) {
