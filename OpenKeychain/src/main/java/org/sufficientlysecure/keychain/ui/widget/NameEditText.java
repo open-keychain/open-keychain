@@ -30,39 +30,44 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 public class NameEditText extends AutoCompleteTextView {
     public NameEditText(Context context) {
         super(context);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     public NameEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     public NameEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public NameEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
+    private void init() {
+        removeFlag();
+        initAdapter();
+    }
+
+    private void initAdapter() {
+        setThreshold(1); // Start working from first character
+        setAdapter(new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_spinner_dropdown_item,
+                ContactHelper.getPossibleUserNames(getContext())));
+    }
+
+    /**
+     * Hack to re-enable keyboard auto correction in AutoCompleteTextView.
+     * From http://stackoverflow.com/a/22512858
+     */
     private void removeFlag() {
         int inputType = getInputType();
         inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setRawInputType(inputType);
-    }
-
-    private void makeAdapter() {
-        this.setThreshold(1); // Start working from first character
-        this.setAdapter(new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_dropdown_item,
-                ContactHelper.getPossibleUserNames(getContext())));
     }
 }

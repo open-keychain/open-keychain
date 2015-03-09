@@ -36,6 +36,10 @@ public class PassphraseEditText extends EditText {
 
     public PassphraseEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context, attrs);
+    }
+
+    private void init(Context context, AttributeSet attrs) {
         mPasswordBarHeight = (int) (8 * getResources().getDisplayMetrics().density);
         mPasswordBarWidth = (int) (50 * getResources().getDisplayMetrics().density);
 

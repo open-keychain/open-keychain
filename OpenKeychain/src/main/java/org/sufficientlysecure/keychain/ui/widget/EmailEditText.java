@@ -35,43 +35,33 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import java.util.regex.Matcher;
 
 public class EmailEditText extends AutoCompleteTextView {
-    EmailEditText emailEditText;
 
     public EmailEditText(Context context) {
         super(context);
-        emailEditText = this;
-        this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        this.addTextChangedListener(textWatcher);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     public EmailEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        emailEditText = this;
-        this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        this.addTextChangedListener(textWatcher);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     public EmailEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        emailEditText = this;
-        this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        this.addTextChangedListener(textWatcher);
-        removeFlag();
-        makeAdapter();
+        init();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public EmailEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        emailEditText = this;
+        init();
+    }
+
+    private void init() {
         this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         this.addTextChangedListener(textWatcher);
         removeFlag();
-        makeAdapter();
+        initAdapter();
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -91,25 +81,29 @@ public class EmailEditText extends AutoCompleteTextView {
             if (email.length() > 0) {
                 Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
                 if (emailMatcher.matches()) {
-                    emailEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                    EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                             R.drawable.uid_mail_ok, 0);
                 } else {
-                    emailEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                    EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
                             R.drawable.uid_mail_bad, 0);
                 }
             } else {
                 // remove drawable if email is empty
-                emailEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             }
         }
     };
 
-    private void makeAdapter() {
-        this.setThreshold(1); // Start working from first character
-        this.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
+    private void initAdapter() {
+        setThreshold(1); // Start working from first character
+        setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item,
                 ContactHelper.getPossibleUserEmails(getContext())));
     }
 
+    /**
+     * Hack to re-enable keyboard auto correction in AutoCompleteTextView.
+     * From http://stackoverflow.com/a/22512858
+     */
     private void removeFlag() {
         int inputType = getInputType();
         inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
