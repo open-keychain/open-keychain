@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -50,6 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -116,15 +116,21 @@ public class CertifyKeyFragment extends LoaderFragment
 
         // preselect certify key id if given
         long certifyKeyId = getActivity().getIntent().getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
-        if (certifyKeyId != Constants.key.none) {
+        if (certifyKeyId == Constants.key.none) {
+            //preselect any certify key id if none
             try {
-                CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
-                if (key.canCertify()) {
-                    mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
-                }
+                certifyKeyId= new CachedPublicKeyRing(new ProviderHelper(getActivity()),KeychainContract.KeyRings.buildUnifiedKeyRingsUri()).getMasterKeyId();
             } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "certify certify check failed", e);
+                e.printStackTrace();
             }
+        }
+        try {
+            CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
+            if (key.canCertify()) {
+                mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
+            }
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "certify certify check failed", e);
         }
 
         mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0);
