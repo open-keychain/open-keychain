@@ -62,6 +62,8 @@
                 android:id="@+id/create_key_passphrase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
                 android:inputType="textPassword"
                 android:hint="@string/label_passphrase"
