@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -52,7 +54,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 
 public class LinkedIdViewFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, OnBackStackChangedListener {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
@@ -155,6 +157,12 @@ public class LinkedIdViewFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onBackStackChanged() {
+        mViewHolder.setShowVerifying(false);
+        getFragmentManager().removeOnBackStackChangedListener(LinkedIdViewFragment.this);
+    }
+
     public interface OnIdentityLoadedListener {
         public void onIdentityLoaded();
     }
@@ -239,7 +247,7 @@ public class LinkedIdViewFragment extends Fragment implements
         private final ViewAnimator vVerifyingContainer;
         LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
 
-        private ViewAnimator mButtonSwitcher;
+        private ViewAnimator vButtonSwitcher;
         private CertListWidget vLinkedCerts;
         private CertifyKeySpinner vKeySpinner;
         private final View vButtonVerify;
@@ -254,7 +262,7 @@ public class LinkedIdViewFragment extends Fragment implements
         ViewHolder(View root) {
             vLinkedCerts = (CertListWidget) root.findViewById(R.id.linked_id_certs);
             vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
-            mButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
+            vButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
 
             mLinkedIdHolder = new LinkedIdsAdapter.ViewHolder(root);
 
@@ -278,11 +286,19 @@ public class LinkedIdViewFragment extends Fragment implements
             }
             if (!show) {
                 vKeySpinner.setVisibility(View.GONE);
+                showButton(0);
             }
         }
 
         void setShowProgress(boolean show) {
             vProgress.setDisplayedChild(show ? 0 : 1);
+        }
+
+        void showButton(int which) {
+            if (vButtonSwitcher.getDisplayedChild() == which) {
+                return;
+            }
+            vButtonSwitcher.setDisplayedChild(which);
         }
 
     }
@@ -324,13 +340,6 @@ public class LinkedIdViewFragment extends Fragment implements
         return root;
     }
 
-    void showButton(int which) {
-        if (mViewHolder.mButtonSwitcher.getDisplayedChild() == which) {
-            return;
-        }
-        mViewHolder.mButtonSwitcher.setDisplayedChild(which);
-    }
-
     void verifyResource() {
 
         // only one at a time
@@ -340,6 +349,11 @@ public class LinkedIdViewFragment extends Fragment implements
             }
             mInProgress = true;
         }
+
+        FragmentManager manager = getFragmentManager();
+        manager.beginTransaction().addToBackStack("verification").commit();
+        manager.executePendingTransactions();
+        manager.addOnBackStackChangedListener(this);
 
         mViewHolder.setShowVerifying(true);
 
@@ -371,7 +385,7 @@ public class LinkedIdViewFragment extends Fragment implements
                     mViewHolder.vText.setText("Ok");
                     setupForConfirmation();
                 } else {
-                    showButton(1);
+                    mViewHolder.showButton(1);
                     mViewHolder.vText.setText("Error");
                 }
                 mInProgress = false;
@@ -383,7 +397,7 @@ public class LinkedIdViewFragment extends Fragment implements
     void setupForConfirmation() {
 
         // button is 'confirm'
-        showButton(2);
+        mViewHolder.showButton(2);
 
         mViewHolder.vKeySpinner.setVisibility(View.VISIBLE);
 
