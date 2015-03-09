@@ -72,7 +72,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
-    private boolean mUseCompression;
+    private boolean mUseCompression = true;
 
     public boolean isModeSymmetric() {
         return MODE_SYMMETRIC == mCurrentMode;
