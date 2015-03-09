@@ -71,10 +71,10 @@
                     <ImageView
                         android:id="@+id/system_contact_picture"
                         android:layout_margin="6dp"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:scaleType="centerCrop"
-                        android:src="@color/bg_gray"/>
+                        android:src="@drawable/ic_person_grey_48dp"/>
 
                     <TextView
                         android:id="@+id/system_contact_name"
