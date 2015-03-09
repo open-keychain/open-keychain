@@ -839,9 +839,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                 mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
-                if (oldFingerprint == null) {
-                    startFragment(mIsSecret, fpData);
-                }
+                startFragment(mIsSecret, fpData);
 
                 // get name, email, and comment from USER_ID
                 String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
@@ -1000,21 +998,25 @@ public class ViewKeyActivity extends BaseActivity implements
 
     }
 
-    private void startFragment(boolean isSecret, byte[] fingerprint) {
-        // Create an instance of the fragment
-        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri, isSecret, fingerprint);
-
+    private void startFragment(final boolean isSecret, final byte[] fingerprint) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
 
                 FragmentManager manager = getSupportFragmentManager();
-                manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                // Add the fragment to the 'fragment_container' FrameLayout
-                // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-                manager.beginTransaction()
-                        .replace(R.id.view_key_fragment, frag, "main")
-                        .commit();
+                if (manager.getBackStackEntryCount() == 0) {
+                    // Create an instance of the fragment
+                    final ViewKeyFragment frag = ViewKeyFragment.newInstance(
+                            mDataUri, isSecret, fingerprint);
+                    manager.beginTransaction()
+                            .replace(R.id.view_key_fragment, frag)
+                            .commit();
+                    manager.popBackStack();
+                } else {
+                    // not sure yet if we actually want this!
+                    // manager.popBackStack();
+                }
+
             }
         });
     }

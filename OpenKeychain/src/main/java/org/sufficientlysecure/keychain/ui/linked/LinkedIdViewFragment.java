@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -44,10 +43,10 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsCertAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -61,8 +60,7 @@ public class LinkedIdViewFragment extends Fragment implements
     private static final String ARG_LID_RANK = "rank";
     private static final String ARG_SHOWCERT = "verified";
     private static final String ARG_FINGERPRINT = "fingerprint";
-    private static final int LOADER_ID_LINKED_CERTS = 1;
-    private static final int LOADER_ID_LINKED_ID = 2;
+    private static final int LOADER_ID_LINKED_ID = 1;
 
     private RawLinkedIdentity mLinkedId;
     private LinkedCookieResource mLinkedResource;
@@ -74,10 +72,8 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private boolean mInProgress;
 
-    private LinkedIdsCertAdapter mCertAdapter;
     private Uri mDataUri;
     private ViewHolder mViewHolder;
-    private View mCurrentCert;
     private int mLidRank;
     private OnIdentityLoadedListener mIdLoadedListener;
 
@@ -109,11 +105,9 @@ public class LinkedIdViewFragment extends Fragment implements
         mContext = getActivity();
         mInflater = getLayoutInflater(savedInstanceState);
 
-        mCertAdapter = new LinkedIdsCertAdapter(getActivity(), null, 0);
-        // getLoaderManager().initLoader(LOADER_ID_LINKED_CERTS, null, this);
         getLoaderManager().initLoader(LOADER_ID_LINKED_ID, null, this);
-
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -122,10 +116,6 @@ public class LinkedIdViewFragment extends Fragment implements
                         UserIdsAdapter.USER_PACKETS_PROJECTION,
                         Tables.USER_PACKETS + "." + UserPackets.RANK
                                 + " = " + Integer.toString(mLidRank), null, null);
-
-            case LOADER_ID_LINKED_CERTS:
-                return LinkedIdsCertAdapter.createLoader(getActivity(), mDataUri);
-
             default:
                 return null;
         }
@@ -162,10 +152,6 @@ public class LinkedIdViewFragment extends Fragment implements
                 }
 
                 break;
-
-            case LOADER_ID_LINKED_CERTS:
-                mCertAdapter.swapCursor(cursor);
-                break;
         }
     }
 
@@ -179,6 +165,16 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
         mLinkedId = linkedId;
+
+        mViewHolder.setShowVerifying(false);
+
+        {
+            Bundle args = new Bundle();
+            args.putParcelable(CertListWidget.ARG_URI, mDataUri);
+            args.putInt(CertListWidget.ARG_RANK, mLidRank);
+            getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
+                    args, mViewHolder.vLinkedCerts);
+        }
 
         if (mLinkedId instanceof LinkedIdentity) {
             LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
@@ -235,30 +231,28 @@ public class LinkedIdViewFragment extends Fragment implements
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_ID_LINKED_CERTS:
-                mCertAdapter.swapCursor(null);
-                break;
-        }
 
     }
 
     static class ViewHolder {
         private final View vButtonView;
+        private final ViewAnimator vVerifyingContainer;
         LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
 
         private ViewAnimator mButtonSwitcher;
-        private LinearLayout vLinkedCerts;
+        private CertListWidget vLinkedCerts;
         private CertifyKeySpinner vKeySpinner;
-        private LinearLayout vLinkedVerify;
         private final View vButtonVerify;
         private final View vButtonRetry;
         private final View vButtonConfirm;
         private final View vButtonBack;
 
+        private final ViewAnimator vProgress;
+        private final ImageView vIcon;
+        private final TextView vText;
+
         ViewHolder(View root) {
-            vLinkedCerts = (LinearLayout) root.findViewById(R.id.linked_id_certs);
-            vLinkedVerify = (LinearLayout) root.findViewById(R.id.linked_id_verify);
+            vLinkedCerts = (CertListWidget) root.findViewById(R.id.linked_id_certs);
             vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
             mButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
 
@@ -269,6 +263,26 @@ public class LinkedIdViewFragment extends Fragment implements
             vButtonRetry = root.findViewById(R.id.button_retry);
             vButtonConfirm = root.findViewById(R.id.button_confirm);
             vButtonView = root.findViewById(R.id.button_view);
+
+            vVerifyingContainer = (ViewAnimator) root.findViewById(R.id.linked_verify_container);
+
+            vProgress = (ViewAnimator) root.findViewById(R.id.linked_cert_progress);
+            vIcon = (ImageView) root.findViewById(R.id.linked_cert_icon);
+            vText = (TextView) root.findViewById(R.id.linked_cert_text);
+        }
+
+        void setShowVerifying(boolean show) {
+            int child = show ? 1 : 0;
+            if (vVerifyingContainer.getDisplayedChild() != child) {
+                vVerifyingContainer.setDisplayedChild(child);
+            }
+            if (!show) {
+                vKeySpinner.setVisibility(View.GONE);
+            }
+        }
+
+        void setShowProgress(boolean show) {
+            vProgress.setDisplayedChild(show ? 0 : 1);
         }
 
     }
@@ -310,21 +324,6 @@ public class LinkedIdViewFragment extends Fragment implements
         return root;
     }
 
-    static class ViewHolderCert {
-        final ViewAnimator vProgress;
-        final ImageView vIcon;
-        final TextView vText;
-
-        ViewHolderCert(View view) {
-            vProgress = (ViewAnimator) view.findViewById(R.id.linked_cert_progress);
-            vIcon = (ImageView) view.findViewById(R.id.linked_cert_icon);
-            vText = (TextView) view.findViewById(R.id.linked_cert_text);
-        }
-        void setShowProgress(boolean show) {
-            vProgress.setDisplayedChild(show ? 0 : 1);
-        }
-    }
-
     void showButton(int which) {
         if (mViewHolder.mButtonSwitcher.getDisplayedChild() == which) {
             return;
@@ -342,20 +341,11 @@ public class LinkedIdViewFragment extends Fragment implements
             mInProgress = true;
         }
 
-        // is there a current certification? if not create a new one
-        final ViewHolderCert holder;
-        if (mCurrentCert == null) {
-            mCurrentCert = mInflater.inflate(R.layout.linked_id_cert, null);
-            holder = new ViewHolderCert(mCurrentCert);
-            mCurrentCert.setTag(holder);
-            mViewHolder.vLinkedVerify.addView(mCurrentCert);
-        } else {
-            holder = (ViewHolderCert) mCurrentCert.getTag();
-        }
+        mViewHolder.setShowVerifying(true);
 
         mViewHolder.vKeySpinner.setVisibility(View.GONE);
-        holder.setShowProgress(true);
-        holder.vText.setText("Verifying…");
+        mViewHolder.setShowProgress(true);
+        mViewHolder.vText.setText("Verifying…");
 
         new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
@@ -376,13 +366,13 @@ public class LinkedIdViewFragment extends Fragment implements
 
             @Override
             protected void onPostExecute(LinkedVerifyResult result) {
-                holder.setShowProgress(false);
+                mViewHolder.setShowProgress(false);
                 if (result.success()) {
-                    holder.vText.setText("Ok");
+                    mViewHolder.vText.setText("Ok");
                     setupForConfirmation();
                 } else {
                     showButton(1);
-                    holder.vText.setText("Error");
+                    mViewHolder.vText.setText("Error");
                 }
                 mInProgress = false;
             }
