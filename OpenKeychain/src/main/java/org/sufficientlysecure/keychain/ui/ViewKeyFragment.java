@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -62,7 +61,6 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_SYSTEM_CONTACT = 2;
 
     private UserIdsAdapter mUserIdsAdapter;
 
@@ -98,14 +96,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
         mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
         mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
-        // mLinkedSystemContact = (ListView) view.findViewById(R.id.view_key_linked_system_contact);
 
-       /* mLinkedSystemContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showSystemContact(position);
-            }
-        });*/
         return root;
     }
 
@@ -125,6 +116,13 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
+    /**
+     * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
+     * and onClickListener for the linked system contact's layout
+     *
+     * @param name
+     * @param masterKeyId
+     */
     private void loadLinkedSystemContact(String name, final long masterKeyId) {
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();
@@ -146,6 +144,14 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
+    /**
+     * launches the default android Contacts app to view a contact with the passed
+     * contactId (CONTACT_ID column from ContactsContract.RawContact table which is _ID column in
+     * ContactsContract.Contact table)
+     *
+     * @param contactId _ID for row in ContactsContract.Contacts table
+     * @param context
+     */
     private void launchContactActivity(final long contactId, Context context) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contactId));

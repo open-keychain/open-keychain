@@ -270,6 +270,7 @@ public class ContactHelper {
     /**
      * returns the CONTACT_ID of the raw contact to which a masterKeyId is associated, if the
      * raw contact has not been marked for deletion
+     *
      * @param resolver
      * @param masterKeyId
      * @return CONTACT_ID (id of aggregated contact) linked to masterKeyId
