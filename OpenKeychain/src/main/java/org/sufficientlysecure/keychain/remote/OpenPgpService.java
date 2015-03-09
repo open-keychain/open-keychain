@@ -38,8 +38,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEnt
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -55,7 +53,6 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +80,7 @@ public class OpenPgpService extends RemoteService {
      * @param encryptionUserIds
      * @return
      */
-    private Intent getKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
+    private Intent returnKeyIdsFromEmails(Intent data, String[] encryptionUserIds) {
         boolean noUserIdsCheck = (encryptionUserIds == null || encryptionUserIds.length == 0);
         boolean missingUserIdsCheck = false;
         boolean duplicateUserIdsCheck = false;
@@ -164,50 +161,7 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private Intent getNfcSignIntent(Intent data, long keyId, String pin, byte[] hashToSign, int hashAlgo) {
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(NfcActivity.EXTRA_DATA, data);
-        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-        intent.putExtra(NfcActivity.EXTRA_KEY_ID, keyId);
-
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-
-        // return PendingIntent to be executed by client
-        Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-        return result;
-    }
-
-    private Intent getNfcDecryptIntent(Intent data, long subKeyId, String pin, byte[] encryptedSessionKey) {
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(NfcActivity.EXTRA_DATA, data);
-        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
-
-        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-
-        // return PendingIntent to be executed by client
-        Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-        return result;
-    }
-
-    private Intent getPassphraseIntent(Intent data, long keyId) {
+    private Intent returnPassphraseIntent(Intent data, long keyId) {
         // build PendingIntent for passphrase input
         Intent intent = new Intent(getBaseContext(), PassphraseDialogActivity.class);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, keyId);
@@ -222,6 +176,59 @@ public class OpenPgpService extends RemoteService {
         result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
         return result;
+    }
+
+    private PendingIntent getNfcSignPendingIntent(Intent data, long keyId, String pin, byte[] hashToSign, int hashAlgo) {
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, keyId);
+
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
+        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
+        return PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent getNfcDecryptPendingIntent(Intent data, long subKeyId, String pin, byte[] encryptedSessionKey) {
+        // build PendingIntent for Yubikey NFC operations
+        Intent intent = new Intent(getBaseContext(), NfcActivity.class);
+        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
+        // pass params through to activity that it can be returned again later to repeat pgp operation
+        intent.putExtra(NfcActivity.EXTRA_DATA, data);
+        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
+        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
+
+        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
+        return PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent getKeyserverPendingIntent(Intent data, long masterKeyId) {
+        // If signature is unknown we return an _additional_ PendingIntent
+        // to retrieve the missing key
+        Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
+        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
+        intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
+
+        return PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent getShowKeyPendingIntent(long masterKeyId) {
+        Intent intent = new Intent(getBaseContext(), ViewKeyActivity.class);
+        intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+
+        return PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
@@ -274,14 +281,20 @@ public class OpenPgpService extends RemoteService {
             if (pgpResult.isPending()) {
                 if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
                         PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                    return returnPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
                 } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
                         PgpSignEncryptResult.RESULT_PENDING_NFC) {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
                     data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                    return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+
+                    // return PendingIntent to be executed by client
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            getNfcSignPendingIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo()));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
                 } else {
                     throw new PgpGeneralException(
                             "Encountered unhandled type of pending action not supported by API!");
@@ -340,7 +353,7 @@ public class OpenPgpService extends RemoteService {
                 // get key ids based on given user ids
                 String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
                 // give params through to activity...
-                Intent result = getKeyIdsFromEmails(data, userIds);
+                Intent result = returnKeyIdsFromEmails(data, userIds);
 
                 if (result.getIntExtra(OpenPgpApi.RESULT_CODE, 0) == OpenPgpApi.RESULT_CODE_SUCCESS) {
                     keyIds = result.getLongArrayExtra(OpenPgpApi.RESULT_KEY_IDS);
@@ -391,14 +404,19 @@ public class OpenPgpService extends RemoteService {
             if (pgpResult.isPending()) {
                 if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
                         PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                    return returnPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
                 } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
                         PgpSignEncryptResult.RESULT_PENDING_NFC) {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
                     data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
-                    return getNfcSignIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                    // return PendingIntent to be executed by client
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            getNfcSignPendingIntent(data, pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcHash(), pgpResult.getNfcAlgo()));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
                 } else {
                     throw new PgpGeneralException(
                             "Encountered unhandled type of pending action not supported by API!");
@@ -478,15 +496,20 @@ public class OpenPgpService extends RemoteService {
             if (pgpResult.isPending()) {
                 if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
                         DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                    return getPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
+                    return returnPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
                 } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
                         DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
                     throw new PgpGeneralException(
                             "Decryption of symmetric content not supported by API!");
                 } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
                         DecryptVerifyResult.RESULT_PENDING_NFC) {
-                    return getNfcDecryptIntent(
-                            data, pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
+
+                    // return PendingIntent to be executed by client
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            getNfcDecryptPendingIntent(data, pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey()));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
                 } else {
                     throw new PgpGeneralException(
                             "Encountered unhandled type of pending action not supported by API!");
@@ -509,16 +532,10 @@ public class OpenPgpService extends RemoteService {
                     if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
                         // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
-                        Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
-                        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, signatureResult.getKeyId());
-                        intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
-
-                        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                                intent,
-                                PendingIntent.FLAG_CANCEL_CURRENT);
-
-                        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, getKeyserverPendingIntent(data, signatureResult.getKeyId()));
+                    } else {
+                        // If signature key is known, return PendingIntent to show key
+                        result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
                     }
                 }
 
@@ -576,33 +593,15 @@ public class OpenPgpService extends RemoteService {
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-
                 // also return PendingIntent that opens the key view activity
-                Intent intent = new Intent(getBaseContext(), ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                        intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
-
-                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+                result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(masterKeyId));
 
                 return result;
             } catch (ProviderHelper.NotFoundException e) {
-                Intent result = new Intent();
-
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
-                Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
-                intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
-                intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
-
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                        intent,
-                        PendingIntent.FLAG_CANCEL_CURRENT);
-
-                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_INTENT, getKeyserverPendingIntent(data, masterKeyId));
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
                 return result;
             }
@@ -629,7 +628,7 @@ public class OpenPgpService extends RemoteService {
         } else {
             // get key ids based on given user ids
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
-            return getKeyIdsFromEmails(data, userIds);
+            return returnKeyIdsFromEmails(data, userIds);
         }
     }
 
@@ -669,7 +668,7 @@ public class OpenPgpService extends RemoteService {
             return result;
         }
 
-        // check if caller is allowed to access openpgp keychain
+        // check if caller is allowed to access OpenKeychain
         Intent result = isAllowed(data);
         if (result != null) {
             return result;
