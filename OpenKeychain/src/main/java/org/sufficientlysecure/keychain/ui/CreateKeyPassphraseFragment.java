@@ -21,10 +21,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
@@ -44,6 +48,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
     CreateKeyActivity mCreateKeyActivity;
     PassphraseEditText mPassphraseEdit;
     EditText mPassphraseEditAgain;
+    CheckBox mShowPassphrase;
     View mBackButton;
     View mNextButton;
 
@@ -102,6 +107,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
 
         mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
+        mShowPassphrase = (CheckBox) view.findViewById(R.id.create_key_show_passphrase);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
@@ -121,6 +127,19 @@ public class CreateKeyPassphraseFragment extends Fragment {
                 createKeyCheck();
             }
         });
+        mShowPassphrase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mPassphraseEdit.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                    mPassphraseEditAgain.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                } else {
+                    mPassphraseEdit.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                    mPassphraseEditAgain.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
+
 
         return view;
     }
