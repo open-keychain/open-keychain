@@ -33,8 +33,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,7 +42,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
-import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
@@ -57,7 +55,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     public static final String MESSAGE_DATA_USER_ID = "user_id";
 
     private Messenger mMessenger;
-    private AutoCompleteTextView mName;
+    private NameEditText  mName;
     private EmailEditText mEmail;
     private EditText mComment;
 
@@ -81,11 +79,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
         String predefinedName = getArguments().getString(ARG_NAME);
 
-        ArrayAdapter<String> autoCompleteEmailAdapter = new ArrayAdapter<>
-                (getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                        ContactHelper.getPossibleUserEmails(getActivity())
-                );
-
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
         alert.setTitle(R.string.edit_key_action_add_identity);
@@ -94,15 +87,11 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         View view = inflater.inflate(R.layout.add_user_id_dialog, null);
         alert.setView(view);
 
-        mName = (AutoCompleteTextView) view.findViewById(R.id.add_user_id_name);
+        mName = (NameEditText) view.findViewById(R.id.add_user_id_name);
         mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
         mComment = (EditText) view.findViewById(R.id.add_user_id_comment);
 
         mName.setText(predefinedName);
-
-
-        mEmail.setThreshold(1); // Start working from first character
-        mEmail.setAdapter(autoCompleteEmailAdapter);
 
         alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
             @Override
@@ -117,14 +106,6 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }
         });
-
-        mName.setThreshold(1); // Start working from first character
-        mName.setAdapter(
-                new ArrayAdapter<>
-                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                                ContactHelper.getPossibleUserNames(getActivity())
-                        )
-        );
 
         alert.setNegativeButton(android.R.string.cancel, new OnClickListener() {
             @Override

@@ -24,22 +24,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
+import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
-import org.sufficientlysecure.keychain.util.ContactHelper;
 
 public class CreateKeyInputFragment extends Fragment {
 
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
     CreateKeyActivity mCreateKeyActivity;
-    AutoCompleteTextView mNameEdit;
+    NameEditText mNameEdit;
     EmailEditText mEmailEdit;
     PassphraseEditText mPassphraseEdit;
     EditText mPassphraseEditAgain;
@@ -98,7 +96,7 @@ public class CreateKeyInputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
 
-        mNameEdit = (AutoCompleteTextView) view.findViewById(R.id.create_key_name);
+        mNameEdit = (NameEditText) view.findViewById(R.id.create_key_name);
         mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
@@ -116,24 +114,6 @@ public class CreateKeyInputFragment extends Fragment {
         } else if (name != null) {
             mEmailEdit.requestFocus();
         }
-
-        mEmailEdit.setThreshold(1); // Start working from first character
-        mEmailEdit.setAdapter(
-                new ArrayAdapter<>
-                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                                ContactHelper.getPossibleUserEmails(getActivity())
-                        )
-        );
-
-
-        mNameEdit.setThreshold(1); // Start working from first character
-        mNameEdit.setAdapter(
-                new ArrayAdapter<>
-                        (getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                                ContactHelper.getPossibleUserNames(getActivity())
-                        )
-        );
-
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
