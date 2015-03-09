@@ -63,6 +63,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_CERTS = 205;
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
     private static final int KEY_RING_LINKED_IDS = 207;
+    private static final int KEY_RING_LINKED_ID_CERTS = 208;
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
@@ -129,6 +130,8 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/_/keys
          * key_rings/_/user_ids
          * key_rings/_/linked_ids
+         * key_rings/_/linked_ids/_
+         * key_rings/_/linked_ids/_/certs
          * key_rings/_/public
          * key_rings/_/secret
          * key_rings/_/certs
@@ -147,6 +150,10 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                         + KeychainContract.PATH_LINKED_IDS,
                 KEY_RING_LINKED_IDS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_LINKED_IDS + "/*/"
+                        + KeychainContract.PATH_CERTS,
+                KEY_RING_LINKED_ID_CERTS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);

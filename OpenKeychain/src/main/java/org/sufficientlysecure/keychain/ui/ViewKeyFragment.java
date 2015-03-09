@@ -131,7 +131,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     private void showLinkedId(final int position) {
         Fragment frag;
         try {
-            frag = mLinkedIdsAdapter.getLinkedIdFragment(position, mFingerprint);
+            frag = mLinkedIdsAdapter.getLinkedIdFragment(mDataUri, position, mFingerprint);
         } catch (IOException e) {
             e.printStackTrace();
             return;

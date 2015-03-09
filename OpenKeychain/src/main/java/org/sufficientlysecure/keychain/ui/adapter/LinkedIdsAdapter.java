@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
@@ -125,19 +126,15 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                 UserIdsAdapter.USER_PACKETS_PROJECTION, LINKED_IDS_WHERE, null, null);
     }
 
-    public Fragment getLinkedIdFragment(int position, byte[] fingerprint) throws IOException {
-        RawLinkedIdentity id = getItem(position);
+    public Fragment getLinkedIdFragment(Uri baseUri,
+            int position, byte[] fingerprint) throws IOException {
 
-        Integer isVerified;
-        if (mShowCertification) {
-            Cursor cursor = getCursor();
-            cursor.moveToPosition(position);
-            isVerified = cursor.getInt(INDEX_VERIFIED);
-        } else {
-            isVerified = null;
-        }
+        Cursor c = getCursor();
+        c.moveToPosition(position);
+        int rank = c.getInt(UserIdsAdapter.INDEX_RANK);
 
-        return LinkedIdViewFragment.newInstance(id, isVerified, fingerprint);
+        Uri dataUri = UserPackets.buildLinkedIdsUri(baseUri);
+        return LinkedIdViewFragment.newInstance(dataUri, rank, mShowCertification, fingerprint);
     }
 
     public static class ViewHolder {

@@ -7,12 +7,16 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,93 +26,68 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter.ViewHolder;
+import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsCertAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class LinkedIdViewFragment extends Fragment {
+public class LinkedIdViewFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
-    private static final String ARG_ENCODED_LID = "encoded_lid";
-    private static final String ARG_VERIFIED = "verified";
+    private static final String ARG_DATA_URI = "data_uri";
+    private static final String ARG_LID_RANK = "rank";
+    private static final String ARG_SHOWCERT = "verified";
     private static final String ARG_FINGERPRINT = "fingerprint";
+    private static final int LOADER_ID_LINKED_CERTS = 1;
+    private static final int LOADER_ID_LINKED_ID = 2;
 
     private RawLinkedIdentity mLinkedId;
     private LinkedCookieResource mLinkedResource;
-    private Integer mVerified;
+    private boolean mShowCert;
 
-    private CardView vLinkedIdsCard;
     private Context mContext;
     private byte[] mFingerprint;
     private LayoutInflater mInflater;
-    private LinearLayout vLinkedCerts;
 
-    private View mCurrentCert;
     private boolean mInProgress;
-    private ViewAnimator mButtonSwitcher;
-    private CertifyKeySpinner vKeySpinner;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private LinkedIdsCertAdapter mCertAdapter;
+    private Uri mDataUri;
+    private ViewHolder mViewHolder;
+    private View mCurrentCert;
+    private int mLidRank;
 
-        Bundle args = getArguments();
-        byte[] data = args.getByteArray(ARG_ENCODED_LID);
-
-        try {
-            mLinkedId = LinkedIdentity.fromAttributeData(data);
-        } catch (IOException e) {
-            // TODO um…
-            e.printStackTrace();
-            throw new AssertionError("reconstruction of user attribute must succeed!");
-        }
-
-        if (mLinkedId instanceof LinkedIdentity) {
-            LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
-            mLinkedResource = (LinkedCookieResource) res;
-        }
-
-        mVerified = args.containsKey(ARG_VERIFIED) ? args.getInt(ARG_VERIFIED) : null;
-        mFingerprint = args.getByteArray(ARG_FINGERPRINT);
-
-        mContext = getActivity();
-        mInflater = getLayoutInflater(savedInstanceState);
-
-    }
-
-    public static Fragment newInstance(RawLinkedIdentity id,
-            Integer isVerified, byte[] fingerprint) throws IOException {
+    public static Fragment newInstance(Uri dataUri, int rank,
+            boolean showCertified, byte[] fingerprint) throws IOException {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
         Bundle args = new Bundle();
-        args.putByteArray(ARG_ENCODED_LID, id.toUserAttribute().getEncoded());
-        if (isVerified != null) {
-            args.putInt(ARG_VERIFIED, isVerified);
-        }
+        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putInt(ARG_LID_RANK, rank);
+        args.putBoolean(ARG_SHOWCERT, showCertified);
         args.putByteArray(ARG_FINGERPRINT, fingerprint);
         frag.setArguments(args);
 
@@ -116,57 +95,114 @@ public class LinkedIdViewFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.linked_id_view_fragment, null);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        vLinkedIdsCard = (CardView) root.findViewById(R.id.card_linked_ids);
-        vLinkedCerts = (LinearLayout) root.findViewById(R.id.linked_id_certs);
-        vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
+        Bundle args = getArguments();
+        mDataUri = args.getParcelable(ARG_DATA_URI);
+        mLidRank = args.getInt(ARG_LID_RANK);
 
-        View back = root.findViewById(R.id.back_button);
-        back.setClickable(true);
-        back.findViewById(R.id.back_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-            }
-        });
+        mShowCert = args.getBoolean(ARG_SHOWCERT);
+        mFingerprint = args.getByteArray(ARG_FINGERPRINT);
 
-        ViewHolder holder = new ViewHolder(root);
+        mContext = getActivity();
+        mInflater = getLayoutInflater(savedInstanceState);
 
-        if (mVerified != null) {
-            holder.vVerified.setVisibility(View.VISIBLE);
-            switch (mVerified) {
+        mCertAdapter = new LinkedIdsCertAdapter(getActivity(), null, 0);
+        // getLoaderManager().initLoader(LOADER_ID_LINKED_CERTS, null, this);
+        getLoaderManager().initLoader(LOADER_ID_LINKED_ID, null, this);
+
+    }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case LOADER_ID_LINKED_ID:
+                return new CursorLoader(getActivity(), mDataUri,
+                        UserIdsAdapter.USER_PACKETS_PROJECTION,
+                        Tables.USER_PACKETS + "." + UserPackets.RANK
+                                + " = " + Integer.toString(mLidRank), null, null);
+
+            case LOADER_ID_LINKED_CERTS:
+                return LinkedIdsCertAdapter.createLoader(getActivity(), mDataUri);
+
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case LOADER_ID_LINKED_ID:
+
+                // TODO proper error reporting and null checks here!
+
+                if (!cursor.moveToFirst()) {
+                    Log.e(Constants.TAG, "error");
+                    break;
+                }
+
+                try {
+                    int certStatus = cursor.getInt(UserIdsAdapter.INDEX_VERIFIED);
+
+                    byte[] data = cursor.getBlob(UserIdsAdapter.INDEX_ATTRIBUTE_DATA);
+                    RawLinkedIdentity linkedId = LinkedIdentity.fromAttributeData(data);
+
+                    loadIdentity(linkedId, certStatus);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new AssertionError("reconstruction of user attribute must succeed!");
+                }
+
+                break;
+
+            case LOADER_ID_LINKED_CERTS:
+                mCertAdapter.swapCursor(cursor);
+                break;
+        }
+    }
+
+    private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
+        mLinkedId = linkedId;
+
+        if (mLinkedId instanceof LinkedIdentity) {
+            LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
+            mLinkedResource = (LinkedCookieResource) res;
+        }
+
+        if (mShowCert) {
+            mViewHolder.mLinkedIdHolder.vVerified.setVisibility(View.VISIBLE);
+
+            switch (certStatus) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
                             null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
                             null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, holder.vVerified,
+                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
                             null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         } else {
-            holder.vVerified.setVisibility(View.GONE);
+            mViewHolder.mLinkedIdHolder.vVerified.setVisibility(View.GONE);
         }
 
-        holder.setData(mContext, mLinkedId);
+        mViewHolder.mLinkedIdHolder.setData(mContext, mLinkedId);
 
         // no resource, nothing further we can do…
         if (mLinkedResource == null) {
-            root.findViewById(R.id.button_view).setVisibility(View.GONE);
-            root.findViewById(R.id.button_verify).setVisibility(View.GONE);
-            return root;
+            mViewHolder.vButtonView.setVisibility(View.GONE);
+            mViewHolder.vButtonVerify.setVisibility(View.GONE);
+            return;
         }
 
-        View button_view = root.findViewById(R.id.button_view);
         if (mLinkedResource.isViewable()) {
-            button_view.setVisibility(View.VISIBLE);
-            button_view.setOnClickListener(new OnClickListener() {
+            mViewHolder.vButtonView.setVisibility(View.VISIBLE);
+            mViewHolder.vButtonView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = mLinkedResource.getViewIntent();
@@ -177,29 +213,79 @@ public class LinkedIdViewFragment extends Fragment {
                 }
             });
         } else {
-            button_view.setVisibility(View.GONE);
+            mViewHolder.vButtonView.setVisibility(View.GONE);
         }
 
-        mButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
+    }
 
-        View button_verify = root.findViewById(R.id.button_verify);
-        button_verify.setOnClickListener(new OnClickListener() {
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+            case LOADER_ID_LINKED_CERTS:
+                mCertAdapter.swapCursor(null);
+                break;
+        }
+
+    }
+
+    static class ViewHolder {
+        private final View vButtonView;
+        LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
+
+        private ViewAnimator mButtonSwitcher;
+        private LinearLayout vLinkedCerts;
+        private CertifyKeySpinner vKeySpinner;
+        private LinearLayout vLinkedVerify;
+        private final View vButtonVerify;
+        private final View vButtonRetry;
+        private final View vButtonConfirm;
+        private final View vButtonBack;
+
+        ViewHolder(View root) {
+            vLinkedCerts = (LinearLayout) root.findViewById(R.id.linked_id_certs);
+            vLinkedVerify = (LinearLayout) root.findViewById(R.id.linked_id_verify);
+            vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
+            mButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
+
+            mLinkedIdHolder = new LinkedIdsAdapter.ViewHolder(root);
+
+            vButtonBack = root.findViewById(R.id.back_button);
+            vButtonVerify = root.findViewById(R.id.button_verify);
+            vButtonRetry = root.findViewById(R.id.button_retry);
+            vButtonConfirm = root.findViewById(R.id.button_confirm);
+            vButtonView = root.findViewById(R.id.button_view);
+        }
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.linked_id_view_fragment, null);
+
+        mViewHolder = new ViewHolder(root);
+        root.setTag(mViewHolder);
+
+        mViewHolder.vButtonBack.setClickable(true);
+        mViewHolder.vButtonBack.findViewById(R.id.back_button).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
+
+        mViewHolder.vButtonVerify.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 verifyResource();
             }
         });
-
-        View button_retry = root.findViewById(R.id.button_retry);
-        button_retry.setOnClickListener(new OnClickListener() {
+        mViewHolder.vButtonRetry.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 verifyResource();
             }
         });
-
-        View button_confirm = root.findViewById(R.id.button_confirm);
-        button_confirm.setOnClickListener(new OnClickListener() {
+        mViewHolder.vButtonConfirm.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 initiateCertifying();
@@ -225,10 +311,10 @@ public class LinkedIdViewFragment extends Fragment {
     }
 
     void showButton(int which) {
-        if (mButtonSwitcher.getDisplayedChild() == which) {
+        if (mViewHolder.mButtonSwitcher.getDisplayedChild() == which) {
             return;
         }
-        mButtonSwitcher.setDisplayedChild(which);
+        mViewHolder.mButtonSwitcher.setDisplayedChild(which);
     }
 
     void verifyResource() {
@@ -247,12 +333,12 @@ public class LinkedIdViewFragment extends Fragment {
             mCurrentCert = mInflater.inflate(R.layout.linked_id_cert, null);
             holder = new ViewHolderCert(mCurrentCert);
             mCurrentCert.setTag(holder);
-            vLinkedCerts.addView(mCurrentCert);
+            mViewHolder.vLinkedVerify.addView(mCurrentCert);
         } else {
             holder = (ViewHolderCert) mCurrentCert.getTag();
         }
 
-        vKeySpinner.setVisibility(View.GONE);
+        mViewHolder.vKeySpinner.setVisibility(View.GONE);
         holder.setShowProgress(true);
         holder.vText.setText("Verifying…");
 
@@ -294,14 +380,14 @@ public class LinkedIdViewFragment extends Fragment {
         // button is 'confirm'
         showButton(2);
 
-        vKeySpinner.setVisibility(View.VISIBLE);
+        mViewHolder.vKeySpinner.setVisibility(View.VISIBLE);
 
     }
 
     private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
         String passphrase;
-        long certifyKeyId = vKeySpinner.getSelectedItemId();
+        long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(
                     getActivity(), certifyKeyId, certifyKeyId);

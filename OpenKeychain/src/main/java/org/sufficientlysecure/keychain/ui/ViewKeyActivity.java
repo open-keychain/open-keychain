@@ -839,7 +839,9 @@ public class ViewKeyActivity extends BaseActivity implements
                 mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
                 mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
-                startFragment(mIsSecret, fpData);
+                if (oldFingerprint == null) {
+                    startFragment(mIsSecret, fpData);
+                }
 
                 // get name, email, and comment from USER_ID
                 String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
