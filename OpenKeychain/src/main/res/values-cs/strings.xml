@@ -464,7 +464,7 @@
   <string name="create_key_final_robot_text">Vytvoření klíče může chvíli trvat, mezitím si dejte třeba šálek dobré kávy...</string>
   <string name="create_key_rsa">(3 podklíče, RSA, 4096 bit)</string>
   <string name="create_key_custom">(uživatelská konfigurace klíče)</string>
-  <string name="create_key_text">Zadejte své celé jméno, emailovou adresu a zvolte heslo.</string>
+  <string name="create_key_identity_text">Zadejte své celé jméno, emailovou adresu a zvolte heslo.</string>
   <string name="create_key_hint_full_name">Celé jméno, např. Jan Novák</string>
   <string name="create_key_edit">Změnit konfiguraci klíče</string>
   <!--View key-->

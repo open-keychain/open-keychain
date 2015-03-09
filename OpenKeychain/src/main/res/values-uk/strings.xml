@@ -449,7 +449,7 @@
   <string name="create_key_empty">Це поле - обов\'язкове</string>
   <string name="create_key_passphrases_not_equal">Паролі фрази не збігаються</string>
   <string name="create_key_final_text">Ви ввели наступну сутність:</string>
-  <string name="create_key_text">Введіть ваше повне ім\'я, електронну адреса та оберіть парольну фразу.</string>
+  <string name="create_key_identity_text">Введіть ваше повне ім\'я, електронну адреса та оберіть парольну фразу.</string>
   <string name="create_key_hint_full_name">Повне ім\'я, наприклад Степан Бандера</string>
   <!--View key-->
   <!--Navigation Drawer-->

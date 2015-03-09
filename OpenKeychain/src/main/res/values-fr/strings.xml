@@ -573,7 +573,7 @@
   <string name="create_key_final_robot_text">Créer une clef peut prendre du temps, prenez donc un café en attendant...</string>
   <string name="create_key_rsa">(3 sous-clefs, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuration personnalisée de la clef)</string>
-  <string name="create_key_text">Saisissez votre nom complet, votre adresse courriel et choisissez votre phrase de passe.</string>
+  <string name="create_key_identity_text">Saisissez votre nom complet, votre adresse courriel et choisissez votre phrase de passe.</string>
   <string name="create_key_hint_full_name">Nom complet, p. ex. Marc-Olivier Lagacé</string>
   <string name="create_key_edit">Changer la configuration de la clef</string>
   <!--View key-->

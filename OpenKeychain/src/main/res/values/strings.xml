@@ -626,8 +626,10 @@
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
-    <string name="create_key_text">"Enter your full name, email address, and choose a passhrase."</string>
-    <string name="create_key_hint_full_name">"Full Name, e.g. Max Mustermann"</string>
+    <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
+    <string name="create_key_email_text">"Choose the email address used for encrypted communication."</string>
+    <string name="create_key_passphrase_text">"Choose a strong passphrase. It protects your key when your device gets stolen."</string>
+    <string name="create_key_hint_full_name">"Full Name or Nickname"</string>
     <string name="create_key_edit">"Change key configuration"</string>
 
     <!-- View key -->

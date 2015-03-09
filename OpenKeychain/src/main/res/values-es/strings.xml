@@ -575,7 +575,7 @@
   <string name="create_key_final_robot_text">Crear una clave puede llevar un tiempo, tómese una taza de café entre tanto...</string>
   <string name="create_key_rsa">(3 subclaves, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuración de clave personalizada)</string>
-  <string name="create_key_text">Introduzca su nombre completo, dirección de correo electrónico, y elija una frase contraseña.</string>
+  <string name="create_key_identity_text">Introduzca su nombre completo, dirección de correo electrónico, y elija una frase contraseña.</string>
   <string name="create_key_hint_full_name">Nombre completo, ej. Max Mustermann</string>
   <string name="create_key_edit">Cambiar configuración de clave</string>
   <!--View key-->
