@@ -67,8 +67,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
-    private boolean mUseArmor;
-    private boolean mUseCompression;
+    private boolean mUseArmor = false;
+    private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
