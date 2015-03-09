@@ -288,7 +288,7 @@ public class OpenPgpService extends RemoteService {
                 }
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
-                if (!cleartextSign) {
+                if (pgpResult.getDetachedSignature() != null && !cleartextSign) {
                     result.putExtra(OpenPgpApi.RESULT_DETACHED_SIGNATURE, pgpResult.getDetachedSignature());
                 }
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);

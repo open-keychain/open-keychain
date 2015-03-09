@@ -78,18 +78,6 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/SectionHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/api_settings_allowed_keys" />
-
-                <FrameLayout
-                    android:id="@+id/api_allowed_keys_list_fragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" />
-
-                <TextView
                     android:id="@+id/api_accounts_label"
                     style="@style/SectionHeader"
                     android:layout_width="match_parent"
@@ -99,6 +87,18 @@
 
                 <FrameLayout
                     android:id="@+id/api_accounts_list_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+
+                <TextView
+                    style="@style/SectionHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/api_settings_allowed_keys" />
+
+                <FrameLayout
+                    android:id="@+id/api_allowed_keys_list_fragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical" />
