@@ -639,6 +639,8 @@
     <string name="view_key_verified">"Confirmed Key"</string>
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
 
+    <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
+
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
     <string name="nav_encrypt_decrypt">"Encrypt/Decrypt"</string>

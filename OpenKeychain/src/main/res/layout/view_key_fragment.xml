@@ -62,11 +62,28 @@
                     android:layout_height="wrap_content"
                     android:text="@string/section_linked_system_contact"/>
 
-                <org.sufficientlysecure.keychain.ui.widget.FixedListView
-                    android:id="@+id/view_key_linked_system_contact"
+                <LinearLayout
+                    android:id='@+id/system_contact_layout'
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"/>
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/system_contact_picture"
+                        android:layout_margin="6dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:scaleType="centerCrop"
+                        android:src="@color/bg_gray"/>
+
+                    <TextView
+                        android:id="@+id/system_contact_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/view_key_fragment_no_system_contact"/>
+                </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 

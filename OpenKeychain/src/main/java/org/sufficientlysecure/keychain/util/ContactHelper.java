@@ -267,6 +267,34 @@ public class ContactHelper {
         return null;
     }
 
+    /**
+     * returns the CONTACT_ID of the raw contact to which a masterKeyId is associated, if the
+     * raw contact has not been marked for deletion
+     * @param resolver
+     * @param masterKeyId
+     * @return CONTACT_ID (id of aggregated contact) linked to masterKeyId
+     */
+    public static long findContactId(ContentResolver resolver, long masterKeyId) {
+        long contactId = -1;
+        Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{
+                        ContactsContract.RawContacts.CONTACT_ID
+                },
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
+                        ContactsContract.RawContacts.DELETED + "=?",
+                new String[]{//"0" for "not deleted"
+                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId), "0"
+                }, null);
+        if (raw != null) {
+            if (raw.moveToNext()) {
+                contactId = raw.getLong(0);
+            }
+            raw.close();
+        }
+        return contactId;
+    }
+
     public static Bitmap getCachedPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
