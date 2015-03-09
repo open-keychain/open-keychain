@@ -209,6 +209,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setEnableAsciiArmorOutput(mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
@@ -409,9 +410,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         }
 
-        if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
-            mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
-        }
+        mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, false);
 
         // preselect keys given by intent
         mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
