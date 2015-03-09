@@ -314,15 +314,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
-            // lock drawer
-//            deactivateDrawerNavigation();
-            // TODO: back button to key?
-        } else {
-//            activateDrawerNavigation(savedInstanceState);
-        }
-
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
@@ -337,17 +328,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    private void updateModeFragment() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.encrypt_pager_mode,
-                        mCurrentMode == MODE_SYMMETRIC
-                                ? new EncryptSymmetricFragment()
-                                : new EncryptAsymmetricFragment()
-                )
-                .commitAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override
@@ -382,6 +362,17 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             }
         }
         return true;
+    }
+
+    private void updateModeFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.encrypt_pager_mode,
+                        mCurrentMode == MODE_SYMMETRIC
+                                ? new EncryptSymmetricFragment()
+                                : new EncryptAsymmetricFragment()
+                )
+                .commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     /**
@@ -428,7 +419,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
         // Save uris
         mInputUris = uris;
-
     }
 
 }

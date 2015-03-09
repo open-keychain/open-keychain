@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -56,7 +57,6 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
 
     // view
     private View mAddView;
-    private View mShareFile;
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
     private final Map<Uri, Bitmap> thumbnailCache = new HashMap<>();
@@ -78,21 +78,6 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_files_fragment, container, false);
 
-        View vEncryptFile = view.findViewById(R.id.action_encrypt_file);
-        vEncryptFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encryptClicked(false);
-            }
-        });
-        mShareFile = view.findViewById(R.id.action_encrypt_share);
-        mShareFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encryptClicked(true);
-            }
-        });
-
         mAddView = inflater.inflate(R.layout.file_list_entry_add, null);
         mAddView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,8 +93,10 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
     }
 
     private void addInputUri() {
@@ -189,6 +176,24 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.encrypt_save: {
+                encryptClicked(false);
+                break;
+            }
+            case R.id.encrypt_share: {
+                encryptClicked(true);
+                break;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+        return true;
     }
 
     @Override

@@ -17,9 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -39,6 +42,14 @@ public class DecryptFilesActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(Activity.RESULT_CANCELED);
+                finish();
+            }
+        }, false);
 
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());

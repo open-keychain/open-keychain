@@ -1,72 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/selected_files_list"
+        android:dividerHeight="4dip"
+        android:divider="@android:color/transparent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent" />
 
-        <ListView
-            android:id="@+id/selected_files_list"
-            android:dividerHeight="4dip"
-            android:divider="@android:color/transparent"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
-
-        <!-- Note: The following construct should be a widget, we use it quiet often -->
-
-        <LinearLayout
-            android:id="@+id/action_encrypt_share"
-            android:paddingLeft="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:clickable="true"
-            style="@style/SelectableItem"
-            android:orientation="horizontal">
-
-            <TextView
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                android:text="@string/btn_encrypt_share_file"
-                android:layout_weight="1"
-                android:drawableRight="@drawable/ic_share_grey_24dp"
-                android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
-
-            <View
-                android:layout_width="1dip"
-                android:layout_height="match_parent"
-                android:gravity="right"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:background="?android:attr/listDivider" />
-
-            <ImageButton
-                android:id="@+id/action_encrypt_file"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/ic_save_grey_24dp"
-                android:layout_gravity="center_vertical"
-                style="@style/SelectableItem" />
-
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>

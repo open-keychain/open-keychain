@@ -18,9 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -48,6 +50,14 @@ public class DecryptTextActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(Activity.RESULT_CANCELED);
+                finish();
+            }
+        }, false);
 
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());
