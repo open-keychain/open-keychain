@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,24 +31,23 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
-import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 
-public class CreateKeyInputFragment extends Fragment {
+public class CreateKeyNameFragment extends Fragment {
 
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
+
     CreateKeyActivity mCreateKeyActivity;
     NameEditText mNameEdit;
-    EmailEditText mEmailEdit;
-    PassphraseEditText mPassphraseEdit;
-    EditText mPassphraseEditAgain;
-    View mCreateButton;
+    View mNextButton;
+
+    String mEmail;
 
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyInputFragment newInstance(String name, String email) {
-        CreateKeyInputFragment frag = new CreateKeyInputFragment();
+    public static CreateKeyNameFragment newInstance(String name, String email) {
+        CreateKeyNameFragment frag = new CreateKeyNameFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_NAME, name);
@@ -94,27 +94,21 @@ public class CreateKeyInputFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_key_input_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_key_name_fragment, container, false);
 
         mNameEdit = (NameEditText) view.findViewById(R.id.create_key_name);
-        mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
-        mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
-        mCreateButton = view.findViewById(R.id.create_key_button);
+        mNextButton = view.findViewById(R.id.create_key_next_button);
 
         // initial values
         String name = getArguments().getString(ARG_NAME);
-        String email = getArguments().getString(ARG_EMAIL);
+        mEmail = getArguments().getString(ARG_EMAIL);
         mNameEdit.setText(name);
-        mEmailEdit.setText(email);
 
-        // focus non-empty edit fields
-        if (name != null && email != null) {
-            mPassphraseEdit.requestFocus();
-        } else if (name != null) {
-            mEmailEdit.requestFocus();
+        // focus empty edit fields
+        if (name == null) {
+            mNameEdit.requestFocus();
         }
-        mCreateButton.setOnClickListener(new View.OnClickListener() {
+        mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createKeyCheck();
@@ -125,43 +119,22 @@ public class CreateKeyInputFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
     private void createKeyCheck() {
-        if (isEditTextNotEmpty(getActivity(), mNameEdit)
-                && isEditTextNotEmpty(getActivity(), mEmailEdit)
-                && isEditTextNotEmpty(getActivity(), mPassphraseEdit)
-                && areEditTextsEqual(getActivity(), mPassphraseEdit, mPassphraseEditAgain)) {
+        if (isEditTextNotEmpty(getActivity(), mNameEdit)) {
 
-            CreateKeyFinalFragment frag =
-                    CreateKeyFinalFragment.newInstance(
+            CreateKeyEmailFragment frag =
+                    CreateKeyEmailFragment.newInstance(
                             mNameEdit.getText().toString(),
-                            mEmailEdit.getText().toString(),
-                            mPassphraseEdit.getText().toString()
+                            mEmail
                     );
 
-            hideKeyboard();
             mCreateKeyActivity.loadFragment(null, frag, FragAction.TO_RIGHT);
         }
-    }
-
-    private void hideKeyboard() {
-        if (getActivity() == null) {
-            return;
-        }
-        InputMethodManager inputManager = (InputMethodManager) getActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        // check if no view has focus
-        View v = getActivity().getCurrentFocus();
-        if (v == null)
-            return;
-
-        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
 }

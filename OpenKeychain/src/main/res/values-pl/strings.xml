@@ -540,7 +540,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="create_key_final_robot_text">Tworzenie klucza może zająć trochę czasu... w międzyczasie idź się napij kawy.</string>
   <string name="create_key_rsa">(3 pod-klucze, RSA, 4096 bit)</string>
   <string name="create_key_custom">(niestandardowa konfiguracja kluczy)</string>
-  <string name="create_key_text">Wpisz swoje imię, adres email oraz wybierz hasło.</string>
+  <string name="create_key_identity_text">Wpisz swoje imię, adres email oraz wybierz hasło.</string>
   <string name="create_key_hint_full_name">Imię i nazwisko, na przykład, Jan Kowalski</string>
   <string name="create_key_edit">Zmień klucz konfiguracji</string>
   <!--View key-->

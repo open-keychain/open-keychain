@@ -575,7 +575,7 @@
   <string name="create_key_final_robot_text">Een sleutel aanmaken kan even duren, maak intussen een tasje thee klaar…</string>
   <string name="create_key_rsa">(3 subsleutels, RSA, 4096 bit)</string>
   <string name="create_key_custom">(aangepaste sleutelconfiguratie)</string>
-  <string name="create_key_text">Voer je volledige naam en e-mailadres in, en kies een wachtwoord.</string>
+  <string name="create_key_identity_text">Voer je volledige naam en e-mailadres in, en kies een wachtwoord.</string>
   <string name="create_key_hint_full_name">Volledige naam, bv. Max Mustermann</string>
   <string name="create_key_edit">Sleutelconfiguratie wijzigen</string>
   <!--View key-->

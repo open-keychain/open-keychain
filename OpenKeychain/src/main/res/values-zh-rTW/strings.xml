@@ -377,7 +377,7 @@
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">口令不相符</string>
   <string name="create_key_final_robot_text">建立金鑰可能需要一點時間，來杯咖啡吧…</string>
-  <string name="create_key_text">輸入你的全名、電子郵件，並選擇一組口令。</string>
+  <string name="create_key_identity_text">輸入你的全名、電子郵件，並選擇一組口令。</string>
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">金鑰</string>

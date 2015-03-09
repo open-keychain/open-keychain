@@ -532,7 +532,7 @@
   <string name="create_key_final_robot_text">しばらくの間鍵を生成しています、その間はコーヒーでもどうぞ....</string>
   <string name="create_key_rsa">(3副鍵、RSA, 4096 bit)</string>
   <string name="create_key_custom">(個別の鍵設定)</string>
-  <string name="create_key_text">フルネーム、Eメールアドレスを入力そしてパスフレーズを選択してください。</string>
+  <string name="create_key_identity_text">フルネーム、Eメールアドレスを入力そしてパスフレーズを選択してください。</string>
   <string name="create_key_hint_full_name">フルネーム、例えば Max Mustermann</string>
   <string name="create_key_edit">鍵の設定変更</string>
   <!--View key-->

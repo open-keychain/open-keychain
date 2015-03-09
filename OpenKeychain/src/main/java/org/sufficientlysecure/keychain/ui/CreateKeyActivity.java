@@ -39,8 +39,8 @@ public class CreateKeyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         // pass extras into fragment
-        CreateKeyInputFragment frag =
-                CreateKeyInputFragment.newInstance(
+        CreateKeyNameFragment frag =
+                CreateKeyNameFragment.newInstance(
                         getIntent().getStringExtra(EXTRA_NAME),
                         getIntent().getStringExtra(EXTRA_EMAIL)
                 );

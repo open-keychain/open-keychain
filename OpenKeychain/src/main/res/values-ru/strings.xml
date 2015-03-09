@@ -490,7 +490,7 @@
   <string name="create_key_final_robot_text">Создание ключа займет некоторое время, можете пока выпить чашечку кофе...</string>
   <string name="create_key_rsa">(3 доп. ключа, RSA, 4096 bit)</string>
   <string name="create_key_custom">(произвольная конфигурация ключа)</string>
-  <string name="create_key_text">Укажите полное имя, адрес почты и придумайте надежный пароль.</string>
+  <string name="create_key_identity_text">Укажите полное имя, адрес почты и придумайте надежный пароль.</string>
   <string name="create_key_hint_full_name">Полное имя, напр. Иван Хлестаков</string>
   <string name="create_key_edit">Изменить конфигурацию ключа</string>
   <!--View key-->
