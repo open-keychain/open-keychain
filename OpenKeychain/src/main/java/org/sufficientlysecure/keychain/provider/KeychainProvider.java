@@ -566,7 +566,8 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RING_CERTS:
-            case KEY_RING_CERTS_SPECIFIC: {
+            case KEY_RING_CERTS_SPECIFIC:
+            case KEY_RING_LINKED_ID_CERTS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
@@ -587,10 +588,6 @@ public class KeychainProvider extends ContentProvider {
                         + " AND "
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_PACKETS + "." + UserPackets.RANK
-                        // for now, we only return user ids here, so TYPE must be NULL
-                        // TODO at some point, we should lift this restriction
-                        + " AND "
-                            + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL"
                     + ") LEFT JOIN " + Tables.USER_PACKETS + " AS signer ON ("
                             + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
                             + "signer." + UserPackets.MASTER_KEY_ID
@@ -608,6 +605,17 @@ public class KeychainProvider extends ContentProvider {
                     qb.appendWhereEscapeString(uri.getPathSegments().get(3));
                     qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER+ " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(4));
+                }
+
+                if (match == KEY_RING_LINKED_ID_CERTS) {
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
+                            + UserPackets.TYPE + " IS NOT NULL");
+
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
+                            + UserPackets.RANK + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+                } else {
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
                 }
 
                 break;

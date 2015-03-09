@@ -359,8 +359,8 @@ public class KeychainContract {
                     .appendPath(PATH_CERTS).build();
         }
 
-        public static Uri buildLinkedIdCertsUri(long masterKeyId, int rank) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId))
+        public static Uri buildLinkedIdCertsUri(Uri uri, int rank) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1))
                     .appendPath(PATH_LINKED_IDS).appendPath(Integer.toString(rank))
                     .appendPath(PATH_CERTS).build();
         }
