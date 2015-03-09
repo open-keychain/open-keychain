@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/encrypt_save"
+        android:title="@string/btn_encrypt_save_file"
+        android:icon="@drawable/ic_action_encrypt_save_24dp"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/encrypt_share"
+        android:title="@string/btn_encrypt_share_file"
+        android:icon="@drawable/ic_action_encrypt_share_24dp"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/check_use_symmetric"
         android:title="@string/label_symmetric"

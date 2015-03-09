@@ -95,7 +95,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mEmailEdit = (TextView) view.findViewById(R.id.email);
         mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
-        mCreateButton = view.findViewById(R.id.create_key_create_button);
+        mCreateButton = view.findViewById(R.id.create_key_next_button);
         mEditText = (TextView) view.findViewById(R.id.create_key_edit_text);
         mEditButton = view.findViewById(R.id.create_key_edit_button);
 

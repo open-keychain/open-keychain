@@ -528,7 +528,7 @@
   <string name="create_key_final_robot_text">Einen Schlüssel zu erzeugen braucht eine Weile, trink in der Zeit einen Kaffee...</string>
   <string name="create_key_rsa">(3 Unterschlüssel, RSA, 4096 Bit)</string>
   <string name="create_key_custom">(Benutzerdefinierte Schlüsseleinstellung)</string>
-  <string name="create_key_text">Vollen Namen und Emailadresse angeben und Passwort wählen.</string>
+  <string name="create_key_identity_text">Vollen Namen und Emailadresse angeben und Passwort wählen.</string>
   <string name="create_key_hint_full_name">Vollständiger Name, z.B. Max Mustermann</string>
   <string name="create_key_edit">Schlüsselkonfiguration ändern</string>
   <!--View key-->

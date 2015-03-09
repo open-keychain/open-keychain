@@ -482,7 +482,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="create_key_final_robot_text">La creazione di una chiave richiede un po\' di tempo, prendi un caffè nel frattempo...</string>
   <string name="create_key_rsa">(3 sottochiavi, RSA, 4096 bit)</string>
   <string name="create_key_custom">(personalizza la configurazione della chiave)</string>
-  <string name="create_key_text">Inserisci Nome Completo, Email e scegli una Frase di Accesso.</string>
+  <string name="create_key_identity_text">Inserisci Nome Completo, Email e scegli una Frase di Accesso.</string>
   <string name="create_key_hint_full_name">Nome completo, es: Mario Rossi</string>
   <string name="create_key_edit">Cambia configurazione della chiave</string>
   <!--View key-->

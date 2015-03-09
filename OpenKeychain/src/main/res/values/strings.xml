@@ -11,8 +11,8 @@
     <!-- title -->
     <string name="title_select_recipients">"Select Keys"</string>
     <string name="title_select_secret_key">"Select Your Key"</string>
-    <string name="title_encrypt_text">"Encrypt Text"</string>
-    <string name="title_encrypt_files">"Encrypt Files"</string>
+    <string name="title_encrypt_text">"Encrypt"</string>
+    <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
@@ -26,7 +26,7 @@
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
     <string name="title_share_file">"Share file with…"</string>
-    <string name="title_share_message">"Share message with…"</string>
+    <string name="title_share_message">"Share text with…"</string>
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
@@ -73,9 +73,10 @@
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
-    <string name="btn_decrypt_verify_message">"Decrypt and verify message"</string>
+    <string name="btn_decrypt_verify_message">"Decrypt and verify text"</string>
     <string name="btn_encrypt_file">"Encrypt and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
+    <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
     <string name="btn_save">"Save"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
@@ -87,7 +88,8 @@
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_lookup_key">"Lookup key"</string>
-    <string name="btn_share_encrypted_signed">"Encrypt and share message"</string>
+    <string name="btn_share_encrypted_signed">"Encrypt and share text"</string>
+    <string name="btn_copy_encrypted_signed">"Encrypt and copy text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
@@ -119,7 +121,7 @@
     <string name="menu_export_log">"Export Log"</string>
 
     <!-- label -->
-    <string name="label_message">"Message"</string>
+    <string name="label_message">"Text"</string>
     <string name="label_file">"File"</string>
     <string name="label_files">"File(s)"</string>
     <string name="label_file_colon">"File:"</string>
@@ -127,6 +129,7 @@
     <string name="label_passphrase">"Passphrase"</string>
     <string name="label_unlock">"Unlocking…"</string>
     <string name="label_passphrase_again">"Repeat Passphrase"</string>
+    <string name="label_show_passphrase">"Show Passphrase"</string>
     <string name="label_algorithm">"Algorithm"</string>
     <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
@@ -144,7 +147,7 @@
     <string name="label_symmetric">"Encrypt with passphrase"</string>
     <string name="label_passphrase_cache_ttl">"Cache time"</string>
     <string name="label_passphrase_cache_subs">"Cache passphrases by subkey"</string>
-    <string name="label_message_compression">"Message compression"</string>
+    <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
@@ -219,7 +222,7 @@
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
-    <string name="file_delete_successful">"Successfully deleted."</string>
+    <string name="file_delete_successful">"'%s' has been deleted."</string>
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
@@ -260,7 +263,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"
     -->
-    <string name="error_file_delete_failed">"deleting '%s' failed"</string>
+    <string name="error_file_delete_failed">"Deleting '%s' failed. Please do this manually!"</string>
     <string name="error_file_not_found">"file not found"</string>
     <string name="error_no_secret_key_found">"no suitable secret key found"</string>
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
@@ -557,7 +560,7 @@
     <string name="key_trust_maybe">"This key is neither revoked nor expired.\nYou haven’t confirmed it, but you may choose to trust it."</string>
     <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
     <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
-    <string name="key_trust_old_keys">" It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
+    <string name="key_trust_old_keys">"It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
     <string name="key_trust_no_cloud_evidence">"No proof from the cloud on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
@@ -625,8 +628,10 @@
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
-    <string name="create_key_text">"Enter your full name, email address, and choose a passhrase."</string>
-    <string name="create_key_hint_full_name">"Full Name, e.g. Max Mustermann"</string>
+    <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
+    <string name="create_key_email_text">"Choose the email address used for encrypted communication."</string>
+    <string name="create_key_passphrase_text">"Choose a strong passphrase. It protects your key when your device gets stolen."</string>
+    <string name="create_key_hint_full_name">"Full Name or Nickname"</string>
     <string name="create_key_edit">"Change key configuration"</string>
 
     <!-- View key -->

@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -33,8 +34,6 @@ public class EncryptTextFragment extends Fragment {
     public static final String ARG_TEXT = "text";
 
     private TextView mText;
-    private View mEncryptShare;
-    private View mEncryptClipboard;
 
     private EncryptActivityInterface mEncryptInterface;
 
@@ -72,24 +71,16 @@ public class EncryptTextFragment extends Fragment {
                 mEncryptInterface.setMessage(s.toString());
             }
         });
-        mEncryptClipboard = view.findViewById(R.id.action_encrypt_clipboard);
-        mEncryptShare = view.findViewById(R.id.action_encrypt_share);
-        mEncryptClipboard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEncryptInterface.startEncrypt(false);
-            }
-        });
-        mEncryptShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEncryptInterface.startEncrypt(true);
-            }
-        });
 
         return view;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -99,5 +90,23 @@ public class EncryptTextFragment extends Fragment {
         if (text != null) {
             mText.setText(text);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.encrypt_copy: {
+                mEncryptInterface.startEncrypt(false);
+                break;
+            }
+            case R.id.encrypt_share: {
+                mEncryptInterface.startEncrypt(true);
+                break;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+        return true;
     }
 }

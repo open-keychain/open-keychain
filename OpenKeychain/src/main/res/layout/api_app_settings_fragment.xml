@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:background="?attr/colorPrimaryDark"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -29,14 +28,12 @@
             android:gravity="center_vertical"
             android:orientation="vertical"
             android:text="Name (set in-code)"
-            android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
     <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textColor="@color/icons"
         custom:foldedLabel="@string/api_settings_show_info"
         custom:unFoldedLabel="@string/api_settings_hide_info">
 
@@ -44,7 +41,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/api_settings_package_name"
-            android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -52,14 +48,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="com.example"
-            android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/api_settings_package_signature"
-            android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -67,7 +61,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Base64 encoded hash of signature"
-            android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>

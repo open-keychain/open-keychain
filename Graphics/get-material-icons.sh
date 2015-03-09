@@ -11,6 +11,7 @@ python copy OpenKeychain av white repeat 24
 python copy OpenKeychain av grey repeat 24
 python copy OpenKeychain editor white mode_edit 24
 python copy OpenKeychain content white save 24
+python copy OpenKeychain navigation black close 24
 
 python copy OpenKeychain action grey delete 24
 python copy OpenKeychain action grey done 24
@@ -36,6 +37,9 @@ python copy OpenKeychain social grey person 24
 python copy OpenKeychain social grey person_add 24
 python copy OpenKeychain social grey share 24
 python copy OpenKeychain communication grey vpn_key 24
+python copy OpenKeychain navigation grey chevron_left 24
+python copy OpenKeychain navigation grey chevron_right 24
+python copy OpenKeychain social grey person 48
 
 # navigation drawer sections
 python copy OpenKeychain communication black vpn_key 24

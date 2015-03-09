@@ -521,7 +521,7 @@
   <string name="create_key_final_robot_text">Att skapa en nyckel kan ta ett tag, drick en kopp kaffe under tiden…</string>
   <string name="create_key_rsa">(3 undernycklar, RSA, 4096 bit)</string>
   <string name="create_key_custom">(anpassad nyckelkonfiguration)</string>
-  <string name="create_key_text">Ange ditt fullständiga namn, e-postadress och välj en lösenordsfras.</string>
+  <string name="create_key_identity_text">Ange ditt fullständiga namn, e-postadress och välj en lösenordsfras.</string>
   <string name="create_key_hint_full_name">Fullständigt namn, t.ex. Kalle Svensson</string>
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <!--View key-->

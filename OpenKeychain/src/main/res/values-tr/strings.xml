@@ -449,7 +449,7 @@
   <string name="create_key_final_robot_text">Anahtar oluşturma biraz zaman alabilir, bu sırada bir çay için...</string>
   <string name="create_key_rsa">(3 alt anahtar, RSA, 4096 bit)</string>
   <string name="create_key_custom">(özel anahtar yapılandırması)</string>
-  <string name="create_key_text">Tam isminizi, e-posta adresinizi girin ve bir parola seçin.</string>
+  <string name="create_key_identity_text">Tam isminizi, e-posta adresinizi girin ve bir parola seçin.</string>
   <string name="create_key_hint_full_name">Tam Ad, örneğin: Max Mustermann</string>
   <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->

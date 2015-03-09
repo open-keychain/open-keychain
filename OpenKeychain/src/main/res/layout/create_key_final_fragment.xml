@@ -6,7 +6,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/create_key_buttons_divider">
+        android:layout_above="@+id/create_key_buttons">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -144,58 +144,42 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:background="@color/holo_gray_bright"
         android:id="@+id/create_key_buttons">
 
         <TextView
             android:id="@+id/create_key_back_button"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_back"
+            android:textAllCaps="true"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:gravity="center_vertical"
+            android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="left|center_vertical"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_gravity="center_vertical" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="?android:attr/listDivider" />
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
-            android:id="@+id/create_key_create_button"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
+            android:id="@+id/create_key_next_button"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/btn_create_key"
+            android:textAllCaps="true"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawableRight="@drawable/ic_key_plus_grey600_24dp"
             android:drawablePadding="8dp"
-            android:gravity="center_vertical"
+            android:gravity="right|center_vertical"
             android:clickable="true"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_gravity="center_vertical" />
+            style="?android:attr/borderlessButtonStyle" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/create_key_buttons_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"
-        android:layout_alignTop="@+id/create_key_buttons"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
 </RelativeLayout>

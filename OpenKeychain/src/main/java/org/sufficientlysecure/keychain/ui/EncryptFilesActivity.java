@@ -67,8 +67,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
-    private boolean mUseArmor;
-    private boolean mUseCompression;
+    private boolean mUseArmor = false;
+    private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private ArrayList<Uri> mInputUris;
@@ -209,6 +209,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setEnableAsciiArmorOutput(mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
@@ -314,15 +315,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // if called with an intent action, do not init drawer navigation
-        if (ACTION_ENCRYPT_DATA.equals(getIntent().getAction())) {
-            // lock drawer
-//            deactivateDrawerNavigation();
-            // TODO: back button to key?
-        } else {
-//            activateDrawerNavigation(savedInstanceState);
-        }
-
         // Handle intent actions
         handleActions(getIntent());
         updateModeFragment();
@@ -337,17 +329,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.encrypt_file_activity, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    private void updateModeFragment() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.encrypt_pager_mode,
-                        mCurrentMode == MODE_SYMMETRIC
-                                ? new EncryptSymmetricFragment()
-                                : new EncryptAsymmetricFragment()
-                )
-                .commitAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override
@@ -384,6 +365,17 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         return true;
     }
 
+    private void updateModeFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.encrypt_pager_mode,
+                        mCurrentMode == MODE_SYMMETRIC
+                                ? new EncryptSymmetricFragment()
+                                : new EncryptAsymmetricFragment()
+                )
+                .commitAllowingStateLoss();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
     /**
      * Handles all actions with this intent
      *
@@ -418,9 +410,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         }
 
-        if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
-            mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
-        }
+        mUseArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, false);
 
         // preselect keys given by intent
         mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
@@ -428,7 +418,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
         // Save uris
         mInputUris = uris;
-
     }
 
 }

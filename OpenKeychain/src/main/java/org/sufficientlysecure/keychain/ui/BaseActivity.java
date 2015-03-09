@@ -88,10 +88,18 @@ public abstract class BaseActivity extends ActionBarActivity {
     /**
      * Close button only
      */
-    protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener) {
-        setActionBarIcon(R.drawable.ic_close_white_24dp);
+    protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener, boolean white) {
+        if (white) {
+            setActionBarIcon(R.drawable.ic_close_white_24dp);
+        } else {
+            setActionBarIcon(R.drawable.ic_close_black_24dp);
+        }
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         mToolbar.setNavigationOnClickListener(cancelOnClickListener);
+    }
+
+    protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener) {
+        setFullScreenDialogClose(cancelOnClickListener, true);
     }
 
     /**
