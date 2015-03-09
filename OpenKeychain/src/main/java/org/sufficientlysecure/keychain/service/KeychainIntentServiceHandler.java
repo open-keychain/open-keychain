@@ -44,10 +44,11 @@ public class KeychainIntentServiceHandler extends Handler {
 
         public static MessageStatus fromInt(int n)
         {
-            if(n >= values.length)
+            if(n >= values.length) {
                 return UNKNOWN;
-            else
+            } else {
                 return values[n];
+            }
         }
     }
 
