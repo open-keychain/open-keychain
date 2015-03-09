@@ -57,7 +57,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     /* don't care about the results (for now?)
 
                     // get returned data bundle

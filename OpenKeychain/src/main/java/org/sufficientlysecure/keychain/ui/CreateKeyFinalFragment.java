@@ -185,7 +185,7 @@ public class CreateKeyFinalFragment extends Fragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
                     if (returnData == null) {
@@ -255,7 +255,7 @@ public class CreateKeyFinalFragment extends Fragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // TODO: upload operation needs a result!
                     // TODO: then combine these results
                     //if (result.getResult() == OperationResultParcel.RESULT_OK) {
