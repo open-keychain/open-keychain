@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -72,7 +73,7 @@ public class LinkedIdViewFragment extends Fragment implements
     private byte[] mFingerprint;
     private LayoutInflater mInflater;
 
-    private boolean mInProgress;
+    private AsyncTask mInProgress;
 
     private Uri mDataUri;
     private ViewHolder mViewHolder;
@@ -157,12 +158,6 @@ public class LinkedIdViewFragment extends Fragment implements
         }
     }
 
-    @Override
-    public void onBackStackChanged() {
-        mViewHolder.setShowVerifying(false);
-        getFragmentManager().removeOnBackStackChangedListener(LinkedIdViewFragment.this);
-    }
-
     public interface OnIdentityLoadedListener {
         public void onIdentityLoaded();
     }
@@ -174,6 +169,13 @@ public class LinkedIdViewFragment extends Fragment implements
     private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
         mLinkedId = linkedId;
 
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                getFragmentManager().popBackStack("verification",
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        });
         mViewHolder.setShowVerifying(false);
 
         {
@@ -343,11 +345,8 @@ public class LinkedIdViewFragment extends Fragment implements
     void verifyResource() {
 
         // only one at a time
-        synchronized (this) {
-            if (mInProgress) {
-                return;
-            }
-            mInProgress = true;
+        if (mInProgress != null) {
+            return;
         }
 
         FragmentManager manager = getFragmentManager();
@@ -361,7 +360,7 @@ public class LinkedIdViewFragment extends Fragment implements
         mViewHolder.setShowProgress(true);
         mViewHolder.vText.setText("Verifying…");
 
-        new AsyncTask<Void,Void,LinkedVerifyResult>() {
+        mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
                 long timer = System.currentTimeMillis();
@@ -381,6 +380,9 @@ public class LinkedIdViewFragment extends Fragment implements
             @Override
             protected void onPostExecute(LinkedVerifyResult result) {
                 mViewHolder.setShowProgress(false);
+                if (isCancelled()) {
+                    return;
+                }
                 if (result.success()) {
                     mViewHolder.vText.setText("Ok");
                     setupForConfirmation();
@@ -388,7 +390,7 @@ public class LinkedIdViewFragment extends Fragment implements
                     mViewHolder.showButton(1);
                     mViewHolder.vText.setText("Error");
                 }
-                mInProgress = false;
+                mInProgress = null;
             }
         }.execute();
 
@@ -422,6 +424,16 @@ public class LinkedIdViewFragment extends Fragment implements
             // bail out; need to wait until the user has entered the passphrase before trying again
         } else {
             certifyResource(certifyKeyId, "");
+        }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        mViewHolder.setShowVerifying(false);
+        getFragmentManager().removeOnBackStackChangedListener(LinkedIdViewFragment.this);
+        if (mInProgress != null) {
+            mInProgress.cancel(false);
+            mInProgress = null;
         }
     }
 
