@@ -220,7 +220,7 @@
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
     <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
-    <string name="file_delete_successful">"Successfully deleted."</string>
+    <string name="file_delete_successful">"'%s' has been deleted."</string>
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
@@ -261,7 +261,7 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"
     -->
-    <string name="error_file_delete_failed">"deleting '%s' failed"</string>
+    <string name="error_file_delete_failed">"Deleting '%s' failed. Please do this manually!"</string>
     <string name="error_file_not_found">"file not found"</string>
     <string name="error_no_secret_key_found">"no suitable secret key found"</string>
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
