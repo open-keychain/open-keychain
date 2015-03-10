@@ -72,7 +72,7 @@
 
     <TextView
         android:id="@+id/api_account_settings_create_key"
-        style="@style/SelectableItem"
+        android:background="?android:selectableItemBackground"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium"

@@ -211,7 +211,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="?android:attr/listPreferredItemHeight"
                 android:clickable="true"
-                style="@style/SelectableItem"
+                android:background="?android:selectableItemBackground"
                 android:text="@string/btn_view_cert_key"
                 android:layout_weight="1"
                 android:drawableRight="@drawable/ic_person_grey_24dp"

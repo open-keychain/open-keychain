@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:src="@drawable/ic_close_grey_24dp"
-            style="@style/SelectableItem" />
+            android:background="?android:selectableItemBackground" />
 
     </FrameLayout>
 

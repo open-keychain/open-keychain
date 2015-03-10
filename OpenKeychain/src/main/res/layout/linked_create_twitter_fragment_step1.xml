@@ -99,7 +99,7 @@
             android:text="@string/btn_back"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical" />
 
@@ -124,7 +124,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 </RelativeLayout>

@@ -49,7 +49,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             android:paddingRight="4dp"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
             <!-- separate ImageView required for recoloring -->
@@ -84,7 +84,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             android:paddingRight="4dp"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
             <!-- separate ImageView required for recoloring -->
@@ -119,7 +119,7 @@
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
             android:paddingRight="4dp"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
             <!-- separate ImageView required for recoloring -->

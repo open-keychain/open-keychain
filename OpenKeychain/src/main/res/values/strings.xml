@@ -48,6 +48,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>
@@ -99,6 +100,7 @@
     <string name="btn_decrypt_files">"Decrypt files"</string>
     <string name="btn_encrypt_files">"Encrypt files"</string>
     <string name="btn_encrypt_text">"Encrypt text"</string>
+    <string name="btn_add_email">"Add additional email address"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -629,10 +631,12 @@
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
     <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
-    <string name="create_key_email_text">"Choose the email address used for encrypted communication."</string>
+    <string name="create_key_email_text">"Enter your main email address used for secure communication."</string>
     <string name="create_key_passphrase_text">"Choose a strong passphrase. It protects your key when your device gets stolen."</string>
     <string name="create_key_hint_full_name">"Full Name or Nickname"</string>
     <string name="create_key_edit">"Change key configuration"</string>
+    <string name="create_key_add_email">"Add email address"</string>
+    <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
@@ -641,6 +645,8 @@
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Confirmed Key"</string>
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
+
+    <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>

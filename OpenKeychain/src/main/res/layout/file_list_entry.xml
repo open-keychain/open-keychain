@@ -56,5 +56,5 @@
             android:src="@drawable/ic_close_grey_24dp"
             android:clickable="true"
             android:layout_centerVertical="true"
-            style="@style/SelectableItem"/>
+        android:background="?android:selectableItemBackground"/>
 </RelativeLayout>

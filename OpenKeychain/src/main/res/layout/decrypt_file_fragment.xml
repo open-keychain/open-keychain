@@ -32,7 +32,7 @@
 
                 android:id="@+id/decrypt_file_browse"
                 android:clickable="true"
-                style="@style/SelectableItem">
+                android:background="?android:selectableItemBackground">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
                     android:minHeight="?android:attr/listPreferredItemHeight"
                     android:text="@string/btn_decrypt_verify_file"
                     android:clickable="true"
-                    style="@style/SelectableItem"
+                    android:background="?android:selectableItemBackground"
                     android:drawableRight="@drawable/ic_save_grey_24dp"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"

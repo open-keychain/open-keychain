@@ -21,10 +21,6 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="SelectableItem">
-        <item name="android:background">@drawable/selector_transparent_button</item>
-    </style>
-
     <style name="FabMenuStyle">
         <item name="android:background">@drawable/fab_label_background</item>
         <item name="android:textColor">@color/white</item>

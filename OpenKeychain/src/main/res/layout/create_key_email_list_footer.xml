@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="16dp"
+    android:orientation="horizontal"
+    android:singleLine="true">
+
+    <Button
+        android:id="@+id/create_key_add_email"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/btn_add_email"
+        style="?android:attr/borderlessButtonStyle"
+        android:drawableLeft="@drawable/ic_email_grey_24dp"
+        android:drawablePadding="8dp"
+        android:gravity="left|center_vertical" />
+
+</LinearLayout>
