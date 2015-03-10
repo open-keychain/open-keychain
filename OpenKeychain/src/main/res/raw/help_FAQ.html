@@ -1,0 +1,201 @@
+<!-- Maintain structure with headings with h2 tags and content with p tags.
+This makes it easy to translate the values with transifex!
+And don't add newlines before or after p tags because of transifex -->
+<html>
+<head>
+</head>
+<body>
+
+<h2>Are my secret keys safe on my mobile device?</h2>
+
+<p>This is a very common question, and it's not an easy one. In the end
+    it comes down to how much you trust your mobile device. The real
+    question usually isn't, "how safe are they", but rather "are they less
+    safe than on my laptop"? The answer depends on three factors:</p>
+
+<ol>
+    <li>Do you trust the hardware? Obviously, there are no guarantees that
+        the vendor of your phone hardware didn't add some kind of
+        backdoor. Then again, the same applies to your laptop's hardware,
+        so it's about even.
+    </li>
+    <li>How easily can the device be stolen? This depends a lot on how
+        careful you are, but this too is probably about even with your
+        laptop.
+    </li>
+    <li>Do you trust the software? The Android operating system actually
+        offers a lot more in the way of security between applications than
+        desktop operating systems. No app without root privileges besides
+        OpenKeychain can ever access the keys stored in OpenKeychain's
+        database. By comparison, any program you run on your computer can
+        just upload your gnupg keyring, if those files belong to the same
+        user. As long as Android as a platform is trustworthy, your keys
+        are safe from malware apps.
+    </li>
+</ol>
+
+<p>In conclusion, we believe that secret keys are not notably less safe
+    on your mobile than they would be on your laptop. If your security
+    requirements are high enough that you don't keep your keys on your
+    laptop, you probably shouldn't put them on your mobile either.
+    Otherwise, they should be fine.</p>
+
+<h2>What is the best way to transfer my own key to OpenKeychain?</h2>
+
+<p>Ideally, put the key on an sd card, import, then erase from the sd
+    card. If your mobile does not have an sd card reader, read on.</p>
+
+<p>Our recommended method is to transfer the exported key "through the
+    cloud", but with a super-safe passphrase which is only used during the
+    transfer. Your key is encrypted with its passphrase, the only
+    visible parts in the exported file are your public key.</p>
+
+<p>So is this really safe? The answer is: Yes, IF you use a good
+    passphrase. If your passphrase is as difficult to guess as your key,
+    an attacker will gain no useful information from your exported key
+    file. To give you a (very!) rough impression, the passphrase
+    "J0hnnnyy1995" is about a third as difficult to guess as a 2048 bit
+    RSA key, while "%aBbaf11!o9$pP2,o9/=" is about the same.</p>
+
+<ol>
+    <li>Make up a long and complex passphrase to use during the transfer.
+        It should be at least 20 characters (more is better, although more
+        than 50 is overkill), with varying capitalization, many special
+        characters and <em>no words from the dictionary</em>. Yes, it is annoying
+        to type, but you'll only use it once! You can also write it down,
+        but make sure to destroy the note afterwards, and make sure it is
+        never transferred over the internet!
+    </li>
+    <li>Change the passphrase of your key to that one, then export</li>
+    <li>Transfer the key file to your mobile by whatever way is most
+        convenient to you (Mail to yourself, PushBullet, Dropbox, ...)
+    </li>
+    <li>Import the key with OpenKeychain, then delete the file from your
+        storage.
+    </li>
+    <li>Change the passphrase to an easier one which is still safe,
+        but more reasonable to type.
+    </li>
+</ol>
+
+<h2>Why is OpenKeychain's database not password protected?</h2>
+
+<p>Your keys are already encrypted with their passphrase - that's the
+    reason you have to input it for every crypto operation. There is no
+    point in encrypting those keys again with another password, so
+    password protecting the entire database would only protect the list of
+    public keys. If this is important to you, consider using
+    <a href="https://source.android.com/devices/tech/security/encryption/">full disk encryption</a>.
+</p>
+
+<h2>Should I certify a key without manually comparing fingerprints?</h2>
+
+<p>To certify someone's key, you should make sure that it's really that
+    same key the other person wants you to certify with their name on it.</p>
+
+<p>Since keys are usually obtained from a keyserver, it is necessary to
+    double-check that the keyserver gave you the correct key. This is
+    traditionally done by manually comparing the key's entire fingerprint,
+    character by character.</p>
+
+<p>However, scanning a QR code, receiving a key via NFC, or exchanging
+    keys via SafeSlinger all have that same check already built-in, so
+    as long as you trust the method used for key exchange, there is no
+    reason to check the fingerprint again manually.</p>
+
+<h2>Can I mark public keys as trusted without certifying them with my own key?</h2>
+
+<p>No. You can, however, simply create a new key just for certification,
+    which will essentially be the same thing.</p>
+
+<h2>How can I specify connection port for Keyserver?</h2>
+
+<p>Add a new Keyserver (or modify existing one) by going to Preferences -&gt; General -&gt;
+    Keyservers. Enter the port number after the Keyserver address and preceded it by a colon. For
+    example, "p80.pool.sks-keyservers.net:80" (without quotation marks) means that server
+    "p80.pool.sks-keyservers.net" is working on a port 80.
+    Default connection port is 11371 and it doesn't need to be specified.</p>
+
+<h2>How to prepare a YubiKey NEO for OpenKeychain?</h2>
+
+<ol>
+    <li><a href="http://www.yubico.com/support/resellers/">Buy a YubiKey NEO</a></li>
+    <li><a href="http://www.yubico.com/2012/12/yubikey-neo-openpgp/">Prepare it for usage with
+        OpenPGP using GnuPG and Yubico's tools</a>.
+    </li>
+    <li>Export the keypair from GnuPG with
+        <code>
+            gpg -a --output gpg-secret-key.asc --export-secret-keys &lt;insert key id or name&gt;
+        </code>
+        and transfer the file to your Android device.
+    </li>
+    <li>In OpenKeychain, select "Import from file", select the file and import the keypair. It will
+        be automatically detect that this is a keypair that works with a YubiKey only.
+    </li>
+</ol>
+
+<p>You can now use your YubiKey with OpenKeychain and compatible <a
+        href="http://www.openkeychain.org/apps/">apps</a>. A screen will appear when you need to
+    hold your YubiKey against the NFC antenna.</p>
+
+<h2>How to use a different YubiKey PIN?</h2>
+
+<ol>
+    <li>Deselect "Use default YubiKey PIN" in OpenKeychain's advanced settings screen</li>
+    <li>Follow <a href="https://developers.yubico.com/ykneo-openpgp/CardEdit.html">https://developers.yubico.com/ykneo-openpgp/CardEdit.html</a>
+    </li>
+</ol>
+
+<h2>How to import an existing key onto the YubiKey?</h2>
+
+<p>Follow <a href="https://developers.yubico.com/ykneo-openpgp/KeyImport.html">https://developers.yubico.com/ykneo-openpgp/KeyImport.html</a>
+</p>
+
+<h2>Advanced YubiKey Infos</h2>
+
+<ul>
+    <li><a href="https://developers.yubico.com/ykneo-openpgp">https://developers.yubico.com/ykneo-openpgp</a>
+    </li>
+    <li>
+        <a href="https://github.com/Yubico/ykneo-openpgp">https://github.com/Yubico/ykneo-openpgp</a>
+    </li>
+</ul>
+
+<h2>Where can I find more information about OpenKeychain's security model and design decisions?</h2>
+
+<p>Head over to our <a href="https://github.com/open-keychain/open-keychain/wiki">Wiki</a>.</p>
+
+<h1>Known Issues</h1>
+
+<h3>Importing secret key fails</h3>
+
+<p>Before posting a new bug report, please check if you are using gpg prior to 2.1.0 and changed the
+    expiry date before exporting the secret key.</p>
+
+<p>Changing the expiry date of a key in gpg prior to version 2.1.0 breaks the secret key in a way
+    which emerges only on export. It's not a problem with OpenKeychain, we correctly reject the key
+    because its self-certificates are either invalid, or have wrong flags.</p>
+
+<p>This issue has been reported before (<a
+        href="https://github.com/open-keychain/open-keychain/issues/996">#996</a>, <a
+        href="https://github.com/open-keychain/open-keychain/issues/1003">#1003</a>, <a
+        href="https://github.com/open-keychain/open-keychain/issues/1026">#1026</a>), and can be
+    assumed to affect a large number of users. The bug in gpg has been fixed in gpg 2.1.0, but that
+    version is as of now <a href="https://packages.debian.org/search?keywords=gnupg2">only deployed
+        in debian experimental</a>, not even sid. Another <a
+            href="https://bugs.g10code.com/gnupg/issue1817">bug report</a> has been opened by jas
+    just today to backport the fix, so I hope this gets fixed soonish.</p>
+
+<h2>A wrong primary user id is shown when searching on a Keyserver</h2>
+
+<p>Unfortunately, this is a bug in the SKS Keyserver software. Its machine-readable output returns
+    the user ids in an arbitrary order. Read the <a
+            href="https://bitbucket.org/skskeyserver/sks-keyserver/issue/28/primary-uid-in-machine-readable-index">related
+        bug</a> report for more information.</p>
+
+<h2>Not working with AOSP Mail</h2>
+
+<p>For now, OpenKeychain will not support AOSP Mail due to bugs in AOSP were we cannot work around (<a
+        href="https://github.com/open-keychain/open-keychain/issues/290">#290</a>).</p>
+</body>
+</html>
