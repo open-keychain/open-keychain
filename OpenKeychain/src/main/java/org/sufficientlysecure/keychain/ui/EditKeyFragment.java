@@ -528,7 +528,6 @@ public class EditKeyFragment extends LoaderFragment implements
     }
 
     private void addUserId() {
-        // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {

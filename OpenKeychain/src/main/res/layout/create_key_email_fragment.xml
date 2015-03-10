@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <ScrollView
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -33,6 +34,12 @@
                 android:imeOptions="actionNext"
                 android:hint="@string/label_email"
                 android:ems="10" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/create_key_emails"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </LinearLayout>
     </ScrollView>

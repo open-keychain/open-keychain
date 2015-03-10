@@ -47,6 +47,9 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
@@ -63,10 +66,12 @@ public class CreateKeyFinalFragment extends Fragment {
 
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
+    public static final String ARG_ADDITIONAL_EMAILS = "emails";
     public static final String ARG_PASSPHRASE = "passphrase";
 
     String mName;
     String mEmail;
+    ArrayList<String> mAdditionalEmails;
     String mPassphrase;
 
     SaveKeyringParcel mSaveKeyringParcel;
@@ -74,12 +79,15 @@ public class CreateKeyFinalFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyFinalFragment newInstance(String name, String email, String passphrase) {
+    public static CreateKeyFinalFragment newInstance(String name, String email,
+                                                     ArrayList<String> additionalEmails,
+                                                     String passphrase) {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_NAME, name);
         args.putString(ARG_EMAIL, email);
+        args.putStringArrayList(ARG_ADDITIONAL_EMAILS, additionalEmails);
         args.putString(ARG_PASSPHRASE, passphrase);
 
         frag.setArguments(args);
@@ -102,11 +110,25 @@ public class CreateKeyFinalFragment extends Fragment {
         // get args
         mName = getArguments().getString(ARG_NAME);
         mEmail = getArguments().getString(ARG_EMAIL);
+        mAdditionalEmails = getArguments().getStringArrayList(ARG_ADDITIONAL_EMAILS);
         mPassphrase = getArguments().getString(ARG_PASSPHRASE);
 
         // set values
         mNameEdit.setText(mName);
-        mEmailEdit.setText(mEmail);
+        if (mAdditionalEmails != null && mAdditionalEmails.size() > 0) {
+            String emailText = mEmail + ", ";
+            Iterator<?> it = mAdditionalEmails.iterator();
+            while (it.hasNext()) {
+                Object next = it.next();
+                emailText += next;
+                if (it.hasNext()) {
+                    emailText += ", ";
+                }
+            }
+            mEmailEdit.setText(emailText);
+        } else {
+            mEmailEdit.setText(mEmail);
+        }
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,11 +189,18 @@ public class CreateKeyFinalFragment extends Fragment {
             String userId = KeyRing.createUserId(mName, mEmail, null);
             mSaveKeyringParcel.mAddUserIds.add(userId);
             mSaveKeyringParcel.mChangePrimaryUserId = userId;
+            if (mAdditionalEmails != null && mAdditionalEmails.size() > 0) {
+                for (String email : mAdditionalEmails) {
+                    String thisUserId = KeyRing.createUserId(mName, email, null);
+                    mSaveKeyringParcel.mAddUserIds.add(thisUserId);
+                }
+            }
             mSaveKeyringParcel.mNewUnlock = mPassphrase != null
                     ? new ChangeUnlockParcel(mPassphrase, null)
                     : null;
         }
     }
+
 
     private void createKey() {
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);

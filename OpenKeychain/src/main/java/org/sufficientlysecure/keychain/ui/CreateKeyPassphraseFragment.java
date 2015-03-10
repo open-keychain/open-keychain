@@ -35,14 +35,18 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 
+import java.util.ArrayList;
+
 public class CreateKeyPassphraseFragment extends Fragment {
 
     public static final String ARG_NAME = "name";
     public static final String ARG_EMAIL = "email";
+    public static final String ARG_ADDITIONAL_EMAILS = "emails";
 
     // model
     String mName;
     String mEmail;
+    ArrayList<String> mAdditionalEmails;
 
     // view
     CreateKeyActivity mCreateKeyActivity;
@@ -55,12 +59,14 @@ public class CreateKeyPassphraseFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyPassphraseFragment newInstance(String name, String email) {
+    public static CreateKeyPassphraseFragment newInstance(String name, String email,
+                                                          ArrayList<String> additionalEmails) {
         CreateKeyPassphraseFragment frag = new CreateKeyPassphraseFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_NAME, name);
         args.putString(ARG_EMAIL, email);
+        args.putStringArrayList(ARG_ADDITIONAL_EMAILS, additionalEmails);
 
         frag.setArguments(args);
 
@@ -114,6 +120,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
         // initial values
         mName = getArguments().getString(ARG_NAME);
         mEmail = getArguments().getString(ARG_EMAIL);
+        mAdditionalEmails = getArguments().getStringArrayList(ARG_ADDITIONAL_EMAILS);
         mPassphraseEdit.requestFocus();
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +170,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
                     CreateKeyFinalFragment.newInstance(
                             mName,
                             mEmail,
+                            mAdditionalEmails,
                             mPassphraseEdit.getText().toString()
                     );
 
