@@ -217,7 +217,7 @@
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
-    <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
+    <string name="file_delete_confirmation">"Are you sure you want to delete the following files?%s"</string>
     <string name="file_delete_successful">"Successfully deleted."</string>
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>

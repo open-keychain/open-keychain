@@ -32,18 +32,21 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class DeleteFileDialogFragment extends DialogFragment {
-    private static final String ARG_DELETE_URI = "delete_uri";
+    private static final String ARG_DELETE_URIS = "delete_uris";
+
+    private OnDeletedListener onDeletedListener;
 
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteFileDialogFragment newInstance(Uri deleteUri) {
+    public static DeleteFileDialogFragment newInstance(Uri... deleteUris) {
         DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(ARG_DELETE_URI, deleteUri);
+        args.putParcelableArray(ARG_DELETE_URIS, deleteUris);
 
         frag.setArguments(args);
 
@@ -57,53 +60,71 @@ public class DeleteFileDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        final Uri deleteUri = getArguments().getParcelable(ARG_DELETE_URI);
-        final String deleteFilename = FileHelper.getFilename(getActivity(), deleteUri);
+        final Uri[] deleteUris = (Uri[]) getArguments().getParcelableArray(ARG_DELETE_URIS);
+
+        final StringBuilder deleteFileNames = new StringBuilder();
+        for (Uri deleteUri : deleteUris) {
+            deleteFileNames.append('\n')
+                    .append(FileHelper.getFilename(getActivity(), deleteUri));
+        }
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFilename));
+        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFileNames.toString()));
 
         alert.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
-                String scheme = deleteUri.getScheme();
 
-                if(scheme.equals(ContentResolver.SCHEME_FILE)) {
-                    if(new File(deleteUri.getPath()).delete()) {
-                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
-                        return;
+                ArrayList<Uri> failedUris = new ArrayList<>();
+
+                for (Uri deleteUri : deleteUris) {
+                    String scheme = deleteUri.getScheme();
+
+                    if(scheme.equals(ContentResolver.SCHEME_FILE)) {
+                        if(new File(deleteUri.getPath()).delete()) {
+                            continue;
+                        }
                     }
-                }
-                else if(scheme.equals(ContentResolver.SCHEME_CONTENT)) {
-                    // We can not securely delete Uris, so just use usual delete on them
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
-                            Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
-                            return;
+                    else if(scheme.equals(ContentResolver.SCHEME_CONTENT)) {
+                        // We can not securely delete Uris, so just use usual delete on them
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                            if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
+                                continue;
+                            }
+                        }
+
+                        if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
+                            continue;
+                        }
+
+                        // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
+                        // via the path of the Uri
+                        if(new File(deleteUri.getPath()).delete()) {
+                            continue;
                         }
                     }
 
-                    if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
-                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                    failedUris.add(deleteUri);
 
-                    // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
-                    // via the path of the Uri
-                    if(new File(deleteUri.getPath()).delete()) {
-                        Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
-                        return;
+                    // Note: We can't delete every file...
+                    // If possible we should find out if deletion is possible before even showing the option to do so.
+                }
+
+                if (failedUris.isEmpty()) {
+                    Toast.makeText(getActivity(), R.string.file_delete_successful, Toast.LENGTH_SHORT).show();
+                } else {
+                    for (Uri deleteUri : deleteUris) {
+                        Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed,
+                                FileHelper.getFilename(getActivity(), deleteUri)), Toast.LENGTH_SHORT).show();
                     }
                 }
 
-                Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed,
-                        deleteFilename), Toast.LENGTH_SHORT).show();
-
-                // Note: We can't delete every file...
-                // If possible we should find out if deletion is possible before even showing the option to do so.
+                if (onDeletedListener != null) {
+                    onDeletedListener.onDeleted();
+                }
             }
         });
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -114,5 +135,15 @@ public class DeleteFileDialogFragment extends DialogFragment {
         alert.setCancelable(true);
 
         return alert.show();
+    }
+
+    public void setOnDeletedListener(OnDeletedListener onDeletedListener) {
+        this.onDeletedListener = onDeletedListener;
+    }
+
+    public interface OnDeletedListener {
+
+        public void onDeleted();
+
     }
 }
