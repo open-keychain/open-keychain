@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.ViewHolder.VerifyState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
@@ -242,7 +243,6 @@ public class LinkedIdViewFragment extends Fragment implements
         private final View vButtonBack;
 
         private final ViewAnimator vProgress;
-        private final ImageView vIcon;
         private final TextView vText;
 
         ViewHolder(View root) {
@@ -261,12 +261,41 @@ public class LinkedIdViewFragment extends Fragment implements
             vVerifyingContainer = (ViewAnimator) root.findViewById(R.id.linked_verify_container);
 
             vProgress = (ViewAnimator) root.findViewById(R.id.linked_cert_progress);
-            vIcon = (ImageView) root.findViewById(R.id.linked_cert_icon);
             vText = (TextView) root.findViewById(R.id.linked_cert_text);
         }
 
-        void setShowProgress(boolean show) {
-            vProgress.setDisplayedChild(show ? 0 : 1);
+        enum VerifyState {
+            VERIFYING, VERIFY_OK, VERIFY_ERROR, CERTIFYING
+        }
+
+        void setVerifyingState(VerifyState state) {
+            switch (state) {
+                case VERIFYING:
+                    vProgress.setDisplayedChild(0);
+                    vText.setText("Verifying…");
+                    vKeySpinner.setVisibility(View.GONE);
+                    break;
+
+                case VERIFY_OK:
+                    showButton(2);
+                    vText.setText("Ok");
+                    vProgress.setDisplayedChild(1);
+                    vKeySpinner.setVisibility(View.VISIBLE);
+                    break;
+
+                case VERIFY_ERROR:
+                    showButton(1);
+                    vProgress.setDisplayedChild(2);
+                    vText.setText("Error");
+                    vKeySpinner.setVisibility(View.GONE);
+                    break;
+
+                case CERTIFYING:
+                    vProgress.setDisplayedChild(0);
+                    vText.setText("Confirming…");
+                    vKeySpinner.setVisibility(View.GONE);
+                    break;
+            }
         }
 
         void showButton(int which) {
@@ -384,8 +413,7 @@ public class LinkedIdViewFragment extends Fragment implements
         setShowVerifying(true);
 
         mViewHolder.vKeySpinner.setVisibility(View.GONE);
-        mViewHolder.setShowProgress(true);
-        mViewHolder.vText.setText("Verifying…");
+        mViewHolder.setVerifyingState(VerifyState.VERIFYING);
 
         mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
@@ -406,29 +434,17 @@ public class LinkedIdViewFragment extends Fragment implements
 
             @Override
             protected void onPostExecute(LinkedVerifyResult result) {
-                mViewHolder.setShowProgress(false);
                 if (isCancelled()) {
                     return;
                 }
                 if (result.success()) {
-                    mViewHolder.vText.setText("Ok");
-                    setupForConfirmation();
+                    mViewHolder.setVerifyingState(VerifyState.VERIFY_OK);
                 } else {
-                    mViewHolder.showButton(1);
-                    mViewHolder.vText.setText("Error");
+                    mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR);
                 }
                 mInProgress = null;
             }
         }.execute();
-
-    }
-
-    void setupForConfirmation() {
-
-        // button is 'confirm'
-        mViewHolder.showButton(2);
-
-        mViewHolder.vKeySpinner.setVisibility(View.VISIBLE);
 
     }
 
@@ -478,6 +494,8 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private void certifyResource(long certifyKeyId, String passphrase) {
 
+        mViewHolder.setVerifyingState(VerifyState.CERTIFYING);
+
         Bundle data = new Bundle();
         {
 
@@ -502,16 +520,24 @@ public class LinkedIdViewFragment extends Fragment implements
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, false) {
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity()) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+                Bundle data = message.getData();
 
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS) {
+                    if (data.containsKey(DATA_MESSAGE)) {
+                        mViewHolder.vText.setText(data.getString(DATA_MESSAGE));
+                    } else if (data.containsKey(DATA_MESSAGE_ID)) {
+                        mViewHolder.vText.setText(data.getString(DATA_MESSAGE_ID));
+                    }
+                    return;
+                }
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
                 }
             }
@@ -520,9 +546,6 @@ public class LinkedIdViewFragment extends Fragment implements
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
 
         // start service with intent
         getActivity().startService(intent);
