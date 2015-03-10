@@ -53,7 +53,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     //private ListView mLinkedSystemContact;
 
     boolean mIsSecret = false;
-    boolean mIsMasterKeyInitialised = false;
+    boolean mSystemContactLoaded = false;
 
     LinearLayout mSystemContactLayout;
     ImageView mSystemContactPicture;
@@ -141,6 +141,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                     launchContactActivity(contactId, context);
                 }
             });
+            mSystemContactLoaded=true;
         }
     }
 
@@ -237,14 +238,19 @@ public class ViewKeyFragment extends LoaderFragment implements
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
+                /* mSystemContactLoaded is necessary to handle the case where a key is verified
+                 * from the ViewKeyActivity, to allow immediate updating of the linked system
+                 * contact, since every time a key is verified we can expect a linked system
+                 * contact to be created
+                 */
+                if (!mSystemContactLoaded) {//ensure we load linked system contact only once
+                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    loadLinkedSystemContact(masterKeyId);
+                }
                 if (data.moveToFirst()) {
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    if (!mIsMasterKeyInitialised) {//ensure we load linked system contact only once
-                        mIsMasterKeyInitialised = true;
-                        long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                        loadLinkedSystemContact(masterKeyId);
-                    }
+
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
