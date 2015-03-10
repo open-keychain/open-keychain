@@ -42,7 +42,7 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
     <string name="title_keys">"Keys"</string>
-    <string name="title_delete_secret_key">"Delete YOUR key \'%s\'?"</string>
+    <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
 
     <!-- section -->

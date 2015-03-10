@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
-  <string name="title_encrypt_text">Zašifrovat text</string>
-  <string name="title_encrypt_files">Zašifrovat soubory</string>
   <string name="title_decrypt">Rozšifrovat</string>
   <string name="title_unlock">Odemknout klíč</string>
   <string name="title_add_subkey">Přidat podklíč</string>
@@ -19,7 +17,6 @@
   <string name="title_share_fingerprint_with">Sdílet otisk s...</string>
   <string name="title_share_key">Sdílet klíč s...</string>
   <string name="title_share_file">Sdílet soubor s...</string>
-  <string name="title_share_message">Sdílet zprávu s...</string>
   <string name="title_encrypt_to_file">Zašifrovat do souboru</string>
   <string name="title_decrypt_to_file">Rozšifrovat do souboru</string>
   <string name="title_import_keys">Importovat klíče</string>
@@ -28,7 +25,6 @@
   <string name="title_export_keys">Exportovat klíče</string>
   <string name="title_key_not_found">Klíč nebyl nalezen</string>
   <string name="title_send_key">Nahrát na keyserver</string>
-  <string name="title_certify_key">Certifikovat identity</string>
   <string name="title_key_details">Detaily klíče</string>
   <string name="title_help">Nápověda</string>
   <string name="title_log_display">Log</string>
@@ -43,20 +39,16 @@
   <string name="section_defaults">Výchozí hodnoty</string>
   <string name="section_advanced">Pokročilé</string>
   <string name="section_passphrase_cache">Cache hesel</string>
-  <string name="section_certify">Certifikovat</string>
   <string name="section_actions">Akce</string>
   <string name="section_share_key">Klíč</string>
-  <string name="section_certification_key">Klíč použitý pro certifikaci</string>
   <string name="section_upload_key">Synchronizovat klíč</string>
   <string name="section_key_server">Keyserver</string>
   <string name="section_fingerprint">Otisk</string>
-  <string name="section_key_to_certify">Klíče k ověření</string>
   <string name="section_decrypt_files">Soubory</string>
   <string name="section_decrypt_text">Text</string>
   <string name="section_certs">Certifikáty</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifrovat, ověřit a uložit soubor</string>
-  <string name="btn_decrypt_verify_message">Dešifrovat a ověřit zpávu</string>
   <string name="btn_encrypt_file">Zaširovat a uložit soubor</string>
   <string name="btn_encrypt_share_file">Zašifrovat a sdílet soubor</string>
   <string name="btn_save">Uložit</string>
@@ -68,7 +60,6 @@
   <string name="btn_next">Další</string>
   <string name="btn_back">Zpět</string>
   <string name="btn_lookup_key">Vyhledat klíč</string>
-  <string name="btn_share_encrypted_signed">Zašifrovat a sdílet zprávu</string>
   <string name="btn_view_cert_key">Zobrazit klíč certifikátu</string>
   <string name="btn_create_key">Vytvořit klíč</string>
   <string name="btn_add_files">Přidat soubor(y)</string>
@@ -91,7 +82,6 @@
   <string name="menu_export_all_keys">Exportovat všechny klíče</string>
   <string name="menu_advanced">Zobrazit pokročilé info</string>
   <!--label-->
-  <string name="label_message">Zpráva</string>
   <string name="label_file">Soubor</string>
   <string name="label_files">Soubor(y)</string>
   <string name="label_file_colon">Soubor:</string>
@@ -116,7 +106,6 @@
   <string name="label_symmetric">Zašifrovat heslem</string>
   <string name="label_passphrase_cache_ttl">Čas vypršení pro cache</string>
   <string name="label_passphrase_cache_subs">Pamatovat si heslo podle podklíče</string>
-  <string name="label_message_compression">Komprimovat zprávu</string>
   <string name="label_file_compression">Komprimovat soubor</string>
   <string name="label_keyservers">Keyservery</string>
   <string name="label_key_id">ID klíče</string>
@@ -136,13 +125,6 @@
   <string name="label_preferred">upřednostněno</string>
   <string name="user_id_no_name">&lt;beze jména&gt;</string>
   <string name="none">&lt;žádný&gt;</string>
-  <string name="no_key">&lt;žádný klíč&gt;</string>
-  <string name="can_encrypt">slouží k šifrovní</string>
-  <string name="can_sign">slouží k podpisu</string>
-  <string name="can_certify">může ověřit</string>
-  <string name="can_certify_not">nemůže ověřit</string>
-  <string name="expired">po epiraci</string>
-  <string name="revoked">revokovat</string>
   <plurals name="n_keys">
     <item quantity="one">1 klíč</item>
     <item quantity="few">%d klíče</item>
@@ -174,7 +156,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Otevřít...</string>
-  <string name="warning">Varovnání</string>
   <string name="error">Chyba</string>
   <string name="error_message">Chyba: %s</string>
   <!--key flags-->
@@ -193,19 +174,14 @@
   <string name="yubikey_pin_for">Zadejte PIN pro přístup k YubiKey pro \'%s\'</string>
   <string name="nfc_text">Přidržte YubiKey u zadní strany vašeho přístroje.</string>
   <string name="file_delete_confirmation">Chcete opravdu smazat\n%s?</string>
-  <string name="file_delete_successful">Úspěšně smazáno.</string>
   <string name="no_file_selected">Nejprve vyberte soubor.</string>
   <string name="encrypt_sign_successful">Úspěšně podepsáno a/nebo zašifrováno.</string>
   <string name="encrypt_sign_clipboard_successful">Úspěšně podepsání a/nebo zašifrováno do schránky.</string>
-  <string name="enter_passphrase_twice">Heslo zadejte dvakrát.</string>
   <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
   <string name="select_encryption_or_signature_key">Vyberte alespoň jeden šifrovací nebo podpisový klíč.</string>
   <string name="specify_file_to_encrypt_to">Prosím specifikujte do kterého souboru zašifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
   <string name="specify_file_to_decrypt_to">Prosím specifikujte do kterého souboru rozšifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
   <string name="specify_file_to_export_to">Prosím specifikujte do kterého souboru exportovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
-  <string name="key_deletion_confirmation_multi">Opravdu si přejete smazat všechny vybrané veřejné klíče?\nToto nebude možné vzít zpět!</string>
-  <string name="secret_key_deletion_confirmation">Opravdu chcete smazat TAJNÝ klíč \'%s\'?\nTuto operaci nelze vzít zpět!</string>
-  <string name="public_key_deletetion_confirmation">Opravdu chcete smazat veřejný klíč \'%s\'?\nToto nelze vzít zpět!</string>
   <string name="also_export_secret_keys">Zárověň exportovat tajný klíč</string>
   <string name="reinstall_openkeychain">Narazili jste na známou chybu v Androidu. Přeinstalujte prosím OpenKeychain pokud chcete své propojit kontakty s klíči.</string>
   <string name="key_exported">Úspěšně exportován 1 klíč.</string>
@@ -217,13 +193,11 @@
   <string name="nfc_successful">Úspěšně odeslaný klíč pomocí NFC Beam!</string>
   <string name="key_copied_to_clipboard">Klíč byl zkopírován do schránky!</string>
   <string name="fingerprint_copied_to_clipboard">Fingerprint byl zkopírován do schránky!</string>
-  <string name="select_key_to_certify">Prosím vyberte klíč pro ověření!</string>
   <string name="key_too_big_for_sharing">Klíč je příliš velký aby byl sdílen pomocí této metody!</string>
   <string name="text_copied_to_clipboard">Text byl zkopírován do schránky!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">mazání \'%s\' selhalo</string>
   <string name="error_file_not_found">soubor nenalezen</string>
   <string name="error_no_secret_key_found">žádný vhodný tajný klíč nenalezen</string>
   <string name="error_external_storage_not_ready">externí úložiště není připraveno</string>
@@ -305,8 +279,6 @@
   <string name="progress_deleting_securely">mažu \'%s\' bezpečně...</string>
   <string name="progress_deleting">mažu klíče...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Jméno/Email/ID klíče</string>
-  <string name="hint_cloud_search_hint">Jméno/Email/Důkaz/Klíč...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -334,7 +306,6 @@
   <!--Help-->
   <string name="help_tab_start">Začít</string>
   <string name="help_tab_faq">FAQ</string>
-  <string name="help_tab_wot">Síť důvěry</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Historie změn</string>
   <string name="help_tab_about">O aplikaci</string>
@@ -414,7 +385,6 @@
   <string name="key_view_action_edit">Editovat klíč</string>
   <string name="key_view_action_encrypt">Zašifrovat text</string>
   <string name="key_view_action_encrypt_files">soubory</string>
-  <string name="key_view_action_certify">Certifikovat identity</string>
   <string name="key_view_action_update">Aktualizuji z keyserveru</string>
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
   <string name="key_view_action_share_nfc">Sdílet přes NFC</string>
@@ -457,15 +427,12 @@
   <string name="edit_key_error_add_identity">Přidejte alespoň jednu identitu!</string>
   <string name="edit_key_error_add_subkey">Přidejte alespoň jeden podklíč!</string>
   <!--Create key-->
-  <string name="create_key_upload">Aktualizovat klíč na keyserver</string>
   <string name="create_key_empty">Toto pole je vyžadováno</string>
   <string name="create_key_passphrases_not_equal">Heslo nesouhlasí</string>
   <string name="create_key_final_text">Zadali jste následující identitu:</string>
   <string name="create_key_final_robot_text">Vytvoření klíče může chvíli trvat, mezitím si dejte třeba šálek dobré kávy...</string>
   <string name="create_key_rsa">(3 podklíče, RSA, 4096 bit)</string>
   <string name="create_key_custom">(uživatelská konfigurace klíče)</string>
-  <string name="create_key_identity_text">Zadejte své celé jméno, emailovou adresu a zvolte heslo.</string>
-  <string name="create_key_hint_full_name">Celé jméno, např. Jan Novák</string>
   <string name="create_key_edit">Změnit konfiguraci klíče</string>
   <!--View key-->
   <!--Navigation Drawer-->
@@ -513,6 +480,7 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_acc_saved">Účet uložen</string>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Kliknout pro vymazání načtených hesel</string>
   <string name="passp_cache_notif_clear">Smazat cache</string>
@@ -527,7 +495,6 @@
   <string name="unknown_uid">&lt;neznámý&gt;</string>
   <string name="empty_certs">Žádné certifikáty pro tento klíč</string>
   <string name="label_revocation">Důvod revokace</string>
-  <string name="label_verify_status">Stav ověření</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Klíč nenalezen!</string>
   <string name="error_key_processing">Chyba zpracování klíče!</string>

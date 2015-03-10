@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Anahtarları Seç</string>
   <string name="title_select_secret_key">Anahtarını Seç</string>
-  <string name="title_encrypt_text">Metni Şifrele</string>
-  <string name="title_encrypt_files">Dosyaları Şifrele</string>
   <string name="title_decrypt">Şifre çöz</string>
   <string name="title_add_subkey">Alt anahtar ekle</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
@@ -17,7 +15,6 @@
   <string name="title_share_fingerprint_with">Parmak izini paylaş...</string>
   <string name="title_share_key">Anahtarı paylaş...</string>
   <string name="title_share_file">Dosyayı paylaş...</string>
-  <string name="title_share_message">Mesajı paylaş...</string>
   <string name="title_encrypt_to_file">Dosyaya Şifrele</string>
   <string name="title_decrypt_to_file">Dosyaya Çözümle</string>
   <string name="title_import_keys">Anahtarları Al</string>
@@ -26,7 +23,6 @@
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_send_key">Anahtar Sunucusuna Yükle</string>
-  <string name="title_certify_key">Kimlikleri Tasdikle</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <string name="title_log_display">Günlük</string>
@@ -41,20 +37,16 @@
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
   <string name="section_passphrase_cache">Parola Önbelleği</string>
-  <string name="section_certify">Tasdik et</string>
   <string name="section_actions">Eylemler</string>
   <string name="section_share_key">Anahtar</string>
-  <string name="section_certification_key">Tasdik işlemi için kullanılan anahtarınız</string>
   <string name="section_upload_key">Anahtarı Eşitle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <string name="section_fingerprint">Parmak izi</string>
-  <string name="section_key_to_certify">Tasdik edilecek anahtar</string>
   <string name="section_decrypt_files">Dosyalar</string>
   <string name="section_decrypt_text">Metin</string>
   <string name="section_certs">Sertifikalar</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Şifreyi çöz, doğrula ve dosyayı kaydet</string>
-  <string name="btn_decrypt_verify_message">Şifreyi çöz ve mesajı doğrula</string>
   <string name="btn_encrypt_file">Şifrele ve dosyayı kaydet</string>
   <string name="btn_encrypt_share_file">Şifrele ve dosyayı paylaş</string>
   <string name="btn_save">Kaydet</string>
@@ -66,7 +58,6 @@
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
   <string name="btn_lookup_key">Anahtarı ara</string>
-  <string name="btn_share_encrypted_signed">Şifrele ve mesajı paylaş</string>
   <string name="btn_view_cert_key">Tasdikleme anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
   <string name="btn_add_files">Dosya(lar) ekle</string>
@@ -89,7 +80,6 @@
   <string name="menu_export_all_keys">Tüm anahtarları ver</string>
   <string name="menu_advanced">Gelişmiş bilgiyi göster</string>
   <!--label-->
-  <string name="label_message">Mesaj</string>
   <string name="label_file">Dosya</string>
   <string name="label_files">Dosya(lar)</string>
   <string name="label_file_colon">Dosya:</string>
@@ -114,7 +104,6 @@
   <string name="label_symmetric">Parolayla şifrele</string>
   <string name="label_passphrase_cache_ttl">Önbellek zamanı</string>
   <string name="label_passphrase_cache_subs">Parolaları altanahtarlara göre önbellekle</string>
-  <string name="label_message_compression">Mesaj sıkıştırma</string>
   <string name="label_file_compression">Dosya sıkıştırma</string>
   <string name="label_keyservers">Anahtar Sunucuları</string>
   <string name="label_key_id">Anahtar ID</string>
@@ -134,13 +123,6 @@
   <string name="label_preferred">tercih edilen</string>
   <string name="user_id_no_name">&lt;isimsiz&gt;</string>
   <string name="none">&lt;hiçbiri&gt;</string>
-  <string name="no_key">&lt;anahtar yok&gt;</string>
-  <string name="can_encrypt">şifreleyebilir</string>
-  <string name="can_sign">imzalayabilir</string>
-  <string name="can_certify">tasdikleyebilir</string>
-  <string name="can_certify_not">tasdikleyemez</string>
-  <string name="expired">zaman aşımına uğramış</string>
-  <string name="revoked">yürürlükten kaldırılmış</string>
   <plurals name="n_keys">
     <item quantity="one">1 anahtar</item>
     <item quantity="other">%d anahtar</item>
@@ -170,7 +152,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Aç...</string>
-  <string name="warning">Uyarı</string>
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
   <!--key flags-->
@@ -187,19 +168,14 @@
   <string name="passphrase_for">\'%s\' için bir parola girin</string>
   <string name="nfc_text">YubiKey\'inizi cihazınızın arkasında tutun.</string>
   <string name="file_delete_confirmation">Silmek istediğinize emin misiniz\n%s?</string>
-  <string name="file_delete_successful">Başarıyla silindi.</string>
   <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
-  <string name="enter_passphrase_twice">Parolanızı iki kere girin.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
   <string name="select_encryption_or_signature_key">En az bir şifreleme anahtarı veya imza anahtarı seçiniz.</string>
   <string name="specify_file_to_encrypt_to">Lütfen şifreleme sonucu hangi dosyanın oluşturulması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
   <string name="specify_file_to_decrypt_to">Lütfen şifre çözme sonucu hangi dosyanın oluşturulması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
   <string name="specify_file_to_export_to">Lütfen dışa aktarım için hangi dosyanın kullanılması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
-  <string name="key_deletion_confirmation_multi">Seçilen tüm genel anahtarları gerçekten silmek istiyor musunuz?\nBu işlemi geri alamazsınız!</string>
-  <string name="secret_key_deletion_confirmation">\'%s\' ÖZEL anahtarını gerçekten silmek istiyor musunuz?\nBu işlemi geri alamazsınız!</string>
-  <string name="public_key_deletetion_confirmation">\'%s\' genel anahtarını gerçekten silmek istiyor musunuz?\nBu işlemi geri alamazsınız!</string>
   <string name="also_export_secret_keys">Özel anahtarları da dışa aktar</string>
   <string name="reinstall_openkeychain">Android için bilinen bir hataya denk geldiniz. Eğer kişilerinizi anahtarlarla eşlemek istiyorsanız, lütfen OpenKeychain uygulamasını yeniden yükleyin.</string>
   <string name="key_exported">1 anahtar başarıyla dışa aktarıldı.</string>
@@ -215,13 +191,11 @@
   <string name="nfc_successful">Anahtar NFC Beam ile başarıyla gönderildi!</string>
   <string name="key_copied_to_clipboard">Anahtar kopyalama önbelleğine kopyalandı!</string>
   <string name="fingerprint_copied_to_clipboard">Parmak izi kopyalama önbelleğine kopyalandı!</string>
-  <string name="select_key_to_certify">Lütfen tasdikleme için kullanılacak bir anahtar seçin!</string>
   <string name="key_too_big_for_sharing">Anahtar bu yolla paylaşılamayacak kadar büyük!</string>
   <string name="text_copied_to_clipboard">Metin kopyalama önbelleğine kopyalandı!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">\'%s\' silmesi başarısız oldu</string>
   <string name="error_file_not_found">dosya bulunamadı</string>
   <string name="error_no_secret_key_found">uygun bir özel anahtar bulunamadı</string>
   <string name="error_external_storage_not_ready">harici depolama hazır değil</string>
@@ -305,8 +279,6 @@
   <string name="progress_con_saving">birleştir: önbelleğe kaydediliyor...</string>
   <string name="progress_con_reimport">birleştir: yeniden içe aktarılıyor...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">İsim/Eposta/Anahtar ID...</string>
-  <string name="hint_cloud_search_hint">İsim/Eposta/Kanıt/Anahtar...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -334,7 +306,6 @@
   <!--Help-->
   <string name="help_tab_start">Başla</string>
   <string name="help_tab_faq">SSS</string>
-  <string name="help_tab_wot">Güven Ağı</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Sürüm Notları</string>
   <string name="help_tab_about">Hakkında</string>
@@ -408,7 +379,6 @@
   <string name="key_view_action_edit">Anahtarı düzenle</string>
   <string name="key_view_action_encrypt">Metni şifrele</string>
   <string name="key_view_action_encrypt_files">dosyalar</string>
-  <string name="key_view_action_certify">Kimlikleri Tasdikle</string>
   <string name="key_view_action_update">Anahtar sunucusundan güncelle</string>
   <string name="key_view_action_share_with">Şu şekilde paylaş...</string>
   <string name="key_view_action_share_nfc">NFC üzerinden Paylaş</string>
@@ -442,15 +412,12 @@
   <string name="edit_key_error_add_identity">En az bir kimlik ekleyin!</string>
   <string name="edit_key_error_add_subkey">En az bir alt anahtar ekleyin!</string>
   <!--Create key-->
-  <string name="create_key_upload">Anahtarı anahtar sunucusuna yükle</string>
   <string name="create_key_empty">Bu alan zorunludur</string>
   <string name="create_key_passphrases_not_equal">Parolalar eşleşmedi</string>
   <string name="create_key_final_text">Şu kimliği girdiniz:</string>
   <string name="create_key_final_robot_text">Anahtar oluşturma biraz zaman alabilir, bu sırada bir çay için...</string>
   <string name="create_key_rsa">(3 alt anahtar, RSA, 4096 bit)</string>
   <string name="create_key_custom">(özel anahtar yapılandırması)</string>
-  <string name="create_key_identity_text">Tam isminizi, e-posta adresinizi girin ve bir parola seçin.</string>
-  <string name="create_key_hint_full_name">Tam Ad, örneğin: Max Mustermann</string>
   <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->
   <!--Navigation Drawer-->
@@ -508,6 +475,7 @@
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <string name="msg_acc_saved">Hesap kaydedildi</string>
   <string name="msg_download_success">Başarıyla indirildi!</string>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_clear">Önbelleği Temizle</string>
   <string name="passp_cache_notif_pwd">Parola</string>
@@ -522,7 +490,6 @@
   <string name="unknown_uid">&lt;bilinmeyen&gt;</string>
   <string name="empty_certs">Bu anahtar için sertifika yok</string>
   <string name="label_revocation">Yürürlükten Kaldırma Nedeni</string>
-  <string name="label_verify_status">Doğrulama Durumu</string>
   <string name="label_cert_type">Tip</string>
   <string name="error_key_not_found">Anahtar bulunamadı!</string>
   <string name="error_key_processing">Anahtar işlenirken hata!</string>
