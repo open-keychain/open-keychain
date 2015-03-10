@@ -177,6 +177,14 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         return isRevokedPending;
     }
 
+    public String getGuessedName() {
+        Cursor cursor = getCursor();
+        cursor.moveToFirst();
+        String userId = cursor.getString(INDEX_USER_ID);
+        String[] splitUserId = KeyRing.splitUserId(userId);
+        return splitUserId[0];
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
