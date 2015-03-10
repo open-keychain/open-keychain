@@ -296,6 +296,35 @@ public class ContactHelper {
         return contactId;
     }
 
+    /**
+     * Returns the display name of the system contact associated with masterKeyId, null if the
+     * contact does not exist
+     *
+     * @param resolver
+     * @param masterKeyId
+     * @return
+     */
+    public static String getContactName(ContentResolver resolver, long masterKeyId) {
+        String contactName = null;
+        Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{
+                        ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY
+                },
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
+                        ContactsContract.RawContacts.DELETED + "=?",
+                new String[]{//"0" for "not deleted"
+                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId), "0"
+                }, null);
+        if (raw != null) {
+            if (raw.moveToNext()) {
+                contactName = raw.getString(0);
+            }
+            raw.close();
+        }
+        return contactName;
+    }
+
     public static Bitmap getCachedPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
