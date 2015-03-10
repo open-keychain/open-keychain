@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
+import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyFragment extends LoaderFragment implements
@@ -218,18 +219,18 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {
-                mUserIdsAdapter.swapCursor(data);
+                mUserIdsAdapter.swapCursor(cursor);
                 break;
             }
 
             case LOADER_ID_LINKED_IDS: {
-                mLinkedIdsCard.setVisibility(data.getCount() > 0 ? View.VISIBLE : View.GONE);
-                mLinkedIdsAdapter.swapCursor(data);
+                mLinkedIdsCard.setVisibility(cursor.getCount() > 0 ? View.VISIBLE : View.GONE);
+                mLinkedIdsAdapter.swapCursor(cursor);
                 break;
             }
         }

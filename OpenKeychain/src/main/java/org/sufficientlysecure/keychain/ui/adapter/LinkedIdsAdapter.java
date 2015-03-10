@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,12 +34,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
 
 import java.io.IOException;
 import java.util.WeakHashMap;
@@ -55,6 +54,23 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
         mShowCertification = showCertification;
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor cursor) {
+        if (cursor == null) {
+            return super.swapCursor(null);
+        }
+
+        Cursor filteredCursor = new FilterCursorWrapper(cursor) {
+            @Override
+            public boolean isVisible(Cursor cursor) {
+                RawLinkedIdentity id = getItemAtPosition(cursor);
+                return id instanceof LinkedIdentity;
+            }
+        };
+
+        return super.swapCursor(filteredCursor);
     }
 
     @Override
@@ -83,30 +99,38 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             holder.vVerified.setVisibility(View.GONE);
         }
 
-        RawLinkedIdentity id = getItem(cursor.getPosition());
+        RawLinkedIdentity id = getItemAtPosition(cursor);
         holder.setData(mContext, id);
 
     }
 
-    @Override
-    public RawLinkedIdentity getItem(int position) {
-        RawLinkedIdentity ret = mLinkedIdentityCache.get(position);
+    public RawLinkedIdentity getItemAtPosition(Cursor cursor) {
+        int rank = cursor.getInt(INDEX_RANK);
+        Log.d(Constants.TAG, "requested rank: " + rank);
+
+        RawLinkedIdentity ret = mLinkedIdentityCache.get(rank);
         if (ret != null) {
+            Log.d(Constants.TAG, "cached!");
             return ret;
         }
+        Log.d(Constants.TAG, "not cached!");
 
-        Cursor c = getCursor();
-        c.moveToPosition(position);
-
-        byte[] data = c.getBlob(INDEX_ATTRIBUTE_DATA);
         try {
+            byte[] data = cursor.getBlob(INDEX_ATTRIBUTE_DATA);
             ret = LinkedIdentity.fromAttributeData(data);
-            mLinkedIdentityCache.put(position, ret);
+            mLinkedIdentityCache.put(rank, ret);
             return ret;
         } catch (IOException e) {
             Log.e(Constants.TAG, "could not read linked identity subpacket data", e);
             return null;
         }
+    }
+
+    @Override
+    public RawLinkedIdentity getItem(int position) {
+        Cursor cursor = getCursor();
+        cursor.moveToPosition(position);
+        return getItemAtPosition(cursor);
     }
 
     @Override
@@ -128,7 +152,6 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
     public LinkedIdViewFragment getLinkedIdFragment(Uri baseUri,
             int position, byte[] fingerprint) throws IOException {
-
         Cursor c = getCursor();
         c.moveToPosition(position);
         int rank = c.getInt(UserIdsAdapter.INDEX_RANK);
@@ -165,12 +188,6 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             vIcon.setImageResource(id.getDisplayIcon());
 
         }
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        mLinkedIdentityCache.clear();
-        super.notifyDataSetChanged();
     }
 
 }
