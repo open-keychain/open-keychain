@@ -113,7 +113,7 @@
                     android:minHeight="?android:attr/listPreferredItemHeight"
                     android:gravity="center_vertical"
                     android:clickable="true"
-                    style="@style/SelectableItem"
+                    android:background="?android:selectableItemBackground"
                     android:layout_gravity="center_vertical" />
             </LinearLayout>
 

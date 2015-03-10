@@ -75,7 +75,7 @@
             android:clickable="true"
             android:layout_marginLeft="32dp"
             android:paddingRight="4dp"
-            style="@style/SelectableItem"
+            android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -121,7 +121,7 @@
                 android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
-                style="@style/SelectableItem" />
+                android:background="?android:selectableItemBackground" />
 
         </LinearLayout>
 

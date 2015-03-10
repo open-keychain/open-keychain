@@ -31,7 +31,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_search_grey_24dp"
             android:layout_gravity="center_vertical"
-            style="@style/SelectableItem" />
+            android:background="?android:selectableItemBackground" />
 
         <View
             android:layout_width="1dip"
@@ -48,7 +48,7 @@
             android:padding="8dp"
             android:src="@drawable/ic_settings_grey_24dp"
             android:layout_gravity="center_vertical"
-            style="@style/SelectableItem" />
+            android:background="?android:selectableItemBackground" />
 
     </LinearLayout>
 

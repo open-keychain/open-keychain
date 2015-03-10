@@ -64,6 +64,8 @@
 
                 <LinearLayout
                     android:id='@+id/system_contact_layout'
+                    android:clickable="true"
+                    android:background="?android:selectableItemBackground"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

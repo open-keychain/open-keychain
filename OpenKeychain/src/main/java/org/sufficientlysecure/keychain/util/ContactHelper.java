@@ -386,7 +386,7 @@ public class ContactHelper {
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
                 if (isExpired || isRevoked) {
-                    Log.d(Constants.TAG, "Expired or revoked: Deleting " + rawContactId);
+                    Log.d(Constants.TAG, "Expired or revoked: Deleting rawContactId " + rawContactId);
                     if (rawContactId != -1) {
                         deleteRawContactById(resolver, rawContactId);
                     }
@@ -423,8 +423,6 @@ public class ContactHelper {
 
     /**
      * Delete all raw contacts associated to OpenKeychain.
-     * <p/>
-     * TODO: Does this work?
      */
     private static int debugDeleteRawContacts(ContentResolver resolver) {
         //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
