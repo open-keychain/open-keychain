@@ -89,9 +89,10 @@ public class AccountSettingsActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_account_settings_delete:
+            case R.id.menu_account_settings_delete: {
                 deleteAccount();
                 return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }

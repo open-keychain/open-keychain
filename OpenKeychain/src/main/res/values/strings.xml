@@ -491,7 +491,7 @@
     <string name="api_settings_hide_advanced">"Hide advanced settings"</string>
     <string name="api_settings_no_key">"No key selected"</string>
     <string name="api_settings_select_key">"Select key"</string>
-    <string name="api_settings_create_key">"Create new key for this account"</string>
+    <string name="api_settings_create_key">"Create new key"</string>
     <string name="api_settings_save">"Save"</string>
     <string name="api_settings_save_msg">"Account has been saved"</string>
     <string name="api_settings_cancel">"Cancel"</string>
@@ -517,6 +517,7 @@
     <string name="api_select_pub_keys_text">"Please review the list of recipients!"</string>
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
+    <string name="api_select_sign_key_text">"Please select one of your existing keys or create a new one."</string>
 
     <!-- Share -->
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>

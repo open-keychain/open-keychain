@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
+import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.ui.NfcActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
@@ -232,8 +233,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
-                            ParcelFileDescriptor output, AccountSettings accSettings,
-                            boolean cleartextSign) {
+                            ParcelFileDescriptor output, boolean cleartextSign) {
         InputStream is = null;
         OutputStream os = null;
         try {
@@ -244,6 +244,17 @@ public class OpenPgpService extends RemoteService {
                 Log.d(Constants.TAG, "nfcSignedHash:" + Hex.toHexString(nfcSignedHash));
             } else {
                 Log.d(Constants.TAG, "nfcSignedHash: null");
+            }
+
+            Intent signKeyIdIntent = getSignKeyMasterId(data);
+            // NOTE: Fallback to return account settings (Old API)
+            if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
+                    == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
+                return signKeyIdIntent;
+            }
+            long signKeyId = signKeyIdIntent.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
+            if (signKeyId == Constants.key.none) {
+                Log.e(Constants.TAG, "No signing key given!");
             }
 
             // carefully: only set if timestamp exists
@@ -271,7 +282,7 @@ public class OpenPgpService extends RemoteService {
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(null)
                     .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
-                    .setSignatureMasterKeyId(accSettings.getKeyId())
+                    .setSignatureMasterKeyId(signKeyId)
                     .setNfcState(nfcSignedHash, nfcCreationDate);
 
             // execute PGP operation!
@@ -336,8 +347,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent encryptAndSignImpl(Intent data, ParcelFileDescriptor input,
-                                      ParcelFileDescriptor output, AccountSettings accSettings,
-                                      boolean sign) {
+                                      ParcelFileDescriptor output, boolean sign) {
         InputStream is = null;
         OutputStream os = null;
         try {
@@ -345,6 +355,14 @@ public class OpenPgpService extends RemoteService {
             String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
             if (originalFilename == null) {
                 originalFilename = "";
+            }
+
+            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
+            int compressionId;
+            if (enableCompression) {
+                compressionId = CompressionAlgorithmTags.ZLIB;
+            } else {
+                compressionId = CompressionAlgorithmTags.UNCOMPRESSED;
             }
 
             // first try to get key ids from non-ambiguous key id extra
@@ -374,13 +392,23 @@ public class OpenPgpService extends RemoteService {
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
-                    .setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED)
+                    .setCompressionId(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED)
                     .setEncryptionMasterKeyIds(keyIds)
-                    .setFailOnMissingEncryptionKeyIds(true)
-                    .setAdditionalEncryptId(accSettings.getKeyId()); // add acc key for encryption
+                    .setFailOnMissingEncryptionKeyIds(true);
 
             if (sign) {
+
+                Intent signKeyIdIntent = getSignKeyMasterId(data);
+                // NOTE: Fallback to return account settings (Old API)
+                if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
+                        == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
+                    return signKeyIdIntent;
+                }
+                long signKeyId = signKeyIdIntent.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
+                if (signKeyId == Constants.key.none) {
+                    Log.e(Constants.TAG, "No signing key given!");
+                }
 
                 byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
                 // carefully: only set if timestamp exists
@@ -392,8 +420,9 @@ public class OpenPgpService extends RemoteService {
 
                 // sign and encrypt
                 pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
-                        .setSignatureMasterKeyId(accSettings.getKeyId())
-                        .setNfcState(nfcSignedHash, nfcCreationDate);
+                        .setSignatureMasterKeyId(signKeyId)
+                        .setNfcState(nfcSignedHash, nfcCreationDate)
+                        .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
@@ -455,8 +484,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor input,
-                                        ParcelFileDescriptor output, Set<Long> allowedKeyIds,
-                                        boolean decryptMetadataOnly) {
+                                        ParcelFileDescriptor output, boolean decryptMetadataOnly) {
         InputStream is = null;
         OutputStream os = null;
         try {
@@ -468,6 +496,16 @@ public class OpenPgpService extends RemoteService {
                 os = null;
             } else {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            }
+
+            String currentPkg = getCurrentCallingPackage();
+            Set<Long> allowedKeyIds;
+            if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
+                allowedKeyIds = mProviderHelper.getAllKeyIdsForApp(
+                        ApiAccounts.buildBaseUri(currentPkg));
+            } else {
+                allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
+                        KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
             }
 
             String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
@@ -516,9 +554,16 @@ public class OpenPgpService extends RemoteService {
                 }
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
+                int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
 
                 OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
                 if (signatureResult != null) {
+                    resultType |= OpenPgpApi.RESULT_TYPE_SIGNED;
+                    if (!signatureResult.isSignatureOnly()) {
+                        resultType |= OpenPgpApi.RESULT_TYPE_ENCRYPTED;
+                    }
+                    result.putExtra(OpenPgpApi.RESULT_TYPE, resultType);
+
                     result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
 
                     if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 5) {
@@ -615,6 +660,27 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
+    private Intent getSignKeyIdImpl(Intent data) {
+        String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
+
+        Intent intent = new Intent(getBaseContext(), SelectSignKeyIdActivity.class);
+        String currentPkg = getCurrentCallingPackage();
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(currentPkg));
+        intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
+        intent.putExtra(SelectSignKeyIdActivity.EXTRA_DATA, data);
+
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // return PendingIntent to be executed by client
+        Intent result = new Intent();
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+
+        return result;
+    }
+
     private Intent getKeyIdsImpl(Intent data) {
         // if data already contains key ids extra GET_KEY_IDS has been executed again
         // after user interaction. Then, we just need to return the array again!
@@ -629,6 +695,35 @@ public class OpenPgpService extends RemoteService {
             // get key ids based on given user ids
             String[] userIds = data.getStringArrayExtra(OpenPgpApi.EXTRA_USER_IDS);
             return returnKeyIdsFromEmails(data, userIds);
+        }
+    }
+
+    private Intent getSignKeyMasterId(Intent data) {
+        // NOTE: Accounts are deprecated on API version >= 7
+        if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
+            String accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
+            // if no account name is given use name "default"
+            if (TextUtils.isEmpty(accName)) {
+                accName = "default";
+            }
+            Log.d(Constants.TAG, "accName: " + accName);
+            // fallback to old API
+            final AccountSettings accSettings = getAccSettings(accName);
+            if (accSettings == null || (accSettings.getKeyId() == Constants.key.none)) {
+                return getCreateAccountIntent(data, accName);
+            }
+
+            // NOTE: just wrapping the key id
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, accSettings.getKeyId());
+            return result;
+        } else {
+            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
+            if (signKeyId == Constants.key.none) {
+                return getSignKeyIdImpl(data);
+            }
+
+            return data;
         }
     }
 
@@ -657,12 +752,13 @@ public class OpenPgpService extends RemoteService {
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 3
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5
-                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 6) {
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 6
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 7) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: 3, 4, 5, 6");
+                            + "supported API versions: 3-7");
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
@@ -677,16 +773,6 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
-    private String getAccountName(Intent data) {
-        String accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
-        // if no account name is given use name "default"
-        if (TextUtils.isEmpty(accName)) {
-            accName = "default";
-        }
-        Log.d(Constants.TAG, "accName: " + accName);
-        return accName;
-    }
-
     // TODO: multi-threading
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
@@ -698,41 +784,29 @@ public class OpenPgpService extends RemoteService {
                     return errorResult;
                 }
 
-                String accName = getAccountName(data);
-                final AccountSettings accSettings = getAccSettings(accName);
-                if (accSettings == null) {
-                    return getCreateAccountIntent(data, accName);
-                }
-
                 String action = data.getAction();
                 if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
-                    return signImpl(data, input, output, accSettings, true);
+                    return signImpl(data, input, output, true);
                 } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
                     // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
                     Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
-                    return signImpl(data, input, output, accSettings, true);
+                    return signImpl(data, input, output, true);
                 } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
-                    return signImpl(data, input, output, accSettings, false);
+                    return signImpl(data, input, output, false);
                 } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
-                    return encryptAndSignImpl(data, input, output, accSettings, false);
+                    return encryptAndSignImpl(data, input, output, false);
                 } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
-                    return encryptAndSignImpl(data, input, output, accSettings, true);
+                    return encryptAndSignImpl(data, input, output, true);
                 } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
-                    String currentPkg = getCurrentCallingPackage();
-                    Set<Long> allowedKeyIds =
-                            mProviderHelper.getAllKeyIdsForApp(
-                                    ApiAccounts.buildBaseUri(currentPkg));
-                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, false);
+                    return decryptAndVerifyImpl(data, input, output, false);
                 } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
-                    String currentPkg = getCurrentCallingPackage();
-                    Set<Long> allowedKeyIds =
-                            mProviderHelper.getAllKeyIdsForApp(
-                                    ApiAccounts.buildBaseUri(currentPkg));
-                    return decryptAndVerifyImpl(data, input, output, allowedKeyIds, true);
-                } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
-                    return getKeyImpl(data);
+                    return decryptAndVerifyImpl(data, input, output, true);
+                } else if (OpenPgpApi.ACTION_GET_SIGN_KEY_ID.equals(action)) {
+                    return getSignKeyIdImpl(data);
                 } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
                     return getKeyIdsImpl(data);
+                } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
+                    return getKeyImpl(data);
                 } else {
                     return null;
                 }
