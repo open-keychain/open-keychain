@@ -14,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -53,7 +54,7 @@ public class CertListWidget extends ViewAnimator
     public static final int INDEX_CREATION = 8;
 
     private TextView vCollapsed;
-    private View vExpanded;
+    private ListView vExpanded;
     private View vExpandButton;
 
     public CertListWidget(Context context, AttributeSet attrs) {
@@ -66,11 +67,24 @@ public class CertListWidget extends ViewAnimator
 
         View root = getRootView();
         vCollapsed = (TextView) root.findViewById(R.id.cert_collapsed_list);
-        vExpanded = root.findViewById(R.id.cert_expanded_list);
+        vExpanded = (ListView) root.findViewById(R.id.cert_expanded_list);
         vExpandButton = root.findViewById(R.id.cert_expand_button);
 
         // for now
         vExpandButton.setVisibility(View.GONE);
+        vExpandButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleExpanded();
+            }
+        });
+
+        // vExpanded.setAdapter(null);
+
+    }
+
+    void toggleExpanded() {
+        setDisplayedChild(getDisplayedChild() == 1 ? 0 : 1);
     }
 
     void setExpanded(boolean expanded) {
@@ -79,13 +93,9 @@ public class CertListWidget extends ViewAnimator
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = args.getParcelable(ARG_URI);
-        int rank = args.getInt(ARG_RANK);
-
-        Uri uri = Certs.buildLinkedIdCertsUri(baseUri, rank);
+        Uri uri = args.getParcelable(ARG_URI);
         return new CursorLoader(getContext(), uri,
                 CERTS_PROJECTION, null, null, null);
-
     }
 
     @Override

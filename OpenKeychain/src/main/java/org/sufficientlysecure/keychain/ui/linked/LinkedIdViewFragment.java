@@ -366,8 +366,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
         {
             Bundle args = new Bundle();
-            args.putParcelable(CertListWidget.ARG_URI, mDataUri);
-            args.putInt(CertListWidget.ARG_RANK, mLidRank);
+            args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(mDataUri, mLidRank));
             getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
                     args, mViewHolder.vLinkedCerts);
         }
