@@ -26,6 +26,7 @@ import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,19 +51,36 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
     protected LayoutInflater mInflater;
     WeakHashMap<Integer,RawLinkedIdentity> mLinkedIdentityCache = new WeakHashMap<>();
 
-    public LinkedIdsAdapter(Context context, Cursor c, int flags, boolean showCertification) {
+    private Cursor mUnfilteredCursor;
+
+    private TextView mExpander;
+
+    public LinkedIdsAdapter(Context context, Cursor c, int flags,
+            boolean showCertification, TextView expander) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
         mShowCertification = showCertification;
+
+        if (expander != null) {
+            mExpander = expander;
+            mExpander.setVisibility(View.GONE);
+            mExpander.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showUnfiltered();
+                }
+            });
+        }
     }
 
     @Override
     public Cursor swapCursor(Cursor cursor) {
         if (cursor == null) {
+            mUnfilteredCursor = null;
             return super.swapCursor(null);
         }
-
-        Cursor filteredCursor = new FilterCursorWrapper(cursor) {
+        mUnfilteredCursor = cursor;
+        FilterCursorWrapper filteredCursor = new FilterCursorWrapper(cursor) {
             @Override
             public boolean isVisible(Cursor cursor) {
                 RawLinkedIdentity id = getItemAtPosition(cursor);
@@ -70,7 +88,23 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             }
         };
 
+        if (mExpander != null) {
+            int hidden = filteredCursor.getHiddenCount();
+            if (hidden == 0) {
+                mExpander.setVisibility(View.GONE);
+            } else {
+                mExpander.setVisibility(View.VISIBLE);
+                mExpander.setText(mContext.getResources().getQuantityString(
+                        R.plurals.linked_id_expand, hidden));
+            }
+        }
+
         return super.swapCursor(filteredCursor);
+    }
+
+    private void showUnfiltered() {
+        mExpander.setVisibility(View.GONE);
+        super.swapCursor(mUnfilteredCursor);
     }
 
     @Override

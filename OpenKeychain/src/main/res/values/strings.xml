@@ -1310,5 +1310,9 @@
     <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
     <string name="menu_linked_add_identity">"Add Linked Identity"</string>
     <string name="section_linked_identities">Linked Identities</string>
+    <plurals name="linked_id_expand">
+        <item quantity="one">"There is one more unknown identity type"</item>
+        <item quantity="other">"There are %d more unknown identity types"</item>
+    </plurals>
 
 </resources>

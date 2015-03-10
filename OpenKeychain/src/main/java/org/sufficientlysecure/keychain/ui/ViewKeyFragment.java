@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -70,6 +71,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     private ListView mLinkedIds;
     private CardView mLinkedIdsCard;
     private byte[] mFingerprint;
+    private TextView mLinkedIdsExpander;
 
     /**
      * Creates new instance of this fragment
@@ -112,6 +114,8 @@ public class ViewKeyFragment extends LoaderFragment implements
         mLinkedIdsCard = (CardView) view.findViewById(R.id.card_linked_ids);
 
         mLinkedIds = (ListView) view.findViewById(R.id.view_key_linked_ids);
+
+        mLinkedIdsExpander = (TextView) view.findViewById(R.id.view_key_linked_ids_expander);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -198,7 +202,8 @@ public class ViewKeyFragment extends LoaderFragment implements
         mUserIds.setAdapter(mUserIdsAdapter);
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
-        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0, !mIsSecret);
+        mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0,
+                !mIsSecret, mLinkedIdsExpander);
         mLinkedIds.setAdapter(mLinkedIdsAdapter);
         getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
 
