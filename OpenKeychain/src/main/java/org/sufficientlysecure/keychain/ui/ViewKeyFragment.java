@@ -18,24 +18,30 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.*;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyFragment extends LoaderFragment implements
@@ -44,8 +50,14 @@ public class ViewKeyFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private ListView mUserIds;
+    //private ListView mLinkedSystemContact;
 
     boolean mIsSecret = false;
+    private String mName;
+
+    LinearLayout mSystemContactLayout;
+    ImageView mSystemContactPicture;
+    TextView mSystemContactName;
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
@@ -81,6 +93,10 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
+        mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
+        mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
+        mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
+
         return root;
     }
 
@@ -98,6 +114,49 @@ public class ViewKeyFragment extends LoaderFragment implements
                 }
             });
         }
+    }
+
+    /**
+     * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
+     * and onClickListener for the linked system contact's layout
+     *
+     * @param name
+     * @param masterKeyId
+     */
+    private void loadLinkedSystemContact(String name, final long masterKeyId) {
+        final Context context = mSystemContactName.getContext();
+        final ContentResolver resolver = context.getContentResolver();
+
+        final long contactId = ContactHelper.findContactId(resolver, masterKeyId);
+
+        if (contactId != -1) {//contact exists for given master key
+            mSystemContactName.setText(name);
+
+            Bitmap picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, true);
+            if (picture != null) mSystemContactPicture.setImageBitmap(picture);
+
+            mSystemContactLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    launchContactActivity(contactId, context);
+                }
+            });
+        }
+    }
+
+    /**
+     * launches the default android Contacts app to view a contact with the passed
+     * contactId (CONTACT_ID column from ContactsContract.RawContact table which is _ID column in
+     * ContactsContract.Contact table)
+     *
+     * @param contactId _ID for row in ContactsContract.Contacts table
+     * @param context
+     */
+    private void launchContactActivity(final long contactId, Context context) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contactId));
+        intent.setData(uri);
+        context.startActivity(intent);
     }
 
     @Override
@@ -148,6 +207,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
     }
 
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         setContentShown(false);
 
@@ -164,6 +224,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
     }
 
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         /* TODO better error handling? May cause problems when a key is deleted,
          * because the notification triggers faster than the activity closes.
@@ -179,7 +240,12 @@ public class ViewKeyFragment extends LoaderFragment implements
                 if (data.moveToFirst()) {
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-
+                    if (mName == null) {//to ensure we load the linked system contact only once
+                        String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
+                        mName = mainUserId[0];
+                        long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                        loadLinkedSystemContact(mName, masterKeyId);
+                    }
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
@@ -202,6 +268,7 @@ public class ViewKeyFragment extends LoaderFragment implements
      * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
      * We need to make sure we are no longer using it.
      */
+    @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {

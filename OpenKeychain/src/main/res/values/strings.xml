@@ -47,6 +47,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>
@@ -643,6 +644,8 @@
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Confirmed Key"</string>
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
+
+    <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
