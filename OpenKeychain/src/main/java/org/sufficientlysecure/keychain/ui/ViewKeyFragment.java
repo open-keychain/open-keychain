@@ -126,11 +126,10 @@ public class ViewKeyFragment extends LoaderFragment implements
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();
 
-        //Querying the same contact twice, should we merge it into one operation?
-        final String contactName = ContactHelper.getContactName(resolver, masterKeyId);
         final long contactId = ContactHelper.findContactId(resolver, masterKeyId);
+        final String contactName = ContactHelper.getContactName(resolver, contactId);
 
-        if (contactName != null) {//contact exists for given master key
+        if (contactName != null) {//contact name exists for given master key
             mSystemContactName.setText(contactName);
 
             Bitmap picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, true);

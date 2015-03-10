@@ -297,24 +297,23 @@ public class ContactHelper {
     }
 
     /**
-     * Returns the display name of the system contact associated with masterKeyId, null if the
+     * Returns the display name of the system contact associated with contactId, null if the
      * contact does not exist
      *
      * @param resolver
-     * @param masterKeyId
-     * @return
+     * @param contactId
+     * @return primary display name of system contact associated with contactId, null if it does
+     * not exist
      */
-    public static String getContactName(ContentResolver resolver, long masterKeyId) {
+    public static String getContactName(ContentResolver resolver, long contactId) {
         String contactName = null;
-        Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+        Cursor raw = resolver.query(ContactsContract.Contacts.CONTENT_URI,
                 new String[]{
-                        ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY
+                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
                 },
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
-                        ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
-                        ContactsContract.RawContacts.DELETED + "=?",
+                ContactsContract.Contacts._ID + "=?",
                 new String[]{//"0" for "not deleted"
-                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId), "0"
+                        Long.toString(contactId)
                 }, null);
         if (raw != null) {
             if (raw.moveToNext()) {
