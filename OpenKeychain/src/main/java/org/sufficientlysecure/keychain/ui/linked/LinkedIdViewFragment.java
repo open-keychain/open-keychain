@@ -71,7 +71,6 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private Context mContext;
     private byte[] mFingerprint;
-    private LayoutInflater mInflater;
 
     private AsyncTask mInProgress;
 
@@ -106,9 +105,9 @@ public class LinkedIdViewFragment extends Fragment implements
         mFingerprint = args.getByteArray(ARG_FINGERPRINT);
 
         mContext = getActivity();
-        mInflater = getLayoutInflater(savedInstanceState);
 
         getLoaderManager().initLoader(LOADER_ID_LINKED_ID, null, this);
+
     }
 
     @Override
@@ -169,22 +168,7 @@ public class LinkedIdViewFragment extends Fragment implements
     private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
         mLinkedId = linkedId;
 
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                getFragmentManager().popBackStack("verification",
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-        });
-        mViewHolder.setShowVerifying(false);
-
-        {
-            Bundle args = new Bundle();
-            args.putParcelable(CertListWidget.ARG_URI, mDataUri);
-            args.putInt(CertListWidget.ARG_RANK, mLidRank);
-            getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
-                    args, mViewHolder.vLinkedCerts);
-        }
+        setShowVerifying(false);
 
         if (mLinkedId instanceof LinkedIdentity) {
             LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
@@ -281,17 +265,6 @@ public class LinkedIdViewFragment extends Fragment implements
             vText = (TextView) root.findViewById(R.id.linked_cert_text);
         }
 
-        void setShowVerifying(boolean show) {
-            int child = show ? 1 : 0;
-            if (vVerifyingContainer.getDisplayedChild() != child) {
-                vVerifyingContainer.setDisplayedChild(child);
-            }
-            if (!show) {
-                vKeySpinner.setVisibility(View.GONE);
-                showButton(0);
-            }
-        }
-
         void setShowProgress(boolean show) {
             vProgress.setDisplayedChild(show ? 0 : 1);
         }
@@ -303,6 +276,58 @@ public class LinkedIdViewFragment extends Fragment implements
             vButtonSwitcher.setDisplayedChild(which);
         }
 
+    }
+
+    private boolean mVerificationState = false;
+    /** Switches between the 'verifying' ui bit and certificate status. This method
+     * must behave correctly in all states, showing or hiding the appropriate views
+     * and cancelling pending operations where necessary.
+     *
+     * This method also handles back button functionality in combination with
+     * onBackStateChanged.
+     */
+    void setShowVerifying(boolean show) {
+        if (!show) {
+            if (mInProgress != null) {
+                mInProgress.cancel(false);
+                mInProgress = null;
+            }
+            getFragmentManager().removeOnBackStackChangedListener(this);
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    getFragmentManager().popBackStack("verification",
+                            FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+            });
+
+            if (!mVerificationState) {
+                return;
+            }
+            mVerificationState = false;
+
+            mViewHolder.showButton(0);
+            mViewHolder.vKeySpinner.setVisibility(View.GONE);
+            mViewHolder.vVerifyingContainer.setDisplayedChild(0);
+            return;
+        }
+
+        if (mVerificationState) {
+            return;
+        }
+        mVerificationState = true;
+
+        FragmentManager manager = getFragmentManager();
+        manager.beginTransaction().addToBackStack("verification").commit();
+        manager.executePendingTransactions();
+        manager.addOnBackStackChangedListener(this);
+        mViewHolder.vVerifyingContainer.setDisplayedChild(1);
+
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        setShowVerifying(false);
     }
 
     @Override
@@ -339,22 +364,25 @@ public class LinkedIdViewFragment extends Fragment implements
             }
         });
 
+        {
+            Bundle args = new Bundle();
+            args.putParcelable(CertListWidget.ARG_URI, mDataUri);
+            args.putInt(CertListWidget.ARG_RANK, mLidRank);
+            getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
+                    args, mViewHolder.vLinkedCerts);
+        }
+
         return root;
     }
 
     void verifyResource() {
 
-        // only one at a time
+        // only one at a time (no sync needed, mInProgress is only touched in ui thread)
         if (mInProgress != null) {
             return;
         }
 
-        FragmentManager manager = getFragmentManager();
-        manager.beginTransaction().addToBackStack("verification").commit();
-        manager.executePendingTransactions();
-        manager.addOnBackStackChangedListener(this);
-
-        mViewHolder.setShowVerifying(true);
+        setShowVerifying(true);
 
         mViewHolder.vKeySpinner.setVisibility(View.GONE);
         mViewHolder.setShowProgress(true);
@@ -424,16 +452,6 @@ public class LinkedIdViewFragment extends Fragment implements
             // bail out; need to wait until the user has entered the passphrase before trying again
         } else {
             certifyResource(certifyKeyId, "");
-        }
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        mViewHolder.setShowVerifying(false);
-        getFragmentManager().removeOnBackStackChangedListener(LinkedIdViewFragment.this);
-        if (mInProgress != null) {
-            mInProgress.cancel(false);
-            mInProgress = null;
         }
     }
 
