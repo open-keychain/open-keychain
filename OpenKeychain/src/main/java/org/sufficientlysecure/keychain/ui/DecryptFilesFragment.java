@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class DecryptFilesFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
@@ -301,7 +302,9 @@ public class DecryptFilesFragment extends DecryptFragment {
 
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
+                            ArrayList<Uri> toDelete = new ArrayList<>();
+                            toDelete.add(mInputUri);
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(toDelete);
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                             setInputUri(null);
                         }

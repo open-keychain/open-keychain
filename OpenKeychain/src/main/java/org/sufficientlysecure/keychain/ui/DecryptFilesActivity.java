@@ -27,9 +27,10 @@ import android.view.View;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesActivity extends BaseActivity {
+public class DecryptFilesActivity extends BaseActivity implements DeleteFileDialogFragment.OnDialogDismissListener {
 
     /* Intents */
     public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
@@ -123,4 +124,8 @@ public class DecryptFilesActivity extends BaseActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
+    @Override
+    public void onDialogDismissListener(boolean delete) {
+
+    }
 }
