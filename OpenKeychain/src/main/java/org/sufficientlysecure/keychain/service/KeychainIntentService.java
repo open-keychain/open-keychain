@@ -135,7 +135,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         private static final IOType[] values = values();
 
         public static IOType fromInt(int n) {
-            if(n >= values.length) {
+            if(n < 0 || n >= values.length) {
                 return UNKNOWN;
             } else {
                 return values[n];
