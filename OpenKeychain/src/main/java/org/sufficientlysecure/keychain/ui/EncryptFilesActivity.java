@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptFilesActivity extends EncryptActivity implements EncryptActivityInterface {
+public class EncryptFilesActivity extends EncryptActivity implements EncryptActivityInterface, DeleteFileDialogFragment.OnDialogDismissListener {
 
     /* Intents */
     public static final String ACTION_ENCRYPT_DATA = OpenKeychainIntents.ENCRYPT_DATA;
@@ -178,20 +178,19 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
     @Override
     public void onEncryptSuccess(SignEncryptResult result) {
+
+        Log.e(Constants.TAG, "En sucess");
+
         if (mDeleteAfterEncrypt) {
-            for (Uri inputUri : mInputUris) {
-                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-            }
+
+            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUris);
+            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+
             mInputUris.clear();
             notifyUpdate();
-        }
-
-        if (mShareAfterEncrypt) {
-            // Share encrypted message/file
+        } else if (mShareAfterEncrypt) {
             startActivity(sendWithChooserExcludingEncrypt());
         } else {
-            // Save encrypted file
             result.createNotify(EncryptFilesActivity.this).show();
         }
     }
@@ -420,4 +419,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         mInputUris = uris;
     }
 
+    @Override
+    public void onDialogDismissListener(boolean deleteFiles) {
+        if (mShareAfterEncrypt && deleteFiles) {
+            // Share encrypted message/file
+            startActivity(sendWithChooserExcludingEncrypt());
+        }
+    }
 }
