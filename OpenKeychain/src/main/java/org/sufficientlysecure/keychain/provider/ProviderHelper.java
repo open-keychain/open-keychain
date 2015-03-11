@@ -1082,9 +1082,8 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_SAVE_SECRET, indent);
             indent += 1;
 
-            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                    KeyRings.PRIVKEY_DATA, KeyRings.FINGERPRINT, KeyRings.HAS_ANY_SECRET
-            }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
+            final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
+                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1106,8 +1105,7 @@ public class ProviderHelper {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)), cursor.getBlob(0)
-                    );
+                    ring = new ParcelableKeyRing(cursor.getBlob(0));
                     cursor.moveToNext();
                     return true;
                 }
@@ -1144,9 +1142,9 @@ public class ProviderHelper {
             log.add(LogType.MSG_CON_SAVE_PUBLIC, indent);
             indent += 1;
 
-            final Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                    KeyRings.PUBKEY_DATA, KeyRings.FINGERPRINT
-            }, null, null, null);
+            final Cursor cursor = mContentResolver.query(
+                    KeyRingData.buildPublicKeyRingUri(),
+                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1168,8 +1166,7 @@ public class ProviderHelper {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = new ParcelableKeyRing(KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(1)), cursor.getBlob(0)
-                    );
+                    ring = new ParcelableKeyRing(cursor.getBlob(0));
                     cursor.moveToNext();
                     return true;
                 }
