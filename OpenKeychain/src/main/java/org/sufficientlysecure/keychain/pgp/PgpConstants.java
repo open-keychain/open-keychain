@@ -58,6 +58,8 @@ public class PgpConstants {
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
     }
 
+    public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA256;
+
     /*
      * Note: s2kcount is a number between 0 and 0xff that controls the
      * number of times to iterate the password hash before use. More
