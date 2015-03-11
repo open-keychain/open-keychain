@@ -194,8 +194,7 @@
   <string name="pin_for">Introduzca el PIN para \'%s\'</string>
   <string name="yubikey_pin_for">Introduzca el PIN para acceder a la YubiKey para \'%s\'</string>
   <string name="nfc_text">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
-  <string name="file_delete_confirmation">¿Está seguro de que quiere eliminar\n%s?</string>
-  <string name="no_file_selected">Selecciona un archivo antes.</string>
+    <string name="no_file_selected">Selecciona un archivo antes.</string>
   <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
   <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
@@ -1145,4 +1144,5 @@
   <string name="nfc_write_succesful">Se escribió con éxito en la etiqueta NFC</string>
   <string name="unlocked">Desbloqueado</string>
   <string name="nfc_settings">Configuración</string>
+    <string name="file_delete_successful"></string>
 </resources>

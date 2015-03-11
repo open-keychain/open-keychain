@@ -168,8 +168,7 @@
   <string name="passphrase_must_not_be_empty">Vnesite geslo.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrično šifriranje.</string>
   <string name="passphrase_for">Vnesite geslo za \'%s\'</string>
-  <string name="file_delete_confirmation">Ste prepričani, da želite izbrisati\n%s?</string>
-  <string name="no_file_selected">Najprej izberite datoteko.</string>
+    <string name="no_file_selected">Najprej izberite datoteko.</string>
   <string name="encrypt_sign_successful">Uspešno podpisano in/ali šifrirano.</string>
   <string name="encrypt_sign_clipboard_successful">Uspešno podpisano in/ali šifrirano ter poslano v odložišče.</string>
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
@@ -479,7 +478,8 @@
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

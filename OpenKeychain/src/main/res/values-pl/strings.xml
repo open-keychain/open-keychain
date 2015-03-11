@@ -179,8 +179,7 @@
   <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="nfc_text">Trzymaj YubiKey z tyłu Twojego urządzenia.</string>
-  <string name="file_delete_confirmation">Czy jesteś pewny, że chcesz usunąć\n%s?</string>
-  <string name="no_file_selected">Najpierw wskaż plik.</string>
+    <string name="no_file_selected">Najpierw wskaż plik.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
@@ -657,7 +656,8 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

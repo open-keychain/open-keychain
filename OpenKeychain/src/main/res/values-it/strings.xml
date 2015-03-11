@@ -164,8 +164,7 @@
   <string name="passphrase_must_not_be_empty">Si prega di inserire una frase di accesso.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
-  <string name="file_delete_confirmation">Sei sicuro di voler eliminare\n%s?</string>
-  <string name="no_file_selected">Seleziona un file prima.</string>
+    <string name="no_file_selected">Seleziona un file prima.</string>
   <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
   <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
@@ -715,7 +714,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
   <string name="error_multi_not_supported">Il salvataggio di più file non è supportato. Questa è una limitazione corrente di Android.</string>
   <string name="key_colon">Chiave:</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

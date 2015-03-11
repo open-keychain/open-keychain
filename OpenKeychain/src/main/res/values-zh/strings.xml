@@ -195,7 +195,9 @@
   <string name="api_select_pub_keys_text">请重审收件人列表</string>
   <!--Share-->
   <string name="share_nfc_dialog">使用NFC分享</string>
-  <!--Key list-->
+    <string name="file_delete_successful"></string>
+    <string name="file_delete_confirmation"></string>
+    <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
   <!--keybase proof stuff-->

@@ -204,9 +204,7 @@
   <string name="pin_for">Унесите ПИН за „%s“</string>
   <string name="yubikey_pin_for">Унесите ПИН за приступ Јубикључу за „%s“</string>
   <string name="nfc_text">Држите Јубикључ на полеђини вашег уређаја.</string>
-  <string name="file_delete_confirmation">Желите ли заиста да обришете\n%s?</string>
-  <string name="file_delete_successful">Брисање је успело.</string>
-  <string name="no_file_selected">Најпре изаберите фајл.</string>
+    <string name="no_file_selected">Најпре изаберите фајл.</string>
   <string name="encrypt_sign_successful">Потписивање и/или шифровање је успело.</string>
   <string name="encrypt_sign_clipboard_successful">Потписивање и/или шифровање на клипборд је успело.</string>
   <string name="enter_passphrase_twice">Унесите лозинку два пута.</string>
@@ -240,8 +238,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">брисање „%s“ није успело</string>
-  <string name="error_file_not_found">фајл није нађен</string>
+    <string name="error_file_not_found">фајл није нађен</string>
   <string name="error_no_secret_key_found">одговарајући тајни кључ није нађен</string>
   <string name="error_external_storage_not_ready">спољашње складиште није спремно</string>
   <string name="error_key_size_minimum512bit">величина кључа мора да буде најмање 512 бита</string>
@@ -1145,4 +1142,5 @@
   <string name="nfc_write_succesful">Успешно уписах на НФЦ ознаку</string>
   <string name="unlocked">Откључан</string>
   <string name="nfc_settings">Поставке</string>
+    <string name="file_delete_successful"></string>
 </resources>
