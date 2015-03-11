@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -177,22 +176,36 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     }
 
     @Override
-    public void onEncryptSuccess(SignEncryptResult result) {
+    public void onEncryptSuccess(final SignEncryptResult result) {
         if (mDeleteAfterEncrypt) {
-            for (Uri inputUri : mInputUris) {
-                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUri);
-                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-            }
+            final Uri[] inputUris = mInputUris.toArray(new Uri[mInputUris.size()]);
+            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUris);
+            deleteFileDialog.setOnDeletedListener(new DeleteFileDialogFragment.OnDeletedListener() {
+
+                @Override
+                public void onDeleted() {
+                    if (mShareAfterEncrypt) {
+                        // Share encrypted message/file
+                        startActivity(sendWithChooserExcludingEncrypt());
+                    } else {
+                        // Save encrypted file
+                        result.createNotify(EncryptFilesActivity.this).show();
+                    }
+                }
+
+            });
+            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+
             mInputUris.clear();
             notifyUpdate();
-        }
-
-        if (mShareAfterEncrypt) {
-            // Share encrypted message/file
-            startActivity(sendWithChooserExcludingEncrypt());
         } else {
-            // Save encrypted file
-            result.createNotify(EncryptFilesActivity.this).show();
+            if (mShareAfterEncrypt) {
+                // Share encrypted message/file
+                startActivity(sendWithChooserExcludingEncrypt());
+            } else {
+                // Save encrypted file
+                result.createNotify(EncryptFilesActivity.this).show();
+            }
         }
     }
 

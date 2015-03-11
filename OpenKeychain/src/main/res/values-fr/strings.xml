@@ -194,8 +194,7 @@
   <string name="pin_for">Saisir le NIP pour « %s »</string>
   <string name="yubikey_pin_for">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
   <string name="nfc_text">Tenez la YubiKey contre le dos de votre appareil.</string>
-  <string name="file_delete_confirmation">Êtes-vous certain de vouloir supprimer\n%s?</string>
-  <string name="no_file_selected">Choisir d\'abord un fichier.</string>
+    <string name="no_file_selected">Choisir d\'abord un fichier.</string>
   <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
   <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
@@ -1136,4 +1135,5 @@
   <string name="nfc_write_succesful">Écrit avec succès sur la balise NFC</string>
   <string name="unlocked">Déverrouillé</string>
   <string name="nfc_settings">Paramètres</string>
+    <string name="file_delete_successful"></string>
 </resources>

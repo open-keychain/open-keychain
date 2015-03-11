@@ -169,9 +169,11 @@
   <string name="passphrase_for_symmetric_encryption">Symmetrinen salaus.</string>
   <string name="passphrase_for">Syötä salasana \'%s\':lle</string>
   <string name="pin_for">Syötä PIN \'%s\':lle</string>
-  <!--errors
-         no punctuation, all lowercase,
-         they will be put after "error_message", e.g. "Error: file not found"-->
+    <string name="file_delete_successful"></string>
+    <string name="file_delete_confirmation"></string>
+    <!--errors
+           no punctuation, all lowercase,
+           they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->

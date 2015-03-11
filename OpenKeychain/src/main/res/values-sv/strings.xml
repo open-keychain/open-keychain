@@ -178,8 +178,7 @@
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="yubikey_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
   <string name="nfc_text">Håll YubiKey mot baksidan av din enhet.</string>
-  <string name="file_delete_confirmation">Vill du verkligen radera\n%s?</string>
-  <string name="no_file_selected">Välj en fil först.</string>
+    <string name="no_file_selected">Välj en fil först.</string>
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
@@ -864,4 +863,5 @@
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
+    <string name="file_delete_successful"></string>
 </resources>

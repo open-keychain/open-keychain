@@ -190,8 +190,7 @@
   <string name="pin_for">PIN für \'%s\' eingeben</string>
   <string name="yubikey_pin_for">PIN für Zugriff auf Yubikey für \'%s\' eingeben</string>
   <string name="nfc_text">Halten Sie den YubiKey gegen die Rückseite Ihres Geräts.</string>
-  <string name="file_delete_confirmation">%s wirklich löschen?</string>
-  <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
+    <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
   <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
@@ -1098,4 +1097,5 @@
   <string name="nfc_write_succesful">Erfolgreich auf den NFC-Tag geschrieben</string>
   <string name="unlocked">Entsperrt</string>
   <string name="nfc_settings">Einstellungen</string>
+    <string name="file_delete_successful"></string>
 </resources>
