@@ -18,9 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
-import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -31,7 +29,6 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
-import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
@@ -43,13 +40,11 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFac
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -287,9 +282,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // create a signatureGenerator from the supplied masterKeyId and passphrase
         PGPSignatureGenerator signatureGenerator;
         {
-            // TODO: SHA256 fixed?
-            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(PGPUtil.SHA256,
-                    nfcSignedHash, nfcCreationTimestamp);
+            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(
+                    PgpConstants.CERTIFY_HASH_ALGO, nfcSignedHash, nfcCreationTimestamp);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
             try {
@@ -351,9 +345,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // create a signatureGenerator from the supplied masterKeyId and passphrase
         PGPSignatureGenerator signatureGenerator;
         {
-            // TODO: SHA256 fixed?
-            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(PGPUtil.SHA256,
-                    nfcSignedHash, nfcCreationTimestamp);
+            PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(
+                    PgpConstants.CERTIFY_HASH_ALGO, nfcSignedHash, nfcCreationTimestamp);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
             try {
