@@ -379,4 +379,6 @@
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Ezarpenak</string>
+    <string name="file_delete_successful"></string>
+    <string name="file_delete_confirmation"></string>
 </resources>

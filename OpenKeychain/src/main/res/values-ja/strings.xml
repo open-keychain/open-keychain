@@ -192,9 +192,7 @@
   <string name="pin_for">\'%s\' にPINを入力してください</string>
   <string name="yubikey_pin_for">\'%s\' の Yubikey にアクセスするためのPINを入力してください</string>
   <string name="nfc_text">あなたのデバイスの背面にYubiKeyを固定してください。</string>
-  <string name="file_delete_confirmation">%s
-を削除してもかまいませんか?</string>
-  <string name="no_file_selected">最初にファイルを選択してください。</string>
+    <string name="no_file_selected">最初にファイルを選択してください。</string>
   <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
   <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
@@ -1092,4 +1090,5 @@
   <string name="nfc_write_succesful">NFCタグに書けました!</string>
   <string name="unlocked">アンロック</string>
   <string name="nfc_settings">設定</string>
+    <string name="file_delete_successful"></string>
 </resources>

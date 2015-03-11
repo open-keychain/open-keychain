@@ -139,8 +139,7 @@
   <string name="passphrases_do_not_match">口令不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入口令。</string>
   <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
-  <string name="file_delete_confirmation">你確定要刪除\n%s？</string>
-  <string name="no_file_selected">請先選擇檔案。</string>
+    <string name="no_file_selected">請先選擇檔案。</string>
   <string name="encrypt_sign_successful">成功簽名並/或加密。</string>
   <string name="encrypt_sign_clipboard_successful">成功簽名並/或加密到剪貼簿。</string>
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
@@ -422,7 +421,8 @@
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
   <string name="info_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

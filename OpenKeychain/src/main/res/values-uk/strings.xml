@@ -168,8 +168,7 @@
   <string name="passphrase_must_not_be_empty">Будь ласка, введіть парольну фразу.</string>
   <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="passphrase_for">Введіть парольну фразу для \'%s\'</string>
-  <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
-  <string name="no_file_selected">Виберіть спершу файл.</string>
+    <string name="no_file_selected">Виберіть спершу файл.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
@@ -589,7 +588,8 @@
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

@@ -204,9 +204,7 @@
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
   <string name="yubikey_pin_for">Voer PIN in om toegang te verkrijgen tot YubiKey voor \'%s\'</string>
   <string name="nfc_text">Hou YubiKey tegen de achterkant van je toestel</string>
-  <string name="file_delete_confirmation">Ben je zeker dat je %s wil verwijderen?</string>
-  <string name="file_delete_successful">\'%s\' is verwijderd.</string>
-  <string name="no_file_selected">Selecteer eerst een bestand.</string>
+    <string name="no_file_selected">Selecteer eerst een bestand.</string>
   <string name="encrypt_sign_successful">Succesvol gesigneerd en/of gecodeerd.</string>
   <string name="encrypt_sign_clipboard_successful">Succesvol gesigneerd en/of gecodeerd naar klembord.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
@@ -239,8 +237,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">Verwijderen van \'%s\' mislukt. Gelieve dit handmatig te doen!</string>
-  <string name="error_file_not_found">bestand niet gevonden</string>
+    <string name="error_file_not_found">bestand niet gevonden</string>
   <string name="error_no_secret_key_found">geen geschikte privésleutel gevonden</string>
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
@@ -1159,4 +1156,5 @@
   <string name="nfc_write_succesful">Succesvol geschreven op NFC-tag</string>
   <string name="unlocked">Ontgrendeld</string>
   <string name="nfc_settings">Instellingen</string>
+    <string name="file_delete_successful"></string>
 </resources>

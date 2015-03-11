@@ -167,8 +167,7 @@
   <string name="passphrase_for_symmetric_encryption">Simetrik şifreleme.</string>
   <string name="passphrase_for">\'%s\' için bir parola girin</string>
   <string name="nfc_text">YubiKey\'inizi cihazınızın arkasında tutun.</string>
-  <string name="file_delete_confirmation">Silmek istediğinize emin misiniz\n%s?</string>
-  <string name="no_file_selected">Önce bir dosya seçin.</string>
+    <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
@@ -509,7 +508,8 @@
   <string name="error_multi_not_supported">Birden çok dosyanın kaydedilmesi desteklenmiyor. Bu şu anki Android\'in bir kısıtlamasıdır.</string>
   <string name="key_colon">Anahtar:</string>
   <string name="exchange_description">Anahtar değiş tokuşu başlatmak için sağ taraftan katılımcıların sayısını seçin ve \"Değiş tokuşu başlat\" tuşuna tıklayın.\n\nSadece istenilen katılımcıların değişim işleminde olduğundan ve parmak izlerinin doğruluğundan emin olmak için size iki soru daha sorulacak.</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
