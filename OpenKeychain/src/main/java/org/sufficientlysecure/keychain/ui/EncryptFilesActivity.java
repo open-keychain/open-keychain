@@ -75,8 +75,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
 
-    private boolean mDeleteFileDialogResult = false;
-
     public boolean isModeSymmetric() {
         return MODE_SYMMETRIC == mCurrentMode;
     }
