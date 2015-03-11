@@ -25,6 +25,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -373,6 +374,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void invokeNfcBeam() {
+        //Check if device supports NFC
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
+            Toast.makeText(this, R.string.no_nfc_support, Toast.LENGTH_SHORT).show();
+            return;
+        }
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
