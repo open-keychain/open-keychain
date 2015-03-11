@@ -53,7 +53,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -61,7 +61,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
-        String USER_PACKETS = "user_ids";
+        String USER_PACKETS = "user_packets";
         String CERTS = "certs";
         String API_APPS = "api_apps";
         String API_ACCOUNTS = "api_accounts";
@@ -119,8 +119,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserPacketsColumns.IS_REVOKED + " INTEGER, "
                 + UserPacketsColumns.RANK+ " INTEGER, "
 
-                + "PRIMARY KEY(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.USER_ID + "), "
-                + "UNIQUE (" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + "), "
+                + "PRIMARY KEY(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + "), "
                 + "FOREIGN KEY(" + UserPacketsColumns.MASTER_KEY_ID + ") REFERENCES "
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
@@ -267,6 +266,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
+            case 9:
+                // tbale name for user_ids changed to user_packets
+                db.execSQL("DROP TABLE IF EXISTS certs");
+                db.execSQL("DROP TABLE IF EXISTS user_ids");
+                db.execSQL(CREATE_USER_PACKETS);
+                db.execSQL(CREATE_CERTS);
+
         }
 
         // always do consolidate after upgrade
