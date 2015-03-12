@@ -20,28 +20,23 @@ package org.sufficientlysecure.keychain.ui.linked;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
 import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.List;
 
-public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragment {
+public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragment {
 
     public static final String ARG_HANDLE = "handle";
 
@@ -51,10 +46,10 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
     String mResourceString;
     private int mNonce;
 
-    public static LinkedIdCreateTwitterStep3Fragment newInstance
+    public static LinkedIdCreateTwitterStep2Fragment newInstance
             (String handle) {
 
-        LinkedIdCreateTwitterStep3Fragment frag = new LinkedIdCreateTwitterStep3Fragment();
+        LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
         int proofNonce = RawLinkedIdentity.generateNonce();
 

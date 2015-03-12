@@ -27,8 +27,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.io.IOException;
@@ -94,8 +92,8 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                             return;
                         }
 
-                        LinkedIdCreateTwitterStep3Fragment frag =
-                                LinkedIdCreateTwitterStep3Fragment.newInstance(handle);
+                        LinkedIdCreateTwitterStep2Fragment frag =
+                                LinkedIdCreateTwitterStep2Fragment.newInstance(handle);
 
                         mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
