@@ -91,11 +91,16 @@ public class CertifyKeySpinner extends KeySpinner {
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
             mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
 
-            // If there is only one choice, pick it by default
-            if (mAdapter.getCount() == 2) {
+            // If there is more than one choice, pick a key
+            if (mAdapter.getCount() >= 2) {
                 // preselect if key can certify
-                if (data.moveToPosition(0) && !data.isNull(mIndexHasCertify)) {
-                    setSelection(1);
+                if (data.moveToPosition(0) ){
+                    do {
+                        if (!data.isNull(mIndexHasCertify)) {
+                            setSelection(data.getPosition() + 1);
+                            break;
+                        }
+                    }while(data.moveToNext());
                 }
             }
         }
