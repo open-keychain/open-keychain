@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class TwitterResource extends LinkedCookieResource {
 
     final String mHandle;
@@ -196,9 +195,9 @@ public class TwitterResource extends LinkedCookieResource {
             return authToken;
         }
         try {
-            String base64Encoded =
-                    "NkloUG5XYll4QVNBb0F6SDJRYVV0SEQwSjpMMEdudWlPbmFwV2JTQ"
-                        + "mJRdExJcXRwZVM1QlR0dmgwNmRtb01vS1FmSFFTOFV3SHVXbQ==";
+
+            String base64Encoded = rot13("D293FQqanH0jH29KIaWJER5DomqSGRE2Ewc1LJACn3cbD1c"
+                        + "Fq1bmqSAQAz5MI2cIHKOuo3cPoRAQI1OyqmIVFJS6LHMXq2g6MRLkIj") + "==";
 
             // Step 2: Obtain a bearer token
             HttpPost httpPost = new HttpPost("https://api.twitter.com/oauth2/token");
@@ -248,6 +247,19 @@ public class TwitterResource extends LinkedCookieResource {
             }
         } catch (IOException e) {
             Log.e(Constants.TAG, "http request error", e);
+        }
+        return sb.toString();
+    }
+
+    public static String rot13(String input) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if       (c >= 'a' && c <= 'm') c += 13;
+            else if  (c >= 'A' && c <= 'M') c += 13;
+            else if  (c >= 'n' && c <= 'z') c -= 13;
+            else if  (c >= 'N' && c <= 'Z') c -= 13;
+            sb.append(c);
         }
         return sb.toString();
     }
