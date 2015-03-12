@@ -106,8 +106,11 @@
             android:layout_weight="1"
             android:text="@string/btn_back"
             android:clickable="true"
-            android:background="?android:selectableItemBackground"
             android:minHeight="?android:attr/listPreferredItemHeight"
+            android:textAllCaps="true"
+            style="?android:attr/borderlessButtonStyle"
+            android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
+            android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical" />
 
@@ -128,11 +131,12 @@
             android:layout_weight="1"
             android:text="@string/btn_next"
             android:minHeight="?android:attr/listPreferredItemHeight"
-            android:drawableRight="@drawable/ic_play_arrow_grey_24dp"
+            android:textAllCaps="true"
+            android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
             android:drawablePadding="8dp"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|right"
+            style="?android:attr/borderlessButtonStyle"
             android:clickable="true"
-            android:background="?android:selectableItemBackground"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 </RelativeLayout>
