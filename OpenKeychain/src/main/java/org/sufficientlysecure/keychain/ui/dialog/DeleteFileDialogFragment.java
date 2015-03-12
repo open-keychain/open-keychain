@@ -75,7 +75,8 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFileNames.toString()));
+        alert.setTitle(getString(R.string.file_delete_confirmation_title));
+        alert.setMessage(getString(R.string.file_delete_confirmation, deleteFileNames.toString()));
 
         alert.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
@@ -112,7 +113,6 @@ public class DeleteFileDialogFragment extends DialogFragment {
                     }
 
                     // Note: We can't delete every file...
-
                     failedFileNameList.add(deleteFileNameMap.get(deleteUri));
                 }
 
@@ -127,7 +127,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 // NOTE: Use Toasts, not Snackbars. When sharing to another application snackbars
                 // would not show up!
                 Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
-                        deleteUris.length - failedFileNameList.size(), deleteUris.length, failedFileNames.toString()),
+                                deleteUris.length - failedFileNameList.size(), deleteUris.length, failedFileNames.toString()),
                         Toast.LENGTH_LONG).show();
 
                 if (onDeletedListener != null) {
