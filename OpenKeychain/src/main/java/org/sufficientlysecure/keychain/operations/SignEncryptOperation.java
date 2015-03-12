@@ -48,6 +48,7 @@ public class SignEncryptOperation extends BaseOperation {
         byte[] inputBytes = input.getBytes();
         byte[] outputBytes = null;
 
+        int total = inputBytes != null ? 1 : inputUris.size(), count = 0;
         ArrayList<PgpSignEncryptResult> results = new ArrayList<>();
 
         do {
@@ -104,7 +105,7 @@ public class SignEncryptOperation extends BaseOperation {
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mProviderHelper,
-                    new ProgressScaler(), mCancelled);
+                    new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
             PgpSignEncryptResult result = op.execute(input, inputData, outStream);
             results.add(result);
             log.add(result, 2);
