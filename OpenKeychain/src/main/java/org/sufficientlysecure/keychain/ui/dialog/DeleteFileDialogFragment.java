@@ -94,7 +94,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                                 continue;
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.TAG, "Catched UnsupportedOperationException, can happen when delete is not supported!", e);
+                            Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
                         }
                     }
 
@@ -103,7 +103,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                             continue;
                         }
                     } catch (Exception e) {
-                        Log.d(Constants.TAG, "Catched UnsupportedOperationException, can happen when delete is not supported!", e);
+                        Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
                     }
 
                     // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
