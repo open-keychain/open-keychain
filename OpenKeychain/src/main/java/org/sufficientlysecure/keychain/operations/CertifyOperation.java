@@ -20,6 +20,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -191,6 +192,9 @@ public class CertifyOperation extends BaseOperation {
         }
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
+        //since only verified keys are synced to contacts, we need to initiate a sync now
+        ContactSyncAdapterService.requestSync();
+        
         return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError, uploadOk, uploadError);
 
     }

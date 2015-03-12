@@ -296,6 +296,34 @@ public class ContactHelper {
         return contactId;
     }
 
+    /**
+     * Returns the display name of the system contact associated with contactId, null if the
+     * contact does not exist
+     *
+     * @param resolver
+     * @param contactId
+     * @return primary display name of system contact associated with contactId, null if it does
+     * not exist
+     */
+    public static String getContactName(ContentResolver resolver, long contactId) {
+        String contactName = null;
+        Cursor raw = resolver.query(ContactsContract.Contacts.CONTENT_URI,
+                new String[]{
+                        ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
+                },
+                ContactsContract.Contacts._ID + "=?",
+                new String[]{//"0" for "not deleted"
+                        Long.toString(contactId)
+                }, null);
+        if (raw != null) {
+            if (raw.moveToNext()) {
+                contactName = raw.getString(0);
+            }
+            raw.close();
+        }
+        return contactName;
+    }
+
     public static Bitmap getCachedPhotoByMasterKeyId(ContentResolver contentResolver, long masterKeyId) {
         if (masterKeyId == -1) {
             return null;
@@ -333,12 +361,16 @@ public class ContactHelper {
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
             KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.IS_REVOKED};
+            KeychainContract.KeyRings.IS_REVOKED,
+            KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_SECRET};
 
     public static final int INDEX_MASTER_KEY_ID = 0;
     public static final int INDEX_USER_ID = 1;
     public static final int INDEX_IS_EXPIRED = 2;
     public static final int INDEX_IS_REVOKED = 3;
+    public static final int INDEX_VERIFIED = 4;
+    public static final int INDEX_HAS_SECRET = 5;
 
     /**
      * Write/Update the current OpenKeychain keys to the contact db
@@ -373,6 +405,8 @@ public class ContactHelper {
                 String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_MASTER_KEY_ID));
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
+                boolean isSecret = cursor.getInt(INDEX_HAS_SECRET) != 0;
 
                 Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
@@ -385,8 +419,8 @@ public class ContactHelper {
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
                 // Do not store expired or revoked keys in contact db - and remove them if they already exist
-                if (isExpired || isRevoked) {
-                    Log.d(Constants.TAG, "Expired or revoked: Deleting rawContactId " + rawContactId);
+                if (isExpired || isRevoked || !isVerified&&!isSecret) {
+                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting rawContactId " + rawContactId);
                     if (rawContactId != -1) {
                         deleteRawContactById(resolver, rawContactId);
                     }

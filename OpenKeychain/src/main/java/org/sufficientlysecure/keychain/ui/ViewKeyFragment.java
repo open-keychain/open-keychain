@@ -53,7 +53,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     //private ListView mLinkedSystemContact;
 
     boolean mIsSecret = false;
-    private String mName;
+    boolean mSystemContactLoaded = false;
 
     LinearLayout mSystemContactLayout;
     ImageView mSystemContactPicture;
@@ -120,17 +120,17 @@ public class ViewKeyFragment extends LoaderFragment implements
      * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
      * and onClickListener for the linked system contact's layout
      *
-     * @param name
      * @param masterKeyId
      */
-    private void loadLinkedSystemContact(String name, final long masterKeyId) {
+    private void loadLinkedSystemContact(final long masterKeyId) {
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();
 
         final long contactId = ContactHelper.findContactId(resolver, masterKeyId);
+        final String contactName = ContactHelper.getContactName(resolver, contactId);
 
-        if (contactId != -1) {//contact exists for given master key
-            mSystemContactName.setText(name);
+        if (contactName != null) {//contact name exists for given master key
+            mSystemContactName.setText(contactName);
 
             Bitmap picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, true);
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
@@ -141,6 +141,7 @@ public class ViewKeyFragment extends LoaderFragment implements
                     launchContactActivity(contactId, context);
                 }
             });
+            mSystemContactLoaded = true;
         }
     }
 
@@ -238,14 +239,14 @@ public class ViewKeyFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
+                    //TODO system to allow immediate refreshing of system contact on verification
+                    if (!mSystemContactLoaded) {//ensure we load linked system contact only once
+                        long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                        loadLinkedSystemContact(masterKeyId);
+                    }
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    if (mName == null) {//to ensure we load the linked system contact only once
-                        String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
-                        mName = mainUserId[0];
-                        long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                        loadLinkedSystemContact(mName, masterKeyId);
-                    }
+
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
