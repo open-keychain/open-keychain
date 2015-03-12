@@ -33,7 +33,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     public static final String ARG_NONCE = "nonce";
     protected static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
 
-    private LinkedIdWizard mLinkedIdWizard;
+    protected LinkedIdWizard mLinkedIdWizard;
 
     private ImageView mVerifyImage;
     private View mVerifyProgress;
@@ -113,16 +113,19 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         }
     }
 
-    private void proofVerify() {
+    protected void proofVerify() {
         setVerifyProgress(true, null);
-
-        final LinkedCookieResource resource = getResource();
 
         new AsyncTask<Void,Void,LinkedVerifyResult>() {
 
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
-                return resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+                LinkedCookieResource resource = getResource();
+                LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+                if (result.success()) {
+                    mVerifiedResource = resource;
+                }
+                return result;
             }
 
             @Override
@@ -130,7 +133,6 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
                 super.onPostExecute(result);
                 if (result.success()) {
                     setVerifyProgress(false, true);
-                    mVerifiedResource = resource;
                 } else {
                     setVerifyProgress(false, false);
                     // on error, show error message

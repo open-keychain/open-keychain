@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.List;
@@ -45,15 +46,16 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
 
     String mResourceHandle, mCustom, mFullString;
     String mResourceString;
+    private int mNonce;
 
     public static LinkedIdCreateTwitterStep3Fragment newInstance
-            (String handle, String proofNonce, String proofText, String customText) {
+            (String handle, int proofNonce, String proofText, String customText) {
 
         LinkedIdCreateTwitterStep3Fragment frag = new LinkedIdCreateTwitterStep3Fragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_HANDLE, handle);
-        args.putString(ARG_NONCE, proofNonce);
+        args.putInt(ARG_NONCE, proofNonce);
         args.putString(ARG_TEXT, proofText);
         args.putString(ARG_CUSTOM, customText);
         frag.setArguments(args);
@@ -65,9 +67,11 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mResourceHandle = getArguments().getString(ARG_HANDLE);
-        mResourceString = getArguments().getString(ARG_TEXT);
-        mCustom = getArguments().getString(ARG_CUSTOM);
+        Bundle args = getArguments();
+        mResourceHandle = args.getString(ARG_HANDLE);
+        mResourceString = args.getString(ARG_TEXT);
+        mCustom = args.getString(ARG_CUSTOM);
+        mNonce = args.getInt(ARG_NONCE);
 
         mFullString = mCustom.isEmpty() ? mResourceString : (mCustom + " " + mResourceString);
 
@@ -94,23 +98,12 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
             }
         });
 
-        view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // AffirmationCreateHttpsStep2Fragment frag =
-                // AffirmationCreateHttpsStep2Fragment.newInstance();
-
-                // mAffirmationWizard.loadFragment(null, frag, AffirmationWizard.FRAG_ACTION_TO_RIGHT);
-            }
-        });
-
         return view;
     }
 
     @Override
     LinkedCookieResource getResource() {
-        return null;
+        return TwitterResource.searchInTwitterStream(mResourceHandle, mFullString);
     }
 
     @Override
@@ -137,7 +130,7 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
                 PackageManager.MATCH_DEFAULT_ONLY);
 
         boolean resolved = false;
-        for(ResolveInfo resolveInfo : resolvedInfoList){
+        for(ResolveInfo resolveInfo : resolvedInfoList) {
             if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")) {
                 tweetIntent.setClassName(
                     resolveInfo.activityInfo.packageName,

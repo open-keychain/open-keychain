@@ -75,7 +75,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        return true; // checkHandle(handle);
+                        return true; // return checkHandle(handle);
                     }
 
                     @Override
@@ -83,21 +83,21 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result == null) {
-                            Notify.showNotify(getActivity(), "Connection error while checking username!", Notify.Style.ERROR);
+                            Notify.showNotify(getActivity(),
+                                    "Connection error while checking username!", Notify.Style.ERROR);
                             return;
                         }
 
                         if (!result) {
-                            Notify.showNotify(getActivity(), "This handle does not exist on Twitter!", Notify.Style.ERROR);
+                            Notify.showNotify(getActivity(),
+                                    "This handle does not exist on Twitter!", Notify.Style.ERROR);
                             return;
                         }
 
                         int proofNonce = RawLinkedIdentity.generateNonce();
-                        String proofText = TwitterResource.generateText(getActivity(),
-                                mLinkedIdWizard.mFingerprint, proofNonce);
 
                         LinkedIdCreateTwitterStep2Fragment frag =
-                                LinkedIdCreateTwitterStep2Fragment.newInstance(handle, proofNonce, proofText);
+                                LinkedIdCreateTwitterStep2Fragment.newInstance(handle, proofNonce);
 
                         mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
@@ -114,7 +114,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
         });
 
         mEditHandle = (EditText) view.findViewById(R.id.linked_create_twitter_handle);
-        mEditHandle.setText("Valodim");
+        mEditHandle.setText("v_debug");
 
         return view;
     }

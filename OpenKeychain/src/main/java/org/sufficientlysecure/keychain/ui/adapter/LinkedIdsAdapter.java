@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
 import java.io.IOException;
 import java.util.WeakHashMap;
 
-
 public class LinkedIdsAdapter extends UserAttributesAdapter {
     private final boolean mShowCertification;
     protected LayoutInflater mInflater;

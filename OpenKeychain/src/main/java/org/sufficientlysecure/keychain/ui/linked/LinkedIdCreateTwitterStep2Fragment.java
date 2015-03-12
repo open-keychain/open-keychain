@@ -45,24 +45,38 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
     TextView mVerifyStatus, mEditTweetTextLen;
 
     String mResourceHandle;
-    String mResourceNonce, mResourceString;
+    int mResourceNonce;
+    String mResourceString;
     String mCookiePreview;
 
     /**
      * Creates new instance of this fragment
      */
     public static LinkedIdCreateTwitterStep2Fragment newInstance
-            (String handle, int proofNonce, String proofText) {
+            (String handle, int proofNonce) {
 
         LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(HANDLE, handle);
         args.putInt(NONCE, proofNonce);
-        args.putString(TEXT, proofText);
         frag.setArguments(args);
 
         return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mLinkedIdWizard = (LinkedIdWizard) getActivity();
+
+        mResourceHandle = getArguments().getString(HANDLE);
+        mResourceNonce = getArguments().getInt(NONCE);
+
+        mResourceString = TwitterResource.generateText(getActivity(),
+                mLinkedIdWizard.mFingerprint, mResourceNonce);
+
     }
 
     @Override
@@ -70,10 +84,6 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
         final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step2, container, false);
 
         mCookiePreview = TwitterResource.generatePreview();
-
-        mResourceHandle = getArguments().getString(HANDLE);
-        mResourceNonce = getArguments().getString(NONCE);
-        mResourceString = getArguments().getString(TEXT);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
@@ -140,13 +150,6 @@ public class LinkedIdCreateTwitterStep2Fragment extends Fragment {
         });
 
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mLinkedIdWizard = (LinkedIdWizard) getActivity();
     }
 
 }

@@ -107,7 +107,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
         String candidateFp = match.group(1).toLowerCase();
         try {
-            int nonceCandidate = Integer.parseInt(match.group(2).toLowerCase(), 16);
+            int nonceCandidate = (int) Long.parseLong(match.group(2).toLowerCase(), 16);
 
             if (nonce != nonceCandidate) {
                 log.add(LogType.MSG_LV_NONCE_ERROR, indent);

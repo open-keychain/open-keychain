@@ -8,7 +8,7 @@
 
     <ImageView
         android:layout_width="32dp"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:id="@+id/linked_id_type_icon"
         android:layout_marginLeft="14dp"
         android:layout_marginStart="14dp"
