@@ -375,9 +375,9 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void invokeNfcBeam() {
-        //Check if device supports NFC
+        // Check if device supports NFC
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            Toast.makeText(this, R.string.no_nfc_support, Toast.LENGTH_SHORT).show();
+            Notify.createNotify(this, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
             return;
         }
         // Check for available NFC Adapter
