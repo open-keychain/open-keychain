@@ -32,11 +32,25 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainIntentServiceHandler extends Handler {
 
-    // possible messages send from this service to handler on ui
-    public static final int MESSAGE_OKAY = 1;
-    public static final int MESSAGE_EXCEPTION = 2;
-    public static final int MESSAGE_UPDATE_PROGRESS = 3;
-    public static final int MESSAGE_PREVENT_CANCEL = 4;
+    // possible messages sent from this service to handler on ui
+    public static enum MessageStatus{
+        UNKNOWN,
+        OKAY,
+        EXCEPTION,
+        UPDATE_PROGRESS,
+        PREVENT_CANCEL;
+
+        private static final MessageStatus[] values = values();
+
+        public static MessageStatus fromInt(int n)
+        {
+            if(n < 0 || n >= values.length) {
+                return UNKNOWN;
+            } else {
+                return values[n];
+            }
+        }
+    }
 
     // possible data keys for messages
     public static final String DATA_ERROR = "error";
@@ -103,13 +117,14 @@ public class KeychainIntentServiceHandler extends Handler {
             return;
         }
 
-        switch (message.arg1) {
-            case MESSAGE_OKAY:
+        MessageStatus status = MessageStatus.fromInt(message.arg1);
+        switch (status) {
+            case OKAY:
                 mProgressDialogFragment.dismissAllowingStateLoss();
 
                 break;
 
-            case MESSAGE_EXCEPTION:
+            case EXCEPTION:
                 mProgressDialogFragment.dismissAllowingStateLoss();
 
                 // show error from service
@@ -121,7 +136,7 @@ public class KeychainIntentServiceHandler extends Handler {
 
                 break;
 
-            case MESSAGE_UPDATE_PROGRESS:
+            case UPDATE_PROGRESS:
                 if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
 
                     // update progress from service
@@ -139,7 +154,7 @@ public class KeychainIntentServiceHandler extends Handler {
 
                 break;
 
-            case MESSAGE_PREVENT_CANCEL:
+            case PREVENT_CANCEL:
                 mProgressDialogFragment.setPreventCancel(true);
                 break;
 

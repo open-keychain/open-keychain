@@ -142,7 +142,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                     public void handleMessage(Message message) {
                         super.handleMessage(message);
                         // handle messages by standard KeychainIntentServiceHandler first
-                        if (message.arg1 == MESSAGE_OKAY) {
+                        if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                             try {
                                 Message msg = Message.obtain();
                                 msg.copyFrom(message);

@@ -368,7 +368,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     Bundle returnData = message.getData();
                     String msg = returnData.getString(KeychainIntentServiceHandler.DATA_MESSAGE);
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
