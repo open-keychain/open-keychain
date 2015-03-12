@@ -104,7 +104,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     @Override
     protected View newView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.linked_create_twitter_fragment_step3, container, false);
+        return inflater.inflate(R.layout.linked_create_twitter_fragment_step2, container, false);
     }
 
     private void proofShare() {
