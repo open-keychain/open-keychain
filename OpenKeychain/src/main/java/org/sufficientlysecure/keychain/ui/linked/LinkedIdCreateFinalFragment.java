@@ -44,8 +44,8 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     LinkedCookieResource mVerifiedResource = null;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mLinkedIdWizard = (LinkedIdWizard) getActivity();
 

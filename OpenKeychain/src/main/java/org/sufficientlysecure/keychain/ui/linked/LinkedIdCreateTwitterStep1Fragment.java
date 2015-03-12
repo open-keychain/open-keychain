@@ -39,9 +39,6 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
     EditText mEditHandle;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static LinkedIdCreateTwitterStep1Fragment newInstance() {
         LinkedIdCreateTwitterStep1Fragment frag = new LinkedIdCreateTwitterStep1Fragment();
 
