@@ -121,6 +121,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     /**
      * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
      * and onClickListener for the linked system contact's layout
+     * In the case of a secret key, "me" contact details are loaded
      *
      * @param masterKeyId
      */
@@ -131,10 +132,10 @@ public class ViewKeyFragment extends LoaderFragment implements
         long contactId;
         String contactName = null;
 
-        if(mIsSecret) {
+        if (mIsSecret) {//all secret keys are linked to "me" profile in contacts
             contactId = ContactHelper.getMainProfileContactId(resolver);
             List<String> mainProfileNames = ContactHelper.getMainProfileContactName(context);
-            if(mainProfileNames!=null) contactName = mainProfileNames.get(0);
+            if (mainProfileNames != null) contactName = mainProfileNames.get(0);
 
         } else {
             contactId = ContactHelper.findContactId(resolver, masterKeyId);
@@ -145,10 +146,10 @@ public class ViewKeyFragment extends LoaderFragment implements
             mSystemContactName.setText(contactName);
 
             Bitmap picture;
-            if(mIsSecret) {
+            if (mIsSecret) {
                 picture = ContactHelper.loadMainProfilePhoto(resolver, false);
             } else {
-                picture = ContactHelper.loadPhotoByMasterKeyId(resolver,masterKeyId,false);
+                picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, false);
             }
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
 

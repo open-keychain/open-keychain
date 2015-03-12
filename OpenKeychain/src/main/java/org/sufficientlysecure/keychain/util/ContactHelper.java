@@ -214,6 +214,13 @@ public class ContactHelper {
         return new ArrayList<>(names);
     }
 
+    /**
+     * returns the CONTACT_ID of the main ("me") contact
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
+     *
+     * @param resolver
+     * @return
+     */
     public static long getMainProfileContactId(ContentResolver resolver) {
         Cursor profileCursor = resolver.query(
                 ContactsContract.Profile.CONTENT_URI,
@@ -229,6 +236,14 @@ public class ContactHelper {
         return profileCursor.getLong(0);
     }
 
+    /**
+     * loads the profile picture of the main ("me") contact
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
+     *
+     * @param contentResolver
+     * @param highRes         true for large image if present, false for thumbnail
+     * @return bitmap of loaded photo
+     */
     public static Bitmap loadMainProfilePhoto(ContentResolver contentResolver, boolean highRes) {
         try {
             long mainProfileContactId = getMainProfileContactId(contentResolver);
@@ -496,6 +511,12 @@ public class ContactHelper {
         }
     }
 
+    /**
+     * Links all keys with secrets to the main ("me") contact
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
+     *
+     * @param context
+     */
     public static void writeKeysToMainProfileContact(Context context) {
         ContentResolver resolver = context.getContentResolver();
         Set<Long> keysToDelete = getMainProfileMasterKeyIds(resolver);
@@ -509,22 +530,28 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
+                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
 
-                boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
-                if (!existsInMainProfile) {
-                    long rawContactId = -1;//new raw contact
+                if (!isExpired && !isRevoked) {
+                    // if expired or revoked will not be removed from keysToDelete or inserted
+                    // into main profile ("me" contact)
+                    boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
+                    if (!existsInMainProfile) {
+                        long rawContactId = -1;//new raw contact
 
-                    String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(masterKeyId);
-                    Log.d(Constants.TAG, "masterKeyId with secret " + masterKeyId);
+                        String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(masterKeyId);
+                        Log.d(Constants.TAG, "masterKeyId with secret " + masterKeyId);
 
-                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-                    insertMainProfileRawContact(ops, masterKeyId);
-                    writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
+                        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                        insertMainProfileRawContact(ops, masterKeyId);
+                        writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
 
-                    try {
-                        resolver.applyBatch(ContactsContract.AUTHORITY, ops);
-                    } catch (Exception e) {
-                        Log.w(Constants.TAG, e);
+                        try {
+                            resolver.applyBatch(ContactsContract.AUTHORITY, ops);
+                        } catch (Exception e) {
+                            Log.w(Constants.TAG, e);
+                        }
                     }
                 }
             }
@@ -538,6 +565,7 @@ public class ContactHelper {
 
     /**
      * Inserts a raw contact into the table defined by ContactsContract.Profile
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
      *
      * @param ops
      * @param masterKeyId
@@ -552,7 +580,8 @@ public class ContactHelper {
     }
 
     /**
-     * deletes a raw contact from the profile table
+     * deletes a raw contact from the main profile table ("me" contact)
+     * http://developer.android.com/reference/android/provider/ContactsContract.Profile.html
      *
      * @param resolver
      * @param masterKeyId
@@ -560,8 +589,8 @@ public class ContactHelper {
      */
     private static int deleteMainProfileRawContactByMasterKeyId(ContentResolver resolver,
                                                                 long masterKeyId) {
-        //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
-        //for deletion
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
         Uri deleteUri = ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI.buildUpon().
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
@@ -574,25 +603,47 @@ public class ContactHelper {
     }
 
     /**
-     * Delete all raw contacts associated to OpenKeychain.
+     * Delete all raw contacts associated to OpenKeychain, including those from "me" contact
+     * defined by ContactsContract.Profile
+     *
+     * @return number of rows deleted
      */
     private static int debugDeleteRawContacts(ContentResolver resolver) {
-        //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
-        //for deletion
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
         Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
         Log.d(Constants.TAG, "Deleting all raw contacts associated to OK...");
-        return resolver.delete(deleteUri,
+        int delete = resolver.delete(deleteUri,
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE
                 });
+
+        Uri mainProfileDeleteUri = ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI.buildUpon()
+                .appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
+
+        delete += resolver.delete(mainProfileDeleteUri,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE
+                });
+
+        return delete;
     }
 
+    /**
+     * Deletes raw contacts from ContactsContract.RawContacts based on rawContactId. Does not
+     * delete contacts from the "me" contact defined in ContactsContract.Profile
+     *
+     * @param resolver
+     * @param rawContactId
+     * @return number of rows deleted
+     */
     private static int deleteRawContactById(ContentResolver resolver, long rawContactId) {
-        //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
-        //for deletion
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
         Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
@@ -604,9 +655,17 @@ public class ContactHelper {
                 });
     }
 
+    /**
+     * Deletes raw contacts from ContactsContract.RawContacts based on masterKeyId. Does not
+     * delete contacts from the "me" contact defined in ContactsContract.Profile
+     *
+     * @param resolver
+     * @param masterKeyId
+     * @return number of rows deleted
+     */
     private static int deleteRawContactByMasterKeyId(ContentResolver resolver, long masterKeyId) {
-        //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
-        //for deletion
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
         Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
