@@ -192,8 +192,7 @@
   <string name="yubikey_pin_for">Введите PIN для доступа к YubiKey для
 \'%s\'</string>
   <string name="nfc_text">Держите YubiKey возле задней части вашего устройства.</string>
-  <string name="file_delete_confirmation">Вы уверены, что хотите удалить\n%s?</string>
-  <string name="no_file_selected">Сначала выберите файл.</string>
+    <string name="no_file_selected">Сначала выберите файл.</string>
   <string name="encrypt_sign_successful">Успешно подписано и/или зашифровано.</string>
   <string name="encrypt_sign_clipboard_successful">Успешно подписано и/или зашифровано в буфер обмена.</string>
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
@@ -811,4 +810,5 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="unlocked">Разблокирован</string>
   <string name="nfc_settings">Настройки</string>
+    <string name="file_delete_successful"></string>
 </resources>

@@ -114,6 +114,13 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             return;
         }
 
+        if (mEncryptInterface.getInputUris().contains(inputUri)) {
+            Notify.showNotify(getActivity(),
+                    getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
+                    Notify.Style.ERROR);
+            return;
+        }
+
         mEncryptInterface.getInputUris().add(inputUri);
         mEncryptInterface.notifyUpdate();
         mSelectedFiles.requestFocus();
