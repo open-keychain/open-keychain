@@ -363,7 +363,8 @@ public class ContactHelper {
             KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_SECRET};
+            KeychainContract.KeyRings.HAS_SECRET,
+            KeychainContract.KeyRings.HAS_ANY_SECRET};
 
     public static final int INDEX_MASTER_KEY_ID = 0;
     public static final int INDEX_USER_ID = 1;
@@ -371,6 +372,7 @@ public class ContactHelper {
     public static final int INDEX_IS_REVOKED = 3;
     public static final int INDEX_VERIFIED = 4;
     public static final int INDEX_HAS_SECRET = 5;
+    public static final int INDEX_HAS_ANY_SECRET = 6;
 
     /**
      * Write/Update the current OpenKeychain keys to the contact db
@@ -378,6 +380,8 @@ public class ContactHelper {
     public static void writeKeysToContacts(Context context) {
         ContentResolver resolver = context.getContentResolver();
         Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
+
+        writeKeysToMainProfileContact(context);
 
         if (Constants.DEBUG_SYNC_REMOVE_CONTACTS) {
             debugDeleteRawContacts(resolver);
@@ -395,9 +399,13 @@ public class ContactHelper {
 //            e.printStackTrace();
 //        }
 
-        // Load all Keys from OK
-        Cursor cursor = resolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(), KEYS_TO_CONTACT_PROJECTION,
-                null, null, null);
+        // Load all public Keys from OK
+        // TODO: figure out why using selectionArgs does not work in this case
+        Cursor cursor = resolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
+                KEYS_TO_CONTACT_PROJECTION,
+                KeychainContract.KeyRings.HAS_ANY_SECRET + "=0",
+                null, null);
+
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
@@ -406,7 +414,6 @@ public class ContactHelper {
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                boolean isSecret = cursor.getInt(INDEX_HAS_SECRET) != 0;
 
                 Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
@@ -418,8 +425,9 @@ public class ContactHelper {
 
                 ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
-                // Do not store expired or revoked keys in contact db - and remove them if they already exist
-                if (isExpired || isRevoked || !isVerified&&!isSecret) {
+                // Do not store expired or revoked or unverified keys in contact db - and
+                // remove them if they already exist. Secret keys do not reach this point
+                if (isExpired || isRevoked || !isVerified) {
                     Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting rawContactId " + rawContactId);
                     if (rawContactId != -1) {
                         deleteRawContactById(resolver, rawContactId);
@@ -455,6 +463,83 @@ public class ContactHelper {
         }
     }
 
+    public static void writeKeysToMainProfileContact(Context context) {
+        ContentResolver resolver = context.getContentResolver();
+        Set<Long> keysToDelete = getMainProfileMasterKeyIds(resolver);
+
+        // get all keys which have associated secret keys
+        // TODO: figure out why using selectionArgs does not work in this case
+        Cursor cursor = resolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
+                KEYS_TO_CONTACT_PROJECTION,
+                KeychainContract.KeyRings.HAS_ANY_SECRET + "!=0",
+                null, null);
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+
+                boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
+                if (!existsInMainProfile) {
+                    long rawContactId = -1;//new raw contact
+
+                    String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(masterKeyId);
+                    Log.d(Constants.TAG, "masterKeyId with secret " + masterKeyId);
+
+                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                    insertMainProfileRawContact(ops, masterKeyId);
+                    writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
+
+                    try {
+                        resolver.applyBatch(ContactsContract.AUTHORITY, ops);
+                    } catch (Exception e) {
+                        Log.w(Constants.TAG, e);
+                    }
+                }
+            }
+        }
+
+        for (long masterKeyId : keysToDelete) {
+            deleteMainProfileRawContactByMasterKeyId(resolver, masterKeyId);
+            Log.d(Constants.TAG, "Delete main profile raw contact with masterKeyId " + masterKeyId);
+        }
+    }
+
+    /**
+     * Inserts a raw contact into the table defined by ContactsContract.Profile
+     *
+     * @param ops
+     * @param masterKeyId
+     */
+    private static void insertMainProfileRawContact(ArrayList<ContentProviderOperation> ops,
+                                                    long masterKeyId) {
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, Constants.ACCOUNT_NAME)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, Constants.ACCOUNT_TYPE)
+                .withValue(ContactsContract.RawContacts.SOURCE_ID, Long.toString(masterKeyId))
+                .build());
+    }
+
+    /**
+     * deletes a raw contact from the profile table
+     *
+     * @param resolver
+     * @param masterKeyId
+     * @return
+     */
+    private static int deleteMainProfileRawContactByMasterKeyId(ContentResolver resolver,
+                                                                long masterKeyId) {
+        //allows us to actually wipe the RawContact from the device, otherwise would be just flagged
+        //for deletion
+        Uri deleteUri = ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI.buildUpon().
+                appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
+
+        return resolver.delete(deleteUri,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.SOURCE_ID + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
+                });
+    }
+
     /**
      * Delete all raw contacts associated to OpenKeychain.
      */
@@ -479,7 +564,8 @@ public class ContactHelper {
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
         return resolver.delete(deleteUri,
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts._ID + "=?",
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts._ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(rawContactId)
                 });
@@ -492,7 +578,8 @@ public class ContactHelper {
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
         return resolver.delete(deleteUri,
-                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?",
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.SOURCE_ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
                 });
@@ -504,6 +591,28 @@ public class ContactHelper {
     private static Set<Long> getRawContactMasterKeyIds(ContentResolver resolver) {
         HashSet<Long> result = new HashSet<>();
         Cursor masterKeyIds = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
+                new String[]{
+                        ContactsContract.RawContacts.SOURCE_ID
+                },
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE
+                }, null);
+        if (masterKeyIds != null) {
+            while (masterKeyIds.moveToNext()) {
+                result.add(masterKeyIds.getLong(0));
+            }
+            masterKeyIds.close();
+        }
+        return result;
+    }
+
+    /**
+     * @return a set of all key master key ids currently present in the contact db
+     */
+    private static Set<Long> getMainProfileMasterKeyIds(ContentResolver resolver) {
+        HashSet<Long> result = new HashSet<>();
+        Cursor masterKeyIds = resolver.query(ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI,
                 new String[]{
                         ContactsContract.RawContacts.SOURCE_ID
                 },
