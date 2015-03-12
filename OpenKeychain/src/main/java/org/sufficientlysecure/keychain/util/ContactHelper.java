@@ -190,7 +190,7 @@ public class ContactHelper {
      * @param context
      * @return
      */
-    private static List<String> getMainProfileContactName(Context context) {
+    public static List<String> getMainProfileContactName(Context context) {
         ContentResolver resolver = context.getContentResolver();
         Cursor profileCursor = resolver.query(
                 ContactsContract.Profile.CONTENT_URI,
@@ -212,6 +212,38 @@ public class ContactHelper {
         }
         profileCursor.close();
         return new ArrayList<>(names);
+    }
+
+    public static long getMainProfileContactId(ContentResolver resolver) {
+        Cursor profileCursor = resolver.query(
+                ContactsContract.Profile.CONTENT_URI,
+                new String[]{
+                        ContactsContract.Profile._ID
+                },
+                null, null, null);
+        if (profileCursor == null) {
+            return -1;
+        }
+
+        profileCursor.moveToNext();
+        return profileCursor.getLong(0);
+    }
+
+    public static Bitmap loadMainProfilePhoto(ContentResolver contentResolver, boolean highRes) {
+        try {
+            long mainProfileContactId = getMainProfileContactId(contentResolver);
+
+            Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                    Long.toString(mainProfileContactId));
+            InputStream photoInputStream =
+                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri, highRes);
+            if (photoInputStream == null) {
+                return null;
+            }
+            return BitmapFactory.decodeStream(photoInputStream);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     public static List<String> getContactMails(Context context) {
@@ -269,7 +301,7 @@ public class ContactHelper {
 
     /**
      * returns the CONTACT_ID of the raw contact to which a masterKeyId is associated, if the
-     * raw contact has not been marked for deletion
+     * raw contact has not been marked for deletion.
      *
      * @param resolver
      * @param masterKeyId
@@ -428,7 +460,8 @@ public class ContactHelper {
                 // Do not store expired or revoked or unverified keys in contact db - and
                 // remove them if they already exist. Secret keys do not reach this point
                 if (isExpired || isRevoked || !isVerified) {
-                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting rawContactId " + rawContactId);
+                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting rawContactId "
+                            + rawContactId);
                     if (rawContactId != -1) {
                         deleteRawContactById(resolver, rawContactId);
                     }
