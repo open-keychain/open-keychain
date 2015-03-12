@@ -94,10 +94,8 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                             return;
                         }
 
-                        int proofNonce = RawLinkedIdentity.generateNonce();
-
-                        LinkedIdCreateTwitterStep2Fragment frag =
-                                LinkedIdCreateTwitterStep2Fragment.newInstance(handle, proofNonce);
+                        LinkedIdCreateTwitterStep3Fragment frag =
+                                LinkedIdCreateTwitterStep3Fragment.newInstance(handle);
 
                         mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }

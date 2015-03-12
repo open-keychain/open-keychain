@@ -33,6 +33,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.pgp.linked.LinkedResource;
+import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
@@ -40,24 +43,24 @@ import java.util.List;
 
 public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragment {
 
-    public static final String ARG_HANDLE = "uri", ARG_TEXT = "text", ARG_CUSTOM = "custom";
+    public static final String ARG_HANDLE = "handle";
 
     EditText mEditTweetPreview;
 
-    String mResourceHandle, mCustom, mFullString;
+    String mResourceHandle;
     String mResourceString;
     private int mNonce;
 
     public static LinkedIdCreateTwitterStep3Fragment newInstance
-            (String handle, int proofNonce, String proofText, String customText) {
+            (String handle) {
 
         LinkedIdCreateTwitterStep3Fragment frag = new LinkedIdCreateTwitterStep3Fragment();
+
+        int proofNonce = RawLinkedIdentity.generateNonce();
 
         Bundle args = new Bundle();
         args.putString(ARG_HANDLE, handle);
         args.putInt(ARG_NONCE, proofNonce);
-        args.putString(ARG_TEXT, proofText);
-        args.putString(ARG_CUSTOM, customText);
         frag.setArguments(args);
 
         return frag;
@@ -67,13 +70,11 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getArguments();
-        mResourceHandle = args.getString(ARG_HANDLE);
-        mResourceString = args.getString(ARG_TEXT);
-        mCustom = args.getString(ARG_CUSTOM);
-        mNonce = args.getInt(ARG_NONCE);
+        mNonce = LinkedIdentity.generateNonce();
+        mResourceString =
+                TwitterResource.generate(getActivity(), mLinkedIdWizard.mFingerprint, mNonce);
 
-        mFullString = mCustom.isEmpty() ? mResourceString : (mCustom + " " + mResourceString);
+        mResourceHandle = getArguments().getString(ARG_HANDLE);
 
     }
 
@@ -82,7 +83,7 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         mEditTweetPreview = (EditText) view.findViewById(R.id.linked_create_twitter_preview);
-        mEditTweetPreview.setText(mFullString);
+        mEditTweetPreview.setText(mResourceString);
 
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override
@@ -103,7 +104,7 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
 
     @Override
     LinkedCookieResource getResource() {
-        return TwitterResource.searchInTwitterStream(mResourceHandle, mFullString);
+        return TwitterResource.searchInTwitterStream(mResourceHandle, mResourceString);
     }
 
     @Override
@@ -114,7 +115,7 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
     private void proofShare() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mFullString);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
@@ -122,7 +123,7 @@ public class LinkedIdCreateTwitterStep3Fragment extends LinkedIdCreateFinalFragm
     private void proofSend() {
 
         Intent tweetIntent = new Intent(Intent.ACTION_SEND);
-        tweetIntent.putExtra(Intent.EXTRA_TEXT, mFullString);
+        tweetIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
         tweetIntent.setType("text/plain");
 
         PackageManager packManager = getActivity().getPackageManager();
