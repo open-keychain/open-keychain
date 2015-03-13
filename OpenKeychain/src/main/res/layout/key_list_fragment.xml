@@ -24,14 +24,31 @@
             android:id="@+id/key_list_empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:orientation="vertical"
             android:visibility="visible">
 
             <TextView
+                android:id="@+id/file_import_key"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/file_import_key"
+                android:minHeight="?android:attr/listPreferredItemHeight"
+                android:drawableRight="@drawable/ic_folder_grey_24dp"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:background="?android:selectableItemBackground"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:text="@string/key_list_empty_text1"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
