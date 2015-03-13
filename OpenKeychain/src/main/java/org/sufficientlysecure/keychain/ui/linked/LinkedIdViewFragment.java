@@ -48,6 +48,8 @@ import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.ViewHolder.VerifyState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -127,10 +129,10 @@ public class LinkedIdViewFragment extends Fragment implements
         switch (loader.getId()) {
             case LOADER_ID_LINKED_ID:
 
-                // TODO proper error reporting and null checks here!
-
                 if (!cursor.moveToFirst()) {
-                    Log.e(Constants.TAG, "error");
+                    Notify.createNotify(getActivity(), "Error loading identity!",
+                            Notify.LENGTH_LONG, Style.ERROR).show();
+                    finishFragment();
                     break;
                 }
 
@@ -148,12 +150,20 @@ public class LinkedIdViewFragment extends Fragment implements
                     }
 
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new AssertionError("reconstruction of user attribute must succeed!");
+                    Log.e(Constants.TAG, "error parsing identity", e);
+                    Notify.createNotify(getActivity(), "Error parsing identity!",
+                            Notify.LENGTH_LONG, Style.ERROR).show();
+                    finishFragment();
                 }
 
                 break;
         }
+    }
+
+    public void finishFragment() {
+        FragmentManager manager = getFragmentManager();
+        manager.removeOnBackStackChangedListener(this);
+        manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     public interface OnIdentityLoadedListener {
@@ -296,6 +306,13 @@ public class LinkedIdViewFragment extends Fragment implements
             }
         }
 
+        void showVerifyingContainer(boolean show) {
+            if (vVerifyingContainer.getDisplayedChild() == (show ? 1 : 0)) {
+                return;
+            }
+            vVerifyingContainer.setDisplayedChild(show ? 1 : 0);
+        }
+
         void showButton(int which) {
             if (vButtonSwitcher.getDisplayedChild() == which) {
                 return;
@@ -335,7 +352,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
             mViewHolder.showButton(0);
             mViewHolder.vKeySpinner.setVisibility(View.GONE);
-            mViewHolder.vVerifyingContainer.setDisplayedChild(0);
+            mViewHolder.showVerifyingContainer(false);
             return;
         }
 
@@ -348,7 +365,7 @@ public class LinkedIdViewFragment extends Fragment implements
         manager.beginTransaction().addToBackStack("verification").commit();
         manager.executePendingTransactions();
         manager.addOnBackStackChangedListener(this);
-        mViewHolder.vVerifyingContainer.setDisplayedChild(1);
+        mViewHolder.showVerifyingContainer(true);
 
     }
 

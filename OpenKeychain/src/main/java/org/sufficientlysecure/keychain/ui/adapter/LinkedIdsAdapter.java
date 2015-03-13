@@ -61,14 +61,16 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         mShowCertification = showCertification;
 
         if (expander != null) {
+            expander.setVisibility(View.GONE);
+            /* don't show an expander (maybe in some sort of advanced view?)
             mExpander = expander;
-            mExpander.setVisibility(View.GONE);
             mExpander.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     showUnfiltered();
                 }
             });
+            */
         }
     }
 
