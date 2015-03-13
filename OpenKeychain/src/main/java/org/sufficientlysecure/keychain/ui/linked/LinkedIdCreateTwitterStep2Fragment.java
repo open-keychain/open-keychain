@@ -18,8 +18,7 @@
 package org.sufficientlysecure.keychain.ui.linked;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +29,6 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-
-import java.util.List;
 
 public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragment {
 
@@ -110,33 +106,12 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     private void proofSend() {
 
-        Intent tweetIntent = new Intent(Intent.ACTION_SEND);
-        tweetIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
-        tweetIntent.setType("text/plain");
+        Uri.Builder builder = Uri.parse("https://twitter.com/intent/tweet").buildUpon();
+        builder.appendQueryParameter("text", mResourceString);
+        Uri uri = builder.build();
 
-        PackageManager packManager = getActivity().getPackageManager();
-        List<ResolveInfo> resolvedInfoList = packManager.queryIntentActivities(tweetIntent,
-                PackageManager.MATCH_DEFAULT_ONLY);
-
-        boolean resolved = false;
-        for(ResolveInfo resolveInfo : resolvedInfoList) {
-            if(resolveInfo.activityInfo.packageName.startsWith("com.twitter.android")) {
-                tweetIntent.setClassName(
-                    resolveInfo.activityInfo.packageName,
-                    resolveInfo.activityInfo.name );
-                resolved = true;
-                break;
-            }
-        }
-
-        if (resolved) {
-            startActivity(tweetIntent);
-        } else {
-            Notify.showNotify(getActivity(),
-                    "Twitter app is not installed, please use the send intent!",
-                    Notify.Style.ERROR);
-        }
-
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        getActivity().startActivity(intent);
     }
 
 }
