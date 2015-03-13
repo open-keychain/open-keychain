@@ -657,6 +657,7 @@
     <string name="drawer_open">"Open navigation drawer"</string>
     <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
+    <string name="file_import_key">"Import from file"</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
