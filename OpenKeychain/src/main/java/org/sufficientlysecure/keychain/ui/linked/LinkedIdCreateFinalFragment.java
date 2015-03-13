@@ -86,7 +86,6 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         return view;
     }
 
-
     abstract LinkedCookieResource getResource();
 
     private void setVerifyProgress(boolean on, Boolean success) {
@@ -113,8 +112,19 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
+                long timer = System.currentTimeMillis();
+
                 LinkedCookieResource resource = getResource();
                 LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint);
+
+                // ux flow: this operation should take at last a second
+                timer = System.currentTimeMillis() -timer;
+                if (timer < 1000) try {
+                    Thread.sleep(1000 -timer);
+                } catch (InterruptedException e) {
+                    // never mind
+                }
+
                 if (result.success()) {
                     mVerifiedResource = resource;
                 }
