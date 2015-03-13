@@ -181,7 +181,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_next"
+            android:text="@string/btn_link_identity"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:textAllCaps="true"
             android:drawableRight="@drawable/ic_person_add_grey_24dp"
