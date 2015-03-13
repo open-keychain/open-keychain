@@ -10,7 +10,7 @@
         android:layout_above="@+id/create_key_button_divider">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
@@ -29,7 +29,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_gravity="center_horizontal"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -39,24 +41,38 @@
                 android:text="@string/linked_create_dns_2_2" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_gravity="center_horizontal">
+                android:layout_gravity="center_horizontal"
+                style="?android:buttonBarStyle"
+                android:showDividers="middle">
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    style="?android:buttonBarButtonStyle"
+                    android:drawableLeft="@drawable/ic_content_copy_grey_24dp"
+                    android:drawableStart="@android:drawable/ic_menu_share"
+                    android:text="Copy"
+                    android:id="@+id/button_save"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    style="?android:buttonBarButtonStyle"
+                    android:drawableLeft="@android:drawable/ic_menu_share"
+                    android:drawableStart="@android:drawable/ic_menu_share"
                     android:text="Share"
                     android:id="@+id/button_send"
-                    android:layout_marginRight="8dip"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Save"
-                    android:id="@+id/button_save"
-                    android:layout_marginLeft="8dip"/>
+                    />
 
             </LinearLayout>
 
@@ -67,57 +83,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/linked_create_dns_2_3" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-
-                <ViewAnimator
-                    android:id="@+id/verify_progress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dip"
-                    android:layout_marginStart="16dip"
-                    android:layout_gravity="center_vertical"
-                    android:inAnimation="@anim/fade_in"
-                    android:outAnimation="@anim/fade_out"
-                    >
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:id="@+id/verify_image"
-                        android:src="@drawable/status_signature_unverified_cutout_24dp"
-                        />
-
-                    <ProgressBar
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:indeterminateOnly="true"/>
-
-                </ViewAnimator>
-
-                <TextView
-                    android:id="@+id/verify_status"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/linked_verify_pending"
-                    android:layout_marginLeft="16dip"
-                    android:layout_marginStart="16dip"
-                    android:layout_weight="1"
-                    />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Verify"
-                    android:id="@+id/button_verify"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginEnd="16dip"
-                    />
-
-            </LinearLayout>
+            <include layout="@layout/linked_create_verify" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -185,7 +151,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_link_identity"
+            android:text="@string/btn_finish"
             android:minHeight="?android:attr/listPreferredItemHeight"
             android:drawableRight="@drawable/ic_person_add_grey_24dp"
             android:drawablePadding="8dp"

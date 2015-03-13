@@ -34,8 +34,6 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     public static final String ARG_HANDLE = "handle";
 
-    EditText mEditTweetPreview;
-
     String mResourceHandle;
     String mResourceString;
 
@@ -65,9 +63,6 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-
-        mEditTweetPreview = (EditText) view.findViewById(R.id.linked_create_twitter_preview);
-        mEditTweetPreview.setText(mResourceString);
 
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override

@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -92,7 +93,7 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
         view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                proofSave();
+                proofToClipboard();
             }
         });
 
@@ -115,22 +116,9 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
         startActivity(sendIntent);
     }
 
-    private void proofSave () {
-        String state = Environment.getExternalStorageState();
-        if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            Notify.showNotify(getActivity(), "External storage not available!", Style.ERROR);
-            return;
-        }
-
-        String targetName = "pgpkey.txt";
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File targetFile = new File(Constants.Path.APP_DIR, targetName);
-            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
-                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, "text/plain", targetName, REQUEST_CODE_OUTPUT);
-        }
+    private void proofToClipboard() {
+        ClipboardReflection.copyToClipboard(getActivity(), mResourceString);
+        Notify.showNotify(getActivity(), R.string.linked_text_clipboard, Notify.Style.OK);
     }
 
     private void saveFile(Uri uri) {

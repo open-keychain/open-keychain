@@ -1280,16 +1280,16 @@
     <string name="linked_create_https_2_1">"A proof file for this URI has been created:"</string>
     <string name="linked_create_https_2_2">"For the next step, you should save and upload this file."</string>
     <string name="linked_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
-    <string name="linked_create_https_2_4">"After verification is successful, hit next to add the linked identity to your keyring and finish the process."</string>
+    <string name="linked_create_https_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_twitter_1_1">"By creating a Linked Identity of this type, you can link your key to a Twitter account you control."</string>
     <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this tweet."</string>
     <string name="linked_create_twitter_1_3">"Please enter your Twitter screen name to proceed."</string>
     <string name="linked_create_twitter_handle">Twitter Handle</string>
-    <string name="linked_create_twitter_2_1">"This is the text for your Tweet:"</string>
-    <string name="linked_create_twitter_2_2">"You may add more text to the Tweet, so long as the text inside the brackets is unmodified. Tweet this message using either method."</string>
-    <string name="linked_create_twitter_2_3">"Once your Tweet is published, click the button below to scan your timeline for it."</string>
-    <string name="linked_create_twitter_2_4">"Next"</string>
+    <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
+    <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_dns_1_1">"By creating a Linked Identity of this type, you can link your key to a domain name you control."</string>
     <string name="linked_create_dns_1_2">"To do this, you create a specific TXT record for the domain, then create a Linked Identity which links to this record."</string>
@@ -1299,20 +1299,21 @@
     <string name="linked_create_dns_2_1">"Your proof text:"</string>
     <string name="linked_create_dns_2_2">"For the next step, bla bla"</string>
     <string name="linked_create_dns_2_3">"More bla:"</string>
-    <string name="linked_create_dns_2_4">"bla bla"</string>
+    <string name="linked_create_dns_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
-    <string name="linked_select_2">Please select a type:</string>
+    <string name="linked_select_2">"Please select a type:"</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
-    <string name="linked_verifying">Verifying…</string>
-    <string name="linked_verify_success">Verified!</string>
-    <string name="linked_verify_error">Verification error!</string>
-    <string name="linked_verify_pending">Not yet verified</string>
+    <string name="linked_verifying">"Verifying…"</string>
+    <string name="linked_verify_success">"Verified!"</string>
+    <string name="linked_verify_error">"Verification error!"</string>
+    <string name="linked_verify_pending">"Not yet verified"</string>
     <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
     <string name="menu_linked_add_identity">"Add Linked Identity"</string>
-    <string name="section_linked_identities">Linked Identities</string>
-    <string name="btn_link_identity">Link Identity</string>
-    <string name="linked_create_verify">Verify</string>
+    <string name="section_linked_identities">"Linked Identities"</string>
+    <string name="btn_finish">"Finish"</string>
+    <string name="linked_create_verify">"Verify"</string>
+    <string name="linked_text_clipboard">Text has been copied to clipboard</string>
     <plurals name="linked_id_expand">
         <item quantity="one">"There is one more unknown identity type"</item>
         <item quantity="other">"There are %d more unknown identity types"</item>

@@ -41,6 +41,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
     // This is a resource, set AFTER it has been verified
     LinkedCookieResource mVerifiedResource = null;
+    private ViewAnimator mVerifyButtonAnimator;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,11 +70,19 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
             }
         });
 
-        mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
         mVerifyAnimator = (ViewAnimator) view.findViewById(R.id.verify_progress);
+        mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
         mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
+        mVerifyButtonAnimator = (ViewAnimator) view.findViewById(R.id.verify_buttons);
 
         view.findViewById(R.id.button_verify).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proofVerify();
+            }
+        });
+
+        view.findViewById(R.id.button_retry).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 proofVerify();
@@ -91,18 +100,28 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     private void setVerifyProgress(boolean on, Boolean success) {
         if (success == null) {
             mVerifyStatus.setText(R.string.linked_verifying);
+            displayButton(on ? 2 : 0);
         } else if (success) {
             mVerifyStatus.setText(R.string.linked_verify_success);
             mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout_24dp);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_green_dark),
                     PorterDuff.Mode.SRC_IN);
+            displayButton(2);
         } else {
             mVerifyStatus.setText(R.string.linked_verify_error);
             mVerifyImage.setImageResource(R.drawable.status_signature_unknown_cutout_24dp);
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
                     PorterDuff.Mode.SRC_IN);
+            displayButton(1);
         }
         mVerifyAnimator.setDisplayedChild(on ? 1 : 0);
+    }
+
+    public void displayButton(int button) {
+        if (mVerifyButtonAnimator.getDisplayedChild() == button) {
+            return;
+        }
+        mVerifyButtonAnimator.setDisplayedChild(button);
     }
 
     protected void proofVerify() {
