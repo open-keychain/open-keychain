@@ -23,15 +23,13 @@ public abstract class LinkedResource {
     protected final HashMap<String,String> mParams;
 
     static Pattern magicPattern =
-            Pattern.compile("\\[Verifying my PGP key: openpgp4fpr:([a-zA-Z0-9]+)#([a-zA-Z0-9]+)\\]");
+            Pattern.compile("\\[Verifying my PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
 
     protected LinkedResource(Set<String> flags, HashMap<String, String> params, URI uri) {
         mFlags = flags;
         mParams = params;
         mSubUri = uri;
     }
-
-    public abstract URI toUri();
 
     public Set<String> getFlags () {
         return new HashSet<>(mFlags);

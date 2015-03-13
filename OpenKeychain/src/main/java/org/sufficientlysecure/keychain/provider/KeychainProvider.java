@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -508,7 +509,8 @@ public class KeychainProvider extends ContentProvider {
                         + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
 
                 if (match == KEY_RING_LINKED_IDS) {
-                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = 100");
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = "
+                            + WrappedUserAttribute.UAT_LINKED_ID);
                 } else {
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
                 }

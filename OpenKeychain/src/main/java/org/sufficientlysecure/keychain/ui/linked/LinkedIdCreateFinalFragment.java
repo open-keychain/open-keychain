@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 
 public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
-    public static final String ARG_NONCE = "nonce";
     protected static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
 
     protected LinkedIdWizard mLinkedIdWizard;
@@ -38,7 +37,6 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     private ImageView mVerifyImage;
     private View mVerifyProgress;
     private TextView mVerifyStatus;
-    private int mResourceNonce;
 
     // This is a resource, set AFTER it has been verified
     LinkedCookieResource mVerifiedResource = null;
@@ -48,8 +46,6 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mLinkedIdWizard = (LinkedIdWizard) getActivity();
-
-        mResourceNonce = getArguments().getInt(ARG_NONCE);
     }
 
     protected abstract View newView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
@@ -121,7 +117,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
                 LinkedCookieResource resource = getResource();
-                LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint, mResourceNonce);
+                LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint);
                 if (result.success()) {
                     mVerifiedResource = resource;
                 }
@@ -195,7 +191,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                LinkedIdentity.fromResource(mVerifiedResource, mResourceNonce).toUserAttribute();
+                LinkedIdentity.fromResource(mVerifiedResource).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 

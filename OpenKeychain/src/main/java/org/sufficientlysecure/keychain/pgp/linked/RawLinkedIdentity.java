@@ -5,46 +5,25 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.DrawableRes;
 
 /** The RawLinkedIdentity contains raw parsed data from a Linked Identity subpacket. */
 public class RawLinkedIdentity {
 
-    public final int mNonce;
     public final URI mUri;
 
-    protected RawLinkedIdentity(int nonce, URI uri) {
-        mNonce = nonce;
+    protected RawLinkedIdentity(URI uri) {
         mUri = uri;
     }
 
     public byte[] getEncoded() {
-        byte[] uriData = Strings.toUTF8ByteArray(mUri.toASCIIString());
-
-        ByteBuffer buf = ByteBuffer.allocate(4 + uriData.length);
-
-        buf.putInt(mNonce);
-        buf.put(uriData);
-
-        return buf.array();
+        return Strings.toUTF8ByteArray(mUri.toASCIIString());
     }
 
     public WrappedUserAttribute toUserAttribute () {
         return WrappedUserAttribute.fromSubpacket(WrappedUserAttribute.UAT_LINKED_ID, getEncoded());
-    }
-
-    public static int generateNonce() {
-        // TODO make this actually random
-        // byte[] data = new byte[4];
-        // new SecureRandom().nextBytes(data);
-        // return Hex.toHexString(data);
-
-        // debug for now
-        return 0x8a9bad32;
     }
 
     public @DrawableRes int getDisplayIcon() {

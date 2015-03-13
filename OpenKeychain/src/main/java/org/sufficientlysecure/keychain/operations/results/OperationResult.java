@@ -770,8 +770,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_LV_MATCH_ERROR (LogLevel.ERROR, R.string.msg_lv_match_error),
         MSG_LV_FP_OK (LogLevel.DEBUG, R.string.msg_lv_fp_ok),
         MSG_LV_FP_ERROR (LogLevel.ERROR, R.string.msg_lv_fp_error),
-        MSG_LV_NONCE_OK (LogLevel.OK, R.string.msg_lv_nonce_ok),
-        MSG_LV_NONCE_ERROR (LogLevel.ERROR, R.string.msg_lv_nonce_error),
 
         MSG_LV_FETCH (LogLevel.DEBUG, R.string.msg_lv_fetch),
         MSG_LV_FETCH_REDIR (LogLevel.DEBUG, R.string.msg_lv_fetch_redir),

@@ -41,10 +41,10 @@ public class DnsResource extends LinkedCookieResource {
         mType = type;
     }
 
-    public static String generateText (Context context, byte[] fingerprint, int nonce) {
+    public static String generateText (Context context, byte[] fingerprint) {
 
-        return String.format("pgpid+cookie=%s;%08x",
-                KeyFormattingUtils.convertFingerprintToHex(fingerprint), nonce);
+        return String.format("pgpid+cookie=%s",
+                KeyFormattingUtils.convertFingerprintToHex(fingerprint));
 
     }
 

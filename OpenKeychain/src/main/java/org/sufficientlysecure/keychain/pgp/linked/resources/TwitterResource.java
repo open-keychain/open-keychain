@@ -72,11 +72,6 @@ public class TwitterResource extends LinkedCookieResource {
 
     }
 
-    public static String generateText (Context context, byte[] fingerprint, int nonce) {
-        // nothing special here for now, might change this later
-        return LinkedCookieResource.generate(context, fingerprint, nonce);
-    }
-
     @Override
     protected String fetchResource(OperationLog log, int indent) {
 

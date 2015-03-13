@@ -41,7 +41,7 @@ public class WrappedUserAttribute implements Serializable {
 
     public static final int UAT_NONE = 0;
     public static final int UAT_IMAGE = UserAttributeSubpacketTags.IMAGE_ATTRIBUTE;
-    public static final int UAT_LINKED_ID = 100;
+    public static final int UAT_LINKED_ID = 101;
 
     private PGPUserAttributeSubpacketVector mVector;
 
@@ -82,7 +82,7 @@ public class WrappedUserAttribute implements Serializable {
     public static WrappedUserAttribute fromData (byte[] data) throws IOException {
         UserAttributeSubpacketInputStream in =
                 new UserAttributeSubpacketInputStream(new ByteArrayInputStream(data));
-        ArrayList<UserAttributeSubpacket> list = new ArrayList<UserAttributeSubpacket>();
+        ArrayList<UserAttributeSubpacket> list = new ArrayList<>();
         while (in.available() > 0) {
             list.add(in.readPacket());
         }
@@ -126,6 +126,7 @@ public class WrappedUserAttribute implements Serializable {
     private void readObjectNoData() throws ObjectStreamException {
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (!WrappedUserAttribute.class.isInstance(o)) {

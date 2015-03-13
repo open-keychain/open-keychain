@@ -31,8 +31,8 @@ public class GenericHttpsResource extends LinkedCookieResource {
         super(flags, params, uri);
     }
 
-    public static String generateText (Context context, byte[] fingerprint, int nonce) {
-        String cookie = LinkedCookieResource.generate(context, fingerprint, nonce);
+    public static String generateText (Context context, byte[] fingerprint) {
+        String cookie = LinkedCookieResource.generate(context, fingerprint);
 
         return String.format(context.getResources().getString(R.string.linked_id_generic_text),
                 cookie, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));

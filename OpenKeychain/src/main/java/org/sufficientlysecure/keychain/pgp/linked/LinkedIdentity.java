@@ -8,8 +8,6 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
@@ -19,8 +17,8 @@ public class LinkedIdentity extends RawLinkedIdentity {
 
     public final LinkedResource mResource;
 
-    protected LinkedIdentity(int nonce, URI uri, LinkedResource resource) {
-        super(nonce, uri);
+    protected LinkedIdentity(URI uri, LinkedResource resource) {
+        super(uri);
         if (resource == null) {
             throw new AssertionError("resource must not be null in a LinkedIdentity!");
         }
@@ -42,29 +40,27 @@ public class LinkedIdentity extends RawLinkedIdentity {
      * subpacket can not be parsed as a valid linked id.
      */
     static RawLinkedIdentity fromAttributeSubpacket(UserAttributeSubpacket subpacket) {
-        if (subpacket.getType() != 100) {
+        if (subpacket.getType() != 101) {
             return null;
         }
 
         byte[] data = subpacket.getData();
 
         return fromSubpacketData(data);
-
     }
 
     static RawLinkedIdentity fromSubpacketData(byte[] data) {
 
         try {
-            int nonce = ByteBuffer.wrap(data).getInt();
-            String uriStr = Strings.fromUTF8ByteArray(Arrays.copyOfRange(data, 4, data.length));
+            String uriStr = Strings.fromUTF8ByteArray(data);
             URI uri = URI.create(uriStr);
 
             LinkedResource res = LinkedResource.fromUri(uri);
             if (res == null) {
-                return new RawLinkedIdentity(nonce, uri);
+                return new RawLinkedIdentity(uri);
             }
 
-            return new LinkedIdentity(nonce, uri, res);
+            return new LinkedIdentity(uri, res);
 
         } catch (IllegalArgumentException e) {
             Log.e(Constants.TAG, "error parsing uri in (suspected) linked id packet");
@@ -72,8 +68,8 @@ public class LinkedIdentity extends RawLinkedIdentity {
         }
     }
 
-    public static RawLinkedIdentity fromResource (LinkedCookieResource res, int nonce) {
-        return new RawLinkedIdentity(nonce, res.toUri());
+    public static RawLinkedIdentity fromResource (LinkedCookieResource res) {
+        return new RawLinkedIdentity(res.toUri());
     }
 
 

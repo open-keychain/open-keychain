@@ -1168,8 +1168,6 @@
     <string name="msg_lv_match_error">"No cookie found in resource!"</string>
     <string name="msg_lv_fp_ok">"Fingerprint ok."</string>
     <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
-    <string name="msg_lv_nonce_ok">"Link verified!"</string>
-    <string name="msg_lv_nonce_error">"Nonce mismatch!"</string>
 
     <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
     <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>

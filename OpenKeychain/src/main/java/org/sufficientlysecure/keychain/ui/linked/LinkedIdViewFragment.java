@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -24,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -419,7 +417,7 @@ public class LinkedIdViewFragment extends Fragment implements
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
                 long timer = System.currentTimeMillis();
-                LinkedVerifyResult result = mLinkedResource.verify(mFingerprint, mLinkedId.mNonce);
+                LinkedVerifyResult result = mLinkedResource.verify(mFingerprint);
 
                 // ux flow: this operation should take at last a second
                 timer = System.currentTimeMillis() -timer;

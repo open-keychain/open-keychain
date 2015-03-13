@@ -61,16 +61,16 @@ public abstract class LinkedCookieResource extends LinkedResource {
         return mSubUri;
     }
 
-    public static String generate (Context context, byte[] fingerprint, int nonce) {
-        return String.format("[Verifying my PGP key: openpgp4fpr:%s#%08x]",
-                KeyFormattingUtils.convertFingerprintToHex(fingerprint), nonce);
+    public static String generate (Context context, byte[] fingerprint) {
+        return String.format("[Verifying my PGP key: openpgp4fpr:%s]",
+                KeyFormattingUtils.convertFingerprintToHex(fingerprint));
     }
 
     public static String generatePreview () {
         return "[Verifying my PGP key: openpgp4fpr:0x…]";
     }
 
-    public LinkedVerifyResult verify(byte[] fingerprint, int nonce) {
+    public LinkedVerifyResult verify(byte[] fingerprint) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_LV, 0);
@@ -84,7 +84,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
         Log.d(Constants.TAG, "Resource data: '" + res + "'");
 
-        return verifyString(log, 1, res, nonce, fingerprint);
+        return verifyString(log, 1, res, fingerprint);
 
     }
 
@@ -96,7 +96,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
     protected LinkedVerifyResult verifyString (OperationLog log, int indent,
                                                String res,
-                                               int nonce, byte[] fingerprint) {
+                                               byte[] fingerprint) {
 
         log.add(LogType.MSG_LV_MATCH, indent);
         Matcher match = matchResource(log, indent+1, res);
@@ -106,27 +106,13 @@ public abstract class LinkedCookieResource extends LinkedResource {
         }
 
         String candidateFp = match.group(1).toLowerCase();
-        try {
-            int nonceCandidate = (int) Long.parseLong(match.group(2).toLowerCase(), 16);
-
-            if (nonce != nonceCandidate) {
-                log.add(LogType.MSG_LV_NONCE_ERROR, indent);
-                return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
-            }
-        } catch (NumberFormatException e) {
-            log.add(LogType.MSG_LV_NONCE_ERROR, indent);
-            return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
-        }
-
         String fp = KeyFormattingUtils.convertFingerprintToHex(fingerprint);
-
         if (!fp.equals(candidateFp)) {
             log.add(LogType.MSG_LV_FP_ERROR, indent);
             return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
         }
         log.add(LogType.MSG_LV_FP_OK, indent);
 
-        log.add(LogType.MSG_LV_NONCE_OK, indent);
         return new LinkedVerifyResult(LinkedVerifyResult.RESULT_OK, log);
 
     }

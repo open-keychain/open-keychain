@@ -52,12 +52,11 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
     String mResourceString;
 
     public static LinkedIdCreateDnsStep2Fragment newInstance
-            (String uri, int proofNonce, String proofText) {
+            (String uri, String proofText) {
 
         LinkedIdCreateDnsStep2Fragment frag = new LinkedIdCreateDnsStep2Fragment();
 
         Bundle args = new Bundle();
-        args.putInt(ARG_NONCE, proofNonce);
         args.putString(DOMAIN, uri);
         args.putString(TEXT, proofText);
         frag.setArguments(args);

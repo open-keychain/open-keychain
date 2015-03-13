@@ -38,9 +38,6 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
 
     EditText mEditUri;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static LinkedIdCreateHttpsStep1Fragment newInstance() {
         LinkedIdCreateHttpsStep1Fragment frag = new LinkedIdCreateHttpsStep1Fragment();
 
@@ -72,12 +69,11 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
                     return;
                 }
 
-                int proofNonce = RawLinkedIdentity.generateNonce();
                 String proofText = GenericHttpsResource.generateText(getActivity(),
-                        mLinkedIdWizard.mFingerprint, proofNonce);
+                        mLinkedIdWizard.mFingerprint);
 
                 LinkedIdCreateHttpsStep2Fragment frag =
-                        LinkedIdCreateHttpsStep2Fragment.newInstance(uri, proofNonce, proofText);
+                        LinkedIdCreateHttpsStep2Fragment.newInstance(uri, proofText);
 
                 mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
 

@@ -73,12 +73,11 @@ public class LinkedIdCreateDnsStep1Fragment extends Fragment {
                     return;
                 }
 
-                int proofNonce = RawLinkedIdentity.generateNonce();
                 String proofText = DnsResource.generateText(getActivity(),
-                        mLinkedIdWizard.mFingerprint, proofNonce);
+                        mLinkedIdWizard.mFingerprint);
 
                 LinkedIdCreateDnsStep2Fragment frag =
-                        LinkedIdCreateDnsStep2Fragment.newInstance(uri, proofNonce, proofText);
+                        LinkedIdCreateDnsStep2Fragment.newInstance(uri, proofText);
 
                 mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
 

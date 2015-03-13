@@ -53,12 +53,11 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     String mResourceString;
 
     public static LinkedIdCreateHttpsStep2Fragment newInstance
-            (String uri, int proofNonce, String proofText) {
+            (String uri, String proofText) {
 
         LinkedIdCreateHttpsStep2Fragment frag = new LinkedIdCreateHttpsStep2Fragment();
 
         Bundle args = new Bundle();
-        args.putInt(ARG_NONCE, proofNonce);
         args.putString(ARG_URI, uri);
         args.putString(ARG_TEXT, proofText);
         frag.setArguments(args);

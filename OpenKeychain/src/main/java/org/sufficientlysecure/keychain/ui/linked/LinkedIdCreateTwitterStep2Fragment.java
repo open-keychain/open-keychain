@@ -29,8 +29,6 @@ import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
@@ -44,18 +42,14 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     String mResourceHandle;
     String mResourceString;
-    private int mNonce;
 
     public static LinkedIdCreateTwitterStep2Fragment newInstance
             (String handle) {
 
         LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
-        int proofNonce = RawLinkedIdentity.generateNonce();
-
         Bundle args = new Bundle();
         args.putString(ARG_HANDLE, handle);
-        args.putInt(ARG_NONCE, proofNonce);
         frag.setArguments(args);
 
         return frag;
@@ -65,9 +59,8 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mNonce = LinkedIdentity.generateNonce();
         mResourceString =
-                TwitterResource.generate(getActivity(), mLinkedIdWizard.mFingerprint, mNonce);
+                TwitterResource.generate(getActivity(), mLinkedIdWizard.mFingerprint);
 
         mResourceHandle = getArguments().getString(ARG_HANDLE);
 
