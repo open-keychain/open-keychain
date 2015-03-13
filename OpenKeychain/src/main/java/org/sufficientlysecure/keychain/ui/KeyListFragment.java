@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -40,7 +39,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,7 +46,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -81,7 +78,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
-import java.lang.Override;
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -126,8 +122,6 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setOnItemClickListener(this);
 
         View mImportKey;
-
-        final int REQUEST_CODE_CREATE_OR_IMPORT_KEY = 0x00007012;
 
         mImportKey = view.findViewById(R.id.file_import_key);
 
