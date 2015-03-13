@@ -68,13 +68,6 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/linked_create_dns_1_4" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_dns_1_5" />
-
         </LinearLayout>
 
     </ScrollView>

@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
@@ -35,8 +36,8 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     protected LinkedIdWizard mLinkedIdWizard;
 
     private ImageView mVerifyImage;
-    private View mVerifyProgress;
     private TextView mVerifyStatus;
+    private ViewAnimator mVerifyAnimator;
 
     // This is a resource, set AFTER it has been verified
     LinkedCookieResource mVerifiedResource = null;
@@ -69,7 +70,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         });
 
         mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
-        mVerifyProgress = view.findViewById(R.id.verify_progress);
+        mVerifyAnimator = (ViewAnimator) view.findViewById(R.id.verify_progress);
         mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
 
         view.findViewById(R.id.button_verify).setOnClickListener(new OnClickListener() {
@@ -89,13 +90,8 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     abstract LinkedCookieResource getResource();
 
     private void setVerifyProgress(boolean on, Boolean success) {
-        mVerifyProgress.setVisibility(on ? View.VISIBLE : View.GONE);
-        mVerifyImage.setVisibility(on ? View.GONE : View.VISIBLE);
         if (success == null) {
             mVerifyStatus.setText(R.string.linked_verifying);
-            mVerifyImage.setImageResource(R.drawable.status_signature_unverified_cutout_24dp);
-            mVerifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
-                    PorterDuff.Mode.SRC_IN);
         } else if (success) {
             mVerifyStatus.setText(R.string.linked_verify_success);
             mVerifyImage.setImageResource(R.drawable.status_signature_verified_cutout_24dp);
@@ -107,6 +103,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
             mVerifyImage.setColorFilter(getResources().getColor(R.color.android_red_dark),
                     PorterDuff.Mode.SRC_IN);
         }
+        mVerifyAnimator.setDisplayedChild(on ? 1 : 0);
     }
 
     protected void proofVerify() {

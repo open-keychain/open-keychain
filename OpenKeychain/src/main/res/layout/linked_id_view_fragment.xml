@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/linked_verify_container"
                 android:inAnimation="@anim/fade_in"
-                android:outAnimation="@anim/fade_out">
+                android:outAnimation="@anim/fade_out"
+                >
 
                 <include layout="@layout/cert_list_widget" />
 

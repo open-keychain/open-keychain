@@ -33,20 +33,11 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/linked_create_twitter_1_1" />
 
             </LinearLayout>
-
-            <EditText
-                android:id="@+id/linked_create_twitter_handle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
-                android:layout_marginTop="16dp"
-                android:ems="10"
-                android:layout_gravity="center_horizontal"
-                android:hint="@string/linked_create_twitter_handle"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -61,6 +52,16 @@
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/linked_create_twitter_1_3" />
+
+            <EditText
+                android:id="@+id/linked_create_twitter_handle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:layout_marginTop="16dp"
+                android:ems="10"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/linked_create_twitter_handle"/>
 
         </LinearLayout>
 
