@@ -426,25 +426,14 @@ public class ContactHelper {
      */
     public static void writeKeysToContacts(Context context) {
         ContentResolver resolver = context.getContentResolver();
-        Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
-
-        writeKeysToMainProfileContact(context);
 
         if (Constants.DEBUG_SYNC_REMOVE_CONTACTS) {
             debugDeleteRawContacts(resolver);
         }
 
-//        ContentProviderClient client = resolver.acquireContentProviderClient(ContactsContract.AUTHORITY_URI);
-//        ContentValues values = new ContentValues();
-//        Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-//        values.put(ContactsContract.Settings.ACCOUNT_NAME, account.name);
-//        values.put(ContactsContract.Settings.ACCOUNT_TYPE, account.type);
-//        values.put(ContactsContract.Settings.UNGROUPED_VISIBLE, true);
-//        try {
-//            client.insert(ContactsContract.Settings.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build(), values);
-//        } catch (RemoteException e) {
-//            e.printStackTrace();
-//        }
+        writeKeysToMainProfileContact(context, resolver);
+
+        Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
 
         // Load all public Keys from OK
         // TODO: figure out why using selectionArgs does not work in this case
@@ -457,7 +446,6 @@ public class ContactHelper {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
-                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_MASTER_KEY_ID));
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
@@ -487,7 +475,7 @@ public class ContactHelper {
                         Log.d(Constants.TAG, "Insert new raw contact with masterKeyId " + masterKeyId);
 
                         insertContact(ops, context, masterKeyId);
-                        writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
+                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit[0]);
                     }
 
                     // We always update the display name (which is derived from primary user id)
@@ -517,8 +505,7 @@ public class ContactHelper {
      *
      * @param context
      */
-    public static void writeKeysToMainProfileContact(Context context) {
-        ContentResolver resolver = context.getContentResolver();
+    public static void writeKeysToMainProfileContact(Context context, ContentResolver resolver) {
         Set<Long> keysToDelete = getMainProfileMasterKeyIds(resolver);
 
         // get all keys which have associated secret keys
@@ -763,10 +750,10 @@ public class ContactHelper {
      * This creates the link to OK in contact details
      */
     private static void writeContactKey(ArrayList<ContentProviderOperation> ops, Context context, long rawContactId,
-                                        long masterKeyId, String keyIdShort) {
+                                        long masterKeyId, String keyName) {
         ops.add(referenceRawContact(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI), rawContactId)
                 .withValue(ContactsContract.Data.MIMETYPE, Constants.CUSTOM_CONTACT_DATA_MIME_TYPE)
-                .withValue(ContactsContract.Data.DATA1, context.getString(R.string.contact_show_key, keyIdShort))
+                .withValue(ContactsContract.Data.DATA1, context.getString(R.string.contact_show_key, keyName))
                 .withValue(ContactsContract.Data.DATA2, masterKeyId)
                 .build());
     }
