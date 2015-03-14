@@ -519,20 +519,20 @@ public class ContactHelper {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
 
-                if (!isExpired && !isRevoked) {
+                if (!isExpired && !isRevoked && userIdSplit[0] != null) {
                     // if expired or revoked will not be removed from keysToDelete or inserted
                     // into main profile ("me" contact)
                     boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
                     if (!existsInMainProfile) {
                         long rawContactId = -1;//new raw contact
 
-                        String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(masterKeyId);
                         Log.d(Constants.TAG, "masterKeyId with secret " + masterKeyId);
 
                         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                         insertMainProfileRawContact(ops, masterKeyId);
-                        writeContactKey(ops, context, rawContactId, masterKeyId, keyIdShort);
+                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit[0]);
 
                         try {
                             resolver.applyBatch(ContactsContract.AUTHORITY, ops);
