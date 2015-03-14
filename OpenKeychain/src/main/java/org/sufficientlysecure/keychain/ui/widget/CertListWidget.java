@@ -1,7 +1,5 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.Context;
@@ -11,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
@@ -29,7 +26,7 @@ public class CertListWidget extends ViewAnimator
     public static final int LOADER_ID_LINKED_CERTS = 38572;
 
     public static final String ARG_URI = "uri";
-    public static final String ARG_RANK = "rank";
+    public static final String ARG_IS_SECRET = "is_secret";
 
 
     // These are the rows that we will retrieve.
@@ -56,6 +53,7 @@ public class CertListWidget extends ViewAnimator
     private TextView vCollapsed;
     private ListView vExpanded;
     private View vExpandButton;
+    private boolean mIsSecret;
 
     public CertListWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -94,6 +92,7 @@ public class CertListWidget extends ViewAnimator
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = args.getParcelable(ARG_URI);
+        mIsSecret = args.getBoolean(ARG_IS_SECRET, false);
         return new CursorLoader(getContext(), uri,
                 CERTS_PROJECTION, null, null, null);
     }
@@ -104,8 +103,6 @@ public class CertListWidget extends ViewAnimator
         if (data == null || !data.moveToFirst()) {
             return;
         }
-
-        setVisibility(View.VISIBLE);
 
         // TODO support external certificates
         Date userCert = null;
@@ -125,11 +122,18 @@ public class CertListWidget extends ViewAnimator
 
         if (userCert != null) {
             PrettyTime format = new PrettyTime();
-            vCollapsed.setText("You verified and confirmed this identity "
-                    + format.format(userCert) + ".");
+            if (mIsSecret) {
+                vCollapsed.setText("You created this identity "
+                        + format.format(userCert) + ".");
+            } else {
+                vCollapsed.setText("You verified and confirmed this identity "
+                        + format.format(userCert) + ".");
+            }
         } else {
             vCollapsed.setText("This identity is not yet verified or confirmed.");
         }
+
+        setVisibility(View.VISIBLE);
 
     }
 

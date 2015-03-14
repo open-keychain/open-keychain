@@ -262,7 +262,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
         mLinkedIdsAdapter = new LinkedIdsAdapter(getActivity(), null, 0,
-                !mIsSecret, mLinkedIdsExpander);
+                mIsSecret, mLinkedIdsExpander);
         mLinkedIds.setAdapter(mLinkedIdsAdapter);
         getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
 

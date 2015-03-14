@@ -62,13 +62,13 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private static final String ARG_DATA_URI = "data_uri";
     private static final String ARG_LID_RANK = "rank";
-    private static final String ARG_SHOWCERT = "verified";
+    private static final String ARG_IS_SECRET = "verified";
     private static final String ARG_FINGERPRINT = "fingerprint";
     private static final int LOADER_ID_LINKED_ID = 1;
 
     private RawLinkedIdentity mLinkedId;
     private LinkedCookieResource mLinkedResource;
-    private boolean mShowCert;
+    private boolean mIsSecret;
 
     private Context mContext;
     private byte[] mFingerprint;
@@ -81,13 +81,13 @@ public class LinkedIdViewFragment extends Fragment implements
     private OnIdentityLoadedListener mIdLoadedListener;
 
     public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
-            boolean showCertified, byte[] fingerprint) throws IOException {
+            boolean isSecret, byte[] fingerprint) throws IOException {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putInt(ARG_LID_RANK, rank);
-        args.putBoolean(ARG_SHOWCERT, showCertified);
+        args.putBoolean(ARG_IS_SECRET, isSecret);
         args.putByteArray(ARG_FINGERPRINT, fingerprint);
         frag.setArguments(args);
 
@@ -102,7 +102,7 @@ public class LinkedIdViewFragment extends Fragment implements
         mDataUri = args.getParcelable(ARG_DATA_URI);
         mLidRank = args.getInt(ARG_LID_RANK);
 
-        mShowCert = args.getBoolean(ARG_SHOWCERT);
+        mIsSecret = args.getBoolean(ARG_IS_SECRET);
         mFingerprint = args.getByteArray(ARG_FINGERPRINT);
 
         mContext = getActivity();
@@ -184,7 +184,7 @@ public class LinkedIdViewFragment extends Fragment implements
             mLinkedResource = (LinkedCookieResource) res;
         }
 
-        if (mShowCert) {
+        if (!mIsSecret) {
             mViewHolder.mLinkedIdHolder.vVerified.setVisibility(View.VISIBLE);
 
             switch (certStatus) {
@@ -276,7 +276,7 @@ public class LinkedIdViewFragment extends Fragment implements
             VERIFYING, VERIFY_OK, VERIFY_ERROR, CERTIFYING
         }
 
-        void setVerifyingState(VerifyState state) {
+        void setVerifyingState(VerifyState state, boolean isSecret) {
             switch (state) {
                 case VERIFYING:
                     vProgress.setDisplayedChild(0);
@@ -285,10 +285,15 @@ public class LinkedIdViewFragment extends Fragment implements
                     break;
 
                 case VERIFY_OK:
-                    showButton(2);
                     vText.setText("Ok");
                     vProgress.setDisplayedChild(1);
-                    vKeySpinner.setVisibility(View.VISIBLE);
+                    if (!isSecret) {
+                        showButton(2);
+                        vKeySpinner.setVisibility(View.VISIBLE);
+                    } else {
+                        showButton(1);
+                        vKeySpinner.setVisibility(View.GONE);
+                    }
                     break;
 
                 case VERIFY_ERROR:
@@ -411,6 +416,7 @@ public class LinkedIdViewFragment extends Fragment implements
         {
             Bundle args = new Bundle();
             args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(mDataUri, mLidRank));
+            args.putBoolean(CertListWidget.ARG_IS_SECRET, mIsSecret);
             getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
                     args, mViewHolder.vLinkedCerts);
         }
@@ -428,7 +434,7 @@ public class LinkedIdViewFragment extends Fragment implements
         setShowVerifying(true);
 
         mViewHolder.vKeySpinner.setVisibility(View.GONE);
-        mViewHolder.setVerifyingState(VerifyState.VERIFYING);
+        mViewHolder.setVerifyingState(VerifyState.VERIFYING, mIsSecret);
 
         mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
@@ -453,9 +459,9 @@ public class LinkedIdViewFragment extends Fragment implements
                     return;
                 }
                 if (result.success()) {
-                    mViewHolder.setVerifyingState(VerifyState.VERIFY_OK);
+                    mViewHolder.setVerifyingState(VerifyState.VERIFY_OK, mIsSecret);
                 } else {
-                    mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR);
+                    mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR, mIsSecret);
                 }
                 mInProgress = null;
             }
@@ -464,6 +470,11 @@ public class LinkedIdViewFragment extends Fragment implements
     }
 
     private void initiateCertifying() {
+
+        if (mIsSecret) {
+            return;
+        }
+
         // get the user's passphrase for this key (if required)
         String passphrase;
         long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
@@ -509,7 +520,11 @@ public class LinkedIdViewFragment extends Fragment implements
 
     private void certifyResource(long certifyKeyId, String passphrase) {
 
-        mViewHolder.setVerifyingState(VerifyState.CERTIFYING);
+        if (mIsSecret) {
+            return;
+        }
+
+        mViewHolder.setVerifyingState(VerifyState.CERTIFYING, mIsSecret);
 
         Bundle data = new Bundle();
         {

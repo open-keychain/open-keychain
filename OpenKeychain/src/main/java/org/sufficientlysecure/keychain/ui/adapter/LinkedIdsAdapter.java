@@ -26,7 +26,6 @@ import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,7 +45,7 @@ import java.io.IOException;
 import java.util.WeakHashMap;
 
 public class LinkedIdsAdapter extends UserAttributesAdapter {
-    private final boolean mShowCertification;
+    private final boolean mIsSecret;
     protected LayoutInflater mInflater;
     WeakHashMap<Integer,RawLinkedIdentity> mLinkedIdentityCache = new WeakHashMap<>();
 
@@ -55,10 +54,10 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
     private TextView mExpander;
 
     public LinkedIdsAdapter(Context context, Cursor c, int flags,
-            boolean showCertification, TextView expander) {
+            boolean isSecret, TextView expander) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
-        mShowCertification = showCertification;
+        mIsSecret = isSecret;
 
         if (expander != null) {
             expander.setVisibility(View.GONE);
@@ -113,7 +112,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
         ViewHolder holder = (ViewHolder) view.getTag();
 
-        if (mShowCertification) {
+        if (!mIsSecret) {
             holder.vVerified.setVisibility(View.VISIBLE);
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
@@ -192,7 +191,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         int rank = c.getInt(UserIdsAdapter.INDEX_RANK);
 
         Uri dataUri = UserPackets.buildLinkedIdsUri(baseUri);
-        return LinkedIdViewFragment.newInstance(dataUri, rank, mShowCertification, fingerprint);
+        return LinkedIdViewFragment.newInstance(dataUri, rank, mIsSecret, fingerprint);
     }
 
     public static class ViewHolder {
