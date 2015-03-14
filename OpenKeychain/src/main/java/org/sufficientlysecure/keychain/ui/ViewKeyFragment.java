@@ -44,6 +44,8 @@ import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.List;
+
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -119,6 +121,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     /**
      * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
      * and onClickListener for the linked system contact's layout
+     * In the case of a secret key, "me" contact details are loaded
      *
      * @param masterKeyId
      */
@@ -126,19 +129,35 @@ public class ViewKeyFragment extends LoaderFragment implements
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();
 
-        final long contactId = ContactHelper.findContactId(resolver, masterKeyId);
-        final String contactName = ContactHelper.getContactName(resolver, contactId);
+        long contactId;
+        String contactName = null;
+
+        if (mIsSecret) {//all secret keys are linked to "me" profile in contacts
+            contactId = ContactHelper.getMainProfileContactId(resolver);
+            List<String> mainProfileNames = ContactHelper.getMainProfileContactName(context);
+            if (mainProfileNames != null) contactName = mainProfileNames.get(0);
+
+        } else {
+            contactId = ContactHelper.findContactId(resolver, masterKeyId);
+            contactName = ContactHelper.getContactName(resolver, contactId);
+        }
 
         if (contactName != null) {//contact name exists for given master key
             mSystemContactName.setText(contactName);
 
-            Bitmap picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, true);
+            Bitmap picture;
+            if (mIsSecret) {
+                picture = ContactHelper.loadMainProfilePhoto(resolver, false);
+            } else {
+                picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, false);
+            }
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
 
+            final long finalContactId = contactId;
             mSystemContactLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    launchContactActivity(contactId, context);
+                    launchContactActivity(finalContactId, context);
                 }
             });
             mSystemContactLoaded = true;
@@ -239,14 +258,14 @@ public class ViewKeyFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
+
+                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+
                     //TODO system to allow immediate refreshing of system contact on verification
                     if (!mSystemContactLoaded) {//ensure we load linked system contact only once
                         long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                         loadLinkedSystemContact(masterKeyId);
                     }
-
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
                     mUserIds.setAdapter(mUserIdsAdapter);
