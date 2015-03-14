@@ -121,6 +121,17 @@ public class KeyListFragment extends LoaderFragment
         mStickyList = (StickyListHeadersListView) view.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
 
+        View mImportKey;
+
+        mImportKey = view.findViewById(R.id.file_import_key);
+
+        mImportKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                importFile();
+            }
+        });
+
         mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
 
         FloatingActionButton fabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
