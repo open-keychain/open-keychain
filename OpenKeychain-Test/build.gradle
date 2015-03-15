@@ -16,7 +16,7 @@ apply plugin: 'jacoco'
 dependencies {
     testCompile 'junit:junit:4.11'
     testCompile 'com.google.android:android:4.1.1.4'
-    testCompile('com.squareup:fest-android:1.0.+') { exclude module: 'support-v4' }
+    testCompile('com.squareup:fest-android:1.0.8') { exclude module: 'support-v4' }
     testCompile ('org.robolectric:robolectric:2.3') {
         exclude module: 'classworlds'
         exclude module: 'maven-artifact'
