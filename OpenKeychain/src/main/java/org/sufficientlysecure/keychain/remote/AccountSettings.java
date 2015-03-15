@@ -17,17 +17,14 @@
 
 package org.sufficientlysecure.keychain.remote;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
 
+/**
+ * DEPRECATED API
+ */
 public class AccountSettings {
     private String mAccountName;
     private long mKeyId = Constants.key.none;
-    private int mEncryptionAlgorithm;
-    private int mHashAlgorithm;
-    private int mCompression;
 
     public AccountSettings() {
 
@@ -36,11 +33,6 @@ public class AccountSettings {
     public AccountSettings(String accountName) {
         super();
         this.mAccountName = accountName;
-
-        // defaults:
-        this.mEncryptionAlgorithm = PGPEncryptedData.AES_256;
-        this.mHashAlgorithm = HashAlgorithmTags.SHA256;
-        this.mCompression = CompressionAlgorithmTags.ZLIB;
     }
 
     public String getAccountName() {
@@ -57,30 +49,6 @@ public class AccountSettings {
 
     public void setKeyId(long scretKeyId) {
         this.mKeyId = scretKeyId;
-    }
-
-    public int getEncryptionAlgorithm() {
-        return mEncryptionAlgorithm;
-    }
-
-    public void setEncryptionAlgorithm(int encryptionAlgorithm) {
-        this.mEncryptionAlgorithm = encryptionAlgorithm;
-    }
-
-    public int getHashAlgorithm() {
-        return mHashAlgorithm;
-    }
-
-    public void setHashAlgorithm(int hashAlgorithm) {
-        this.mHashAlgorithm = hashAlgorithm;
-    }
-
-    public int getCompression() {
-        return mCompression;
-    }
-
-    public void setCompression(int compression) {
-        this.mCompression = compression;
     }
 
 }

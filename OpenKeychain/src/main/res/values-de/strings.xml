@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Wähle Schlüssel</string>
   <string name="title_select_secret_key">Wähle Deinen Schlüssel</string>
-  <string name="title_encrypt_text">Text Verschlüsseln</string>
-  <string name="title_encrypt_files">Dateien verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_unlock">Schlüssel entsperren</string>
   <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
@@ -20,7 +18,6 @@
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
   <string name="title_share_file">Datei teilen mit…</string>
-  <string name="title_share_message">Teile Nachricht über…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
   <string name="title_import_keys">Schlüssel importieren</string>
@@ -29,7 +26,7 @@
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
-  <string name="title_certify_key">Identitäten beglaubigen</string>
+  <string name="title_certify_key">Schlüssel bestätigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <string name="title_log_display">Log</string>
@@ -37,30 +34,33 @@
   <string name="title_exchange_keys">Schlüssel austauschen</string>
   <string name="title_advanced_key_info">Erweiterte Schlüsselinformation</string>
   <string name="title_keys">Schlüssel</string>
+  <string name="title_delete_secret_key">DEINEN Schlüssel löschen \'%s\'?</string>
   <!--section-->
   <string name="section_user_ids">Identitäten</string>
+  <string name="section_should_you_trust">Sollten Sie diesem Schlüssel vertrauen?</string>
+  <string name="section_proof_details">Nachweis überprüfen</string>
+  <string name="section_cloud_evidence">Nachweise aus der Cloud</string>
   <string name="section_keys">Unterschlüssel</string>
   <string name="section_cloud_search">Cloudsuche</string>
   <string name="section_general">Allgemein</string>
   <string name="section_defaults">Standardwerte</string>
   <string name="section_advanced">Fortgeschrittene Einstellungen</string>
   <string name="section_passphrase_cache">Passwort Zwischenspeicher</string>
-  <string name="section_certify">Beglaubigen</string>
+  <string name="section_certify">Bestätigen</string>
   <string name="section_actions">Aktionen</string>
   <string name="section_share_key">Schlüssel</string>
-  <string name="section_certification_key">Mit diesem Schlüssel beglaubigen</string>
   <string name="section_upload_key">Schlüssel synchronisieren</string>
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_fingerprint">Fingerabdruck</string>
-  <string name="section_key_to_certify">Zu beglaubigender Schlüssel</string>
   <string name="section_decrypt_files">Dateien</string>
   <string name="section_decrypt_text">Text</string>
   <string name="section_certs">Zertifikate</string>
   <string name="section_encrypt">Verschlüsseln</string>
   <string name="section_decrypt">Entschlüsseln</string>
+  <string name="section_current_expiry">Aktuelles Ablaufdatum</string>
+  <string name="section_new_expiry">Neues Ablaufdatum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
-  <string name="btn_decrypt_verify_message">Entschlüsseln und verifizieren</string>
   <string name="btn_encrypt_file">Datei verschlüsseln und speichern</string>
   <string name="btn_encrypt_share_file">Datei verschlüsseln und teilen</string>
   <string name="btn_save">Speichern</string>
@@ -71,8 +71,9 @@
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
+  <string name="btn_no">Nein</string>
+  <string name="btn_match">Fingerabdrücke stimmen überein</string>
   <string name="btn_lookup_key">Schlüssel nachschlagen</string>
-  <string name="btn_share_encrypted_signed">Verschlüsseln und teilen</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
   <string name="btn_create_key">Schlüssel erzeugen</string>
   <string name="btn_add_files">Datei(en) hinzufügen</string>
@@ -90,6 +91,7 @@
   <string name="menu_create_key">Erzeuge meinen Schlüssel</string>
   <string name="menu_import_existing_key">Von Datei importieren</string>
   <string name="menu_search">Suchen</string>
+  <string name="menu_nfc_preferences">NFC-Einstellungen</string>
   <string name="menu_beam_preferences">Beam-Einstellungen</string>
   <string name="menu_key_edit_cancel">Abbrechen</string>
   <string name="menu_encrypt_to">Verschlüsseln nach…</string>
@@ -99,7 +101,6 @@
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
   <string name="menu_advanced">Erweiterte Infos anzeigen</string>
   <!--label-->
-  <string name="label_message">Nachricht</string>
   <string name="label_file">Datei</string>
   <string name="label_files">Datei(en)</string>
   <string name="label_file_colon">Datei:</string>
@@ -114,7 +115,7 @@
   <string name="label_write_version_header_summary">Fügt \'OpenKeychain v2.7\' zu OpenPGP-Signaturen, Daten und exportierten Schlüsseln hinzu</string>
   <string name="label_use_default_yubikey_pin">Standard-YubiKey-PIN verwenden</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Zifferntastatur für YubiKey PIN verwenden</string>
-  <string name="label_label_use_default_yubikey_pin_summary">Verwendet Standard-PIN (123456) zum Zugriff auf YubiKeys über NFC</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Verwendet zum Zugriff auf YubiKeys über NFC die Standard-PIN (123456)</string>
   <string name="label_asymmetric_from">Signiert von:</string>
   <string name="label_to">Verschlüsselt an:</string>
   <string name="label_delete_after_encryption">Datei nach Verschlüsselung löschen</string>
@@ -122,9 +123,8 @@
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
   <string name="label_hash_algorithm">Hash-Algorithmus</string>
   <string name="label_symmetric">Mit Passwort verschlüsseln</string>
-  <string name="label_passphrase_cache_ttl">Länge der Zwischenspeicherung</string>
+  <string name="label_passphrase_cache_ttl">Zwischenspeicherdauer</string>
   <string name="label_passphrase_cache_subs">Passwort pro Unterschlüssel zwischenspeichern</string>
-  <string name="label_message_compression">Nachrichten Kompression</string>
   <string name="label_file_compression">Datei Kompression</string>
   <string name="label_keyservers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
@@ -144,13 +144,6 @@
   <string name="label_preferred">bevorzugt</string>
   <string name="user_id_no_name">&lt;kein Name&gt;</string>
   <string name="none">&lt;keine&gt;</string>
-  <string name="no_key">&lt;kein Schlüssel&gt;</string>
-  <string name="can_encrypt">kann verschlüsseln</string>
-  <string name="can_sign">kann signieren</string>
-  <string name="can_certify">kann beglaubigen</string>
-  <string name="can_certify_not">kann nicht beglaubigen</string>
-  <string name="expired">abgelaufen</string>
-  <string name="revoked">widerrufen</string>
   <plurals name="n_keys">
     <item quantity="one">1 Schlüssel</item>
     <item quantity="other">%d Schlüssel</item>
@@ -180,7 +173,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Öffnen...</string>
-  <string name="warning">Warnung</string>
   <string name="error">Fehler</string>
   <string name="error_message">Fehler: %s</string>
   <!--key flags-->
@@ -198,20 +190,16 @@
   <string name="pin_for">PIN für \'%s\' eingeben</string>
   <string name="yubikey_pin_for">PIN für Zugriff auf Yubikey für \'%s\' eingeben</string>
   <string name="nfc_text">Halten Sie den YubiKey gegen die Rückseite Ihres Geräts.</string>
-  <string name="file_delete_confirmation">%s wirklich löschen?</string>
-  <string name="file_delete_successful">Erfolgreich gelöscht.</string>
-  <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
+    <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
   <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
-  <string name="enter_passphrase_twice">Das Passwort bitte zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten öffentlichen Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="public_key_deletetion_confirmation">Soll der öffentliche Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
+  <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?</string>
+  <string name="public_key_deletetion_confirmation">Schlüssel löschen \'%s\'?</string>
   <string name="also_export_secret_keys">Exportiere auch private Schlüssel</string>
   <string name="reinstall_openkeychain">Sie sind auf einen Fehler in Android gestoßen. Installieren Sie OpenKeychain erneut, wenn Sie Ihre Kontakte mit Schlüsseln verbinden wollen.</string>
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
@@ -227,13 +215,11 @@
   <string name="nfc_successful">Schlüssel erfolgreich mit NFC-Beam gesendet!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
   <string name="fingerprint_copied_to_clipboard">Fingerabdruck wurde in die Zwischenablage kopiert!</string>
-  <string name="select_key_to_certify">Bitte wähle einen Schlüssel um zu Beglaubigen!</string>
   <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <string name="text_copied_to_clipboard">Text wurde in Zwischenablage kopiert!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">Löschen von \'%s\' ist fehlgeschlagen</string>
   <string name="error_file_not_found">Datei nicht gefunden</string>
   <string name="error_no_secret_key_found">kein geeigneter privater Schlüssel gefunden</string>
   <string name="error_external_storage_not_ready">Externes Laufwerk ist nicht bereit</string>
@@ -249,6 +235,8 @@
   <string name="error_could_not_extract_private_key">Privater Schlüssel konnte nicht extrahiert werden</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Android 4.1 wird benötigt um Androids NFC Beam nutzen zu können!</string>
+  <string name="error_nfc_needed">NFC muss aktiviert sein!</string>
+  <string name="error_beam_needed">Beam muss aktiviert sein!</string>
   <string name="error_nothing_import">Keine Schlüssel gefunden!</string>
   <string name="error_contacts_key_id_missing">Abrufen der Schlüsselkennung von den Kontakten ist fehlgeschlagen!</string>
   <string name="error_generic_report_bug">Ein allgemeiner Fehler trat auf, bitte schreiben Sie einen neuen Bugreport für OpenKeychain.</string>
@@ -318,8 +306,7 @@
   <string name="progress_con_saving">Zusammenführung: Im Cache speichern...</string>
   <string name="progress_con_reimport">Zusammenführung: Neuimportierung...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Name/Email/Schlüssel ID...</string>
-  <string name="hint_cloud_search_hint">Name/Email/Nachweis/Schlüssel...</string>
+  <string name="hint_cloud_search_hint">Suche via Name, E-Mail...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -347,7 +334,6 @@
   <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">FAQ</string>
-  <string name="help_tab_wot">Web of Trust</string>
   <string name="help_tab_nfc_beam">NFC-Beam</string>
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">Über</string>
@@ -384,12 +370,12 @@
     <item quantity="other">%1$d Schlüssel erfolgreich aktualisiert: %2$s.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
-    <item quantity="one">Importieren von einen Schlüssel fehlgeschlagen!</item>
-    <item quantity="other">Importieren von %d Schlüsseln fehlgeschlagen!</item>
+    <item quantity="one">Import eines Schlüssels fehlgeschlagen!</item>
+    <item quantity="other">Import von %d Schlüsseln fehlgeschlagen!</item>
   </plurals>
   <plurals name="import_error">
-    <item quantity="one">Importieren fehlgeschlagen!</item>
-    <item quantity="other">Importieren von %d Schlüsseln fehlgeschlagen!</item>
+    <item quantity="one">Import fehlgeschlagen!</item>
+    <item quantity="other">Import von %d Schlüsseln fehlgeschlagen!</item>
   </plurals>
   <string name="import_error_nothing">Nichts zu importieren.</string>
   <string name="import_error_nothing_cancelled">Import abgebrochen.</string>
@@ -478,7 +464,7 @@
   <string name="key_view_action_edit">Schlüssel bearbeiten</string>
   <string name="key_view_action_encrypt">Text Verschlüsseln</string>
   <string name="key_view_action_encrypt_files">Dateien</string>
-  <string name="key_view_action_certify">Identitäten beglaubigen</string>
+  <string name="key_view_action_certify">Schlüssel bestätigen</string>
   <string name="key_view_action_update">Von Schlüsselserver aktualisieren</string>
   <string name="key_view_action_share_with">Teilen über...</string>
   <string name="key_view_action_share_nfc">Über NFC teilen</string>
@@ -487,8 +473,9 @@
   <string name="key_view_tab_share">Teilen</string>
   <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
-  <string name="user_id_info_revoked_title">Wiederrufen</string>
-  <string name="user_id_info_revoked_text">Diese Identität wurde durch den Schlüsselinhaber wiederrufen. Sie ist nicht mehr gültig.</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
+  <string name="user_id_info_revoked_title">Widerrufen</string>
+  <string name="user_id_info_revoked_text">Diese Identität wurde vom Schlüsselinhaber widerrufen. Sie ist nicht mehr gültig.</string>
   <string name="user_id_info_certified_title">Beglaubigt</string>
   <string name="user_id_info_certified_text">Diese Identität wurde von Ihnen beglaubigt.</string>
   <string name="user_id_info_uncertified_title">Nicht beglaubigt</string>
@@ -496,7 +483,41 @@
   <string name="user_id_info_invalid_title">Ungültig</string>
   <string name="user_id_info_invalid_text">Irgend etwas ist mit dieser Identität nicht in Ordnung!</string>
   <!--Key trust-->
+  <string name="key_trust_it_is_yours">Dies ist einer deiner Schlüssel!</string>
+  <string name="key_trust_revoked">Dieser Schlüssel wurde vom Schlüsselinhaber widerrufen. Du solltest ihm nicht vertrauen.</string>
+  <string name="key_trust_expired">Dieser Schlüssel ist abgelaufen. Du solltest ihm nicht vertrauen.</string>
+  <string name="key_trust_no_cloud_evidence">Kein Nachweis aus der Cloud zur Vertrauenswürdigkeit dieses Schlüssels.</string>
+  <string name="key_trust_start_cloud_search">Suche beginnen</string>
+  <string name="key_trust_results_prefix">Keybase.io bietet \"Nachweise\" die versichern, dass der Schlüsselinhaber:</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">Schreibt auf Twitter als</string>
+  <string name="keybase_narrative_github">Ist auf GitHub bekannt als</string>
+  <string name="keybase_narrative_dns">Kontrolliert diese Domainnamen</string>
+  <string name="keybase_narrative_web_site">Kann auf diesen Webseiten veröffentlichen</string>
+  <string name="keybase_narrative_reddit">Veröffentlicht auf Reddit als</string>
+  <string name="keybase_narrative_coinbase">Ist auf Coinbase bekannt als</string>
+  <string name="keybase_narrative_hackernews">Veröffentlicht auf Hacker News als</string>
+  <string name="keybase_narrative_unknown">Unbekannter Nachweistyp</string>
+  <string name="keybase_proof_failure">Leider kann dieser Nachweis nicht überprüft werden.</string>
+  <string name="keybase_unknown_proof_failure">Unbekanntes Problem mit dem Nachweis-Prüfer</string>
+  <string name="keybase_problem_fetching_evidence">Problem mit dem Nachweis</string>
+  <string name="keybase_key_mismatch">Schlüssel-Fingerabdruck stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
+  <string name="keybase_dns_query_failure">Abfrage des DNS-TXT-Eintrags fehlgeschlagen</string>
+  <string name="keybase_no_prover_found">Kein Nachweis-Prüfer gefunden für</string>
+  <string name="keybase_message_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
+  <string name="keybase_message_fetching_data">Hole Nachweis</string>
+  <string name="keybase_proof_succeeded">Dieser Nachweis wurde überprüft!</string>
+  <string name="keybase_a_post">Ein Posting</string>
+  <string name="keybase_fetched_from">abgerufen von</string>
+  <string name="keybase_for_the_domain">für die Domain</string>
+  <string name="keybase_contained_signature">enthält eine Nachricht, die nur vom Schlüsselinhaber hätte erzeugt werden können.</string>
+  <string name="keybase_twitter_proof">Ein Tweet</string>
+  <string name="keybase_dns_proof">Ein DNS-TXT-Eintrag</string>
+  <string name="keybase_web_site_proof">Eine Textdatei</string>
+  <string name="keybase_github_proof">Ein Gist</string>
+  <string name="keybase_reddit_proof">Eine JSON-Datei</string>
+  <string name="keybase_reddit_attribution">von Reddit zugeordnet an</string>
+  <string name="keybase_verify">Überprüfen</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Passwort ändern</string>
   <string name="edit_key_action_add_identity">Identität hinzufügen</string>
@@ -521,17 +542,19 @@
   <string name="edit_key_error_add_identity">Füge mindestens eine Identität hinzu!</string>
   <string name="edit_key_error_add_subkey">Fügen Sie mindestens einen Unterschlüssel hinzu!</string>
   <!--Create key-->
-  <string name="create_key_upload">Schlüssel auf Schlüsselserver hochladen</string>
+  <string name="create_key_upload">Mit der Cloud synchronisieren</string>
   <string name="create_key_empty">Dieses Feld wird benötigt</string>
   <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
   <string name="create_key_final_text">Du hast folgende Identität eingegeben:</string>
   <string name="create_key_final_robot_text">Einen Schlüssel zu erzeugen braucht eine Weile, trink in der Zeit einen Kaffee...</string>
   <string name="create_key_rsa">(3 Unterschlüssel, RSA, 4096 Bit)</string>
   <string name="create_key_custom">(Benutzerdefinierte Schlüsseleinstellung)</string>
-  <string name="create_key_identity_text">Vollen Namen und Emailadresse angeben und Passwort wählen.</string>
-  <string name="create_key_hint_full_name">Vollständiger Name, z.B. Max Mustermann</string>
   <string name="create_key_edit">Schlüsselkonfiguration ändern</string>
   <!--View key-->
+  <string name="view_key_revoked">Widerrufen: Schlüssel darf nicht mehr genutzt werden!</string>
+  <string name="view_key_expired">Abgelaufen: Der Kontakt muss die Gültigkeit des Schlüssels verlängern!</string>
+  <string name="view_key_expired_secret">Abgelaufen: Du kannst die Gültigkeit des Schlüssels verlängern indem du ihn editierst.</string>
+  <string name="view_key_my_key">Mein Schlüssel</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Schlüssel</string>
   <string name="nav_encrypt_decrypt">Verschlüsseln/Entschlüsseln</string>
@@ -564,7 +587,7 @@
   <string name="msg_ip_error_op_exc">Vorgang aufgrund eines Datenbankfehlers fehlgeschlagen</string>
   <string name="msg_ip_error_remote_ex">Vorgang augrund internem Fehler fehlgeschlagen</string>
   <string name="msg_ip">Importiere öffentlichen Schlüsselbund %s</string>
-  <string name="msg_ip_insert_keyring">Schlüsselbund-daten werden kodiert</string>
+  <string name="msg_ip_insert_keyring">Schlüsselbunddaten werden kodiert</string>
   <string name="msg_ip_insert_keys">Analysiere Schlüssel</string>
   <string name="msg_ip_prepare">Datenbank-Transaktionen werden vorbereitet</string>
   <string name="msg_ip_master">Hauptschlüssel %s wird verarbeitet</string>
@@ -623,14 +646,14 @@
     <item quantity="one">Ignoriere eine Beglaubigung, ausgestellt von unbekanntm öffentlichen Schlüssel</item>
     <item quantity="other">Ignoriere %s Beglaubigungen, ausgestellt von unbekannten öffentlichen Schlüsseln</item>
   </plurals>
-  <string name="msg_ip_uid_classifying_zero">Benutzerkennungen werden klassifiziert (keine vertrauenswürdigen Schlüssel verfügbar)</string>
+  <string name="msg_ip_uid_classifying_zero">User-IDs werden klassifiziert (keine vertrauenswürdigen Schlüssel verfügbar)</string>
   <plurals name="msg_ip_uid_classifying">
-    <item quantity="one">Benutzerkennungen werden klassifiziert (ein vertrauenswürdiger Schlüssel wird verwendet)</item>
-    <item quantity="other">Benutzerkennungen werden klassifiziert (%s vertrauenswürdige Schlüssel werden verwendet)</item>
+    <item quantity="one">User-ID wird klassifiziert (verwende einen vertrauenswürdigen Schlüssel)</item>
+    <item quantity="other">User-IDs werden klassifiziert (verwende %s vertrauenswürdige Schlüssel)</item>
   </plurals>
-  <string name="msg_ip_uid_reorder">Benutzerkennungen werden neu geordnet</string>
-  <string name="msg_ip_uid_processing">Benutzerkennung %s wird verarbeitet</string>
-  <string name="msg_ip_uid_revoked">Nutzer ID wiederrufen</string>
+  <string name="msg_ip_uid_reorder">User-IDs werden neu geordnet</string>
+  <string name="msg_ip_uid_processing">User-ID %s wird verarbeitet</string>
+  <string name="msg_ip_uid_revoked">User-ID wurde widerrufen</string>
   <string name="msg_ip_uat_processing_image">Bilder werden verarbeitet</string>
   <string name="msg_ip_uat_processing_unknown">Unbekannte Benutzerattribute werden verarbeitet</string>
   <string name="msg_ip_uat_cert_bad">Ungültiges Zertifikat gefunden!</string>
@@ -659,32 +682,31 @@
   <string name="msg_is_pubring_generate">Generiere öffentlichen Schlüsselbund aus geheimem Schlüsselbund</string>
   <string name="msg_is_subkey_nonexistent">Unterschlüssel %s in privatem Schlüssel nicht verfügbar.</string>
   <string name="msg_is_subkey_ok">Geheimen Unterschlüssel %s als verfügbar markiert</string>
-  <string name="msg_is_subkey_empty">Geheimen Unterschlüssel %s als verfügbar markiert, ohne Passphrase</string>
+  <string name="msg_is_subkey_empty">Geheimen Unterschlüssel %s als verfügbar markiert, ohne Passwort</string>
   <string name="msg_is_subkey_pin">Geheimen Unterschlüssel %s als verfügbar markiert, mit PIN</string>
   <string name="msg_is_subkey_stripped">Privater Unterschlüssel %s als gekürzt markiert</string>
-  <string name="msg_is_subkey_divert">Privater Unterschlüssel %s als \'Umleiten zu Smartcard/NFC\' markiert</string>
-  <string name="msg_is_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun.</string>
+  <string name="msg_is_subkey_divert">Privater Unterschlüssel %s als \'Umgeleitet zu Smartcard/NFC\' markiert</string>
+  <string name="msg_is_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun</string>
   <string name="msg_is_success">Geheimer Schlüsselbund erfolgreich importiert</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Öffentlicher Schlüsselbund %s wird in vorschriftsgemäße Form gebracht</string>
   <string name="msg_kc_secret">Geheimer Schlüsselbund %s wird in vorschriftsgemäße Form gebracht</string>
   <string name="msg_kc_error_v3">Dies ist ein OpenPGP Schlüssel der Version 3, welche hinfällig sind und nicht weiter unterstützt werden!</string>
-  <string name="msg_kc_error_no_uid">Schlüsselbund hat keine gültigen Benutzerkennungen!</string>
+  <string name="msg_kc_error_no_uid">Schlüsselbund hat keine gültigen User-IDs!</string>
   <string name="msg_kc_error_master_algo">Der Hauptschlüssel verwendet einen unbekannten (%s) Algorithmus!</string>
   <string name="msg_kc_error_dup_key">Unterschlüssel %s kommt zweimal im Schlüsselbund vor. Schlüsselbund ist fehlerhaft, wird nicht importiert!</string>
   <string name="msg_kc_master">Verarbeite Hauptschlüssel</string>
   <string name="msg_kc_master_bad_type">Hauptschlüsselbeglaubigung unbekannter Art wird entfernt (%s)</string>
-  <string name="msg_kc_master_bad_local">Hauptschlüsselbeglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
+  <string name="msg_kc_master_bad_local">Entferne Hauptschlüsselbeglaubigung mit \'Local\'-Attribut</string>
   <string name="msg_kc_master_bad_err">Fehlerhafte Hauptschlüsselbeglaubigung wird entfernt</string>
   <string name="msg_kc_master_bad_time">Schlüsselbund-Widerrufszertifikat mit zukünftigem Zeitstempel wird entfernt</string>
-  <string name="msg_kc_master_bad_type_uid"> Benutzerkennungsbeglaubigung an falscher Position wird entfernt</string>
+  <string name="msg_kc_master_bad_type_uid">User-ID-Beglaubigung an falscher Position wird entfernt</string>
   <string name="msg_kc_master_bad">Fehlerhafte Hauptschlüsselbeglaubigung wird entfernt</string>
-  <string name="msg_kc_master_local">Hauptschlüsselbeglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
-  <string name="msg_kc_revoke_dup">Entferne redundantes Schlüsselbund Widerrufszertifikat</string>
+  <string name="msg_kc_master_local">Entferne Hauptschlüsselbeglaubigung mit \'Local\'-Attribut</string>
+  <string name="msg_kc_revoke_dup">Entferne redundantes Schlüsselbund-Widerrufszertifikat</string>
   <string name="msg_kc_sub">Verarbeite Unterschlüssel %s</string>
   <string name="msg_kc_sub_bad">Entferne ungültige Unterschlüssel Zwischenbeglaubigung</string>
   <string name="msg_kc_sub_bad_err">Entferne fehlerhafte Unterschlüssel Zwischenbeglaubigung</string>
-  <string name="msg_kc_sub_bad_local">Entferne Unterschlüssel Zwischenzertifikat mit \"Lokal\" Attribut</string>
   <string name="msg_kc_sub_bad_keyid">Ungleiche Zwischenausstellerkennung beim Unterschlüssels</string>
   <string name="msg_kc_sub_bad_time">Entferne Unterschlüssel Zwischenbeglaubigung mit zukünftigem Zeitstempel</string>
   <string name="msg_kc_sub_bad_type">Unbekannte Unterschlüsselbeglaubigungart: %s</string>
@@ -692,7 +714,7 @@
   <string name="msg_kc_sub_primary_bad">Entferne Unterschlüssel Zwischenbeglaubigung aufgrund ungültiger primärer Zwischenbeglaubigung</string>
   <string name="msg_kc_sub_primary_bad_err">Entferne Unterschlüssel Zwischenbeglaubigung aufgrund fehlerhafter primärer Zwischenbeglaubigung</string>
   <string name="msg_kc_sub_primary_none">Entferne Unterschlüssel Zwischenbeglaubigung aufgrund fehlender primärer Zwischenbeglaubigung</string>
-  <string name="msg_kc_sub_no_cert">Keine gültige Beglaubigung für %s gefunden, entferne vom Ring</string>
+  <string name="msg_kc_sub_no_cert">Keine gültige Beglaubigung für %s gefunden, entferne vom Schlüsselbund</string>
   <string name="msg_kc_sub_revoke_bad_err">Entferne fehlerhaftes Unterschlüssel Widerrufszertifikat</string>
   <string name="msg_kc_sub_revoke_bad">Entferne fehlerhaftes Unterschlüssel Widerrufszertifikat</string>
   <string name="msg_kc_sub_revoke_dup">Entferne redundantes Unterschlüssel Widerrufszertifikat</string>
@@ -709,19 +731,18 @@
     <item quantity="one">Schlüsselbund wurde erfolgreich in vorschriftsgemäße Form gebracht, eine redundante Beglaubigung entfernt</item>
     <item quantity="other">Schlüsselbund wurde erfolgreich in vorschriftsgemäße Form gebracht, %d redundante Beglaubigungen entfernt</item>
   </plurals>
-  <string name="msg_kc_uid_bad_err">Fehlerhafte Eigenbeglaubigung für Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_bad_local">Benutzerkennungsbeglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
-  <string name="msg_kc_uid_bad_time">Benutzerkennung mit zukünftigem Zeitstempel wird entfernt</string>
-  <string name="msg_kc_uid_bad_type">Benutzerkennungsbeglaubigung unbekannter Art wird entfernt (%s)</string>
-  <string name="msg_kc_uid_bad">Fehlerhafte Eigenbeglaubigung für Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_cert_dup">Abgelaufene Eigenbeglaubigung für Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_foreign">Fremde Benutzerkennungsbeglaubigung von \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_revoke_dup">Redundantes Widerrufszertifikat für Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_revoke_old">Abgelaufenes Widerrufszertifikat für Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_no_cert">Keine gültige Eigenbeglaubigung für Benutzerkennung \'%s\' gefunden, wird vom Bund entfernt</string>
-  <string name="msg_kc_uid_remove">Ungültige Benutzerkennung \'%s\' wird entfernt</string>
-  <string name="msg_kc_uid_dup">Doppelte Benutzerkennung \'%s\' wird entfernt. Der geheime Schlüssel enthielt zwei davon. Hieraus könnten fehlende Beglaubigungen resultieren!</string>
-  <string name="msg_kc_uid_warn_encoding">Benutzerkennung nicht als UTF-8 bestätigt!</string>
+  <string name="msg_kc_uid_bad_err">Fehlerhafte Eigenbeglaubigung für User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_bad_local">User-ID-Beglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
+  <string name="msg_kc_uid_bad_time">User-ID mit zukünftigem Zeitstempel wird entfernt</string>
+  <string name="msg_kc_uid_bad_type">User-ID-Beglaubigung unbekannter Art wird entfernt (%s)</string>
+  <string name="msg_kc_uid_bad">Fehlerhafte Eigenbeglaubigung für User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_cert_dup">Abgelaufene Eigenbeglaubigung für User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_foreign">Fremde User-ID-Beglaubigung von \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_revoke_dup">Redundantes Widerrufszertifikat für User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_revoke_old">Abgelaufenes Widerrufszertifikat für User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_no_cert">Keine gültige Eigenbeglaubigung für User-ID \'%s\' gefunden, wird aus Schlüsselbund entfernt</string>
+  <string name="msg_kc_uid_remove">Ungültige User-ID \'%s\' wird entfernt</string>
+  <string name="msg_kc_uid_dup">Doppelte User-ID \'%s\' wird entfernt. Der Schlüsselbund enthielt zwei davon. Hieraus könnten fehlende Beglaubigungen resultieren!</string>
   <string name="msg_kc_uat_jpeg">Das Benutzerattribut JPEG wird verarbeitet</string>
   <string name="msg_kc_uat_unknown">Ein unbekanntes Benutzerattribut wird verarbeitet</string>
   <string name="msg_kc_uat_bad_err">Entferne fehlerhafte Eigenbeglaubigung für Benutzerattribut</string>
@@ -730,17 +751,18 @@
   <string name="msg_kc_uat_bad_type">Entferne Benutzerattributbeglaubigung unbekannter Art (%s)</string>
   <string name="msg_kc_uat_bad">Entferne fehlerhafte Eigenbeglaubigung für Benutzerattribut</string>
   <string name="msg_kc_uat_cert_dup">Entferne abgelaufene Eigenbeglaubigung für Benutzerattribut</string>
+  <string name="msg_kc_uat_dup">Doppeltes Benutzerattribut wird entfernt. Der Schlüsselbund enthielt zwei davon. Hieraus könnten fehlende Beglaubigungen resultieren!</string>
   <string name="msg_kc_uat_foreign">Entferne fremdes Benutzerattributszertifikat von</string>
   <string name="msg_kc_uat_revoke_dup">Entferne redundantes Widerrufszertifikat für Benutzerkennung</string>
   <string name="msg_kc_uat_revoke_old">Entferne abgelaufenes Widerrufszertifikat für Benutzerkennung</string>
-  <string name="msg_kc_uat_no_cert">Keine gültigen Eigenbeglaubigungen für das Benutzerattribut gefunden, entferne vom Ring</string>
+  <string name="msg_kc_uat_no_cert">Keine gültige Eigenbeglaubigung für das Benutzerattribut gefunden, wird aus Schlüsselbund entfernt</string>
   <string name="msg_kc_uat_remove">Ungültiges Benutzerattribut wird entfernt</string>
-  <string name="msg_kc_uat_warn_encoding">Benutzerkennung nicht als UTF-8 bestätigt!</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Neuer öffentlicher Unterschlüssel gefunden, aber Erstellung von geheimen Unterschlüsseldummys wird nicht unterstützt!</string>
-  <string name="msg_mg_error_heterogeneous">Versucht Schlüsselbunde mit unterschiedlichen Fingerabdrücken zusammenzufügen!</string>
+  <string name="msg_mg_error_heterogeneous">Versuch Schlüsselbünde mit unterschiedlichen Fingerabdrücken zusammenzuführen!</string>
   <string name="msg_mg_error_encode">Schwerer Fehler bei Kodierung der Signatur!</string>
-  <string name="msg_mg_public">Vereine in öffentlichen Schlüsselbund %s </string>
+  <string name="msg_mg_public">Wird in öffentlichen Schlüsselbund %s eingefügt
+</string>
   <string name="msg_mg_secret">Wird in geheimen Schlüsselbund %s eingefügt</string>
   <string name="msg_mg_new_subkey">Neuer Unterschlüssel %s wird hinzugefügt</string>
   <string name="msg_mg_found_new">%s neue Beglaubigungen in Schlüsselbund gefunden</string>
@@ -748,7 +770,7 @@
   <!--createSecretKeyRing-->
   <string name="msg_cr">Neuer Masterschlüssel wird erzeugt</string>
   <string name="msg_cr_error_no_master">Keine Hauptschlüsseloptionen definiert!</string>
-  <string name="msg_cr_error_no_user_id">Schlüsselbund muss mit mindestens einer Benutzerkennung erstellt werden!</string>
+  <string name="msg_cr_error_no_user_id">Schlüsselbünde müssen mit mindestens einer User-ID erstellt werden!</string>
   <string name="msg_cr_error_no_certify">Hauptschlüssel benötigt das Attribut beglaubigen!</string>
   <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerstellung nicht \'gleiche wie vorher\' sein. Das ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_cr_error_keysize_512">Schlüsselgröße muss größer/gleich 512 sein!</string>
@@ -767,9 +789,9 @@
   <string name="msg_mf_error_keyid">Keine Schlüssel ID. Dies ist ein interner Fehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_integrity">Interner Fehler, Integritätsprüfung fehlgeschlagen!</string>
   <string name="msg_mf_error_master_none">Keine Hauptbeglaubigung zum arbeiten gefunden! (Alle widerrufen?)</string>
-  <string name="msg_mf_error_noexist_primary">Falsche primäre Benutzerkennung festgelegt!</string>
-  <string name="msg_mf_error_noexist_revoke">Falsche Benutzerkennung für Widerruf definiert!</string>
-  <string name="msg_mf_error_revoked_primary">Widerrufene Benutzerkennungen können keine Primäre sein!</string>
+  <string name="msg_mf_error_noexist_primary">Falsche primäre User-ID festgelegt!</string>
+  <string name="msg_mf_error_noexist_revoke">Falsche User-ID für Widerruf festgelegt!</string>
+  <string name="msg_mf_error_revoked_primary">Widerrufene User-IDs können nicht primäre IDs sein!</string>
   <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerstellung nicht \'gleiche wie vorher\' sein. Das ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_passphrase_master">Schwerer Fehler beim Entschlüsseln des Hauptschlüssels! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein.</string>
   <string name="msg_mf_error_pgp">Interner OpenPGP Fehler!</string>
@@ -779,8 +801,8 @@
   <string name="msg_mf_passphrase_key">Erneute Verschlüsselung des Unterschlüssels %s mit neuem Passwort</string>
   <string name="msg_mf_passphrase_empty_retry">Setzen des neuen Passworts fehlgeschlagen, versuche es nochmal mit leerem altem Passwort</string>
   <string name="msg_mf_passphrase_fail">Passwort für Unterschlüssel konnte nicht geändert werden! (Hat er ein anderes als die anderen Schlüssel?)</string>
-  <string name="msg_mf_primary_replace_old">Beglaubigung von vorheriger primärer Benutzerkennung wird ersetzt</string>
-  <string name="msg_mf_primary_new">Neue Beglaubigung für neue primäre Benutzerkennung wird erzeugt</string>
+  <string name="msg_mf_primary_replace_old">Beglaubigung von vorheriger primärer User-ID wird ersetzt</string>
+  <string name="msg_mf_primary_new">Neue Beglaubigung für neue primäre User-ID wird erzeugt</string>
   <string name="msg_mf_subkey_change">Unterschlüssel %s wird geändert</string>
   <string name="msg_mf_error_subkey_missing">Versuch mit fehlendem Unterschlüssel %s zu arbeiten!</string>
   <string name="msg_mf_subkey_new">Füge neuen Unterschlüssel vom Typ %s hinzu</string>
@@ -789,10 +811,10 @@
   <string name="msg_mf_subkey_revoke">Widerrufe Unterschlüssel %s</string>
   <string name="msg_mf_subkey_strip">Kürze Unterschlüssel %s</string>
   <string name="msg_mf_success">Schlüsselbund erfolgreich verändert</string>
-  <string name="msg_mf_uid_add">Benutzerkennung %s wird hinzugefügt</string>
-  <string name="msg_mf_uid_primary">Primäre Benutzerkenung wird auf %s geändert</string>
-  <string name="msg_mf_uid_revoke">Benutzerkennung %s wird widerrufen</string>
-  <string name="msg_mf_uid_error_empty">Benutzerkennung darf nicht leer sein!</string>
+  <string name="msg_mf_uid_add">User-ID %s wird hinzugefügt</string>
+  <string name="msg_mf_uid_primary">Primäre User-ID wird geändert zu %s</string>
+  <string name="msg_mf_uid_revoke">Widerrufe User-ID %s</string>
+  <string name="msg_mf_uid_error_empty">User-ID darf nicht leer sein!</string>
   <string name="msg_mf_uat_error_empty">Benutzerattribut darf nicht leer sein!</string>
   <string name="msg_mf_uat_add_image">Benutzerattribut vom Typ Bild wird hinzugefügt</string>
   <string name="msg_mf_uat_add_unknown">Benutzerattribut unbekannter Art wird hinzugefügt</string>
@@ -818,30 +840,32 @@
   <string name="msg_con_recover">Zusammenführungsvorgang wird fortgesetzt</string>
   <string name="msg_con_recover_unknown">Zusammenführungsvorgang aus unbekanntem Zustand wird fortgesetzt</string>
   <plurals name="msg_con_reimport_public">
-    <item quantity="one">Wiederimport eines öffentlichen Schlüssels </item>
-    <item quantity="other">Reimport von %d öffentlichen Schlüsseln</item>
+    <item quantity="one">Reimportiere einen öffentlichen Schlüssel</item>
+    <item quantity="other">Reimportiere %d öffentliche Schlüssel</item>
   </plurals>
-  <string name="msg_con_reimport_public_skip">Keine öffentlichen Schlüssel für reimport, überspringe...</string>
+  <string name="msg_con_reimport_public_skip">Keine öffentlichen Schlüssel für Reimport, überspringe...</string>
   <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Wiederimport eines geheimen Schlüssels</item>
-    <item quantity="other">Reimport von %d geheimen Schlüsseln</item>
+    <item quantity="one">Reimportiere einen geheimen Schlüssel</item>
+    <item quantity="other">Reimportiere %d geheime Schlüssel</item>
   </plurals>
-  <string name="msg_con_reimport_secret_skip">Keine geheimen Schlüssel für reimport, überspringe...</string>
+  <string name="msg_con_reimport_secret_skip">Keine geheimen Schlüssel für Reimport, überspringe...</string>
   <string name="msg_con_warn_delete_public">Fehler beim Löschen der Öffentlichen Cache-Datei</string>
   <string name="msg_con_warn_delete_secret">Fehler beim Löschen der Geheimen Cache-Datei</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Schlüsselvorgang wird durchgeführt</string>
   <string name="msg_ed_caching_new">Neues Passwort wird zwischengespeichert</string>
+  <string name="msg_ed_error_no_parcel">SaveKeyringParcel fehlt! (Dies ist ein Bug, bitte melden.)</string>
   <string name="msg_ed_error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="msg_ed_fetching">Zu ändernder Schlüssel wird abgerufen (%s)</string>
   <string name="msg_ed_success">Schlüsselvorgang erfolgreich</string>
   <!--Promote key-->
+  <string name="msg_pr">Befördere öffentlichen Schlüssel zum geheimen Schlüssel</string>
   <string name="msg_pr_error_already_secret">Der Schlüssel ist bereits ein geheimer Schlüssel!</string>
   <string name="msg_pr_error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="msg_pr_fetching">Zu ändernder Schlüssel wird abgerufen (%s)</string>
-  <string name="msg_pr_success">Schlüssel erfolgreich eingebracht</string>
+  <string name="msg_pr_success">Schlüssel erfolgreich befördert</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_divert">Bearbeiten von NFC Schlüsseln wird (noch) nicht unterstützt!</string>
+  <string name="msg_ek_error_divert">Bearbeiten von NFC-Schlüsseln wird (noch) nicht unterstützt!</string>
   <string name="msg_ek_error_dummy">Kann Schlüsselbund nicht mit gekürztem Hauptschlüssel bearbeiten!</string>
   <string name="msg_ek_error_not_found">Schlüssel nicht gefunden!</string>
   <!--Messages for DecryptVerify operation-->
@@ -854,7 +878,7 @@
   <string name="msg_dc_clear_meta_file">Dateiname: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-Typ: %s</string>
   <string name="msg_dc_clear_meta_size">Dateigröße: %s</string>
-  <string name="msg_dc_clear_meta_size_unknown">Dateigröße ist unbekannt</string>
+  <string name="msg_dc_clear_meta_size_unknown">Dateigröße unbekannt</string>
   <string name="msg_dc_clear_meta_time">Änderungszeit: %s</string>
   <string name="msg_dc_clear_signature_bad">Signaturprüfung NICHT OK!</string>
   <string name="msg_dc_clear_signature_check">Überprüfe Signaturdaten</string>
@@ -871,9 +895,8 @@
   <string name="msg_dc_error_pgp_exception">Es ist ein OpenPGP-Ausnahmefehler während des Vorgangs aufgetreten!</string>
   <string name="msg_dc_integrity_check_ok">Integritätsprüfung OK!</string>
   <string name="msg_dc_ok_meta_only">Es wurden nur Metadaten angefragt, überspringe Entschlüsselung</string>
-  <string name="msg_dc_ok">OK</string>
   <string name="msg_dc_pass_cached">Verwende Passwort aus Zwischenspeicher</string>
-  <string name="msg_dc_pending_nfc">NFC Token benötigt, verlange Benutzereingabe...</string>
+  <string name="msg_dc_pending_nfc">NFC-Token benötigt, verlange Benutzereingabe...</string>
   <string name="msg_dc_pending_passphrase">Passwort benötigt, verlange Benutezreingabe...</string>
   <string name="msg_dc_prep_streams">Bereite Datenkette </string>
   <string name="msg_dc">Starte Entschlüsselungsvorgang...</string>
@@ -884,10 +907,19 @@
   <string name="msg_dc_trail_unknown">Anhängende Daten unbekannter Art gefunden</string>
   <string name="msg_dc_unlocking">Geheimer Schlüssel wird entsperrt</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_clear_meta_file">Dateiname: %s</string>
+  <string name="msg_vl_clear_meta_mime">MIME-Typ: %s</string>
+  <string name="msg_vl_clear_meta_time">Änderungszeit: %s</string>
+  <string name="msg_vl_clear_meta_size">Dateigröße: %s</string>
+  <string name="msg_vl_clear_signature_check">Überprüfe Signaturdaten</string>
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Starte Signier-/Verschlüsselungsvorgang</string>
+  <string name="msg_se_input_bytes">Verarbeite Eingabe aus Bytearray</string>
+  <string name="msg_se_input_uri">Verarbeite Eingabe von URI</string>
   <string name="msg_se_error_no_input">Keine Eingabe gegeben!</string>
-  <string name="msg_se_error_input_uri_not_found">Fehler beim öffnen der Uri zum lesen!</string>
+  <string name="msg_se_error_input_uri_not_found">Fehler beim öffnen der URI zum lesen!</string>
+  <string name="msg_se_error_output_uri_not_found">Fehler beim öffnen der URI zum schreiben!</string>
   <string name="msg_se_success">Signier-/Verschlüsselungsvorgang erfolgreich!</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Bereite öffentliche Schlüssel für Verschlüsselung vor</string>
@@ -900,7 +932,7 @@
   <string name="msg_pse_error_key_sign">Gewählter Signaturschlüssel kann keine Daten signieren!</string>
   <string name="msg_pse_error_sign_key">Fehler bei Abruf des Signaturschlüssels!</string>
   <string name="msg_pse_error_nfc">NFC-Datenfehler!</string>
-  <string name="msg_pse_error_no_passphrase">Kein Passwort bereitgestellt!</string>
+  <string name="msg_pse_error_no_passphrase">Kein Passwort angegeben!</string>
   <string name="msg_pse_error_pgp">Interner OpenPGP Fehler!</string>
   <string name="msg_pse_error_sig">OpenPGP-Signaturfehler aufgetreten!</string>
   <string name="msg_pse_error_unlock">Unbekannter Fehler bei Schlüsselentsperrung!</string>
@@ -908,7 +940,7 @@
   <string name="msg_pse_key_unknown">Fehlender Schlüssel für Verschlüsselung: %s</string>
   <string name="msg_pse_key_warn">Falscher Schlüssel für Verschlüsselung: %s</string>
   <string name="msg_pse_ok">Signierungs-/Verschlüsselungsvorgang erfolgreich!</string>
-  <string name="msg_pse_pending_nfc">NFC Token benötigt, verlange Benutzereingabe...</string>
+  <string name="msg_pse_pending_nfc">NFC-Token benötigt, verlange Benutzereingabe...</string>
   <string name="msg_pse_pending_passphrase">Passwort benötigt, verlange Benutzereingabe...</string>
   <string name="msg_pse_signing">Signiere Daten (ohne Verschlüsselung)</string>
   <string name="msg_pse_signing_cleartext">Erstelle Klartextsignatur</string>
@@ -917,20 +949,15 @@
   <string name="msg_pse">Starte Signier- und/oder Verschlüsselungsvorgang</string>
   <string name="msg_pse_symmetric">Bereite symmetrische Verschlüsselung vor</string>
   <string name="msg_crt_certifying">Zertifizierungen werden erzeugt</string>
-  <string name="msg_crt_certify_all">Alle Benutzerkennungen für Schlüssel %s werden beglaubigt</string>
-  <plurals name="msg_crt_certify_some">
-    <item quantity="one">Eine Benutzerkennung für Schlüssel %2$s wird beglaubigt</item>
-    <item quantity="other">%1$d Benutzerkennungen für Schlüssel %2$s werden beglaubigt</item>
-  </plurals>
   <string name="msg_crt_error_self">Auf diese Art und Weise kann keine Eigenbeglaubigung ausgestellt werden!</string>
   <string name="msg_crt_error_master_not_found">Hauptschlüssel nicht gefunden!</string>
   <string name="msg_crt_error_nothing">Keine beglaubigten Schlüssel!</string>
   <string name="msg_crt_error_unlock">Fehler beim Entsperren des Hauptschlüssels!</string>
-  <string name="msg_crt_error_divert">Beglaubigung mit NFC wird (noch) nicht unterstützt!</string>
-  <string name="msg_crt">Schlüsselbund wird beglaubigt</string>
+  <string name="msg_crt_error_divert">Beglaubigung über NFC wird (noch) nicht unterstützt!</string>
+  <string name="msg_crt">Schlüsselbünde werden beglaubigt</string>
   <string name="msg_crt_master_fetch">Beglaubigender Hauptschlüssel wird abgerfufen</string>
   <string name="msg_crt_save">Beglaubigter Schlüssel %s wird gespeichert</string>
-  <string name="msg_crt_saving">Schlüsselbunde werden gespeichert</string>
+  <string name="msg_crt_saving">Schlüsselbünde werden gespeichert</string>
   <string name="msg_crt_unlock">Hauptschlüssel wird entsperrt</string>
   <string name="msg_crt_success">Identitäten erfolgreich beglaubigt</string>
   <string name="msg_crt_warn_not_found">Schlüssel nicht gefunden!</string>
@@ -1000,8 +1027,10 @@
   <string name="msg_download_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten. Bitte verfeinern Sie Ihre Anfrage!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden. Bitte verbessern Sie Ihre Anfrage!</string>
   <string name="msg_download_query_failed">Beim suchen der Schlüssel ist ein Fehler aufgetreten.</string>
+  <!--Messages for Export Log operation-->
+  <string name="msg_export_log_error_no_file">Kein Dateiname angegeben!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Klicken um Passworte aus Zwischenspeicher zu leeren</string>
+  <string name="passp_cache_notif_click_to_clear">Klicken um Passworte aus Zwischenspeicher zu löschen</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain hat %d Passworte zwischengespeichert</string>
   <string name="passp_cache_notif_keys">Zwischengespeicherte Passworte:</string>
   <string name="passp_cache_notif_clear">Cache löschen</string>
@@ -1019,14 +1048,15 @@
   <string name="empty_certs">Keine Beglaubigungen für diesen Schlüssel</string>
   <string name="certs_text">Nur geprüfte Eigenbeglaubigungen und geprüfte Beglaubigungen welche mit deinen Schlüsseln erstellt wurden werden hier angezeigt.</string>
   <string name="section_uids_to_certify">Identitäten für</string>
+  <string name="certify_fingerprint_text">Vergleiche den angezeigten Fingerabdruck zeichenweise mit dem, der auf dem Gerät deines Gegenübers angezeigt wird.</string>
+  <string name="certify_fingerprint_text2">Stimmen die angezeigten Fingerabdrücke überein?</string>
   <string name="label_revocation">Widerrufsgrund</string>
-  <string name="label_verify_status">Verifikationsstatus</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Schlüssel nicht gefunden!</string>
   <string name="error_key_processing">Fehler bei der Verarbeitung des Schlüssels!</string>
   <string name="key_stripped">nicht verfügbar</string>
-  <string name="key_divert">Übergebe an SmartCard/NFC</string>
-  <string name="key_no_passphrase">Kein Passwort</string>
+  <string name="key_divert">Umgeleitet zu SmartCard/NFC</string>
+  <string name="key_no_passphrase">kein Passwort</string>
   <string name="key_unavailable">nicht verfügbar</string>
   <string name="secret_cannot_multiple">Deine eigenen Schlüssel können nur einzeln gelöscht werden!</string>
   <string name="title_view_cert">Zertifikatdetails anzeigen</string>
@@ -1049,22 +1079,23 @@
   <string name="passphrase">Passwort</string>
   <string name="noPassphrase">Kein Passwort</string>
   <string name="no_passphrase_set">Kein Passwort gesetzt</string>
-  <string name="passphrases_match">Die Passwörter stimmten nicht überein.</string>
+  <string name="passphrases_match">Die Passwörter stimmten nicht überein</string>
   <string name="passphrase_saved">Passwort gespeichert</string>
   <string name="passphrase_invalid">Falsches Passwort</string>
   <string name="missing_passphrase">Fehlendes Passwort</string>
   <string name="passphrase_again">Wiederholen</string>
   <string name="lockpattern">Entsperrcode</string>
-  <string name="lockpatternNFC">NFc + Entsperrcode</string>
+  <string name="lockpatternNFC">NFC + Entsperrcode</string>
   <string name="unlock_method">Entsperrmethode</string>
   <string name="set_passphrase">Passwort setzen</string>
   <string name="draw_lockpattern">Zeichne Entsperrcode</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_wrong_tag">Falscher Tag. Bitte versuche es erneut.</string>
-  <string name="enable_nfc">Aktiviere NFC in deinen Einstellungen.</string>
+  <string name="enable_nfc">Bitte aktiviere NFC in deinen Einstellungen.</string>
   <string name="no_nfc_support">Dieses Gerät unterstützt kein NFC</string>
-  <string name="nfc_write_succesful">Erfolgreich auf den NFC Tag geschrieben</string>
+  <string name="nfc_write_succesful">Erfolgreich auf den NFC-Tag geschrieben</string>
   <string name="unlocked">Entsperrt</string>
   <string name="nfc_settings">Einstellungen</string>
+    <string name="file_delete_successful"></string>
 </resources>

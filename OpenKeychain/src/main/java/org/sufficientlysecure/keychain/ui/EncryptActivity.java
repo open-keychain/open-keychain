@@ -128,7 +128,7 @@ public abstract class EncryptActivity extends BaseActivity {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     SignEncryptResult result =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
 

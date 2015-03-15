@@ -25,6 +25,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -74,6 +75,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -364,6 +366,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void invokeNfcBeam() {
+        // Check if device supports NFC
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
+            Notify.createNotify(this, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            return;
+        }
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
@@ -420,7 +427,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     Bundle data = message.getData();
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 
@@ -477,7 +484,7 @@ public class ViewKeyActivity extends BaseActivity implements
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     setResult(RESULT_CANCELED);
                     finish();
                 }
@@ -586,7 +593,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 

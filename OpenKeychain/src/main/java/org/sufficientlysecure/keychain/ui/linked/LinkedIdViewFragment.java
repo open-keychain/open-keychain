@@ -557,7 +557,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
                 Bundle data = message.getData();
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS) {
+                if (message.arg1 == MessageStatus.UPDATE_PROGRESS.ordinal()) {
                     if (data.containsKey(DATA_MESSAGE)) {
                         mViewHolder.vText.setText(data.getString(DATA_MESSAGE));
                     } else if (data.containsKey(DATA_MESSAGE_ID)) {
@@ -566,7 +566,7 @@ public class LinkedIdViewFragment extends Fragment implements
                     return;
                 }
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
                 }

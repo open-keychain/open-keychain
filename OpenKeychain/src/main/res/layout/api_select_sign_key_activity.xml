@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone" />
+
+    <LinearLayout
+        android:layout_below="@id/toolbar_include"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- focusable and related properties to workaround http://stackoverflow.com/q/16182331-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:descendantFocusability="beforeDescendants"
+                android:padding="16dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/api_select_sign_key_list_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="3dip"
+                    android:text="@string/api_select_sign_key_text"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <FrameLayout
+                    android:id="@+id/api_select_sign_key_list_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/api_select_sign_key_create_key"
+                    android:background="?android:selectableItemBackground"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:text="@string/api_settings_create_key"
+                    android:layout_height="?android:attr/listPreferredItemHeight"
+                    android:drawableLeft="@drawable/ic_key_plus_grey600_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:clickable="true" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</RelativeLayout>

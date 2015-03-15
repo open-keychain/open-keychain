@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Wybierz klucze</string>
   <string name="title_select_secret_key">Wybierz swój klucz</string>
-  <string name="title_encrypt_text">Szyfruj tekst</string>
-  <string name="title_encrypt_files">Szyfruj pliki</string>
   <string name="title_decrypt">Odszyfruj</string>
   <string name="title_unlock">Odblokuj klucz</string>
   <string name="title_add_subkey">Dodaj pod-klucz</string>
@@ -20,7 +18,6 @@
   <string name="title_share_fingerprint_with">Podziel się odciskiem klucza przez...</string>
   <string name="title_share_key">Podziel się kluczem przez...</string>
   <string name="title_share_file">Podziel się plikiem przez...</string>
-  <string name="title_share_message">Podziel się wiadomością przez...</string>
   <string name="title_encrypt_to_file">Zaszyfruj do pliku</string>
   <string name="title_decrypt_to_file">Odszyfruj do pliku</string>
   <string name="title_import_keys">Importuj klucze</string>
@@ -29,7 +26,6 @@
   <string name="title_export_keys">Eksportuj klucze</string>
   <string name="title_key_not_found">Nie znaleziono klucza</string>
   <string name="title_send_key">Wyślij do serwera kluczy</string>
-  <string name="title_certify_key">Certyfikuj tożsamości</string>
   <string name="title_key_details">Szczegóły klucza</string>
   <string name="title_help">Pomoc</string>
   <string name="title_log_display">Logi</string>
@@ -45,14 +41,11 @@
   <string name="section_defaults">Domyślne</string>
   <string name="section_advanced">Zaawansowane</string>
   <string name="section_passphrase_cache">Pamięć cache hasła</string>
-  <string name="section_certify">Certyfikuj</string>
   <string name="section_actions">Działania</string>
   <string name="section_share_key">Klucz</string>
-  <string name="section_certification_key">Twój klucz użyty do certyfikacji</string>
   <string name="section_upload_key">Synchronizuj Klucz</string>
   <string name="section_key_server">Serwer kluczy</string>
   <string name="section_fingerprint">Odcisk klucza</string>
-  <string name="section_key_to_certify">Klucz do certyfikacji</string>
   <string name="section_decrypt_files">Pliki</string>
   <string name="section_decrypt_text">Tekst</string>
   <string name="section_certs">Certyfikaty</string>
@@ -60,7 +53,6 @@
   <string name="section_decrypt">Odszyfruj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Odszyfruj, weryfikuj i zapisz plik</string>
-  <string name="btn_decrypt_verify_message">Odszyfruj i weryfikuj wiadomość</string>
   <string name="btn_encrypt_file">Szyfruj i zapisz plik</string>
   <string name="btn_encrypt_share_file">Szyfruj i podziel się plikiem</string>
   <string name="btn_save">Zapisz</string>
@@ -72,7 +64,6 @@
   <string name="btn_next">Dalej</string>
   <string name="btn_back">Wstecz</string>
   <string name="btn_lookup_key">Sprawdź klucz</string>
-  <string name="btn_share_encrypted_signed">Szyfruj i podziel się wiadomością</string>
   <string name="btn_view_cert_key">Wyświetl klucz certyfikacji</string>
   <string name="btn_create_key">Utwórz klucz</string>
   <string name="btn_add_files">Dodaj plik(i)</string>
@@ -98,7 +89,6 @@
   <string name="menu_export_all_keys">Eksportuj wszystkie klucze</string>
   <string name="menu_advanced">Pokaż zaawansowane informacje</string>
   <!--label-->
-  <string name="label_message">Wiadomość</string>
   <string name="label_file">Plik</string>
   <string name="label_files">Plik(i)</string>
   <string name="label_file_colon">Plik:</string>
@@ -123,7 +113,6 @@
   <string name="label_symmetric">Szyfruj z hasłem</string>
   <string name="label_passphrase_cache_ttl">Czas pamięci cache</string>
   <string name="label_passphrase_cache_subs">Pamiętaj hasła względem pod-klucza:</string>
-  <string name="label_message_compression">Kompresja wiadomości</string>
   <string name="label_file_compression">Kompresja pliku</string>
   <string name="label_keyservers">Serwery kluczy</string>
   <string name="label_key_id">Identyfikator klucza</string>
@@ -143,13 +132,6 @@
   <string name="label_preferred">preferowany</string>
   <string name="user_id_no_name">&lt;bez nazwy&gt;</string>
   <string name="none">&lt;żaden&gt;</string>
-  <string name="no_key">&lt;brak klucza&gt;</string>
-  <string name="can_encrypt">może szyfrować</string>
-  <string name="can_sign">może podpisywać</string>
-  <string name="can_certify">może certyfikować</string>
-  <string name="can_certify_not">nie może certyfikować</string>
-  <string name="expired">wygasły</string>
-  <string name="revoked">unieważniony</string>
   <plurals name="n_keys">
     <item quantity="one">1 klucz</item>
     <item quantity="few">%d klucze</item>
@@ -181,7 +163,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Otwórz...</string>
-  <string name="warning">Ostrzeżenie</string>
   <string name="error">Błąd</string>
   <string name="error_message">Błąd: %s</string>
   <!--key flags-->
@@ -198,20 +179,14 @@
   <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="nfc_text">Trzymaj YubiKey z tyłu Twojego urządzenia.</string>
-  <string name="file_delete_confirmation">Czy jesteś pewny, że chcesz usunąć\n%s?</string>
-  <string name="file_delete_successful">Usunięto pomyślnie.</string>
-  <string name="no_file_selected">Najpierw wskaż plik.</string>
+    <string name="no_file_selected">Najpierw wskaż plik.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
-  <string name="enter_passphrase_twice">Podaj hasło dwukrotnie.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
   <string name="select_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
   <string name="specify_file_to_encrypt_to">Wskaż, do którego pliku zapisać zaszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
   <string name="specify_file_to_decrypt_to">Wskaż, do którego pliku zapisać odszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
   <string name="specify_file_to_export_to">Wskaż, do którego pliku wyeksportować dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
-  <string name="key_deletion_confirmation_multi">Czy na pewno chcesz usunąć wszystkie zaznaczone klucze publiczne?\nTej operacji nie można cofnąć!</string>
-  <string name="secret_key_deletion_confirmation">Czy na pewno chcesz usunąć TAJNY klucz \'%s\'?\nNie można cofnąć tej operacji!</string>
-  <string name="public_key_deletetion_confirmation">Czy na pewno chcesz usunąć klucz publiczny \'%s\'?\nNie można cofnąć tej operacji!</string>
   <string name="also_export_secret_keys">Także eksportuj tajne klucze</string>
   <string name="reinstall_openkeychain">Napotkałeś się na znany błąd w Androidzie. Proszę ponownie zainstalować OpenKeychain jeśli chcesz połączyć kontakty z kluczami.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
@@ -228,13 +203,11 @@
   <string name="nfc_successful">Pomyślnie wysłano klucz przez NFC Beam!</string>
   <string name="key_copied_to_clipboard">Klucz został skopiowany do schowka!</string>
   <string name="fingerprint_copied_to_clipboard">Odcisk klucza został skopiowany do schowka!</string>
-  <string name="select_key_to_certify">Proszę wybrać klucz który będzie użyty do certyfikacji!</string>
   <string name="key_too_big_for_sharing">Klucz ma za duży rozmiar by być udostępniony w ten sposób!</string>
   <string name="text_copied_to_clipboard">Tekst został skopiowany do schowka!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">usuwanie \'%s\' zakończone niepowodzeniem</string>
   <string name="error_file_not_found">plik nie znaleziony</string>
   <string name="error_no_secret_key_found">nie znaleziono pasującego klucza prywatnego</string>
   <string name="error_external_storage_not_ready">zewnętrzne urządzenie jest niegotowe</string>
@@ -316,8 +289,6 @@
   <string name="progress_deleting_securely">usuwanie \'%s\' bezpiecznie…</string>
   <string name="progress_deleting">usuwanie kluczy...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Nazwa/Email/ID klucza...</string>
-  <string name="hint_cloud_search_hint">Nazwa/Email/Dowód/Klucz...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -345,7 +316,6 @@
   <!--Help-->
   <string name="help_tab_start">Początek</string>
   <string name="help_tab_faq">FAQ</string>
-  <string name="help_tab_wot">Sieć zaufania</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Dziennik zmian</string>
   <string name="help_tab_about">O programie</string>
@@ -490,7 +460,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="key_view_action_edit">Edytuj klucz</string>
   <string name="key_view_action_encrypt">Szyfruj tekst</string>
   <string name="key_view_action_encrypt_files">pliki</string>
-  <string name="key_view_action_certify">Certyfikuj tożsamości</string>
   <string name="key_view_action_update">Aktualizuj z serwera kluczy</string>
   <string name="key_view_action_share_with">Podziel się z...</string>
   <string name="key_view_action_share_nfc">Udostępnij używając NFC</string>
@@ -533,15 +502,12 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="edit_key_error_add_identity">Dodaj przynajmniej jedną tożsamość!</string>
   <string name="edit_key_error_add_subkey">Dodaj przynajmniej jeden pod-klucz!</string>
   <!--Create key-->
-  <string name="create_key_upload">Wyślij klucz do serwera kluczy</string>
   <string name="create_key_empty">Dane pole jest wymagane</string>
   <string name="create_key_passphrases_not_equal">Hasła nie zgadzają się</string>
   <string name="create_key_final_text">Wpisałeś następującą tożsamość:</string>
   <string name="create_key_final_robot_text">Tworzenie klucza może zająć trochę czasu... w międzyczasie idź się napij kawy.</string>
   <string name="create_key_rsa">(3 pod-klucze, RSA, 4096 bit)</string>
   <string name="create_key_custom">(niestandardowa konfiguracja kluczy)</string>
-  <string name="create_key_identity_text">Wpisz swoje imię, adres email oraz wybierz hasło.</string>
-  <string name="create_key_hint_full_name">Imię i nazwisko, na przykład, Jan Kowalski</string>
   <string name="create_key_edit">Zmień klucz konfiguracji</string>
   <!--View key-->
   <!--Navigation Drawer-->
@@ -602,13 +568,11 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="msg_dc_clear_decompress">Rozpakowywanie skompresowanych danych</string>
   <string name="msg_dc_clear_meta_file">Nazwa pliku: %s</string>
   <string name="msg_dc_clear_meta_mime">Typ MIME: %s</string>
-  <string name="msg_dc_clear_meta_size">Rozmiar pliku: %s</string>
   <string name="msg_dc_clear_meta_time">Czas modyfikacji: %s</string>
   <string name="msg_dc_clear_signature_bad">Sprawdzanie podpisu NIE JEST OK</string>
   <string name="msg_dc_clear_signature_check">Weryfikowanie danych podpisu...</string>
   <string name="msg_dc_clear_signature_ok">Sprawdzanie podpisu jest OK</string>
   <string name="msg_dc_ok_meta_only">Tylko metadane były wymagane, pomijanie odszyfrowania</string>
-  <string name="msg_dc_ok">OK</string>
   <string name="msg_dc_pass_cached">Użycie hasła z pamięci cache</string>
   <string name="msg_dc_pending_passphrase">Hasło wymagane, wymagana reakcja użytkownika...</string>
   <string name="msg_dc">Rozpoczynanie operacji odszyfrowania...</string>
@@ -657,6 +621,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
     <item quantity="few">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>
     <item quantity="other">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>
   </plurals>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Kliknij, aby wyczyścić zapamiętane hasła</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain zapamiętał %d haseł</string>
@@ -675,7 +640,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="empty_certs">Nie ma certyfikatów dla tego klucza</string>
   <string name="section_uids_to_certify">Tożsamości dla</string>
   <string name="label_revocation">Powód odwołania</string>
-  <string name="label_verify_status">Stan weryfikacji</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Nie znaleziono klucza!</string>
   <string name="error_key_processing">Błąd przy przetwarzaniu klucza!</string>
@@ -692,7 +656,8 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Seleccionar claves</string>
   <string name="title_select_secret_key">Seleccionar su clave</string>
-  <string name="title_encrypt_text">Cifrar texto</string>
-  <string name="title_encrypt_files">Cifrar ficheros</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_unlock">Desbloquear clave</string>
   <string name="title_add_subkey">Añadir subclave</string>
@@ -20,7 +18,6 @@
   <string name="title_share_fingerprint_with">Compartir huella de validación de clave con...</string>
   <string name="title_share_key">Compartir clave con...</string>
   <string name="title_share_file">Compartir fichero con...</string>
-  <string name="title_share_message">Compartir mensaje con...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -29,7 +26,7 @@
   <string name="title_export_keys">Exportar claves</string>
   <string name="title_key_not_found">Clave no encontrada</string>
   <string name="title_send_key">Cargar al servidor de claves</string>
-  <string name="title_certify_key">Certificar identificaciones</string>
+  <string name="title_certify_key">Confirmar clave</string>
   <string name="title_key_details">Detalles de la clave</string>
   <string name="title_help">Ayuda</string>
   <string name="title_log_display">Registro (log)</string>
@@ -37,33 +34,34 @@
   <string name="title_exchange_keys">Intercambiar claves</string>
   <string name="title_advanced_key_info">Información avanzada de clave</string>
   <string name="title_keys">Claves</string>
+  <string name="title_delete_secret_key">¿Borrar SU clave \'%s\'?</string>
+  <string name="title_export_log">Exportar registro (log)</string>
   <!--section-->
   <string name="section_user_ids">Identificaciones</string>
   <string name="section_should_you_trust">¿Debe confiar en esta clave?</string>
-  <string name="section_proof_details">Prueba de verificación</string>
-  <string name="section_cloud_evidence">Evidencia desde la nube</string>
+  <string name="section_proof_details">Comprobante de verificación</string>
+  <string name="section_cloud_evidence">Comprobantes desde la nube</string>
   <string name="section_keys">Subclaves</string>
   <string name="section_cloud_search">Búsqueda en la nube</string>
   <string name="section_general">General</string>
   <string name="section_defaults">Predeterminados</string>
   <string name="section_advanced">Avanzado</string>
   <string name="section_passphrase_cache">Caché de frase-contraseña</string>
-  <string name="section_certify">Certificar</string>
+  <string name="section_certify">Confirmar</string>
   <string name="section_actions">Acciones</string>
   <string name="section_share_key">Clave</string>
-  <string name="section_certification_key">Tu clave usada para las certificaciones</string>
   <string name="section_upload_key">Sincronizar clave</string>
   <string name="section_key_server">Servidor de claves</string>
   <string name="section_fingerprint">Huella de validación de clave</string>
-  <string name="section_key_to_certify">Clave a ser certificada</string>
   <string name="section_decrypt_files">Ficheros</string>
   <string name="section_decrypt_text">Texto</string>
   <string name="section_certs">Certificados</string>
   <string name="section_encrypt">Cifrar</string>
   <string name="section_decrypt">Descifrar</string>
+  <string name="section_current_expiry">Caducidad actual</string>
+  <string name="section_new_expiry">Nueva caducidad</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Descifrar, verificar, y guardar fichero</string>
-  <string name="btn_decrypt_verify_message">Descifrar y verificar mensaje</string>
   <string name="btn_encrypt_file">Cifrar y guardar fichero</string>
   <string name="btn_encrypt_share_file">Cifrar y compartir fichero</string>
   <string name="btn_save">Guardar</string>
@@ -75,9 +73,8 @@
   <string name="btn_next">Siguiente</string>
   <string name="btn_back">Volver</string>
   <string name="btn_no">No</string>
-  <string name="btn_match">Las huellas de validación son coincidentes</string>
+  <string name="btn_match">Las huellas de validación coinciden</string>
   <string name="btn_lookup_key">Buscar clave</string>
-  <string name="btn_share_encrypted_signed">Cifrar y compartir mensaje</string>
   <string name="btn_view_cert_key">Ver clave de verificación</string>
   <string name="btn_create_key">Crear clave</string>
   <string name="btn_add_files">Añadir fichero(s)</string>
@@ -104,9 +101,9 @@
   <string name="menu_search_cloud">Buscar en la nube</string>
   <string name="menu_export_all_keys">Exportar todas las claves</string>
   <string name="menu_advanced">Mostrar información avanzada</string>
-  <string name="menu_certify_fingerprint">Verificar vía comparación de huellas de validación</string>
+  <string name="menu_certify_fingerprint">Confirmar mediante comparación de la huella de validación (fingerprint)</string>
+  <string name="menu_export_log">Exportar registro (log)</string>
   <!--label-->
-  <string name="label_message">Mensaje</string>
   <string name="label_file">Archivo</string>
   <string name="label_files">Fichero(s)</string>
   <string name="label_file_colon">Fichero:</string>
@@ -131,7 +128,6 @@
   <string name="label_symmetric">Cifrar con frase-contraseña</string>
   <string name="label_passphrase_cache_ttl">Duración en caché</string>
   <string name="label_passphrase_cache_subs">Almacenar en caché frases-contraseña por subclave</string>
-  <string name="label_message_compression">Compresión del mensaje</string>
   <string name="label_file_compression">Compresión del fichero</string>
   <string name="label_keyservers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
@@ -149,15 +145,9 @@
   <string name="expiry_date_dialog_title">Establer la fecha de vencimiento</string>
   <string name="label_first_keyserver_is_used">(Se prefiere el primer servidor de claves listado)</string>
   <string name="label_preferred">preferido</string>
+  <string name="label_enable_compression">Habilitar compresión</string>
   <string name="user_id_no_name">&lt;sin nombre&gt;</string>
   <string name="none">&lt;ninguna&gt;</string>
-  <string name="no_key">&lt;sin clave&gt;</string>
-  <string name="can_encrypt">se puede cifrar</string>
-  <string name="can_sign">se puede firmar</string>
-  <string name="can_certify">puede certificarse</string>
-  <string name="can_certify_not">no puede certificarse</string>
-  <string name="expired">caducado</string>
-  <string name="revoked">revocado</string>
   <plurals name="n_keys">
     <item quantity="one">1 clave</item>
     <item quantity="other">%d claves</item>
@@ -187,7 +177,6 @@
   <string name="ecdh">ECDH (intercambio Diffie-Hellman con curva elíptica)</string>
   <string name="ecdsa">ECDSA (algoritmo de firma digital con curva elíptica)</string>
   <string name="filemanager_title_open">Abrir...</string>
-  <string name="warning">Advertencia</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
   <!--key flags-->
@@ -205,20 +194,17 @@
   <string name="pin_for">Introduzca el PIN para \'%s\'</string>
   <string name="yubikey_pin_for">Introduzca el PIN para acceder a la YubiKey para \'%s\'</string>
   <string name="nfc_text">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
-  <string name="file_delete_confirmation">¿Está seguro de que quiere eliminar\n%s?</string>
-  <string name="file_delete_successful">Borrado satisfactoriamente.</string>
-  <string name="no_file_selected">Selecciona un archivo antes.</string>
+    <string name="no_file_selected">Selecciona un archivo antes.</string>
   <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
   <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
-  <string name="enter_passphrase_twice">Introduce la frase de contraseña dos veces.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
   <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
   <string name="specify_file_to_encrypt_to">Por favor especifique hacia qué fichero cifrar.\nADVERTENCIA: El fichero se sobreescribirá si existe.</string>
   <string name="specify_file_to_decrypt_to">Por favor especifique hacia que fichero descifrar.\nADVERTENCIA: El fichero se sobreescribirá si existe.</string>
   <string name="specify_file_to_export_to">Por favor especifique hacia qué fichero exportar.\nADVERTENCIA: El fichero se sobreescribirá si existe.</string>
-  <string name="key_deletion_confirmation_multi">¿De verdad quiere eliminar todas las claves públicas seleccionadas?\n¡No puede deshacer esto!</string>
-  <string name="secret_key_deletion_confirmation">¿De verdad quiere eliminar la clave SECRETA (privada) \'%s\'?\n¡No puede deshacer esto!</string>
-  <string name="public_key_deletetion_confirmation">¿De verdad quiere eliminar la clave pública \'%s\'?\n¡No puede deshacer esto!</string>
+  <string name="key_deletion_confirmation_multi">¿De verdad quiere borrar todas las claves seleccionadas?</string>
+  <string name="secret_key_deletion_confirmation">¡Después del borrado no podrá leer mensajes cifrados con esta clave y perderá todas las confirmaciones de clave hechas con ella!</string>
+  <string name="public_key_deletetion_confirmation">¿Borrar clave \'%s\'?</string>
   <string name="also_export_secret_keys">Exportar también claves secretas (privadas)</string>
   <string name="reinstall_openkeychain">Ha encontrado un conocido fallo con Android. Por favor reinstale OpenKeychain si quiere enlazar sus contactos con las claves.</string>
   <string name="key_exported">Se ha exportado 1 clave satisfactoriamente.</string>
@@ -226,6 +212,7 @@
   <string name="no_keys_exported">No se han exportado claves.</string>
   <string name="key_creation_el_gamal_info">Nota: Sólo las subclaves soportan ElGamal.</string>
   <string name="key_not_found">No se puede encontrar la clave %08X.</string>
+  <string name="specify_file_to_export_log_to">Por favor especifique el fichero al que exportar. \nADVERTENCIA: El fichero se sobreescribirá si existe.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d clave secreta (privada) defectuosa ignorada. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
     <item quantity="other">%d claves secretas (privadas) defectuosas ignoradas. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
@@ -234,13 +221,12 @@
   <string name="nfc_successful">¡Clave enviada con éxito vía NFC Beam (haz NFC)!</string>
   <string name="key_copied_to_clipboard">¡La clave ha sido copiada al portapapeles!</string>
   <string name="fingerprint_copied_to_clipboard">¡La huella de validación de clave se ha copiado al portapapeles!</string>
-  <string name="select_key_to_certify">Por favor ¡seleccione una clave para ser usada en certificación!</string>
+  <string name="select_key_to_certify">¡Por favor seleccione una clave a usar para confirmación!</string>
   <string name="key_too_big_for_sharing">¡La clave es demasiado grande para ser compartida de esta forma!</string>
   <string name="text_copied_to_clipboard">¡El texto se ha copiado al portapapeles!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">ha fallado el borrado de \'%s\'</string>
   <string name="error_file_not_found">archivo no encontrado</string>
   <string name="error_no_secret_key_found">no se ha encontrado una clave secreta adecuada</string>
   <string name="error_external_storage_not_ready">el almacenamiento externo no está preparado</string>
@@ -327,8 +313,7 @@
   <string name="progress_con_saving">consolidación: guardando en caché...</string>
   <string name="progress_con_reimport">consolidación: reimportando</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Nombre/Correo electrónico/Identificación de clave...</string>
-  <string name="hint_cloud_search_hint">Nombre/Correo/Prueba/Clave...</string>
+  <string name="hint_cloud_search_hint">Buscar mediante Nombre, Correo electrónico...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -356,7 +341,7 @@
   <!--Help-->
   <string name="help_tab_start">Comenzar</string>
   <string name="help_tab_faq">FAQ</string>
-  <string name="help_tab_wot">Anillo de confianza</string>
+  <string name="help_tab_wot">Confirmación de clave</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Registro de cambios</string>
   <string name="help_tab_about">A cerca de</string>
@@ -487,7 +472,7 @@
   <string name="key_view_action_edit">Editar clave</string>
   <string name="key_view_action_encrypt">Cifrar texto</string>
   <string name="key_view_action_encrypt_files">ficheros</string>
-  <string name="key_view_action_certify">Certificar identificación</string>
+  <string name="key_view_action_certify">Confirmar clave</string>
   <string name="key_view_action_update">Actualizar desde el servidor de claves</string>
   <string name="key_view_action_share_with">Compartir con...</string>
   <string name="key_view_action_share_nfc">Compartir por NFC</string>
@@ -506,15 +491,15 @@
   <string name="user_id_info_invalid_title">No válida</string>
   <string name="user_id_info_invalid_text">¡Hay algo mal con esta identificación!</string>
   <!--Key trust-->
-  <string name="key_trust_already_verified">¡Ya ha certificado esta clave!</string>
+  <string name="key_trust_already_verified">¡Ya ha confirmado esta clave!</string>
   <string name="key_trust_it_is_yours">¡Esta es una de sus claves!</string>
-  <string name="key_trust_maybe">Esta clave no está revocada ni caducada.\nNo la ha certificado, pero puede elegir confiar en ella.</string>
+  <string name="key_trust_maybe">Esta clave no está revocada ni ha caducado.\nNo la ha confirmado, pero puede elegir confiar en ella.</string>
   <string name="key_trust_revoked">Esta clave ha sido revocada por su propietario. No debe confiar en ella.</string>
   <string name="key_trust_expired">Esta clave ha caducado. No debe confiar en ella.</string>
-  <string name="key_trust_old_keys">Puede ser correcto usar esta para descifrar un mensaje antiguo que date del momento en que esta clave estaba vigente.</string>
-  <string name="key_trust_no_cloud_evidence">No hay evidencia desde la nube de la fiabilidad de esta clave.</string>
+  <string name="key_trust_no_cloud_evidence">No hay comprobantes desde la nube sobre la confiabilidad de esta clave.</string>
   <string name="key_trust_start_cloud_search">Comenzar búsqueda</string>
-  <string name="key_trust_results_prefix">Keybase.io ofrece \"pruebas\" que sostienen que el propietario de esta clave:</string>
+  <string name="key_trust_results_prefix">Keybase.io ofrece \"comprobantes\" que sostienen que el propietario de esta clave:</string>
+  <string name="key_trust_header_text">Nota: Los comprobantes de Keybase.io son una característica experimental de OpenKeychain. Le animamos a que escanee los Códigos QR o intercambie claves vía NFC además de confirmarlas.</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Publica en Twitter como</string>
   <string name="keybase_narrative_github">Es conocido en GitHub como</string>
@@ -523,16 +508,16 @@
   <string name="keybase_narrative_reddit">Publica en Reddit como </string>
   <string name="keybase_narrative_coinbase">Es conocido en Coinbase como</string>
   <string name="keybase_narrative_hackernews">Publica en Hacker News como</string>
-  <string name="keybase_narrative_unknown">Tipo de prueba desconocido</string>
-  <string name="keybase_proof_failure">Desafortunadamente esta prueba no puede ser verificada.</string>
-  <string name="keybase_unknown_proof_failure">Problema no reconocido con el verificador de la prueba</string>
-  <string name="keybase_problem_fetching_evidence">Problema con la evidencia de la prueba</string>
-  <string name="keybase_key_mismatch">La huella de validación de clave no coincide con aquella en el post de la prueba</string>
+  <string name="keybase_narrative_unknown">Tipo de comprobante desconocido</string>
+  <string name="keybase_proof_failure">Desafortunadamente este comprobante no se puede verificar.</string>
+  <string name="keybase_unknown_proof_failure">Problema no reconocido con el chequeador del comprobante</string>
+  <string name="keybase_problem_fetching_evidence">Problema con el comprobante</string>
+  <string name="keybase_key_mismatch">La huella de validación de clave no coincide con aquella en el post del comprobante</string>
   <string name="keybase_dns_query_failure">Fallo al obtener registro DNS TXT</string>
-  <string name="keybase_no_prover_found">No se encontró verificador de prueba para</string>
-  <string name="keybase_message_payload_mismatch">El post de la prueba descifrada no coincide con el valor esperado</string>
-  <string name="keybase_message_fetching_data">Descargado evidencia de la prueba</string>
-  <string name="keybase_proof_succeeded">¡Esta prueba ha sido verificada!</string>
+  <string name="keybase_no_prover_found">No se encontró chequeador del comprobante</string>
+  <string name="keybase_message_payload_mismatch">El post del comprobante descrifrado no coincide con el valor esperado</string>
+  <string name="keybase_message_fetching_data">Descargando comprobante</string>
+  <string name="keybase_proof_succeeded">¡Este comprobante ha sido verificado!</string>
   <string name="keybase_a_post">Un post</string>
   <string name="keybase_fetched_from">descargada desde</string>
   <string name="keybase_for_the_domain">para el dominio</string>
@@ -568,23 +553,21 @@
   <string name="edit_key_error_add_identity">¡Añadir al menos una identificación!</string>
   <string name="edit_key_error_add_subkey">¡Añadir al menos una subclave!</string>
   <!--Create key-->
-  <string name="create_key_upload">Subir clave al servidor de claves</string>
+  <string name="create_key_upload">Sincronizar con la nube</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
   <string name="create_key_passphrases_not_equal">Las frases-contraseña no coinciden</string>
   <string name="create_key_final_text">Ha introducido la siguiente identificación:</string>
   <string name="create_key_final_robot_text">Crear una clave puede llevar un tiempo, tómese una taza de café entre tanto...</string>
   <string name="create_key_rsa">(3 subclaves, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuración de clave personalizada)</string>
-  <string name="create_key_identity_text">Introduzca su nombre completo, dirección de correo electrónico, y elija una frase contraseña.</string>
-  <string name="create_key_hint_full_name">Nombre completo, ej. Max Mustermann</string>
   <string name="create_key_edit">Cambiar configuración de clave</string>
   <!--View key-->
   <string name="view_key_revoked">Revocada: ¡La clave no debe volver a ser usada!</string>
-  <string name="view_key_expired">Caducada: ¡El contacto necesita extender la vigencia de las claves!</string>
+  <string name="view_key_expired">Caducada: ¡El contacto necesita extender la vigencia de la clave!</string>
   <string name="view_key_expired_secret">Caducada: ¡Puede extender la vigencia de las claves al editarlas!</string>
   <string name="view_key_my_key">Mi clave</string>
-  <string name="view_key_verified">Clave verificada</string>
-  <string name="view_key_unverified">No verificada: ¡Escanee el código QR para verificar la clave!</string>
+  <string name="view_key_verified">Clave confirmada</string>
+  <string name="view_key_unverified">No confirmada: ¡Escanee el código QR para confirmar clave!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Claves</string>
   <string name="nav_encrypt_decrypt">Cifrar/Descifrar</string>
@@ -727,19 +710,19 @@
   <string name="msg_kc_error_dup_key">La subclave %s aparece dos veces en el juego de claves (keyring). El juego de claves está mal formado, ¡no se va a importar!</string>
   <string name="msg_kc_master">Procesando clave maestra</string>
   <string name="msg_kc_master_bad_type">Eliminando certificado de clave maestra de tipo desconocido (%s)</string>
-  <string name="msg_kc_master_bad_local">Eliminando certificado de clave maestra con distintivo \"local\"</string>
+  <string name="msg_kc_master_bad_local">Eliminando certificado de clave maestra con distintivo \'local\'</string>
   <string name="msg_kc_master_bad_err">Eliminando certificado de clave maestra defectuoso</string>
   <string name="msg_kc_master_bad_time">Eliminando certificado de revocación de juego de claves con marca de tiempo en el futuro</string>
   <string name="msg_kc_master_bad_type_uid">Eliminando certificado de identificación de usuario en posición incorrecta</string>
   <string name="msg_kc_master_bad">Eliminando certificado de clave maestra defectuoso</string>
-  <string name="msg_kc_master_local">Eliminando certificado de clave maestra con distitivo \"local\"</string>
+  <string name="msg_kc_master_local">Eliminando certificado de clave maestra con distintitivo \'local\'</string>
   <string name="msg_kc_revoke_dup">Eliminando certificado redundante de revocación de juego de claves </string>
   <string name="msg_kc_notation_dup">Eliminando certificado de notación redundante</string>
   <string name="msg_kc_notation_empty">Eliminando certificado de notación vacía</string>
   <string name="msg_kc_sub">Procesando subclave %s</string>
   <string name="msg_kc_sub_bad">Eliminando certificado no vigente de vinculación de subclave</string>
   <string name="msg_kc_sub_bad_err">Eliminando certificado defectuoso de vinculación de subclave</string>
-  <string name="msg_kc_sub_bad_local">Eliminando certificado de vinculación de subclave, con distintivo \"local\"</string>
+  <string name="msg_kc_sub_bad_local">Eliminando certificado de vinculación de subclave con distintivo \'local\'</string>
   <string name="msg_kc_sub_bad_keyid">La identificación del publicante de la vinculación de subclave no coincide</string>
   <string name="msg_kc_sub_bad_time">Eliminando certificado de vinculación de subclave, con marca de tiempo futura</string>
   <string name="msg_kc_sub_bad_type">Tipo de certificado de subclave desconocido: %s</string>
@@ -776,7 +759,7 @@
   <string name="msg_kc_uid_no_cert">No se encontró auto-certificado vigente para la identificación de usuario \'%s\', eliminándola del juego de claves</string>
   <string name="msg_kc_uid_remove">Eliminando identificación de usuario \'%s\' no válida</string>
   <string name="msg_kc_uid_dup">Eliminando identificaciones de usuario duplicadas \'%s\'. El juego de claves contenía dos de ellas. ¡Esto puede resultar en certificados perdidos!</string>
-  <string name="msg_kc_uid_warn_encoding">¡La identificación de usuario no se verifica como UTF-8!</string>
+  <string name="msg_kc_uid_warn_encoding">¡La identificación de usuario no se confirma como UTF-8!</string>
   <string name="msg_kc_uat_jpeg">Procesando atributo de usuario del tipo JPEG</string>
   <string name="msg_kc_uat_unknown">Procesando atributo de usuario de tipo desconocido</string>
   <string name="msg_kc_uat_bad_err">Eliminando auto certificados defectuosos para el atributo de usuario</string>
@@ -791,7 +774,7 @@
   <string name="msg_kc_uat_revoke_old">Eliminando certificado de revocación desactualizado para el atributo de usuario</string>
   <string name="msg_kc_uat_no_cert">No se encontró auto certificado válido para el atributo de usuario, eliminándolo del juego de claves</string>
   <string name="msg_kc_uat_remove">Eliminando atributo de usuario no válido</string>
-  <string name="msg_kc_uat_warn_encoding">¡La identificación de usuario no se verifica con formato UTF-8!</string>
+  <string name="msg_kc_uat_warn_encoding">¡La identificación de usuario no se confirma como UTF-8!</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_secret_dummy">Nueva subclave pública encontrada, ¡pero la generación de subclaves secretas (privadas) ficticias no está soportada!</string>
   <string name="msg_mg_error_heterogeneous">¡Se intentaron fusionar juegos de claves con diferentes huellas de validación!</string>
@@ -920,6 +903,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Tamaño de fichero desconocido</string>
   <string name="msg_dc_clear_meta_time">Hora de la modificación: %s</string>
   <string name="msg_dc_clear_signature_bad">¡Comprobación de firma NO CORRECTA!</string>
+  <string name="msg_dc_error_unsupported_hash_algo">¡Algoritmo de identificador criptográfico (hash) no soportado y potencialmente inseguro!</string>
   <string name="msg_dc_clear_signature_check">Verificando datos de firma</string>
   <string name="msg_dc_clear_signature_ok">Comprobación de firma CORRECTA</string>
   <string name="msg_dc_clear_signature">Guardando datos de firma para más tarde</string>
@@ -935,7 +919,7 @@
   <string name="msg_dc_error_pgp_exception">¡Se encontró una excepción OpenPGP durante la operación!</string>
   <string name="msg_dc_integrity_check_ok">¡Comprobación de integridad CORRECTA!</string>
   <string name="msg_dc_ok_meta_only">Sólo fueron solicitados los metadatos, omitiendo descifrado</string>
-  <string name="msg_dc_ok">CORRECTO</string>
+  <string name="msg_dc_ok">Descifrado/Verificación finalizado</string>
   <string name="msg_dc_pass_cached">Usando frase-contraseña desde caché</string>
   <string name="msg_dc_pending_nfc">Se requiere credencial NFC, solicitando su introducción por el usuario...</string>
   <string name="msg_dc_pending_passphrase">Se requiere frase-contraseña, solicitando su introducción por el usuario...</string>
@@ -947,6 +931,7 @@
   <string name="msg_dc_trail_sym">Se encontró huella, datos cifrados simétricamente</string>
   <string name="msg_dc_trail_unknown">Se encontró huella, datos de tipo desconocido</string>
   <string name="msg_dc_unlocking">Desbloqueando clave secreta (privada)</string>
+  <string name="msg_dc_old_symmetric_encryption_algo">¡Se ha usado un algoritmo de cifrado potencialmente inseguro!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Comenzando comprobación de firma</string>
   <string name="msg_vl_error_no_siglist">No hay lista de firmas en los datos literales firmados</string>
@@ -962,7 +947,7 @@
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Iniciando operación de firmado/cifrado</string>
   <string name="msg_se_input_bytes">Procesando entrada de matriz de bytes</string>
-  <string name="msg_se_input_uri">Procesando entrada de URI</string>
+  <string name="msg_se_input_uri">Procesar entrada desde URI</string>
   <string name="msg_se_error_no_input">¡No se proporcionó entrada!</string>
   <string name="msg_se_error_input_uri_not_found">¡Error al abrir URI para lectura!</string>
   <string name="msg_se_error_output_uri_not_found">¡Error al abrir URI para escritura!</string>
@@ -997,10 +982,13 @@
   <string name="msg_pse">Iniciando operación de firmado y/o cifrado</string>
   <string name="msg_pse_symmetric">Preparando cifrado simétrico</string>
   <string name="msg_crt_certifying">Generando certificaciones</string>
-  <string name="msg_crt_certify_all">Certificando todas las identificaciones de usuario para la clave %s</string>
-  <plurals name="msg_crt_certify_some">
+  <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certificando una identificación de usuario para la clave %2$s</item>
     <item quantity="other">Certificando %1$d identificaciones de usuario para la clave %2$s</item>
+  </plurals>
+  <plurals name="msg_crt_certify_uats">
+    <item quantity="one">Certificando un atributo de usuario para la clave %2$s</item>
+    <item quantity="other">Certificando %1$d atributos de usuario para la clave %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">¡No se puede emitir un auto-certificado como este!</string>
   <string name="msg_crt_error_master_not_found">¡Clave maestra no encontrada!</string>
@@ -1080,6 +1068,12 @@
   <string name="msg_download_too_many_responses">La solicitud de búsqueda de clave devolvió demasiados candidatos. ¡Por favor refine su petición!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">O bien no hay claves o se han encontrado demasiadas. ¡Por favor mejore su petición!</string>
   <string name="msg_download_query_failed">Ocurrió un error al buscar claves.</string>
+  <!--Messages for Export Log operation-->
+  <string name="msg_export_log_start">Exportando registro (log)</string>
+  <string name="msg_export_log_error_fopen">Error abriendo fichero</string>
+  <string name="msg_export_log_error_no_file">¡No se especificó nombre de fichero!</string>
+  <string name="msg_export_log_error_writing">¡Error de E/S al escribir al fichero!</string>
+  <string name="msg_export_log_success">¡Registro (log) exportado con éxito!</string>
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Haga clic para eliminar las frases-contraseña almacenadas en caché</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha almacenado en caché %d frases-contraseña</string>
@@ -1099,11 +1093,10 @@
   <string name="empty_certs">No hay certificados para esta clave</string>
   <string name="certs_text">Aquí sólo se muestran auto-certificados validados y certificados validados creados con sus claves.</string>
   <string name="section_uids_to_certify">Identificaciones para</string>
-  <string name="certify_text">Las claves que está importando contienen \"identificaciones\": nombres y correos electrónicos. Para certificación seleccione exactamente aquellas que coinciden con lo que usted esperaba.</string>
+  <string name="certify_text">Las claves que está importando contienen \"identidades\": nombres y correos electrónicos. Seleccione exactamente aquellos para confirmación que coinciden con lo que esperaba.</string>
   <string name="certify_fingerprint_text">Compare la huella de validación mostrada, caracter por caracter, con la que se muestra en el dispositivo de su colega.</string>
   <string name="certify_fingerprint_text2">¿Coinciden las huellas de validación mostradas?</string>
   <string name="label_revocation">Razón de la revocación</string>
-  <string name="label_verify_status">Estado de la verificación</string>
   <string name="label_cert_type">Tipo</string>
   <string name="error_key_not_found">¡Clave no encontrada!</string>
   <string name="error_key_processing">¡Error procesando clave!</string>
@@ -1151,4 +1144,5 @@
   <string name="nfc_write_succesful">Se escribió con éxito en la etiqueta NFC</string>
   <string name="unlocked">Desbloqueado</string>
   <string name="nfc_settings">Configuración</string>
+    <string name="file_delete_successful"></string>
 </resources>

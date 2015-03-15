@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">選擇金鑰</string>
   <string name="title_select_secret_key">選擇私鑰</string>
-  <string name="title_encrypt_text">加密文字</string>
-  <string name="title_encrypt_files">加密檔案</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">新增子金鑰</string>
   <string name="title_edit_key">編輯金鑰</string>
@@ -17,7 +15,6 @@
   <string name="title_share_fingerprint_with">分享指紋…</string>
   <string name="title_share_key">分享金鑰…</string>
   <string name="title_share_file">分享檔案…</string>
-  <string name="title_share_message">分享訊息…</string>
   <string name="title_encrypt_to_file">加密到檔案</string>
   <string name="title_decrypt_to_file">解密到檔案</string>
   <string name="title_import_keys">匯入金鑰</string>
@@ -26,7 +23,6 @@
   <string name="title_export_keys">匯出所有金鑰</string>
   <string name="title_key_not_found">找不到金鑰</string>
   <string name="title_send_key">上傳到金鑰伺服器</string>
-  <string name="title_certify_key">簽署身份</string>
   <string name="title_key_details">金鑰內容</string>
   <string name="title_help">說明</string>
   <string name="title_log_display">紀錄</string>
@@ -41,15 +37,12 @@
   <string name="section_defaults">預設</string>
   <string name="section_advanced">進階</string>
   <string name="section_passphrase_cache">口令快取</string>
-  <string name="section_certification_key">用來簽署的私鑰</string>
   <string name="section_key_server">金鑰伺服器</string>
   <string name="section_fingerprint">指紋</string>
-  <string name="section_key_to_certify">要簽署的金鑰</string>
   <string name="section_decrypt_files">檔案</string>
   <string name="section_decrypt_text">文字</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">解密並驗證檔案</string>
-  <string name="btn_decrypt_verify_message">解密並驗證訊息</string>
   <string name="btn_encrypt_file">加密檔案</string>
   <string name="btn_encrypt_share_file">加密並分享檔案</string>
   <string name="btn_save">儲存</string>
@@ -61,7 +54,6 @@
   <string name="btn_next">下一步</string>
   <string name="btn_back">返回</string>
   <string name="btn_lookup_key">尋找金鑰</string>
-  <string name="btn_share_encrypted_signed">加密並分享訊息</string>
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
@@ -83,7 +75,6 @@
   <string name="menu_export_all_keys">匯出所有金鑰</string>
   <string name="menu_advanced">顯示進階資訊</string>
   <!--label-->
-  <string name="label_message">訊息</string>
   <string name="label_file">檔案</string>
   <string name="label_files">檔案</string>
   <string name="label_no_passphrase">沒有口令</string>
@@ -100,7 +91,6 @@
   <string name="label_hash_algorithm">雜湊演算法</string>
   <string name="label_symmetric">使用口令加密</string>
   <string name="label_passphrase_cache_ttl">快取時間</string>
-  <string name="label_message_compression">訊息壓縮</string>
   <string name="label_file_compression">檔案壓縮</string>
   <string name="label_keyservers">金鑰伺服器</string>
   <string name="label_key_id">金鑰ID</string>
@@ -116,12 +106,6 @@
   <string name="label_send_key">與雲端同步</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">設定效期</string>
-  <string name="can_encrypt">可以加密</string>
-  <string name="can_sign">可以簽名</string>
-  <string name="can_certify">可以簽署</string>
-  <string name="can_certify_not">無法簽署</string>
-  <string name="expired">已過期</string>
-  <string name="revoked">已撤銷</string>
   <string name="secret_key">密鑰:</string>
   <!--choice-->
   <string name="choice_15secs">15秒</string>
@@ -142,7 +126,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">開啟…</string>
-  <string name="warning">警告</string>
   <string name="error">錯誤</string>
   <string name="error_message">錯誤: %s</string>
   <!--key flags-->
@@ -156,33 +139,25 @@
   <string name="passphrases_do_not_match">口令不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入口令。</string>
   <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
-  <string name="file_delete_confirmation">你確定要刪除\n%s？</string>
-  <string name="file_delete_successful">刪除成功。</string>
-  <string name="no_file_selected">請先選擇檔案。</string>
+    <string name="no_file_selected">請先選擇檔案。</string>
   <string name="encrypt_sign_successful">成功簽名並/或加密。</string>
   <string name="encrypt_sign_clipboard_successful">成功簽名並/或加密到剪貼簿。</string>
-  <string name="enter_passphrase_twice">重複輸入口令</string>
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
   <string name="select_encryption_or_signature_key">選擇至少一把加密或簽名金鑰。</string>
   <string name="specify_file_to_encrypt_to">請選擇要將檔案加密到哪。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_decrypt_to">請選擇要將檔案解密到哪。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_export_to">請選擇要將檔案匯出到哪。\n警告：已經存在的檔案將被覆蓋。</string>
-  <string name="key_deletion_confirmation_multi">你確定要刪除選擇的公鑰？\n此動作無法復原！</string>
-  <string name="secret_key_deletion_confirmation">你確定要刪除密鑰\'%s\'？\n此動作無法復原！</string>
-  <string name="public_key_deletetion_confirmation">你確定要刪除公鑰\'%s\'？\n此動作無法復原！</string>
   <string name="also_export_secret_keys">一併匯出私鑰</string>
   <string name="key_exported">成功匯出 1 把金鑰。</string>
   <string name="keys_exported">成功匯出 %d 把金鑰。</string>
   <string name="nfc_successful">NFC Beam發送金鑰成功!</string>
   <string name="key_copied_to_clipboard">金鑰已複製到剪貼簿!</string>
   <string name="fingerprint_copied_to_clipboard">指紋已複製到剪貼簿!</string>
-  <string name="select_key_to_certify">請選擇要用來認證的金鑰！</string>
   <string name="key_too_big_for_sharing">金鑰太大無法使用此方式分享!</string>
   <string name="text_copied_to_clipboard">文字已複製到剪貼簿!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">刪除%s失敗</string>
   <string name="error_file_not_found">找不到檔案</string>
   <string name="error_no_secret_key_found">沒有適合的私鑰</string>
   <string name="error_external_storage_not_ready">外部儲存空間尚未就緒</string>
@@ -274,7 +249,6 @@
   <!--Help-->
   <string name="help_tab_start">快速上手</string>
   <string name="help_tab_faq">常見問題</string>
-  <string name="help_tab_wot">信任網</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">更新紀錄</string>
   <string name="help_tab_about">關於</string>
@@ -373,11 +347,9 @@
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
   <!--Create key-->
-  <string name="create_key_upload">上傳到金鑰伺服器</string>
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">口令不相符</string>
   <string name="create_key_final_robot_text">建立金鑰可能需要一點時間，來杯咖啡吧…</string>
-  <string name="create_key_identity_text">輸入你的全名、電子郵件，並選擇一組口令。</string>
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">金鑰</string>
@@ -430,6 +402,7 @@
   <string name="msg_download_success">下載成功！</string>
   <string name="msg_download_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_n_keys">OpenKeychain快取了%d個口令</string>
   <string name="passp_cache_notif_keys">已快取的口令：</string>
@@ -448,7 +421,8 @@
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
   <string name="info_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

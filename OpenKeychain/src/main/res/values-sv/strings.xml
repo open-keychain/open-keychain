@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Välj nycklar</string>
   <string name="title_select_secret_key">Välj din nyckel</string>
-  <string name="title_encrypt_text">Kryptera text</string>
-  <string name="title_encrypt_files">Kryptera filer</string>
   <string name="title_decrypt">Dekryptera</string>
   <string name="title_unlock">Lås upp nyckel</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
@@ -20,7 +18,6 @@
   <string name="title_share_fingerprint_with">Dela fingeravtryck med…</string>
   <string name="title_share_key">Dela nyckel med…</string>
   <string name="title_share_file">Dela fil med…</string>
-  <string name="title_share_message">Dela meddelande med…</string>
   <string name="title_encrypt_to_file">Kryptera till fil</string>
   <string name="title_decrypt_to_file">Dekryptera till fil</string>
   <string name="title_import_keys">Importera nycklar</string>
@@ -29,7 +26,6 @@
   <string name="title_export_keys">Exportera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
   <string name="title_send_key">Ladda upp till nyckelserver</string>
-  <string name="title_certify_key">Certifiera identiteter</string>
   <string name="title_key_details">Nyckelinformation</string>
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
@@ -45,14 +41,11 @@
   <string name="section_defaults">Förval</string>
   <string name="section_advanced">Avancerat</string>
   <string name="section_passphrase_cache">Cache för lösenordsfras</string>
-  <string name="section_certify">Certifiera</string>
   <string name="section_actions">Åtgärder</string>
   <string name="section_share_key">Nyckel</string>
-  <string name="section_certification_key">Din nyckel för att certifiera</string>
   <string name="section_upload_key">Synkronisera nyckel</string>
   <string name="section_key_server">Nyckelserver</string>
   <string name="section_fingerprint">Fingeravtryck</string>
-  <string name="section_key_to_certify">Nyckel att certifiera</string>
   <string name="section_decrypt_files">Filer</string>
   <string name="section_decrypt_text">Text</string>
   <string name="section_certs">Certifikat</string>
@@ -60,7 +53,6 @@
   <string name="section_decrypt">Dekryptera</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dekryptera, verifiera och spara fil</string>
-  <string name="btn_decrypt_verify_message">Dekryptera och verifiera meddelande</string>
   <string name="btn_encrypt_file">Kryptera och spara fil</string>
   <string name="btn_encrypt_share_file">Kryptera och dela fil</string>
   <string name="btn_save">Spara</string>
@@ -72,7 +64,6 @@
   <string name="btn_next">Nästa</string>
   <string name="btn_back">Föregående</string>
   <string name="btn_lookup_key">Sök efter nyckel</string>
-  <string name="btn_share_encrypted_signed">Kryptera och dela meddelande</string>
   <string name="btn_view_cert_key">Visa nyckel för certifiering</string>
   <string name="btn_create_key">Skapa nyckel</string>
   <string name="btn_add_files">Lägg till fil(er)</string>
@@ -99,7 +90,6 @@
   <string name="menu_export_all_keys">Exportera alla nycklar</string>
   <string name="menu_advanced">Visa avancerad information</string>
   <!--label-->
-  <string name="label_message">Meddelande</string>
   <string name="label_file">Fil</string>
   <string name="label_files">Fil(er)</string>
   <string name="label_file_colon">Fil:</string>
@@ -124,7 +114,6 @@
   <string name="label_symmetric">Kryptera med lösenordsfras</string>
   <string name="label_passphrase_cache_ttl">Tid i cache</string>
   <string name="label_passphrase_cache_subs">Cacha lösenordsfraser efter undernyckel</string>
-  <string name="label_message_compression">Meddelandekompression</string>
   <string name="label_file_compression">Filkompression</string>
   <string name="label_keyservers">Nyckelservrar</string>
   <string name="label_key_id">Nyckel-ID</string>
@@ -143,13 +132,6 @@
   <string name="label_preferred">föredraget</string>
   <string name="user_id_no_name">&lt;inget namn&gt;</string>
   <string name="none">&lt;ingen&gt;</string>
-  <string name="no_key">&lt;ingen nyckel&gt;</string>
-  <string name="can_encrypt">kan kryptera</string>
-  <string name="can_sign">kan signera</string>
-  <string name="can_certify">kan certifiera</string>
-  <string name="can_certify_not">kan inte certifiera</string>
-  <string name="expired">utgången</string>
-  <string name="revoked">återkallad</string>
   <plurals name="n_keys">
     <item quantity="one">1 nyckel</item>
     <item quantity="other">%d nycklar</item>
@@ -179,7 +161,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Öppna…</string>
-  <string name="warning">Varning</string>
   <string name="error">Fel</string>
   <string name="error_message">Fel: %s</string>
   <!--key flags-->
@@ -197,20 +178,14 @@
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="yubikey_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
   <string name="nfc_text">Håll YubiKey mot baksidan av din enhet.</string>
-  <string name="file_delete_confirmation">Vill du verkligen radera\n%s?</string>
-  <string name="file_delete_successful">Raderades.</string>
-  <string name="no_file_selected">Välj en fil först.</string>
+    <string name="no_file_selected">Välj en fil först.</string>
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
-  <string name="enter_passphrase_twice">Ange lösenordsfrasen två gånger.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
   <string name="select_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
   <string name="specify_file_to_encrypt_to">Ange vilken fil som du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil som du vill dekryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
   <string name="specify_file_to_export_to">Ange vilken fil som du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
-  <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade publika nycklar?\nDu kan inte ångra detta!</string>
-  <string name="secret_key_deletion_confirmation">Vill du verkligen radera den PRIVATA nyckeln \'%s\'?\nDu kan inte ångra detta!</string>
-  <string name="public_key_deletetion_confirmation">Vill du verkligen radera den publika nyckeln \'%s\'?\nDu kan inte ångra detta!</string>
   <string name="also_export_secret_keys">Exportera även privata nycklar</string>
   <string name="reinstall_openkeychain">Du stötte på en känd bugg hos Android. Installera om OpenKeychain om du vill koppla ihop dina kontaker med nycklar.</string>
   <string name="key_exported">Exporterade 1 nyckel.</string>
@@ -226,13 +201,11 @@
   <string name="nfc_successful">Skickade nyckel med NFC Beam!</string>
   <string name="key_copied_to_clipboard">Nyckel har kopierats till urklipp!</string>
   <string name="fingerprint_copied_to_clipboard">Fingeravtryck har kopierats till urklipp!</string>
-  <string name="select_key_to_certify">Välj en nyckel att använda för certifiering!</string>
   <string name="key_too_big_for_sharing">Nyckeln är för stor för att dela på detta sätt!</string>
   <string name="text_copied_to_clipboard">Text har kopierats till urklipp!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">det gick inte att radera \'%s\' </string>
   <string name="error_file_not_found">fil hittades inte</string>
   <string name="error_no_secret_key_found">ingen passande privat nyckel hittades</string>
   <string name="error_external_storage_not_ready">extern lagring inte redo</string>
@@ -317,8 +290,6 @@
   <string name="progress_con_saving">konsolidera: sparar till cache…</string>
   <string name="progress_con_reimport">konsolidera: återimporterar…</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Namn/e-post/nyckel-ID…</string>
-  <string name="hint_cloud_search_hint">Namn/e-post/bevis/nyckel…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -345,7 +316,6 @@
   <string name="compression_very_slow">väldigt långsam</string>
   <!--Help-->
   <string name="help_tab_faq">Vanliga frågor</string>
-  <string name="help_tab_wot">Tillitsnät</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Ändringslogg</string>
   <string name="help_tab_about">Om</string>
@@ -476,7 +446,6 @@
   <string name="key_view_action_edit">Redigera nyckel</string>
   <string name="key_view_action_encrypt">Kryptera text</string>
   <string name="key_view_action_encrypt_files">filer</string>
-  <string name="key_view_action_certify">Certifiera identiteter</string>
   <string name="key_view_action_update">Uppdatera från nyckelserver</string>
   <string name="key_view_action_share_with">Dela med…</string>
   <string name="key_view_action_share_nfc">Dela via NFC</string>
@@ -514,15 +483,12 @@
   <string name="edit_key_error_add_identity">Lägg till åtminstone en identitet!</string>
   <string name="edit_key_error_add_subkey">Lägg till åtminstone en undernyckel!</string>
   <!--Create key-->
-  <string name="create_key_upload">Ladda upp nyckel till nyckelserver</string>
   <string name="create_key_empty">Detta fält krävs</string>
   <string name="create_key_passphrases_not_equal">Lösenordsfraser stämmer inte överens</string>
   <string name="create_key_final_text">Du angav följande identitet:</string>
   <string name="create_key_final_robot_text">Att skapa en nyckel kan ta ett tag, drick en kopp kaffe under tiden…</string>
   <string name="create_key_rsa">(3 undernycklar, RSA, 4096 bit)</string>
   <string name="create_key_custom">(anpassad nyckelkonfiguration)</string>
-  <string name="create_key_identity_text">Ange ditt fullständiga namn, e-postadress och välj en lösenordsfras.</string>
-  <string name="create_key_hint_full_name">Fullständigt namn, t.ex. Kalle Svensson</string>
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <!--View key-->
   <!--Navigation Drawer-->
@@ -652,11 +618,9 @@
   <string name="msg_kc_error_master_algo">Den här huvudnyckeln använder en okänd (%s) algoritm!</string>
   <string name="msg_kc_master">Bearbetar huvudnyckel</string>
   <string name="msg_kc_master_bad_type">Tar bort huvudnyckelcertifikat av okänd typ (%s)</string>
-  <string name="msg_kc_master_bad_local">Tar bort huvudnyckelcertifikat med flaggan \"local\"</string>
   <string name="msg_kc_master_bad_err">Tar bort dåligt huvudnyckelcertifikat</string>
   <string name="msg_kc_master_bad_time">Tar bort återkallelsecertifikat för nyckelring med framtida tidstämpel</string>
   <string name="msg_kc_master_bad">Tar bort dåligt huvudnyckelcertifikat</string>
-  <string name="msg_kc_master_local">Tar bort huvudnyckelcertifikat med flaggan \"local\"</string>
   <string name="msg_kc_revoke_dup">Tar bort överflödigt återkallelsecertifikat för nyckelring</string>
   <string name="msg_kc_sub">Bearbetar undernyckel %s</string>
   <string name="msg_kc_sub_no_cert">Inget giltigt certifikat hittades för %s, tar bort från nyckelring</string>
@@ -672,7 +636,6 @@
   <string name="msg_kc_uid_revoke_old">Tar bort föråldrat återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_no_cert">Inget giltigt eget-certifikat hittades för användar-ID \'%s\', tar bort från nyckelring</string>
   <string name="msg_kc_uid_remove">Tar bort ogiltigt användar-ID \'%s\'</string>
-  <string name="msg_kc_uid_warn_encoding">Användar-ID verifierar inte som UTF-8!</string>
   <string name="msg_kc_uat_remove">Tar bort ogiltigt användarattribut</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_heterogeneous">Försökte att slå ihop nyckelringar med olika fingeravtryck!</string>
@@ -757,7 +720,6 @@
   <string name="msg_dc_clear_decompress">Packar upp komprimerad data</string>
   <string name="msg_dc_clear_meta_file">Filnamn: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-typ: %s</string>
-  <string name="msg_dc_clear_meta_size">Filstorlek: %s</string>
   <string name="msg_dc_clear_signature_bad">Signaturkontroll INTE OK!</string>
   <string name="msg_dc_clear_signature_check">Verifierar signaturdata</string>
   <string name="msg_dc_clear_signature_ok">Signaturkontroll OK</string>
@@ -766,7 +728,6 @@
   <string name="msg_dc_error_extract_key">Okänt fel vid upplåsning av nyckel</string>
   <string name="msg_dc_error_integrity_check">Fel vid integritetskontroll!</string>
   <string name="msg_dc_ok_meta_only">Endast metadata krävdes, hoppar över dekryptering</string>
-  <string name="msg_dc_ok">OK</string>
   <string name="msg_dc_pass_cached">Använder lösenordsfras från cache</string>
   <string name="msg_dc_prep_streams">Förbereder strömmar för dekryptering</string>
   <string name="msg_dc">Startar dekrypteringsoperation…</string>
@@ -842,6 +803,7 @@
     <item quantity="one">en del av den inlästa filen är ett giltigt OpenPGP-objekt men inte en OpenPGP-nyckel</item>
     <item quantity="other">delar av den inlästa filen är giltiga OpenPGP-objekt men inte OpenPGP-nycklar</item>
   </plurals>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Klicka för att rensa cachade lösenordsfraser</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain har cachat %d lösenordsfraser</string>
@@ -860,7 +822,6 @@
   <string name="empty_certs">Inga certifikat för den här nyckeln</string>
   <string name="section_uids_to_certify">Identiteter för</string>
   <string name="label_revocation">Anledning till återkallelse</string>
-  <string name="label_verify_status">Verifieringsstatus</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Nyckel hittades inte!</string>
   <string name="error_key_processing">Fel vid bearbetning av nyckel!</string>
@@ -902,4 +863,5 @@
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
+    <string name="file_delete_successful"></string>
 </resources>

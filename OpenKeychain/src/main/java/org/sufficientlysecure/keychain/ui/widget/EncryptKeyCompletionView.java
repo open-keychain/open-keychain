@@ -28,6 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,9 +52,12 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class EncryptKeyCompletionView extends TokenCompleteTextView {
     public EncryptKeyCompletionView(Context context) {
@@ -125,7 +129,9 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
                             KeyRings.USER_ID,
                             KeyRings.FINGERPRINT,
                             KeyRings.IS_EXPIRED,
-                            KeyRings.HAS_ENCRYPT
+                            KeyRings.HAS_ENCRYPT,
+                            KeyRings.HAS_DUPLICATE_USER_ID,
+                            KeyRings.CREATION
                     };
 
                     String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND " + KeyRings.IS_EXPIRED + " = 0 AND "
@@ -153,7 +159,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {
         super.onFocusChanged(hasFocus, direction, previous);
         if (hasFocus) {
-            ((InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+            ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
                     .showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
         }
     }
@@ -180,25 +186,30 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         private String mUserIdFull;
         private String[] mUserId;
         private long mKeyId;
+        private boolean mHasDuplicate;
+        private Date mCreation;
         private String mFingerprint;
 
-        public EncryptionKey(String userId, long keyId, String fingerprint) {
-            this.mUserId = KeyRing.splitUserId(userId);
-            this.mUserIdFull = userId;
-            this.mKeyId = keyId;
-            this.mFingerprint = fingerprint;
+        public EncryptionKey(String userId, long keyId, boolean hasDuplicate, Date creation, String fingerprint) {
+            mUserId = KeyRing.splitUserId(userId);
+            mUserIdFull = userId;
+            mKeyId = keyId;
+            mHasDuplicate = hasDuplicate;
+            mCreation = creation;
+            mFingerprint = fingerprint;
         }
 
         public EncryptionKey(Cursor cursor) {
             this(cursor.getString(cursor.getColumnIndexOrThrow(KeyRings.USER_ID)),
                     cursor.getLong(cursor.getColumnIndexOrThrow(KeyRings.KEY_ID)),
+                    cursor.getLong(cursor.getColumnIndexOrThrow(KeyRings.HAS_DUPLICATE_USER_ID)) > 0,
+                    new Date(cursor.getLong(cursor.getColumnIndexOrThrow(KeyRings.CREATION)) * 1000),
                     KeyFormattingUtils.convertFingerprintToHex(
                             cursor.getBlob(cursor.getColumnIndexOrThrow(KeyRings.FINGERPRINT))));
-
         }
 
         public EncryptionKey(CachedPublicKeyRing ring) throws PgpKeyNotFoundException {
-            this(ring.getPrimaryUserId(), ring.extractOrGetMasterKeyId(),
+            this(ring.getPrimaryUserId(), ring.extractOrGetMasterKeyId(), false, null,
                     KeyFormattingUtils.convertFingerprintToHex(ring.getFingerprint()));
         }
 
@@ -222,13 +233,13 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
             if (mUserId[1] != null) {
                 return mUserId[1];
             } else {
-                return getKeyIdHex();
+                return getCreationDate();
             }
         }
 
         public String getTertiary() {
             if (mUserId[0] != null) {
-                return getKeyIdHex();
+                return getCreationDate();
             } else {
                 return null;
             }
@@ -236,6 +247,20 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
         public long getKeyId() {
             return mKeyId;
+        }
+
+        public String getCreationDate() {
+            if (mHasDuplicate) {
+                Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                creationCal.setTime(mCreation);
+                // convert from UTC to time zone of device
+                creationCal.setTimeZone(TimeZone.getDefault());
+
+                return getContext().getString(R.string.label_creation) + ": "
+                        + DateFormat.getDateFormat(getContext()).format(creationCal.getTime());
+            } else {
+                return null;
+            }
         }
 
         public String getKeyIdHex() {
@@ -278,7 +303,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         protected boolean keepObject(EncryptionKey obj, String mask) {
             String m = mask.toLowerCase(Locale.ENGLISH);
             return obj.getUserId().toLowerCase(Locale.ENGLISH).contains(m) ||
-                    obj.getKeyIdHex().toString().contains(m) ||
+                    obj.getKeyIdHex().contains(m) ||
                     obj.getKeyIdHexShort().startsWith(m);
         }
     }

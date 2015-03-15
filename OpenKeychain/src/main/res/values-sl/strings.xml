@@ -6,19 +6,18 @@
   <!--title-->
   <string name="title_select_recipients">Izberi ključe</string>
   <string name="title_select_secret_key">Izberi zasebni ključ</string>
-  <string name="title_encrypt_text">Šifriraj besedilo</string>
-  <string name="title_encrypt_files">Šifriraj datoteko</string>
   <string name="title_decrypt">Dešifriraj</string>
   <string name="title_unlock">Odkleni ključ</string>
   <string name="title_add_subkey">Dodaj podključ</string>
   <string name="title_edit_key">Uredi ključ</string>
+  <string name="title_preferences">Nastavitve</string>
   <string name="title_cloud_search_preferences">Nastavitve iskanja v oblaku</string>
   <string name="title_api_registered_apps">Aplikacije</string>
+  <string name="title_key_server_preference">Strežniki javnih ključev</string>
   <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
   <string name="title_share_key">Deli ključ z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
-  <string name="title_share_message">Deli sporočilo z...</string>
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
   <string name="title_import_keys">Uvozi ključe</string>
@@ -27,33 +26,35 @@
   <string name="title_export_keys">Izvozi ključe</string>
   <string name="title_key_not_found">Ključ ni bil najden</string>
   <string name="title_send_key">Naloži na strežnik</string>
-  <string name="title_certify_key">Overi identiteto</string>
+  <string name="title_certify_key">Potrdi ključ</string>
   <string name="title_key_details">Podrobnosti o ključu</string>
   <string name="title_help">Pomoč</string>
   <string name="title_log_display">Dnevnik</string>
   <string name="title_create_key">Ustvari kluč</string>
   <string name="title_exchange_keys">Izmenjava ključev</string>
   <string name="title_advanced_key_info">Napredne informacije o ključu</string>
+  <string name="title_keys">Ključi</string>
+  <string name="title_delete_secret_key">Izbrišem VAŠ ključ \'%s\'?</string>
   <!--section-->
   <string name="section_user_ids">Identitete</string>
+  <string name="section_should_you_trust">Ali zaupate temu ključu?</string>
   <string name="section_keys">Podključi</string>
   <string name="section_cloud_search">Iskanje v oblaku</string>
   <string name="section_general">Splošno</string>
   <string name="section_defaults">Privzeto</string>
   <string name="section_advanced">Napredno</string>
-  <string name="section_certify">Overjanje</string>
+  <string name="section_certify">Potrdi</string>
   <string name="section_actions">Ravnanja</string>
   <string name="section_share_key">Ključ</string>
-  <string name="section_certification_key">Vaš ključ, uporabljan za overitev</string>
   <string name="section_key_server">Strežnik</string>
   <string name="section_fingerprint">Prstni odtis</string>
-  <string name="section_key_to_certify">Ključi za overjanje</string>
   <string name="section_decrypt_files">Datoteke</string>
   <string name="section_decrypt_text">Besedilo</string>
   <string name="section_certs">Certifikati</string>
+  <string name="section_encrypt">Šifriraj</string>
+  <string name="section_decrypt">Dešifriraj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifriraj, preveri in shrani</string>
-  <string name="btn_decrypt_verify_message">Dešifriraj in preveri sporočilo</string>
   <string name="btn_encrypt_file">Šifriraj in shrani datoteko</string>
   <string name="btn_encrypt_share_file">Šifriraj in deli datoteko</string>
   <string name="btn_save">Shrani</string>
@@ -65,7 +66,6 @@
   <string name="btn_next">Naprej</string>
   <string name="btn_back">Nazaj</string>
   <string name="btn_lookup_key">Išči ključ</string>
-  <string name="btn_share_encrypted_signed">Šifriraj in deli sporočilo</string>
   <string name="btn_view_cert_key">Poglej ključ za overjanje</string>
   <string name="btn_create_key">Ustvari ključ</string>
   <string name="btn_add_files">Dodaj datoteko</string>
@@ -86,7 +86,6 @@
   <string name="menu_export_all_keys">Izvozi vse ključe</string>
   <string name="menu_advanced">Prikaži dodatne informacije</string>
   <!--label-->
-  <string name="label_message">Sporočilo</string>
   <string name="label_file">Datoteka</string>
   <string name="label_files">Datoteke</string>
   <string name="label_file_colon">Datoteka:</string>
@@ -106,7 +105,6 @@
   <string name="label_encryption_algorithm">Šifrirni algoritem</string>
   <string name="label_hash_algorithm">Zgostitveni algoritem</string>
   <string name="label_symmetric">Šifriranje z geslom</string>
-  <string name="label_message_compression">Stiskanje sporočil</string>
   <string name="label_file_compression">Stiskanje datotek</string>
   <string name="label_keyservers">Strežniki</string>
   <string name="label_key_id">ID ključa</string>
@@ -123,13 +121,6 @@
   <string name="expiry_date_dialog_title">Določi datum poteka veljavnosti</string>
   <string name="user_id_no_name">&lt;brez imena&gt;</string>
   <string name="none">&lt;nič&gt;</string>
-  <string name="no_key">&lt;brez ključa&gt;</string>
-  <string name="can_encrypt">lahko šifrira</string>
-  <string name="can_sign">lahko podpisuje</string>
-  <string name="can_certify">lahko overovi</string>
-  <string name="can_certify_not">ne more overoviti</string>
-  <string name="expired">potečen</string>
-  <string name="revoked">preklican</string>
   <plurals name="n_keys">
     <item quantity="one">1 ključ</item>
     <item quantity="two">%d ključa</item>
@@ -163,7 +154,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Odpri...</string>
-  <string name="warning">Opozorilo</string>
   <string name="error">Napaka</string>
   <string name="error_message">Napaka: %s</string>
   <!--key flags-->
@@ -178,12 +168,9 @@
   <string name="passphrase_must_not_be_empty">Vnesite geslo.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrično šifriranje.</string>
   <string name="passphrase_for">Vnesite geslo za \'%s\'</string>
-  <string name="file_delete_confirmation">Ste prepričani, da želite izbrisati\n%s?</string>
-  <string name="file_delete_successful">Uspešno izbrisano.</string>
-  <string name="no_file_selected">Najprej izberite datoteko.</string>
+    <string name="no_file_selected">Najprej izberite datoteko.</string>
   <string name="encrypt_sign_successful">Uspešno podpisano in/ali šifrirano.</string>
   <string name="encrypt_sign_clipboard_successful">Uspešno podpisano in/ali šifrirano ter poslano v odložišče.</string>
-  <string name="enter_passphrase_twice">Dvakrat vnesite geslo.</string>
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
   <string name="select_encryption_or_signature_key">Vnesite vsaj en šifrirni ključ ali ključ za podpisovanje.</string>
   <string name="specify_file_to_encrypt_to">Določite datoteko, v katero želite šifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
@@ -198,13 +185,11 @@
   <string name="nfc_successful">Ključ uspešno poslan preko NFC Beam!</string>
   <string name="key_copied_to_clipboard">Ključ je bil prekopiran v odložišče!</string>
   <string name="fingerprint_copied_to_clipboard">Prstni odtis je bil prekopiran v odložišče!</string>
-  <string name="select_key_to_certify">Izberite ključ, ki ga boste uporabljali za overjanje!</string>
   <string name="key_too_big_for_sharing">Ključ je prevelik za delitev na ta način!</string>
   <string name="text_copied_to_clipboard">Besedilo je bilo prekopirano v odložišče!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">izbris \'%s\' ni uspel</string>
   <string name="error_file_not_found">ne najdem datoteke</string>
   <string name="error_no_secret_key_found">ne najdem ustreznega zasebnega ključa</string>
   <string name="error_external_storage_not_ready">zunanja shramba ni na voljo</string>
@@ -279,8 +264,6 @@
   <string name="progress_deleting_securely">varno brišem \'%s\'…</string>
   <string name="progress_deleting">brisanje ključev...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Ime/e-pošta/ID ključa</string>
-  <string name="hint_cloud_search_hint">Ime/E-pošta/Dokaz/Ključ...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -308,7 +291,6 @@
   <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">Pogosta vprašanja</string>
-  <string name="help_tab_wot">Omrežje zaupanja</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Dnevnik sprememb</string>
   <string name="help_tab_about">O aplikaciji</string>
@@ -368,7 +350,6 @@
   <string name="key_view_action_edit">Uredi ključ</string>
   <string name="key_view_action_encrypt">Šifriraj besedilo</string>
   <string name="key_view_action_encrypt_files">datoteke</string>
-  <string name="key_view_action_certify">Overi identitete</string>
   <string name="key_view_action_update">Posodobi s strežnika</string>
   <string name="key_view_action_share_with">Deli z...</string>
   <string name="key_view_action_share_nfc">Deli preko NFC</string>
@@ -392,10 +373,8 @@
   </string-array>
   <string name="edit_key_edit_subkey_title">Izberite dejanje!</string>
   <!--Create key-->
-  <string name="create_key_upload">Naloži ključ na strežnik ključev</string>
   <string name="create_key_empty">To polje je obvezno</string>
   <string name="create_key_passphrases_not_equal">Gesli se ne ujemata</string>
-  <string name="create_key_hint_full_name">Polno ime, npr. Janez Vzorec</string>
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
@@ -445,7 +424,6 @@
   <string name="msg_kc_sub">Obdelujem podključ %s</string>
   <string name="msg_kc_sub_bad">Umikam neveljaven certifikat za povezovanje podključev</string>
   <string name="msg_kc_sub_bad_err">Umikam slab certifikat za povezovanje podključev</string>
-  <string name="msg_kc_sub_bad_local">Umikam certifikat za povezovanje podključev z oznako \"lokalno\"</string>
   <string name="msg_kc_sub_bad_time">Umikam certifikat za povezovanje podključev z časovno znamko v prihodnosti</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
@@ -469,6 +447,7 @@
     <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
     <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
   </plurals>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Kliknite za izbris zapomnjenih gesel</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain pomni gesla: %d</string>
@@ -486,7 +465,6 @@
   <string name="unknown_uid">&lt;neznan&gt;</string>
   <string name="empty_certs">Ni potrdil za ta ključ</string>
   <string name="label_revocation">Razlog za preklic</string>
-  <string name="label_verify_status">Status preverjanja</string>
   <string name="label_cert_type">Vrsta</string>
   <string name="error_key_not_found">Ključ ni bil najden!</string>
   <string name="error_key_processing">Napaka pri obdelavi ključa!</string>
@@ -500,7 +478,8 @@
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

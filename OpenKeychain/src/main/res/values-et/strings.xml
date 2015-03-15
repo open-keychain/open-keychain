@@ -26,7 +26,6 @@
   <string name="menu_delete_key">Kustuta võti</string>
   <string name="menu_search">Otsi</string>
   <!--label-->
-  <string name="label_message">Sõnum</string>
   <string name="label_file">Fail</string>
   <string name="label_no_passphrase">Salasõnet pole</string>
   <string name="label_passphrase">Salasõne</string>
@@ -38,7 +37,6 @@
   <string name="label_name">Nimi</string>
   <string name="label_comment">Kommentaar</string>
   <string name="label_email">E-mail</string>
-  <string name="expired">aegunud</string>
   <string name="secret_key">Salajane võti:</string>
   <!--choice-->
   <string name="choice_15secs">15 sekundit</string>
@@ -56,7 +54,6 @@
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
   <string name="filemanager_title_open">Ava...</string>
-  <string name="warning">Hoiatus</string>
   <string name="error">Viga</string>
   <string name="error_message">Viga: %s</string>
   <!--key flags-->
@@ -64,9 +61,11 @@
   <string name="wrong_passphrase">Vale salasõne</string>
   <string name="passphrases_do_not_match">Salasõned ei ühti.</string>
   <string name="passphrase_for_symmetric_encryption">Sümmeetriline krüpteering</string>
-  <!--errors
-         no punctuation, all lowercase,
-         they will be put after "error_message", e.g. "Error: file not found"-->
+    <string name="file_delete_successful"></string>
+    <string name="file_delete_confirmation"></string>
+    <!--errors
+           no punctuation, all lowercase,
+           they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
@@ -113,6 +112,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->
   <!--unsorted-->

@@ -43,7 +43,7 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
     <string name="title_keys">"Keys"</string>
-    <string name="title_delete_secret_key">"Delete YOUR key \'%s\'?"</string>
+    <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
 
     <!-- section -->
@@ -223,8 +223,9 @@
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
-    <string name="file_delete_confirmation">"Are you sure you want to delete\n%s?"</string>
-    <string name="file_delete_successful">"'%s' has been deleted."</string>
+    <string name="file_delete_confirmation_title">"Delete original files?"</string>
+    <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
+    <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
     <string name="no_file_selected">"Select a file first."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
@@ -265,7 +266,8 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"
     -->
-    <string name="error_file_delete_failed">"Deleting '%s' failed. Please do this manually!"</string>
+    <string name="error_file_delete_failed">"have not been deleted. Delete them manually!"</string>
+    <string name="error_file_added_already">%s has already been added.</string>
     <string name="error_file_not_found">"file not found"</string>
     <string name="error_no_secret_key_found">"no suitable secret key found"</string>
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
@@ -492,7 +494,7 @@
     <string name="api_settings_hide_advanced">"Hide advanced settings"</string>
     <string name="api_settings_no_key">"No key selected"</string>
     <string name="api_settings_select_key">"Select key"</string>
-    <string name="api_settings_create_key">"Create new key for this account"</string>
+    <string name="api_settings_create_key">"Create new key"</string>
     <string name="api_settings_save">"Save"</string>
     <string name="api_settings_save_msg">"Account has been saved"</string>
     <string name="api_settings_cancel">"Cancel"</string>
@@ -518,6 +520,7 @@
     <string name="api_select_pub_keys_text">"Please review the list of recipients!"</string>
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
+    <string name="api_select_sign_key_text">"Please select one of your existing keys or create a new one."</string>
 
     <!-- Share -->
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>

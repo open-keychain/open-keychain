@@ -68,6 +68,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -134,8 +135,21 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String SOURCE = "source";
 
     // possible targets:
-    public static final int IO_BYTES = 1;
-    public static final int IO_URI = 2;
+    public static enum IOType {
+        UNKNOWN,
+        BYTES,
+        URI;
+
+        private static final IOType[] values = values();
+
+        public static IOType fromInt(int n) {
+            if(n < 0 || n >= values.length) {
+                return UNKNOWN;
+            } else {
+                return values[n];
+            }
+        }
+    }
 
     // encrypt
     public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
@@ -252,7 +266,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 CertifyResult result = op.certify(parcel, keyServerUri);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -267,7 +281,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -296,7 +310,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                     DecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, decryptVerifyResult);
+                    sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
                 } catch (Exception e) {
                     sendErrorToHandler(e);
                 }
@@ -357,7 +371,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                     }
 
                     // kind of awkward, but this whole class wants to pull bytes out of “data”
-                    data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_BYTES);
+                    data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
                     data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, messageBytes);
 
                     InputData inputData = createDecryptInputData(data);
@@ -394,7 +408,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                     resultData.putString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
                     resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
                     resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                    sendMessageToHandler(MessageStatus.OKAY, resultData);
                 } catch (Exception e) {
                     sendErrorToHandler(e);
                 }
@@ -437,7 +451,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                     Log.logDebugBundle(resultData, "resultData");
 
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                    sendMessageToHandler(MessageStatus.OKAY, resultData);
                 } catch (Exception e) {
                     sendErrorToHandler(e);
                 }
@@ -455,7 +469,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 DeleteResult result = op.execute(masterKeyIds, isSecret);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -470,7 +484,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 EditKeyResult result = op.execute(saveParcel, passphrase);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -484,7 +498,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 PromoteKeyResult result = op.execute(keyRingId);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -508,7 +522,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 }
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -529,7 +543,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                         : importExportOperation.importKeyRings(cache, keyServer);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
 
@@ -545,7 +559,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 SignEncryptResult result = op.execute(inputParcel);
 
                 // Result
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, result);
+                sendMessageToHandler(MessageStatus.OKAY, result);
 
                 break;
             }
@@ -568,7 +582,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                         throw new PgpGeneralException("Unable to export key to selected server");
                     }
 
-                    sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+                    sendMessageToHandler(MessageStatus.OKAY);
                 } catch (Exception e) {
                     sendErrorToHandler(e);
                 }
@@ -590,7 +604,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     private void sendProofError(String msg) {
         Bundle bundle = new Bundle();
         bundle.putString(KeychainIntentServiceHandler.DATA_ERROR, msg);
-        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, bundle);
+        sendMessageToHandler(MessageStatus.OKAY, bundle);
     }
 
     private void sendErrorToHandler(Exception e) {
@@ -607,14 +621,14 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         Bundle data = new Bundle();
         data.putString(KeychainIntentServiceHandler.DATA_ERROR, message);
-        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_EXCEPTION, null, data);
+        sendMessageToHandler(MessageStatus.EXCEPTION, null, data);
     }
 
-    private void sendMessageToHandler(Integer arg1, Integer arg2, Bundle data) {
+    private void sendMessageToHandler(MessageStatus status, Integer arg2, Bundle data) {
 
         Message msg = Message.obtain();
         assert msg != null;
-        msg.arg1 = arg1;
+        msg.arg1 = status.ordinal();
         if (arg2 != null) {
             msg.arg2 = arg2;
         }
@@ -631,18 +645,18 @@ public class KeychainIntentService extends IntentService implements Progressable
         }
     }
 
-    private void sendMessageToHandler(Integer arg1, OperationResult data) {
+    private void sendMessageToHandler(MessageStatus status, OperationResult data) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
-        sendMessageToHandler(arg1, null, bundle);
+        sendMessageToHandler(status, null, bundle);
     }
 
-    private void sendMessageToHandler(Integer arg1, Bundle data) {
-        sendMessageToHandler(arg1, null, data);
+    private void sendMessageToHandler(MessageStatus status, Bundle data) {
+        sendMessageToHandler(status, null, data);
     }
 
-    private void sendMessageToHandler(Integer arg1) {
-        sendMessageToHandler(arg1, null, null);
+    private void sendMessageToHandler(MessageStatus status) {
+        sendMessageToHandler(status, null, null);
     }
 
     /**
@@ -659,7 +673,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         data.putInt(KeychainIntentServiceHandler.DATA_PROGRESS, progress);
         data.putInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX, max);
 
-        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS, null, data);
+        sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, null, data);
     }
 
     public void setProgress(int resourceId, int progress, int max) {
@@ -672,7 +686,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     @Override
     public void setPreventCancel() {
-        sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_PREVENT_CANCEL);
+        sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
     }
 
     private InputData createDecryptInputData(Bundle data) throws IOException, PgpGeneralException {
@@ -681,35 +695,37 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     private InputData createCryptInputData(Bundle data, String bytesName) throws PgpGeneralException, IOException {
         int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
-        switch (source) {
-            case IO_BYTES: /* encrypting bytes directly */
+        IOType type = IOType.fromInt(source);
+        switch (type) {
+            case BYTES: /* encrypting bytes directly */
                 byte[] bytes = data.getByteArray(bytesName);
                 return new InputData(new ByteArrayInputStream(bytes), bytes.length);
 
-            case IO_URI: /* encrypting content uri */
+            case URI: /* encrypting content uri */
                 Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
 
                 // InputStream
                 return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
 
             default:
-                throw new PgpGeneralException("No target choosen!");
+                throw new PgpGeneralException("No target chosen!");
         }
     }
 
     private OutputStream createCryptOutputStream(Bundle data) throws PgpGeneralException, FileNotFoundException {
         int target = data.getInt(TARGET);
-        switch (target) {
-            case IO_BYTES:
+        IOType type = IOType.fromInt(target);
+        switch (type) {
+            case BYTES:
                 return new ByteArrayOutputStream();
 
-            case IO_URI:
+            case URI:
                 Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_OUTPUT_URI);
 
                 return getContentResolver().openOutputStream(providerUri);
 
             default:
-                throw new PgpGeneralException("No target choosen!");
+                throw new PgpGeneralException("No target chosen!");
         }
     }
 
@@ -719,12 +735,13 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     private void finalizeCryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream, String bytesName) {
         int target = data.getInt(TARGET);
-        switch (target) {
-            case IO_BYTES:
+        IOType type = IOType.fromInt(target);
+        switch (type) {
+            case BYTES:
                 byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
                 resultData.putByteArray(bytesName, output);
                 break;
-            case IO_URI:
+            case URI:
                 // nothing, output was written, just send okay and verification bundle
 
                 break;

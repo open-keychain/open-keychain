@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.util.LongSparseArray;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -48,6 +49,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -81,15 +83,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/** This class contains high level methods for database access. Despite its
+/**
+ * This class contains high level methods for database access. Despite its
  * name, it is not only a helper but actually the main interface for all
  * synchronous database operations.
- *
+ * <p/>
  * Operations in this class write logs. These can be obtained from the
  * OperationResultParcel return values directly, but are also accumulated over
  * the lifetime of the executing ProviderHelper object unless the resetLog()
  * method is called to start a new one specifically.
- *
  */
 public class ProviderHelper {
     private final Context mContext;
@@ -126,12 +128,13 @@ public class ProviderHelper {
     }
 
     public void log(LogType type) {
-        if(mLog != null) {
+        if (mLog != null) {
             mLog.add(type, mIndent);
         }
     }
+
     public void log(LogType type, Object... parameters) {
-        if(mLog != null) {
+        if (mLog != null) {
             mLog.add(type, mIndent, parameters);
         }
     }
@@ -213,7 +216,7 @@ public class ProviderHelper {
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
-        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
                 KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED,
@@ -288,7 +291,7 @@ public class ProviderHelper {
                 boolean hasAnySecret = cursor.getInt(0) > 0;
                 int verified = cursor.getInt(1);
                 byte[] blob = cursor.getBlob(2);
-                if(secret &! hasAnySecret) {
+                if (secret & !hasAnySecret) {
                     throw new NotFoundException("Secret key not available!");
                 }
                 return secret
@@ -305,7 +308,7 @@ public class ProviderHelper {
     }
 
     // bits, in order: CESA. make SURE these are correct, we will get bad log entries otherwise!!
-    static final LogType LOG_TYPES_FLAG_MASTER[] = new LogType[] {
+    static final LogType LOG_TYPES_FLAG_MASTER[] = new LogType[]{
             LogType.MSG_IP_MASTER_FLAGS_XXXX, LogType.MSG_IP_MASTER_FLAGS_CXXX,
             LogType.MSG_IP_MASTER_FLAGS_XEXX, LogType.MSG_IP_MASTER_FLAGS_CEXX,
             LogType.MSG_IP_MASTER_FLAGS_XXSX, LogType.MSG_IP_MASTER_FLAGS_CXSX,
@@ -317,7 +320,7 @@ public class ProviderHelper {
     };
 
     // same as above, but for subkeys
-    static final LogType LOG_TYPES_FLAG_SUBKEY[] = new LogType[] {
+    static final LogType LOG_TYPES_FLAG_SUBKEY[] = new LogType[]{
             LogType.MSG_IP_SUBKEY_FLAGS_XXXX, LogType.MSG_IP_SUBKEY_FLAGS_CXXX,
             LogType.MSG_IP_SUBKEY_FLAGS_XEXX, LogType.MSG_IP_SUBKEY_FLAGS_CEXX,
             LogType.MSG_IP_SUBKEY_FLAGS_XXSX, LogType.MSG_IP_SUBKEY_FLAGS_CXSX,
@@ -328,8 +331,9 @@ public class ProviderHelper {
             LogType.MSG_IP_SUBKEY_FLAGS_XESA, LogType.MSG_IP_SUBKEY_FLAGS_CESA
     };
 
-    /** Saves an UncachedKeyRing of the public variant into the db.
-     *
+    /**
+     * Saves an UncachedKeyRing of the public variant into the db.
+     * <p/>
      * This method will not delete all previous data for this masterKeyId from the database prior
      * to inserting. All public data is effectively re-inserted, secret keyrings are left deleted
      * and need to be saved externally to be preserved past the operation.
@@ -403,7 +407,7 @@ public class ProviderHelper {
                         if (key.getKeyUsage() == null) {
                             log(LogType.MSG_IP_MASTER_FLAGS_UNSPECIFIED);
                         } else {
-                            log(LOG_TYPES_FLAG_MASTER[(c?1:0) + (e?2:0) + (s?4:0) + (a?8:0)]);
+                            log(LOG_TYPES_FLAG_MASTER[(c ? 1 : 0) + (e ? 2 : 0) + (s ? 4 : 0) + (a ? 8 : 0)]);
                         }
                     } else {
                         if (key.getKeyUsage() == null) {
@@ -492,7 +496,7 @@ public class ProviderHelper {
                     try {
                         cert.init(trustedKey);
                         // if it doesn't certify, leave a note and skip
-                        if ( ! cert.verifySignature(masterKey, rawUserId)) {
+                        if (!cert.verifySignature(masterKey, rawUserId)) {
                             log(LogType.MSG_IP_UID_CERT_BAD);
                             continue;
                         }
@@ -537,7 +541,7 @@ public class ProviderHelper {
 
             ArrayList<WrappedUserAttribute> userAttributes = masterKey.getUnorderedUserAttributes();
             // Don't spam the log if there aren't even any attributes
-            if ( ! userAttributes.isEmpty()) {
+            if (!userAttributes.isEmpty()) {
                 log(LogType.MSG_IP_UAT_CLASSIFYING);
             }
 
@@ -592,7 +596,7 @@ public class ProviderHelper {
                     try {
                         cert.init(trustedKey);
                         // if it doesn't certify, leave a note and skip
-                        if ( ! cert.verifySignature(masterKey, userAttribute)) {
+                        if (!cert.verifySignature(masterKey, userAttribute)) {
                             log(LogType.MSG_IP_UAT_CERT_BAD);
                             continue;
                         }
@@ -660,7 +664,7 @@ public class ProviderHelper {
                         selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
 
                 // iterate over signatures
-                for (int i = 0; i < item.trustedCerts.size() ; i++) {
+                for (int i = 0; i < item.trustedCerts.size(); i++) {
                     WrappedSignature sig = item.trustedCerts.valueAt(i);
                     // if it's a revocation
                     if (sig.isRevocation()) {
@@ -725,7 +729,7 @@ public class ProviderHelper {
         public int compareTo(UserPacketItem o) {
             // revoked keys always come last!
             //noinspection DoubleNegation
-            if ( (selfRevocation != null) != (o.selfRevocation != null)) {
+            if ((selfRevocation != null) != (o.selfRevocation != null)) {
                 return selfRevocation != null ? 1 : -1;
             }
             // if one is a user id, but the other isn't, the user id always comes first.
@@ -742,7 +746,8 @@ public class ProviderHelper {
         }
     }
 
-    /** Saves an UncachedKeyRing of the secret variant into the db.
+    /**
+     * Saves an UncachedKeyRing of the secret variant into the db.
      * This method will fail if no corresponding public keyring is in the database!
      */
     private int saveCanonicalizedSecretKeyRing(CanonicalizedSecretKeyRing keyRing) {
@@ -789,7 +794,7 @@ public class ProviderHelper {
                     SecretKeyType mode = sub.getSecretKeyType();
                     values.put(Keys.HAS_SECRET, mode.getNum());
                     int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
-                            new String[]{ Long.toString(id) });
+                            new String[]{Long.toString(id)});
                     if (upd == 1) {
                         switch (mode) {
                             case PASSPHRASE:
@@ -843,8 +848,9 @@ public class ProviderHelper {
         return savePublicKeyRing(keyRing, new ProgressScaler());
     }
 
-    /** Save a public keyring into the database.
-     *
+    /**
+     * Save a public keyring into the database.
+     * <p/>
      * This is a high level method, which takes care of merging all new information into the old and
      * keep public and secret keyrings in sync.
      */
@@ -949,7 +955,7 @@ public class ProviderHelper {
             log(LogType.MSG_IS, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
             mIndent += 1;
 
-            if ( ! secretRing.isSecret()) {
+            if (!secretRing.isSecret()) {
                 log(LogType.MSG_IS_BAD_TYPE_PUBLIC);
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
@@ -1417,9 +1423,13 @@ public class ProviderHelper {
         ContentValues values = new ContentValues();
         values.put(KeychainContract.ApiAccounts.ACCOUNT_NAME, accSettings.getAccountName());
         values.put(KeychainContract.ApiAccounts.KEY_ID, accSettings.getKeyId());
-        values.put(KeychainContract.ApiAccounts.COMPRESSION, accSettings.getCompression());
-        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM, accSettings.getEncryptionAlgorithm());
-        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM, accSettings.getHashAlgorithm());
+
+        // DEPRECATED and thus hardcoded
+        values.put(KeychainContract.ApiAccounts.COMPRESSION, CompressionAlgorithmTags.ZLIB);
+        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM,
+                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM,
+                PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED);
         return values;
     }
 
@@ -1475,12 +1485,6 @@ public class ProviderHelper {
                         cursor.getColumnIndex(KeychainContract.ApiAccounts.ACCOUNT_NAME)));
                 settings.setKeyId(cursor.getLong(
                         cursor.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID)));
-                settings.setCompression(cursor.getInt(
-                        cursor.getColumnIndexOrThrow(KeychainContract.ApiAccounts.COMPRESSION)));
-                settings.setHashAlgorithm(cursor.getInt(
-                        cursor.getColumnIndexOrThrow(KeychainContract.ApiAccounts.HASH_ALORITHM)));
-                settings.setEncryptionAlgorithm(cursor.getInt(
-                        cursor.getColumnIndexOrThrow(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM)));
             }
         } finally {
             if (cursor != null) {
@@ -1544,26 +1548,32 @@ public class ProviderHelper {
         }
     }
 
+    public void addAllowedKeyIdForApp(Uri uri, long allowedKeyId) {
+        ContentValues values = new ContentValues();
+        values.put(ApiAllowedKeys.KEY_ID, allowedKeyId);
+        mContentResolver.insert(uri, values);
+    }
+
     public Set<String> getAllFingerprints(Uri uri) {
-         Set<String> fingerprints = new HashSet<>();
-         String[] projection = new String[]{KeyRings.FINGERPRINT};
-         Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
-         try {
-             if(cursor != null) {
-                 int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
-                 while(cursor.moveToNext()) {
-                     fingerprints.add(
+        Set<String> fingerprints = new HashSet<>();
+        String[] projection = new String[]{KeyRings.FINGERPRINT};
+        Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
+        try {
+            if (cursor != null) {
+                int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
+                while (cursor.moveToNext()) {
+                    fingerprints.add(
                             KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
-                         );
-                     }
-                 }
-             } finally {
-             if (cursor != null) {
-                 cursor.close();
-                 }
-             }
-         return fingerprints;
-     }
+                    );
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return fingerprints;
+    }
 
     public byte[] getApiAppSignature(String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);

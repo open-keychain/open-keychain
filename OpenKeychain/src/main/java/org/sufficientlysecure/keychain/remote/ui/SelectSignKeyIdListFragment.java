@@ -17,41 +17,37 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.OperationApplicationException;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
-
-public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
+public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String ARG_DATA_URI = "uri";
+    public static final String ARG_DATA = "data";
 
     private SelectKeyCursorAdapter mAdapter;
-    private Set<Long> mSelectedMasterKeyIds;
     private ProviderHelper mProviderHelper;
 
     private Uri mDataUri;
@@ -59,11 +55,12 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     /**
      * Creates new instance of this fragment
      */
-    public static AppSettingsAllowedKeysListFragment newInstance(Uri dataUri) {
-        AppSettingsAllowedKeysListFragment frag = new AppSettingsAllowedKeysListFragment();
+    public static SelectSignKeyIdListFragment newInstance(Uri dataUri, Intent data) {
+        SelectSignKeyIdListFragment frag = new SelectSignKeyIdListFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putParcelable(ARG_DATA, data);
 
         frag.setArguments(args);
 
@@ -108,8 +105,24 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         super.onActivityCreated(savedInstanceState);
 
         mDataUri = getArguments().getParcelable(ARG_DATA_URI);
+        final Intent resultData = getArguments().getParcelable(ARG_DATA);
 
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                long masterKeyId = mAdapter.getMasterKeyId(position);
+
+                Uri allowedKeysUri = mDataUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
+                Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
+                mProviderHelper.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
+
+                resultData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
+
+                getActivity().setResult(Activity.RESULT_OK, resultData);
+                getActivity().finish();
+            }
+        });
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
@@ -122,73 +135,9 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // Start out with a progress indicator.
         setListShown(false);
 
-        mSelectedMasterKeyIds = mProviderHelper.getAllKeyIdsForApp(mDataUri);
-        Log.d(Constants.TAG, "allowed: " + mSelectedMasterKeyIds.toString());
-
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    /**
-     * Selects items based on master key ids in list view
-     *
-     * @param masterKeyIds
-     */
-    private void preselectMasterKeyIds(Set<Long> masterKeyIds) {
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            long listKeyId = mAdapter.getMasterKeyId(i);
-            for (long keyId : masterKeyIds) {
-                if (listKeyId == keyId) {
-                    getListView().setItemChecked(i, true);
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns all selected master key ids
-     *
-     * @return
-     */
-    public Set<Long> getSelectedMasterKeyIds() {
-        // mListView.getCheckedItemIds() would give the row ids of the KeyRings not the master key
-        // ids!
-        Set<Long> keyIds = new HashSet<>();
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            if (getListView().isItemChecked(i)) {
-                keyIds.add(mAdapter.getMasterKeyId(i));
-            }
-        }
-
-        return keyIds;
-    }
-
-    /**
-     * Returns all selected user ids
-     *
-     * @return
-     */
-    public String[] getSelectedUserIds() {
-        Vector<String> userIds = new Vector<>();
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            if (getListView().isItemChecked(i)) {
-                userIds.add(mAdapter.getUserId(i));
-            }
-        }
-
-        // make empty array to not return null
-        String userIdArray[] = new String[0];
-        return userIds.toArray(userIdArray);
-    }
-
-    public void saveAllowedKeys() {
-        try {
-            mProviderHelper.saveAllowedKeyIdsForApp(mDataUri, getSelectedMasterKeyIds());
-        } catch (RemoteException | OperationApplicationException e) {
-            Log.e(Constants.TAG, "Problem saving allowed key ids!", e);
-        }
     }
 
     @Override
@@ -209,26 +158,9 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
                 KeyRings.CREATION,
         };
 
-        String inMasterKeyList = null;
-        if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.size() > 0) {
-            inMasterKeyList = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN (";
-            Iterator iter = mSelectedMasterKeyIds.iterator();
-            while (iter.hasNext()) {
-                inMasterKeyList += DatabaseUtils.sqlEscapeString("" + iter.next());
-                if (iter.hasNext()) {
-                    inMasterKeyList += ", ";
-                }
-            }
-            inMasterKeyList += ")";
-        }
-
         String selection = KeyRings.HAS_ANY_SECRET + " != 0";
 
         String orderBy = KeyRings.USER_ID + " ASC";
-        if (inMasterKeyList != null) {
-            // sort by selected master keys
-            orderBy = inMasterKeyList + " DESC, " + orderBy;
-        }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), baseUri, projection, selection, null, orderBy);
@@ -247,8 +179,6 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
             setListShownNoAnimation(true);
         }
 
-        // preselect given master keys
-        preselectMasterKeyIds(mSelectedMasterKeyIds);
     }
 
     @Override
@@ -275,17 +205,13 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
             super.bindView(view, context, cursor);
             ViewHolderItem h = (ViewHolderItem) view.getTag();
 
-            // We care about the checkbox
-            h.selected.setVisibility(View.VISIBLE);
-            // the getListView works because this is not a static subclass!
-            h.selected.setChecked(getListView().isItemChecked(cursor.getPosition()));
+            h.selected.setVisibility(View.GONE);
 
             boolean enabled = false;
             if ((Boolean) h.statusIcon.getTag()) {
                 h.statusIcon.setVisibility(View.GONE);
                 enabled = true;
             }
-
             h.setEnabled(enabled);
         }
 

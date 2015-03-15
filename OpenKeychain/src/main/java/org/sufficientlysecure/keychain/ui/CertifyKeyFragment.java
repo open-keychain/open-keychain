@@ -394,7 +394,7 @@ public class CertifyKeyFragment extends LoaderFragment
                     // handle messages by standard KeychainIntentServiceHandler first
                     super.handleMessage(message);
 
-                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                         Bundle data = message.getData();
                         CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 

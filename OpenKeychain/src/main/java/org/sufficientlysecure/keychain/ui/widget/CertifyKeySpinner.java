@@ -68,7 +68,9 @@ public class CertifyKeySpinner extends KeySpinner {
                 KeychainContract.KeyRings.IS_REVOKED,
                 KeychainContract.KeyRings.IS_EXPIRED,
                 KeychainContract.KeyRings.HAS_CERTIFY,
-                KeychainContract.KeyRings.HAS_ANY_SECRET
+                KeychainContract.KeyRings.HAS_ANY_SECRET,
+                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                KeychainContract.KeyRings.CREATION
         };
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
@@ -91,15 +93,30 @@ public class CertifyKeySpinner extends KeySpinner {
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
             mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
 
-            // If there is only one choice, pick it by default
-            if (mAdapter.getCount() == 2) {
+            // If:
+            // - no key has been pre-selected (e.g. by SageSlinger)
+            // - there are actually keys (not just "none" entry)
+            // Then:
+            // - select key that is capable of certifying, but only if there is only one key capable of it
+            if (mSelectedKeyId == Constants.key.none && mAdapter.getCount() > 1) {
                 // preselect if key can certify
-                if (data.moveToPosition(0) && !data.isNull(mIndexHasCertify)) {
-                    setSelection(1);
+                int selection = -1;
+                while (data.moveToNext()) {
+                    if (!data.isNull(mIndexHasCertify)) {
+                        if (selection == -1) {
+                            selection = data.getPosition() + 1;
+                        } else {
+                            // if selection is already set, we have more than one certify key!
+                            // get back to "none"!
+                            selection = 0;
+                        }
+                    }
                 }
+                setSelection(selection);
             }
         }
     }
+
 
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {

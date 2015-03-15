@@ -113,7 +113,7 @@ public class UploadKeyActivity extends BaseActivity {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
 
                     Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
                             Toast.LENGTH_SHORT).show();

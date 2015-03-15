@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -34,18 +33,22 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DeleteFileDialogFragment extends DialogFragment {
-    private static final String ARG_DELETE_URI = "delete_uri";
+    private static final String ARG_DELETE_URIS = "delete_uris";
+
+    private OnDeletedListener onDeletedListener;
 
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteFileDialogFragment newInstance(Uri deleteUri) {
+    public static DeleteFileDialogFragment newInstance(Uri... deleteUris) {
         DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(ARG_DELETE_URI, deleteUri);
+        args.putParcelableArray(ARG_DELETE_URIS, deleteUris);
 
         frag.setArguments(args);
 
@@ -59,12 +62,21 @@ public class DeleteFileDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        final Uri deleteUri = getArguments().getParcelable(ARG_DELETE_URI);
-        final String deleteFilename = FileHelper.getFilename(getActivity(), deleteUri);
+        final Uri[] deleteUris = (Uri[]) getArguments().getParcelableArray(ARG_DELETE_URIS);
+
+        final StringBuilder deleteFileNames = new StringBuilder();
+        //Retrieving file names after deletion gives unexpected results
+        final HashMap<Uri, String> deleteFileNameMap = new HashMap<>();
+        for (Uri deleteUri : deleteUris) {
+            String deleteFileName = FileHelper.getFilename(getActivity(), deleteUri);
+            deleteFileNames.append('\n').append(deleteFileName);
+            deleteFileNameMap.put(deleteUri, deleteFileName);
+        }
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFilename));
+        alert.setTitle(getString(R.string.file_delete_confirmation_title));
+        alert.setMessage(getString(R.string.file_delete_confirmation, deleteFileNames.toString()));
 
         alert.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
@@ -72,43 +84,55 @@ public class DeleteFileDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
+                ArrayList<String> failedFileNameList = new ArrayList<>();
+
+                for (Uri deleteUri : deleteUris) {
+                    // Use DocumentsContract on Android >= 4.4
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        try {
+                            if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
+                                continue;
+                            }
+                        } catch (Exception e) {
+                            Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
+                        }
+                    }
+
+                    try {
+                        if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
+                    }
+
+                    // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
+                    // via the path of the Uri
+                    if (new File(deleteUri.getPath()).delete()) {
+                        continue;
+                    }
+
+                    // Note: We can't delete every file...
+                    failedFileNameList.add(deleteFileNameMap.get(deleteUri));
+                }
+
+                StringBuilder failedFileNames = new StringBuilder();
+                if (!failedFileNameList.isEmpty()) {
+                    for (String failedFileName : failedFileNameList) {
+                        failedFileNames.append('\n').append(failedFileName);
+                    }
+                    failedFileNames.append('\n').append(getActivity().getString(R.string.error_file_delete_failed));
+                }
+
                 // NOTE: Use Toasts, not Snackbars. When sharing to another application snackbars
                 // would not show up!
+                Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
+                                deleteUris.length - failedFileNameList.size(), deleteUris.length, failedFileNames.toString()),
+                        Toast.LENGTH_LONG).show();
 
-                // Use DocumentsContract on Android >= 4.4
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    try {
-                        if (DocumentsContract.deleteDocument(getActivity().getContentResolver(), deleteUri)) {
-                            Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
-                                    deleteFilename), Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    } catch (UnsupportedOperationException e) {
-                        Log.d(Constants.TAG, "Catched UnsupportedOperationException, can happen when delete is not supported!", e);
-                    }
+                if (onDeletedListener != null) {
+                    onDeletedListener.onDeleted();
                 }
-
-                try {
-                    if (getActivity().getContentResolver().delete(deleteUri, null, null) > 0) {
-                        Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
-                                deleteFilename), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                } catch (UnsupportedOperationException e) {
-                    Log.d(Constants.TAG, "Catched UnsupportedOperationException, can happen when delete is not supported!", e);
-                }
-
-                // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete
-                // via the path of the Uri
-                if (new File(deleteUri.getPath()).delete()) {
-                    Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
-                            deleteFilename), Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                // Note: We can't delete every file...
-                Toast.makeText(getActivity(), getActivity().getString(R.string.error_file_delete_failed,
-                        deleteFilename), Toast.LENGTH_LONG).show();
             }
         });
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -120,4 +144,18 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         return alert.show();
     }
+
+    public void setOnDeletedListener(OnDeletedListener onDeletedListener) {
+        this.onDeletedListener = onDeletedListener;
+    }
+
+    /**
+     * Callback for performing tasks after the deletion of files
+     */
+    public interface OnDeletedListener {
+
+        public void onDeleted();
+
+    }
+
 }

@@ -56,6 +56,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.List;
+
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -67,7 +69,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     //private ListView mLinkedSystemContact;
 
     boolean mIsSecret = false;
-    private String mName;
+    boolean mSystemContactLoaded = false;
 
     LinearLayout mSystemContactLayout;
     ImageView mSystemContactPicture;
@@ -209,28 +211,48 @@ public class ViewKeyFragment extends LoaderFragment implements
     /**
      * Checks if a system contact exists for given masterKeyId, and if it does, sets name, picture
      * and onClickListener for the linked system contact's layout
+     * In the case of a secret key, "me" contact details are loaded
      *
-     * @param name
      * @param masterKeyId
      */
-    private void loadLinkedSystemContact(String name, final long masterKeyId) {
+    private void loadLinkedSystemContact(final long masterKeyId) {
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();
 
-        final long contactId = ContactHelper.findContactId(resolver, masterKeyId);
+        long contactId;
+        String contactName = null;
 
-        if (contactId != -1) {//contact exists for given master key
-            mSystemContactName.setText(name);
+        if (mIsSecret) {//all secret keys are linked to "me" profile in contacts
+            contactId = ContactHelper.getMainProfileContactId(resolver);
+            List<String> mainProfileNames = ContactHelper.getMainProfileContactName(context);
+            if (mainProfileNames != null && mainProfileNames.size() > 0) {
+                contactName = mainProfileNames.get(0);
+            }
 
-            Bitmap picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, true);
+        } else {
+            contactId = ContactHelper.findContactId(resolver, masterKeyId);
+            contactName = ContactHelper.getContactName(resolver, contactId);
+        }
+
+        if (contactName != null) {//contact name exists for given master key
+            mSystemContactName.setText(contactName);
+
+            Bitmap picture;
+            if (mIsSecret) {
+                picture = ContactHelper.loadMainProfilePhoto(resolver, false);
+            } else {
+                picture = ContactHelper.loadPhotoByMasterKeyId(resolver, masterKeyId, false);
+            }
             if (picture != null) mSystemContactPicture.setImageBitmap(picture);
 
+            final long finalContactId = contactId;
             mSystemContactLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    launchContactActivity(contactId, context);
+                    launchContactActivity(finalContactId, context);
                 }
             });
+            mSystemContactLoaded = true;
         }
     }
 
@@ -291,10 +313,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_USER_IDS: {
                 mUserIdsAdapter.swapCursor(cursor);
-
-                String guessedName = mUserIdsAdapter.getGuessedName();
-                loadLinkedSystemContact(guessedName,
-                        KeyFormattingUtils.convertFingerprintToKeyId(mFingerprint));
+                loadLinkedSystemContact(KeyFormattingUtils.convertFingerprintToKeyId(mFingerprint));
                 break;
             }
 

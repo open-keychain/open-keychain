@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -182,10 +183,10 @@ public class DecryptFilesFragment extends DecryptFragment {
         // data
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
-        data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
+        data.putInt(KeychainIntentService.SOURCE, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
 
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
+        data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
@@ -200,7 +201,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
@@ -256,10 +257,10 @@ public class DecryptFilesFragment extends DecryptFragment {
         // data
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
-        data.putInt(KeychainIntentService.SOURCE, KeychainIntentService.IO_URI);
+        data.putInt(KeychainIntentService.SOURCE, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
 
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.IO_URI);
+        data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
@@ -274,7 +275,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 

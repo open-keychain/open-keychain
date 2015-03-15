@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Вибрати ключі</string>
   <string name="title_select_secret_key">Виберіть ваш ключ</string>
-  <string name="title_encrypt_text">Зашифрувати текст…</string>
-  <string name="title_encrypt_files">Зашифрувати файли</string>
   <string name="title_decrypt">Розшифрувати</string>
   <string name="title_add_subkey">Додати підключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
@@ -17,7 +15,6 @@
   <string name="title_share_fingerprint_with">Поділитися відбитком із…</string>
   <string name="title_share_key">Поділитися ключем з…</string>
   <string name="title_share_file">Поширити файл з…</string>
-  <string name="title_share_message">Поширити повідомлення із…</string>
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
@@ -26,7 +23,6 @@
   <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
-  <string name="title_certify_key">Сертифікувати сутності</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <string name="title_log_display">Журнал</string>
@@ -41,20 +37,16 @@
   <string name="section_defaults">Типове</string>
   <string name="section_advanced">Додаткове</string>
   <string name="section_passphrase_cache">Кеш парольної фрази</string>
-  <string name="section_certify">Сертифікувати</string>
   <string name="section_actions">Дії</string>
   <string name="section_share_key">Ключ</string>
-  <string name="section_certification_key">Ваш ключ використаний для сертифікації</string>
   <string name="section_upload_key">Синхронізувати ключ</string>
   <string name="section_key_server">Сервер ключів</string>
   <string name="section_fingerprint">Відбиток</string>
-  <string name="section_key_to_certify">Ключ для сертикації</string>
   <string name="section_decrypt_files">Файли</string>
   <string name="section_decrypt_text">Текст</string>
   <string name="section_certs">Сертифікати</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Розшифрувати, перевірити та зберегти файл</string>
-  <string name="btn_decrypt_verify_message">Розшифрувати і перевірити повідомлення</string>
   <string name="btn_encrypt_file">Шифрувати і зберегти файл</string>
   <string name="btn_encrypt_share_file">Зашифрувати та поширити файл</string>
   <string name="btn_save">Зберегти</string>
@@ -66,7 +58,6 @@
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
   <string name="btn_lookup_key">Шукати ключ</string>
-  <string name="btn_share_encrypted_signed">Зашифрувати і поширити повідомлення</string>
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
@@ -89,7 +80,6 @@
   <string name="menu_export_all_keys">Експортувати усі ключі</string>
   <string name="menu_advanced">Показати додаткову інформацію</string>
   <!--label-->
-  <string name="label_message">Повідомлення</string>
   <string name="label_file">Файл</string>
   <string name="label_files">Файл(и)</string>
   <string name="label_file_colon">Файл:</string>
@@ -114,7 +104,6 @@
   <string name="label_symmetric">Зашифрувати з парольною фразою</string>
   <string name="label_passphrase_cache_ttl">Кешувати час</string>
   <string name="label_passphrase_cache_subs">Кешувати парольні фрази за підключем</string>
-  <string name="label_message_compression">Стиснення повідомлення</string>
   <string name="label_file_compression">Стиснення файлу</string>
   <string name="label_keyservers">Сервери ключів</string>
   <string name="label_key_id">ІД ключа</string>
@@ -134,13 +123,6 @@
   <string name="label_preferred">бажаний</string>
   <string name="user_id_no_name">&lt;без імені&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
-  <string name="no_key">&lt;без ключа&gt;</string>
-  <string name="can_encrypt">можна зашифрувати</string>
-  <string name="can_sign">можна підписати</string>
-  <string name="can_certify">можна сертифікувати</string>
-  <string name="can_certify_not">не можна сертифікувати</string>
-  <string name="expired">закінчився</string>
-  <string name="revoked">скасовано</string>
   <plurals name="n_keys">
     <item quantity="one">1 ключ</item>
     <item quantity="few">%d ключі</item>
@@ -172,7 +154,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Відкрити…</string>
-  <string name="warning">Попередження</string>
   <string name="error">Помилка</string>
   <string name="error_message">Помилка: %s</string>
   <!--key flags-->
@@ -187,20 +168,14 @@
   <string name="passphrase_must_not_be_empty">Будь ласка, введіть парольну фразу.</string>
   <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="passphrase_for">Введіть парольну фразу для \'%s\'</string>
-  <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
-  <string name="file_delete_successful">Успішно вилучено.</string>
-  <string name="no_file_selected">Виберіть спершу файл.</string>
+    <string name="no_file_selected">Виберіть спершу файл.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
-  <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
   <string name="specify_file_to_encrypt_to">Будь ласка, виберіть файл для шифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
   <string name="specify_file_to_decrypt_to">Будь ласка, виберіть файл для розшифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
   <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
-  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані відкриті ключі?\nВи не зможете це відмінити!</string>
-  <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
-  <string name="public_key_deletetion_confirmation">Ви справді хочете вилучити відкритий ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
@@ -219,13 +194,11 @@
   <string name="nfc_successful">Успішно надіслано ключ через промінь NFC!</string>
   <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
   <string name="fingerprint_copied_to_clipboard">Відбиток вже скопійовано до буфера обміну!</string>
-  <string name="select_key_to_certify">Будь ласка, виберіть ключ для використання у сертифікації!</string>
   <string name="key_too_big_for_sharing">Ключ надто великий для цього способу поширення!</string>
   <string name="text_copied_to_clipboard">Текст вже скопійовано у буфер обміну!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">вилучення \'%s\' провалилося</string>
   <string name="error_file_not_found">файл не знайдено</string>
   <string name="error_no_secret_key_found">відповідного секретного ключа не знайдено</string>
   <string name="error_external_storage_not_ready">зовнішній носій не готовий</string>
@@ -303,7 +276,6 @@
   <string name="progress_con_saving">consolidate: зберігається у кеші…</string>
   <string name="progress_con_reimport">consolidate: повторний імпорт…</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Назва/Ел. пошта/ІД ключа…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -331,7 +303,6 @@
   <!--Help-->
   <string name="help_tab_start">Початок</string>
   <string name="help_tab_faq">ЧАП</string>
-  <string name="help_tab_wot">Мережа довіри</string>
   <string name="help_tab_nfc_beam">NFC промінь</string>
   <string name="help_tab_changelog">Журнал змін</string>
   <string name="help_tab_about">Про</string>
@@ -416,7 +387,6 @@
   <string name="key_view_action_edit">Редагувати ключ</string>
   <string name="key_view_action_encrypt">Зашифрувати текст</string>
   <string name="key_view_action_encrypt_files">файли</string>
-  <string name="key_view_action_certify">Сертифікувати сутності</string>
   <string name="key_view_action_update">Оновити із сервера ключів</string>
   <string name="key_view_action_share_with">Поділитися із…</string>
   <string name="key_view_action_share_nfc">Поділитися через NFC</string>
@@ -445,12 +415,9 @@
   <string name="edit_key_error_add_identity">Додати хоча б одну сутність!</string>
   <string name="edit_key_error_add_subkey">Додати хоча б один підключ!</string>
   <!--Create key-->
-  <string name="create_key_upload">Відвантажити ключ на сервер ключів</string>
   <string name="create_key_empty">Це поле - обов\'язкове</string>
   <string name="create_key_passphrases_not_equal">Паролі фрази не збігаються</string>
   <string name="create_key_final_text">Ви ввели наступну сутність:</string>
-  <string name="create_key_identity_text">Введіть ваше повне ім\'я, електронну адреса та оберіть парольну фразу.</string>
-  <string name="create_key_hint_full_name">Повне ім\'я, наприклад Степан Бандера</string>
   <!--View key-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключі</string>
@@ -584,10 +551,8 @@
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_file">Назва файла: %s</string>
   <string name="msg_dc_clear_meta_mime">Тип MIME: %s</string>
-  <string name="msg_dc_clear_meta_size">Розмір файла: %s</string>
   <string name="msg_dc_clear_meta_time">Час зміни: %s</string>
   <string name="msg_dc_error_integrity_check">Помилка перевірки цілісності!</string>
-  <string name="msg_dc_ok">Гаразд</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
@@ -596,6 +561,7 @@
     <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
     <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
   </plurals>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Клацніть для очищення кешованих парольних фраз</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain має %d кешованих парольних фраз</string>
@@ -612,7 +578,6 @@
   <string name="unknown_uid">&lt;невідомо&gt;</string>
   <string name="empty_certs">Немає сертифікатів для цього ключа</string>
   <string name="label_revocation">Причина відхилення</string>
-  <string name="label_verify_status">Стан перевірки</string>
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Ключ не знайдено!</string>
   <string name="error_key_processing">Помилка опрацювання ключа!</string>
@@ -623,7 +588,8 @@
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

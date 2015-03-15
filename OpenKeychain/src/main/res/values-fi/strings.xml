@@ -5,8 +5,6 @@
   <!--title-->
   <string name="title_select_recipients">Valitse Avaimet</string>
   <string name="title_select_secret_key">Valitse Oma Avain</string>
-  <string name="title_encrypt_text">Salaa Tekstiä</string>
-  <string name="title_encrypt_files">Salaa Tiedostoja</string>
   <string name="title_decrypt">Pura Salaus</string>
   <string name="title_unlock">Avaa Avain</string>
   <string name="title_add_subkey">Lisää aliavain</string>
@@ -18,7 +16,6 @@
   <string name="title_share_fingerprint_with">Jaa sormenjälki...</string>
   <string name="title_share_key">Jaa avain...</string>
   <string name="title_share_file">Jaa tiedosto...</string>
-  <string name="title_share_message">Jaa viesti...</string>
   <string name="title_encrypt_to_file">Salaa Tiedostoon</string>
   <string name="title_decrypt_to_file">Pura Tiedostoon</string>
   <string name="title_import_keys">Tuo Avaimia</string>
@@ -27,7 +24,6 @@
   <string name="title_export_keys">Vie Avaimia</string>
   <string name="title_key_not_found">Avainta Ei Löydy</string>
   <string name="title_send_key">Lähetä Avainpalvelimelle</string>
-  <string name="title_certify_key">Varmenna Identiteetit</string>
   <string name="title_key_details">Avaimen Tiedot</string>
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
@@ -42,20 +38,16 @@
   <string name="section_defaults">Vakiot</string>
   <string name="section_advanced">Lisäasetukset</string>
   <string name="section_passphrase_cache">Salasanavälimuisti</string>
-  <string name="section_certify">Varmenna</string>
   <string name="section_actions">Toiminteet</string>
   <string name="section_share_key">Avain</string>
-  <string name="section_certification_key">Varmentamiseen käytetty Avaimesi</string>
   <string name="section_upload_key">Synkronoi Avain</string>
   <string name="section_key_server">Avainpalvelin</string>
   <string name="section_fingerprint">Sormenjälki</string>
-  <string name="section_key_to_certify">Varmennettava avain</string>
   <string name="section_decrypt_files">Tiedostot</string>
   <string name="section_decrypt_text">Teksti</string>
   <string name="section_certs">Varmenteet</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
-  <string name="btn_decrypt_verify_message">Pura ja todenna viesti</string>
   <string name="btn_encrypt_file">Salaa ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
   <string name="btn_save">Tallenna</string>
@@ -67,7 +59,6 @@
   <string name="btn_next">Seuraava</string>
   <string name="btn_back">Takaisin</string>
   <string name="btn_lookup_key">Etsi avain</string>
-  <string name="btn_share_encrypted_signed">Salaa ja jaa viesti</string>
   <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
@@ -91,7 +82,6 @@
   <string name="menu_export_all_keys">Vie kaikki avaimet</string>
   <string name="menu_advanced">Näytä lisäinformaatio</string>
   <!--label-->
-  <string name="label_message">Viesti</string>
   <string name="label_file">Tiedosto</string>
   <string name="label_files">Tiedosto(t)</string>
   <string name="label_file_colon">Tiedosto:</string>
@@ -116,7 +106,6 @@
   <string name="label_symmetric">Salaa salasanalla</string>
   <string name="label_passphrase_cache_ttl">Välimuistiaika</string>
   <string name="label_passphrase_cache_subs">Väliaikaistalleta salasanat aliavaimen mukaan</string>
-  <string name="label_message_compression">Viestin pakkaus</string>
   <string name="label_file_compression">Tiedoston pakkaus</string>
   <string name="label_keyservers">Avainpalvelimet</string>
   <string name="label_key_id">Avaimen ID</string>
@@ -136,13 +125,6 @@
   <string name="label_preferred">ensisijainen</string>
   <string name="user_id_no_name">&lt;ei nimeä&gt;</string>
   <string name="none">&lt;ei mitään&gt;</string>
-  <string name="no_key">&lt;ei avainta&gt;</string>
-  <string name="can_encrypt">voi salata</string>
-  <string name="can_sign">voi allekirjoittaa</string>
-  <string name="can_certify">voi varmentaa</string>
-  <string name="can_certify_not">ei voi varmentaa</string>
-  <string name="expired">umpeutunut</string>
-  <string name="revoked">peruutettu</string>
   <plurals name="n_keys">
     <item quantity="one">1 avain</item>
     <item quantity="other">%d avainta</item>
@@ -172,7 +154,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Avaa...</string>
-  <string name="warning">Varoitus</string>
   <string name="error">Virhe</string>
   <string name="error_message">Virhe: %s</string>
   <!--key flags-->
@@ -188,9 +169,11 @@
   <string name="passphrase_for_symmetric_encryption">Symmetrinen salaus.</string>
   <string name="passphrase_for">Syötä salasana \'%s\':lle</string>
   <string name="pin_for">Syötä PIN \'%s\':lle</string>
-  <!--errors
-         no punctuation, all lowercase,
-         they will be put after "error_message", e.g. "Error: file not found"-->
+    <string name="file_delete_successful"></string>
+    <string name="file_delete_confirmation"></string>
+    <!--errors
+           no punctuation, all lowercase,
+           they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
@@ -237,6 +220,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->
   <!--unsorted-->

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,9 +154,9 @@ public abstract class RemoteService extends Service {
     }
 
     /**
-     * Retrieves AccountSettings from database for the application calling this remote service
+     * DEPRECATED API
      *
-     * @return
+     * Retrieves AccountSettings from database for the application calling this remote service
      */
     protected AccountSettings getAccSettings(String accountName) {
         String currentPkg = getCurrentCallingPackage();
@@ -164,11 +164,12 @@ public abstract class RemoteService extends Service {
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
-        AccountSettings settings = mProviderHelper.getApiAccountSettings(uri);
-
-        return settings; // can be null!
+        return mProviderHelper.getApiAccountSettings(uri); // can be null!
     }
 
+    /**
+     * Deprecated API
+     */
     protected Intent getCreateAccountIntent(Intent data, String accountName) {
         String packageName = getCurrentCallingPackage();
         Log.d(Constants.TAG, "getCreateAccountIntent accountName: " + accountName);

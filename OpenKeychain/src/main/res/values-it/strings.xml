@@ -6,8 +6,6 @@
   <!--title-->
   <string name="title_select_recipients">Seleziona chiavi</string>
   <string name="title_select_secret_key">Seleziona la tua chiave</string>
-  <string name="title_encrypt_text">Testo cifrato</string>
-  <string name="title_encrypt_files">File cifrati</string>
   <string name="title_decrypt">Decodifica</string>
   <string name="title_add_subkey">Aggiungi Sottochiave</string>
   <string name="title_edit_key">Modifica Chiave</string>
@@ -17,7 +15,6 @@
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
   <string name="title_share_key">Condividi chiave con...</string>
   <string name="title_share_file">Condividi file con...</string>
-  <string name="title_share_message">Condividi messaggio con...</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
   <string name="title_import_keys">Importa Chiavi</string>
@@ -26,7 +23,6 @@
   <string name="title_export_keys">Esporta Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
   <string name="title_send_key">Carica sul Server delle Chiavi</string>
-  <string name="title_certify_key">Certifica identità</string>
   <string name="title_key_details">Dettagli Chiave</string>
   <string name="title_help">Aiuto</string>
   <string name="title_log_display">Registro</string>
@@ -41,20 +37,16 @@
   <string name="section_defaults">Predefiniti</string>
   <string name="section_advanced">Avanzato</string>
   <string name="section_passphrase_cache">Cache Frase di Accesso</string>
-  <string name="section_certify">Certifica</string>
   <string name="section_actions">Azioni</string>
   <string name="section_share_key">Chiave</string>
-  <string name="section_certification_key">La Tua Chiave usata per la certificazione</string>
   <string name="section_upload_key">Sincronizza Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_fingerprint">Impronta</string>
-  <string name="section_key_to_certify">Chiave da certificare</string>
   <string name="section_decrypt_files">Files</string>
   <string name="section_decrypt_text">Testo</string>
   <string name="section_certs">Certificati</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Decodifica, verifica e salva su file</string>
-  <string name="btn_decrypt_verify_message">Decodifica e verifica messaggio</string>
   <string name="btn_encrypt_file">Codifica e salva file</string>
   <string name="btn_encrypt_share_file">Codifica e condividi file</string>
   <string name="btn_save">Salva</string>
@@ -66,7 +58,6 @@
   <string name="btn_next">Prossimo</string>
   <string name="btn_back">Precedente</string>
   <string name="btn_lookup_key">Chiave di ricerca</string>
-  <string name="btn_share_encrypted_signed">Codifica e condividi messaggio</string>
   <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <string name="btn_create_key">Crea chiave</string>
   <string name="btn_add_files">Aggiungi file(s)</string>
@@ -89,7 +80,6 @@
   <string name="menu_export_all_keys">Esporta tutte le chiavi</string>
   <string name="menu_advanced">Mostra informazioni avanzate</string>
   <!--label-->
-  <string name="label_message">Messaggio</string>
   <string name="label_file">File</string>
   <string name="label_files">File(s)</string>
   <string name="label_file_colon">File:</string>
@@ -112,7 +102,6 @@
   <string name="label_hash_algorithm">Algoritmo Hash</string>
   <string name="label_symmetric">Cifra con password</string>
   <string name="label_passphrase_cache_subs">Memorizza password tramite sottochiave</string>
-  <string name="label_message_compression">Compressione messaggio</string>
   <string name="label_file_compression">Compressione file</string>
   <string name="label_keyservers">Server Chiavi</string>
   <string name="label_key_id">ID Chiave</string>
@@ -132,13 +121,6 @@
   <string name="label_preferred">preferiti</string>
   <string name="user_id_no_name">&lt;nessun nome&gt;</string>
   <string name="none">&lt;nessuno&gt;</string>
-  <string name="no_key">&lt;nessuna chiave&gt;</string>
-  <string name="can_encrypt">puo\' codificare</string>
-  <string name="can_sign">puo\' firmare</string>
-  <string name="can_certify">può certificare</string>
-  <string name="can_certify_not">non può certificare</string>
-  <string name="expired">scaduto</string>
-  <string name="revoked">revocato</string>
   <plurals name="n_keys">
     <item quantity="one">1 chiave</item>
     <item quantity="other">%d chiavi</item>
@@ -168,7 +150,6 @@
   <string name="ecdh">ECDH</string>
   <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">Apri...</string>
-  <string name="warning">Attenzione</string>
   <string name="error">Errore</string>
   <string name="error_message">Errore: %s</string>
   <!--key flags-->
@@ -183,12 +164,9 @@
   <string name="passphrase_must_not_be_empty">Si prega di inserire una frase di accesso.</string>
   <string name="passphrase_for_symmetric_encryption">Codifica Simmetrica.</string>
   <string name="passphrase_for">Inserisci la frase di accesso per \'%s\'</string>
-  <string name="file_delete_confirmation">Sei sicuro di voler eliminare\n%s?</string>
-  <string name="file_delete_successful">Eliminato correttamente.</string>
-  <string name="no_file_selected">Seleziona un file prima.</string>
+    <string name="no_file_selected">Seleziona un file prima.</string>
   <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
   <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
-  <string name="enter_passphrase_twice">Inserisci la frase di accesso due volte.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
   <string name="specify_file_to_encrypt_to">Perfavore specifica il file da codificare.
@@ -197,12 +175,6 @@ ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
 ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
   <string name="specify_file_to_export_to">Perfavore specifica il file da esportare.
 ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
-  <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi pubbliche selezionate?
-Non potrai annullare!</string>
-  <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?
-Non potrai annullare!</string>
-  <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave pubblica \'%s\'?
-Non potrai annullare!</string>
   <string name="also_export_secret_keys">Esporta anche chiave segreta</string>
   <string name="reinstall_openkeychain">Hai riscontrato un bug noto con Android. Si prega di reinstallare OpenKeychain se vuoi collegare i tuoi contatti con le chiavi.</string>
   <string name="key_exported">1 chiave esportata correttamente.</string>
@@ -218,13 +190,11 @@ Non potrai annullare!</string>
   <string name="nfc_successful">Chiave correttamente inviata tramite NFC Beam!</string>
   <string name="key_copied_to_clipboard">Chiave copiata negli appunti!</string>
   <string name="fingerprint_copied_to_clipboard">Impronta copiata negli appunti!</string>
-  <string name="select_key_to_certify">Per favore seleziona una chiave per la certificazione!</string>
   <string name="key_too_big_for_sharing">Chiave troppo grande per essere condivisa in questo modo!</string>
   <string name="text_copied_to_clipboard">Il testo è stato copiato sulla lavagna!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">Cancellazione di \'%s\' fallita</string>
   <string name="error_file_not_found">File non trovato</string>
   <string name="error_no_secret_key_found">nessuna chiave privata adatta trovata</string>
   <string name="error_external_storage_not_ready">memoria esterna non pronta</string>
@@ -305,8 +275,6 @@ Non potrai annullare!</string>
   <string name="progress_con_saving">consolidazione: salvataggio della cache...</string>
   <string name="progress_con_reimport">consolidazione: reimportazione...</string>
   <!--action strings-->
-  <string name="hint_keyserver_search_hint">Nome/Email/ID Chiave...</string>
-  <string name="hint_cloud_search_hint">Nome/Email/Certificato/Chiave...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -334,7 +302,6 @@ Non potrai annullare!</string>
   <!--Help-->
   <string name="help_tab_start">Inizia</string>
   <string name="help_tab_faq">FAQ</string>
-  <string name="help_tab_wot">Rete di Fiducia</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Novita\'</string>
   <string name="help_tab_about">Info</string>
@@ -432,7 +399,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica Testo</string>
   <string name="key_view_action_encrypt_files">documenti</string>
-  <string name="key_view_action_certify">Certifica identità</string>
   <string name="key_view_action_update">Aggiorna dal server delle chiavi</string>
   <string name="key_view_action_share_with">Condividi con...</string>
   <string name="key_view_action_share_nfc">Condividi tramite NFC</string>
@@ -475,15 +441,12 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="edit_key_error_add_identity">Aggiungi almeno una identità</string>
   <string name="edit_key_error_add_subkey">Aggiungi almeno una sottochiave!</string>
   <!--Create key-->
-  <string name="create_key_upload">Carica chiave nel server delle chiavi</string>
   <string name="create_key_empty">Questo campo è necessario</string>
   <string name="create_key_passphrases_not_equal">Le frasi di accesso non coincidono.</string>
   <string name="create_key_final_text">Hai inserito la seguente identità:</string>
   <string name="create_key_final_robot_text">La creazione di una chiave richiede un po\' di tempo, prendi un caffè nel frattempo...</string>
   <string name="create_key_rsa">(3 sottochiavi, RSA, 4096 bit)</string>
   <string name="create_key_custom">(personalizza la configurazione della chiave)</string>
-  <string name="create_key_identity_text">Inserisci Nome Completo, Email e scegli una Frase di Accesso.</string>
-  <string name="create_key_hint_full_name">Nome completo, es: Mario Rossi</string>
   <string name="create_key_edit">Cambia configurazione della chiave</string>
   <!--View key-->
   <!--Navigation Drawer-->
@@ -597,7 +560,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_kc_sub">Elaborazione sottochiave %s</string>
   <string name="msg_kc_sub_bad">Rimozione certificato vincolante di sottochiave non valido</string>
   <string name="msg_kc_sub_bad_err">Rimozione certificato vincolante di sottochiave corrotto</string>
-  <string name="msg_kc_sub_bad_local">Rimozione certificato di sottochiave con caratteristica \"locale\"</string>
   <string name="msg_kc_sub_bad_keyid">ID emittente vincolante della sottochiave non corrispondente</string>
   <string name="msg_kc_sub_bad_time">Rimozione certificato vincolante della sottochiave con marca temporale futura</string>
   <string name="msg_kc_sub_bad_type">Tipo di certificato della sottochiave sconosciuto: %s</string>
@@ -695,14 +657,12 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_file">Nome file: %s</string>
   <string name="msg_dc_clear_meta_mime">Tipo MIME: %s</string>
-  <string name="msg_dc_clear_meta_size">Dimensione file: %s</string>
   <string name="msg_dc_clear_meta_time">Ultima modifica: %s</string>
   <string name="msg_dc_clear_signature_bad">Controllo firma NON OK!</string>
   <string name="msg_dc_clear_signature_check">Verifica dati firma</string>
   <string name="msg_dc_clear_signature_ok">Controllo firma OK</string>
   <string name="msg_dc_error_integrity_check">Errore di controllo di integrità!</string>
   <string name="msg_dc_integrity_check_ok">Controllo integrità OK!</string>
-  <string name="msg_dc_ok">OK</string>
   <string name="msg_dc_pass_cached">Uso della frase di accesso dalla cache</string>
   <string name="msg_dc">Inizio operazione di decodifica...</string>
   <string name="msg_dc_sym_skip">Dati simmetrici non permessi, proseguo...</string>
@@ -720,6 +680,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
     <item quantity="one">parte del file caricato e\' un oggetto OpenPGP valido, ma non una chave OpenPGP</item>
     <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
   </plurals>
+  <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_click_to_clear">Clicca per rimuovere la frase di accesso nella cache</string>
   <string name="passp_cache_notif_n_keys">OpenKeychain ha memorizzato nella cache %d frasi di accesso</string>
@@ -737,7 +698,6 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="unknown_uid">&lt;sconosciuto&gt;</string>
   <string name="empty_certs">Nessun certificato per questa chiave</string>
   <string name="label_revocation">Ragione della Revoca</string>
-  <string name="label_verify_status">Stato Verifica</string>
   <string name="label_cert_type">Tipo</string>
   <string name="error_key_not_found">Chiave non trovata!</string>
   <string name="error_key_processing">Errore di elaborazione chiave!</string>
@@ -754,7 +714,8 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
   <string name="error_multi_not_supported">Il salvataggio di più file non è supportato. Questa è una limitazione corrente di Android.</string>
   <string name="key_colon">Chiave:</string>
-  <!--Passphrase wizard-->
+    <string name="file_delete_successful"></string>
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
