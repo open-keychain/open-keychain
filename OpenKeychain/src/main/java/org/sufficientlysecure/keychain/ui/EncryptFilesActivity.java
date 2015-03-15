@@ -268,7 +268,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
         }
-        sendIntent.setType("application/octet-stream");
+        sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();

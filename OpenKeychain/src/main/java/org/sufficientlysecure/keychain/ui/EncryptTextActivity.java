@@ -247,7 +247,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private Intent createSendIntent(byte[] resultBytes) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType("text/plain");
+        sendIntent.setType(Constants.ENCRYPTED_TEXT_MIME);
         sendIntent.putExtra(Intent.EXTRA_TEXT, new String(resultBytes));
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
