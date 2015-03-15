@@ -53,9 +53,15 @@ public class PgpConstants {
         sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA1);
         sPreferredHashAlgorithms.add(HashAlgorithmTags.RIPEMD160);
 
+        /*
+         * Prefer ZIP
+         * "ZLIB provides no benefit over ZIP and is more malleable"
+         * - (OpenPGP WG mailinglist: "[openpgp] Intent to deprecate: Insecure primitives")
+         * BZIP2: very slow
+         */
+        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZLIB);
         sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.BZIP2);
-        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
     }
 
     public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA256;
