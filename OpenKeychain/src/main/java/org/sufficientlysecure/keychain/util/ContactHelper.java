@@ -222,18 +222,20 @@ public class ContactHelper {
      * @return
      */
     public static long getMainProfileContactId(ContentResolver resolver) {
-        Cursor profileCursor = resolver.query(
-                ContactsContract.Profile.CONTENT_URI,
-                new String[]{
-                        ContactsContract.Profile._ID
-                },
-                null, null, null);
-        if (profileCursor == null) {
+        Cursor profileCursor = resolver.query(ContactsContract.Profile.CONTENT_URI,
+                new String[]{ ContactsContract.Profile._ID}, null, null, null);
+
+        if(profileCursor != null && profileCursor.getCount() != 0 && profileCursor.moveToNext()) {
+            long contactId = profileCursor.getLong(0);
+            profileCursor.close();
+            return contactId;
+        }
+        else {
+            if(profileCursor != null) {
+                profileCursor.close();
+            }
             return -1;
         }
-
-        profileCursor.moveToNext();
-        return profileCursor.getLong(0);
     }
 
     /**
