@@ -205,6 +205,8 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
                 KeyRings.HAS_ENCRYPT,
                 KeyRings.VERIFIED,
                 KeyRings.HAS_ANY_SECRET,
+                KeyRings.HAS_DUPLICATE_USER_ID,
+                KeyRings.CREATION,
         };
 
         String inMasterKeyList = null;

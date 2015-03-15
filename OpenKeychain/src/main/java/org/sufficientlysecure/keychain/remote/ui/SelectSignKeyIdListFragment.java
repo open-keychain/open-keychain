@@ -154,6 +154,8 @@ public class SelectSignKeyIdListFragment extends ListFragmentWorkaround implemen
                 KeyRings.HAS_ENCRYPT,
                 KeyRings.VERIFIED,
                 KeyRings.HAS_ANY_SECRET,
+                KeyRings.HAS_DUPLICATE_USER_ID,
+                KeyRings.CREATION,
         };
 
         String selection = KeyRings.HAS_ANY_SECRET + " != 0";
