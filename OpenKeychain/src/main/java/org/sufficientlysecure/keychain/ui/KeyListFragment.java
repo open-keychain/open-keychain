@@ -270,7 +270,8 @@ public class KeyListFragment extends LoaderFragment
             KeyRings.IS_REVOKED,
             KeyRings.IS_EXPIRED,
             KeyRings.VERIFIED,
-            KeyRings.HAS_ANY_SECRET
+            KeyRings.HAS_ANY_SECRET,
+            KeyRings.HAS_DUPLICATE_USER_ID,
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -279,6 +280,7 @@ public class KeyListFragment extends LoaderFragment
     static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
     static final int INDEX_HAS_ANY_SECRET = 6;
+    static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
 
     static final String ORDER =
             KeyRings.HAS_ANY_SECRET + " DESC, UPPER(" + KeyRings.USER_ID + ") ASC";
@@ -707,6 +709,7 @@ public class KeyListFragment extends LoaderFragment
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
+                boolean hasDuplicate = cursor.getInt(INDEX_HAS_DUPLICATE_USER_ID) == 1;
 
                 h.mMasterKeyId = masterKeyId;
 
