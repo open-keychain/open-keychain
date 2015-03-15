@@ -536,6 +536,12 @@ public class PgpKeyOperationTest {
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime() / 1000);
             Assert.assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
+
+            Date date = modified.canonicalize(new OperationLog(), 0).getPublicKey().getExpiryTime();
+            Assert.assertNotNull("modified key must have an expiry date", date);
+            Assert.assertEquals("modified key must have expected expiry date",
+                    expiry, date.getTime() / 1000);
+
         }
 
         {
