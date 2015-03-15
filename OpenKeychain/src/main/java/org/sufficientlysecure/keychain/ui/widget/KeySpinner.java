@@ -25,6 +25,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.internal.widget.TintSpinner;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,10 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Use TintSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
@@ -139,11 +144,12 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
     protected class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {
         private CursorAdapter inner;
         private int mIndexUserId;
-        private int mIndexKeyId;
+        private int mIndexDuplicate;
         private int mIndexMasterKeyId;
+        private int mIndexCreationDate;
 
         public SelectKeyAdapter() {
-            inner = new CursorAdapter(null, null, 0) {
+            inner = new CursorAdapter(getContext(), null, 0) {
                 @Override
                 public View newView(Context context, Cursor cursor, ViewGroup parent) {
                     return View.inflate(getContext(), R.layout.keyspinner_item, null);
@@ -154,12 +160,26 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
                     TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
                     ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
                     TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
-                    TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+                    TextView vDuplicate = (TextView) view.findViewById(R.id.keyspinner_duplicate);
 
                     String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
                     vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
                     vKeyEmail.setText(userId[1]);
-                    vKeyId.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getContext(), cursor.getLong(mIndexKeyId)));
+
+                    boolean duplicate = cursor.getLong(mIndexDuplicate) > 0;
+                    if (duplicate) {
+                        Date creationDate = new Date(cursor.getLong(mIndexCreationDate) * 1000);
+                        Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                        creationCal.setTime(creationDate);
+                        // convert from UTC to time zone of device
+                        creationCal.setTimeZone(TimeZone.getDefault());
+
+                        vDuplicate.setText(context.getString(R.string.label_creation) + ": "
+                                + DateFormat.getDateFormat(context).format(creationCal.getTime()));
+                        vDuplicate.setVisibility(View.VISIBLE);
+                    } else {
+                        vDuplicate.setVisibility(View.GONE);
+                    }
 
                     boolean valid = setStatus(getContext(), cursor, vKeyStatus);
                     setItemEnabled(view, valid);
@@ -181,18 +201,18 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
             TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
             ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
             TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
-            TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+            TextView vKeyDuplicate = (TextView) view.findViewById(R.id.keyspinner_duplicate);
 
             if (enabled) {
                 vKeyName.setTextColor(Color.BLACK);
                 vKeyEmail.setTextColor(Color.BLACK);
-                vKeyId.setTextColor(Color.BLACK);
+                vKeyDuplicate.setTextColor(Color.BLACK);
                 vKeyStatus.setVisibility(View.GONE);
                 view.setClickable(false);
             } else {
                 vKeyName.setTextColor(Color.GRAY);
                 vKeyEmail.setTextColor(Color.GRAY);
-                vKeyId.setTextColor(Color.GRAY);
+                vKeyDuplicate.setTextColor(Color.GRAY);
                 vKeyStatus.setVisibility(View.VISIBLE);
                 // this is a HACK. the trick is, if the element itself is clickable, the
                 // click is not passed on to the view list
@@ -203,9 +223,10 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
         public Cursor swapCursor(Cursor newCursor) {
             if (newCursor == null) return inner.swapCursor(null);
 
-            mIndexKeyId = newCursor.getColumnIndex(KeychainContract.KeyRings.KEY_ID);
+            mIndexDuplicate = newCursor.getColumnIndex(KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID);
             mIndexUserId = newCursor.getColumnIndex(KeychainContract.KeyRings.USER_ID);
             mIndexMasterKeyId = newCursor.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID);
+            mIndexCreationDate = newCursor.getColumnIndex(KeychainContract.KeyRings.CREATION);
             if (newCursor.moveToFirst()) {
                 do {
                     if (newCursor.getLong(mIndexMasterKeyId) == mSelectedKeyId) {
@@ -257,19 +278,17 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
                 TextView vKeyName = (TextView) view.findViewById(R.id.keyspinner_key_name);
                 ImageView vKeyStatus = (ImageView) view.findViewById(R.id.keyspinner_key_status);
                 TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
-                TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
+                TextView vKeyDuplicate = (TextView) view.findViewById(R.id.keyspinner_duplicate);
 
                 vKeyName.setText(R.string.choice_none);
                 vKeyEmail.setVisibility(View.GONE);
-                vKeyId.setVisibility(View.GONE);
+                vKeyDuplicate.setVisibility(View.GONE);
                 vKeyStatus.setVisibility(View.GONE);
                 setItemEnabled(view, true);
             } else {
                 view = inner.getView(position - 1, convertView, parent);
                 TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
-                TextView vKeyId = (TextView) view.findViewById(R.id.keyspinner_key_id);
                 vKeyEmail.setVisibility(View.VISIBLE);
-                vKeyId.setVisibility(View.VISIBLE);
             }
             return view;
         }

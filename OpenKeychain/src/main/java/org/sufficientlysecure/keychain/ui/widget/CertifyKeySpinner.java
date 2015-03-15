@@ -68,7 +68,9 @@ public class CertifyKeySpinner extends KeySpinner {
                 KeychainContract.KeyRings.IS_REVOKED,
                 KeychainContract.KeyRings.IS_EXPIRED,
                 KeychainContract.KeyRings.HAS_CERTIFY,
-                KeychainContract.KeyRings.HAS_ANY_SECRET
+                KeychainContract.KeyRings.HAS_ANY_SECRET,
+                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                KeychainContract.KeyRings.CREATION
         };
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
