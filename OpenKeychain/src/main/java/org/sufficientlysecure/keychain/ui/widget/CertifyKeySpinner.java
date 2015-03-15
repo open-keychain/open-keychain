@@ -93,21 +93,30 @@ public class CertifyKeySpinner extends KeySpinner {
             mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
             mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
 
-            // If there is more than one choice, pick a key
-            if (mAdapter.getCount() >= 2) {
+            // If:
+            // - no key has been pre-selected (e.g. by SageSlinger)
+            // - there are actually keys (not just "none" entry)
+            // Then:
+            // - select key that is capable of certifying, but only if there is only one key capable of it
+            if (mSelectedKeyId == Constants.key.none && mAdapter.getCount() > 1) {
                 // preselect if key can certify
-                if (data.moveToPosition(0)) {
-                    do {
-                        if (!data.isNull(mIndexHasCertify)) {
-                            setSelection(data.getPosition() + 1);
-                            break;
+                int selection = -1;
+                while (data.moveToNext()) {
+                    if (!data.isNull(mIndexHasCertify)) {
+                        if (selection == -1) {
+                            selection = data.getPosition() + 1;
+                        } else {
+                            // if selection is already set, we have more than one certify key!
+                            // get back to "none"!
+                            selection = 0;
                         }
                     }
-                    while (data.moveToNext());
                 }
+                setSelection(selection);
             }
         }
     }
+
 
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {

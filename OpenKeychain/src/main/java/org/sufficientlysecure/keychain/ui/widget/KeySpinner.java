@@ -55,7 +55,7 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
         public void onKeyChanged(long masterKeyId);
     }
 
-    protected long mSelectedKeyId;
+    protected long mSelectedKeyId = Constants.key.none;
     protected SelectKeyAdapter mAdapter = new SelectKeyAdapter();
     protected OnKeyChangedListener mListener;
 
@@ -227,7 +227,9 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
             mIndexUserId = newCursor.getColumnIndex(KeychainContract.KeyRings.USER_ID);
             mIndexMasterKeyId = newCursor.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID);
             mIndexCreationDate = newCursor.getColumnIndex(KeychainContract.KeyRings.CREATION);
-            if (newCursor.moveToFirst()) {
+
+            // pre-select key if mSelectedKeyId is given
+            if (mSelectedKeyId != Constants.key.none && newCursor.moveToFirst()) {
                 do {
                     if (newCursor.getLong(mIndexMasterKeyId) == mSelectedKeyId) {
                         setSelection(newCursor.getPosition() + 1);
