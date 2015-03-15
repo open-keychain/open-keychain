@@ -135,7 +135,9 @@ public class ViewKeyFragment extends LoaderFragment implements
         if (mIsSecret) {//all secret keys are linked to "me" profile in contacts
             contactId = ContactHelper.getMainProfileContactId(resolver);
             List<String> mainProfileNames = ContactHelper.getMainProfileContactName(context);
-            if (mainProfileNames != null) contactName = mainProfileNames.get(0);
+            if (mainProfileNames != null && mainProfileNames.size() > 0) {
+                contactName = mainProfileNames.get(0);
+            }
 
         } else {
             contactId = ContactHelper.findContactId(resolver, masterKeyId);
