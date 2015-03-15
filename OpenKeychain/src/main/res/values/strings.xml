@@ -1304,6 +1304,16 @@
     <string name="linked_create_dns_2_3">"More bla:"</string>
     <string name="linked_create_dns_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
+    <string name="linked_create_verify">"Verify"</string>
+    <string name="linked_text_clipboard">Text has been copied to clipboard</string>
+    <string name="linked_verified_https">"The Website has been fetched and verified."</string>
+    <string name="linked_verified_dns">"The DNS record has been fetched and verified."</string>
+    <string name="linked_verified_twitter">"The Tweet has been fetched and verified."</string>
+    <plurals name="linked_id_expand">
+        <item quantity="one">"There is one more unknown identity type"</item>
+        <item quantity="other">"There are %d more unknown identity types"</item>
+    </plurals>
+
     <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
     <string name="linked_select_2">"Please select a type:"</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
@@ -1315,11 +1325,5 @@
     <string name="menu_linked_add_identity">"Add Linked Identity"</string>
     <string name="section_linked_identities">"Linked Identities"</string>
     <string name="btn_finish">"Finish"</string>
-    <string name="linked_create_verify">"Verify"</string>
-    <string name="linked_text_clipboard">Text has been copied to clipboard</string>
-    <plurals name="linked_id_expand">
-        <item quantity="one">"There is one more unknown identity type"</item>
-        <item quantity="other">"There are %d more unknown identity types"</item>
-    </plurals>
 
 </resources>

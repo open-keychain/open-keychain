@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 
 import com.textuality.keybase.lib.Search;
 
@@ -81,6 +82,8 @@ public class GenericHttpsResource extends LinkedCookieResource {
             log.add(LogType.MSG_LV_FETCH_ERROR_URL, indent);
             return null;
         } catch (IOException e) {
+            Log.e(Constants.TAG, "io error", e);
+            e.printStackTrace();
             log.add(LogType.MSG_LV_FETCH_ERROR_IO, indent);
             return null;
         }
@@ -107,6 +110,12 @@ public class GenericHttpsResource extends LinkedCookieResource {
     public @DrawableRes
     int getDisplayIcon() {
         return R.drawable.ssl_lock;
+    }
+
+    @Override
+    public @StringRes
+    int getVerifiedText() {
+        return R.string.linked_verified_https;
     }
 
     @Override

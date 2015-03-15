@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -240,6 +242,7 @@ public class LinkedIdViewFragment extends Fragment implements
     static class ViewHolder {
         private final View vButtonView;
         private final ViewAnimator vVerifyingContainer;
+        private final ViewAnimator vItemCertified;
         LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
 
         private ViewAnimator vButtonSwitcher;
@@ -267,6 +270,7 @@ public class LinkedIdViewFragment extends Fragment implements
             vButtonView = root.findViewById(R.id.button_view);
 
             vVerifyingContainer = (ViewAnimator) root.findViewById(R.id.linked_verify_container);
+            vItemCertified = (ViewAnimator) root.findViewById(R.id.linked_id_certified);
 
             vProgress = (ViewAnimator) root.findViewById(R.id.linked_cert_progress);
             vText = (TextView) root.findViewById(R.id.linked_cert_text);
@@ -285,7 +289,6 @@ public class LinkedIdViewFragment extends Fragment implements
                     break;
 
                 case VERIFY_OK:
-                    vText.setText("Ok");
                     vProgress.setDisplayedChild(1);
                     if (!isSecret) {
                         showButton(2);
@@ -315,7 +318,9 @@ public class LinkedIdViewFragment extends Fragment implements
             if (vVerifyingContainer.getDisplayedChild() == (show ? 1 : 0)) {
                 return;
             }
+
             vVerifyingContainer.setDisplayedChild(show ? 1 : 0);
+            vItemCertified.setDisplayedChild(show ? 1 : 0);
         }
 
         void showButton(int which) {
@@ -385,6 +390,15 @@ public class LinkedIdViewFragment extends Fragment implements
 
         mViewHolder = new ViewHolder(root);
         root.setTag(mViewHolder);
+
+        ((ImageView) root.findViewById(R.id.status_icon_verified))
+                .setColorFilter(mContext.getResources().getColor(R.color.android_green_light),
+                        PorterDuff.Mode.SRC_IN);
+        ((ImageView) root.findViewById(R.id.status_icon_invalid))
+                .setColorFilter(mContext.getResources().getColor(R.color.android_red_light),
+                        PorterDuff.Mode.SRC_IN);
+
+
 
         mViewHolder.vButtonBack.setClickable(true);
         mViewHolder.vButtonBack.findViewById(R.id.back_button).setOnClickListener(new OnClickListener() {
@@ -459,9 +473,11 @@ public class LinkedIdViewFragment extends Fragment implements
                     return;
                 }
                 if (result.success()) {
+                    mViewHolder.vText.setText(mLinkedResource.getVerifiedText());
                     mViewHolder.setVerifyingState(VerifyState.VERIFY_OK, mIsSecret);
                 } else {
                     mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR, mIsSecret);
+                    result.createNotify(getActivity()).show();
                 }
                 mInProgress = null;
             }
@@ -524,7 +540,7 @@ public class LinkedIdViewFragment extends Fragment implements
             return;
         }
 
-        mViewHolder.setVerifyingState(VerifyState.CERTIFYING, mIsSecret);
+        mViewHolder.setVerifyingState(VerifyState.CERTIFYING, false);
 
         Bundle data = new Bundle();
         {
@@ -557,19 +573,11 @@ public class LinkedIdViewFragment extends Fragment implements
 
                 Bundle data = message.getData();
 
-                if (message.arg1 == MessageStatus.UPDATE_PROGRESS.ordinal()) {
-                    if (data.containsKey(DATA_MESSAGE)) {
-                        mViewHolder.vText.setText(data.getString(DATA_MESSAGE));
-                    } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                        mViewHolder.vText.setText(data.getString(DATA_MESSAGE_ID));
-                    }
-                    return;
-                }
-
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
                 }
+
             }
         };
 

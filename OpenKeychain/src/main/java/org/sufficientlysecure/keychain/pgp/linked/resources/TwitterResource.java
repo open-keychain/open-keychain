@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.textuality.keybase.lib.JWalk;
@@ -116,6 +117,12 @@ public class TwitterResource extends LinkedCookieResource {
     @Override
     public @DrawableRes int getDisplayIcon() {
         return R.drawable.twitter;
+    }
+
+    @Override
+    public @StringRes
+    int getVerifiedText() {
+        return R.string.linked_verified_twitter;
     }
 
     @Override

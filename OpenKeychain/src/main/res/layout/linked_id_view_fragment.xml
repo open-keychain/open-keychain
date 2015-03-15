@@ -38,6 +38,8 @@
                 android:id="@+id/linked_verify_container"
                 android:inAnimation="@anim/fade_in"
                 android:outAnimation="@anim/fade_out"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
                 >
 
                 <include layout="@layout/cert_list_widget" />
@@ -48,36 +50,6 @@
                     android:minHeight="?android:attr/listPreferredItemHeight"
                     android:orientation="horizontal"
                     android:singleLine="true">
-
-                    <ViewAnimator
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_gravity="center"
-                        android:id="@+id/linked_cert_progress"
-                        android:inAnimation="@anim/fade_in"
-                        android:outAnimation="@anim/fade_out">
-
-                        <ProgressBar
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:indeterminate="true"
-                            />
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/status_signature_verified_cutout_24dp"
-                            />
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/status_signature_unknown_cutout_24dp"
-                            />
-
-                    </ViewAnimator>
 
                     <LinearLayout
                         android:orientation="vertical"
@@ -97,6 +69,38 @@
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     </LinearLayout>
+
+                    <ViewAnimator
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_gravity="center"
+                        android:id="@+id/linked_cert_progress"
+                        android:inAnimation="@anim/fade_in"
+                        android:outAnimation="@anim/fade_out">
+
+                        <ProgressBar
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:indeterminate="true"
+                            />
+
+                        <ImageView
+                            android:id="@+id/status_icon_verified"
+                            android:layout_width="22dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/status_signature_verified_inner_24dp"
+                            />
+
+                        <ImageView
+                            android:id="@+id/status_icon_invalid"
+                            android:layout_width="22dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/status_signature_invalid_cutout_24dp"
+                            />
+
+                    </ViewAnimator>
 
                 </LinearLayout>
 

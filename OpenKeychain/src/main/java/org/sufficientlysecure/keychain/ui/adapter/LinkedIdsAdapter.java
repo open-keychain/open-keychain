@@ -201,7 +201,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         final public TextView vComment;
 
         public ViewHolder(View view) {
-            vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
+            vVerified = (ImageView) view.findViewById(R.id.linked_id_certified_icon);
             vIcon = (ImageView) view.findViewById(R.id.linked_id_type_icon);
             vTitle = (TextView) view.findViewById(R.id.linked_id_title);
             vComment = (TextView) view.findViewById(R.id.linked_id_comment);

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:singleLine="true">
+    android:singleLine="true"
+    tools:showIn="@layout/linked_id_view_fragment">
 
     <ImageView
         android:layout_width="32dp"
@@ -43,22 +45,28 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/user_id_item_certified_layout"
+    <ViewAnimator
+        android:id="@+id/linked_id_certified"
         android:layout_width="22dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:outAnimation="@anim/fade_out_down"
+        android:inAnimation="@anim/fade_in_up"
         android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/user_id_item_certified"
+            android:id="@+id/linked_id_certified_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/status_signature_unknown_cutout_24dp"
             android:layout_gravity="center_horizontal" />
 
-    </LinearLayout>
+        <Space
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+    </ViewAnimator>
 
 </LinearLayout>

@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.pgp.linked.resources;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -101,6 +102,12 @@ public class DnsResource extends LinkedCookieResource {
     @Override
     protected Matcher matchResource(OperationLog log, int indent, String res) {
         return magicPattern.matcher(res);
+    }
+
+    @Override
+    public @StringRes
+    int getVerifiedText() {
+        return R.string.linked_verified_dns;
     }
 
     @Override
