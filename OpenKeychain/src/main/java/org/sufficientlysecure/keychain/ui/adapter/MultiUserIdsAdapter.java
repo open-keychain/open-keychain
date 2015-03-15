@@ -81,16 +81,6 @@ public class MultiUserIdsAdapter extends CursorAdapter {
         ArrayList<String> uids = p.createStringArrayList();
         p.recycle();
 
-        if (isHeader == 1) {
-            long masterKeyId = cursor.getLong(0);
-            vHeaderId.setVisibility(View.VISIBLE);
-            String message = mContext.getString(R.string.section_uids_to_certify) +
-                    KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId);
-            vHeaderId.setText(message);
-        } else {
-            vHeaderId.setVisibility(View.GONE);
-        }
-
         { // first one
             String userId = uids.get(0);
             String[] splitUserId = KeyRing.splitUserId(userId);
@@ -98,6 +88,21 @@ public class MultiUserIdsAdapter extends CursorAdapter {
                 vName.setText(splitUserId[0]);
             } else {
                 vName.setText(R.string.user_id_no_name);
+            }
+
+            if (isHeader == 1) {
+                vHeaderId.setVisibility(View.VISIBLE);
+                String message;
+                if (splitUserId[0] != null) {
+                    message = mContext.getString(R.string.section_uids_to_certify) +
+                            splitUserId[0];
+                } else {
+                    message = mContext.getString(R.string.section_uids_to_certify) +
+                           context.getString(R.string.user_id_no_name);
+                }
+                vHeaderId.setText(message);
+            } else {
+                vHeaderId.setVisibility(View.GONE);
             }
         }
 
