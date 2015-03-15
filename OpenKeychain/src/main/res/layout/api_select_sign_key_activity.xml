@@ -35,6 +35,28 @@
                     android:text="@string/api_select_sign_key_text"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/api_select_sign_key_none"
+                    android:background="?android:selectableItemBackground"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:text="@string/none"
+                    android:layout_height="?android:attr/listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:clickable="true" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dip"
+                    android:background="?android:attr/listDivider" />
+
                 <FrameLayout
                     android:id="@+id/api_select_sign_key_list_fragment"
                     android:layout_width="match_parent"

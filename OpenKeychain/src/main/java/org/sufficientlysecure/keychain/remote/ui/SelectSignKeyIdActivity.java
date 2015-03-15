@@ -42,9 +42,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
     private Uri mAppUri;
     private String mPreferredUserId;
+    private Intent mData;
 
     private SelectSignKeyIdListFragment mListFragment;
     private TextView mActionCreateKey;
+    private TextView mNone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,18 +69,29 @@ public class SelectSignKeyIdActivity extends BaseActivity {
                 createKey(mPreferredUserId);
             }
         });
+        mNone = (TextView) findViewById(R.id.api_select_sign_key_none);
+        mNone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 0 is "none"
+                mData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, 0);
+
+                setResult(Activity.RESULT_OK, mData);
+                finish();
+            }
+        });
 
         Intent intent = getIntent();
         mAppUri = intent.getData();
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
-        Intent data = intent.getParcelableExtra(EXTRA_DATA);
+        mData = intent.getParcelableExtra(EXTRA_DATA);
         if (mAppUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
             return;
         } else {
             Log.d(Constants.TAG, "uri: " + mAppUri);
-            startListFragments(savedInstanceState, mAppUri, data);
+            startListFragments(savedInstanceState, mAppUri, mData);
         }
     }
 
