@@ -127,9 +127,9 @@ public class SelectSignKeyIdActivity extends BaseActivity {
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-//                        SaveKeyringResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                         // TODO: select?
-//                            mSelectKeySpinner.setSelectedKeyId(result.mRingMasterKeyId);
+//                        EditKeyResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+//                        mSelectKeySpinner.setSelectedKeyId(result.mMasterKeyId);
                     } else {
                         Log.e(Constants.TAG, "missing result!");
                     }

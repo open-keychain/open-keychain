@@ -28,8 +28,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -106,8 +106,8 @@ public class AccountSettingsFragment extends Fragment {
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-                        SaveKeyringResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-                        mSelectKeySpinner.setSelectedKeyId(result.mRingMasterKeyId);
+                        EditKeyResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                        mSelectKeySpinner.setSelectedKeyId(result.mMasterKeyId);
                     } else {
                         Log.e(Constants.TAG, "missing result!");
                     }
