@@ -126,26 +126,27 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         // the getValidSeconds method is unreliable for master keys. we need to iterate all
         // user ids, then use the most recent certification from a non-revoked user id
         if (isMasterKey()) {
-            Date latestCreation = null;
             seconds = 0;
 
+            long masterKeyId = getKeyId();
+
+            Date latestCreation = null;
             for (byte[] rawUserId : getUnorderedRawUserIds()) {
                 Iterator<WrappedSignature> sigs = getSignaturesForRawId(rawUserId);
+                while (sigs.hasNext()) {
+                    WrappedSignature sig = sigs.next();
+                    if (sig.getKeyId() != masterKeyId) {
+                        continue;
+                    }
+                    if (sig.isRevocation()) {
+                        continue;
+                    }
 
-                // there is always a certification, so this call is safe
-                WrappedSignature sig = sigs.next();
+                    if (latestCreation == null || latestCreation.before(sig.getCreationTime())) {
+                        latestCreation = sig.getCreationTime();
+                        seconds = sig.getKeyExpirySeconds();
+                    }
 
-                // we know a user id has at most two sigs: one certification, one revocation.
-                // if the sig is a revocation, or there is another sig (which is a revocation),
-                // the data in this uid is not relevant
-                if (sig.isRevocation() || sigs.hasNext()) {
-                    continue;
-                }
-
-                // this is our revocation, UNLESS there is a newer certificate!
-                if (latestCreation == null || latestCreation.before(sig.getCreationTime())) {
-                    latestCreation = sig.getCreationTime();
-                    seconds = sig.getKeyExpirySeconds();
                 }
             }
         } else {
