@@ -100,8 +100,8 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
                 // return new user id back to activity
                 Bundle data = new Bundle();
-                String userId = KeyRing.createUserId(mName.getText().toString(),
-                        mEmail.getText().toString(), mComment.getText().toString());
+                String userId = KeyRing.createUserId(new KeyRing.UserId(mName.getText().toString(),
+                        mEmail.getText().toString(), mComment.getText().toString()));
                 data.putString(MESSAGE_DATA_USER_ID, userId);
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }

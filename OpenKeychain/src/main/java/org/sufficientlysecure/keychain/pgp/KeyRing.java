@@ -44,7 +44,7 @@ public abstract class KeyRing {
 
     abstract public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException;
 
-    public String[] getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
+    public UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
         return splitUserId(getPrimaryUserIdWithFallback());
     }
 
@@ -62,35 +62,21 @@ public abstract class KeyRing {
 
     /**
      * Splits userId string into naming part, email part, and comment part
+     * <p/>
+     * User ID matching:
+     * http://fiddle.re/t4p6f
      *
      * @param userId
-     * @return array with naming (0), email (1), comment (2)
+     * @return theParsedUserInfo
      */
-    public static String[] splitUserId(String userId) {
-        String[] result = new String[]{null, null, null};
-
-        if (userId == null || userId.equals("")) {
-            return result;
+    public static UserId splitUserId(final String userId) {
+        if (!TextUtils.isEmpty(userId)) {
+            final Matcher matcher = USER_ID_PATTERN.matcher(userId);
+            if (matcher.matches()) {
+                return new UserId(matcher.group(1), matcher.group(3), matcher.group(2));
+            }
         }
-
-        /*
-         * User ID matching:
-         * http://fiddle.re/t4p6f
-         *
-         * test cases:
-         * "Max Mustermann (this is a comment) <max@example.com>"
-         * "Max Mustermann <max@example.com>"
-         * "Max Mustermann (this is a comment)"
-         * "Max Mustermann [this is nothing]"
-         */
-        Matcher matcher = USER_ID_PATTERN.matcher(userId);
-        if (matcher.matches()) {
-            result[0] = matcher.group(1);
-            result[1] = matcher.group(3);
-            result[2] = matcher.group(2);
-        }
-
-        return result;
+        return new UserId(null, null, null);
     }
 
     /**
@@ -101,16 +87,28 @@ public abstract class KeyRing {
      * @param comment
      * @return
      */
-    public static String createUserId(String name, String email, String comment) {
-        String userId = name; // consider name a required value
-        if (userId != null && !TextUtils.isEmpty(comment)) {
-            userId += " (" + comment + ")";
+    public static String createUserId(UserId userId) {
+        String userIdString = userId.name; // consider name a required value
+        if (userIdString != null && !TextUtils.isEmpty(userId.comment)) {
+            userIdString += " (" + userId.comment + ")";
         }
-        if (userId != null && !TextUtils.isEmpty(email)) {
-            userId += " <" + email + ">";
+        if (userIdString != null && !TextUtils.isEmpty(userId.email)) {
+            userIdString += " <" + userId.email + ">";
         }
 
-        return userId;
+        return userIdString;
+    }
+
+    public static class UserId {
+        public final String name;
+        public final String email;
+        public final String comment;
+
+        public UserId(String name, String email, String comment) {
+            this.name = name;
+            this.email = email;
+            this.comment = comment;
+        }
     }
 
 }

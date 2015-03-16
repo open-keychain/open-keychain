@@ -273,9 +273,9 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
-                String[] userId = KeyRing.splitUserId(user);
-                if (userId[1] != null) {
-                    users.add(userId[1]);
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
                 }
             }
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));

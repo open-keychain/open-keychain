@@ -186,12 +186,12 @@ public class CreateKeyFinalFragment extends Fragment {
                     Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
             mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-            String userId = KeyRing.createUserId(mName, mEmail, null);
+            String userId = KeyRing.createUserId(new KeyRing.UserId(mName, mEmail, null));
             mSaveKeyringParcel.mAddUserIds.add(userId);
             mSaveKeyringParcel.mChangePrimaryUserId = userId;
             if (mAdditionalEmails != null && mAdditionalEmails.size() > 0) {
                 for (String email : mAdditionalEmails) {
-                    String thisUserId = KeyRing.createUserId(mName, email, null);
+                    String thisUserId = KeyRing.createUserId(new KeyRing.UserId(mName, email, null));
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }

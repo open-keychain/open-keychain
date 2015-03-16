@@ -211,9 +211,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     // the catch clause doesn't return.
                     try {
                         String mainUserId = mSecretRing.getPrimaryUserIdWithFallback();
-                        String[] mainUserIdSplit = KeyRing.splitUserId(mainUserId);
-                        if (mainUserIdSplit[0] != null) {
-                            userId = mainUserIdSplit[0];
+                        KeyRing.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        if (mainUserIdSplit.name != null) {
+                            userId = mainUserIdSplit.name;
                         } else {
                             userId = getString(R.string.user_id_no_name);
                         }

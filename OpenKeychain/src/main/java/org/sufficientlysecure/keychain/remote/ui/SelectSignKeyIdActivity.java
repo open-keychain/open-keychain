@@ -96,11 +96,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
     }
 
     private void createKey(String userId) {
-        String[] userIdSplit = KeyRing.splitUserId(userId);
+        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         Intent intent = new Intent(this, CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit[0]);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit[1]);
+        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);
+        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit.email);
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 

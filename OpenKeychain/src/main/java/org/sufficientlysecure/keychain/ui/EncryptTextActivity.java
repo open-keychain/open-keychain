@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -253,9 +252,9 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
-                String[] userId = KeyRing.splitUserId(user);
-                if (userId[1] != null) {
-                    users.add(userId[1]);
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
                 }
             }
             // pass trough email addresses as extra for email applications

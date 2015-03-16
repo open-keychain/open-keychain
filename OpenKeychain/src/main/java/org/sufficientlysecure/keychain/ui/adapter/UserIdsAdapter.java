@@ -72,20 +72,20 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         vDeleteButton.setVisibility(View.GONE); // not used
 
         String userId = cursor.getString(INDEX_USER_ID);
-        String[] splitUserId = KeyRing.splitUserId(userId);
-        if (splitUserId[0] != null) {
-            vName.setText(splitUserId[0]);
+        KeyRing.UserId splitUserId = KeyRing.splitUserId(userId);
+        if (splitUserId.name != null) {
+            vName.setText(splitUserId.name);
         } else {
             vName.setText(R.string.user_id_no_name);
         }
-        if (splitUserId[1] != null) {
-            vAddress.setText(splitUserId[1]);
+        if (splitUserId.email != null) {
+            vAddress.setText(splitUserId.email);
             vAddress.setVisibility(View.VISIBLE);
         } else {
             vAddress.setVisibility(View.GONE);
         }
-        if (splitUserId[2] != null) {
-            vComment.setText(splitUserId[2]);
+        if (splitUserId.comment != null) {
+            vComment.setText(splitUserId.comment);
             vComment.setVisibility(View.VISIBLE);
         } else {
             vComment.setVisibility(View.GONE);

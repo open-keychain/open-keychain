@@ -688,14 +688,14 @@ public class KeyListFragment extends LoaderFragment
 
             { // set name and stuff, common to both key types
                 String userId = cursor.getString(INDEX_USER_ID);
-                String[] userIdSplit = KeyRing.splitUserId(userId);
-                if (userIdSplit[0] != null) {
-                    h.mMainUserId.setText(highlighter.highlight(userIdSplit[0]));
+                KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+                if (userIdSplit.name != null) {
+                    h.mMainUserId.setText(highlighter.highlight(userIdSplit.name));
                 } else {
                     h.mMainUserId.setText(R.string.user_id_no_name);
                 }
-                if (userIdSplit[1] != null) {
-                    h.mMainUserIdRest.setText(highlighter.highlight(userIdSplit[1]));
+                if (userIdSplit.email != null) {
+                    h.mMainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
                     h.mMainUserIdRest.setVisibility(View.VISIBLE);
                 } else {
                     h.mMainUserIdRest.setVisibility(View.GONE);

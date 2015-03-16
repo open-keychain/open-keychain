@@ -197,9 +197,9 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
-                    String[] mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
-                    if (mainUserId[0] != null) {
-                        setTitle(mainUserId[0]);
+                    KeyRing.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
+                    if (mainUserId.name != null) {
+                        setTitle(mainUserId.name);
                     } else {
                         setTitle(R.string.user_id_no_name);
                     }

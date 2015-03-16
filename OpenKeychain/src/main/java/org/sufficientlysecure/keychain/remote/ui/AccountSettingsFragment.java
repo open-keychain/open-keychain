@@ -92,11 +92,11 @@ public class AccountSettingsFragment extends Fragment {
     }
 
     private void createKey() {
-        String[] userId = KeyRing.splitUserId(mAccSettings.getAccountName());
+        KeyRing.UserId userId = KeyRing.splitUserId(mAccSettings.getAccountName());
 
         Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userId[0]);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userId[1]);
+        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userId.name);
+        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userId.email);
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 
