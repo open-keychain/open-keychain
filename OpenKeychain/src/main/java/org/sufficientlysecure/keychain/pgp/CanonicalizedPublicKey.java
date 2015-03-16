@@ -55,8 +55,8 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return new IterableIterator<String>(mPublicKey.getUserIDs());
     }
 
-    JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator() {
-        return new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
+    JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator(boolean hiddenRecipients) {
+        return new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey, hiddenRecipients);
     }
 
     public boolean canSign() {

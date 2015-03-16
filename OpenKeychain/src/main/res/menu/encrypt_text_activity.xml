@@ -24,4 +24,11 @@
         android:title="@string/label_enable_compression"
         android:checked="true"
         android:checkable="true" />
+
+    <item
+        android:id="@+id/check_hidden_recipients"
+        android:title="@string/label_hidden_recipients"
+        android:checked="false"
+        android:checkable="true" />
+
 </menu>

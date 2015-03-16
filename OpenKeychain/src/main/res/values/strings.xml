@@ -168,6 +168,7 @@
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
+    <string name="label_hidden_recipients">"Hide recipients"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>

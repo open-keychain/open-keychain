@@ -65,9 +65,6 @@ public abstract class KeyRing {
      * <p/>
      * User ID matching:
      * http://fiddle.re/t4p6f
-     *
-     * @param userId
-     * @return theParsedUserInfo
      */
     public static UserId splitUserId(final String userId) {
         if (!TextUtils.isEmpty(userId)) {
@@ -81,11 +78,6 @@ public abstract class KeyRing {
 
     /**
      * Returns a composed user id. Returns null if name is null!
-     *
-     * @param name
-     * @param email
-     * @param comment
-     * @return
      */
     public static String createUserId(UserId userId) {
         String userIdString = userId.name; // consider name a required value

@@ -31,7 +31,7 @@
         android:checkable="true" />
 
     <item
-        android:id="@+id/encrypt_filenames"
+        android:id="@+id/check_encrypt_filenames"
         android:title="@string/label_encrypt_filenames"
         android:checked="true"
         android:checkable="true" />
@@ -40,5 +40,11 @@
         android:id="@+id/check_use_armor"
         android:title="@string/label_file_ascii_armor"
         android:checkable="true" />
-    
+
+    <item
+        android:id="@+id/check_hidden_recipients"
+        android:title="@string/label_hidden_recipients"
+        android:checked="false"
+        android:checkable="true" />
+
 </menu>

@@ -62,16 +62,19 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
+    private boolean mShareAfterEncrypt = false;
+    private boolean mUseCompression = true;
+    private boolean mHiddenRecipients = false;
+
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
     private String mPassphrase = "";
-    private boolean mShareAfterEncrypt = false;
+
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
-    private boolean mUseCompression = true;
 
     public boolean isModeSymmetric() {
         return MODE_SYMMETRIC == mCurrentMode;
@@ -90,6 +93,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     @Override
     public boolean isUseCompression() {
         return mUseCompression;
+    }
+
+    @Override
+    public boolean isHiddenRecipients() {
+        return mHiddenRecipients;
     }
 
     @Override
@@ -206,6 +214,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setHiddenRecipients(mHiddenRecipients);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
@@ -354,6 +363,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             }
             case R.id.check_enable_compression: {
                 mUseCompression = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+            case R.id.check_hidden_recipients: {
+                mHiddenRecipients = item.isChecked();
                 notifyUpdate();
                 break;
             }

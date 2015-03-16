@@ -62,15 +62,18 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
-    private long mEncryptionKeyIds[] = null;
-    private String mEncryptionUserIds[] = null;
-    private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private boolean mEncryptFilenames = true;
+    private boolean mHiddenRecipients = false;
+
+    private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
+    private long mSigningKeyId = Constants.key.none;
+    private String mPassphrase = "";
+
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
@@ -92,6 +95,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean isEncryptFilenames() {
         return mEncryptFilenames;
+    }
+
+    @Override
+    public boolean isHiddenRecipients() {
+        return mHiddenRecipients;
     }
 
     @Override
@@ -228,6 +236,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
@@ -377,12 +386,16 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 notifyUpdate();
                 break;
             }
-            case R.id.encrypt_filenames: {
+            case R.id.check_encrypt_filenames: {
                 mEncryptFilenames = item.isChecked();
                 notifyUpdate();
                 break;
             }
-
+            case R.id.check_hidden_recipients: {
+                mHiddenRecipients = item.isChecked();
+                notifyUpdate();
+                break;
+            }
             default: {
                 return super.onOptionsItemSelected(item);
             }
