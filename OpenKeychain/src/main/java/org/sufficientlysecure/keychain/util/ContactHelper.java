@@ -365,12 +365,14 @@ public class ContactHelper {
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_SECRET};
 
-    public static final int INDEX_MASTER_KEY_ID = 0;
-    public static final int INDEX_USER_ID = 1;
-    public static final int INDEX_IS_EXPIRED = 2;
-    public static final int INDEX_IS_REVOKED = 3;
-    public static final int INDEX_VERIFIED = 4;
-    public static final int INDEX_HAS_SECRET = 5;
+    public static enum INDEX{ MASTER_KEY_ID, USER_ID, IS_EXPIRED, IS_REVOKED, VERIFIED, HAS_SECRET;}
+
+//    public static final int INDEX_MASTER_KEY_ID = 0;
+//    public static final int INDEX_USER_ID = 1;
+//    public static final int INDEX_IS_EXPIRED = 2;
+//    public static final int INDEX_IS_REVOKED = 3;
+//    public static final int INDEX_VERIFIED = 4;
+//    public static final int INDEX_HAS_SECRET = 5;
 
     /**
      * Write/Update the current OpenKeychain keys to the contact db
@@ -400,13 +402,13 @@ public class ContactHelper {
                 null, null, null);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
-                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX_MASTER_KEY_ID));
-                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
-                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                boolean isSecret = cursor.getInt(INDEX_HAS_SECRET) != 0;
+                long masterKeyId = cursor.getLong(INDEX.MASTER_KEY_ID.ordinal());
+                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX.USER_ID.ordinal()));
+                String keyIdShort = KeyFormattingUtils.convertKeyIdToHexShort(cursor.getLong(INDEX.MASTER_KEY_ID.ordinal()));
+                boolean isExpired = cursor.getInt(INDEX.IS_EXPIRED.ordinal()) != 0;
+                boolean isRevoked = cursor.getInt(INDEX.IS_REVOKED.ordinal()) > 0;
+                boolean isVerified = cursor.getInt(INDEX.VERIFIED.ordinal()) > 0;
+                boolean isSecret = cursor.getInt(INDEX.HAS_SECRET.ordinal()) != 0;
 
                 Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 

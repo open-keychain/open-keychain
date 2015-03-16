@@ -134,12 +134,14 @@ public class AppsListFragment extends ListFragment implements
             "0 as " + TEMP_COLUMN_ICON_RES_ID // not used
     };
 
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_PACKAGE_NAME = 1;
-    private static final int INDEX_NAME = 2;
-    private static final int INDEX_INSTALLED = 3;
-    private static final int INDEX_REGISTERED = 4;
-    private static final int INDEX_ICON_RES_ID = 5;
+//    private static final int INDEX_ID = 0;
+//    private static final int INDEX_PACKAGE_NAME = 1;
+//    private static final int INDEX_NAME = 2;
+//    private static final int INDEX_INSTALLED = 3;
+//    private static final int INDEX_REGISTERED = 4;
+//    private static final int INDEX_ICON_RES_ID = 5;
+
+    private static enum INDEX{ ID, PACKAGE_NAME, NAME, INSTALLED, REGISTERED, ICON_RES_ID}
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -221,21 +223,21 @@ public class AppsListFragment extends ListFragment implements
                 switch (joinerResult) {
                     case LEFT: {
                         // handle case where a row in availableAppsCursor is unique
-                        String packageName = availableAppsCursor.getString(INDEX_PACKAGE_NAME);
+                        String packageName = availableAppsCursor.getString(INDEX.PACKAGE_NAME.ordinal());
 
                         mergedCursor.addRow(new Object[]{
                                 1, // no need for unique _ID
                                 packageName,
-                                availableAppsCursor.getString(INDEX_NAME),
+                                availableAppsCursor.getString(INDEX.NAME.ordinal()),
                                 isInstalled(packageName),
                                 0,
-                                availableAppsCursor.getInt(INDEX_ICON_RES_ID)
+                                availableAppsCursor.getInt(INDEX.ICON_RES_ID.ordinal())
                         });
                         break;
                     }
                     case RIGHT: {
                         // handle case where a row in data is unique
-                        String packageName = data.getString(INDEX_PACKAGE_NAME);
+                        String packageName = data.getString(INDEX.PACKAGE_NAME.ordinal());
 
                         mergedCursor.addRow(new Object[]{
                                 1, // no need for unique _ID
@@ -249,14 +251,14 @@ public class AppsListFragment extends ListFragment implements
                     }
                     case BOTH: {
                         // handle case where a row with the same key is in both cursors
-                        String packageName = data.getString(INDEX_PACKAGE_NAME);
+                        String packageName = data.getString(INDEX.PACKAGE_NAME.ordinal());
 
                         String name;
                         if (isInstalled(packageName) == 1) {
-                            name = data.getString(INDEX_NAME);
+                            name = data.getString(INDEX.NAME.ordinal());
                         } else {
                             // if not installed take name from available apps list
-                            name = availableAppsCursor.getString(INDEX_NAME);
+                            name = availableAppsCursor.getString(INDEX.NAME.ordinal());
                         }
 
                         mergedCursor.addRow(new Object[]{
@@ -303,7 +305,7 @@ public class AppsListFragment extends ListFragment implements
          */
         public String getItemPackageName(int position) {
             if (mDataValid && mCursor != null && mCursor.moveToPosition(position)) {
-                return mCursor.getString(INDEX_PACKAGE_NAME);
+                return mCursor.getString(INDEX.PACKAGE_NAME.ordinal());
             } else {
                 return null;
             }
@@ -311,12 +313,12 @@ public class AppsListFragment extends ListFragment implements
 
         public boolean getItemIsInstalled(int position) {
             return mDataValid && mCursor != null
-                    && mCursor.moveToPosition(position) && (mCursor.getInt(INDEX_INSTALLED) == 1);
+                    && mCursor.moveToPosition(position) && (mCursor.getInt(INDEX.INSTALLED.ordinal()) == 1);
         }
 
         public boolean getItemIsRegistered(int position) {
             return mDataValid && mCursor != null
-                    && mCursor.moveToPosition(position) && (mCursor.getInt(INDEX_REGISTERED) == 1);
+                    && mCursor.moveToPosition(position) && (mCursor.getInt(INDEX.REGISTERED.ordinal()) == 1);
         }
 
         @Override
@@ -325,11 +327,11 @@ public class AppsListFragment extends ListFragment implements
             ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
             ImageView installIcon = (ImageView) view.findViewById(R.id.api_apps_adapter_install_icon);
 
-            String packageName = cursor.getString(INDEX_PACKAGE_NAME);
+            String packageName = cursor.getString(INDEX.PACKAGE_NAME.ordinal());
             Log.d(Constants.TAG, "packageName: " + packageName);
-            int installed = cursor.getInt(INDEX_INSTALLED);
-            String name = cursor.getString(INDEX_NAME);
-            int iconResName = cursor.getInt(INDEX_ICON_RES_ID);
+            int installed = cursor.getInt(INDEX.INSTALLED.ordinal());
+            String name = cursor.getString(INDEX.NAME.ordinal());
+            int iconResName = cursor.getInt(INDEX.ICON_RES_ID.ordinal());
 
             // get application name and icon
             try {
