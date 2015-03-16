@@ -29,6 +29,7 @@ public interface EncryptActivityInterface {
 
     public boolean isUseArmor();
     public boolean isUseCompression();
+    public boolean isEncryptFilenames();
 
     public long getSignatureKey();
     public long[] getEncryptionKeys();

@@ -18,17 +18,27 @@
         android:id="@+id/check_use_symmetric"
         android:title="@string/label_symmetric"
         android:checkable="true" />
-    <item
-        android:id="@+id/check_use_armor"
-        android:title="@string/label_file_ascii_armor"
-        android:checkable="true" />
+
     <item
         android:id="@+id/check_delete_after_encrypt"
         android:title="@string/label_delete_after_encryption"
         android:checkable="true" />
+
     <item
         android:id="@+id/check_enable_compression"
         android:title="@string/label_enable_compression"
         android:checked="true"
         android:checkable="true" />
+
+    <item
+        android:id="@+id/encrypt_filenames"
+        android:title="@string/label_encrypt_filenames"
+        android:checked="true"
+        android:checkable="true" />
+
+    <item
+        android:id="@+id/check_use_armor"
+        android:title="@string/label_file_ascii_armor"
+        android:checkable="true" />
+    
 </menu>

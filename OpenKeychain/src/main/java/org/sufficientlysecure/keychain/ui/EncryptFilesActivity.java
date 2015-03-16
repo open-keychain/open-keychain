@@ -70,6 +70,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
+    private boolean mEncryptFilenames = true;
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
@@ -86,6 +87,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean isUseCompression() {
         return mUseCompression;
+    }
+
+    @Override
+    public boolean isEncryptFilenames() {
+        return mEncryptFilenames;
     }
 
     @Override
@@ -371,6 +377,12 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 notifyUpdate();
                 break;
             }
+            case R.id.encrypt_filenames: {
+                mEncryptFilenames = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+
             default: {
                 return super.onOptionsItemSelected(item);
             }

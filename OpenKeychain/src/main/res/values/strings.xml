@@ -141,7 +141,7 @@
     <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access YubiKeys over NFC"</string>
     <string name="label_asymmetric_from">"Signed by:"</string>
     <string name="label_to">"Encrypt to:"</string>
-    <string name="label_delete_after_encryption">"Delete file after encryption"</string>
+    <string name="label_delete_after_encryption">"Delete files after encryption"</string>
     <string name="label_delete_after_decryption">"Delete after decryption"</string>
     <string name="label_encryption_algorithm">"Encryption algorithm"</string>
     <string name="label_hash_algorithm">"Hash algorithm"</string>
@@ -167,6 +167,7 @@
     <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
+    <string name="label_encrypt_filenames">"Encrypt filenames"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>

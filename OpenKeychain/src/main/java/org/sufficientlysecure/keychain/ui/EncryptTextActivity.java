@@ -83,6 +83,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     }
 
     @Override
+    public boolean isEncryptFilenames() {
+        return false;
+    }
+
+    @Override
     public boolean isUseCompression() {
         return mUseCompression;
     }
