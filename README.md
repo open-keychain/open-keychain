@@ -1,3 +1,9 @@
+# Branch Description
+
+This is Valodim's topic branch for linked identities in OpenKeychain.
+Everything here is very much work-in-progress and subject to changes.
+Specification will follow.
+
 # OpenKeychain (for Android)
 
 OpenKeychain is an OpenPGP implementation for Android.  
