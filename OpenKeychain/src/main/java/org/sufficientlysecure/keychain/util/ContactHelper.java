@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -28,7 +27,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.Patterns;
 
@@ -302,10 +300,9 @@ public class ContactHelper {
         return new ArrayList<>(names);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
-                new String[]{ContactsContract.Data.DATA2}, null, null, null, null);
+                new String[]{ContactsContract.Data.DATA2}, null, null, null);
         if (contactMasterKey != null) {
             if (contactMasterKey.moveToNext()) {
                 return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
@@ -714,7 +711,6 @@ public class ContactHelper {
      *
      * @return raw contact id or -1 if not found
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static long findRawContactId(ContentResolver resolver, long masterKeyId) {
         long rawContactId = -1;
         Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
@@ -724,7 +720,7 @@ public class ContactHelper {
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
-                }, null, null);
+                }, null);
         if (raw != null) {
             if (raw.moveToNext()) {
                 rawContactId = raw.getLong(0);
