@@ -140,25 +140,25 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         // main user id
         String userId = entry.getUserIds().get(0);
-        String[] userIdSplit = KeyRing.splitUserId(userId);
+        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         // name
-        if (userIdSplit[0] != null) {
+        if (userIdSplit.name != null) {
             // show red user id if it is a secret key
             if (entry.isSecretKey()) {
                 holder.mainUserId.setText(mActivity.getString(R.string.secret_key)
-                        + " " + userIdSplit[0]);
+                        + " " + userIdSplit.name);
             } else {
-                holder.mainUserId.setText(highlighter.highlight(userIdSplit[0]));
+                holder.mainUserId.setText(highlighter.highlight(userIdSplit.name));
             }
         } else {
             holder.mainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
-        if (userIdSplit[1] != null) {
+        if (userIdSplit.email != null) {
             holder.mainUserIdRest.setVisibility(View.VISIBLE);
-            holder.mainUserIdRest.setText(highlighter.highlight(userIdSplit[1]));
+            holder.mainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
         } else {
             holder.mainUserIdRest.setVisibility(View.GONE);
         }

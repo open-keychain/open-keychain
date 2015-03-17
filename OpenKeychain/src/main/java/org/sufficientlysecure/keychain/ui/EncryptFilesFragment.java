@@ -137,17 +137,17 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             throw new IllegalStateException();
         }
         Uri inputUri = mEncryptInterface.getInputUris().get(0);
+        String targetName =
+                (mEncryptInterface.isEncryptFilenames() ? "1" : FileHelper.getFilename(getActivity(), inputUri))
+                        + (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            String targetName = FileHelper.getFilename(getActivity(), inputUri) +
-                    (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
             File targetFile = new File(parentDir, targetName);
             FileHelper.saveFile(this, getString(R.string.title_encrypt_to_file),
                     getString(R.string.specify_file_to_encrypt_to), targetFile, REQUEST_CODE_OUTPUT);
         } else {
-            FileHelper.saveDocument(this, "*/*", FileHelper.getFilename(getActivity(), inputUri) +
-                    (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg"), REQUEST_CODE_OUTPUT);
+            FileHelper.saveDocument(this, "*/*", targetName, REQUEST_CODE_OUTPUT);
         }
     }
 
@@ -158,10 +158,13 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
         }
         if (share) {
             mEncryptInterface.getOutputUris().clear();
+            int filenameCounter = 1;
             for (Uri uri : mEncryptInterface.getInputUris()) {
-                String targetName = FileHelper.getFilename(getActivity(), uri) +
-                        (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
+                String targetName =
+                        (mEncryptInterface.isEncryptFilenames() ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), uri))
+                                + (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
                 mEncryptInterface.getOutputUris().add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+                filenameCounter++;
             }
             mEncryptInterface.startEncrypt(true);
         } else {

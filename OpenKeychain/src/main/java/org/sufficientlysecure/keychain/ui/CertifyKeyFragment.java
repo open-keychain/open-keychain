@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -247,14 +246,14 @@ public class CertifyKeyFragment extends LoaderFragment
         while (!data.isAfterLast()) {
             long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
             String userId = data.getString(INDEX_USER_ID);
-            String[] pieces = KeyRing.splitUserId(userId);
+            KeyRing.UserId pieces = KeyRing.splitUserId(userId);
 
             // Two cases:
 
             boolean grouped = masterKeyId == lastMasterKeyId;
-            boolean subGrouped = data.isFirst() || grouped && lastName.equals(pieces[0]);
+            boolean subGrouped = data.isFirst() || grouped && lastName.equals(pieces.name);
             // Remember for next loop
-            lastName = pieces[0];
+            lastName = pieces.name;
 
             Log.d(Constants.TAG, Long.toString(masterKeyId, 16) + (grouped ? "grouped" : "not grouped"));
 

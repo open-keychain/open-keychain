@@ -263,6 +263,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                 KeyRings.IS_REVOKED,
                 KeyRings.HAS_ENCRYPT,
                 KeyRings.VERIFIED,
+                KeyRings.HAS_DUPLICATE_USER_ID,
+                KeyRings.CREATION,
         };
 
         String inMasterKeyList = null;

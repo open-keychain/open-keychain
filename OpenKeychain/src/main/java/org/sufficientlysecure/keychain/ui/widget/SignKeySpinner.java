@@ -59,7 +59,9 @@ public class SignKeySpinner extends KeySpinner {
                 KeychainContract.KeyRings.IS_REVOKED,
                 KeychainContract.KeyRings.IS_EXPIRED,
                 KeychainContract.KeyRings.HAS_SIGN,
-                KeychainContract.KeyRings.HAS_ANY_SECRET
+                KeychainContract.KeyRings.HAS_ANY_SECRET,
+                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
+                KeychainContract.KeyRings.CREATION
         };
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";

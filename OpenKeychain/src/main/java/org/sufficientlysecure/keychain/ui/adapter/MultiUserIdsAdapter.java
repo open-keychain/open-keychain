@@ -33,7 +33,6 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.util.ArrayList;
 
@@ -81,35 +80,40 @@ public class MultiUserIdsAdapter extends CursorAdapter {
         ArrayList<String> uids = p.createStringArrayList();
         p.recycle();
 
-        if (isHeader == 1) {
-            long masterKeyId = cursor.getLong(0);
-            vHeaderId.setVisibility(View.VISIBLE);
-            String message = mContext.getString(R.string.section_uids_to_certify) +
-                    KeyFormattingUtils.beautifyKeyIdWithPrefix(mContext, masterKeyId);
-            vHeaderId.setText(message);
-        } else {
-            vHeaderId.setVisibility(View.GONE);
-        }
-
         { // first one
             String userId = uids.get(0);
-            String[] splitUserId = KeyRing.splitUserId(userId);
-            if (splitUserId[0] != null) {
-                vName.setText(splitUserId[0]);
+            KeyRing.UserId splitUserId = KeyRing.splitUserId(userId);
+            if (splitUserId.name != null) {
+                vName.setText(splitUserId.name);
             } else {
                 vName.setText(R.string.user_id_no_name);
+            }
+
+            if (isHeader == 1) {
+                vHeaderId.setVisibility(View.VISIBLE);
+                String message;
+                if (splitUserId.name != null) {
+                    message = mContext.getString(R.string.section_uids_to_certify) +
+                            splitUserId.name;
+                } else {
+                    message = mContext.getString(R.string.section_uids_to_certify) +
+                           context.getString(R.string.user_id_no_name);
+                }
+                vHeaderId.setText(message);
+            } else {
+                vHeaderId.setVisibility(View.GONE);
             }
         }
 
         StringBuilder lines = new StringBuilder();
         for (String uid : uids) {
-            String[] splitUserId = KeyRing.splitUserId(uid);
-            if (splitUserId[1] == null) {
+            KeyRing.UserId splitUserId = KeyRing.splitUserId(uid);
+            if (splitUserId.email == null) {
                 continue;
             }
-            lines.append(splitUserId[1]);
-            if (splitUserId[2] != null) {
-                lines.append(" (").append(splitUserId[2]).append(")");
+            lines.append(splitUserId.email);
+            if (splitUserId.comment != null) {
+                lines.append(" (").append(splitUserId.comment).append(")");
             }
             lines.append('\n');
         }

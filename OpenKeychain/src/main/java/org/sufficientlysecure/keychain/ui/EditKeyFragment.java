@@ -545,7 +545,7 @@ public class EditKeyFragment extends LoaderFragment implements
         Messenger messenger = new Messenger(returnHandler);
 
         // pre-fill out primary name
-        String predefinedName = KeyRing.splitUserId(mPrimaryUserId)[0];
+        String predefinedName = KeyRing.splitUserId(mPrimaryUserId).name;
         AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
                 predefinedName);
 

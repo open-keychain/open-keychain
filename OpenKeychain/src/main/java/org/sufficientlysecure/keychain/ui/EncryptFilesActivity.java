@@ -62,14 +62,18 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
-    private long mEncryptionKeyIds[] = null;
-    private String mEncryptionUserIds[] = null;
-    private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
+    private boolean mEncryptFilenames = true;
+    private boolean mHiddenRecipients = false;
+
+    private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
+    private long mSigningKeyId = Constants.key.none;
+    private String mPassphrase = "";
+
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
@@ -86,6 +90,16 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean isUseCompression() {
         return mUseCompression;
+    }
+
+    @Override
+    public boolean isEncryptFilenames() {
+        return mEncryptFilenames;
+    }
+
+    @Override
+    public boolean isHiddenRecipients() {
+        return mHiddenRecipients;
     }
 
     @Override
@@ -222,6 +236,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
@@ -268,14 +283,14 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
         }
-        sendIntent.setType("application/octet-stream");
+        sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
-                String[] userId = KeyRing.splitUserId(user);
-                if (userId[1] != null) {
-                    users.add(userId[1]);
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
                 }
             }
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
@@ -368,6 +383,16 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             }
             case R.id.check_enable_compression: {
                 mUseCompression = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+            case R.id.check_encrypt_filenames: {
+                mEncryptFilenames = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+            case R.id.check_hidden_recipients: {
+                mHiddenRecipients = item.isChecked();
                 notifyUpdate();
                 break;
             }

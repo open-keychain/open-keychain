@@ -92,20 +92,20 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
         // save reference to model item
         holder.mModel = getItem(position);
 
-        String[] splitUserId = KeyRing.splitUserId(holder.mModel);
-        if (splitUserId[0] != null) {
-            holder.vName.setText(splitUserId[0]);
+        KeyRing.UserId splitUserId = KeyRing.splitUserId(holder.mModel);
+        if (splitUserId.name != null) {
+            holder.vName.setText(splitUserId.name);
         } else {
             holder.vName.setText(R.string.user_id_no_name);
         }
-        if (splitUserId[1] != null) {
-            holder.vAddress.setText(splitUserId[1]);
+        if (splitUserId.email != null) {
+            holder.vAddress.setText(splitUserId.email);
             holder.vAddress.setVisibility(View.VISIBLE);
         } else {
             holder.vAddress.setVisibility(View.GONE);
         }
-        if (splitUserId[2] != null) {
-            holder.vComment.setText(splitUserId[2]);
+        if (splitUserId.comment != null) {
+            holder.vComment.setText(splitUserId.comment);
             holder.vComment.setVisibility(View.VISIBLE);
         } else {
             holder.vComment.setVisibility(View.GONE);

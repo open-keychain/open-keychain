@@ -128,14 +128,14 @@ public abstract class DecryptFragment extends Fragment {
             mSignatureKeyId = signatureResult.getKeyId();
 
             String userId = signatureResult.getPrimaryUserId();
-            String[] userIdSplit = KeyRing.splitUserId(userId);
-            if (userIdSplit[0] != null) {
-                mSignatureName.setText(userIdSplit[0]);
+            KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+            if (userIdSplit.name != null) {
+                mSignatureName.setText(userIdSplit.name);
             } else {
                 mSignatureName.setText(R.string.user_id_no_name);
             }
-            if (userIdSplit[1] != null) {
-                mSignatureEmail.setText(userIdSplit[1]);
+            if (userIdSplit.email != null) {
+                mSignatureEmail.setText(userIdSplit.email);
             } else {
                 mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), mSignatureKeyId));
             }

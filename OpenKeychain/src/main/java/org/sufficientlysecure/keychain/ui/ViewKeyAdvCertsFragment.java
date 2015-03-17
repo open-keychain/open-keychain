@@ -237,9 +237,9 @@ public class ViewKeyAdvCertsFragment extends LoaderFragment implements
             TextView wSignStatus = (TextView) view.findViewById(R.id.signStatus);
 
             String signerKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(getActivity(), cursor.getLong(mIndexSignerKeyId));
-            String[] userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
-            if (userId[0] != null) {
-                wSignerName.setText(userId[0]);
+            KeyRing.UserId userId = KeyRing.splitUserId(cursor.getString(mIndexSignerUserId));
+            if (userId.name != null) {
+                wSignerName.setText(userId.name);
             } else {
                 wSignerName.setText(R.string.user_id_no_name);
             }

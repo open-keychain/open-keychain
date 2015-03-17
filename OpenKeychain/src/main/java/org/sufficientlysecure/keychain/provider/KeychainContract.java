@@ -123,6 +123,7 @@ public class KeychainContract {
         public static final String HAS_SIGN = "has_sign";
         public static final String HAS_CERTIFY = "has_certify";
         public static final String HAS_AUTHENTICATE = "has_authenticate";
+        public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
         public static final String PUBKEY_DATA = "pubkey_data";
         public static final String PRIVKEY_DATA = "privkey_data";
 

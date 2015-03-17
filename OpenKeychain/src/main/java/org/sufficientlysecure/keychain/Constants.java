@@ -42,6 +42,11 @@ public final class Constants {
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 
+    // as defined in http://tools.ietf.org/html/rfc3156
+    // we don't use application/pgp-encrypted as it only holds the version number
+    public static final String ENCRYPTED_FILES_MIME = "application/octet-stream";
+    public static final String ENCRYPTED_TEXT_MIME = "text/plain";
+
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 

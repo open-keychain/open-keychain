@@ -36,8 +36,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/keyspinner_key_id"
-            android:text="12345"
+            android:id="@+id/keyspinner_duplicate"
+            android:text="creation: bla"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"

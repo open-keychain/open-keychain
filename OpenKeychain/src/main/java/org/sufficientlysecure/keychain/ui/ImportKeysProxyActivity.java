@@ -154,7 +154,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         String fingerprint = null;
 
         // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
-        if (uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
+        if (uri != null && uri.getScheme() != null && uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
         }
 

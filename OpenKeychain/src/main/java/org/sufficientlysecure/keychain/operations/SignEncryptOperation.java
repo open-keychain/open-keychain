@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2014-2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
@@ -48,6 +65,7 @@ public class SignEncryptOperation extends BaseOperation {
         byte[] inputBytes = input.getBytes();
         byte[] outputBytes = null;
 
+        int total = inputBytes != null ? 1 : inputUris.size(), count = 0;
         ArrayList<PgpSignEncryptResult> results = new ArrayList<>();
 
         do {
@@ -104,7 +122,7 @@ public class SignEncryptOperation extends BaseOperation {
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mProviderHelper,
-                    new ProgressScaler(), mCancelled);
+                    new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
             PgpSignEncryptResult result = op.execute(input, inputData, outStream);
             results.add(result);
             log.add(result, 2);
