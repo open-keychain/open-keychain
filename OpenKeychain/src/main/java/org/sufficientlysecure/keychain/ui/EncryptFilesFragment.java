@@ -139,7 +139,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
         Uri inputUri = mEncryptInterface.getInputUris().get(0);
         String targetName =
                 (mEncryptInterface.isEncryptFilenames() ? "1" : FileHelper.getFilename(getActivity(), inputUri))
-                        + (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
+                        + (mEncryptInterface.isUseArmor() ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
@@ -162,7 +162,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             for (Uri uri : mEncryptInterface.getInputUris()) {
                 String targetName =
                         (mEncryptInterface.isEncryptFilenames() ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), uri))
-                                + (mEncryptInterface.isUseArmor() ? ".asc" : ".gpg");
+                                + (mEncryptInterface.isUseArmor() ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
                 mEncryptInterface.getOutputUris().add(TemporaryStorageProvider.createFile(getActivity(), targetName));
                 filenameCounter++;
             }

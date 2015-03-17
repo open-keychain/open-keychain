@@ -147,7 +147,9 @@ public class DecryptFilesFragment extends DecryptFragment {
     }
 
     private String removeEncryptedAppend(String name) {
-        if (name.endsWith(".asc") || name.endsWith(".gpg") || name.endsWith(".pgp")) {
+        if (name.endsWith(Constants.FILE_EXTENSION_ASC)
+                || name.endsWith(Constants.FILE_EXTENSION_PGP_MAIN)
+                || name.endsWith(Constants.FILE_EXTENSION_PGP_ALTERNATE)) {
             return name.substring(0, name.length() - 4);
         }
         return name;

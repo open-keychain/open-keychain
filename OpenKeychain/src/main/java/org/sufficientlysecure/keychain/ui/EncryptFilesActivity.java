@@ -391,11 +391,11 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 notifyUpdate();
                 break;
             }
-            case R.id.check_hidden_recipients: {
-                mHiddenRecipients = item.isChecked();
-                notifyUpdate();
-                break;
-            }
+//            case R.id.check_hidden_recipients: {
+//                mHiddenRecipients = item.isChecked();
+//                notifyUpdate();
+//                break;
+//            }
             default: {
                 return super.onOptionsItemSelected(item);
             }

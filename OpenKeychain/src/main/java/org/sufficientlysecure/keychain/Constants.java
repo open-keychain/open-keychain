@@ -47,6 +47,10 @@ public final class Constants {
     public static final String ENCRYPTED_FILES_MIME = "application/octet-stream";
     public static final String ENCRYPTED_TEXT_MIME = "text/plain";
 
+    public static final String FILE_EXTENSION_PGP_MAIN = ".gpg";
+    public static final String FILE_EXTENSION_PGP_ALTERNATE = ".pgp";
+    public static final String FILE_EXTENSION_ASC = ".asc";
+
     // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
