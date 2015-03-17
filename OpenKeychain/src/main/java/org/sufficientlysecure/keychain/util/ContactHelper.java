@@ -413,13 +413,6 @@ public class ContactHelper {
 
     public static enum INDEX{ MASTER_KEY_ID, USER_ID, IS_EXPIRED, IS_REVOKED, VERIFIED, HAS_SECRET, HAS_ANY_SECRET;}
 
-//    public static final int INDEX_MASTER_KEY_ID = 0;
-//    public static final int INDEX_USER_ID = 1;
-//    public static final int INDEX_IS_EXPIRED = 2;
-//    public static final int INDEX_IS_REVOKED = 3;
-//    public static final int INDEX_VERIFIED = 4;
-//    public static final int INDEX_HAS_SECRET = 5;
-
     /**
      * Write/Update the current OpenKeychain keys to the contact db
      */
