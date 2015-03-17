@@ -414,7 +414,7 @@
         <activity
             android:name=".ui.ViewKeyAdvActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_advanced_key_info"/>
+            android:label="@string/title_advanced_key_info" />
         <activity
             android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -657,6 +657,10 @@
                 android:value=".ui.MainActivity" />
         </activity>
         <activity
+            android:name=".ui.LogDisplayActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_log_display" />
+        <activity
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
@@ -743,13 +747,10 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".ui.LogDisplayActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_log_display"
-            android:exported="false" />
-
-        <service android:name=".service.DummyAccountService">
+        <!-- Contact Sync services -->
+        <service
+            android:name=".service.DummyAccountService"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -761,7 +762,8 @@
         <service
             android:name=".service.ContactSyncAdapterService"
             android:exported="true"
-            android:process=":sync">
+            android:process=":sync"
+            tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -774,6 +776,7 @@
                 android:resource="@xml/custom_pgp_contacts_structure" />
         </service>
 
+        <!-- Storage Provider for temporary decrypted files -->
         <provider
             android:name=".provider.TemporaryStorageProvider"
             android:authorities="org.sufficientlysecure.keychain.tempstorage"
