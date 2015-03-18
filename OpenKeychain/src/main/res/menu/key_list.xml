@@ -13,6 +13,10 @@
         android:id="@+id/menu_key_list_export"
         android:title="@string/menu_export_all_keys"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_key_list_import"
+        android:title="@string/menu_import_all_keys"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_key_list_create"

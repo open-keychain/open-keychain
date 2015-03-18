@@ -105,6 +105,7 @@
     <string name="menu_preferences">"Settings"</string>
     <string name="menu_help">"Help"</string>
     <string name="menu_export_key">"Export to file"</string>
+    <string name="menu_import_key">"Import from file"</string>
     <string name="menu_delete_key">"Delete key"</string>
     <string name="menu_create_key">"Create my key"</string>
     <string name="menu_import_existing_key">"Import from file"</string>
@@ -117,6 +118,7 @@
     <string name="menu_add_keys">"Add keys"</string>
     <string name="menu_search_cloud">"Search cloud"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
+    <string name="menu_import_all_keys">"Import all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
     <string name="menu_export_log">"Export Log"</string>

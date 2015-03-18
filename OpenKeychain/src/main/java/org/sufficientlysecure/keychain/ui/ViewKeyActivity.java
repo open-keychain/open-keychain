@@ -91,8 +91,8 @@ public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_DELETE= 2;
-    static final int REQUEST_EXPORT= 3;
+    static final int REQUEST_DELETE = 2;
+    static final int REQUEST_EXPORT = 3;
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -310,8 +310,8 @@ public class ViewKeyActivity extends BaseActivity implements
                 return true;
             }
             case R.id.menu_key_view_export_file: {
-                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
-                long keyId=0;
+                Intent mIntent = new Intent(this, PassphraseDialogActivity.class);
+                long keyId = 0;
                 try {
                     keyId = new ProviderHelper(this)
                             .getCachedPublicKeyRing(mDataUri)
@@ -319,13 +319,13 @@ public class ViewKeyActivity extends BaseActivity implements
                 } catch (PgpKeyNotFoundException e) {
                     e.printStackTrace();
                 }
-                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
-                startActivityForResult(mIntent,REQUEST_EXPORT);
+                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, keyId);
+                startActivityForResult(mIntent, REQUEST_EXPORT);
                 return true;
             }
             case R.id.menu_key_view_delete: {
-                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
-                long keyId=0;
+                Intent mIntent = new Intent(this, PassphraseDialogActivity.class);
+                long keyId = 0;
                 try {
                     keyId = new ProviderHelper(this)
                             .getCachedPublicKeyRing(mDataUri)
@@ -333,8 +333,8 @@ public class ViewKeyActivity extends BaseActivity implements
                 } catch (PgpKeyNotFoundException e) {
                     e.printStackTrace();
                 }
-                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
-                startActivityForResult(mIntent,REQUEST_DELETE);
+                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, keyId);
+                startActivityForResult(mIntent, REQUEST_DELETE);
                 return true;
             }
             case R.id.menu_key_view_advanced: {
@@ -358,6 +358,12 @@ public class ViewKeyActivity extends BaseActivity implements
             case R.id.menu_key_view_certify_fingerprint: {
                 certifyFingeprint(mDataUri);
                 return true;
+            }
+            case R.id.menu_key_view_import_file: {
+                Intent intentImportExisting = new Intent(ViewKeyActivity.this, ImportKeysActivity.class);
+                intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+                startActivityForResult(intentImportExisting, 0);
+                break;
             }
         }
         return super.onOptionsItemSelected(item);
@@ -530,10 +536,10 @@ public class ViewKeyActivity extends BaseActivity implements
             return;
         }
 
-        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK) {
             deleteKey(mDataUri, mExportHelper);
         }
-        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK) {
             try {
                 exportToFile(mDataUri, mExportHelper, mProviderHelper);
             } catch (ProviderHelper.NotFoundException e) {
