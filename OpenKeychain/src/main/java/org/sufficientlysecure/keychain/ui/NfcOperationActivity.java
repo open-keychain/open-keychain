@@ -182,17 +182,17 @@ public class NfcOperationActivity extends BaseActivity {
 
             case NFC_DECRYPT:
 
-                for (int i = 0; i < mNfcOperations.mInputHash.length; i++) {
-                    byte[] hash = mNfcOperations.mInputHash[i];
+                for (int i = 0; i < mNfcOperations.mInputHashes.length; i++) {
+                    byte[] hash = mNfcOperations.mInputHashes[i];
                     byte[] decryptedSessionKey = nfcDecryptSessionKey(hash);
                     resultData.addCryptoData(hash, decryptedSessionKey);
                 }
                 break;
 
             case NFC_SIGN:
-                for (int i = 0; i < mNfcOperations.mInputHash.length; i++) {
-                    byte[] hash = mNfcOperations.mInputHash[i];
-                    int algo = mNfcOperations.mSignAlgo[i];
+                for (int i = 0; i < mNfcOperations.mInputHashes.length; i++) {
+                    byte[] hash = mNfcOperations.mInputHashes[i];
+                    int algo = mNfcOperations.mSignAlgos[i];
                     byte[] signedHash = nfcCalculateSignature(hash, algo);
                     resultData.addCryptoData(hash, signedHash);
                 }

@@ -44,8 +44,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -283,7 +281,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
             try {
                 boolean cleartext = input.isCleartextSignature() && input.isEnableAsciiArmorOutput() && !enableEncryption;
-                signatureGenerator = signingKey.getSignatureGenerator(
+                signatureGenerator = signingKey.getDataSignatureGenerator(
                         input.getSignatureHashAlgorithm(), cleartext,
                         input.getCryptoData(), input.getSignatureTime());
             } catch (PgpGeneralException e) {

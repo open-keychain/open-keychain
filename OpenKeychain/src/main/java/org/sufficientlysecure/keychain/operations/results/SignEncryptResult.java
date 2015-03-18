@@ -31,6 +31,7 @@ public class SignEncryptResult extends OperationResult {
 
     public static final int RESULT_PENDING = RESULT_ERROR + 8;
 
+
     public PgpSignEncryptResult getPending() {
         for (PgpSignEncryptResult sub : mResults) {
             if (sub.isPending()) {

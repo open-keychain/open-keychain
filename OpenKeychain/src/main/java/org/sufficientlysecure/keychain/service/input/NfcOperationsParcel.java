@@ -1,5 +1,7 @@
 package org.sufficientlysecure.keychain.service.input;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import android.os.Parcel;
@@ -14,13 +16,14 @@ public class NfcOperationsParcel implements Parcelable {
 
     public Date mSignatureTime;
     public final NfcOperationType mType;
-    public final byte[][] mInputHash;
-    public final int[] mSignAlgo;
+    public final byte[][] mInputHashes;
+    public final int[] mSignAlgos;
 
-    private NfcOperationsParcel(NfcOperationType type, byte[] inputHash, int signAlgo, Date signatureTime) {
+    private NfcOperationsParcel(NfcOperationType type, byte[][] inputHashes,
+            int[] signAlgos, Date signatureTime) {
         mType = type;
-        mInputHash = new byte[][] { inputHash };
-        mSignAlgo = new int[] { signAlgo };
+        mInputHashes = inputHashes;
+        mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
     }
 
@@ -29,11 +32,11 @@ public class NfcOperationsParcel implements Parcelable {
 
         {
             int count = source.readInt();
-            mInputHash = new byte[count][];
-            mSignAlgo = new int[count];
+            mInputHashes = new byte[count][];
+            mSignAlgos = new int[count];
             for (int i = 0; i < count; i++) {
-                mInputHash[i] = source.createByteArray();
-                mSignAlgo[i] = source.readInt();
+                mInputHashes[i] = source.createByteArray();
+                mSignAlgos[i] = source.readInt();
             }
         }
 
@@ -43,11 +46,13 @@ public class NfcOperationsParcel implements Parcelable {
 
     public static NfcOperationsParcel createNfcSignOperation(
             byte[] inputHash, int signAlgo, Date signatureTime) {
-        return new NfcOperationsParcel(NfcOperationType.NFC_SIGN, inputHash, signAlgo, signatureTime);
+        return new NfcOperationsParcel(NfcOperationType.NFC_SIGN,
+                new byte[][] { inputHash }, new int[] { signAlgo }, signatureTime);
     }
 
     public static NfcOperationsParcel createNfcDecryptOperation(byte[] inputHash) {
-        return new NfcOperationsParcel(NfcOperationType.NFC_DECRYPT, inputHash, 0, null);
+        return new NfcOperationsParcel(NfcOperationType.NFC_DECRYPT,
+                new byte[][] { inputHash }, null, null);
     }
 
     @Override
@@ -58,10 +63,10 @@ public class NfcOperationsParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mType.ordinal());
-        dest.writeInt(mInputHash.length);
-        for (int i = 0; i < mInputHash.length; i++) {
-            dest.writeByteArray(mInputHash[i]);
-            dest.writeInt(mSignAlgo[i]);
+        dest.writeInt(mInputHashes.length);
+        for (int i = 0; i < mInputHashes.length; i++) {
+            dest.writeByteArray(mInputHashes[i]);
+            dest.writeInt(mSignAlgos[i]);
         }
         if (mSignatureTime != null) {
             dest.writeInt(1);
@@ -81,5 +86,51 @@ public class NfcOperationsParcel implements Parcelable {
             return new NfcOperationsParcel[size];
         }
     };
+
+    public static class NfcSignOperationsBuilder {
+        Date mSignatureTime;
+        ArrayList<Integer> mSignAlgos = new ArrayList<>();
+        ArrayList<byte[]> mInputHashes = new ArrayList<>();
+
+        public NfcSignOperationsBuilder(Date signatureTime) {
+            mSignatureTime = signatureTime;
+        }
+
+        public NfcOperationsParcel build() {
+            byte[][] inputHashes = new byte[mInputHashes.size()][];
+            mInputHashes.toArray(inputHashes);
+            int[] signAlgos = new int[mSignAlgos.size()];
+            for (int i = 0; i < mSignAlgos.size(); i++) {
+                signAlgos[i] = mSignAlgos.get(i);
+            }
+
+            return new NfcOperationsParcel(NfcOperationType.NFC_SIGN,
+                    inputHashes, signAlgos, mSignatureTime);
+        }
+
+        public void addHash(byte[] hash, int algo) {
+            mInputHashes.add(hash);
+            mSignAlgos.add(algo);
+        }
+
+        public void addAll(NfcOperationsParcel input) {
+            if (!mSignatureTime.equals(input.mSignatureTime)) {
+                throw new AssertionError("input times must match, this is a programming error!");
+            }
+            if (input.mType != NfcOperationType.NFC_SIGN) {
+                throw new AssertionError("operation types must match, this is a progrmming error!");
+            }
+
+            Collections.addAll(mInputHashes, input.mInputHashes);
+            for (int signAlgo : input.mSignAlgos) {
+                mSignAlgos.add(signAlgo);
+            }
+        }
+
+        public boolean isEmpty() {
+            return mInputHashes.isEmpty();
+        }
+
+    }
 
 }

@@ -22,8 +22,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -42,9 +44,9 @@ public class CertifyActionsParcel implements Parcelable {
     public ArrayList<CertifyAction> mCertifyActions = new ArrayList<>();
     public CryptoInputParcel mCryptoInput;
 
-    public CertifyActionsParcel(Date operationTime, long masterKeyId) {
+    public CertifyActionsParcel(CryptoInputParcel cryptoInput, long masterKeyId) {
         mMasterKeyId = masterKeyId;
-        mCryptoInput = new CryptoInputParcel(operationTime);
+        mCryptoInput = cryptoInput != null ? cryptoInput : new CryptoInputParcel(new Date());
         mLevel = CertifyLevel.DEFAULT;
     }
 
@@ -68,6 +70,14 @@ public class CertifyActionsParcel implements Parcelable {
         destination.writeInt(mLevel.ordinal());
 
         destination.writeSerializable(mCertifyActions);
+    }
+
+    public Map<ByteBuffer, byte[]> getSignatureData() {
+        return mCryptoInput.getCryptoData();
+    }
+
+    public Date getSignatureTime() {
+        return mCryptoInput.getSignatureTime();
     }
 
     public static final Creator<CertifyActionsParcel> CREATOR = new Creator<CertifyActionsParcel>() {

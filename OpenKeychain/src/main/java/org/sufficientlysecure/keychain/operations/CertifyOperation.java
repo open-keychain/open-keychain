@@ -30,6 +30,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -38,6 +40,8 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -73,10 +77,6 @@ public class CertifyOperation extends BaseOperation {
                     mProviderHelper.getCanonicalizedSecretKeyRing(parcel.mMasterKeyId);
             log.add(LogType.MSG_CRT_UNLOCK, 1);
             certificationKey = secretKeyRing.getSecretKey();
-            if (certificationKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
-                log.add(LogType.MSG_CRT_ERROR_DIVERT, 2);
-                return new CertifyResult(CertifyResult.RESULT_ERROR, log);
-            }
 
             // certification is always with the master key id, so use that one
             String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
@@ -102,6 +102,8 @@ public class CertifyOperation extends BaseOperation {
 
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
+        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(parcel.getSignatureTime());
+
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {
 
@@ -122,34 +124,32 @@ public class CertifyOperation extends BaseOperation {
                 CanonicalizedPublicKeyRing publicRing =
                         mProviderHelper.getCanonicalizedPublicKeyRing(action.mMasterKeyId);
 
-                UncachedKeyRing certifiedKey = null;
-                if (action.mUserIds != null) {
-                    log.add(LogType.MSG_CRT_CERTIFY_UIDS, 2, action.mUserIds.size(),
-                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
+                PgpCertifyOperation op = new PgpCertifyOperation();
+                PgpCertifyResult result = op.certify(certificationKey, publicRing,
+                        log, 2, action, parcel.getSignatureData(), parcel.getSignatureTime());
 
-                    certifiedKey = certificationKey.certifyUserIds(
-                            publicRing, action.mUserIds, null, null);
-                }
-
-                if (action.mUserAttributes != null) {
-                    log.add(LogType.MSG_CRT_CERTIFY_UATS, 2, action.mUserAttributes.size(),
-                            KeyFormattingUtils.convertKeyIdToHex(action.mMasterKeyId));
-
-                    certifiedKey = certificationKey.certifyUserAttributes(
-                            publicRing, action.mUserAttributes, null, null);
-                }
-
-                if (certifiedKey == null) {
+                if (!result.success()) {
                     certifyError += 1;
-                    log.add(LogType.MSG_CRT_WARN_CERT_FAILED, 3);
+                    continue;
                 }
-                certifiedKeys.add(certifiedKey);
+                if (result.nfcInputRequired()) {
+                    NfcOperationsParcel requiredInput = result.getRequiredInput();
+                    allRequiredInput.addAll(requiredInput);
+                    continue;
+                }
+
+                certifiedKeys.add(result.getCertifiedRing());
 
             } catch (NotFoundException e) {
                 certifyError += 1;
                 log.add(LogType.MSG_CRT_WARN_NOT_FOUND, 3);
             }
 
+        }
+
+        if ( ! allRequiredInput.isEmpty()) {
+            log.add(LogType.MSG_CRT_NFC_RETURN, 1);
+            return new CertifyResult(log, allRequiredInput.build());
         }
 
         log.add(LogType.MSG_CRT_SAVING, 1);

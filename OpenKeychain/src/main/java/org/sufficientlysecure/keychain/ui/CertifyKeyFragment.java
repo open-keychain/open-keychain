@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
@@ -66,13 +66,10 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
 
 
-public class CertifyKeyFragment extends LoaderFragment
+public class CertifyKeyFragment extends CryptoOperationFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
     private CheckBox mUploadKeyCheckbox;
     ListView mUserIds;
@@ -102,9 +99,6 @@ public class CertifyKeyFragment extends LoaderFragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Start out with a progress indicator.
-        setContentShown(false);
-
         mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(CertifyKeyActivity.EXTRA_KEY_IDS);
         if (mPubMasterKeyIds == null) {
             Log.e(Constants.TAG, "List of key ids to certify missing!");
@@ -114,6 +108,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
         mPassthroughMessenger = getActivity().getIntent().getParcelableExtra(
                 KeychainIntentService.EXTRA_MESSENGER);
+        mPassthroughMessenger = null; // TODO remove, development hack
 
         // preselect certify key id if given
         long certifyKeyId = getActivity().getIntent().getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
@@ -143,9 +138,7 @@ public class CertifyKeyFragment extends LoaderFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-
-        View view = inflater.inflate(R.layout.certify_key_fragment, getContainer());
+        View view = inflater.inflate(R.layout.certify_key_fragment, null);
 
         mCertifyKeySpinner = (CertifyKeySpinner) view.findViewById(R.id.certify_key_spinner);
         mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.sign_key_upload_checkbox);
@@ -173,7 +166,7 @@ public class CertifyKeyFragment extends LoaderFragment
                     Notify.showNotify(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR);
                 } else {
-                    initiateCertifying();
+                    cryptoOperation();
                 }
             }
         });
@@ -183,7 +176,7 @@ public class CertifyKeyFragment extends LoaderFragment
             mUploadKeyCheckbox.setChecked(false);
         }
 
-        return root;
+        return view;
     }
 
     @Override
@@ -307,7 +300,6 @@ public class CertifyKeyFragment extends LoaderFragment
         }
 
         mUserIdsAdapter.swapCursor(matrix);
-        setContentShown(true, isResumed());
     }
 
     @Override
@@ -315,50 +307,17 @@ public class CertifyKeyFragment extends LoaderFragment
         mUserIdsAdapter.swapCursor(null);
     }
 
-    /**
-     * handles the UI bits of the signing process on the UI thread
-     */
-    private void initiateCertifying() {
-        // get the user's passphrase for this key (if required)
-        String passphrase;
-        try {
-            passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(), mSignMasterKeyId, mSignMasterKeyId);
-        } catch (PassphraseCacheService.KeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key not found!", e);
-            getActivity().finish();
-            return;
-        }
-        if (passphrase == null) {
-            Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mSignMasterKeyId);
-            startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-            // bail out; need to wait until the user has entered the passphrase before trying again
-        } else {
-            startCertifying();
-        }
+    protected void cryptoOperation() {
+        cryptoOperation((CryptoInputParcel) null);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PASSPHRASE: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    startCertifying();
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-        }
+    protected void cryptoOperation(String passphrase) {
+        cryptoOperation((CryptoInputParcel) null);
     }
 
-    /**
-     * kicks off the actual signing process on a background thread
-     */
-    private void startCertifying() {
+    @Override
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         // Bail out if there is not at least one user id selected
         ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
         if (certifyActions.isEmpty()) {
@@ -370,7 +329,7 @@ public class CertifyKeyFragment extends LoaderFragment
         Bundle data = new Bundle();
         {
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(new Date(), mSignMasterKeyId);
+            CertifyActionsParcel parcel = new CertifyActionsParcel(cryptoInput, mSignMasterKeyId);
             parcel.mCertifyActions.addAll(certifyActions);
 
             data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
@@ -390,14 +349,21 @@ public class CertifyKeyFragment extends LoaderFragment
         } else {
 
             // Message is received after signing is done in KeychainIntentService
-            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                    getString(R.string.progress_certifying), ProgressDialog.STYLE_SPINNER, true) {
+            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                    getActivity(), getString(R.string.progress_certifying),
+                    ProgressDialog.STYLE_SPINNER, true) {
                 public void handleMessage(Message message) {
-                    // handle messages by standard KeychainIntentServiceHandler first
+                    // handle messages by KeychainIntentCryptoServiceHandler first
                     super.handleMessage(message);
+
+                    // handle pending messages
+                    if (handlePendingMessage(message)) {
+                        return;
+                    }
 
                     if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                         Bundle data = message.getData();
+
                         CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 
                         Intent intent = new Intent();
