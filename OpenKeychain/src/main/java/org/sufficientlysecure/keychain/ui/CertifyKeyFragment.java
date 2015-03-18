@@ -66,6 +66,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
+
 
 public class CertifyKeyFragment extends LoaderFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -368,7 +370,7 @@ public class CertifyKeyFragment extends LoaderFragment
         Bundle data = new Bundle();
         {
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
+            CertifyActionsParcel parcel = new CertifyActionsParcel(new Date(), mSignMasterKeyId);
             parcel.mCertifyActions.addAll(certifyActions);
 
             data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
