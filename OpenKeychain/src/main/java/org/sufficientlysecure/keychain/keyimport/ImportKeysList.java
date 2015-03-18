@@ -70,6 +70,7 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             modified = true;
         }
 
+        // keep track if this key result is from a HKP keyserver
         boolean incomingFromHkpServer = true;
         // we’re going to want to try to fetch the key from everywhere we found it, so remember
         //  all the origins
@@ -79,6 +80,7 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             // to work properly, Keybase-sourced entries need to pass along the extra
             if (KeybaseKeyserver.ORIGIN.equals(origin)) {
                 existing.setExtraData(incoming.getExtraData());
+                // one of the origins is not a HKP keyserver
                 incomingFromHkpServer = false;
             }
         }
@@ -87,6 +89,10 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
         ArrayList<String> existingIDs = existing.getUserIds();
         for (String incomingID : incomingIDs) {
             if (!existingIDs.contains(incomingID)) {
+                // prepend  HKP server results to the start of the list,
+                // so that the UI (for cloud key search, which is picking the first list item)
+                // shows the right main email address, as mail addresses returned by HKP servers
+                // are preferred over keybase.io IDs
                 if (incomingFromHkpServer) {
                     existingIDs.add(0, incomingID);
                 } else {
