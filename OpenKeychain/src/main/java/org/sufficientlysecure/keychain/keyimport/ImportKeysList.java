@@ -70,6 +70,7 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             modified = true;
         }
 
+        boolean incomingFromHkpServer = true;
         // we’re going to want to try to fetch the key from everywhere we found it, so remember
         //  all the origins
         for (String origin : incoming.getOrigins()) {
@@ -78,13 +79,19 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
             // to work properly, Keybase-sourced entries need to pass along the extra
             if (KeybaseKeyserver.ORIGIN.equals(origin)) {
                 existing.setExtraData(incoming.getExtraData());
+                incomingFromHkpServer = false;
             }
         }
+
         ArrayList<String> incomingIDs = incoming.getUserIds();
         ArrayList<String> existingIDs = existing.getUserIds();
         for (String incomingID : incomingIDs) {
             if (!existingIDs.contains(incomingID)) {
-                existingIDs.add(incomingID);
+                if (incomingFromHkpServer) {
+                    existingIDs.add(0, incomingID);
+                } else {
+                    existingIDs.add(incomingID);
+                }
                 modified = true;
             }
         }
