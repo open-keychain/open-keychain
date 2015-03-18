@@ -232,7 +232,6 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
             data.setSignatureMasterKeyId(mSigningKeyId);
             data.setSignaturePassphrase(mSigningKeyPassphrase);
-            data.setNfcState(mNfcHash, mNfcTimestamp);
         }
         return data;
     }

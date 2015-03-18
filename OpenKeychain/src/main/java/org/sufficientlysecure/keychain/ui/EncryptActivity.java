@@ -25,15 +25,15 @@ import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
 
-import java.util.Date;
 
 public abstract class EncryptActivity extends BaseActivity {
 
@@ -42,8 +42,6 @@ public abstract class EncryptActivity extends BaseActivity {
 
     // For NFC data
     protected String mSigningKeyPassphrase = null;
-    protected Date mNfcTimestamp = null;
-    protected byte[] mNfcHash = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,17 +62,12 @@ public abstract class EncryptActivity extends BaseActivity {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(long keyId, String pin, byte[] hashToSign, int hashAlgo) {
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(this, NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_SIGN_HASH);
+    protected void startNfcSign(long keyId, String pin, NfcOperationsParcel nfcOps) {
 
-        // pass params through to activity that it can be returned again later to repeat pgp operation
-        intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
-        intent.putExtra(NfcActivity.EXTRA_KEY_ID, keyId);
-        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_TO_SIGN, hashToSign);
-        intent.putExtra(NfcActivity.EXTRA_NFC_HASH_ALGO, hashAlgo);
+        Intent intent = new Intent(this, NfcOperationActivity.class);
+        intent.putExtra(NfcOperationActivity.EXTRA_PIN, pin);
+        intent.putExtra(NfcOperationActivity.EXTRA_NFC_OPS, nfcOps);
+        // TODO respect keyid(?)
 
         startActivityForResult(intent, REQUEST_CODE_NFC);
     }
@@ -93,8 +86,9 @@ public abstract class EncryptActivity extends BaseActivity {
 
             case REQUEST_CODE_NFC: {
                 if (resultCode == RESULT_OK && data != null) {
-                    mNfcHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
-                    startEncrypt();
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(NfcOperationActivity.RESULT_DATA);
+                    startEncrypt(cryptoInput);
                     return;
                 }
                 break;
@@ -108,6 +102,10 @@ public abstract class EncryptActivity extends BaseActivity {
     }
 
     public void startEncrypt() {
+        startEncrypt(null);
+    }
+
+    public void startEncrypt(CryptoInputParcel cryptoInput) {
         if (!inputIsValid()) {
             // Notify was created by inputIsValid.
             return;
@@ -117,8 +115,13 @@ public abstract class EncryptActivity extends BaseActivity {
         Intent intent = new Intent(this, KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
+        final SignEncryptParcel input = createEncryptBundle();
+        if (cryptoInput != null) {
+            input.setCryptoInput(cryptoInput);
+        }
+
         Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, createEncryptBundle());
+        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
@@ -141,9 +144,13 @@ public abstract class EncryptActivity extends BaseActivity {
                         } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
                                 PgpSignEncryptResult.RESULT_PENDING_NFC) {
 
-                            mNfcTimestamp = pgpResult.getNfcTimestamp();
-                            startNfcSign(pgpResult.getNfcKeyId(), pgpResult.getNfcPassphrase(),
-                                    pgpResult.getNfcHash(), pgpResult.getNfcAlgo());
+                            NfcOperationsParcel parcel = NfcOperationsParcel.createNfcSignOperation(
+                                    pgpResult.getNfcHash(),
+                                    pgpResult.getNfcAlgo(),
+                                    input.getSignatureTime());
+                            startNfcSign(pgpResult.getNfcKeyId(),
+                                    pgpResult.getNfcPassphrase(), parcel);
+
                         } else {
                             throw new RuntimeException("Unhandled pending result!");
                         }
@@ -158,8 +165,6 @@ public abstract class EncryptActivity extends BaseActivity {
 
                     // no matter the result, reset parameters
                     mSigningKeyPassphrase = null;
-                    mNfcHash = null;
-                    mNfcTimestamp = null;
                 }
             }
         };

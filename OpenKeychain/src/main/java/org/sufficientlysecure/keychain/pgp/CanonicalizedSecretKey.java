@@ -42,10 +42,13 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 /**
  * Wrapper for a PGPSecretKey.
@@ -183,13 +186,13 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return PgpConstants.sPreferredHashAlgorithms;
     }
 
-    private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo, byte[] nfcSignedHash,
-                                                            Date nfcCreationTimestamp) {
+    private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo,
+            Map<ByteBuffer,byte[]> signedHashes) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // use synchronous "NFC based" SignerBuilder
             return new NfcSyncPGPContentSignerBuilder(
                     mSecretKey.getPublicKey().getAlgorithm(), hashAlgo,
-                    mSecretKey.getKeyID(), nfcSignedHash, nfcCreationTimestamp)
+                    mSecretKey.getKeyID(), signedHashes)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
@@ -200,28 +203,24 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public PGPSignatureGenerator getSignatureGenerator(int hashAlgo, boolean cleartext,
-                                                       byte[] nfcSignedHash, Date nfcCreationTimestamp)
+            Map<ByteBuffer,byte[]> signedHashes, Date creationTimestamp)
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
-        }
-        if (nfcSignedHash != null && nfcCreationTimestamp == null) {
-            throw new PgpGeneralException("Got nfc hash without timestamp!!");
         }
 
         // We explicitly create a signature creation timestamp in this place.
         // That way, we can inject an artificial one from outside, ie the one
         // used in previous runs of this function.
-        if (nfcCreationTimestamp == null) {
+        if (creationTimestamp == null) {
             // to sign using nfc PgpSignEncrypt is executed two times.
             // the first time it stops to return the PendingIntent for nfc connection and signing the hash
             // the second time the signed hash is used.
             // to get the same hash we cache the timestamp for the second round!
-            nfcCreationTimestamp = new Date();
+            creationTimestamp = new Date();
         }
 
-        PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(hashAlgo,
-                nfcSignedHash, nfcCreationTimestamp);
+        PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(hashAlgo, signedHashes);
 
         int signatureType;
         if (cleartext) {
@@ -237,7 +236,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             spGen.setSignerUserID(false, mRing.getPrimaryUserIdWithFallback());
-            spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
+            spGen.setSignatureCreationTime(false, creationTimestamp);
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch (PgpKeyNotFoundException | PGPException e) {
@@ -267,8 +266,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * @param userIds       User IDs to certify
      * @return A keyring with added certifications
      */
-    public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing, List<String> userIds,
-                                          byte[] nfcSignedHash, Date nfcCreationTimestamp) {
+    public UncachedKeyRing certifyUserIds(CanonicalizedPublicKeyRing publicKeyRing,
+            List<String> userIds,
+            HashMap<ByteBuffer,byte[]> signedHashes, Date creationTimestamp) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
@@ -283,7 +283,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPSignatureGenerator signatureGenerator;
         {
             PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(
-                    PgpConstants.CERTIFY_HASH_ALGO, nfcSignedHash, nfcCreationTimestamp);
+                    PgpConstants.CERTIFY_HASH_ALGO, signedHashes);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
             try {
@@ -296,9 +296,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         { // supply signatureGenerator with a SubpacketVector
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            if (nfcCreationTimestamp != null) {
-                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
-                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            if (creationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, creationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + creationTimestamp);
             }
             PGPSignatureSubpacketVector packetVector = spGen.generate();
             signatureGenerator.setHashedSubpackets(packetVector);
@@ -331,7 +331,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      * @return A keyring with added certifications
      */
     public UncachedKeyRing certifyUserAttributes(CanonicalizedPublicKeyRing publicKeyRing,
-            List<WrappedUserAttribute> userAttributes, byte[] nfcSignedHash, Date nfcCreationTimestamp) {
+            List<WrappedUserAttribute> userAttributes,
+            HashMap<ByteBuffer,byte[]> signedHashes, Date creationTimestamp) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
@@ -346,7 +347,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPSignatureGenerator signatureGenerator;
         {
             PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(
-                    PgpConstants.CERTIFY_HASH_ALGO, nfcSignedHash, nfcCreationTimestamp);
+                    PgpConstants.CERTIFY_HASH_ALGO, signedHashes);
 
             signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
             try {
@@ -359,9 +360,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
         { // supply signatureGenerator with a SubpacketVector
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            if (nfcCreationTimestamp != null) {
-                spGen.setSignatureCreationTime(false, nfcCreationTimestamp);
-                Log.d(Constants.TAG, "For NFC: set sig creation time to " + nfcCreationTimestamp);
+            if (creationTimestamp != null) {
+                spGen.setSignatureCreationTime(false, creationTimestamp);
+                Log.d(Constants.TAG, "For NFC: set sig creation time to " + creationTimestamp);
             }
             PGPSignatureSubpacketVector packetVector = spGen.generate();
             signatureGenerator.setHashedSubpackets(packetVector);

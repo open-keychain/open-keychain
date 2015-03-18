@@ -44,6 +44,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -71,7 +73,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * For a high-level operation based on URIs, see SignEncryptOperation.
  *
- * @see org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput
+ * @see PgpSignEncryptInputParcel
  * @see org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult
  * @see org.sufficientlysecure.keychain.operations.SignEncryptOperation
  *
@@ -99,7 +101,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
     /**
      * Signs and/or encrypts data based on parameters of class
      */
-    public PgpSignEncryptResult execute(PgpSignEncryptInput input,
+    public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input,
                                      InputData inputData, OutputStream outputStream) {
 
         int indent = 0;
@@ -282,7 +284,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
             try {
                 boolean cleartext = input.isCleartextSignature() && input.isEnableAsciiArmorOutput() && !enableEncryption;
                 signatureGenerator = signingKey.getSignatureGenerator(
-                        input.getSignatureHashAlgorithm(), cleartext, input.getNfcSignedHash(), input.getNfcCreationTimestamp());
+                        input.getSignatureHashAlgorithm(), cleartext,
+                        input.getCryptoData(), input.getSignatureTime());
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_NFC, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -489,7 +492,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
                             new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_NFC, log);
                     // Note that the checked key here is the master key, not the signing key
                     // (although these are always the same on Yubikeys)
-                    result.setNfcData(input.getSignatureSubKeyId(), e.hashToSign, e.hashAlgo, e.creationTimestamp, input.getSignaturePassphrase());
+                    result.setNfcData(signingKey.getKeyId(), e.hashToSign, e.hashAlgo,
+                            input.getSignaturePassphrase());
                     Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
                     return result;
                 }

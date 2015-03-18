@@ -252,7 +252,6 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
             data.setSignatureMasterKeyId(mSigningKeyId);
             data.setSignaturePassphrase(mSigningKeyPassphrase);
-            data.setNfcState(mNfcHash, mNfcTimestamp);
         }
         return data;
     }

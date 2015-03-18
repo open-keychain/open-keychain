@@ -35,7 +35,6 @@ public class PgpSignEncryptResult extends OperationResult {
     long mNfcKeyId;
     byte[] mNfcHash;
     int mNfcAlgo;
-    Date mNfcTimestamp;
     String mNfcPassphrase;
     byte[] mDetachedSignature;
 
@@ -47,11 +46,10 @@ public class PgpSignEncryptResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, String passphrase) {
+    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, String passphrase) {
         mNfcKeyId = nfcKeyId;
         mNfcHash = nfcHash;
         mNfcAlgo = nfcAlgo;
-        mNfcTimestamp = nfcTimestamp;
         mNfcPassphrase = passphrase;
     }
 
@@ -69,10 +67,6 @@ public class PgpSignEncryptResult extends OperationResult {
 
     public int getNfcAlgo() {
         return mNfcAlgo;
-    }
-
-    public Date getNfcTimestamp() {
-        return mNfcTimestamp;
     }
 
     public String getNfcPassphrase() {
@@ -95,7 +89,6 @@ public class PgpSignEncryptResult extends OperationResult {
         super(source);
         mNfcHash = source.readInt() != 0 ? source.createByteArray() : null;
         mNfcAlgo = source.readInt();
-        mNfcTimestamp = source.readInt() != 0 ? new Date(source.readLong()) : null;
         mDetachedSignature = source.readInt() != 0 ? source.createByteArray() : null;
     }
 
@@ -112,12 +105,6 @@ public class PgpSignEncryptResult extends OperationResult {
             dest.writeInt(0);
         }
         dest.writeInt(mNfcAlgo);
-        if (mNfcTimestamp != null) {
-            dest.writeInt(1);
-            dest.writeLong(mNfcTimestamp.getTime());
-        } else {
-            dest.writeInt(0);
-        }
         if (mDetachedSignature != null) {
             dest.writeInt(1);
             dest.writeByteArray(mDetachedSignature);

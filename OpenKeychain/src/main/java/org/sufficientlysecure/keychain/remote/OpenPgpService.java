@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEnt
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.ui.NfcActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
@@ -258,11 +259,13 @@ public class OpenPgpService extends RemoteService {
             }
 
             // carefully: only set if timestamp exists
-            Date nfcCreationDate = null;
+            Date nfcCreationDate;
             long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
             Log.d(Constants.TAG, "nfcCreationTimestamp: " + nfcCreationTimestamp);
             if (nfcCreationTimestamp != -1) {
                 nfcCreationDate = new Date(nfcCreationTimestamp);
+            } else {
+                nfcCreationDate = new Date();
             }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -275,15 +278,18 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
+            CryptoInputParcel cryptoInput = new CryptoInputParcel(nfcCreationDate);
+            cryptoInput.addCryptoData(null, nfcSignedHash); // TODO fix
+
             // sign-only
-            PgpSignEncryptInput pseInput = new PgpSignEncryptInput()
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
                     .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(null)
                     .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
                     .setSignatureMasterKeyId(signKeyId)
-                    .setNfcState(nfcSignedHash, nfcCreationDate);
+                    .setCryptoInput(cryptoInput);
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
@@ -298,7 +304,7 @@ public class OpenPgpService extends RemoteService {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
-                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, nfcCreationDate.getTime());
 
                     // return PendingIntent to be executed by client
                     Intent result = new Intent();
@@ -389,7 +395,7 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength, originalFilename);
 
-            PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel();
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionId(compressionId)
@@ -412,16 +418,21 @@ public class OpenPgpService extends RemoteService {
 
                 byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
                 // carefully: only set if timestamp exists
-                Date nfcCreationDate = null;
+                Date nfcCreationDate;
                 long nfcCreationTimestamp = data.getLongExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, -1);
                 if (nfcCreationTimestamp != -1) {
                     nfcCreationDate = new Date(nfcCreationTimestamp);
+                } else {
+                    nfcCreationDate = new Date();
                 }
+
+                CryptoInputParcel cryptoInput = new CryptoInputParcel(nfcCreationDate);
+                cryptoInput.addCryptoData(null, nfcSignedHash); // TODO fix!
 
                 // sign and encrypt
                 pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
                         .setSignatureMasterKeyId(signKeyId)
-                        .setNfcState(nfcSignedHash, nfcCreationDate)
+                        .setCryptoInput(cryptoInput)
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
@@ -439,7 +450,7 @@ public class OpenPgpService extends RemoteService {
                     // return PendingIntent to execute NFC activity
                     // pass through the signature creation timestamp to be used again on second execution
                     // of PgpSignEncrypt when we have the signed hash!
-                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, pgpResult.getNfcTimestamp().getTime());
+                    data.putExtra(OpenPgpApi.EXTRA_NFC_SIG_CREATION_TIMESTAMP, 0L); // TODO fix
                     // return PendingIntent to be executed by client
                     Intent result = new Intent();
                     result.putExtra(OpenPgpApi.RESULT_INTENT,

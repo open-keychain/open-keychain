@@ -26,31 +26,31 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.service.input.CryptoOperationParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
 /**
  * This class is a a transferable representation for a number of keyrings to
  * be certified.
  */
-public class CertifyActionsParcel extends CryptoOperationParcel {
+public class CertifyActionsParcel implements Parcelable {
 
     // the master key id to certify with
     final public long mMasterKeyId;
     public CertifyLevel mLevel;
 
     public ArrayList<CertifyAction> mCertifyActions = new ArrayList<>();
+    public CryptoInputParcel mCryptoInput;
 
     public CertifyActionsParcel(Date operationTime, long masterKeyId) {
-        super(operationTime);
         mMasterKeyId = masterKeyId;
+        mCryptoInput = new CryptoInputParcel(operationTime);
         mLevel = CertifyLevel.DEFAULT;
     }
 
     public CertifyActionsParcel(Parcel source) {
-        super(source);
-
         mMasterKeyId = source.readLong();
+        mCryptoInput = source.readParcelable(CertifyActionsParcel.class.getClassLoader());
         // just like parcelables, this is meant for ad-hoc IPC only and is NOT portable!
         mLevel = CertifyLevel.values()[source.readInt()];
 
@@ -63,9 +63,8 @@ public class CertifyActionsParcel extends CryptoOperationParcel {
 
     @Override
     public void writeToParcel(Parcel destination, int flags) {
-        super.writeToParcel(destination, flags);
-
         destination.writeLong(mMasterKeyId);
+        destination.writeParcelable(mCryptoInput, 0);
         destination.writeInt(mLevel.ordinal());
 
         destination.writeSerializable(mCertifyActions);

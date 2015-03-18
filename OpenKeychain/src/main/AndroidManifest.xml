@@ -680,6 +680,12 @@
             android:taskAffinity=":Nfc"
             android:allowTaskReparenting="true" />
 
+        <activity
+            android:name=".ui.NfcOperationActivity"
+            android:launchMode="singleTop"
+            android:taskAffinity=":Nfc"
+            android:allowTaskReparenting="true" />
+
         <!--<activity-->
         <!--android:name=".ui.NfcIntentActivity"-->
         <!--android:launchMode="singleTop">-->

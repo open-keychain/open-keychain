@@ -21,6 +21,9 @@ import android.os.Parcel;
 
 import java.util.ArrayList;
 
+import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+
+
 public class SignEncryptResult extends OperationResult {
 
     ArrayList<PgpSignEncryptResult> mResults;
