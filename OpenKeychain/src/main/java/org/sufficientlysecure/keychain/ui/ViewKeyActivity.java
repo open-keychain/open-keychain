@@ -21,18 +21,12 @@ package org.sufficientlysecure.keychain.ui;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
-import android.nfc.NfcEvent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,7 +34,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -58,9 +51,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.getbase.floatingactionbutton.FloatingActionButton;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -84,6 +75,7 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
@@ -93,8 +85,8 @@ public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_DELETE= 2;
-    static final int REQUEST_EXPORT= 3;
+    static final int REQUEST_DELETE = 2;
+    static final int REQUEST_EXPORT = 3;
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -115,11 +107,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private CardView mQrCodeLayout;
 
     // NFC
-    private NfcAdapter mNfcAdapter;
-    private NfcAdapter.CreateNdefMessageCallback mNdefCallback;
-    private NfcAdapter.OnNdefPushCompleteCallback mNdefCompleteCallback;
-    private byte[] mNfcKeyringBytes;
-    private static final int NFC_SENT = 1;
+    private NfcHelper mNfcHelper;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -256,7 +244,7 @@ public class ViewKeyActivity extends BaseActivity implements
         mActionNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                invokeNfcBeam();
+                mNfcHelper.invokeNfcBeam();
             }
         });
 
@@ -264,7 +252,8 @@ public class ViewKeyActivity extends BaseActivity implements
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
-        initNfc(mDataUri);
+        mNfcHelper = new NfcHelper(this, mProviderHelper);
+        mNfcHelper.initNfc(mDataUri);
 
         startFragment(savedInstanceState, mDataUri);
     }
@@ -375,41 +364,6 @@ public class ViewKeyActivity extends BaseActivity implements
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void invokeNfcBeam() {
-        // Check if device supports NFC
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            Notify.createNotify(this, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-            return;
-        }
-        // Check for available NFC Adapter
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-            Notify.createNotify(this, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intentSettings = new Intent(Settings.ACTION_NFC_SETTINGS);
-                    startActivity(intentSettings);
-                }
-            }, R.string.menu_nfc_preferences).show();
-
-            return;
-        }
-
-        if (!mNfcAdapter.isNdefPushEnabled()) {
-            Notify.createNotify(this, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intentSettings = new Intent(Settings.ACTION_NFCSHARING_SETTINGS);
-                    startActivity(intentSettings);
-                }
-            }, R.string.menu_beam_preferences).show();
-
-            return;
-        }
-
-        mNfcAdapter.invokeBeam(this);
-    }
 
     private void scanQrCode() {
         Intent scanQrCode = new Intent(this, ImportKeysProxyActivity.class);
@@ -426,7 +380,7 @@ public class ViewKeyActivity extends BaseActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] {mMasterKeyId});
 
         startCertifyIntent(intent);
     }
@@ -487,11 +441,11 @@ public class ViewKeyActivity extends BaseActivity implements
 
             HashMap<String, Object> data = providerHelper.getGenericData(
                     baseUri,
-                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
-                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
+                    new String[] {KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
+                    new int[] {ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
 
             exportHelper.showExportKeysDialog(
-                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
+                    new long[] {(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                     Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
             );
         } catch (ProviderHelper.NotFoundException e) {
@@ -515,7 +469,7 @@ public class ViewKeyActivity extends BaseActivity implements
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{ mMasterKeyId });
+                new long[] {mMasterKeyId});
         deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
@@ -546,11 +500,11 @@ public class ViewKeyActivity extends BaseActivity implements
             return;
         }
 
-        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK) {
             deleteKey();
         }
 
-        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK) {
             exportToFile(mDataUri, mExportHelper, mProviderHelper);
         }
 
@@ -572,7 +526,7 @@ public class ViewKeyActivity extends BaseActivity implements
             long keyId = new ProviderHelper(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[]{keyId};
+            long[] encryptionKeyIds = new long[] {keyId};
             Intent intent;
             if (text) {
                 intent = new Intent(this, EncryptTextActivity.class);
@@ -710,98 +664,9 @@ public class ViewKeyActivity extends BaseActivity implements
         loadTask.execute();
     }
 
-    /**
-     * NFC: Initialize NFC sharing if OS and device supports it
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void initNfc(final Uri dataUri) {
-        // check if NFC Beam is supported (>= Android 4.1)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-
-            // Implementation for the CreateNdefMessageCallback interface
-            mNdefCallback = new NfcAdapter.CreateNdefMessageCallback() {
-                @Override
-                public NdefMessage createNdefMessage(NfcEvent event) {
-                    /*
-                     * When a device receives a push with an AAR in it, the application specified in the AAR is
-                     * guaranteed to run. The AAR overrides the tag dispatch system. You can add it back in to
-                     * guarantee that this activity starts when receiving a beamed message. For now, this code
-                     * uses the tag dispatch system.
-                     */
-                    return new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
-                            mNfcKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
-                }
-            };
-
-            // Implementation for the OnNdefPushCompleteCallback interface
-            mNdefCompleteCallback = new NfcAdapter.OnNdefPushCompleteCallback() {
-                @Override
-                public void onNdefPushComplete(NfcEvent event) {
-                    // A handler is needed to send messages to the activity when this
-                    // callback occurs, because it happens from a binder thread
-                    mNfcHandler.obtainMessage(NFC_SENT).sendToTarget();
-                }
-            };
-
-            // Check for available NFC Adapter
-            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-            if (mNfcAdapter != null) {
-                /*
-                 * Retrieve mNfcKeyringBytes here asynchronously (to not block the UI)
-                 * and init nfc adapter afterwards.
-                 * mNfcKeyringBytes can not be retrieved in createNdefMessage, because this process
-                 * has no permissions to query the Uri.
-                 */
-                AsyncTask<Void, Void, Void> initTask =
-                        new AsyncTask<Void, Void, Void>() {
-                            protected Void doInBackground(Void... unused) {
-                                try {
-                                    Uri blobUri =
-                                            KeychainContract.KeyRingData.buildPublicKeyRingUri(dataUri);
-                                    mNfcKeyringBytes = (byte[]) mProviderHelper.getGenericData(
-                                            blobUri,
-                                            KeychainContract.KeyRingData.KEY_RING_DATA,
-                                            ProviderHelper.FIELD_TYPE_BLOB);
-                                } catch (ProviderHelper.NotFoundException e) {
-                                    Log.e(Constants.TAG, "key not found!", e);
-                                }
-
-                                // no AsyncTask return (Void)
-                                return null;
-                            }
-
-                            protected void onPostExecute(Void unused) {
-                                // Register callback to set NDEF message
-                                mNfcAdapter.setNdefPushMessageCallback(mNdefCallback,
-                                        ViewKeyActivity.this);
-                                // Register callback to listen for message-sent success
-                                mNfcAdapter.setOnNdefPushCompleteCallback(mNdefCompleteCallback,
-                                        ViewKeyActivity.this);
-                            }
-                        };
-
-                initTask.execute();
-            }
-        }
-    }
-
-    /**
-     * NFC: This handler receives a message from onNdefPushComplete
-     */
-    private final Handler mNfcHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case NFC_SENT:
-                    Notify.showNotify(
-                            ViewKeyActivity.this, R.string.nfc_successful, Notify.Style.INFO);
-                    break;
-            }
-        }
-    };
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
+    static final String[] PROJECTION = new String[] {
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
