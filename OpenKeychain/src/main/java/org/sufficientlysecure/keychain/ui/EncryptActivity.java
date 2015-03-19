@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 
 public abstract class EncryptActivity extends BaseActivity {
@@ -62,11 +62,11 @@ public abstract class EncryptActivity extends BaseActivity {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(long keyId, String pin, NfcOperationsParcel nfcOps) {
+    protected void startNfcSign(long keyId, String pin, RequiredInputParcel nfcOps) {
 
         Intent intent = new Intent(this, NfcOperationActivity.class);
         intent.putExtra(NfcOperationActivity.EXTRA_PIN, pin);
-        intent.putExtra(NfcOperationActivity.EXTRA_NFC_OPS, nfcOps);
+        intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, nfcOps);
         // TODO respect keyid(?)
 
         startActivityForResult(intent, REQUEST_CODE_NFC);
@@ -144,7 +144,7 @@ public abstract class EncryptActivity extends BaseActivity {
                         } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
                                 PgpSignEncryptResult.RESULT_PENDING_NFC) {
 
-                            NfcOperationsParcel parcel = NfcOperationsParcel.createNfcSignOperation(
+                            RequiredInputParcel parcel = RequiredInputParcel.createNfcSignOperation(
                                     pgpResult.getNfcHash(),
                                     pgpResult.getNfcAlgo(),
                                     input.getSignatureTime());

@@ -166,7 +166,7 @@ public class CertifyKeyFragment extends CryptoOperationFragment
                     Notify.showNotify(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR);
                 } else {
-                    cryptoOperation();
+                    cryptoOperation(null);
                 }
             }
         });
@@ -305,15 +305,6 @@ public class CertifyKeyFragment extends CryptoOperationFragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mUserIdsAdapter.swapCursor(null);
-    }
-
-    protected void cryptoOperation() {
-        cryptoOperation((CryptoInputParcel) null);
-    }
-
-    @Override
-    protected void cryptoOperation(String passphrase) {
-        cryptoOperation((CryptoInputParcel) null);
     }
 
     @Override

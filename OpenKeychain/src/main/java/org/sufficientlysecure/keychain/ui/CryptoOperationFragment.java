@@ -11,7 +11,7 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 
 public abstract class CryptoOperationFragment extends Fragment {
@@ -19,17 +19,28 @@ public abstract class CryptoOperationFragment extends Fragment {
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
-    private void startPassphraseDialog(long subkeyId) {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-    }
+    private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
-    private void initiateNfcInput(NfcOperationsParcel nfcOps) {
-        Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
-        intent.putExtra(NfcOperationActivity.EXTRA_PIN, "123456");
-        intent.putExtra(NfcOperationActivity.EXTRA_NFC_OPS, nfcOps);
-        startActivityForResult(intent, REQUEST_CODE_NFC);
+        switch (requiredInput.mType) {
+            case NFC_DECRYPT:
+            case NFC_SIGN: {
+                Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
+                intent.putExtra(NfcOperationActivity.EXTRA_PIN, "123456");
+                intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                startActivityForResult(intent, REQUEST_CODE_NFC);
+                return;
+            }
+
+            case PASSPHRASE: {
+                Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                return;
+            }
+        }
+
+        throw new RuntimeException("Unhandled pending result!");
+
     }
 
     @Override
@@ -37,8 +48,9 @@ public abstract class CryptoOperationFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    cryptoOperation(passphrase);
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
+                    cryptoOperation(cryptoInput);
                 }
                 return;
             }
@@ -67,16 +79,9 @@ public abstract class CryptoOperationFragment extends Fragment {
             InputPendingResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
 
             if (result != null && result.isPending()) {
-                if (result.isPassphrasePending()) {
-                    startPassphraseDialog(result.getPassphraseKeyId());
-                    return true;
-                } else if (result.isNfcPending()) {
-                    NfcOperationsParcel requiredInput = result.getNfcOperationsParcel();
-                    initiateNfcInput(requiredInput);
-                    return true;
-                } else {
-                    throw new RuntimeException("Unhandled pending result!");
-                }
+                RequiredInputParcel requiredInput = result.getRequiredInputParcel();
+                initiateInputActivity(requiredInput);
+                return true;
             }
         }
 
@@ -84,6 +89,5 @@ public abstract class CryptoOperationFragment extends Fragment {
     }
 
     protected abstract void cryptoOperation(CryptoInputParcel cryptoInput);
-    protected abstract void cryptoOperation(String passphrase);
 
 }

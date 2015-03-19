@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -38,7 +38,7 @@ public class CertifyResult extends InputPendingResult {
         super(result, log);
     }
 
-    public CertifyResult(OperationLog log, NfcOperationsParcel requiredInput) {
+    public CertifyResult(OperationLog log, RequiredInputParcel requiredInput) {
         super(log, requiredInput);
     }
 

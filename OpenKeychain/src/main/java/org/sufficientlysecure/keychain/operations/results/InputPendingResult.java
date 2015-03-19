@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 
 public class InputPendingResult extends OperationResult {
@@ -14,7 +14,7 @@ public class InputPendingResult extends OperationResult {
     public static final int RESULT_PENDING_PASSPHRASE = RESULT_PENDING + 16;
     public static final int RESULT_PENDING_NFC = RESULT_PENDING + 32;
 
-    final NfcOperationsParcel mRequiredInput;
+    final RequiredInputParcel mRequiredInput;
     final Long mKeyIdPassphraseNeeded;
 
     public InputPendingResult(int result, OperationLog log) {
@@ -23,7 +23,7 @@ public class InputPendingResult extends OperationResult {
         mKeyIdPassphraseNeeded = null;
     }
 
-    public InputPendingResult(OperationLog log, NfcOperationsParcel requiredInput) {
+    public InputPendingResult(OperationLog log, RequiredInputParcel requiredInput) {
         super(RESULT_PENDING_NFC, log);
         mRequiredInput = requiredInput;
         mKeyIdPassphraseNeeded = null;
@@ -65,7 +65,7 @@ public class InputPendingResult extends OperationResult {
         return (mResult & RESULT_PENDING_PASSPHRASE) == RESULT_PENDING_PASSPHRASE;
     }
 
-    public NfcOperationsParcel getNfcOperationsParcel() {
+    public RequiredInputParcel getRequiredInputParcel() {
         return mRequiredInput;
     }
 

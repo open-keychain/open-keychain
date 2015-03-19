@@ -15,18 +15,26 @@ import android.os.Parcelable;
  */
 public class CryptoInputParcel implements Parcelable {
 
-    Date mSignatureTime;
+    final Date mSignatureTime;
+    final String mPassphrase;
 
     // this map contains both decrypted session keys and signed hashes to be
     // used in the crypto operation described by this parcel.
     private HashMap<ByteBuffer,byte[]> mCryptoData = new HashMap<>();
 
+    public CryptoInputParcel(Date signatureTime, String passphrase) {
+        mSignatureTime = signatureTime == null ? new Date() : signatureTime;
+        mPassphrase = passphrase;
+    }
+
     public CryptoInputParcel(Date signatureTime) {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
+        mPassphrase = null;
     }
 
     protected CryptoInputParcel(Parcel source) {
         mSignatureTime = new Date(source.readLong());
+        mPassphrase = source.readString();
 
         {
             int count = source.readInt();
@@ -48,6 +56,7 @@ public class CryptoInputParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mSignatureTime.getTime());
+        dest.writeString(mPassphrase);
 
         dest.writeInt(mCryptoData.size());
         for (HashMap.Entry<ByteBuffer,byte[]> entry : mCryptoData.entrySet()) {
@@ -66,6 +75,14 @@ public class CryptoInputParcel implements Parcelable {
 
     public Date getSignatureTime() {
         return mSignatureTime;
+    }
+
+    public boolean hasPassphrase() {
+        return mPassphrase != null;
+    }
+
+    public String getPassphrase() {
+        return mPassphrase;
     }
 
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {

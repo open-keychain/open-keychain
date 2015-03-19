@@ -28,7 +28,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
@@ -40,8 +39,8 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -78,8 +77,13 @@ public class CertifyOperation extends BaseOperation {
             log.add(LogType.MSG_CRT_UNLOCK, 1);
             certificationKey = secretKeyRing.getSecretKey();
 
+            if (!parcel.mCryptoInput.hasPassphrase()) {
+                return new CertifyResult(log, RequiredInputParcel.createRequiredPassphrase(
+                        certificationKey.getKeyId(), null));
+            }
+
             // certification is always with the master key id, so use that one
-            String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
+            String passphrase = parcel.mCryptoInput.getPassphrase();
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
@@ -89,9 +93,6 @@ public class CertifyOperation extends BaseOperation {
             log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         } catch (NotFoundException e) {
-            log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
-            return new CertifyResult(CertifyResult.RESULT_ERROR, log);
-        } catch (NoSecretKeyException e) {
             log.add(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND, 2);
             return new CertifyResult(CertifyResult.RESULT_ERROR, log);
         }
@@ -133,7 +134,7 @@ public class CertifyOperation extends BaseOperation {
                     continue;
                 }
                 if (result.nfcInputRequired()) {
-                    NfcOperationsParcel requiredInput = result.getRequiredInput();
+                    RequiredInputParcel requiredInput = result.getRequiredInput();
                     allRequiredInput.addAll(requiredInput);
                     continue;
                 }

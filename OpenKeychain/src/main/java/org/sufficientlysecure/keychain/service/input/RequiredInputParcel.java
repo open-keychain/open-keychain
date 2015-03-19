@@ -8,29 +8,31 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 
-public class NfcOperationsParcel implements Parcelable {
+public class RequiredInputParcel implements Parcelable {
 
-    public enum NfcOperationType {
-        NFC_SIGN, NFC_DECRYPT
+    public enum RequiredInputType {
+        PASSPHRASE, NFC_SIGN, NFC_DECRYPT
     }
 
     public Date mSignatureTime;
-    public final NfcOperationType mType;
+    public final RequiredInputType mType;
     public final byte[][] mInputHashes;
     public final int[] mSignAlgos;
+    private Long mSubKeyId;
 
-    private NfcOperationsParcel(NfcOperationType type, byte[][] inputHashes,
-            int[] signAlgos, Date signatureTime) {
+    private RequiredInputParcel(RequiredInputType type, byte[][] inputHashes,
+            int[] signAlgos, Date signatureTime, Long keyId) {
         mType = type;
         mInputHashes = inputHashes;
         mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
+        mSubKeyId = keyId;
     }
 
-    public NfcOperationsParcel(Parcel source) {
-        mType = NfcOperationType.values()[source.readInt()];
+    public RequiredInputParcel(Parcel source) {
+        mType = RequiredInputType.values()[source.readInt()];
 
-        {
+        if (source.readInt() != 0) {
             int count = source.readInt();
             mInputHashes = new byte[count][];
             mSignAlgos = new int[count];
@@ -38,21 +40,34 @@ public class NfcOperationsParcel implements Parcelable {
                 mInputHashes[i] = source.createByteArray();
                 mSignAlgos[i] = source.readInt();
             }
+        } else {
+            mInputHashes = null;
+            mSignAlgos = null;
         }
 
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
+        mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
 
     }
 
-    public static NfcOperationsParcel createNfcSignOperation(
+    public long getSubKeyId() {
+        return mSubKeyId;
+    }
+
+    public static RequiredInputParcel createNfcSignOperation(
             byte[] inputHash, int signAlgo, Date signatureTime) {
-        return new NfcOperationsParcel(NfcOperationType.NFC_SIGN,
-                new byte[][] { inputHash }, new int[] { signAlgo }, signatureTime);
+        return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
+                new byte[][] { inputHash }, new int[] { signAlgo }, signatureTime, null);
     }
 
-    public static NfcOperationsParcel createNfcDecryptOperation(byte[] inputHash) {
-        return new NfcOperationsParcel(NfcOperationType.NFC_DECRYPT,
-                new byte[][] { inputHash }, null, null);
+    public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash) {
+        return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
+                new byte[][] { inputHash }, null, null, null);
+    }
+
+    public static RequiredInputParcel createRequiredPassphrase(long keyId, Date signatureTime) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+                null, null, signatureTime, keyId);
     }
 
     @Override
@@ -63,10 +78,15 @@ public class NfcOperationsParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mType.ordinal());
-        dest.writeInt(mInputHashes.length);
-        for (int i = 0; i < mInputHashes.length; i++) {
-            dest.writeByteArray(mInputHashes[i]);
-            dest.writeInt(mSignAlgos[i]);
+        if (mInputHashes != null) {
+            dest.writeInt(1);
+            dest.writeInt(mInputHashes.length);
+            for (int i = 0; i < mInputHashes.length; i++) {
+                dest.writeByteArray(mInputHashes[i]);
+                dest.writeInt(mSignAlgos[i]);
+            }
+        } else {
+            dest.writeInt(0);
         }
         if (mSignatureTime != null) {
             dest.writeInt(1);
@@ -74,16 +94,22 @@ public class NfcOperationsParcel implements Parcelable {
         } else {
             dest.writeInt(0);
         }
+        if (mSubKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mSubKeyId);
+        } else {
+            dest.writeInt(0);
+        }
 
     }
 
-    public static final Creator<NfcOperationsParcel> CREATOR = new Creator<NfcOperationsParcel>() {
-        public NfcOperationsParcel createFromParcel(final Parcel source) {
-            return new NfcOperationsParcel(source);
+    public static final Creator<RequiredInputParcel> CREATOR = new Creator<RequiredInputParcel>() {
+        public RequiredInputParcel createFromParcel(final Parcel source) {
+            return new RequiredInputParcel(source);
         }
 
-        public NfcOperationsParcel[] newArray(final int size) {
-            return new NfcOperationsParcel[size];
+        public RequiredInputParcel[] newArray(final int size) {
+            return new RequiredInputParcel[size];
         }
     };
 
@@ -96,7 +122,7 @@ public class NfcOperationsParcel implements Parcelable {
             mSignatureTime = signatureTime;
         }
 
-        public NfcOperationsParcel build() {
+        public RequiredInputParcel build() {
             byte[][] inputHashes = new byte[mInputHashes.size()][];
             mInputHashes.toArray(inputHashes);
             int[] signAlgos = new int[mSignAlgos.size()];
@@ -104,8 +130,8 @@ public class NfcOperationsParcel implements Parcelable {
                 signAlgos[i] = mSignAlgos.get(i);
             }
 
-            return new NfcOperationsParcel(NfcOperationType.NFC_SIGN,
-                    inputHashes, signAlgos, mSignatureTime);
+            return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
+                    inputHashes, signAlgos, mSignatureTime, null);
         }
 
         public void addHash(byte[] hash, int algo) {
@@ -113,11 +139,11 @@ public class NfcOperationsParcel implements Parcelable {
             mSignAlgos.add(algo);
         }
 
-        public void addAll(NfcOperationsParcel input) {
+        public void addAll(RequiredInputParcel input) {
             if (!mSignatureTime.equals(input.mSignatureTime)) {
                 throw new AssertionError("input times must match, this is a programming error!");
             }
-            if (input.mType != NfcOperationType.NFC_SIGN) {
+            if (input.mType != RequiredInputType.NFC_SIGN) {
                 throw new AssertionError("operation types must match, this is a progrmming error!");
             }
 

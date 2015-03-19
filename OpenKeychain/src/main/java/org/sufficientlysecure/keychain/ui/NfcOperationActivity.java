@@ -23,7 +23,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -41,7 +41,7 @@ import java.nio.ByteBuffer;
 public class NfcOperationActivity extends BaseActivity {
 
     public static final String EXTRA_PIN = "pin";
-    public static final String EXTRA_NFC_OPS = "nfc_operations";
+    public static final String EXTRA_REQUIRED_INPUT = "required_input";
 
     public static final String RESULT_DATA = "result_data";
 
@@ -52,7 +52,7 @@ public class NfcOperationActivity extends BaseActivity {
 
     private String mPin;
 
-    NfcOperationsParcel mNfcOperations;
+    RequiredInputParcel mNfcOperations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class NfcOperationActivity extends BaseActivity {
 
         Bundle data = intent.getExtras();
 
-        mNfcOperations = data.getParcelable(EXTRA_NFC_OPS);
+        mNfcOperations = data.getParcelable(EXTRA_REQUIRED_INPUT);
         mPin = data.getString(EXTRA_PIN);
 
     }

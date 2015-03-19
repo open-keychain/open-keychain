@@ -3,7 +3,6 @@ package org.sufficientlysecure.keychain.pgp;
 
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.spongycastle.openpgp.PGPException;
@@ -19,8 +18,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel;
-import org.sufficientlysecure.keychain.service.input.NfcOperationsParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -110,7 +109,7 @@ public class PgpCertifyOperation {
 
     public static class PgpCertifyResult {
 
-        final NfcOperationsParcel mRequiredInput;
+        final RequiredInputParcel mRequiredInput;
         final UncachedKeyRing mCertifiedRing;
 
         PgpCertifyResult() {
@@ -118,7 +117,7 @@ public class PgpCertifyOperation {
             mCertifiedRing = null;
         }
 
-        PgpCertifyResult(NfcOperationsParcel requiredInput) {
+        PgpCertifyResult(RequiredInputParcel requiredInput) {
             mRequiredInput = requiredInput;
             mCertifiedRing = null;
         }
@@ -140,7 +139,7 @@ public class PgpCertifyOperation {
             return mCertifiedRing;
         }
 
-        public NfcOperationsParcel getRequiredInput() {
+        public RequiredInputParcel getRequiredInput() {
             return mRequiredInput;
         }
 
