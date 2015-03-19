@@ -26,6 +26,16 @@ import org.sufficientlysecure.keychain.Constants;
 
 import java.util.Arrays;
 
+/**
+ * Passwords should not be stored as Strings in memory.
+ * This class wraps a char[] that can be erased after it is no longer used.
+ * See also:
+ * <p/>
+ * http://docs.oracle.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#PBEEx
+ * https://github.com/c-a-m/passfault/blob/master/core/src/main/java/org/owasp/passfault/SecureString.java
+ * http://stackoverflow.com/q/8881291
+ * http://stackoverflow.com/a/15844273
+ */
 public class Passphrase implements Parcelable {
     private char[] mPassphrase;
 
@@ -39,7 +49,6 @@ public class Passphrase implements Parcelable {
         editable.getChars(0, pl, mPassphrase, 0);
         // TODO: clean up internal char[] of EditText after getting the passphrase?
 //        editText.getText().replace()
-        System.gc();
     }
 
     public Passphrase(EditText editText) {
@@ -54,6 +63,9 @@ public class Passphrase implements Parcelable {
         mPassphrase = passphrase.toCharArray();
     }
 
+    /**
+     * Creates a passphrase object with an empty ("") passphrase
+     */
     public Passphrase() {
         setEmpty();
     }
@@ -62,20 +74,36 @@ public class Passphrase implements Parcelable {
         return mPassphrase;
     }
 
-    public boolean isEmpty() {
-        return (mPassphrase.length == 0);
-    }
-
     public void setEmpty() {
         removeFromMemory();
         mPassphrase = new char[0];
     }
 
+    public boolean isEmpty() {
+        return (length() == 0);
+    }
+
+    public int length() {
+        return mPassphrase.length;
+    }
+
+    public char charAt(int index) {
+        return mPassphrase[index];
+    }
+
+    /**
+     * Manually clear the underlying array holding the characters
+     */
     public void removeFromMemory() {
         if (mPassphrase != null) {
             Arrays.fill(mPassphrase, ' ');
-            System.gc();
         }
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        removeFromMemory();
+        super.finalize();
     }
 
     @Override
