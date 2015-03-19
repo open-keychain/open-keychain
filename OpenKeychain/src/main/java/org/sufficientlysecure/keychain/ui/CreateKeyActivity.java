@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -72,6 +73,7 @@ public class CreateKeyActivity extends BaseActivity {
         if (mFirstTime) {
             setTitle(R.string.app_name);
             setActionBarIcon(R.drawable.ic_launcher);
+            mToolbar.setNavigationOnClickListener(null);
         } else {
             setTitle(R.string.title_manage_my_keys);
         }
