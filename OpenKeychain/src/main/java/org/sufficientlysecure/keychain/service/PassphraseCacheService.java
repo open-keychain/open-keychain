@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Date;
@@ -121,7 +122,7 @@ public class PassphraseCacheService extends Service {
      * new events to the alarm manager for new passphrases to let them timeout in the future.
      */
     public static void addCachedPassphrase(Context context, long masterKeyId, long subKeyId,
-                                           String passphrase,
+                                           Passphrase passphrase,
                                            String primaryUserId) {
         Log.d(Constants.TAG, "PassphraseCacheService.cacheNewPassphrase() for " + masterKeyId);
 
@@ -143,7 +144,7 @@ public class PassphraseCacheService extends Service {
 
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
-    public static String getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
+    public static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
         Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() for masterKeyId "
                 + masterKeyId + ", subKeyId " + subKeyId);
 
@@ -190,7 +191,9 @@ public class PassphraseCacheService extends Service {
 
         switch (returnMessage.what) {
             case MSG_PASSPHRASE_CACHE_GET_OKAY:
-                return returnMessage.getData().getString(EXTRA_PASSPHRASE);
+                Bundle returnData = returnMessage.getData();
+                returnData.setClassLoader(context.getClassLoader());
+                return returnData.getParcelable(EXTRA_PASSPHRASE);
             case MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND:
                 throw new KeyNotFoundException();
             default:
@@ -202,11 +205,11 @@ public class PassphraseCacheService extends Service {
     /**
      * Internal implementation to get cached passphrase.
      */
-    private String getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderHelper.NotFoundException {
+    private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderHelper.NotFoundException {
         // passphrase for symmetric encryption?
         if (masterKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
-            String cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric).getPassphrase();
+            Passphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric).getPassphrase();
             if (cachedPassphrase == null) {
                 return null;
             }
@@ -232,13 +235,13 @@ public class PassphraseCacheService extends Service {
             case DIVERT_TO_CARD:
                 if (Preferences.getPreferences(this).useDefaultYubikeyPin()) {
                     Log.d(Constants.TAG, "PassphraseCacheService: Using default Yubikey PIN: 123456");
-                    return "123456"; // default Yubikey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
+                    return new Passphrase("123456"); // default Yubikey PIN, see http://www.yubico.com/2012/12/yubikey-neo-openpgp/
                 } else {
                     Log.d(Constants.TAG, "PassphraseCacheService: NOT using default Yubikey PIN");
                     break;
                 }
             case PASSPHRASE_EMPTY:
-                return "";
+                return new Passphrase("");
             case UNAVAILABLE:
                 throw new ProviderHelper.NotFoundException("secret key for this subkey is not available");
             case GNU_DUMMY:
@@ -331,7 +334,7 @@ public class PassphraseCacheService extends Service {
                 long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, -1);
 
-                String passphrase = intent.getStringExtra(EXTRA_PASSPHRASE);
+                Passphrase passphrase = intent.getParcelableExtra(EXTRA_PASSPHRASE);
                 String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
 
                 Log.d(Constants.TAG,
@@ -373,10 +376,10 @@ public class PassphraseCacheService extends Service {
                         Log.e(Constants.TAG, "PassphraseCacheService: Bad request, missing masterKeyId or subKeyId!");
                         msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                     } else {
-                        String passphrase = getCachedPassphraseImpl(masterKeyId, subKeyId);
+                        Passphrase passphrase = getCachedPassphraseImpl(masterKeyId, subKeyId);
                         msg.what = MSG_PASSPHRASE_CACHE_GET_OKAY;
                         Bundle bundle = new Bundle();
-                        bundle.putString(EXTRA_PASSPHRASE, passphrase);
+                        bundle.putParcelable(EXTRA_PASSPHRASE, passphrase);
                         msg.setData(bundle);
                     }
                 } catch (ProviderHelper.NotFoundException e) {
@@ -412,7 +415,10 @@ public class PassphraseCacheService extends Service {
      * Called when one specific passphrase for keyId timed out
      */
     private void timeout(Context context, long keyId) {
-        // remove passphrase corresponding to keyId from memory
+        CachedPassphrase cPass = mPassphraseCache.get(keyId);
+        // clean internal char[] from memory!
+        cPass.getPassphrase().removeFromMemory();
+        // remove passphrase object
         mPassphraseCache.remove(keyId);
 
         Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
@@ -517,9 +523,9 @@ public class PassphraseCacheService extends Service {
 
     public class CachedPassphrase {
         private String primaryUserID;
-        private String passphrase;
+        private Passphrase passphrase;
 
-        public CachedPassphrase(String passphrase, String primaryUserID) {
+        public CachedPassphrase(Passphrase passphrase, String primaryUserID) {
             setPassphrase(passphrase);
             setPrimaryUserID(primaryUserID);
         }
@@ -528,7 +534,7 @@ public class PassphraseCacheService extends Service {
             return primaryUserID;
         }
 
-        public String getPassphrase() {
+        public Passphrase getPassphrase() {
             return passphrase;
         }
 
@@ -536,7 +542,7 @@ public class PassphraseCacheService extends Service {
             this.primaryUserID = primaryUserID;
         }
 
-        public void setPassphrase(String passphrase) {
+        public void setPassphrase(Passphrase passphrase) {
             this.passphrase = passphrase;
         }
     }

@@ -23,10 +23,19 @@ import android.support.v4.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
 
+import java.util.ArrayList;
+
 public class CreateKeyActivity extends BaseActivity {
 
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
+
+    public class State {
+        String name;
+        String email;
+        ArrayList<String> additionalEmails;
+        char[] passphrase;
+    }
 
     public static enum FragAction {
         START,
@@ -44,7 +53,7 @@ public class CreateKeyActivity extends BaseActivity {
                         getIntent().getStringExtra(EXTRA_NAME),
                         getIntent().getStringExtra(EXTRA_EMAIL)
                 );
-        loadFragment(null, frag, FragAction.START);
+        loadFragment(savedInstanceState, frag, FragAction.START);
     }
 
     @Override

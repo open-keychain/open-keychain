@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -179,7 +180,7 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-    private PendingIntent getNfcSignPendingIntent(Intent data, long keyId, String pin, byte[] hashToSign, int hashAlgo) {
+    private PendingIntent getNfcSignPendingIntent(Intent data, long keyId, Passphrase pin, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
@@ -195,7 +196,7 @@ public class OpenPgpService extends RemoteService {
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
-    private PendingIntent getNfcDecryptPendingIntent(Intent data, long subKeyId, String pin, byte[] encryptedSessionKey) {
+    private PendingIntent getNfcDecryptPendingIntent(Intent data, long subKeyId, Passphrase pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getBaseContext(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
@@ -508,7 +509,7 @@ public class OpenPgpService extends RemoteService {
                         KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
             }
 
-            String passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
+            Passphrase passphrase = data.getParcelableExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 

@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedInputStream;
@@ -83,7 +84,7 @@ public class PgpDecryptVerify extends BaseOperation {
     private OutputStream mOutStream;
 
     private boolean mAllowSymmetricDecryption;
-    private String mPassphrase;
+    private Passphrase mPassphrase;
     private Set<Long> mAllowedKeyIds;
     private boolean mDecryptMetadataOnly;
     private byte[] mDecryptedSessionKey;
@@ -118,7 +119,7 @@ public class PgpDecryptVerify extends BaseOperation {
         private OutputStream mOutStream = null;
         private Progressable mProgressable = null;
         private boolean mAllowSymmetricDecryption = true;
-        private String mPassphrase = null;
+        private Passphrase mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
         private boolean mDecryptMetadataOnly = false;
         private byte[] mDecryptedSessionKey = null;
@@ -159,7 +160,7 @@ public class PgpDecryptVerify extends BaseOperation {
             return this;
         }
 
-        public Builder setPassphrase(String passphrase) {
+        public Builder setPassphrase(Passphrase passphrase) {
             mPassphrase = passphrase;
             return this;
         }
@@ -572,7 +573,7 @@ public class PgpDecryptVerify extends BaseOperation {
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
             PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
                     digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                    mPassphrase.toCharArray());
+                    mPassphrase.getCharArray());
 
             clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
             encryptedData = encryptedDataSymmetric;

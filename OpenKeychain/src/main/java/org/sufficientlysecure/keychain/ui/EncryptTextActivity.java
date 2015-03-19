@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
+    private Passphrase mPassphrase = new Passphrase();
 
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
@@ -134,7 +135,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     }
 
     @Override
-    public void setPassphrase(String passphrase) {
+    public void setPassphrase(Passphrase passphrase) {
+        mPassphrase.removeFromMemory();
         mPassphrase = passphrase;
     }
 
@@ -223,8 +225,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passphrase = mPassphrase;
-            if (passphrase.length() == 0) {
+            Passphrase passphrase = mPassphrase;
+            if (passphrase.isEmpty()) {
                 passphrase = null;
             }
             data.setSymmetricPassphrase(passphrase);

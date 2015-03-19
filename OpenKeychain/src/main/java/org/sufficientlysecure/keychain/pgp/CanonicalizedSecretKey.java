@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -149,7 +150,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     /**
      * Returns true on right passphrase
      */
-    public boolean unlock(String passphrase) throws PgpGeneralException {
+    public boolean unlock(Passphrase passphrase) throws PgpGeneralException {
         // handle keys on OpenPGP cards like they were unlocked
         if (mSecretKey.getS2K() != null
                 && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
@@ -161,7 +162,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // try to extract keys using the passphrase
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
+                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
             mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {

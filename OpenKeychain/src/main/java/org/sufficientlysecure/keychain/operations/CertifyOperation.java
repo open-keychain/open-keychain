@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,7 +80,7 @@ public class CertifyOperation extends BaseOperation {
             }
 
             // certification is always with the master key id, so use that one
-            String passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
+            Passphrase passphrase = getCachedPassphrase(parcel.mMasterKeyId, parcel.mMasterKeyId);
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);

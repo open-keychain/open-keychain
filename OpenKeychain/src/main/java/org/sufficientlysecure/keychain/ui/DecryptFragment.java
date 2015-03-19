@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public abstract class DecryptFragment extends Fragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
@@ -57,7 +58,7 @@ public abstract class DecryptFragment extends Fragment {
 
 
     // State
-    protected String mPassphrase;
+    protected Passphrase mPassphrase;
     protected byte[] mNfcDecryptedSessionKey;
 
     @Override
@@ -100,7 +101,7 @@ public abstract class DecryptFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcDecrypt(long subKeyId, String pin, byte[] encryptedSessionKey) {
+    protected void startNfcDecrypt(long subKeyId, Passphrase pin, byte[] encryptedSessionKey) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(getActivity(), NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);

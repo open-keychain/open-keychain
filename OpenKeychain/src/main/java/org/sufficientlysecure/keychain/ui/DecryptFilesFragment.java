@@ -191,7 +191,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -265,7 +265,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -341,7 +341,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     decryptOriginalFilename();
                 }
                 return;

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.Date;
 
@@ -29,12 +30,12 @@ public class PgpSignEncryptInput {
     protected boolean mEnableAsciiArmorOutput = false;
     protected int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
-    protected String mSymmetricPassphrase = null;
+    protected Passphrase mSymmetricPassphrase = null;
     protected int mSymmetricEncryptionAlgorithm = PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED;
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
     protected int mSignatureHashAlgorithm = PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED;
-    protected String mSignaturePassphrase = null;
+    protected Passphrase mSignaturePassphrase = null;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected byte[] mNfcSignedHash = null;
     protected Date mNfcCreationTimestamp = null;
@@ -73,11 +74,11 @@ public class PgpSignEncryptInput {
         return this;
     }
 
-    public String getSignaturePassphrase() {
+    public Passphrase getSignaturePassphrase() {
         return mSignaturePassphrase;
     }
 
-    public PgpSignEncryptInput setSignaturePassphrase(String signaturePassphrase) {
+    public PgpSignEncryptInput setSignaturePassphrase(Passphrase signaturePassphrase) {
         mSignaturePassphrase = signaturePassphrase;
         return this;
     }
@@ -118,11 +119,11 @@ public class PgpSignEncryptInput {
         return this;
     }
 
-    public String getSymmetricPassphrase() {
+    public Passphrase getSymmetricPassphrase() {
         return mSymmetricPassphrase;
     }
 
-    public PgpSignEncryptInput setSymmetricPassphrase(String symmetricPassphrase) {
+    public PgpSignEncryptInput setSymmetricPassphrase(Passphrase symmetricPassphrase) {
         mSymmetricPassphrase = symmetricPassphrase;
         return this;
     }

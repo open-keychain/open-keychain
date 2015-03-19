@@ -85,7 +85,7 @@ public class CreateKeyEmailFragment extends Fragment {
      */
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
         boolean output = true;
-        if (editText.getText().toString().length() == 0) {
+        if (editText.getText().length() == 0) {
             editText.setError(context.getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;

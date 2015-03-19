@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class CreateKeyFinalFragment extends Fragment {
     String mName;
     String mEmail;
     ArrayList<String> mAdditionalEmails;
-    String mPassphrase;
+    Passphrase mPassphrase;
 
     SaveKeyringParcel mSaveKeyringParcel;
 
@@ -81,14 +82,14 @@ public class CreateKeyFinalFragment extends Fragment {
      */
     public static CreateKeyFinalFragment newInstance(String name, String email,
                                                      ArrayList<String> additionalEmails,
-                                                     String passphrase) {
+                                                     Passphrase passphrase) {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_NAME, name);
         args.putString(ARG_EMAIL, email);
         args.putStringArrayList(ARG_ADDITIONAL_EMAILS, additionalEmails);
-        args.putString(ARG_PASSPHRASE, passphrase);
+        args.putParcelable(ARG_PASSPHRASE, passphrase);
 
         frag.setArguments(args);
 
@@ -111,7 +112,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mName = getArguments().getString(ARG_NAME);
         mEmail = getArguments().getString(ARG_EMAIL);
         mAdditionalEmails = getArguments().getStringArrayList(ARG_ADDITIONAL_EMAILS);
-        mPassphrase = getArguments().getString(ARG_PASSPHRASE);
+        mPassphrase = getArguments().getParcelable(ARG_PASSPHRASE);
 
         // set values
         mNameEdit.setText(mName);

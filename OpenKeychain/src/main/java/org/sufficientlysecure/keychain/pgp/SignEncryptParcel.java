@@ -22,6 +22,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,12 +59,12 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         mEnableAsciiArmorOutput  = src.readInt() == 1;
         mCompressionId = src.readInt();
         mEncryptionMasterKeyIds = src.createLongArray();
-        mSymmetricPassphrase = src.readString();
+        mSymmetricPassphrase = src.readParcelable(Passphrase.class.getClassLoader());
         mSymmetricEncryptionAlgorithm = src.readInt();
         mSignatureMasterKeyId = src.readLong();
         mSignatureSubKeyId = src.readInt() == 1 ? src.readLong() : null;
         mSignatureHashAlgorithm = src.readInt();
-        mSignaturePassphrase = src.readString();
+        mSignaturePassphrase = src.readParcelable(Passphrase.class.getClassLoader());
         mAdditionalEncryptId = src.readLong();
         mNfcSignedHash = src.createByteArray();
         mNfcCreationTimestamp = src.readInt() == 1 ? new Date(src.readLong()) : null;
@@ -112,7 +114,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
         dest.writeInt(mCompressionId);
         dest.writeLongArray(mEncryptionMasterKeyIds);
-        dest.writeString(mSymmetricPassphrase);
+        dest.writeParcelable(mSymmetricPassphrase, flags);
         dest.writeInt(mSymmetricEncryptionAlgorithm);
         dest.writeLong(mSignatureMasterKeyId);
         if (mSignatureSubKeyId != null) {
@@ -122,7 +124,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
             dest.writeInt(0);
         }
         dest.writeInt(mSignatureHashAlgorithm);
-        dest.writeString(mSignaturePassphrase);
+        dest.writeParcelable(mSignaturePassphrase, flags);
         dest.writeLong(mAdditionalEncryptId);
         dest.writeByteArray(mNfcSignedHash);
         if (mNfcCreationTimestamp != null) {

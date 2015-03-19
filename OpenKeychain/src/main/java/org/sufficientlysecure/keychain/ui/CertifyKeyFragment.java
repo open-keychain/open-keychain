@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.lang.reflect.Method;
@@ -318,7 +319,7 @@ public class CertifyKeyFragment extends LoaderFragment
      */
     private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
-        String passphrase;
+        Passphrase passphrase;
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(), mSignMasterKeyId, mSignMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
@@ -341,7 +342,6 @@ public class CertifyKeyFragment extends LoaderFragment
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     startCertifying();
                 }
                 return;

@@ -68,25 +68,12 @@ public class CreateKeyNameFragment extends Fragment {
      */
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
         boolean output = true;
-        if (editText.getText().toString().length() == 0) {
+        if (editText.getText().length() == 0) {
             editText.setError(context.getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
         } else {
             editText.setError(null);
-        }
-
-        return output;
-    }
-
-    private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
-        boolean output = true;
-        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
-            editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
-            editText2.requestFocus();
-            output = false;
-        } else {
-            editText2.setError(null);
         }
 
         return output;

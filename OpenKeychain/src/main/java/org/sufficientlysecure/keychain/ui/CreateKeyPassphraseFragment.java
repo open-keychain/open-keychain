@@ -34,6 +34,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 
@@ -83,7 +84,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
      */
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
         boolean output = true;
-        if (editText.getText().toString().length() == 0) {
+        if (editText.getText().length() == 0) {
             editText.setError(context.getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
@@ -95,11 +96,13 @@ public class CreateKeyPassphraseFragment extends Fragment {
     }
 
     private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
-        boolean output = true;
-        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
+        Passphrase p1 = new Passphrase(editText1);
+        Passphrase p2 = new Passphrase(editText2);
+        boolean output = (p1.equals(p2));
+
+        if (!output) {
             editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
             editText2.requestFocus();
-            output = false;
         } else {
             editText2.setError(null);
         }
@@ -171,7 +174,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
                             mName,
                             mEmail,
                             mAdditionalEmails,
-                            mPassphraseEdit.getText().toString()
+                            new Passphrase(mPassphraseEdit.getText())
                     );
 
             hideKeyboard();
