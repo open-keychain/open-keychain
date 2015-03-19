@@ -74,6 +74,8 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -310,31 +312,31 @@ public class ViewKeyActivity extends BaseActivity implements
                 return true;
             }
             case R.id.menu_key_view_export_file: {
-                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
-                long keyId=0;
                 try {
-                    keyId = new ProviderHelper(this)
-                            .getCachedPublicKeyRing(mDataUri)
-                            .extractOrGetMasterKeyId();
-                } catch (PgpKeyNotFoundException e) {
-                    e.printStackTrace();
+                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
+                        exportToFile(mDataUri, mExportHelper, mProviderHelper);
+                        return true;
+                    }
+
+                    startPassphraseActivity(REQUEST_EXPORT);
+                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                    // This happens when the master key is stripped
+                    exportToFile(mDataUri, mExportHelper, mProviderHelper);
                 }
-                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
-                startActivityForResult(mIntent,REQUEST_EXPORT);
                 return true;
             }
             case R.id.menu_key_view_delete: {
-                Intent mIntent = new Intent(this,PassphraseDialogActivity.class);
-                long keyId=0;
                 try {
-                    keyId = new ProviderHelper(this)
-                            .getCachedPublicKeyRing(mDataUri)
-                            .extractOrGetMasterKeyId();
-                } catch (PgpKeyNotFoundException e) {
-                    e.printStackTrace();
+                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
+                        deleteKey();
+                        return true;
+                    }
+
+                    startPassphraseActivity(REQUEST_DELETE);
+                } catch (PassphraseCacheService.KeyNotFoundException e) {
+                    // This happens when the master key is stripped
+                    deleteKey();
                 }
-                mIntent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID,keyId);
-                startActivityForResult(mIntent,REQUEST_DELETE);
                 return true;
             }
             case R.id.menu_key_view_advanced: {
@@ -473,22 +475,32 @@ public class ViewKeyActivity extends BaseActivity implements
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
-    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-        Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
-
-        HashMap<String, Object> data = providerHelper.getGenericData(
-                baseUri,
-                new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
-                new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
-
-        exportHelper.showExportKeysDialog(
-                new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
-        );
+    private void startPassphraseActivity(int requestCode) {
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+        startActivityForResult(intent, requestCode);
     }
 
-    private void deleteKey(Uri dataUri, ExportHelper exportHelper) {
+    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper) {
+        try {
+            Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
+
+            HashMap<String, Object> data = providerHelper.getGenericData(
+                    baseUri,
+                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
+                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
+
+            exportHelper.showExportKeysDialog(
+                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
+                    Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
+            );
+        } catch (ProviderHelper.NotFoundException e) {
+            Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+            Log.e(Constants.TAG, "Key not found", e);
+        }
+    }
+
+    private void deleteKey() {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
@@ -500,7 +512,11 @@ public class ViewKeyActivity extends BaseActivity implements
             }
         };
 
-        exportHelper.deleteKey(dataUri, returnHandler);
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                new long[]{ mMasterKeyId });
+        deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
     @Override
@@ -531,17 +547,12 @@ public class ViewKeyActivity extends BaseActivity implements
         }
 
         if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK){
-            deleteKey(mDataUri, mExportHelper);
-        }
-        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
-            try {
-                exportToFile(mDataUri, mExportHelper, mProviderHelper);
-            } catch (ProviderHelper.NotFoundException e) {
-                Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
-                Log.e(Constants.TAG, "Key not found", e);
-            }
+            deleteKey();
         }
 
+        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
+            exportToFile(mDataUri, mExportHelper, mProviderHelper);
+        }
 
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);

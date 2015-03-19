@@ -47,21 +47,6 @@ public class ExportHelper {
         this.mActivity = activity;
     }
 
-    public void deleteKey(Uri dataUri, Handler deleteHandler) {
-        try {
-            long masterKeyId = new ProviderHelper(mActivity).getCachedPublicKeyRing(dataUri)
-                .extractOrGetMasterKeyId();
-
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(deleteHandler);
-            DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                    new long[]{ masterKeyId });
-            deleteKeyDialog.show(mActivity.getSupportFragmentManager(), "deleteKeyDialog");
-        } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
-        }
-    }
-
     /**
      * Show dialog where to export keys
      */
