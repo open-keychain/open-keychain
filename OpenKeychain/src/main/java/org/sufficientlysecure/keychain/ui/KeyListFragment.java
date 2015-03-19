@@ -169,6 +169,22 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
 
+        // Adds an empty footer view so that the Floating Action Button won't block content
+        // in last few rows.
+        View footer = new View(getActivity());
+
+        int spacing = (int) android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
+        );
+
+        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
+                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
+                spacing
+        );
+
+        footer.setLayoutParams(params);
+        mStickyList.addFooterView(footer, null, false);
+
         /*
          * Multi-selection
          */
@@ -369,7 +385,7 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Show dialog to delete key
      *
-     * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
+     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
@@ -907,7 +923,6 @@ public class KeyListFragment extends LoaderFragment
         }
 
     }
-
 
 
 }
