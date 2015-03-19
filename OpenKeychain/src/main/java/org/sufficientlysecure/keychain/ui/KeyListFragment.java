@@ -166,6 +166,21 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
 
+        // Adds an empty footer view so that the Floating Action Button won't block content in last few rows.
+        View footer = new View(getActivity());
+
+        int spacing = (int) android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
+        );
+
+        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
+                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
+                spacing
+        );
+
+        footer.setLayoutParams(params);
+        mStickyList.addFooterView(footer, null, false);
+
         /*
          * Multi-selection
          */
@@ -317,21 +332,6 @@ public class KeyListFragment extends LoaderFragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
-
-        // Adds an empty footer view so that the Floating Action Button won't block content in last row.
-        View footer = new View(getActivity());
-
-        int spacing = (int) android.util.TypedValue.applyDimension(
-                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
-        );
-
-        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
-                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
-                spacing
-        );
-
-        footer.setLayoutParams(params);
-        mStickyList.addFooterView(footer, null, false);
 
         // this view is made visible if no data is available
         mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
