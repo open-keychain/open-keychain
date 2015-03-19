@@ -118,6 +118,7 @@
     <string name="menu_add_keys">"Add keys"</string>
     <string name="menu_search_cloud">"Search cloud"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
+    <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
     <string name="menu_export_log">"Export Log"</string>
@@ -316,6 +317,7 @@
     <string name="progress_cancelling">"cancelling…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
+    <string name="progress_updating">"Updating keys…"</string>
     <string name="progress_exporting">"exporting…"</string>
     <string name="progress_uploading">"uploading…"</string>
     <string name="progress_building_key">"building key…"</string>

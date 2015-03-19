@@ -21,11 +21,11 @@ package org.sufficientlysecure.keychain.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
+
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
@@ -74,7 +74,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.measite.minidns.Client;
@@ -136,7 +138,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         private static final IOType[] values = values();
 
         public static IOType fromInt(int n) {
-            if(n < 0 || n >= values.length) {
+            if (n < 0 || n >= values.length) {
                 return UNKNOWN;
             } else {
                 return values[n];
@@ -201,7 +203,127 @@ public class KeychainIntentService extends IntentService implements Progressable
     Messenger mMessenger;
 
     // this attribute can possibly merged with the one above? not sure...
-    private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
+    private static AtomicBoolean sActionCanceled = new AtomicBoolean(false);
+
+    /**
+     * accumulates the results from a multi-threaded key import from a keyserver and
+     * consolidates them into a single ImportKeyResult, besides keeping count of keys imported and
+     * total keys to be imported. Also provides the Progressable used by these threads, which
+     * currently ignores updates
+     */
+    private class KeyImportAccumulator {
+        private OperationLog mImportLog = new OperationLog();
+        private int mTotalKeys;
+        private int mImportedKeys = 0;
+        private Progressable mImportProgressable;
+        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<Long>();
+        private int mBadKeys = 0;
+        private int mNewKeys = 0;
+        private int mUpdatedKeys = 0;
+        private int mSecret = 0;
+        private int mResultType = 0;
+
+        public KeyImportAccumulator(int totalKeys) {
+            mTotalKeys = totalKeys;
+            //ignore updates from ImportExportOperation for now
+            mImportProgressable = new Progressable() {
+                @Override
+                public void setProgress(String message, int current, int total) {
+
+                }
+
+                @Override
+                public void setProgress(int resourceId, int current, int total) {
+
+                }
+
+                @Override
+                public void setProgress(int current, int total) {
+
+                }
+
+                @Override
+                public void setPreventCancel() {
+
+                }
+            };
+        }
+
+        public Progressable getImportProgressable() {
+            return mImportProgressable;
+        }
+
+        public int getTotalKeys() {
+            return mTotalKeys;
+        }
+
+        public int getImportedKeys() {
+            return mImportedKeys;
+        }
+
+        public synchronized void accumulateKeyImport(ImportKeyResult result) {
+            mImportedKeys++;
+            mImportLog.addAll(result.getLog().toList());//accumulates log
+            mBadKeys += result.mBadKeys;
+            mNewKeys += result.mNewKeys;
+            mUpdatedKeys += result.mUpdatedKeys;
+            mSecret += result.mSecret;
+
+            long[] masterKeyIds = result.getImportedMasterKeyIds();
+            for (int i = 0; i < masterKeyIds.length; i++) {
+                mImportedMasterKeyIds.add(masterKeyIds[i]);
+            }
+
+            // if any key import has been cancelled, set result type to cancelled
+            // resultType is added to in getConsolidatedKayImport to account for remaining factors
+            mResultType |= result.getResult() & ImportKeyResult.RESULT_CANCELLED;
+
+        }
+
+        /**
+         * returns accumulated result of all imports so far
+         *
+         * @return
+         */
+        public ImportKeyResult getConsolidatedImportKeyResult() {
+
+            // adding required information to mResultType
+            // special case,no keys requested for import
+            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0) {
+                mResultType = ImportKeyResult.RESULT_FAIL_NOTHING;
+            } else {
+                if (mNewKeys > 0) {
+                    mResultType |= ImportKeyResult.RESULT_OK_NEWKEYS;
+                }
+                if (mUpdatedKeys > 0) {
+                    mResultType |= ImportKeyResult.RESULT_OK_UPDATED;
+                }
+                if (mBadKeys > 0) {
+                    mResultType |= ImportKeyResult.RESULT_WITH_ERRORS;
+                    if (mNewKeys == 0 && mUpdatedKeys == 0) {
+                        mResultType |= ImportKeyResult.RESULT_ERROR;
+                    }
+                }
+                if (mImportLog.containsWarnings()) {
+                    mResultType |= ImportKeyResult.RESULT_WARNINGS;
+                }
+            }
+
+            long masterKeyIds[] = new long[mImportedMasterKeyIds.size()];
+            for (int i = 0; i < masterKeyIds.length; i++) {
+                masterKeyIds[i] = mImportedMasterKeyIds.get(i);
+            }
+
+            return new ImportKeyResult(mResultType, mImportLog, mNewKeys, mUpdatedKeys, mBadKeys,
+                    mSecret, masterKeyIds);
+        }
+
+        public boolean isImportFinished() {
+            return mTotalKeys == mImportedKeys;
+        }
+    }
+
+    private KeyImportAccumulator mKeyImportAccumulator;
 
     public KeychainIntentService() {
         super("KeychainIntentService");
@@ -216,7 +338,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     protected void onHandleIntent(Intent intent) {
 
         // We have not been cancelled! (yet)
-        mActionCanceled.set(false);
+        sActionCanceled.set(false);
 
         Bundle extras = intent.getExtras();
         if (extras == null) {
@@ -242,7 +364,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         Log.logDebugBundle(data, "EXTRA_DATA");
 
-        ProviderHelper providerHelper = new ProviderHelper(this);
+        final ProviderHelper providerHelper = new ProviderHelper(this);
 
         String action = intent.getAction();
 
@@ -255,7 +377,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
 
                 // Operation
-                CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
+                CertifyOperation op = new CertifyOperation(this, providerHelper, this, sActionCanceled);
                 CertifyResult result = op.certify(parcel, keyServerUri);
 
                 // Result
@@ -473,7 +595,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 Passphrase passphrase = data.getParcelable(EDIT_KEYRING_PASSPHRASE);
 
                 // Operation
-                EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
+                EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, sActionCanceled);
                 EditKeyResult result = op.execute(saveParcel, passphrase);
 
                 // Result
@@ -487,7 +609,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                 long keyRingId = data.getInt(EXPORT_KEY_RING_MASTER_KEY_ID);
 
                 // Operation
-                PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
+                PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, sActionCanceled);
                 PromoteKeyResult result = op.execute(keyRingId);
 
                 // Result
@@ -520,26 +642,68 @@ public class KeychainIntentService extends IntentService implements Progressable
                 break;
             }
             case ACTION_IMPORT_KEYRING: {
-
                 // Input
-                String keyServer = data.getString(IMPORT_KEY_SERVER);
+                final String keyServer = data.getString(IMPORT_KEY_SERVER);
                 ArrayList<ParcelableKeyRing> list = data.getParcelableArrayList(IMPORT_KEY_LIST);
                 ParcelableFileCache<ParcelableKeyRing> cache =
                         new ParcelableFileCache<>(this, "key_import.pcl");
+                int totKeys = 0;
+                Iterator<ParcelableKeyRing> keyListIterator = null;
+                //either list or cache must be null, no guarantees otherwise
+                if (list == null) {//export from cache, copied from ImportExportOperation.importKeyRings
 
-                // Operation
-                ImportExportOperation importExportOperation = new ImportExportOperation(
-                        this, providerHelper, this, mActionCanceled);
-                // Either list or cache must be null, no guarantees otherwise.
-                ImportKeyResult result = list != null
-                        ? importExportOperation.importKeyRings(list, keyServer)
-                        : importExportOperation.importKeyRings(cache, keyServer);
+                    try {
+                        ParcelableFileCache.IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
+                        keyListIterator = it;
+                        totKeys = it.getSize();
+                    } catch (IOException e) {
 
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
+                        // Special treatment here, we need a lot
+                        OperationLog log = new OperationLog();
+                        log.add(OperationResult.LogType.MSG_IMPORT, 0, 0);
+                        log.add(OperationResult.LogType.MSG_IMPORT_ERROR_IO, 0, 0);
+
+                        keyImportFailed(new ImportKeyResult(ImportKeyResult.RESULT_ERROR, log));
+                    }
+                } else {
+                    keyListIterator = list.iterator();
+                    totKeys = list.size();
+                }
+
+
+                if (keyListIterator != null) {
+                    mKeyImportAccumulator = new KeyImportAccumulator(totKeys);
+                    setProgress(0, totKeys);
+
+                    final int maxThreads = 200;
+                    ExecutorService importExecutor = new ThreadPoolExecutor(0, maxThreads,
+                            30L, TimeUnit.SECONDS,
+                            new SynchronousQueue<Runnable>());
+
+                    while (keyListIterator.hasNext()) {
+                        final ParcelableKeyRing pkRing = keyListIterator.next();
+                        Runnable importOperationRunnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                // Operation
+                                ImportExportOperation importExportOperation = new ImportExportOperation(
+                                        KeychainIntentService.this,
+                                        new ProviderHelper(KeychainIntentService.this),
+                                        mKeyImportAccumulator.getImportProgressable(),
+                                        sActionCanceled);
+
+                                ArrayList<ParcelableKeyRing> list = new ArrayList<>();
+                                list.add(pkRing);
+                                ImportKeyResult result = importExportOperation.importKeyRings(list,
+                                        keyServer);
+                                singleKeyRingImportCompleted(result);
+                            }
+                        };
+                        importExecutor.execute(importOperationRunnable);
+                    }
+                }
 
                 break;
-
             }
             case ACTION_SIGN_ENCRYPT: {
 
@@ -548,7 +712,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Operation
                 SignEncryptOperation op = new SignEncryptOperation(
-                        this, new ProviderHelper(this), this, mActionCanceled);
+                        this, new ProviderHelper(this), this, sActionCanceled);
                 SignEncryptResult result = op.execute(inputParcel);
 
                 // Result
@@ -582,6 +746,23 @@ public class KeychainIntentService extends IntentService implements Progressable
                 break;
             }
         }
+    }
+
+    private synchronized void singleKeyRingImportCompleted(ImportKeyResult result) {
+        mKeyImportAccumulator.accumulateKeyImport(result);
+
+        setProgress(mKeyImportAccumulator.getImportedKeys(), mKeyImportAccumulator.getTotalKeys());
+
+        if (mKeyImportAccumulator.isImportFinished()) {
+            ContactSyncAdapterService.requestSync();
+
+            sendMessageToHandler(MessageStatus.OKAY,
+                    mKeyImportAccumulator.getConsolidatedImportKeyResult());
+        }
+    }
+
+    private void keyImportFailed(ImportKeyResult result) {
+        sendMessageToHandler(MessageStatus.OKAY, result);
     }
 
     private void sendProofError(List<String> log, String label) {
@@ -655,7 +836,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     /**
      * Set progress of ProgressDialog by sending message to handler on UI thread
      */
-    public void setProgress(String message, int progress, int max) {
+    public synchronized void setProgress(String message, int progress, int max) {
         Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
                 + max);
 
@@ -669,16 +850,16 @@ public class KeychainIntentService extends IntentService implements Progressable
         sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, null, data);
     }
 
-    public void setProgress(int resourceId, int progress, int max) {
+    public synchronized void setProgress(int resourceId, int progress, int max) {
         setProgress(getString(resourceId), progress, max);
     }
 
-    public void setProgress(int progress, int max) {
+    public synchronized void setProgress(int progress, int max) {
         setProgress(null, progress, max);
     }
 
     @Override
-    public void setPreventCancel() {
+    public synchronized void setPreventCancel() {
         sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
     }
 
@@ -743,8 +924,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // onStartCommand will be run on the thread which starts the service
+        // cancel operation is introduced here as it must not be queued up
         if (ACTION_CANCEL.equals(intent.getAction())) {
-            mActionCanceled.set(true);
+            sActionCanceled.set(true);
             return START_NOT_STICKY;
         }
         return super.onStartCommand(intent, flags, startId);
