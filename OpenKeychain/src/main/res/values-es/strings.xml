@@ -89,7 +89,7 @@
   <string name="menu_help">Ayuda</string>
   <string name="menu_export_key">Exportar hacia archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
-  <string name="menu_create_key">Crear mi clave</string>
+  <string name="menu_manage_keys">Crear mi clave</string>
   <string name="menu_import_existing_key">Importar desde fichero</string>
   <string name="menu_search">Buscar</string>
   <string name="menu_nfc_preferences">Configuraciones NFC</string>

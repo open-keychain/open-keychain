@@ -50,7 +50,7 @@ public class NameEditText extends AutoCompleteTextView {
     }
 
     private void init() {
-        removeFlag();
+        reenableKeyboardSuggestions();
         initAdapter();
     }
 
@@ -62,10 +62,10 @@ public class NameEditText extends AutoCompleteTextView {
     }
 
     /**
-     * Hack to re-enable keyboard auto correction in AutoCompleteTextView.
+     * Hack to re-enable keyboard suggestions in AutoCompleteTextView.
      * From http://stackoverflow.com/a/22512858
      */
-    private void removeFlag() {
+    private void reenableKeyboardSuggestions() {
         int inputType = getInputType();
         inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setRawInputType(inputType);

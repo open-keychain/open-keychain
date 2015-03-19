@@ -24,34 +24,26 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 
 public class CreateKeyNameFragment extends Fragment {
 
-    public static final String ARG_NAME = "name";
-    public static final String ARG_EMAIL = "email";
-
     CreateKeyActivity mCreateKeyActivity;
     NameEditText mNameEdit;
+    View mBackButton;
     View mNextButton;
-
-    String mEmail;
 
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyNameFragment newInstance(String name, String email) {
+    public static CreateKeyNameFragment newInstance() {
         CreateKeyNameFragment frag = new CreateKeyNameFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_NAME, name);
-        args.putString(ARG_EMAIL, email);
 
         frag.setArguments(args);
 
@@ -84,21 +76,26 @@ public class CreateKeyNameFragment extends Fragment {
         View view = inflater.inflate(R.layout.create_key_name_fragment, container, false);
 
         mNameEdit = (NameEditText) view.findViewById(R.id.create_key_name);
+        mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
         // initial values
-        String name = getArguments().getString(ARG_NAME);
-        mEmail = getArguments().getString(ARG_EMAIL);
-        mNameEdit.setText(name);
+        mNameEdit.setText(mCreateKeyActivity.mName);
 
         // focus empty edit fields
-        if (name == null) {
+        if (mCreateKeyActivity.mName == null) {
             mNameEdit.requestFocus();
         }
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
+            }
+        });
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createKeyCheck();
+                nextClicked();
             }
         });
 
@@ -111,16 +108,13 @@ public class CreateKeyNameFragment extends Fragment {
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
-    private void createKeyCheck() {
+    private void nextClicked() {
         if (isEditTextNotEmpty(getActivity(), mNameEdit)) {
+            // save state
+            mCreateKeyActivity.mName = mNameEdit.getText().toString();
 
-            CreateKeyEmailFragment frag =
-                    CreateKeyEmailFragment.newInstance(
-                            mNameEdit.getText().toString(),
-                            mEmail
-                    );
-
-            mCreateKeyActivity.loadFragment(null, frag, FragAction.TO_RIGHT);
+            CreateKeyEmailFragment frag = CreateKeyEmailFragment.newInstance();
+            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
 

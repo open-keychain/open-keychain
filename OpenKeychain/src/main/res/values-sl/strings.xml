@@ -75,7 +75,7 @@
   <string name="menu_help">Pomoč</string>
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
-  <string name="menu_create_key">Ustvari zasebni ključ</string>
+  <string name="menu_manage_keys">Ustvari zasebni ključ</string>
   <string name="menu_import_existing_key">Uvozi iz datoteke</string>
   <string name="menu_search">Išči</string>
   <string name="menu_beam_preferences">Nastavitve Beam</string>

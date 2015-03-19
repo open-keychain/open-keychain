@@ -489,7 +489,8 @@ public class KeyListFragment extends LoaderFragment
             case R.id.menu_key_list_debug_first_time:
                 Preferences prefs = Preferences.getPreferences(getActivity());
                 prefs.setFirstTime(true);
-                Intent intent = new Intent(getActivity(), FirstTimeActivity.class);
+                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+                intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
                 startActivity(intent);
                 getActivity().finish();
                 return true;

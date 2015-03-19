@@ -46,16 +46,12 @@ import java.util.List;
 
 public class CreateKeyEmailFragment extends Fragment {
 
-    public static final String ARG_NAME = "name";
-    public static final String ARG_EMAIL = "email";
-
     CreateKeyActivity mCreateKeyActivity;
     EmailEditText mEmailEdit;
     RecyclerView mEmailsRecyclerView;
     View mBackButton;
     View mNextButton;
 
-    String mName;
     ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
 
     EmailAdapter mEmailAdapter;
@@ -63,13 +59,10 @@ public class CreateKeyEmailFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyEmailFragment newInstance(String name, String email) {
+    public static CreateKeyEmailFragment newInstance() {
         CreateKeyEmailFragment frag = new CreateKeyEmailFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_NAME, name);
-        args.putString(ARG_EMAIL, email);
-
         frag.setArguments(args);
 
         return frag;
@@ -106,31 +99,33 @@ public class CreateKeyEmailFragment extends Fragment {
         mEmailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
 
         // initial values
-        mName = getArguments().getString(ARG_NAME);
-        String email = getArguments().getString(ARG_EMAIL);
-        mEmailEdit.setText(email);
+        mEmailEdit.setText(mCreateKeyActivity.mEmail);
 
         // focus empty edit fields
-        if (email == null) {
+        if (mCreateKeyActivity.mEmail == null) {
             mEmailEdit.requestFocus();
         }
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCreateKeyActivity.loadFragment(null, null, FragAction.TO_LEFT);
+                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
             }
         });
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createKeyCheck();
+                nextClicked();
             }
         });
         mEmailsRecyclerView.setHasFixedSize(true);
         mEmailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mEmailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        // initial values
         mAdditionalEmailModels = new ArrayList<>();
+        if (mCreateKeyActivity.mAdditionalEmails != null) {
+            setAdditionalEmails(mCreateKeyActivity.mAdditionalEmails);
+        }
         mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,23 +166,36 @@ public class CreateKeyEmailFragment extends Fragment {
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
-    private void createKeyCheck() {
+    private void nextClicked() {
         if (isEditTextNotEmpty(getActivity(), mEmailEdit)) {
+            // save state
+            mCreateKeyActivity.mEmail = mEmailEdit.getText().toString();
+            mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();
 
-            ArrayList<String> emails = new ArrayList<>();
-            for (EmailAdapter.ViewModel holder : mAdditionalEmailModels) {
-                emails.add(holder.toString());
-            }
-
-            CreateKeyPassphraseFragment frag =
-                    CreateKeyPassphraseFragment.newInstance(
-                            mName,
-                            mEmailEdit.getText().toString(),
-                            emails
-                    );
-
-            mCreateKeyActivity.loadFragment(null, frag, FragAction.TO_RIGHT);
+            CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
+            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         }
+    }
+
+    private ArrayList<String> getAdditionalEmails() {
+        ArrayList<String> emails = new ArrayList<>();
+        for (EmailAdapter.ViewModel holder : mAdditionalEmailModels) {
+            emails.add(holder.toString());
+        }
+        return emails;
+    }
+
+    private void setAdditionalEmails(ArrayList<String> emails) {
+        for (String email : emails) {
+            mAdditionalEmailModels.add(new EmailAdapter.ViewModel(email));
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // save state in activity
+        mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();
     }
 
     public static class EmailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

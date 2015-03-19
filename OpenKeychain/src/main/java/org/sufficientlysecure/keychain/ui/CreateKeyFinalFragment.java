@@ -65,32 +65,15 @@ public class CreateKeyFinalFragment extends Fragment {
     TextView mEditText;
     View mEditButton;
 
-    public static final String ARG_NAME = "name";
-    public static final String ARG_EMAIL = "email";
-    public static final String ARG_ADDITIONAL_EMAILS = "emails";
-    public static final String ARG_PASSPHRASE = "passphrase";
-
-    String mName;
-    String mEmail;
-    ArrayList<String> mAdditionalEmails;
-    Passphrase mPassphrase;
-
     SaveKeyringParcel mSaveKeyringParcel;
 
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyFinalFragment newInstance(String name, String email,
-                                                     ArrayList<String> additionalEmails,
-                                                     Passphrase passphrase) {
+    public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_NAME, name);
-        args.putString(ARG_EMAIL, email);
-        args.putStringArrayList(ARG_ADDITIONAL_EMAILS, additionalEmails);
-        args.putParcelable(ARG_PASSPHRASE, passphrase);
-
         frag.setArguments(args);
 
         return frag;
@@ -108,17 +91,11 @@ public class CreateKeyFinalFragment extends Fragment {
         mEditText = (TextView) view.findViewById(R.id.create_key_edit_text);
         mEditButton = view.findViewById(R.id.create_key_edit_button);
 
-        // get args
-        mName = getArguments().getString(ARG_NAME);
-        mEmail = getArguments().getString(ARG_EMAIL);
-        mAdditionalEmails = getArguments().getStringArrayList(ARG_ADDITIONAL_EMAILS);
-        mPassphrase = getArguments().getParcelable(ARG_PASSPHRASE);
-
         // set values
-        mNameEdit.setText(mName);
-        if (mAdditionalEmails != null && mAdditionalEmails.size() > 0) {
-            String emailText = mEmail + ", ";
-            Iterator<?> it = mAdditionalEmails.iterator();
+        mNameEdit.setText(mCreateKeyActivity.mName);
+        if (mCreateKeyActivity.mAdditionalEmails != null && mCreateKeyActivity.mAdditionalEmails.size() > 0) {
+            String emailText = mCreateKeyActivity.mEmail + ", ";
+            Iterator<?> it = mCreateKeyActivity.mAdditionalEmails.iterator();
             while (it.hasNext()) {
                 Object next = it.next();
                 emailText += next;
@@ -128,7 +105,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
             mEmailEdit.setText(emailText);
         } else {
-            mEmailEdit.setText(mEmail);
+            mEmailEdit.setText(mCreateKeyActivity.mEmail);
         }
 
         mCreateButton.setOnClickListener(new View.OnClickListener() {
@@ -141,7 +118,7 @@ public class CreateKeyFinalFragment extends Fragment {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCreateKeyActivity.loadFragment(null, null, FragAction.TO_LEFT);
+                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
             }
         });
 
@@ -155,6 +132,12 @@ public class CreateKeyFinalFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCreateKeyActivity = (CreateKeyActivity) getActivity();
     }
 
     @Override
@@ -187,17 +170,22 @@ public class CreateKeyFinalFragment extends Fragment {
                     Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
             mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
-            String userId = KeyRing.createUserId(new KeyRing.UserId(mName, mEmail, null));
+            String userId = KeyRing.createUserId(
+                    new KeyRing.UserId(mCreateKeyActivity.mName, mCreateKeyActivity.mEmail, null)
+            );
             mSaveKeyringParcel.mAddUserIds.add(userId);
             mSaveKeyringParcel.mChangePrimaryUserId = userId;
-            if (mAdditionalEmails != null && mAdditionalEmails.size() > 0) {
-                for (String email : mAdditionalEmails) {
-                    String thisUserId = KeyRing.createUserId(new KeyRing.UserId(mName, email, null));
+            if (mCreateKeyActivity.mAdditionalEmails != null
+                    && mCreateKeyActivity.mAdditionalEmails.size() > 0) {
+                for (String email : mCreateKeyActivity.mAdditionalEmails) {
+                    String thisUserId = KeyRing.createUserId(
+                            new KeyRing.UserId(mCreateKeyActivity.mName, email, null)
+                    );
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
-            mSaveKeyringParcel.mNewUnlock = mPassphrase != null
-                    ? new ChangeUnlockParcel(mPassphrase, null)
+            mSaveKeyringParcel.mNewUnlock = mCreateKeyActivity.mPassphrase != null
+                    ? new ChangeUnlockParcel(mCreateKeyActivity.mPassphrase, null)
                     : null;
         }
     }

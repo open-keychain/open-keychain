@@ -44,6 +44,7 @@
     <string name="title_keys">"Keys"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
+    <string name="title_manage_my_keys">"Manage my keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -106,7 +107,7 @@
     <string name="menu_help">"Help"</string>
     <string name="menu_export_key">"Export to file"</string>
     <string name="menu_delete_key">"Delete key"</string>
-    <string name="menu_create_key">"Create my key"</string>
+    <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_import_existing_key">"Import from file"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_nfc_preferences">"NFC settings"</string>
@@ -1197,8 +1198,9 @@
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
-    <string name="first_time_create_key">"Create my key"</string>
-    <string name="first_time_import_key">"Import from file"</string>
+    <string name="first_time_create_key">"Create my key (recommended)"</string>
+    <string name="first_time_import_key">"Import key from file"</string>
+    <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
 
     <!-- unsorted -->
