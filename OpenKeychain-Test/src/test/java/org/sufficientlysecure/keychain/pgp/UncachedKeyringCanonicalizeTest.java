@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.ByteArrayInputStream;
 import java.security.Security;
@@ -111,7 +112,7 @@ public class UncachedKeyringCanonicalizeTest {
         }
 
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = new ChangeUnlockParcel("");
+        parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);
@@ -546,7 +547,7 @@ public class UncachedKeyringCanonicalizeTest {
             CanonicalizedSecretKeyRing canonicalized = (CanonicalizedSecretKeyRing) ring.canonicalize(log, 0);
 
             CanonicalizedSecretKey masterSecretKey = canonicalized.getSecretKey();
-            masterSecretKey.unlock("");
+            masterSecretKey.unlock(new Passphrase());
             PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
             PGPSignature cert = PgpKeyOperation.generateSubkeyBindingSignature(
                     masterPublicKey, masterSecretKey.getPrivateKey(), masterSecretKey.getPrivateKey(),

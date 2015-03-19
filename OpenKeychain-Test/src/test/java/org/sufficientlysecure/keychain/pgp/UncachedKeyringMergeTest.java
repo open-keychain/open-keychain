@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -105,7 +106,7 @@ public class UncachedKeyringMergeTest {
             }
 
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = new ChangeUnlockParcel("");
+            parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -122,7 +123,7 @@ public class UncachedKeyringMergeTest {
 
             parcel.mAddUserIds.add("shy");
             // passphrase is tested in PgpKeyOperationTest, just use empty here
-            parcel.mNewUnlock = new ChangeUnlockParcel("");
+            parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
             PgpKeyOperation op = new PgpKeyOperation(null);
 
             OperationResult.OperationLog log = new OperationResult.OperationLog();
@@ -185,11 +186,11 @@ public class UncachedKeyringMergeTest {
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
 
             parcel.reset();
             parcel.mAddUserIds.add("flam");
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
         }
 
         { // merge A into base
@@ -226,8 +227,8 @@ public class UncachedKeyringMergeTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
 
             subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
             subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
@@ -268,7 +269,7 @@ public class UncachedKeyringMergeTest {
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modified = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
         }
 
         {
@@ -293,7 +294,7 @@ public class UncachedKeyringMergeTest {
 
             CanonicalizedSecretKey secretKey = new CanonicalizedSecretKeyRing(
                     ringB.getEncoded(), false, 0).getSecretKey();
-            secretKey.unlock("");
+            secretKey.unlock(new Passphrase());
             // sign all user ids
             modified = secretKey.certifyUserIds(publicRing, publicRing.getPublicKey().getUnorderedUserIds(), null, null);
         }
@@ -362,7 +363,7 @@ public class UncachedKeyringMergeTest {
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, parcel, "").getRing();
+            modified = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
         }
 
         {

@@ -46,6 +46,10 @@ public class Passphrase implements Parcelable {
         this(editText.getText());
     }
 
+    public Passphrase(char[] passphrase) {
+        mPassphrase = passphrase;
+    }
+
     public Passphrase(String passphrase) {
         mPassphrase = passphrase.toCharArray();
     }
