@@ -1,4 +1,3 @@
-package org.sufficientlysecure.keychain.util;
 /*
  * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
@@ -15,6 +14,8 @@ package org.sufficientlysecure.keychain.util;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+package org.sufficientlysecure.keychain.util;
 
 import java.util.Random;
 
