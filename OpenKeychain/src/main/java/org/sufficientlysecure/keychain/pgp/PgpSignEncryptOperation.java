@@ -62,19 +62,19 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** This class supports a single, low-level, sign/encrypt operation.
- *
+/**
+ * This class supports a single, low-level, sign/encrypt operation.
+ * <p/>
  * The operation of this class takes an Input- and OutputStream plus a
  * PgpSignEncryptInput, and signs and/or encrypts the stream as
  * parametrized in the PgpSignEncryptInput object. It returns its status
  * and a possible detached signature as a SignEncryptResult.
- *
+ * <p/>
  * For a high-level operation based on URIs, see SignEncryptOperation.
  *
  * @see org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput
  * @see org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult
  * @see org.sufficientlysecure.keychain.operations.SignEncryptOperation
- *
  */
 public class PgpSignEncryptOperation extends BaseOperation {
 
@@ -100,7 +100,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
      * Signs and/or encrypts data based on parameters of class
      */
     public PgpSignEncryptResult execute(PgpSignEncryptInput input,
-                                     InputData inputData, OutputStream outputStream) {
+                                        InputData inputData, OutputStream outputStream) {
 
         int indent = 0;
         OperationLog log = new OperationLog();
@@ -489,6 +489,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
                             new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_NFC, log);
                     // Note that the checked key here is the master key, not the signing key
                     // (although these are always the same on Yubikeys)
+
+                    // SignatureSubKeyId can be null.
+                    if (input.getSignatureSubKeyId() == null) {
+                        //log.add(LogType.MSG_IP_SUBKEY, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                    }
+
                     result.setNfcData(input.getSignatureSubKeyId(), e.hashToSign, e.hashAlgo, e.creationTimestamp, input.getSignaturePassphrase());
                     Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
                     return result;
