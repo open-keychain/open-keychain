@@ -114,7 +114,9 @@
                 android:layout_weight="1"
                 android:drawableRight="@drawable/ic_share_grey_24dp"
                 android:drawablePadding="8dp"
-                android:gravity="center_vertical" />
+                android:gravity="center_vertical"
+                android:background="?android:selectableItemBackground"
+                />
 
             <View
                 android:layout_width="1dip"
