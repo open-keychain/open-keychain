@@ -50,18 +50,19 @@
             android:layout_weight="1"
             android:background="@android:color/white" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/import_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
             android:background="@android:color/white">
 
             <View
+                android:id="@+id/import_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:background="?android:attr/listDivider" />
 
             <TextView
@@ -70,7 +71,10 @@
                 android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_below="@id/import_divider"
                 android:text="@string/import_import"
                 android:minHeight="?android:attr/listPreferredItemHeight"
                 android:drawableRight="@drawable/ic_file_download_grey_24dp"
@@ -79,6 +83,12 @@
                 android:clickable="true"
                 android:background="?android:selectableItemBackground" />
 
-        </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/import_snackbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/import_import" />
+
+        </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>
