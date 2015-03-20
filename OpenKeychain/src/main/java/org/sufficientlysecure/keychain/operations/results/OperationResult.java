@@ -273,19 +273,19 @@ public abstract class OperationResult implements Parcelable {
         }
 
         if (getLog() == null || getLog().isEmpty()) {
-            return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style);
+            return Notify.create(activity, msgId, Notify.LENGTH_LONG, style);
         }
 
-        return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style,
-            new ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intent = new Intent(
-                            activity, LogDisplayActivity.class);
-                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                    activity.startActivity(intent);
-                }
-            }, R.string.view_log);
+        return Notify.create(activity, msgId, Notify.LENGTH_LONG, style,
+                new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Intent intent = new Intent(
+                                activity, LogDisplayActivity.class);
+                        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                        activity.startActivity(intent);
+                    }
+                }, R.string.view_log);
 
     }
 

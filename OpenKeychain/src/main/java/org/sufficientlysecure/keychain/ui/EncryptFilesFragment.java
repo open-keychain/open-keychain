@@ -115,9 +115,9 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
         }
 
         if (mEncryptInterface.getInputUris().contains(inputUri)) {
-            Notify.showNotify(getActivity(),
+            Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
-                    Notify.Style.ERROR);
+                    Notify.Style.ERROR).show(this);
             return;
         }
 
@@ -153,7 +153,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
 
     private void encryptClicked(boolean share) {
         if (mEncryptInterface.getInputUris().isEmpty()) {
-            Notify.showNotify(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show(this);
             return;
         }
         if (share) {
@@ -169,7 +169,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             mEncryptInterface.startEncrypt(true);
         } else {
             if (mEncryptInterface.getInputUris().size() > 1) {
-                Notify.showNotify(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR);
+                Notify.create(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR).show(this);
                 return;
             }
             showOutputFileDialog();

@@ -198,8 +198,9 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             // Copy to clipboard
             copyToClipboard(result.getResultBytes());
             result.createNotify(EncryptTextActivity.this).show();
-            // Notify.showNotify(EncryptTextActivity.this,
-            // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+            // Notify.create(EncryptTextActivity.this,
+            // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
+            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
         }
     }
 
@@ -281,7 +282,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
     protected boolean inputIsValid() {
         if (mMessage == null) {
-            Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
+            Notify.create(this, R.string.error_message, Notify.Style.ERROR)
+                    .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
             return false;
         }
 
@@ -289,11 +291,13 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             // symmetric encryption checks
 
             if (mPassphrase == null) {
-                Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
             if (mPassphrase.isEmpty()) {
-                Notify.showNotify(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
 
@@ -304,7 +308,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                     && mEncryptionKeyIds.length > 0);
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
-                Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
+                Notify.create(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
         }

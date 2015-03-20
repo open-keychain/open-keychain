@@ -277,7 +277,7 @@ public class ImportKeysActivity extends BaseActivity {
 
     private boolean isFingerprintValid(String fingerprint) {
         if (fingerprint == null || fingerprint.length() < 40) {
-            Notify.showNotify(this, R.string.import_qr_code_too_short_fingerprint, Notify.Style.ERROR);
+            Notify.create(this, R.string.import_qr_code_too_short_fingerprint, Notify.Style.ERROR).show();
             return false;
         } else {
             return true;
@@ -372,7 +372,7 @@ public class ImportKeysActivity extends BaseActivity {
                 startService(intent);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.showNotify(this, "Problem writing cache file!", Notify.Style.ERROR);
+                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
         } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
@@ -412,7 +412,7 @@ public class ImportKeysActivity extends BaseActivity {
             // start service with intent
             startService(intent);
         } else {
-            Notify.showNotify(this, R.string.error_nothing_import, Notify.Style.ERROR);
+            Notify.create(this, R.string.error_nothing_import, Notify.Style.ERROR).show();
         }
     }
 
