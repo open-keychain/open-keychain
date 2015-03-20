@@ -240,6 +240,11 @@ public class OpenPgpService extends RemoteService {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
             if (nfcSignedHash != null) {
                 Log.d(Constants.TAG, "nfcSignedHash:" + Hex.toHexString(nfcSignedHash));
@@ -278,6 +283,7 @@ public class OpenPgpService extends RemoteService {
 
             // sign-only
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput()
+                    .setSignaturePassphrase(passphrase)
                     .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
@@ -366,6 +372,11 @@ public class OpenPgpService extends RemoteService {
                 compressionId = CompressionAlgorithmTags.UNCOMPRESSED;
             }
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             // first try to get key ids from non-ambiguous key id extra
             long[] keyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
             if (keyIds == null) {
@@ -391,7 +402,8 @@ public class OpenPgpService extends RemoteService {
             InputData inputData = new InputData(is, inputLength, originalFilename);
 
             PgpSignEncryptInput pseInput = new PgpSignEncryptInput();
-            pseInput.setEnableAsciiArmorOutput(asciiArmor)
+            pseInput.setSignaturePassphrase(passphrase)
+                    .setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionId(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED)
@@ -499,6 +511,11 @@ public class OpenPgpService extends RemoteService {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             String currentPkg = getCurrentCallingPackage();
             Set<Long> allowedKeyIds;
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
@@ -509,7 +526,6 @@ public class OpenPgpService extends RemoteService {
                         KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
             }
 
-            Passphrase passphrase = data.getParcelableExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
