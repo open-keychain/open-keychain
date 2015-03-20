@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.support.TestDataUtil;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
@@ -72,7 +73,7 @@ import java.util.Random;
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    final static String passphrase = TestingUtils.genPassphrase();
+    final static Passphrase passphrase = TestingUtils.genPassphrase();
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -295,9 +296,9 @@ public class PgpKeyOperationTest {
         }
 
         {
-            String badphrase = "";
+            Passphrase badphrase = new Passphrase();
             if (badphrase.equals(passphrase)) {
-                badphrase = "a";
+                badphrase = new Passphrase("a");
             }
 
             assertModifyFailure("keyring modification with bad passphrase should fail",
@@ -1036,7 +1037,7 @@ public class PgpKeyOperationTest {
     public void testPassphraseChange() throws Exception {
 
         // change passphrase to empty
-        parcel.mNewUnlock = new ChangeUnlockParcel("");
+        parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
         // note that canonicalization here necessarily strips the empty notation packet
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
                 passphrase);
@@ -1050,9 +1051,9 @@ public class PgpKeyOperationTest {
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         // modify keyring, change to non-empty passphrase
-        String otherPassphrase = TestingUtils.genPassphrase(true);
+        Passphrase otherPassphrase = TestingUtils.genPassphrase(true);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, "");
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, new Passphrase());
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -1075,7 +1076,7 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("extracted packet should be a secret subkey",
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
-        String otherPassphrase2 = TestingUtils.genPassphrase(true);
+        Passphrase otherPassphrase2 = TestingUtils.genPassphrase(true);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase2);
         {
             // if we replace a secret key with one without passphrase
@@ -1112,7 +1113,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testUnlockPin() throws Exception {
 
-        String pin = "5235125";
+        Passphrase pin = new Passphrase("5235125");
 
         // change passphrase to a pin type
         parcel.mNewUnlock = new ChangeUnlockParcel(null, pin);
@@ -1138,7 +1139,7 @@ public class PgpKeyOperationTest {
         Thread.sleep(1000);
 
         {
-            parcel.mNewUnlock = new ChangeUnlockParcel("phrayse", null);
+            parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase("phrayse"), null);
             applyModificationWithChecks(parcel, modified, onlyA, onlyB, pin, true, false);
 
             Assert.assertEquals("exactly four packets should have been removed (the secret keys + notation packet)",
@@ -1171,7 +1172,7 @@ public class PgpKeyOperationTest {
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
-                                                               String passphrase) {
+                                                               Passphrase passphrase) {
         return applyModificationWithChecks(parcel, ring, onlyA, onlyB, passphrase, true, true);
     }
 
@@ -1180,7 +1181,7 @@ public class PgpKeyOperationTest {
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
-                                                               String passphrase,
+                                                               Passphrase passphrase,
                                                                boolean canonicalize,
                                                                boolean constantCanonicalize) {
 
@@ -1257,7 +1258,7 @@ public class PgpKeyOperationTest {
     }
 
     private void assertModifyFailure(String reason, UncachedKeyRing ring,
-                                     SaveKeyringParcel parcel, String passphrase, LogType expected)
+                                     SaveKeyringParcel parcel, Passphrase passphrase, LogType expected)
             throws Exception {
 
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);

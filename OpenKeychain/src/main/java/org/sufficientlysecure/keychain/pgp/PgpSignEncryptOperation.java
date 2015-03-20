@@ -243,7 +243,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 log.add(LogType.MSG_PSE_SYMMETRIC, indent);
 
                 JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
-                        new JcePBEKeyEncryptionMethodGenerator(input.getSymmetricPassphrase().toCharArray());
+                        new JcePBEKeyEncryptionMethodGenerator(input.getSymmetricPassphrase().getCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
                 log.add(LogType.MSG_PSE_ASYMMETRIC, indent);

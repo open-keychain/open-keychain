@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain.pgp;
 import android.net.Uri;
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

@@ -22,6 +22,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -296,33 +297,30 @@ public class SaveKeyringParcel implements Parcelable {
     public static class ChangeUnlockParcel implements Parcelable {
 
         // The new passphrase to use
-        public final String mNewPassphrase;
+        public final Passphrase mNewPassphrase;
         // A new pin to use. Must only contain [0-9]+
-        public final String mNewPin;
+        public final Passphrase mNewPin;
 
-        public ChangeUnlockParcel(String newPassphrase) {
+        public ChangeUnlockParcel(Passphrase newPassphrase) {
             this(newPassphrase, null);
         }
-        public ChangeUnlockParcel(String newPassphrase, String newPin) {
+        public ChangeUnlockParcel(Passphrase newPassphrase, Passphrase newPin) {
             if (newPassphrase == null && newPin == null) {
                 throw new RuntimeException("Cannot set both passphrase and pin. THIS IS A BUG!");
-            }
-            if (newPin != null && !newPin.matches("[0-9]+")) {
-                throw new RuntimeException("Pin must be numeric digits only. THIS IS A BUG!");
             }
             mNewPassphrase = newPassphrase;
             mNewPin = newPin;
         }
 
         public ChangeUnlockParcel(Parcel source) {
-            mNewPassphrase = source.readString();
-            mNewPin = source.readString();
+            mNewPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
+            mNewPin = source.readParcelable(Passphrase.class.getClassLoader());
         }
 
         @Override
         public void writeToParcel(Parcel destination, int flags) {
-            destination.writeString(mNewPassphrase);
-            destination.writeString(mNewPin);
+            destination.writeParcelable(mNewPassphrase, flags);
+            destination.writeParcelable(mNewPin, flags);
         }
 
         @Override

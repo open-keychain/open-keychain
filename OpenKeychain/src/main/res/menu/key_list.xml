@@ -16,7 +16,7 @@
 
     <item
         android:id="@+id/menu_key_list_create"
-        android:title="@string/menu_create_key"
+        android:title="@string/menu_manage_keys"
         app:showAsAction="never" />
 
     <item

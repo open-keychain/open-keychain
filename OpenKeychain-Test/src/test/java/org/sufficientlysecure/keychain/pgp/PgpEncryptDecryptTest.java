@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
@@ -47,17 +48,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.HashSet;
 
 @RunWith(RobolectricTestRunner.class)
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
 public class PgpEncryptDecryptTest {
 
-    static String mPassphrase = TestingUtils.genPassphrase(true);
+    static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
-    static String mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static String mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -180,7 +182,7 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(Robolectric.application),
                     null, // new DummyPassphraseCache(mPassphrase, 0L),
                     data, out);
-            b.setPassphrase(mPassphrase + "x");
+            b.setPassphrase(new Passphrase(Arrays.toString(mPassphrase.getCharArray()) + "x"));
             DecryptVerifyResult result = b.build().execute();
             Assert.assertFalse("decryption must succeed", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
@@ -511,7 +513,7 @@ public class PgpEncryptDecryptTest {
 
     private PgpDecryptVerify.Builder builderWithFakePassphraseCache (
             InputData data, OutputStream out,
-            final String passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
+            final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
         return new PgpDecryptVerify.Builder(Robolectric.application,
                 new ProviderHelper(Robolectric.application),
@@ -520,7 +522,7 @@ public class PgpEncryptDecryptTest {
             public PgpDecryptVerify build() {
                 return new PgpDecryptVerify(this) {
                     @Override
-                    public String getCachedPassphrase(long masterKeyId, long subKeyId)
+                    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
                             throws NoSecretKeyException {
                         if (checkMasterKeyId != null) {
                             Assert.assertEquals("requested passphrase should be for expected master key id",

@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
@@ -333,7 +334,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             positive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final String passphrase = mPassphraseEditText.getText().toString();
+                    final Passphrase passphrase = new Passphrase(mPassphraseEditText);
 
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
@@ -410,7 +411,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             });
         }
 
-        private void finishCaching(String passphrase) {
+        private void finishCaching(Passphrase passphrase) {
             // any indication this isn't needed anymore, don't do it.
             if (mIsCancelled || getActivity() == null) {
                 return;

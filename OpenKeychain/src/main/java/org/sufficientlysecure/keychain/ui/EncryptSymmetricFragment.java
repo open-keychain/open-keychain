@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class EncryptSymmetricFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
 
@@ -67,8 +68,13 @@ public class EncryptSymmetricFragment extends Fragment implements EncryptActivit
             @Override
             public void afterTextChanged(Editable s) {
                 // update passphrase in EncryptActivity
-                if (mPassphrase.getText().toString().equals(mPassphraseAgain.getText().toString())) {
-                    mEncryptInterface.setPassphrase(s.toString());
+                Passphrase p1 = new Passphrase(mPassphrase.getText());
+                Passphrase p2 = new Passphrase(mPassphraseAgain.getText());
+                boolean passesEquals = (p1.equals(p2));
+                p1.removeFromMemory();
+                p2.removeFromMemory();
+                if (passesEquals) {
+                    mEncryptInterface.setPassphrase(new Passphrase(mPassphrase.getText()));
                 } else {
                     mEncryptInterface.setPassphrase(null);
                 }

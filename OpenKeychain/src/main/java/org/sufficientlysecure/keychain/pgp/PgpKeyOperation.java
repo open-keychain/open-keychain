@@ -63,6 +63,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSign
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -328,7 +329,7 @@ public class PgpKeyOperation {
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
             subProgressPush(50, 100);
-            CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), "");
+            mCryptoInput = new CryptoInputParcel(new Date(), new Passphrase(""));
             return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, saveParcel, log);
 
         } catch (PGPException e) {
@@ -444,7 +445,7 @@ public class PgpKeyOperation {
             {
                 try {
                     PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mCryptoInput.getPassphrase());
+                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mCryptoInput.getPassphrase().getCharArray());
                     masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
                 } catch (PGPException e) {
                     log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
@@ -815,7 +816,7 @@ public class PgpKeyOperation {
 
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                mCryptoInput.getPassphrase());
+                                mCryptoInput.getPassphrase().getCharArray());
                 PGPPrivateKey subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
                 PGPSignature sig = generateSubkeyBindingSignature(
                         getSignatureGenerator(masterSecretKey, mCryptoInput),
@@ -911,17 +912,14 @@ public class PgpKeyOperation {
                 }
 
                 PGPSecretKey sKey; {
-                    char[] passphrase = mCryptoInput.getPassphrase();
-                    if (passphrase == null) {
-                        passphrase = new char[] { };
-                    }
                     // Build key encrypter and decrypter based on passphrase
                     PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
                     PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                             PgpConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                             PgpConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase);
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                    mCryptoInput.getPassphrase().getCharArray());
 
                     PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
@@ -1055,7 +1053,7 @@ public class PgpKeyOperation {
             PGPSecretKeyRing sKR,
             PGPPublicKey masterPublicKey,
             PGPPrivateKey masterPrivateKey,
-            char[] passphrase,
+            Passphrase passphrase,
             ChangeUnlockParcel newUnlock,
             OperationLog log, int indent) throws PGPException {
 
@@ -1139,20 +1137,19 @@ public class PgpKeyOperation {
     private static PGPSecretKeyRing applyNewPassphrase(
             PGPSecretKeyRing sKR,
             PGPPublicKey masterPublicKey,
-            char[] passphrase,
-            String newPassphrase,
+            Passphrase passphrase,
+            Passphrase newPassphrase,
             OperationLog log, int indent) throws PGPException {
 
         PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder().build()
                 .get(PgpConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase);
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
         // Build key encryptor based on new passphrase
         PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
                 PgpConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                 PgpConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        newPassphrase.toCharArray());
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
 
         // noinspection unchecked
         for (PGPSecretKey sKey : new IterableIterator<PGPSecretKey>(sKR.getSecretKeys())) {

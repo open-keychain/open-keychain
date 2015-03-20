@@ -87,15 +87,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.FirstTimeActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
             android:name=".ui.CreateKeyActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:windowSoftInputMode="adjustResize"
-            android:label="@string/title_create_key"
+            android:label="@string/title_manage_my_keys"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

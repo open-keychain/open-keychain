@@ -89,7 +89,7 @@
   <string name="menu_help">Помоћ</string>
   <string name="menu_export_key">Извези у фајл</string>
   <string name="menu_delete_key">Обриши кључ</string>
-  <string name="menu_create_key">Направи ми кључ</string>
+  <string name="menu_manage_keys">Направи ми кључ</string>
   <string name="menu_import_existing_key">Увези из фајла</string>
   <string name="menu_search">Претрага</string>
   <string name="menu_nfc_preferences">НФЦ поставке</string>

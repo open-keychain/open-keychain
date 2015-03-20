@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 public abstract class EncryptActivity extends BaseActivity {
@@ -41,7 +42,7 @@ public abstract class EncryptActivity extends BaseActivity {
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
     // For NFC data
-    protected String mSigningKeyPassphrase = null;
+    protected Passphrase mSigningKeyPassphrase = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public abstract class EncryptActivity extends BaseActivity {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == RESULT_OK && data != null) {
-                    mSigningKeyPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mSigningKeyPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     startEncrypt();
                     return;
                 }

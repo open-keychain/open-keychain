@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -70,7 +71,7 @@ public class UncachedKeyringTest {
             parcel.mAddUserAttribute.add(uat);
         }
         // passphrase is tested in PgpKeyOperationTest, just use empty here
-        parcel.mNewUnlock = new ChangeUnlockParcel("");
+        parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
         PgpKeyOperation op = new PgpKeyOperation(null);
 
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);

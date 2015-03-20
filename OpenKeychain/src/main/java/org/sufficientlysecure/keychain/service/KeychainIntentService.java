@@ -66,6 +66,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -283,7 +284,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 try {
                 /* Input */
-                    String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
                     byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
                     InputData inputData = createDecryptInputData(data);
@@ -413,7 +414,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 try {
                 /* Input */
-                    String passphrase = data.getString(DECRYPT_PASSPHRASE);
+                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
                     byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
                     InputData inputData = createDecryptInputData(data);

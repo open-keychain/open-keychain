@@ -161,7 +161,7 @@ public class DecryptTextFragment extends DecryptFragment {
         // data
         data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -247,7 +247,7 @@ public class DecryptTextFragment extends DecryptFragment {
 
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     decryptStart();
                 } else {
                     getActivity().finish();

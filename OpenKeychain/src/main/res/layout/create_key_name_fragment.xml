@@ -56,11 +56,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:text="@string/btn_back"
             android:textAllCaps="true"
             android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
             android:drawablePadding="8dp"
             android:gravity="left|center_vertical"
-            android:clickable="false"
+            android:clickable="true"
             style="?android:attr/borderlessButtonStyle" />
 
         <TextView

@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -113,12 +114,12 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                String passphrase1;
+                Passphrase passphrase1 = new Passphrase();
                 if (mNoPassphraseCheckBox.isChecked()) {
-                    passphrase1 = "";
+                    passphrase1.setEmpty();
                 } else {
-                    passphrase1 = mPassphraseEditText.getText().toString();
-                    String passphrase2 = mPassphraseAgainEditText.getText().toString();
+                    passphrase1 = new Passphrase(mPassphraseEditText);
+                    Passphrase passphrase2 = new Passphrase(mPassphraseAgainEditText);
                     if (!passphrase1.equals(passphrase2)) {
                         Toast.makeText(
                                 activity,
@@ -129,7 +130,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
                         return;
                     }
 
-                    if (passphrase1.equals("")) {
+                    if (passphrase1.isEmpty()) {
                         Toast.makeText(
                                 activity,
                                 getString(R.string.error_message,
@@ -142,7 +143,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
                 // return resulting data back to activity
                 Bundle data = new Bundle();
-                data.putString(MESSAGE_NEW_PASSPHRASE, passphrase1);
+                data.putParcelable(MESSAGE_NEW_PASSPHRASE, passphrase1);
 
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }

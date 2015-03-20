@@ -19,6 +19,11 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.Snackbar.SnackbarDuration;
@@ -61,11 +66,11 @@ public class Notify {
                 break;
         }
 
-        SnackbarManager.show(bar);
+        showSnackbar(activity, bar);
 
     }
 
-    public static Showable createNotify (Activity activity, int resId, int duration, Style style) {
+    public static Showable createNotify (final Activity activity, int resId, int duration, Style style) {
         final Snackbar bar = getSnackbar(activity)
                 .text(resId);
 
@@ -90,7 +95,7 @@ public class Notify {
         return new Showable () {
             @Override
             public void show() {
-                SnackbarManager.show(bar);
+                showSnackbar(activity, bar);
             }
         };
     }
@@ -104,7 +109,7 @@ public class Notify {
         return createNotify(activity, msg, duration, style, null, 0);
     }
 
-    public static Showable createNotify(Activity activity, String msg, int duration, Style style,
+    public static Showable createNotify(final Activity activity, String msg, int duration, Style style,
                                         final ActionListener listener, int resIdAction) {
 
         final Snackbar bar = getSnackbar(activity)
@@ -141,7 +146,7 @@ public class Notify {
         return new Showable () {
             @Override
             public void show() {
-                SnackbarManager.show(bar);
+                showSnackbar(activity, bar);
             }
         };
 
@@ -176,6 +181,26 @@ public class Notify {
             });
         }
         return bar;
+    }
+
+    private static void showSnackbar(Activity activity, Snackbar snackbar) {
+        if (activity instanceof FragmentActivity) {
+            FragmentManager fragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
+
+            int count = fragmentManager.getBackStackEntryCount();
+            Fragment fragment = fragmentManager.getFragments().get(count > 0 ? count - 1 : 0);
+
+            if (fragment != null) {
+                View view = fragment.getView();
+
+                if (view != null) {
+                    SnackbarManager.show(snackbar, (ViewGroup) view);
+                    return;
+                }
+            }
+        }
+
+        SnackbarManager.show(snackbar);
     }
 
     public interface Showable {

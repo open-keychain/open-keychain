@@ -58,9 +58,10 @@ public class EmailEditText extends AutoCompleteTextView {
     }
 
     private void init() {
-        this.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        this.addTextChangedListener(textWatcher);
-        removeFlag();
+        setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        reenableKeyboardSuggestions();
+
+        addTextChangedListener(textWatcher);
         initAdapter();
     }
 
@@ -104,7 +105,7 @@ public class EmailEditText extends AutoCompleteTextView {
      * Hack to re-enable keyboard auto correction in AutoCompleteTextView.
      * From http://stackoverflow.com/a/22512858
      */
-    private void removeFlag() {
+    private void reenableKeyboardSuggestions() {
         int inputType = getInputType();
         inputType &= ~EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         setRawInputType(inputType);

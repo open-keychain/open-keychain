@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -83,7 +84,7 @@ public class CertifyOperation extends BaseOperation {
             }
 
             // certification is always with the master key id, so use that one
-            char[] passphrase = parcel.mCryptoInput.getPassphrase();
+            Passphrase passphrase = parcel.mCryptoInput.getPassphrase();
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);

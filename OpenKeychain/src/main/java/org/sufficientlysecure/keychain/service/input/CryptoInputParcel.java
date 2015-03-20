@@ -9,6 +9,8 @@ import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 /** This is a base class for the input of crypto operations.
  *
@@ -16,13 +18,13 @@ import android.os.Parcelable;
 public class CryptoInputParcel implements Parcelable {
 
     final Date mSignatureTime;
-    final String mPassphrase;
+    final Passphrase mPassphrase;
 
     // this map contains both decrypted session keys and signed hashes to be
     // used in the crypto operation described by this parcel.
     private HashMap<ByteBuffer,byte[]> mCryptoData = new HashMap<>();
 
-    public CryptoInputParcel(Date signatureTime, String passphrase) {
+    public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = passphrase;
     }
@@ -34,7 +36,7 @@ public class CryptoInputParcel implements Parcelable {
 
     protected CryptoInputParcel(Parcel source) {
         mSignatureTime = new Date(source.readLong());
-        mPassphrase = source.readString();
+        mPassphrase = source.readParcelable(getClass().getClassLoader());
 
         {
             int count = source.readInt();
@@ -56,7 +58,7 @@ public class CryptoInputParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mSignatureTime.getTime());
-        dest.writeString(mPassphrase);
+        dest.writeParcelable(mPassphrase, 0);
 
         dest.writeInt(mCryptoData.size());
         for (HashMap.Entry<ByteBuffer,byte[]> entry : mCryptoData.entrySet()) {
@@ -81,8 +83,8 @@ public class CryptoInputParcel implements Parcelable {
         return mPassphrase != null;
     }
 
-    public char[] getPassphrase() {
-        return mPassphrase == null ? null : mPassphrase.toCharArray();
+    public Passphrase getPassphrase() {
+        return mPassphrase;
     }
 
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {

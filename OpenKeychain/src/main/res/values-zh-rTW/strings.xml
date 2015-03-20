@@ -65,7 +65,7 @@
   <string name="menu_help">說明</string>
   <string name="menu_export_key">匯出到檔案</string>
   <string name="menu_delete_key">刪除金鑰</string>
-  <string name="menu_create_key">建立金鑰</string>
+  <string name="menu_manage_keys">建立金鑰</string>
   <string name="menu_import_existing_key">從檔案匯入</string>
   <string name="menu_search">搜尋</string>
   <string name="menu_beam_preferences">Beam 設定</string>

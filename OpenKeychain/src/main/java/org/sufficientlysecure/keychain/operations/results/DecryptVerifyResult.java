@@ -22,6 +22,7 @@ import android.os.Parcel;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class DecryptVerifyResult extends OperationResult {
 
@@ -37,7 +38,7 @@ public class DecryptVerifyResult extends OperationResult {
 
     long mNfcSubKeyId;
     byte[] mNfcSessionKey;
-    String mNfcPassphrase;
+    Passphrase mNfcPassphrase;
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
@@ -53,7 +54,7 @@ public class DecryptVerifyResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcState(long subKeyId, byte[] sessionKey, String passphrase) {
+    public void setNfcState(long subKeyId, byte[] sessionKey, Passphrase passphrase) {
         mNfcSubKeyId = subKeyId;
         mNfcSessionKey = sessionKey;
         mNfcPassphrase = passphrase;
@@ -67,7 +68,7 @@ public class DecryptVerifyResult extends OperationResult {
         return mNfcSessionKey;
     }
 
-    public String getNfcPassphrase() {
+    public Passphrase getNfcPassphrase() {
         return mNfcPassphrase;
     }
 
@@ -109,7 +110,7 @@ public class DecryptVerifyResult extends OperationResult {
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
         mNfcSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
-        mNfcPassphrase = source.readString();
+        mNfcPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
     }
 
     public int describeContents() {
@@ -127,7 +128,7 @@ public class DecryptVerifyResult extends OperationResult {
         } else {
             dest.writeInt(0);
         }
-        dest.writeString(mNfcPassphrase);
+        dest.writeParcelable(mNfcPassphrase, flags);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {

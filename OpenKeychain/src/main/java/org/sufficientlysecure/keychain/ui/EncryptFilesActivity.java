@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
     private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
+    private Passphrase mPassphrase = new Passphrase();
 
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
@@ -136,7 +137,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     }
 
     @Override
-    public void setPassphrase(String passphrase) {
+    public void setPassphrase(Passphrase passphrase) {
         mPassphrase = passphrase;
     }
 
@@ -243,8 +244,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passphrase = mPassphrase;
-            if (passphrase.length() == 0) {
+            Passphrase passphrase = mPassphrase;
+            if (passphrase.isEmpty()) {
                 passphrase = null;
             }
             data.setSymmetricPassphrase(passphrase);

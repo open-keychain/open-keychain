@@ -69,6 +69,8 @@ import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 public class EditKeyFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -337,7 +339,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
                             null
                     );
                 }

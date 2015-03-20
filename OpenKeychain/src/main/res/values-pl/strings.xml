@@ -78,7 +78,7 @@
   <string name="menu_help">Pomoc</string>
   <string name="menu_export_key">Eksportuj do pliku</string>
   <string name="menu_delete_key">Usuń klucz</string>
-  <string name="menu_create_key">Utwórz mój klucz</string>
+  <string name="menu_manage_keys">Utwórz mój klucz</string>
   <string name="menu_import_existing_key">Importuj z pliku</string>
   <string name="menu_search">Szukaj</string>
   <string name="menu_beam_preferences">Ustawienia Beam</string>
