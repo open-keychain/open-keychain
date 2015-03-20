@@ -42,17 +42,14 @@ public class CertifyActionsParcel implements Parcelable {
     public CertifyLevel mLevel;
 
     public ArrayList<CertifyAction> mCertifyActions = new ArrayList<>();
-    public CryptoInputParcel mCryptoInput;
 
-    public CertifyActionsParcel(CryptoInputParcel cryptoInput, long masterKeyId) {
+    public CertifyActionsParcel(long masterKeyId) {
         mMasterKeyId = masterKeyId;
-        mCryptoInput = cryptoInput != null ? cryptoInput : new CryptoInputParcel(new Date());
         mLevel = CertifyLevel.DEFAULT;
     }
 
     public CertifyActionsParcel(Parcel source) {
         mMasterKeyId = source.readLong();
-        mCryptoInput = source.readParcelable(CertifyActionsParcel.class.getClassLoader());
         // just like parcelables, this is meant for ad-hoc IPC only and is NOT portable!
         mLevel = CertifyLevel.values()[source.readInt()];
 
@@ -66,14 +63,9 @@ public class CertifyActionsParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel destination, int flags) {
         destination.writeLong(mMasterKeyId);
-        destination.writeParcelable(mCryptoInput, 0);
         destination.writeInt(mLevel.ordinal());
 
         destination.writeSerializable(mCertifyActions);
-    }
-
-    public Map<ByteBuffer, byte[]> getSignatureData() {
-        return mCryptoInput.getCryptoData();
     }
 
     public static final Creator<CertifyActionsParcel> CREATOR = new Creator<CertifyActionsParcel>() {

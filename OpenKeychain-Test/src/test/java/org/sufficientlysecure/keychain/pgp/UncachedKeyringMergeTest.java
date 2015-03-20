@@ -35,9 +35,12 @@ import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
+import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -46,6 +49,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 import java.io.ByteArrayInputStream;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -186,11 +190,11 @@ public class UncachedKeyringMergeTest {
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
 
             parcel.reset();
             parcel.mAddUserIds.add("flam");
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
         }
 
         { // merge A into base
@@ -227,8 +231,8 @@ public class UncachedKeyringMergeTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
-            modifiedA = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
-            modifiedB = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
 
             subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
             subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
@@ -269,7 +273,7 @@ public class UncachedKeyringMergeTest {
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
         }
 
         {
@@ -295,8 +299,13 @@ public class UncachedKeyringMergeTest {
             CanonicalizedSecretKey secretKey = new CanonicalizedSecretKeyRing(
                     ringB.getEncoded(), false, 0).getSecretKey();
             secretKey.unlock(new Passphrase());
+            PgpCertifyOperation op = new PgpCertifyOperation();
+            CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds());
             // sign all user ids
-            modified = secretKey.certifyUserIds(publicRing, publicRing.getPublicKey().getUnorderedUserIds(), null, null);
+            PgpCertifyResult result = op.certify(secretKey, publicRing, new OperationLog(), 0, action, null, new Date());
+            Assert.assertTrue("certification must succeed", result.success());
+            Assert.assertNotNull("certification must yield result", result.getCertifiedRing());
+            modified = result.getCertifiedRing();
         }
 
         {
@@ -363,7 +372,7 @@ public class UncachedKeyringMergeTest {
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, parcel, new Passphrase()).getRing();
+            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
         }
 
         {

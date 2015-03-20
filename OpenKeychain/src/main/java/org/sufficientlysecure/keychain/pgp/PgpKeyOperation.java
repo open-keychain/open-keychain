@@ -1283,7 +1283,7 @@ public class PgpKeyOperation {
 
     }
 
-    private static PGPSignatureGenerator getSignatureGenerator(
+    static PGPSignatureGenerator getSignatureGenerator(
             PGPSecretKey secretKey, CryptoInputParcel cryptoInput) {
 
         PGPContentSignerBuilder builder;

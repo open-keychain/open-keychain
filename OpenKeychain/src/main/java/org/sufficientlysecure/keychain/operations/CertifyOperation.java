@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -63,7 +64,7 @@ public class CertifyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public CertifyResult certify(CertifyActionsParcel parcel, String keyServerUri) {
+    public CertifyResult certify(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput, String keyServerUri) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_CRT, 0);
@@ -78,13 +79,13 @@ public class CertifyOperation extends BaseOperation {
             log.add(LogType.MSG_CRT_UNLOCK, 1);
             certificationKey = secretKeyRing.getSecretKey();
 
-            if (!parcel.mCryptoInput.hasPassphrase()) {
+            if (!cryptoInput.hasPassphrase()) {
                 return new CertifyResult(log, RequiredInputParcel.createRequiredPassphrase(
                         certificationKey.getKeyId(), null));
             }
 
             // certification is always with the master key id, so use that one
-            Passphrase passphrase = parcel.mCryptoInput.getPassphrase();
+            Passphrase passphrase = cryptoInput.getPassphrase();
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
@@ -104,7 +105,7 @@ public class CertifyOperation extends BaseOperation {
 
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
-        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(parcel.mCryptoInput.getSignatureTime());
+        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(cryptoInput.getSignatureTime());
 
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {
@@ -128,7 +129,7 @@ public class CertifyOperation extends BaseOperation {
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
-                        log, 2, action, parcel.getSignatureData(), parcel.mCryptoInput.getSignatureTime());
+                        log, 2, action, cryptoInput.getCryptoData(), cryptoInput.getSignatureTime());
 
                 if (!result.success()) {
                     certifyError += 1;

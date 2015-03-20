@@ -138,7 +138,7 @@ public class PgpEncryptDecryptTest {
 
             InputData data = new InputData(in, in.available());
 
-            PgpSignEncryptInputParcel b = new setSignatureTimestamp();
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
             b.setSymmetricPassphrase(mPassphrase);
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
 
@@ -222,7 +222,7 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(Robolectric.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new setSignatureTimestamp();
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
             b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
@@ -303,7 +303,7 @@ public class PgpEncryptDecryptTest {
 
             InputData data = new InputData(in, in.available());
 
-            PgpSignEncryptInputParcel b = new setSignatureTimestamp();
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
             b.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getMasterKeyId()
@@ -395,7 +395,7 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(Robolectric.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new setSignatureTimestamp();
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
             b.setEncryptionMasterKeyIds(new long[] {
                     mStaticRing1.getMasterKeyId(),
@@ -477,7 +477,7 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(Robolectric.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new setSignatureTimestamp();
+            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
             b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);

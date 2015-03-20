@@ -254,11 +254,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                 String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
 
                 // Operation
                 CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
-                CertifyResult result = op.certify(parcel, keyServerUri);
+                CertifyResult result = op.certify(parcel, cryptoInput, keyServerUri);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);

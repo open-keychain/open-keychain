@@ -321,9 +321,10 @@ public class CertifyKeyFragment extends CryptoOperationFragment
         Bundle data = new Bundle();
         {
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(cryptoInput, mSignMasterKeyId);
+            CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
             parcel.mCertifyActions.addAll(certifyActions);
 
+            data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
             data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
             if (mUploadKeyCheckbox.isChecked()) {
                 String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
