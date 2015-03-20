@@ -36,7 +36,6 @@ import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.spongycastle.openpgp.operator.PGPDataDecryptor;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
@@ -96,8 +95,6 @@ public class PgpKeyOperation {
     private Stack<Progressable> mProgress;
     private AtomicBoolean mCancelled;
 
-    NfcSignOperationsBuilder mNfcSignOps;
-
     public PgpKeyOperation(Progressable progress) {
         super();
         if (progress != null) {
@@ -106,10 +103,9 @@ public class PgpKeyOperation {
         }
     }
 
-    public PgpKeyOperation(Progressable progress, AtomicBoolean cancelled, CryptoInputParcel cryptoInput) {
+    public PgpKeyOperation(Progressable progress, AtomicBoolean cancelled) {
         this(progress);
         mCancelled = cancelled;
-        mNfcSignOps = new NfcSignOperationsBuilder(cryptoInput.getSignatureTime());
     }
 
     private boolean checkCancelled() {
@@ -428,6 +424,8 @@ public class PgpKeyOperation {
 
         int indent = 1;
 
+        NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(cryptoInput.getSignatureTime());
+
         progress(R.string.progress_modify, 0);
 
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
@@ -474,7 +472,7 @@ public class PgpKeyOperation {
                     String userId = saveParcel.mAddUserIds.get(i);
                     log.add(LogType.MSG_MF_UID_ADD, indent, userId);
 
-                    if (userId.equals("")) {
+                    if ("".equals(userId)) {
                         log.add(LogType.MSG_MF_UID_ERROR_EMPTY, indent + 1);
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
@@ -513,7 +511,7 @@ public class PgpKeyOperation {
                                 isPrimary, masterKeyFlags, masterKeyExpiry);
                         modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
                     } catch (NfcInteractionNeeded e) {
-                        mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                     }
                 }
                 subProgressPop();
@@ -548,7 +546,7 @@ public class PgpKeyOperation {
                                 masterPrivateKey, masterPublicKey, vector);
                         modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
                     } catch (NfcInteractionNeeded e) {
-                        mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                     }
                 }
                 subProgressPop();
@@ -584,7 +582,7 @@ public class PgpKeyOperation {
                                 masterPrivateKey, masterPublicKey, userId);
                         modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
                     } catch (NfcInteractionNeeded e) {
-                        mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                     }
                 }
                 subProgressPop();
@@ -664,7 +662,7 @@ public class PgpKeyOperation {
                                 modifiedPublicKey = PGPPublicKey.addCertification(
                                         modifiedPublicKey, userId, newCert);
                             } catch (NfcInteractionNeeded e) {
-                                mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                             }
 
                             continue;
@@ -687,7 +685,7 @@ public class PgpKeyOperation {
                                 modifiedPublicKey = PGPPublicKey.addCertification(
                                         modifiedPublicKey, userId, newCert);
                             } catch (NfcInteractionNeeded e) {
-                                mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                             }
                             ok = true;
                         }
@@ -777,7 +775,7 @@ public class PgpKeyOperation {
                     PGPPublicKey pKey =
                             updateMasterCertificates(
                                     masterSecretKey, masterPrivateKey, masterPublicKey,
-                                    flags, expiry, cryptoInput,  indent, log);
+                                    flags, expiry, cryptoInput,  nfcSignOps, indent, log);
                     if (pKey == null) {
                         // error log entry has already been added by updateMasterCertificates itself
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -856,7 +854,7 @@ public class PgpKeyOperation {
                     pKey = PGPPublicKey.addCertification(pKey, sig);
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
                 } catch (NfcInteractionNeeded e) {
-                    mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                    nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                 }
             }
             subProgressPop();
@@ -908,7 +906,7 @@ public class PgpKeyOperation {
                             add.mFlags, add.mExpiry);
                     pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
                 } catch (NfcInteractionNeeded e) {
-                    mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                    nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                 }
 
                 PGPSecretKey sKey; {
@@ -972,9 +970,9 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_done, 100);
 
-        if (!mNfcSignOps.isEmpty()) {
+        if (!nfcSignOps.isEmpty()) {
             log.add(LogType.MSG_MF_INPUT_REQUIRED, indent);
-            return new PgpEditKeyResult(log, mNfcSignOps.build());
+            return new PgpEditKeyResult(log, nfcSignOps.build());
         }
 
         log.add(LogType.MSG_MF_SUCCESS, indent);
@@ -1205,6 +1203,7 @@ public class PgpKeyOperation {
             PGPPublicKey masterPublicKey,
             int flags, long expiry,
             CryptoInputParcel cryptoInput,
+            NfcSignOperationsBuilder nfcSignOps,
             int indent, OperationLog log)
             throws PGPException, IOException, SignatureException {
 
@@ -1268,7 +1267,7 @@ public class PgpKeyOperation {
                 modifiedPublicKey = PGPPublicKey.addCertification(
                         modifiedPublicKey, userId, newCert);
             } catch (NfcInteractionNeeded e) {
-                mNfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
             }
             ok = true;
 
