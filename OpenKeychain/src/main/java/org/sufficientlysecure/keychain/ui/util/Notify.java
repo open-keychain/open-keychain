@@ -147,10 +147,20 @@ public class Notify {
 
     public interface Showable {
 
+        /**
+         * Shows the notification on the bottom of the Activity.
+         */
         public void show();
 
+        /**
+         * Shows the notification on the bottom of the Fragment.
+         */
         public void show(Fragment fragment);
 
+        /**
+         * Shows the notification on the given ViewGroup.
+         * The viewGroup should be either a RelativeLayout or FrameLayout.
+         */
         public void show(ViewGroup viewGroup);
 
     }
