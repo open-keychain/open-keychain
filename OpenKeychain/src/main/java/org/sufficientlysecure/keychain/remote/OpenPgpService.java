@@ -571,15 +571,14 @@ public class OpenPgpService extends RemoteService {
                 }
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
-                int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
 
                 OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+                int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
                 if (signatureResult != null) {
                     resultType |= OpenPgpApi.RESULT_TYPE_SIGNED;
                     if (!signatureResult.isSignatureOnly()) {
                         resultType |= OpenPgpApi.RESULT_TYPE_ENCRYPTED;
                     }
-                    result.putExtra(OpenPgpApi.RESULT_TYPE, resultType);
 
                     result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
 
@@ -599,7 +598,10 @@ public class OpenPgpService extends RemoteService {
                         // If signature key is known, return PendingIntent to show key
                         result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
                     }
+                } else {
+                    resultType |= OpenPgpApi.RESULT_TYPE_ENCRYPTED;
                 }
+                result.putExtra(OpenPgpApi.RESULT_TYPE, resultType);
 
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
                     OpenPgpMetadata metadata = pgpResult.getDecryptMetadata();

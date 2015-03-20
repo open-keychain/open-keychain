@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik SchÃ¼rmann <dominik@dominikschuermann.de>
  * Copyright (C) 2015 Kent Nguyen <kentnguyen@moneylover.me>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
