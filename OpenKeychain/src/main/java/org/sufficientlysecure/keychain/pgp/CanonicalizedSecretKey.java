@@ -149,10 +149,14 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     }
 
+    public boolean unlock(String passphrase) throws PgpGeneralException {
+        return unlock(passphrase.toCharArray());
+    }
+
     /**
      * Returns true on right passphrase
      */
-    public boolean unlock(String passphrase) throws PgpGeneralException {
+    public boolean unlock(char[] passphrase) throws PgpGeneralException {
         // handle keys on OpenPGP cards like they were unlocked
         if (mSecretKey.getS2K() != null
                 && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
@@ -164,7 +168,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // try to extract keys using the passphrase
         try {
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
+                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase);
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
             mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {

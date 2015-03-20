@@ -49,7 +49,6 @@ import org.sufficientlysecure.keychain.util.Log;
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
-    private static final String ARG_OLD_PASSPHRASE = "old_passphrase";
 
     public static final int MESSAGE_OKAY = 1;
 
@@ -67,12 +66,11 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
      * @param messenger to communicate back after setting the passphrase
      * @return
      */
-    public static SetPassphraseDialogFragment newInstance(Messenger messenger, String oldPassphrase, int title) {
+    public static SetPassphraseDialogFragment newInstance(Messenger messenger, int title) {
         SetPassphraseDialogFragment frag = new SetPassphraseDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_TITLE, title);
         args.putParcelable(ARG_MESSENGER, messenger);
-        args.putString(ARG_OLD_PASSPHRASE, oldPassphrase);
 
         frag.setArguments(args);
 
@@ -88,7 +86,6 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
         int title = getArguments().getInt(ARG_TITLE);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
-        String oldPassphrase = getArguments().getString(ARG_OLD_PASSPHRASE);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
@@ -101,13 +98,6 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         mPassphraseEditText = (PassphraseEditText) view.findViewById(R.id.passphrase_passphrase);
         mPassphraseAgainEditText = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
         mNoPassphraseCheckBox = (CheckBox) view.findViewById(R.id.passphrase_no_passphrase);
-
-
-        if (TextUtils.isEmpty(oldPassphrase)) {
-            mNoPassphraseCheckBox.setChecked(true);
-            mPassphraseEditText.setEnabled(false);
-            mPassphraseAgainEditText.setEnabled(false);
-        }
 
         mNoPassphraseCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

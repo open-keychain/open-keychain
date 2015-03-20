@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -25,7 +26,6 @@ public abstract class CryptoOperationFragment extends Fragment {
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
-                intent.putExtra(NfcOperationActivity.EXTRA_PIN, "123456");
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
@@ -76,10 +76,14 @@ public abstract class CryptoOperationFragment extends Fragment {
         if (message.arg1 == MessageStatus.OKAY.ordinal()) {
             Bundle data = message.getData();
 
-            InputPendingResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+            OperationResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
+            if (result == null || ! (result instanceof InputPendingResult)) {
+                return false;
+            }
 
-            if (result != null && result.isPending()) {
-                RequiredInputParcel requiredInput = result.getRequiredInputParcel();
+            InputPendingResult pendingResult = (InputPendingResult) result;
+            if (pendingResult.isPending()) {
+                RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
                 initiateInputActivity(requiredInput);
                 return true;
             }

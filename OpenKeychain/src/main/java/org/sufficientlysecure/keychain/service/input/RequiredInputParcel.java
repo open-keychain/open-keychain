@@ -15,9 +15,13 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public Date mSignatureTime;
+
     public final RequiredInputType mType;
+
+    public String mNfcPin = "123456";
     public final byte[][] mInputHashes;
     public final int[] mSignAlgos;
+
     private Long mSubKeyId;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputHashes,

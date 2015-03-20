@@ -512,6 +512,7 @@ public abstract class OperationResult implements Parcelable {
 
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
+        MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
         MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (LogLevel.ERROR, R.string.msg_mf_error_fingerprint),
@@ -529,6 +530,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_REVOKED_PRIMARY (LogLevel.ERROR, R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
+        MSG_MF_INPUT_REQUIRED (LogLevel.OK, R.string.msg_mf_input_required),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
         MSG_MF_NOTATION_PIN (LogLevel.DEBUG, R.string.msg_mf_notation_pin),
         MSG_MF_NOTATION_EMPTY (LogLevel.DEBUG, R.string.msg_mf_notation_empty),
@@ -596,7 +598,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_PR_SUCCESS (LogLevel.OK, R.string.msg_pr_success),
 
         // messages used in UI code
-        MSG_EK_ERROR_DIVERT (LogLevel.ERROR, R.string.msg_ek_error_divert),
         MSG_EK_ERROR_DUMMY (LogLevel.ERROR, R.string.msg_ek_error_dummy),
         MSG_EK_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_ek_error_not_found),
 

@@ -83,7 +83,7 @@ public class CertifyOperation extends BaseOperation {
             }
 
             // certification is always with the master key id, so use that one
-            String passphrase = parcel.mCryptoInput.getPassphrase();
+            char[] passphrase = parcel.mCryptoInput.getPassphrase();
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
@@ -103,7 +103,7 @@ public class CertifyOperation extends BaseOperation {
 
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
-        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(parcel.getSignatureTime());
+        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(parcel.mCryptoInput.getSignatureTime());
 
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {
@@ -127,7 +127,7 @@ public class CertifyOperation extends BaseOperation {
 
                 PgpCertifyOperation op = new PgpCertifyOperation();
                 PgpCertifyResult result = op.certify(certificationKey, publicRing,
-                        log, 2, action, parcel.getSignatureData(), parcel.getSignatureTime());
+                        log, 2, action, parcel.getSignatureData(), parcel.mCryptoInput.getSignatureTime());
 
                 if (!result.success()) {
                     certifyError += 1;

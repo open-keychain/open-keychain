@@ -76,10 +76,6 @@ public class CertifyActionsParcel implements Parcelable {
         return mCryptoInput.getCryptoData();
     }
 
-    public Date getSignatureTime() {
-        return mCryptoInput.getSignatureTime();
-    }
-
     public static final Creator<CertifyActionsParcel> CREATOR = new Creator<CertifyActionsParcel>() {
         public CertifyActionsParcel createFromParcel(final Parcel source) {
             return new CertifyActionsParcel(source);

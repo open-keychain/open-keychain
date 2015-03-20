@@ -40,7 +40,6 @@ import java.nio.ByteBuffer;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class NfcOperationActivity extends BaseActivity {
 
-    public static final String EXTRA_PIN = "pin";
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
 
     public static final String RESULT_DATA = "result_data";
@@ -49,8 +48,6 @@ public class NfcOperationActivity extends BaseActivity {
 
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
-
-    private String mPin;
 
     RequiredInputParcel mNfcOperations;
 
@@ -70,7 +67,6 @@ public class NfcOperationActivity extends BaseActivity {
         Bundle data = intent.getExtras();
 
         mNfcOperations = data.getParcelable(EXTRA_REQUIRED_INPUT);
-        mPin = data.getString(EXTRA_PIN);
 
     }
 
@@ -161,14 +157,16 @@ public class NfcOperationActivity extends BaseActivity {
             return;
         }
 
+        String pin = mNfcOperations.mNfcPin;
+
         // Command APDU for VERIFY command (page 32)
         String login =
                 "00" // CLA
                         + "20" // INS
                         + "00" // P1
                         + "82" // P2 (PW1)
-                        + String.format("%02x", mPin.length()) // Lc
-                        + Hex.toHexString(mPin.getBytes());
+                        + String.format("%02x", pin.length()) // Lc
+                        + Hex.toHexString(pin.getBytes());
         if ( ! card(login).equals(accepted)) { // login
             toast("Wrong PIN!");
             setResult(RESULT_CANCELED);

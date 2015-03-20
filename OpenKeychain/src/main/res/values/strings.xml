@@ -897,6 +897,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
+    <string name="msg_mf_divert">"Will divert to card/nfc for crypto operations"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a divert-to-card key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
@@ -911,6 +912,7 @@
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
+    <string name="msg_mf_input_required">"Diverting to card/nfc for crypto operations"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
@@ -987,7 +989,6 @@
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->
-    <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 

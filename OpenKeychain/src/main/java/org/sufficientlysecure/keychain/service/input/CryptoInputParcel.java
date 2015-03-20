@@ -81,8 +81,8 @@ public class CryptoInputParcel implements Parcelable {
         return mPassphrase != null;
     }
 
-    public String getPassphrase() {
-        return mPassphrase;
+    public char[] getPassphrase() {
+        return mPassphrase == null ? null : mPassphrase.toCharArray();
     }
 
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {
@@ -95,4 +95,19 @@ public class CryptoInputParcel implements Parcelable {
         }
     };
 
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("CryptoInput: { ");
+        b.append(mSignatureTime).append(" ");
+        if (mPassphrase != null) {
+            b.append("passphrase");
+        }
+        if (mCryptoData != null) {
+            b.append(mCryptoData.size());
+            b.append(" hashes ");
+        }
+        b.append("}");
+        return b.toString();
+    }
 }

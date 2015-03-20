@@ -62,10 +62,9 @@ public abstract class EncryptActivity extends BaseActivity {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(long keyId, String pin, RequiredInputParcel nfcOps) {
+    protected void startNfcSign(long keyId, RequiredInputParcel nfcOps) {
 
         Intent intent = new Intent(this, NfcOperationActivity.class);
-        intent.putExtra(NfcOperationActivity.EXTRA_PIN, pin);
         intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, nfcOps);
         // TODO respect keyid(?)
 
@@ -148,8 +147,7 @@ public abstract class EncryptActivity extends BaseActivity {
                                     pgpResult.getNfcHash(),
                                     pgpResult.getNfcAlgo(),
                                     input.getSignatureTime());
-                            startNfcSign(pgpResult.getNfcKeyId(),
-                                    pgpResult.getNfcPassphrase(), parcel);
+                            startNfcSign(pgpResult.getNfcKeyId(), parcel);
 
                         } else {
                             throw new RuntimeException("Unhandled pending result!");

@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -160,6 +161,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
     public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // delete keyring(s)
     public static final String DELETE_KEY_LIST = "delete_list";
@@ -469,11 +471,11 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                String passphrase = data.getString(EDIT_KEYRING_PASSPHRASE);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                 // Operation
                 EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
-                EditKeyResult result = op.execute(saveParcel, passphrase);
+                OperationResult result = op.execute(saveParcel, cryptoInput);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);
