@@ -395,6 +395,11 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
+        if (saveParcel.isEmpty()) {
+            log.add(LogType.MSG_MF_ERROR_NOOP, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
         if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log);

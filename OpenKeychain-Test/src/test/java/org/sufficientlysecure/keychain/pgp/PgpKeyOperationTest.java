@@ -312,6 +312,12 @@ public class PgpKeyOperationTest {
                     ring, parcel, new CryptoInputParcel(badphrase), LogType.MSG_MF_UNLOCK_ERROR);
         }
 
+        {
+            parcel.reset();
+            assertModifyFailure("no-op should fail",
+                    ring, parcel, cryptoInput, LogType.MSG_MF_ERROR_NOOP);
+        }
+
     }
 
     @Test

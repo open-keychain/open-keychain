@@ -522,6 +522,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_NO_CERTIFY (LogLevel.ERROR, R.string.msg_cr_error_no_certify),
         MSG_MF_ERROR_NOEXIST_PRIMARY (LogLevel.ERROR, R.string.msg_mf_error_noexist_primary),
         MSG_MF_ERROR_NOEXIST_REVOKE (LogLevel.ERROR, R.string.msg_mf_error_noexist_revoke),
+        MSG_MF_ERROR_NOOP (LogLevel.ERROR, R.string.msg_mf_error_noop),
         MSG_MF_ERROR_NULL_EXPIRY (LogLevel.ERROR, R.string.msg_mf_error_null_expiry),
         MSG_MF_ERROR_PASSPHRASE_MASTER(LogLevel.ERROR, R.string.msg_mf_error_passphrase_master),
         MSG_MF_ERROR_PAST_EXPIRY(LogLevel.ERROR, R.string.msg_mf_error_past_expiry),
