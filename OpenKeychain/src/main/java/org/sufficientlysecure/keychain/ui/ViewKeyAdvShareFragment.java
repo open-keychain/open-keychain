@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.NfcHelper;
 
 import java.io.IOException;
 
@@ -68,10 +69,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private View mFingerprintClipboardButton;
     private View mKeyShareButton;
     private View mKeyClipboardButton;
+    private View mKeyNfcButton;
     private ImageButton mKeySafeSlingerButton;
     private View mKeyUploadButton;
 
     ProviderHelper mProviderHelper;
+    NfcHelper mNfcHelper;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -83,6 +86,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
         mProviderHelper = new ProviderHelper(ViewKeyAdvShareFragment.this.getActivity());
+        mNfcHelper = new NfcHelper(getActivity(), mProviderHelper);
 
         mFingerprint = (TextView) view.findViewById(R.id.view_key_fingerprint);
         mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
@@ -90,6 +94,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         mFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         mKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
+        mKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         mKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         mKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
         mKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
@@ -128,6 +133,14 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 share(mDataUri, mProviderHelper, false, true);
             }
         });
+
+        mKeyNfcButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNfcHelper.invokeNfcBeam();
+            }
+        });
+
         mKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,9 +268,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+
+        // Prepare the NfcHelper
+        mNfcHelper.initNfc(mDataUri);
     }
 
-    static final String[] UNIFIED_PROJECTION = new String[]{
+    static final String[] UNIFIED_PROJECTION = new String[] {
             KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.HAS_ANY_SECRET,
             KeyRings.USER_ID, KeyRings.FINGERPRINT,
             KeyRings.ALGORITHM, KeyRings.KEY_SIZE, KeyRings.CREATION, KeyRings.IS_EXPIRED,
@@ -361,5 +377,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         uploadIntent.setData(mDataUri);
         startActivityForResult(uploadIntent, 0);
     }
+
 
 }
