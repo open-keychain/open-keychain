@@ -159,13 +159,13 @@ public class NfcHelper {
     public void invokeNfcBeam() {
         // Check if device supports NFC
         if (!mActivity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_NFC)) {
-            Notify.createNotify(mActivity, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            Notify.create(mActivity, R.string.no_nfc_support, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
             return;
         }
         // Check for available NFC Adapter
         mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);
         if (mNfcAdapter == null || !mNfcAdapter.isEnabled()) {
-            Notify.createNotify(mActivity, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
+            Notify.create(mActivity, R.string.error_nfc_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
                 @Override
                 public void onAction() {
                     Intent intentSettings = new Intent(Settings.ACTION_NFC_SETTINGS);
@@ -177,7 +177,7 @@ public class NfcHelper {
         }
 
         if (!mNfcAdapter.isNdefPushEnabled()) {
-            Notify.createNotify(mActivity, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
+            Notify.create(mActivity, R.string.error_beam_needed, Notify.LENGTH_LONG, Notify.Style.ERROR, new Notify.ActionListener() {
                 @Override
                 public void onAction() {
                     Intent intentSettings = new Intent(Settings.ACTION_NFCSHARING_SETTINGS);
@@ -208,8 +208,7 @@ public class NfcHelper {
             if (activity != null) {
                 switch (msg.what) {
                     case NFC_SENT:
-                        Notify.showNotify(
-                                activity, R.string.nfc_successful, Notify.Style.INFO);
+                        Notify.create(activity, R.string.nfc_successful, Notify.Style.OK).show();
                         break;
                 }
             }

@@ -338,7 +338,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 try {
                     updateFromKeyserver(mDataUri, mProviderHelper);
                 } catch (ProviderHelper.NotFoundException e) {
-                    Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+                    Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
                 return true;
             }
@@ -449,7 +449,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
             );
         } catch (ProviderHelper.NotFoundException e) {
-            Notify.showNotify(this, R.string.error_key_not_found, Notify.Style.ERROR);
+            Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
             Log.e(Constants.TAG, "Key not found", e);
         }
     }
@@ -486,14 +486,14 @@ public class ViewKeyActivity extends BaseActivity implements
 
             String fp = data.getStringExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
             if (fp == null) {
-                Notify.createNotify(this, "Error scanning fingerprint!",
+                Notify.create(this, "Error scanning fingerprint!",
                         Notify.LENGTH_LONG, Notify.Style.ERROR).show();
                 return;
             }
             if (mFingerprint.equalsIgnoreCase(fp)) {
                 certifyImmediate();
             } else {
-                Notify.createNotify(this, "Fingerprints did not match!",
+                Notify.create(this, "Fingerprints did not match!",
                         Notify.LENGTH_LONG, Notify.Style.ERROR).show();
             }
 
@@ -519,7 +519,7 @@ public class ViewKeyActivity extends BaseActivity implements
     private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
-            Notify.showNotify(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR);
+            Notify.create(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR).show();
             return;
         }
         try {

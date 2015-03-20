@@ -132,7 +132,7 @@ public class DecryptTextFragment extends DecryptFragment {
 
     private void copyToClipboard(String text) {
         ClipboardReflection.copyToClipboard(getActivity(), text);
-        Notify.showNotify(getActivity(), R.string.text_copied_to_clipboard, Notify.Style.INFO);
+        Notify.create(getActivity(), R.string.text_copied_to_clipboard, Notify.Style.OK).show();
     }
 
     @Override
