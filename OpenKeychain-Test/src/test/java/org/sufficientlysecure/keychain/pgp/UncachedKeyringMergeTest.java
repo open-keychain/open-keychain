@@ -190,11 +190,11 @@ public class UncachedKeyringMergeTest {
 
             parcel.reset();
             parcel.mAddUserIds.add("flim");
-            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
 
             parcel.reset();
             parcel.mAddUserIds.add("flam");
-            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
         }
 
         { // merge A into base
@@ -231,8 +231,8 @@ public class UncachedKeyringMergeTest {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
-            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
-            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modifiedA = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
+            modifiedB = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
 
             subKeyIdA = KeyringTestingHelper.getSubkeyId(modifiedA, 2);
             subKeyIdB = KeyringTestingHelper.getSubkeyId(modifiedB, 2);
@@ -273,7 +273,7 @@ public class UncachedKeyringMergeTest {
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(ringA, 1));
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
         }
 
         {
@@ -372,7 +372,7 @@ public class UncachedKeyringMergeTest {
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(
                     ringA.getEncoded(), false, 0);
-            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(), parcel).getRing();
+            modified = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Passphrase()), parcel).getRing();
         }
 
         {

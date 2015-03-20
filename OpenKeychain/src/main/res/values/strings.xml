@@ -913,7 +913,7 @@
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
-    <string name="msg_mf_input_required">"Diverting to card/nfc for crypto operations"</string>
+    <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
@@ -923,8 +923,10 @@
     <string name="msg_mf_passphrase_fail">"Passphrase for subkey could not be changed! (Does it have a different one from the other keys?)"</string>
     <string name="msg_mf_primary_replace_old">"Replacing certificate of previous primary user ID"</string>
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
+    <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
+    <string name="msg_mf_require_divert">"Diverting to card/nfc for crypto operations"</string>
+    <string name="msg_mf_require_passphrase">"Passphrase required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>

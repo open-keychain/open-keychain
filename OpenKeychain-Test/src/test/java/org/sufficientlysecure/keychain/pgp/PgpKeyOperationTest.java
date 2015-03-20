@@ -75,13 +75,14 @@ public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
     final static Passphrase passphrase = TestingUtils.genPassphrase();
-    final static CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), passphrase);
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
     ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
     ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+
+    static CryptoInputParcel cryptoInput;
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -110,6 +111,9 @@ public class PgpKeyOperationTest {
 
         // we sleep here for a second, to make sure all new certificates have different timestamps
         Thread.sleep(1000);
+
+        cryptoInput = new CryptoInputParcel(new Date(), passphrase);
+
     }
 
     @Before public void setUp() throws Exception {
@@ -302,6 +306,7 @@ public class PgpKeyOperationTest {
             if (badphrase.equals(passphrase)) {
                 badphrase = new Passphrase("a");
             }
+            parcel.mAddUserIds.add("allure");
 
             assertModifyFailure("keyring modification with bad passphrase should fail",
                     ring, parcel, new CryptoInputParcel(badphrase), LogType.MSG_MF_UNLOCK_ERROR);
@@ -659,7 +664,8 @@ public class PgpKeyOperationTest {
             parcel.reset();
             parcel.mRevokeSubKeys.add(keyId);
 
-            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
+                    new CryptoInputParcel(new Date(), passphrase));
 
             Assert.assertEquals("no extra packets in original", 0, onlyA.size());
             Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
@@ -779,7 +785,7 @@ public class PgpKeyOperationTest {
         { // we should be able to change the stripped/divert status of subkeys without passphrase
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
-            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
@@ -795,7 +801,7 @@ public class PgpKeyOperationTest {
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             };
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, serial));
-            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, null);
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
@@ -972,12 +978,12 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("signature type must be positive certification",
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
 
-        // make sure packets can be distinguished by timestamp
         Thread.sleep(1000);
 
         // applying the same modification AGAIN should not add more certifications but drop those
         // as duplicates
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, cryptoInput, true, false);
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB,
+                new CryptoInputParcel(new Date(), passphrase), true, false);
 
         Assert.assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
         Assert.assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
@@ -1055,7 +1061,8 @@ public class PgpKeyOperationTest {
         Passphrase otherPassphrase = TestingUtils.genPassphrase(true);
         CryptoInputParcel otherCryptoInput = new CryptoInputParcel(otherPassphrase);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, new CryptoInputParcel(new Date()));
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB,
+                new CryptoInputParcel(new Date(), new Passphrase()));
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());

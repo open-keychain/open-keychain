@@ -36,7 +36,7 @@ public class CryptoInputParcel implements Parcelable {
 
     public CryptoInputParcel(Passphrase passphrase) {
         mSignatureTime = new Date();
-        mPassphrase = null;
+        mPassphrase = passphrase;
     }
 
     public CryptoInputParcel(Date signatureTime) {

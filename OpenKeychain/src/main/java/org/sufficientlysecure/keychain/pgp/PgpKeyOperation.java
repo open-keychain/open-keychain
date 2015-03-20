@@ -395,12 +395,14 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (saveParcel.isRestrictedOnly()) {
+        if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
+            log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log);
         }
 
         // Do we require a passphrase? If so, pass it along
         if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
+            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredPassphrase(
                     masterSecretKey.getKeyID(), cryptoInput.getSignatureTime()));
         }
@@ -971,7 +973,7 @@ public class PgpKeyOperation {
         progress(R.string.progress_done, 100);
 
         if (!nfcSignOps.isEmpty()) {
-            log.add(LogType.MSG_MF_INPUT_REQUIRED, indent);
+            log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
             return new PgpEditKeyResult(log, nfcSignOps.build());
         }
 
@@ -1457,6 +1459,12 @@ public class PgpKeyOperation {
             flags |= sig.getHashedSubPackets().getKeyFlags();
         }
         return flags;
+    }
+
+    private static boolean isDummy(PGPSecretKey secretKey) {
+        S2K s2k = secretKey.getS2K();
+        return s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY;
     }
 
     private static boolean isDivertToCard(PGPSecretKey secretKey) {
