@@ -72,7 +72,7 @@ public class EditKeyOperation extends BaseOperation {
         PgpEditKeyResult modifyResult;
         {
             PgpKeyOperation keyOperations =
-                    new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled, cryptoInput);
+                    new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
 
             // If a key id is specified, fetch and edit
             if (saveParcel.mMasterKeyId != null) {
@@ -83,7 +83,7 @@ public class EditKeyOperation extends BaseOperation {
                     CanonicalizedSecretKeyRing secRing =
                             mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
-                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel);
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
                     if (modifyResult.isPending()) {
                         return modifyResult;
                     }

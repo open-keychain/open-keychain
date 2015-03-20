@@ -24,9 +24,19 @@ public class CryptoInputParcel implements Parcelable {
     // used in the crypto operation described by this parcel.
     private HashMap<ByteBuffer,byte[]> mCryptoData = new HashMap<>();
 
+    public CryptoInputParcel() {
+        mSignatureTime = new Date();
+        mPassphrase = null;
+    }
+
     public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = passphrase;
+    }
+
+    public CryptoInputParcel(Passphrase passphrase) {
+        mSignatureTime = new Date();
+        mPassphrase = null;
     }
 
     public CryptoInputParcel(Date signatureTime) {

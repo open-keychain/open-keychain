@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -74,6 +75,7 @@ public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
     final static Passphrase passphrase = TestingUtils.genPassphrase();
+    final static CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), passphrase);
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -302,7 +304,7 @@ public class PgpKeyOperationTest {
             }
 
             assertModifyFailure("keyring modification with bad passphrase should fail",
-                    ring, parcel, badphrase, LogType.MSG_MF_UNLOCK_ERROR);
+                    ring, parcel, new CryptoInputParcel(badphrase), LogType.MSG_MF_UNLOCK_ERROR);
         }
 
     }
@@ -646,7 +648,7 @@ public class PgpKeyOperationTest {
             parcel.mRevokeSubKeys.add(123L);
 
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, parcel, passphrase).getRing();
+            UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, cryptoInput, parcel).getRing();
 
             Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
 
@@ -975,7 +977,7 @@ public class PgpKeyOperationTest {
 
         // applying the same modification AGAIN should not add more certifications but drop those
         // as duplicates
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, passphrase, true, false);
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, cryptoInput, true, false);
 
         Assert.assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
         Assert.assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
@@ -1039,8 +1041,7 @@ public class PgpKeyOperationTest {
         // change passphrase to empty
         parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase());
         // note that canonicalization here necessarily strips the empty notation packet
-        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB,
-                passphrase);
+        UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, cryptoInput);
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -1052,8 +1053,9 @@ public class PgpKeyOperationTest {
 
         // modify keyring, change to non-empty passphrase
         Passphrase otherPassphrase = TestingUtils.genPassphrase(true);
+        CryptoInputParcel otherCryptoInput = new CryptoInputParcel(otherPassphrase);
         parcel.mNewUnlock = new ChangeUnlockParcel(otherPassphrase);
-        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, new Passphrase());
+        modified = applyModificationWithChecks(parcel, modified, onlyA, onlyB, new CryptoInputParcel(new Date()));
 
         Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
@@ -1086,7 +1088,7 @@ public class PgpKeyOperationTest {
             // we should still be able to modify it (and change its passphrase) without errors
             PgpKeyOperation op = new PgpKeyOperation(null);
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, otherCryptoInput, parcel);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertFalse("log must not contain a warning",
                     result.getLog().containsWarnings());
@@ -1102,7 +1104,7 @@ public class PgpKeyOperationTest {
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
-            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, otherPassphrase2);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(otherPassphrase2), parcel);
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertTrue("log must contain a failed passphrase change warning",
                     result.getLog().containsType(LogType.MSG_MF_PASSPHRASE_FAIL));
@@ -1140,7 +1142,7 @@ public class PgpKeyOperationTest {
 
         {
             parcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase("phrayse"), null);
-            applyModificationWithChecks(parcel, modified, onlyA, onlyB, pin, true, false);
+            applyModificationWithChecks(parcel, modified, onlyA, onlyB, new CryptoInputParcel(pin), true, false);
 
             Assert.assertEquals("exactly four packets should have been removed (the secret keys + notation packet)",
                     4, onlyA.size());
@@ -1157,7 +1159,7 @@ public class PgpKeyOperationTest {
 
         parcel.mAddUserIds.add("discord");
         PgpKeyOperation op = new PgpKeyOperation(null);
-        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, null);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, new CryptoInputParcel(new Date()), parcel);
         Assert.assertFalse("non-restricted operations should fail without passphrase", result.success());
     }
 
@@ -1165,15 +1167,15 @@ public class PgpKeyOperationTest {
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB) {
-        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, passphrase, true, true);
+        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, cryptoInput, true, true);
     }
 
     private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
-                                                               Passphrase passphrase) {
-        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, passphrase, true, true);
+                                                               CryptoInputParcel cryptoInput) {
+        return applyModificationWithChecks(parcel, ring, onlyA, onlyB, cryptoInput, true, true);
     }
 
     // applies a parcel modification while running some integrity checks
@@ -1181,7 +1183,7 @@ public class PgpKeyOperationTest {
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
-                                                               Passphrase passphrase,
+                                                               CryptoInputParcel cryptoInput,
                                                                boolean canonicalize,
                                                                boolean constantCanonicalize) {
 
@@ -1191,7 +1193,7 @@ public class PgpKeyOperationTest {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
-            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
             Assert.assertTrue("key modification must succeed", result.success());
             UncachedKeyRing rawModified = result.getRing();
             Assert.assertNotNull("key modification must not return null", rawModified);
@@ -1258,11 +1260,11 @@ public class PgpKeyOperationTest {
     }
 
     private void assertModifyFailure(String reason, UncachedKeyRing ring,
-                                     SaveKeyringParcel parcel, Passphrase passphrase, LogType expected)
+                                     SaveKeyringParcel parcel, CryptoInputParcel cryptoInput, LogType expected)
             throws Exception {
 
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());
@@ -1276,7 +1278,7 @@ public class PgpKeyOperationTest {
             throws Exception {
 
         CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
-        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, parcel, passphrase);
+        PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
         Assert.assertNull(reason, result.getRing());

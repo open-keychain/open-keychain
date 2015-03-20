@@ -49,7 +49,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
     protected boolean mHiddenRecipients = false;
-    protected CryptoInputParcel mCryptoInput = new CryptoInputParcel(null);
+    protected CryptoInputParcel mCryptoInput = new CryptoInputParcel();
 
     public PgpSignEncryptInputParcel() {
 
