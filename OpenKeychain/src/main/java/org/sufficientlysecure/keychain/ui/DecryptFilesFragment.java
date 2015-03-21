@@ -139,7 +139,7 @@ public class DecryptFilesFragment extends DecryptFragment {
 
     private void decryptAction() {
         if (mInputUri == null) {
-            Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
             return;
         }
 

@@ -169,8 +169,8 @@ public class CertifyKeyFragment extends LoaderFragment
             @Override
             public void onClick(View v) {
                 if (mSignMasterKeyId == Constants.key.none) {
-                    Notify.showNotify(getActivity(), getString(R.string.select_key_to_certify),
-                            Notify.Style.ERROR);
+                    Notify.create(getActivity(), getString(R.string.select_key_to_certify),
+                            Notify.Style.ERROR).show();
                 } else {
                     initiateCertifying();
                 }
@@ -360,8 +360,8 @@ public class CertifyKeyFragment extends LoaderFragment
         // Bail out if there is not at least one user id selected
         ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
         if (certifyActions.isEmpty()) {
-            Notify.showNotify(getActivity(), "No identities selected!",
-                    Notify.Style.ERROR);
+            Notify.create(getActivity(), "No identities selected!",
+                    Notify.Style.ERROR).show();
             return;
         }
 
