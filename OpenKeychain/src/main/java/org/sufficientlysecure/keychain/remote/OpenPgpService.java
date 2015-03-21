@@ -573,6 +573,8 @@ public class OpenPgpService extends RemoteService {
                 Intent result = new Intent();
 
                 OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+                // TODO: currently RESULT_TYPE_UNENCRYPTED_UNSIGNED is never returned
+                // instead an error is returned when no pgp data has been found
                 int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
                 if (signatureResult != null) {
                     resultType |= OpenPgpApi.RESULT_TYPE_SIGNED;
