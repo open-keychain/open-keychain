@@ -250,12 +250,20 @@ public abstract class OperationResult implements Parcelable {
 
     public Showable createNotify(final Activity activity) {
 
-        Log.d(Constants.TAG, "mLog.getLast()"+mLog.getLast());
-        Log.d(Constants.TAG, "mLog.getLast().mType"+mLog.getLast().mType);
-        Log.d(Constants.TAG, "mLog.getLast().mType.getMsgId()"+mLog.getLast().mType.getMsgId());
-
         // Take the last message as string
-        int msgId = mLog.getLast().mType.getMsgId();
+        String logText;
+
+        LogEntryParcel entryParcel = mLog.getLast();
+        // special case: first parameter may be a quantity
+        if (entryParcel.mParameters != null && entryParcel.mParameters.length > 0
+                && entryParcel.mParameters[0] instanceof Integer) {
+            logText = activity.getResources().getQuantityString(entryParcel.mType.getMsgId(),
+                    (Integer) entryParcel.mParameters[0],
+                    entryParcel.mParameters);
+        } else {
+            logText = activity.getString(entryParcel.mType.getMsgId(),
+                    entryParcel.mParameters);
+        }
 
         Style style;
 
@@ -273,10 +281,10 @@ public abstract class OperationResult implements Parcelable {
         }
 
         if (getLog() == null || getLog().isEmpty()) {
-            return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style);
+            return Notify.createNotify(activity, logText, Notify.LENGTH_LONG, style);
         }
 
-        return Notify.createNotify(activity, msgId, Notify.LENGTH_LONG, style,
+        return Notify.createNotify(activity, logText, Notify.LENGTH_LONG, style,
             new ActionListener() {
                 @Override
                 public void onAction() {

@@ -31,13 +31,18 @@ public class EditKeyResult extends OperationResult {
 
     public EditKeyResult(Parcel source) {
         super(source);
-        mMasterKeyId = source.readLong();
+        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(mMasterKeyId);
+        if (mMasterKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mMasterKeyId);
+        } else {
+            dest.writeInt(0);
+        }
     }
 
     public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {

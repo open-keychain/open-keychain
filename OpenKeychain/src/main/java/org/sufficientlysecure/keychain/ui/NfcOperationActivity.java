@@ -26,6 +26,8 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,6 +42,8 @@ import java.nio.ByteBuffer;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class NfcOperationActivity extends BaseActivity {
 
+    public static final int REQUEST_CODE_PASSPHRASE = 1;
+
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
 
     public static final String RESULT_DATA = "result_data";
@@ -49,7 +53,8 @@ public class NfcOperationActivity extends BaseActivity {
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
 
-    RequiredInputParcel mNfcOperations;
+    RequiredInputParcel mRequiredInput;
+    private Passphrase mPin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +71,38 @@ public class NfcOperationActivity extends BaseActivity {
 
         Bundle data = intent.getExtras();
 
-        mNfcOperations = data.getParcelable(EXTRA_REQUIRED_INPUT);
+        mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
 
+        obtainPassphrase();
+
+    }
+
+    private void obtainPassphrase() {
+
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.useDefaultYubikeyPin()) {
+            mPin = new Passphrase("123456");
+            return;
+        }
+
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE:
+                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
+                mPin = input.getPassphrase();
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -157,7 +192,7 @@ public class NfcOperationActivity extends BaseActivity {
             return;
         }
 
-        String pin = mNfcOperations.mNfcPin;
+        byte[] pin = new String(mPin.getCharArray()).getBytes();
 
         // Command APDU for VERIFY command (page 32)
         String login =
@@ -165,8 +200,8 @@ public class NfcOperationActivity extends BaseActivity {
                         + "20" // INS
                         + "00" // P1
                         + "82" // P2 (PW1)
-                        + String.format("%02x", pin.length()) // Lc
-                        + Hex.toHexString(pin.getBytes());
+                        + String.format("%02x", pin.length) // Lc
+                        + Hex.toHexString(pin);
         if ( ! card(login).equals(accepted)) { // login
             toast("Wrong PIN!");
             setResult(RESULT_CANCELED);
@@ -174,23 +209,22 @@ public class NfcOperationActivity extends BaseActivity {
             return;
         }
 
-        CryptoInputParcel resultData = new CryptoInputParcel(mNfcOperations.mSignatureTime);
+        CryptoInputParcel resultData = new CryptoInputParcel(mRequiredInput.mSignatureTime);
 
-        switch (mNfcOperations.mType) {
+        switch (mRequiredInput.mType) {
 
             case NFC_DECRYPT:
-
-                for (int i = 0; i < mNfcOperations.mInputHashes.length; i++) {
-                    byte[] hash = mNfcOperations.mInputHashes[i];
+                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
+                    byte[] hash = mRequiredInput.mInputHashes[i];
                     byte[] decryptedSessionKey = nfcDecryptSessionKey(hash);
                     resultData.addCryptoData(hash, decryptedSessionKey);
                 }
                 break;
 
             case NFC_SIGN:
-                for (int i = 0; i < mNfcOperations.mInputHashes.length; i++) {
-                    byte[] hash = mNfcOperations.mInputHashes[i];
-                    int algo = mNfcOperations.mSignAlgos[i];
+                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
+                    byte[] hash = mRequiredInput.mInputHashes[i];
+                    int algo = mRequiredInput.mSignAlgos[i];
                     byte[] signedHash = nfcCalculateSignature(hash, algo);
                     resultData.addCryptoData(hash, signedHash);
                 }

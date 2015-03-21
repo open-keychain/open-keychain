@@ -409,7 +409,8 @@ public class PgpKeyOperation {
         if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredPassphrase(
-                    masterSecretKey.getKeyID(), cryptoInput.getSignatureTime()));
+                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
+                    cryptoInput.getSignatureTime()));
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -431,7 +432,9 @@ public class PgpKeyOperation {
 
         int indent = 1;
 
-        NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(cryptoInput.getSignatureTime());
+        NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
+                cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
+                masterSecretKey.getKeyID());
 
         progress(R.string.progress_modify, 0);
 

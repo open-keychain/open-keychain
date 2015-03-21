@@ -58,7 +58,8 @@ public class PgpCertifyOperation {
         // get the master subkey (which we certify for)
         PGPPublicKey publicKey = publicRing.getPublicKey().getPublicKey();
 
-        NfcSignOperationsBuilder requiredInput = new NfcSignOperationsBuilder(creationTimestamp);
+        NfcSignOperationsBuilder requiredInput = new NfcSignOperationsBuilder(creationTimestamp,
+                publicKey.getKeyID(), publicKey.getKeyID());
 
         try {
             if (action.mUserIds != null) {

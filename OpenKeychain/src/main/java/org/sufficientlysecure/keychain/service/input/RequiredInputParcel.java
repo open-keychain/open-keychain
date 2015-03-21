@@ -18,19 +18,20 @@ public class RequiredInputParcel implements Parcelable {
 
     public final RequiredInputType mType;
 
-    public String mNfcPin = "123456";
     public final byte[][] mInputHashes;
     public final int[] mSignAlgos;
 
+    private Long mMasterKeyId;
     private Long mSubKeyId;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputHashes,
-            int[] signAlgos, Date signatureTime, Long keyId) {
+            int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
         mType = type;
         mInputHashes = inputHashes;
         mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
-        mSubKeyId = keyId;
+        mMasterKeyId = masterKeyId;
+        mSubKeyId = subKeyId;
     }
 
     public RequiredInputParcel(Parcel source) {
@@ -50,6 +51,7 @@ public class RequiredInputParcel implements Parcelable {
         }
 
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
+        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
 
     }
@@ -61,18 +63,27 @@ public class RequiredInputParcel implements Parcelable {
     public static RequiredInputParcel createNfcSignOperation(
             byte[] inputHash, int signAlgo, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
-                new byte[][] { inputHash }, new int[] { signAlgo }, signatureTime, null);
+                new byte[][] { inputHash }, new int[] { signAlgo },
+                signatureTime, null, null);
     }
 
     public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
-                new byte[][] { inputHash }, null, null, null);
+                new byte[][] { inputHash }, null, null, null, null);
     }
 
-    public static RequiredInputParcel createRequiredPassphrase(long keyId, Date signatureTime) {
+    public static RequiredInputParcel createRequiredPassphrase(
+            long masterKeyId, long subKeyId, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, signatureTime, keyId);
+                null, null, signatureTime, masterKeyId, subKeyId);
     }
+
+    public static RequiredInputParcel createRequiredPassphrase(
+            RequiredInputParcel req) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId);
+    }
+
 
     @Override
     public int describeContents() {
@@ -95,6 +106,12 @@ public class RequiredInputParcel implements Parcelable {
         if (mSignatureTime != null) {
             dest.writeInt(1);
             dest.writeLong(mSignatureTime.getTime());
+        } else {
+            dest.writeInt(0);
+        }
+        if (mMasterKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mMasterKeyId);
         } else {
             dest.writeInt(0);
         }
@@ -121,9 +138,13 @@ public class RequiredInputParcel implements Parcelable {
         Date mSignatureTime;
         ArrayList<Integer> mSignAlgos = new ArrayList<>();
         ArrayList<byte[]> mInputHashes = new ArrayList<>();
+        long mMasterKeyId;
+        long mSubKeyId;
 
-        public NfcSignOperationsBuilder(Date signatureTime) {
+        public NfcSignOperationsBuilder(Date signatureTime, long masterKeyId, long subKeyId) {
             mSignatureTime = signatureTime;
+            mMasterKeyId = masterKeyId;
+            mSubKeyId = subKeyId;
         }
 
         public RequiredInputParcel build() {
@@ -135,7 +156,7 @@ public class RequiredInputParcel implements Parcelable {
             }
 
             return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
-                    inputHashes, signAlgos, mSignatureTime, null);
+                    inputHashes, signAlgos, mSignatureTime, mMasterKeyId, mSubKeyId);
         }
 
         public void addHash(byte[] hash, int algo) {

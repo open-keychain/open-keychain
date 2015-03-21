@@ -81,7 +81,7 @@ public class CertifyOperation extends BaseOperation {
 
             if (!cryptoInput.hasPassphrase()) {
                 return new CertifyResult(log, RequiredInputParcel.createRequiredPassphrase(
-                        certificationKey.getKeyId(), null));
+                        certificationKey.getKeyId(), certificationKey.getKeyId(), null));
             }
 
             // certification is always with the master key id, so use that one
@@ -105,7 +105,9 @@ public class CertifyOperation extends BaseOperation {
 
         int certifyOk = 0, certifyError = 0, uploadOk = 0, uploadError = 0;
 
-        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(cryptoInput.getSignatureTime());
+        NfcSignOperationsBuilder allRequiredInput = new NfcSignOperationsBuilder(
+                cryptoInput.getSignatureTime(), certificationKey.getKeyId(),
+                certificationKey.getKeyId());
 
         // Work through all requested certifications
         for (CertifyAction action : parcel.mCertifyActions) {
