@@ -390,8 +390,8 @@ public class KeyListFragment extends LoaderFragment
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if (hasSecret && masterKeyIds.length > 1) {
-            Notify.showNotify(getActivity(), R.string.secret_cannot_multiple,
-                    Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.secret_cannot_multiple,
+                    Notify.Style.ERROR).show();
             return;
         }
 
@@ -484,21 +484,21 @@ public class KeyListFragment extends LoaderFragment
             case R.id.menu_key_list_debug_read:
                 try {
                     KeychainDatabase.debugBackup(getActivity(), true);
-                    Notify.showNotify(getActivity(), "Restored debug_backup.db", Notify.Style.INFO);
+                    Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
                     getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
 
             case R.id.menu_key_list_debug_write:
                 try {
                     KeychainDatabase.debugBackup(getActivity(), false);
-                    Notify.showNotify(getActivity(), "Backup to debug_backup.db completed", Notify.Style.INFO);
+                    Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
 

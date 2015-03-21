@@ -205,7 +205,7 @@ public class SafeSlingerActivity extends BaseActivity {
                 activity.startService(intent);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.showNotify(activity, "Problem writing cache file!", Notify.Style.ERROR);
+                Notify.create(activity, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
         } else {
             // give everything else down to KeyListActivity!

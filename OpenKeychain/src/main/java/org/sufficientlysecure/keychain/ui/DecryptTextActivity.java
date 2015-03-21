@@ -161,7 +161,7 @@ public class DecryptTextActivity extends BaseActivity {
                 if (sharedText != null) {
                     loadFragment(savedInstanceState, sharedText);
                 } else {
-                    Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
+                    Notify.create(this, R.string.error_invalid_data, Notify.Style.ERROR).show();
                 }
             } else {
                 Log.e(Constants.TAG, "ACTION_SEND received non-plaintext, this should not happen in this activity!");
@@ -175,7 +175,7 @@ public class DecryptTextActivity extends BaseActivity {
             if (extraText != null) {
                 loadFragment(savedInstanceState, extraText);
             } else {
-                Notify.showNotify(this, R.string.error_invalid_data, Notify.Style.ERROR);
+                Notify.create(this, R.string.error_invalid_data, Notify.Style.ERROR).show();
             }
         } else if (ACTION_DECRYPT_FROM_CLIPBOARD.equals(action)) {
             Log.d(Constants.TAG, "ACTION_DECRYPT_FROM_CLIPBOARD");
