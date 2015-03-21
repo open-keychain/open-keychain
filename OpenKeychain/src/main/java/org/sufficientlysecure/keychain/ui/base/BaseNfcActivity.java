@@ -1,132 +1,69 @@
-/**
- * Copyright (c) 2013-2014 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
- *
- * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
- */
+package org.sufficientlysecure.keychain.ui.base;
 
-package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
+import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 
-/**
- * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
- * NFC devices.
- *
- * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
- */
-@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
-public class NfcActivity extends BaseActivity {
+public abstract class BaseNfcActivity extends BaseActivity {
 
-    // actions
-    public static final String ACTION_SIGN_HASH = "sign_hash";
-    public static final String ACTION_DECRYPT_SESSION_KEY = "decrypt_session_key";
+    public static final int REQUEST_CODE_PASSPHRASE = 1;
 
-    // always
-    public static final String EXTRA_KEY_ID = "key_id";
-    public static final String EXTRA_PIN = "pin";
-    // special extra for OpenPgpService
-    public static final String EXTRA_DATA = "data";
-
-    // sign
-    public static final String EXTRA_NFC_HASH_TO_SIGN = "nfc_hash";
-    public static final String EXTRA_NFC_HASH_ALGO = "nfc_hash_algo";
-
-    // decrypt
-    public static final String EXTRA_NFC_ENC_SESSION_KEY = "encrypted_session_key";
-
-    private Intent mServiceIntent;
-
-    private static final int TIMEOUT = 100000;
-
+    protected Passphrase mPin;
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
-    private String mAction;
 
-    private String mPin;
-    private Long mKeyId;
-
-    // sign
-    private byte[] mHashToSign;
-    private int mHashAlgo;
-
-    // decrypt
-    private byte[] mEncryptedSessionKey;
+    private static final int TIMEOUT = 100000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.TAG, "NfcActivity.onCreate");
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
         String action = intent.getAction();
-
-        // if we get are passed a key id, save it for the check
-        if (data.containsKey(EXTRA_KEY_ID)) {
-            mKeyId = data.getLong(EXTRA_KEY_ID);
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+            throw new AssertionError("should not happen: NfcOperationActivity.onCreate is called instead of onNewIntent!");
         }
 
-        switch (action) {
-            case ACTION_SIGN_HASH:
-                mAction = action;
-                mPin = data.getString(EXTRA_PIN);
-                mHashToSign = data.getByteArray(EXTRA_NFC_HASH_TO_SIGN);
-                mHashAlgo = data.getInt(EXTRA_NFC_HASH_ALGO);
-                mServiceIntent = data.getParcelable(EXTRA_DATA);
-
-                Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
-                Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
-                Log.d(Constants.TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
-                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
-                break;
-            case ACTION_DECRYPT_SESSION_KEY:
-                mAction = action;
-                mPin = data.getString(EXTRA_PIN);
-                mEncryptedSessionKey = data.getByteArray(EXTRA_NFC_ENC_SESSION_KEY);
-                mServiceIntent = data.getParcelable(EXTRA_DATA);
-
-                Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
-                Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
-                Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
-                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
-                break;
-            case NfcAdapter.ACTION_TAG_DISCOVERED:
-                Log.e(Constants.TAG, "This should not happen! NfcActivity.onCreate() is being called instead of onNewIntent()!");
-                toast("This should not happen! Please create a new bug report that the NFC screen is restarted!");
-                finish();
-                break;
-            default:
-                Log.d(Constants.TAG, "Action not supported: " + action);
-                break;
-        }
     }
 
+    /**
+     * This activity is started as a singleTop activity.
+     * All new NFC Intents which are delivered to this activity are handled here
+     */
     @Override
-    protected void initLayout() {
-        setContentView(R.layout.nfc_activity);
+    public void onNewIntent(Intent intent) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+            try {
+                handleNdefDiscoveredIntent(intent);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Connection error!", e);
+                toast("Connection Error: " + e.getMessage());
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        }
     }
 
     /**
@@ -135,7 +72,7 @@ public class NfcActivity extends BaseActivity {
      */
     public void onPause() {
         super.onPause();
-        Log.d(Constants.TAG, "NfcActivity.onPause");
+        Log.d(Constants.TAG, "NfcOperationActivity.onPause");
 
         disableNfcForegroundDispatch();
     }
@@ -146,25 +83,40 @@ public class NfcActivity extends BaseActivity {
      */
     public void onResume() {
         super.onResume();
-        Log.d(Constants.TAG, "NfcActivity.onResume");
+        Log.d(Constants.TAG, "NfcOperationActivity.onResume");
 
         enableNfcForegroundDispatch();
     }
 
-    /**
-     * This activity is started as a singleTop activity.
-     * All new NFC Intents which are delivered to this activity are handled here
-     */
-    public void onNewIntent(Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            try {
-                handleNdefDiscoveredIntent(intent);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Connection error!", e);
-                toast("Connection Error: " + e.getMessage());
-                setResult(RESULT_CANCELED, mServiceIntent);
-                finish();
-            }
+    protected void obtainYubikeyPin(RequiredInputParcel requiredInput) {
+
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.useDefaultYubikeyPin()) {
+            mPin = new Passphrase("123456");
+            return;
+        }
+
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                RequiredInputParcel.createRequiredPassphrase(requiredInput));
+        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+
+    }
+
+    protected void setYubikeyPin(Passphrase pin) {
+        mPin = pin;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_PASSPHRASE:
+                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
+                mPin = input.getPassphrase();
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -182,7 +134,7 @@ public class NfcActivity extends BaseActivity {
      * on ISO SmartCard Systems specification.
      *
      */
-    private void handleNdefDiscoveredIntent(Intent intent) throws IOException {
+    protected void handleNdefDiscoveredIntent(Intent intent) throws IOException {
 
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -197,104 +149,49 @@ public class NfcActivity extends BaseActivity {
 
         // Command APDU (page 51) for SELECT FILE command (page 29)
         String opening =
-                  "00" // CLA
-                + "A4" // INS
-                + "04" // P1
-                + "00" // P2
-                + "06" // Lc (number of bytes)
-                + "D27600012401" // Data (6 bytes)
-                + "00"; // Le
-        if ( ! card(opening).equals(accepted)) { // activate connection
+                "00" // CLA
+                        + "A4" // INS
+                        + "04" // P1
+                        + "00" // P2
+                        + "06" // Lc (number of bytes)
+                        + "D27600012401" // Data (6 bytes)
+                        + "00"; // Le
+        if ( ! nfcCommunicate(opening).equals(accepted)) { // activate connection
             toast("Opening Error!");
-            setResult(RESULT_CANCELED, mServiceIntent);
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
 
-        // Command APDU for VERIFY command (page 32)
-        String login =
-              "00" // CLA
-            + "20" // INS
-            + "00" // P1
-            + "82" // P2 (PW1)
-            + String.format("%02x", mPin.length()) // Lc
-            + Hex.toHexString(mPin.getBytes());
-        if ( ! card(login).equals(accepted)) { // login
-            toast("Wrong PIN!");
-            setResult(RESULT_CANCELED, mServiceIntent);
-            finish();
-            return;
-        }
+        if (mPin != null) {
 
-        if (ACTION_SIGN_HASH.equals(mAction)) {
+            byte[] pin = new String(mPin.getCharArray()).getBytes();
 
-            // If we were supplied with a key id for checking, do so
-            if (mKeyId != null) {
-                // For signing, we check the master key
-                long keyId = nfcGetKeyId(mIsoDep, 0);
-                // If it's wrong, just cancel
-                if (keyId != mKeyId) {
-                    toast("NFC Tag has wrong signing key id!");
-                    setResult(RESULT_CANCELED, mServiceIntent);
-                    finish();
-                    return;
-                }
-            }
-
-            // returns signed hash
-            byte[] signedHash = nfcCalculateSignature(mHashToSign, mHashAlgo);
-
-            if (signedHash == null) {
-                setResult(RESULT_CANCELED, mServiceIntent);
+            // Command APDU for VERIFY command (page 32)
+            String login =
+                    "00" // CLA
+                            + "20" // INS
+                            + "00" // P1
+                            + "82" // P2 (PW1)
+                            + String.format("%02x", pin.length) // Lc
+                            + Hex.toHexString(pin);
+            if (!nfcCommunicate(login).equals(accepted)) { // login
+                toast("Wrong PIN!");
+                setResult(RESULT_CANCELED);
                 finish();
                 return;
             }
 
-            Log.d(Constants.TAG, "NfcActivity signedHash as hex: " + getHex(signedHash));
-
-            // give data through for new service call
-            // OpenPgpApi.EXTRA_NFC_SIGNED_HASH
-            mServiceIntent.putExtra("nfc_signed_hash", signedHash);
-            setResult(RESULT_OK, mServiceIntent);
-            finish();
-
-        } else if (ACTION_DECRYPT_SESSION_KEY.equals(mAction)) {
-
-            // If we were supplied with a key id for checking, do so
-            if (mKeyId != null) {
-                // For decryption, we check the confidentiality key
-                long keyId = nfcGetKeyId(mIsoDep, 1);
-                // If it's wrong, just cancel
-                if (keyId != mKeyId) {
-                    toast("NFC Tag has wrong encryption key id!");
-                    setResult(RESULT_CANCELED, mServiceIntent);
-                    finish();
-                    return;
-                }
-            }
-
-            byte[] decryptedSessionKey = nfcDecryptSessionKey(mEncryptedSessionKey);
-
-            // give data through for new service call
-            // OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY
-            mServiceIntent.putExtra("nfc_decrypted_session_key", decryptedSessionKey);
-            setResult(RESULT_OK, mServiceIntent);
-            finish();
         }
 
+        onNfcPerform();
+
+        mIsoDep.close();
+        mIsoDep = null;
+
     }
 
-    /**
-     * Gets the user ID
-     *
-     * @return the user id as "name <email>"
-     * @throws java.io.IOException
-     */
-    public String getUserId() throws IOException {
-        String info = "00CA006500";
-        String data = "00CA005E00";
-        return getName(card(info)) + " <" + (new String(Hex.decode(getDataField(card(data))))) + ">";
-    }
+    protected abstract void onNfcPerform() throws IOException;
 
     /** Return the key id from application specific data stored on tag, or null
      * if it doesn't exist.
@@ -302,8 +199,8 @@ public class NfcActivity extends BaseActivity {
      * @param idx Index of the key to return the fingerprint from.
      * @return The long key id of the requested key, or null if not found.
      */
-    public static Long nfcGetKeyId(IsoDep isoDep, int idx) throws IOException {
-        byte[] fp = nfcGetFingerprint(isoDep, idx);
+    public Long nfcGetKeyId(int idx) throws IOException {
+        byte[] fp = nfcGetFingerprint(idx);
         if (fp == null) {
             return null;
         }
@@ -319,9 +216,9 @@ public class NfcActivity extends BaseActivity {
      *
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
-    public static byte[] nfcGetFingerprints(IsoDep isoDep) throws IOException {
+    public byte[] nfcGetFingerprints() throws IOException {
         String data = "00CA006E00";
-        byte[] buf = isoDep.transceive(Hex.decode(data));
+        byte[] buf = mIsoDep.transceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
         Log.d(Constants.TAG, "nfc tlv data:\n" + tlv.prettyPrint());
@@ -340,8 +237,8 @@ public class NfcActivity extends BaseActivity {
      * @param idx Index of the key to return the fingerprint from.
      * @return The fingerprint of the requested key, or null if not found.
      */
-    public static byte[] nfcGetFingerprint(IsoDep isoDep, int idx) throws IOException {
-        byte[] data = nfcGetFingerprints(isoDep);
+    public byte[] nfcGetFingerprint(int idx) throws IOException {
+        byte[] data = nfcGetFingerprints();
 
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
@@ -352,12 +249,19 @@ public class NfcActivity extends BaseActivity {
         return fp;
     }
 
+
+    public String nfcGetUserId() throws IOException {
+        String info = "00CA006500";
+        String data = "00CA005E00";
+        return nfcGetHolderName(nfcCommunicate(info)) + " <" + (new String(Hex.decode(nfcGetDataField(
+                nfcCommunicate(data))))) + ">";
+    }
+
     /**
      * Calls to calculate the signature and returns the MPI value
      *
      * @param hash the hash for signing
      * @return a big integer representing the MPI for the given hash
-     * @throws java.io.IOException
      */
     public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
 
@@ -413,11 +317,11 @@ public class NfcActivity extends BaseActivity {
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
         String apdu  =
-                  "002A9E9A" // CLA, INS, P1, P2
-                + dsi // digital signature input
-                + "00"; // Le
+                "002A9E9A" // CLA, INS, P1, P2
+                        + dsi // digital signature input
+                        + "00"; // Le
 
-        String response = card(apdu);
+        String response = nfcCommunicate(apdu);
 
         // split up response into signature and status
         String status = response.substring(response.length()-4);
@@ -427,14 +331,14 @@ public class NfcActivity extends BaseActivity {
         while (status.substring(0, 2).equals("61")) {
             Log.d(Constants.TAG, "requesting more data, status " + status);
             // Send GET RESPONSE command
-            response = card("00C00000" + status.substring(2));
+            response = nfcCommunicate("00C00000" + status.substring(2));
             status = response.substring(response.length()-4);
             signature += response.substring(0, response.length()-4);
         }
 
         Log.d(Constants.TAG, "final response:" + status);
 
-        if ( ! status.equals("9000")) {
+        if ( ! "9000".equals(status)) {
             toast("Bad NFC response code: " + status);
             return null;
         }
@@ -453,7 +357,6 @@ public class NfcActivity extends BaseActivity {
      *
      * @param encryptedSessionKey the encoded session key
      * @return the decoded session key
-     * @throws java.io.IOException
      */
     public byte[] nfcDecryptSessionKey(byte[] encryptedSessionKey) throws IOException {
         String firstApdu = "102a8086fe";
@@ -469,10 +372,10 @@ public class NfcActivity extends BaseActivity {
             two[i] = encryptedSessionKey[i + one.length + 1];
         }
 
-        String first = card(firstApdu + getHex(one));
-        String second = card(secondApdu + getHex(two) + le);
+        String first = nfcCommunicate(firstApdu + getHex(one));
+        String second = nfcCommunicate(secondApdu + getHex(two) + le);
 
-        String decryptedSessionKey = getDataField(second);
+        String decryptedSessionKey = nfcGetDataField(second);
 
         Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
 
@@ -484,7 +387,7 @@ public class NfcActivity extends BaseActivity {
      *
      * @param text the text which should be contained within the toast
      */
-    private void toast(String text) {
+    protected void toast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 
@@ -494,7 +397,7 @@ public class NfcActivity extends BaseActivity {
      */
     public void enableNfcForegroundDispatch() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        Intent nfcI = new Intent(this, NfcActivity.class)
+        Intent nfcI = new Intent(this, NfcOperationActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
         IntentFilter[] writeTagFilters = new IntentFilter[]{
@@ -519,13 +422,7 @@ public class NfcActivity extends BaseActivity {
         Log.d(Constants.TAG, "NfcForegroundDispatch has been disabled!");
     }
 
-    /**
-     * Gets the name of the user out of the raw card output regarding card holder related data
-     *
-     * @param name the raw card holder related data from the card
-     * @return the name given in this data
-     */
-    public String getName(String name) {
+    public String nfcGetHolderName(String name) {
         String slength;
         int ilength;
         name = name.substring(6);
@@ -536,34 +433,16 @@ public class NfcActivity extends BaseActivity {
         return (name);
     }
 
-    /**
-     * Reduces the raw data from the card by four characters
-     *
-     * @param output the raw data from the card
-     * @return the data field of that data
-     */
-    private String getDataField(String output) {
+    private String nfcGetDataField(String output) {
         return output.substring(0, output.length() - 4);
     }
 
-    /**
-     * Communicates with the OpenPgpCard via the APDU
-     *
-     * @param hex the hexadecimal APDU
-     * @return The answer from the card
-     * @throws java.io.IOException throws an exception if something goes wrong
-     */
-    public String card(String hex) throws IOException {
-        return getHex(mIsoDep.transceive(Hex.decode(hex)));
+    public String nfcCommunicate(String apdu) throws IOException {
+        return getHex(mIsoDep.transceive(Hex.decode(apdu)));
     }
 
-    /**
-     * Converts a byte array into an hex string
-     *
-     * @param raw the byte array representation
-     * @return the  hexadecimal string representation
-     */
     public static String getHex(byte[] raw) {
         return new String(Hex.encode(raw));
     }
+
 }

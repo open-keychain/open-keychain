@@ -23,6 +23,7 @@ import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class CertifyFingerprintActivity extends BaseActivity {

@@ -78,7 +78,7 @@ public class CreateKeyStartFragment extends Fragment {
 
         mCreateKey = view.findViewById(R.id.create_key_create_key_button);
         mImportKey = view.findViewById(R.id.create_key_import_button);
-//        mYubiKey = view.findViewById(R.id.create_key_yubikey_button);
+        mYubiKey = view.findViewById(R.id.create_key_yubikey_button);
         mCancel = (TextView) view.findViewById(R.id.create_key_cancel);
 
         if (mCreateKeyActivity.mFirstTime) {
@@ -91,6 +91,14 @@ public class CreateKeyStartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            }
+        });
+
+        mYubiKey.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateKeyYubiFragment frag = new CreateKeyYubiFragment();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             }
         });

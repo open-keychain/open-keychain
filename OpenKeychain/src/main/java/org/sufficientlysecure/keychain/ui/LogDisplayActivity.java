@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+
 
 public class LogDisplayActivity extends BaseActivity {
 

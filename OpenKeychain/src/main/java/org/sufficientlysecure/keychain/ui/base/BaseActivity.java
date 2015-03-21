@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -63,8 +63,8 @@ public abstract class BaseActivity extends ActionBarActivity {
      * Inflate custom design to look like a full screen dialog, as specified in Material Design Guidelines
      * see http://www.google.com/design/spec/components/dialogs.html#dialogs-full-screen-dialogs
      */
-    protected void setFullScreenDialogDoneClose(int doneText, View.OnClickListener doneOnClickListener,
-                                                View.OnClickListener cancelOnClickListener) {
+    public void setFullScreenDialogDoneClose(int doneText, View.OnClickListener doneOnClickListener,
+            View.OnClickListener cancelOnClickListener) {
         setActionBarIcon(R.drawable.ic_close_white_24dp);
 
         // Inflate the custom action bar view

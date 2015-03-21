@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+
 
 /**
  * Signs the specified public key with the specified secret master key
