@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -59,12 +59,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.*;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -597,11 +592,12 @@ public class EditKeyFragment extends LoaderFragment implements
     private void saveInDatabase(Passphrase passphrase) {
         Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true) {
+                true,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

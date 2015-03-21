@@ -697,6 +697,9 @@
         <service
             android:name=".service.KeychainIntentService"
             android:exported="false" />
+        <service
+            android:name=".service.CloudImportService"
+            android:exported="false" />
 
         <provider
             android:name=".provider.KeychainProvider"

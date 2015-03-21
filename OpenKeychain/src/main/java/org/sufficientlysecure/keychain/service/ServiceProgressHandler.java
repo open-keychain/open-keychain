@@ -30,7 +30,7 @@ import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class KeychainIntentServiceHandler extends Handler {
+public class ServiceProgressHandler extends Handler {
 
     // possible messages sent from this service to handler on ui
     public static enum MessageStatus{
@@ -67,28 +67,34 @@ public class KeychainIntentServiceHandler extends Handler {
     Activity mActivity;
     ProgressDialogFragment mProgressDialogFragment;
 
-    public KeychainIntentServiceHandler(Activity activity) {
+    public ServiceProgressHandler(Activity activity) {
         this.mActivity = activity;
     }
 
-    public KeychainIntentServiceHandler(Activity activity,
-                                        ProgressDialogFragment progressDialogFragment) {
+    public ServiceProgressHandler(Activity activity,
+                                  ProgressDialogFragment progressDialogFragment) {
         this.mActivity = activity;
         this.mProgressDialogFragment = progressDialogFragment;
     }
 
-    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
-                                        int progressDialogStyle) {
-        this(activity, progressDialogMessage, progressDialogStyle, false);
+    public ServiceProgressHandler(Activity activity,
+                                  String progressDialogMessage,
+                                  int progressDialogStyle,
+                                  ProgressDialogFragment.ServiceType serviceType) {
+        this(activity, progressDialogMessage, progressDialogStyle, false, serviceType);
     }
 
-    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
-                                        int progressDialogStyle, boolean cancelable) {
+    public ServiceProgressHandler(Activity activity,
+                                  String progressDialogMessage,
+                                  int progressDialogStyle,
+                                  boolean cancelable,
+                                  ProgressDialogFragment.ServiceType serviceType) {
         this.mActivity = activity;
         this.mProgressDialogFragment = ProgressDialogFragment.newInstance(
                 progressDialogMessage,
                 progressDialogStyle,
-                cancelable);
+                cancelable,
+                serviceType);
     }
 
     public void showProgressDialog(FragmentActivity activity) {

@@ -42,7 +42,8 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -213,11 +214,12 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     private void startImportService (ArrayList<ParcelableKeyRing> keyRings) {
 
         // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_importing),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true) {
+                true,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

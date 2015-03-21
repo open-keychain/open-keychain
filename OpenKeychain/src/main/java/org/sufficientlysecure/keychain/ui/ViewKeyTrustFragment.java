@@ -50,12 +50,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -362,23 +362,26 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
         // Create a new Messenger for the communication back after proof work is done
         //
-        KeychainIntentServiceHandler handler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_verifying_signature), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler handler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_verifying_signature),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     Bundle returnData = message.getData();
-                    String msg = returnData.getString(KeychainIntentServiceHandler.DATA_MESSAGE);
+                    String msg = returnData.getString(ServiceProgressHandler.DATA_MESSAGE);
                     SpannableStringBuilder ssb = new SpannableStringBuilder();
 
                     if ((msg != null) && msg.equals("OK")) {
 
                         //yay
-                        String proofUrl = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL);
-                        String presenceUrl = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL);
-                        String presenceLabel = returnData.getString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL);
+                        String proofUrl = returnData.getString(ServiceProgressHandler.KEYBASE_PROOF_URL);
+                        String presenceUrl = returnData.getString(ServiceProgressHandler.KEYBASE_PRESENCE_URL);
+                        String presenceLabel = returnData.getString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL);
 
                         String proofLabel;
                         switch (proof.getType()) {
@@ -429,7 +432,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                         ssb.append(" ").append(getString(R.string.keybase_contained_signature));
                     } else {
                         // verification failed!
-                        msg = returnData.getString(KeychainIntentServiceHandler.DATA_ERROR);
+                        msg = returnData.getString(ServiceProgressHandler.DATA_ERROR);
                         ssb.append(getString(R.string.keybase_proof_failure));
                         if (msg == null) {
                             msg = getString(R.string.keybase_unknown_proof_failure);
