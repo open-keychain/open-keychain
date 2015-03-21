@@ -131,9 +131,9 @@ public class KeychainIntentServiceHandler extends Handler {
 
                 // show error from service
                 if (data.containsKey(DATA_ERROR)) {
-                    Notify.showNotify(mActivity,
+                    Notify.create(mActivity,
                             mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
-                            Notify.Style.ERROR);
+                            Notify.Style.ERROR).show();
                 }
 
                 break;

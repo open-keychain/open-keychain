@@ -302,7 +302,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         // file checks
 
         if (mInputUris.isEmpty()) {
-            Notify.showNotify(this, R.string.no_file_selected, Notify.Style.ERROR);
+            Notify.create(this, R.string.no_file_selected, Notify.Style.ERROR)
+                    .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
             return false;
         } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
             // This should be impossible...
@@ -316,11 +317,13 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             // symmetric encryption checks
 
             if (mPassphrase == null) {
-                Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
             if (mPassphrase.isEmpty()) {
-                Notify.showNotify(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
 
@@ -332,7 +335,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
             // Files must be encrypted, only text can be signed-only right now
             if (!gotEncryptionKeys) {
-                Notify.showNotify(this, R.string.select_encryption_key, Notify.Style.ERROR);
+                Notify.create(this, R.string.select_encryption_key, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
         }

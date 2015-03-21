@@ -190,7 +190,7 @@ public class FileDialogFragment extends DialogFragment {
                         mFile = file;
                         mFilename.setText(mFile.getName());
                     } else {
-                        Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
+                        Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
                     }
                 }
 

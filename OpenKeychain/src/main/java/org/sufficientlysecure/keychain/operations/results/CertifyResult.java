@@ -124,7 +124,7 @@ public class CertifyResult extends InputPendingResult {
                     mCertifyError, mCertifyError);
         }
 
-        return Notify.createNotify(activity, str, duration, style, new ActionListener() {
+        return Notify.create(activity, str, duration, style, new ActionListener() {
             @Override
             public void onAction() {
                 Intent intent = new Intent(

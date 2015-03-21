@@ -241,6 +241,11 @@ public class OpenPgpService extends RemoteService {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             byte[] nfcSignedHash = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_SIGNED_HASH);
             if (nfcSignedHash != null) {
                 Log.d(Constants.TAG, "nfcSignedHash:" + Hex.toHexString(nfcSignedHash));
@@ -284,6 +289,7 @@ public class OpenPgpService extends RemoteService {
 
             // sign-only
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
+                    .setSignaturePassphrase(passphrase)
                     .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
@@ -372,6 +378,11 @@ public class OpenPgpService extends RemoteService {
                 compressionId = CompressionAlgorithmTags.UNCOMPRESSED;
             }
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             // first try to get key ids from non-ambiguous key id extra
             long[] keyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
             if (keyIds == null) {
@@ -397,7 +408,8 @@ public class OpenPgpService extends RemoteService {
             InputData inputData = new InputData(is, inputLength, originalFilename);
 
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel();
-            pseInput.setEnableAsciiArmorOutput(asciiArmor)
+            pseInput.setSignaturePassphrase(passphrase)
+                    .setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionId(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED)
@@ -510,6 +522,11 @@ public class OpenPgpService extends RemoteService {
                 os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
+            Passphrase passphrase = null;
+            if (data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE) != null) {
+                passphrase = new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
+            }
+
             String currentPkg = getCurrentCallingPackage();
             Set<Long> allowedKeyIds;
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
@@ -520,7 +537,6 @@ public class OpenPgpService extends RemoteService {
                         KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
             }
 
-            Passphrase passphrase = data.getParcelableExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
@@ -566,15 +582,16 @@ public class OpenPgpService extends RemoteService {
                 }
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
-                int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
 
                 OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
+                // TODO: currently RESULT_TYPE_UNENCRYPTED_UNSIGNED is never returned
+                // instead an error is returned when no pgp data has been found
+                int resultType = OpenPgpApi.RESULT_TYPE_UNENCRYPTED_UNSIGNED;
                 if (signatureResult != null) {
                     resultType |= OpenPgpApi.RESULT_TYPE_SIGNED;
                     if (!signatureResult.isSignatureOnly()) {
                         resultType |= OpenPgpApi.RESULT_TYPE_ENCRYPTED;
                     }
-                    result.putExtra(OpenPgpApi.RESULT_TYPE, resultType);
 
                     result.putExtra(OpenPgpApi.RESULT_SIGNATURE, signatureResult);
 
@@ -594,7 +611,10 @@ public class OpenPgpService extends RemoteService {
                         // If signature key is known, return PendingIntent to show key
                         result.putExtra(OpenPgpApi.RESULT_INTENT, getShowKeyPendingIntent(signatureResult.getKeyId()));
                     }
+                } else {
+                    resultType |= OpenPgpApi.RESULT_TYPE_ENCRYPTED;
                 }
+                result.putExtra(OpenPgpApi.RESULT_TYPE, resultType);
 
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
                     OpenPgpMetadata metadata = pgpResult.getDecryptMetadata();

@@ -529,11 +529,11 @@ public class EditKeyFragment extends CryptoOperationFragment implements
 
     private void returnKeyringParcel() {
         if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
-            Notify.showNotify(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR).show();
             return;
         }
         if (mSaveKeyringParcel.mAddSubKeys.size() == 0) {
-            Notify.showNotify(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR).show();
             return;
         }
 

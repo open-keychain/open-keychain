@@ -169,6 +169,22 @@ public class KeyListFragment extends LoaderFragment
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
 
+        // Adds an empty footer view so that the Floating Action Button won't block content
+        // in last few rows.
+        View footer = new View(getActivity());
+
+        int spacing = (int) android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
+        );
+
+        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
+                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
+                spacing
+        );
+
+        footer.setLayoutParams(params);
+        mStickyList.addFooterView(footer, null, false);
+
         /*
          * Multi-selection
          */
@@ -369,13 +385,13 @@ public class KeyListFragment extends LoaderFragment
     /**
      * Show dialog to delete key
      *
-     * @param hasSecret    must contain whether the list of masterKeyIds contains a secret key or not
+     * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
     public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if (hasSecret && masterKeyIds.length > 1) {
-            Notify.showNotify(getActivity(), R.string.secret_cannot_multiple,
-                    Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.secret_cannot_multiple,
+                    Notify.Style.ERROR).show();
             return;
         }
 
@@ -468,21 +484,21 @@ public class KeyListFragment extends LoaderFragment
             case R.id.menu_key_list_debug_read:
                 try {
                     KeychainDatabase.debugBackup(getActivity(), true);
-                    Notify.showNotify(getActivity(), "Restored debug_backup.db", Notify.Style.INFO);
+                    Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
                     getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
 
             case R.id.menu_key_list_debug_write:
                 try {
                     KeychainDatabase.debugBackup(getActivity(), false);
-                    Notify.showNotify(getActivity(), "Backup to debug_backup.db completed", Notify.Style.INFO);
+                    Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IO Error", e);
-                    Notify.showNotify(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR);
+                    Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
 
@@ -907,7 +923,6 @@ public class KeyListFragment extends LoaderFragment
         }
 
     }
-
 
 
 }

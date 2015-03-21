@@ -277,8 +277,8 @@ public class CreateKeyFinalFragment extends Fragment {
                     // TODO: upload operation needs a result!
                     // TODO: then combine these results
                     //if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                    //Notify.showNotify(getActivity(), R.string.key_send_success,
-                    //Notify.Style.INFO);
+                    //Notify.create(getActivity(), R.string.key_send_success,
+                    //Notify.Style.OK).show();
 
                     Intent data = new Intent();
                     data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);

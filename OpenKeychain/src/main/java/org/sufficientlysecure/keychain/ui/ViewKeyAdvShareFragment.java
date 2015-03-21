@@ -199,13 +199,13 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 } else {
                     message = getResources().getString(R.string.key_copied_to_clipboard);
                 }
-                Notify.showNotify(getActivity(), message, Notify.Style.OK);
+                Notify.create(getActivity(), message, Notify.Style.OK).show();
             } else {
                 // Android will fail with android.os.TransactionTooLargeException if key is too big
                 // see http://www.lonestarprod.com/?p=34
                 if (content.length() >= 86389) {
-                    Notify.showNotify(getActivity(), R.string.key_too_big_for_sharing,
-                            Notify.Style.ERROR);
+                    Notify.create(getActivity(), R.string.key_too_big_for_sharing,
+                            Notify.Style.ERROR).show();
                     return;
                 }
 
@@ -223,10 +223,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             }
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
-            Notify.showNotify(getActivity(), R.string.error_key_processing, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.error_key_processing, Notify.Style.ERROR).show();
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            Notify.showNotify(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
     }
 

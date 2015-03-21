@@ -281,10 +281,10 @@ public abstract class OperationResult implements Parcelable {
         }
 
         if (getLog() == null || getLog().isEmpty()) {
-            return Notify.createNotify(activity, logText, Notify.LENGTH_LONG, style);
+            return Notify.create(activity, logText, Notify.LENGTH_LONG, style);
         }
 
-        return Notify.createNotify(activity, logText, Notify.LENGTH_LONG, style,
+        return Notify.create(activity, logText, Notify.LENGTH_LONG, style,
             new ActionListener() {
                 @Override
                 public void onAction() {
