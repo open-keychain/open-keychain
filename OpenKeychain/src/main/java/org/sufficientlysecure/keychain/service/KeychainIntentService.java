@@ -487,7 +487,7 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_PROMOTE_KEYRING: {
 
                 // Input
-                long keyRingId = data.getInt(EXPORT_KEY_RING_MASTER_KEY_ID);
+                long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
 
                 // Operation
                 PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);

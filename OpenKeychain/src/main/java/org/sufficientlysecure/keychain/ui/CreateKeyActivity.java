@@ -17,23 +17,18 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-public class CreateKeyActivity extends BaseActivity {
+public class CreateKeyActivity extends BaseNfcActivity {
 
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
@@ -86,6 +81,13 @@ public class CreateKeyActivity extends BaseActivity {
     }
 
     @Override
+    protected void onNfcPerform() throws IOException {
+        if (mCurrentFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentFragment).onNfcPerform();
+        }
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -133,6 +135,10 @@ public class CreateKeyActivity extends BaseActivity {
         }
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
+    }
+
+    interface NfcListenerFragment {
+        public void onNfcPerform() throws IOException;
     }
 
 }

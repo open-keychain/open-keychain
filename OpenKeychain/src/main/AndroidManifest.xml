@@ -90,6 +90,8 @@
             android:name=".ui.CreateKeyActivity"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/title_manage_my_keys"
+            android:launchMode="singleTop"
+            android:allowTaskReparenting="true"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

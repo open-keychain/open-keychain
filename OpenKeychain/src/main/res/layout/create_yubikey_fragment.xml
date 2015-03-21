@@ -9,30 +9,97 @@
         android:fillViewport="true"
         android:layout_above="@+id/create_key_buttons">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ViewAnimator
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:inAnimation="@anim/abc_fade_in"
+            android:outAnimation="@anim/abc_fade_out"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:orientation="vertical">
+            android:id="@+id/create_yubikey_animator"
+            >
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Hold Yubikey against device dawg" />
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Hold Yubikey against device dawg"
+                    />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/yubikey_phone" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="(yubikey fingerprint)" />
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/create_yubikey_unknown_fp"
+                    android:text="(yubikey fingerprint)" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Hit next to import this key"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/create_yubikey_fingerprint"
+                    android:text="(yubikey fingerprint)" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/create_yubikey_user_id"
+                    android:text="(yubikey fingerprint)" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Hit next to add this Yubikey to your own!"
+                    />
+
+            </LinearLayout>
+
+        </ViewAnimator>
 
     </ScrollView>
 
@@ -79,5 +146,7 @@
             android:gravity="right|center_vertical"
             android:clickable="true"
             style="?android:attr/borderlessButtonStyle" />
+
     </LinearLayout>
+
 </RelativeLayout>

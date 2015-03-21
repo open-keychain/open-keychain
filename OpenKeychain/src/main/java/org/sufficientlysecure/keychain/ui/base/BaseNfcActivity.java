@@ -18,7 +18,6 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
@@ -72,7 +71,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public void onPause() {
         super.onPause();
-        Log.d(Constants.TAG, "NfcOperationActivity.onPause");
+        Log.d(Constants.TAG, "BaseNfcActivity.onPause");
 
         disableNfcForegroundDispatch();
     }
@@ -83,7 +82,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public void onResume() {
         super.onResume();
-        Log.d(Constants.TAG, "NfcOperationActivity.onResume");
+        Log.d(Constants.TAG, "BaseNfcActivity.onResume");
 
         enableNfcForegroundDispatch();
     }
@@ -397,7 +396,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public void enableNfcForegroundDispatch() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        Intent nfcI = new Intent(this, NfcOperationActivity.class)
+        Intent nfcI = new Intent(this, getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
         IntentFilter[] writeTagFilters = new IntentFilter[]{

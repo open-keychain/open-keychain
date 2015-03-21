@@ -31,13 +31,18 @@ public class PromoteKeyResult extends OperationResult {
 
     public PromoteKeyResult(Parcel source) {
         super(source);
-        mMasterKeyId = source.readLong();
+        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(mMasterKeyId);
+        if (mMasterKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mMasterKeyId);
+        } else {
+            dest.writeInt(0);
+        }
     }
 
     public static Creator<PromoteKeyResult> CREATOR = new Creator<PromoteKeyResult>() {
