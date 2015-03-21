@@ -74,7 +74,7 @@ public class PromoteKeyOperation extends BaseOperation {
                         mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 // create divert-to-card secret key from public key
-                promotedRing = pubRing.createDummySecretRing();
+                promotedRing = pubRing.createDummySecretRing(true);
 
             } catch (PgpKeyNotFoundException e) {
                 log.add(LogType.MSG_PR_ERROR_KEY_NOT_FOUND, 2);

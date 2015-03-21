@@ -98,7 +98,7 @@ public class CreateKeyStartFragment extends Fragment {
         mYubiKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateKeyYubiFragment frag = new CreateKeyYubiFragment();
+                CreateKeyYubiWaitFragment frag = new CreateKeyYubiWaitFragment();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             }
         });

@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,11 +36,9 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -51,55 +47,57 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class CreateKeyYubiFragment extends Fragment implements NfcListenerFragment,
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class CreateKeyYubiFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final String ARG_FINGERPRINT = "fingerprint";
 
     CreateKeyActivity mCreateKeyActivity;
-    NameEditText mNameEdit;
-    View mBackButton;
-    View mNextButton;
-    private TextView mUnknownFingerprint;
 
-    public static final String ARGS_MASTER_KEY_ID = "master_key_id";
     private byte[] mScannedFingerprint;
     private long mScannedMasterKeyId;
+
     private ViewAnimator mAnimator;
+    private TextView mUnknownFingerprint;
     private TextView mFingerprint;
     private TextView mUserId;
 
-    private YubiImportState mState = YubiImportState.SCAN;
+    private YubiImportState mState;
+
+    public static Fragment createInstance(byte[] scannedFingerprint) {
+        Bundle args = new Bundle();
+        args.putByteArray(ARG_FINGERPRINT, scannedFingerprint);
+
+        CreateKeyYubiFragment frag = new CreateKeyYubiFragment();
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mScannedFingerprint = getArguments().getByteArray(ARG_FINGERPRINT);
+        mScannedMasterKeyId = getKeyIdFromFingerprint(mScannedFingerprint);
+
+        getLoaderManager().initLoader(0, null, this);
+    }
 
     enum YubiImportState {
-        SCAN, // waiting for scan
         UNKNOWN, // scanned unknown key (ready to import)
         BAD_FINGERPRINT, // scanned key, bad fingerprint
         IMPORTED, // imported key (ready to promote)
-    }
-
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
-        boolean output = true;
-        if (editText.getText().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
-            editText.requestFocus();
-            output = false;
-        } else {
-            editText.setError(null);
-        }
-
-        return output;
     }
 
     @Override
@@ -113,8 +111,8 @@ public class CreateKeyYubiFragment extends Fragment implements NfcListenerFragme
         mFingerprint = (TextView) view.findViewById(R.id.create_yubikey_fingerprint);
         mUserId = (TextView) view.findViewById(R.id.create_yubikey_user_id);
 
-        mBackButton = view.findViewById(R.id.create_key_back_button);
-        mNextButton = view.findViewById(R.id.create_key_next_button);
+        View mBackButton = view.findViewById(R.id.create_key_back_button);
+        View mNextButton = view.findViewById(R.id.create_key_next_button);
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,16 +134,6 @@ public class CreateKeyYubiFragment extends Fragment implements NfcListenerFragme
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
-    }
-
-    @Override
-    public void onNfcPerform() throws IOException {
-
-        mScannedFingerprint = mCreateKeyActivity.nfcGetFingerprint(0);
-        mScannedMasterKeyId = getKeyIdFromFingerprint(mScannedFingerprint);
-
-        getLoaderManager().initLoader(0, null, this);
-
     }
 
     // These are the rows that we will retrieve.
@@ -185,34 +173,25 @@ public class CreateKeyYubiFragment extends Fragment implements NfcListenerFragme
                 return;
             }
 
-            showKey(data);
+            String userId = data.getString(INDEX_USER_ID);
+            boolean hasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+
+            String fp = KeyFormattingUtils.convertFingerprintToHex(mScannedFingerprint);
+            mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fp));
+
+            mUserId.setText(userId);
+
+            mAnimator.setDisplayedChild(2);
+            mState = YubiImportState.IMPORTED;
 
         } else {
-            showUnknownKey();
+            String fp = KeyFormattingUtils.convertFingerprintToHex(mScannedFingerprint);
+            mUnknownFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fp));
+
+            mAnimator.setDisplayedChild(1);
+            mState = YubiImportState.UNKNOWN;
         }
     }
-
-    public void showUnknownKey() {
-        String fp = KeyFormattingUtils.convertFingerprintToHex(mScannedFingerprint);
-        mUnknownFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fp));
-
-        mAnimator.setDisplayedChild(1);
-        mState = YubiImportState.UNKNOWN;
-    }
-
-    public void showKey(Cursor data) {
-        String userId = data.getString(INDEX_USER_ID);
-        boolean hasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-
-        String fp = KeyFormattingUtils.convertFingerprintToHex(mScannedFingerprint);
-        mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fp));
-
-        mUserId.setText(userId);
-
-        mAnimator.setDisplayedChild(2);
-        mState = YubiImportState.IMPORTED;
-    }
-
 
     private void nextClicked() {
 

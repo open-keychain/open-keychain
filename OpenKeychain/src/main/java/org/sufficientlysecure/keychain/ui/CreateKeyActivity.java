@@ -84,7 +84,13 @@ public class CreateKeyActivity extends BaseNfcActivity {
     protected void onNfcPerform() throws IOException {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).onNfcPerform();
+            return;
         }
+
+        byte[] scannedFingerprint = nfcGetFingerprint(0);
+        Fragment frag = CreateKeyYubiFragment.createInstance(scannedFingerprint);
+        loadFragment(frag, FragAction.TO_RIGHT);
+
     }
 
     @Override

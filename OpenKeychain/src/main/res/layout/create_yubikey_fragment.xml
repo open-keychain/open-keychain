@@ -19,26 +19,12 @@
             android:id="@+id/create_yubikey_animator"
             >
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ProgressBar
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginLeft="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Hold Yubikey against device dawg"
-                    />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/yubikey_phone" />
-
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"

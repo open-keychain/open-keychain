@@ -97,10 +97,12 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     }
 
     /** Create a dummy secret ring from this key */
-    public UncachedKeyRing createDummySecretRing () {
+    public UncachedKeyRing createDummySecretRing (boolean divertToCard) {
 
         PGPSecretKeyRing secRing = PGPSecretKeyRing.constructDummyFromPublic(getRing(),
-                S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY);
+                divertToCard
+                        ? S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD
+                        : S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY);
         return new UncachedKeyRing(secRing);
 
     }
