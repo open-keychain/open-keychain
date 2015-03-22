@@ -37,7 +37,28 @@ import org.sufficientlysecure.keychain.util.FabContainer;
  */
 public class Notify {
 
-    public static enum Style {OK, WARN, ERROR}
+    public static enum Style {
+        OK, WARN, ERROR;
+
+        public void applyToBar(Snackbar bar) {
+
+            switch (this) {
+                case OK:
+                    // bar.actionColorResource(R.color.android_green_light);
+                    bar.lineColorResource(R.color.android_green_light);
+                    break;
+                case WARN:
+                    // bar.textColorResource(R.color.android_orange_light);
+                    bar.lineColorResource(R.color.android_orange_light);
+                    break;
+                case ERROR:
+                    // bar.textColorResource(R.color.android_red_light);
+                    bar.lineColorResource(R.color.android_red_light);
+                    break;
+            }
+
+        }
+    }
 
     public static final int LENGTH_INDEFINITE = 0;
     public static final int LENGTH_LONG = 3500;
@@ -54,19 +75,7 @@ public class Notify {
             snackbar.duration(duration);
         }
 
-        switch (style) {
-            case OK:
-                snackbar.actionColorResource(R.color.android_green_light);
-                break;
-
-            case WARN:
-                snackbar.textColorResource(R.color.android_orange_light);
-                break;
-
-            case ERROR:
-                snackbar.textColorResource(R.color.android_red_light);
-                break;
-        }
+        style.applyToBar(snackbar);
 
         if (actionListener != null) {
             snackbar.actionLabel(actionResId)
