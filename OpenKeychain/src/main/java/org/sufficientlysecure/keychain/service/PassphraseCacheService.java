@@ -314,8 +314,10 @@ public class PassphraseCacheService extends Service {
     private static PendingIntent buildIntent(Context context, long keyId) {
         Intent intent = new Intent(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
         intent.putExtra(EXTRA_KEY_ID, keyId);
-        Long _id = System.currentTimeMillis();
-        return PendingIntent.getBroadcast(context, _id.intValue(), intent,
+        //request code should be unique for each call for pending intent so we have taken requestcode
+        //as keyId which is unique for each call as keyId is unique for each passphrase
+        long requestcode = keyId;
+        return PendingIntent.getBroadcast(context, (int)requestcode, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
