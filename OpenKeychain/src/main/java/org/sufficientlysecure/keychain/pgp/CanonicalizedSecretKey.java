@@ -278,6 +278,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
+    public byte[] getIv() {
+        return mSecretKey.getIV();
+    }
+
     static class PrivateKeyNotUnlockedException extends RuntimeException {
         // this exception is a programming error which happens when an operation which requires
         // the private key is called without a previous call to unlock()
