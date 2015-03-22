@@ -17,12 +17,21 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -87,9 +96,28 @@ public class CreateKeyActivity extends BaseNfcActivity {
             return;
         }
 
-        byte[] scannedFingerprint = nfcGetFingerprint(0);
-        Fragment frag = CreateKeyYubiFragment.createInstance(scannedFingerprint);
-        loadFragment(frag, FragAction.TO_RIGHT);
+        byte[] scannedFingerprints = nfcGetFingerprints();
+
+        try {
+            long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
+            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+            ring.getMasterKeyId();
+
+            String userId = nfcGetUserId();
+            byte[] nfcAid = nfcGetAid();
+
+            Intent intent = new Intent(this, ViewKeyActivity.class);
+            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, userId);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, scannedFingerprints);
+            startActivity(intent);
+            finish();
+
+        } catch (PgpKeyNotFoundException e) {
+            Fragment frag = CreateKeyYubiFragment.createInstance(scannedFingerprints);
+            loadFragment(frag, FragAction.TO_RIGHT);
+        }
 
     }
 

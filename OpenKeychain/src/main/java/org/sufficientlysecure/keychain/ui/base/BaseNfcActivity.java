@@ -248,12 +248,17 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return fp;
     }
 
+    public byte[] nfcGetAid() throws IOException {
+
+        String info = "00CA004F00";
+        return mIsoDep.transceive(Hex.decode(info));
+
+    }
 
     public String nfcGetUserId() throws IOException {
+
         String info = "00CA006500";
-        String data = "00CA005E00";
-        return nfcGetHolderName(nfcCommunicate(info)) + " <" + (new String(Hex.decode(nfcGetDataField(
-                nfcCommunicate(data))))) + ">";
+        return nfcGetHolderName(nfcCommunicate(info));
     }
 
     /**

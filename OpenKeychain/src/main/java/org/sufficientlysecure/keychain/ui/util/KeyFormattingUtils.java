@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.nio.ByteBuffer;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -215,7 +216,15 @@ public class KeyFormattingUtils {
      * @return
      */
     public static String convertFingerprintToHex(byte[] fingerprint) {
-        return Hex.toHexString(fingerprint).toLowerCase(Locale.ENGLISH);
+        return Hex.toHexString(fingerprint, 0, 20).toLowerCase(Locale.ENGLISH);
+    }
+
+    public static long getKeyIdFromFingerprint(byte[] fingerprint) {
+        ByteBuffer buf = ByteBuffer.wrap(fingerprint);
+        // skip first 12 bytes of the fingerprint
+        buf.position(12);
+        // the last eight bytes are the key id (big endian, which is default order in ByteBuffer)
+        return buf.getLong();
     }
 
     /**

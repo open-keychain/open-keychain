@@ -48,6 +48,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_yubikey">"Yubikey"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
@@ -1267,5 +1268,6 @@
     <string name="nfc_write_succesful">Successfully written on NFC tag</string>
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
+    <string name="snack_yubikey_view">View</string>
 
 </resources>

@@ -35,6 +35,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -60,18 +61,22 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
@@ -79,11 +84,16 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ViewKeyActivity extends BaseActivity implements
+public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
+    public static final String EXTRA_NFC_AID = "nfc_aid";
+    public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_DELETE = 2;
@@ -106,6 +116,8 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageView mPhoto;
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
+
+    private String mQrCodeLoaded;
 
     // NFC
     private NfcHelper mNfcHelper;
@@ -257,6 +269,15 @@ public class ViewKeyActivity extends BaseActivity implements
         mNfcHelper.initNfc(mDataUri);
 
         startFragment(savedInstanceState, mDataUri);
+
+        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_NFC_AID)) {
+            Intent intent = getIntent();
+            byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
+            String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
+            byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
+            showYubikeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+        }
+
     }
 
     @Override
@@ -517,6 +538,60 @@ public class ViewKeyActivity extends BaseActivity implements
         }
     }
 
+    @Override
+    protected void onNfcPerform() throws IOException {
+
+        final byte[] nfcFingerprints = nfcGetFingerprints();
+        final String nfcUserId = nfcGetUserId();
+        final byte[] nfcAid = nfcGetAid();
+
+        String fp = KeyFormattingUtils.convertFingerprintToHex(nfcFingerprints);
+        final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+
+        if (!mFingerprint.equals(fp)) {
+            try {
+                CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+                ring.getMasterKeyId();
+
+                Notify.create(this, "Different key stored on Yubikey!", Notify.LENGTH_LONG,
+                        Style.WARN, new ActionListener() {
+                            @Override
+                            public void onAction() {
+                                Intent intent = new Intent(
+                                        ViewKeyActivity.this, ViewKeyActivity.class);
+                                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }, R.string.snack_yubikey_view).show();
+                return;
+
+            } catch (PgpKeyNotFoundException e) {
+                Notify.create(this, "Different key stored on Yubikey!", Style.ERROR).show();
+                return;
+            }
+        }
+
+        showYubikeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+
+    }
+
+    public void showYubikeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
+        ViewKeyYubikeyFragment frag = ViewKeyYubikeyFragment.newInstance(
+                nfcFingerprints, nfcUserId, nfcAid);
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        manager.popBackStack("yubikey", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        manager.beginTransaction()
+                .addToBackStack("yubikey")
+                .replace(R.id.view_key_fragment, frag)
+                .commit();
+    }
+
     private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
@@ -648,6 +723,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
+                        mQrCodeLoaded = fingerprint;
                         // scale the image up to our actual size. we do this in code rather
                         // than let the ImageView do this because we don't require filtering.
                         Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
@@ -725,7 +801,6 @@ public class ViewKeyActivity extends BaseActivity implements
                         mName.setText(R.string.user_id_no_name);
                     }
 
-                    String oldFingerprint = mFingerprint;
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
 
@@ -789,7 +864,7 @@ public class ViewKeyActivity extends BaseActivity implements
                         mStatusImage.setVisibility(View.GONE);
                         color = getResources().getColor(R.color.primary);
                         // reload qr code only if the fingerprint changed
-                        if (!mFingerprint.equals(oldFingerprint)) {
+                        if (!mFingerprint.equals(mQrCodeLoaded)) {
                             loadQrCode(mFingerprint);
                         }
                         photoTask.execute(mMasterKeyId);
