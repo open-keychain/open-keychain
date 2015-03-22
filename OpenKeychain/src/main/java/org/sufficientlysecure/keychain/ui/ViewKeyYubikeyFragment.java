@@ -36,10 +36,10 @@ public class ViewKeyYubikeyFragment extends Fragment
 
     public static final String ARG_FINGERPRINT = "fingerprint";
     public static final String ARG_USER_ID = "user_id";
-    public static final String ARG_AID = "aid";
+    public static final String ARG_CARD_AID = "aid";
     private byte[][] mFingerprints;
     private String mUserId;
-    private byte[] mAid;
+    private byte[] mCardAid;
     private long mMasterKeyId;
     private Button vButton;
     private TextView vStatus;
@@ -51,7 +51,7 @@ public class ViewKeyYubikeyFragment extends Fragment
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINT, fingerprints);
         args.putString(ARG_USER_ID, userId);
-        args.putByteArray(ARG_AID, aid);
+        args.putByteArray(ARG_CARD_AID, aid);
         frag.setArguments(args);
 
         return frag;
@@ -70,7 +70,7 @@ public class ViewKeyYubikeyFragment extends Fragment
             buf.get(mFingerprints[i]);
         }
         mUserId = args.getString(ARG_USER_ID);
-        mAid = args.getByteArray(ARG_AID);
+        mCardAid = args.getByteArray(ARG_CARD_AID);
 
         mMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mFingerprints[0]);
 
@@ -85,7 +85,7 @@ public class ViewKeyYubikeyFragment extends Fragment
         TextView vSerNo = (TextView) view.findViewById(R.id.yubikey_serno);
         TextView vUserId = (TextView) view.findViewById(R.id.yubikey_userid);
 
-        String serno = Hex.toHexString(mAid, 10, 4);
+        String serno = Hex.toHexString(mCardAid, 10, 4);
         vSerNo.setText(getString(R.string.yubikey_serno, serno));
 
         if (!mUserId.isEmpty()) {
@@ -137,6 +137,7 @@ public class ViewKeyYubikeyFragment extends Fragment
 
         Bundle data = new Bundle();
         data.putLong(KeychainIntentService.PROMOTE_MASTER_KEY_ID, mMasterKeyId);
+        data.putByteArray(KeychainIntentService.PROMOTE_CARD_AID, mCardAid);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
@@ -192,13 +193,13 @@ public class ViewKeyYubikeyFragment extends Fragment
 
         if (allBound) {
             vButton.setVisibility(View.GONE);
-            vStatus.setText("Key matches, fully bound");
+            vStatus.setText(R.string.yubikey_status_bound);
         } else {
             vButton.setVisibility(View.VISIBLE);
             if (noneBound) {
-                vStatus.setText("Key matches, can be bound");
+                vStatus.setText(R.string.yubikey_status_unbound);
             } else {
-                vStatus.setText("Key matches, partly bound");
+                vStatus.setText(R.string.yubikey_status_partly);
             }
         }
 

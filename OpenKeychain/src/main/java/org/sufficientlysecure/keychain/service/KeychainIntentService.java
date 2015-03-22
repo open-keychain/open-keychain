@@ -187,7 +187,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
-    public static final String PROMOTE_TYPE = "promote_type";
+    public static final String PROMOTE_CARD_AID = "promote_card_aid";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -488,10 +488,11 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
+                byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
 
                 // Operation
                 PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
-                PromoteKeyResult result = op.execute(keyRingId);
+                PromoteKeyResult result = op.execute(keyRingId, cardAid);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);
