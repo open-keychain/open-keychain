@@ -16,9 +16,20 @@ import android.widget.Toast;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -190,7 +201,38 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
-    protected abstract void onNfcPerform() throws IOException;
+    protected void onNfcPerform() throws IOException {
+
+        final byte[] nfcFingerprints = nfcGetFingerprints();
+        final String nfcUserId = nfcGetUserId();
+        final byte[] nfcAid = nfcGetAid();
+
+        String fp = KeyFormattingUtils.convertFingerprintToHex(nfcFingerprints);
+        final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+
+        try {
+            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+            ring.getMasterKeyId();
+
+            Intent intent = new Intent(
+                    BaseNfcActivity.this, ViewKeyActivity.class);
+            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+            startActivity(intent);
+            finish();
+        } catch (PgpKeyNotFoundException e) {
+            Intent intent = new Intent(
+                    BaseNfcActivity.this, CreateKeyActivity.class);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, nfcAid);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+            startActivity(intent);
+            finish();
+        }
+
+    }
 
     /** Return the key id from application specific data stored on tag, or null
      * if it doesn't exist.
@@ -242,7 +284,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
         byte[] fp = new byte[20];
-        fpbuf.position(idx*20);
+        fpbuf.position(idx * 20);
         fpbuf.get(fp, 0, 20);
 
         return fp;

@@ -559,7 +559,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
                 ring.getMasterKeyId();
 
-                Notify.create(this, "Different key stored on Yubikey!", Notify.LENGTH_LONG,
+                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
                         Style.WARN, new ActionListener() {
                             @Override
                             public void onAction() {
@@ -576,7 +576,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return;
 
             } catch (PgpKeyNotFoundException e) {
-                Notify.create(this, "Different key stored on Yubikey!", Notify.LENGTH_LONG,
+                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
                         Style.WARN, new ActionListener() {
                             @Override
                             public void onAction() {
