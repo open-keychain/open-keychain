@@ -68,6 +68,11 @@ public class HelpActivity extends BaseActivity {
         mTabsAdapter.addTab(HelpHtmlFragment.class, startBundle,
                 getString(R.string.help_tab_start));
 
+        Bundle faqBundle = new Bundle();
+        faqBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_faq);
+        mTabsAdapter.addTab(HelpHtmlFragment.class, faqBundle,
+                getString(R.string.help_tab_faq));
+
         Bundle wotBundle = new Bundle();
         wotBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_certification);
         mTabsAdapter.addTab(HelpHtmlFragment.class, wotBundle,

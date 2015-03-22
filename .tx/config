@@ -22,6 +22,11 @@ file_filter = OpenKeychain/src/main/res/raw-<lang>/help_certification.html
 source_file = OpenKeychain/src/main/res/raw/help_certification.html
 source_lang = en
 
+[open-keychain.help-faq]
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_faq.html
+source_file = OpenKeychain/src/main/res/raw/help_faq.html
+source_lang = en
+
 [open-keychain.help-start]
 file_filter = OpenKeychain/src/main/res/raw-<lang>/help_start.html
 source_file = OpenKeychain/src/main/res/raw/help_start.html
