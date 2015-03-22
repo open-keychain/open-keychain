@@ -98,6 +98,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_DELETE = 2;
     static final int REQUEST_EXPORT = 3;
+    public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -267,6 +268,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         mNfcHelper = new NfcHelper(this, mProviderHelper);
         mNfcHelper.initNfc(mDataUri);
+
+        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
+            OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);
+            result.createNotify(this).show();
+        }
 
         startFragment(savedInstanceState, mDataUri);
 
@@ -570,7 +576,19 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return;
 
             } catch (PgpKeyNotFoundException e) {
-                Notify.create(this, "Different key stored on Yubikey!", Style.ERROR).show();
+                Notify.create(this, "Different key stored on Yubikey!", Notify.LENGTH_LONG,
+                        Style.WARN, new ActionListener() {
+                            @Override
+                            public void onAction() {
+                                Intent intent = new Intent(
+                                        ViewKeyActivity.this, CreateKeyActivity.class);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }, R.string.snack_yubikey_import).show();
                 return;
             }
         }

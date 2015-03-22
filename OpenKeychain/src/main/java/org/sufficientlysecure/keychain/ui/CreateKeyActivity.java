@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
@@ -29,9 +30,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -44,6 +42,10 @@ public class CreateKeyActivity extends BaseNfcActivity {
     public static final String EXTRA_FIRST_TIME = "first_time";
     public static final String EXTRA_ADDITIONAL_EMAILS = "additional_emails";
     public static final String EXTRA_PASSPHRASE = "passphrase";
+
+    public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
+    public static final String EXTRA_NFC_AID = "nfc_aid";
+    public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
     public static final String FRAGMENT_TAG = "currentFragment";
 
@@ -70,14 +72,29 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
             mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
-            // Initialize members with default values for a new instance
-            mName = getIntent().getStringExtra(EXTRA_NAME);
-            mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-            mFirstTime = getIntent().getBooleanExtra(EXTRA_FIRST_TIME, false);
 
-            // Start with first fragment of wizard
-            CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
-            loadFragment(frag, FragAction.START);
+            Intent intent = getIntent();
+            // Initialize members with default values for a new instance
+            mName = intent.getStringExtra(EXTRA_NAME);
+            mEmail = intent.getStringExtra(EXTRA_EMAIL);
+            mFirstTime = intent.getBooleanExtra(EXTRA_FIRST_TIME, false);
+
+            if (intent.hasExtra(EXTRA_NFC_FINGERPRINTS)) {
+                byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
+                String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
+                byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
+
+                Fragment frag2 = CreateKeyYubiImportFragment.createInstance(
+                        nfcFingerprints, nfcAid, nfcUserId);
+                loadFragment(frag2, FragAction.START);
+
+                setTitle(R.string.title_import_keys);
+                return;
+            } else {
+                CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
+                loadFragment(frag, FragAction.START);
+            }
+
         }
 
         if (mFirstTime) {
@@ -97,14 +114,13 @@ public class CreateKeyActivity extends BaseNfcActivity {
         }
 
         byte[] scannedFingerprints = nfcGetFingerprints();
+        byte[] nfcAid = nfcGetAid();
+        String userId = nfcGetUserId();
 
         try {
             long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
             CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
             ring.getMasterKeyId();
-
-            String userId = nfcGetUserId();
-            byte[] nfcAid = nfcGetAid();
 
             Intent intent = new Intent(this, ViewKeyActivity.class);
             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
@@ -115,7 +131,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
             finish();
 
         } catch (PgpKeyNotFoundException e) {
-            Fragment frag = CreateKeyYubiFragment.createInstance(scannedFingerprints);
+            Fragment frag = CreateKeyYubiImportFragment.createInstance(
+                    scannedFingerprints, nfcAid, userId);
             loadFragment(frag, FragAction.TO_RIGHT);
         }
 
@@ -167,8 +184,10 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 break;
 
         }
+
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
+
     }
 
     interface NfcListenerFragment {

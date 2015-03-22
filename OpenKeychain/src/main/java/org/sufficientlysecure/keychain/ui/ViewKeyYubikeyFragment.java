@@ -196,11 +196,9 @@ public class ViewKeyYubikeyFragment extends Fragment
             vStatus.setText(R.string.yubikey_status_bound);
         } else {
             vButton.setVisibility(View.VISIBLE);
-            if (noneBound) {
-                vStatus.setText(R.string.yubikey_status_unbound);
-            } else {
-                vStatus.setText(R.string.yubikey_status_partly);
-            }
+            vStatus.setText(noneBound
+                    ? R.string.yubikey_status_unbound
+                    : R.string.yubikey_status_partly);
         }
 
     }
