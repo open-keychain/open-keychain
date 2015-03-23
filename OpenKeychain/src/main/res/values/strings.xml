@@ -1278,5 +1278,6 @@
     <string name="yubikey_status_partly">"Yubikey matches, partly bound to key"</string>
     <string name="btn_import">"Import"</string>
     <string name="snack_yubi_other">Different key stored on Yubikey!</string>
+    <string name="error_nfc">"NFC Error: %s"</string>
 
 </resources>

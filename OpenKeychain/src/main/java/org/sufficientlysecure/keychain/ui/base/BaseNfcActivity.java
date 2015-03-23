@@ -28,7 +28,6 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
@@ -68,12 +67,16 @@ public abstract class BaseNfcActivity extends BaseActivity {
             try {
                 handleNdefDiscoveredIntent(intent);
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Connection error!", e);
-                toast("Connection Error: " + e.getMessage());
-                setResult(RESULT_CANCELED);
-                finish();
+                handleNfcError(e);
             }
         }
+    }
+
+    public void handleNfcError(IOException e) {
+
+        Log.e(Constants.TAG, "nfc error", e);
+        Notify.create(this, getString(R.string.error_nfc, e.getMessage()), Style.WARN).show();
+
     }
 
     /**
