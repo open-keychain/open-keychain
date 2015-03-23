@@ -1279,5 +1279,6 @@
     <string name="btn_import">"Import"</string>
     <string name="snack_yubi_other">Different key stored on Yubikey!</string>
     <string name="error_nfc">"NFC Error: %s"</string>
+    <string name="error_pin_nodefault">Default PIN was rejected!</string>
 
 </resources>

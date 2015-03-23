@@ -79,6 +79,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
+    public void handlePinError() {
+        toast("Wrong PIN!");
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
     /**
      * Called when the system is about to start resuming a previous activity,
      * disables NFC Foreground Dispatch
@@ -170,10 +176,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + "D27600012401" // Data (6 bytes)
                         + "00"; // Le
         if ( ! nfcCommunicate(opening).equals(accepted)) { // activate connection
-            toast("Opening Error!");
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
+            throw new IOException("Initialization failed!");
         }
 
         if (mPin != null) {
@@ -189,9 +192,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                             + String.format("%02x", pin.length) // Lc
                             + Hex.toHexString(pin);
             if (!nfcCommunicate(login).equals(accepted)) { // login
-                toast("Wrong PIN!");
-                setResult(RESULT_CANCELED);
-                finish();
+                handlePinError();
                 return;
             }
 
@@ -321,7 +322,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         switch (hashAlgo) {
             case HashAlgorithmTags.SHA1:
                 if (hash.length != 20) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 10!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 10!");
                 }
                 dsi = "23" // Lc
                         + "3021" // Tag/Length of Sequence, the 0x21 includes all following 33 bytes
@@ -332,36 +333,36 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 break;
             case HashAlgorithmTags.RIPEMD160:
                 if (hash.length != 20) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 20!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 20!");
                 }
                 dsi = "233021300906052B2403020105000414" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA224:
                 if (hash.length != 28) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 28!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 28!");
                 }
                 dsi = "2F302D300D06096086480165030402040500041C" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA256:
                 if (hash.length != 32) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 32!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 32!");
                 }
                 dsi = "333031300D060960864801650304020105000420" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA384:
                 if (hash.length != 48) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 48!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 48!");
                 }
                 dsi = "433041300D060960864801650304020205000430" + getHex(hash);
                 break;
             case HashAlgorithmTags.SHA512:
                 if (hash.length != 64) {
-                    throw new RuntimeException("Bad hash length (" + hash.length + ", expected 64!");
+                    throw new IOException("Bad hash length (" + hash.length + ", expected 64!");
                 }
                 dsi = "533051300D060960864801650304020305000440" + getHex(hash);
                 break;
             default:
-                throw new RuntimeException("Not supported hash algo!");
+                throw new IOException("Not supported hash algo!");
         }
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
@@ -388,14 +389,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
         Log.d(Constants.TAG, "final response:" + status);
 
         if ( ! "9000".equals(status)) {
-            toast("Bad NFC response code: " + status);
-            return null;
+            throw new IOException("Bad NFC response code: " + status);
         }
 
         // Make sure the signature we received is actually the expected number of bytes long!
         if (signature.length() != 256 && signature.length() != 512) {
-            toast("Bad signature length! Expected 128 or 256 bytes, got " + signature.length() / 2);
-            return null;
+            throw new IOException("Bad signature length! Expected 128 or 256 bytes, got " + signature.length() / 2);
         }
 
         return Hex.decode(signature);

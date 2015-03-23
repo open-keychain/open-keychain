@@ -56,6 +56,10 @@ public class RequiredInputParcel implements Parcelable {
 
     }
 
+    public long getMasterKeyId() {
+        return mMasterKeyId;
+    }
+
     public long getSubKeyId() {
         return mSubKeyId;
     }

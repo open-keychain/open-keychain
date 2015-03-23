@@ -14,10 +14,12 @@ import android.view.WindowManager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 
@@ -87,6 +89,26 @@ public class NfcOperationActivity extends BaseNfcActivity {
         result.putExtra(NfcOperationActivity.RESULT_DATA, resultData);
         setResult(RESULT_OK, result);
         finish();
+
+    }
+
+    @Override
+    public void handlePinError() {
+
+        // avoid a loop
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.useDefaultYubikeyPin()) {
+            toast(getString(R.string.error_pin_nodefault));
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        // clear (invalid) passphrase
+        PassphraseCacheService.clearCachedPassphrase(
+                this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+
+        obtainYubikeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
 
     }
 }

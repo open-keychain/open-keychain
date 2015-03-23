@@ -124,7 +124,7 @@ public class PassphraseCacheService extends Service {
     public static void addCachedPassphrase(Context context, long masterKeyId, long subKeyId,
                                            Passphrase passphrase,
                                            String primaryUserId) {
-        Log.d(Constants.TAG, "PassphraseCacheService.cacheNewPassphrase() for " + masterKeyId);
+        Log.d(Constants.TAG, "PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
@@ -137,6 +137,19 @@ public class PassphraseCacheService extends Service {
 
         context.startService(intent);
     }
+
+    public static void clearCachedPassphrase(Context context, long masterKeyId, long subKeyId) {
+        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase() for " + masterKeyId);
+
+        Intent intent = new Intent(context, PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+
+        intent.putExtra(EXTRA_KEY_ID, masterKeyId);
+        intent.putExtra(EXTRA_SUBKEY_ID, subKeyId);
+
+        context.startService(intent);
+    }
+
 
     /**
      * Gets a cached passphrase from memory by sending an intent to the service. This method is
@@ -395,12 +408,27 @@ public class PassphraseCacheService extends Service {
             } else if (ACTION_PASSPHRASE_CACHE_CLEAR.equals(intent.getAction())) {
                 AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-                // Stop all ttl alarms
-                for (int i = 0; i < mPassphraseCache.size(); i++) {
-                    am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
-                }
+                if (intent.hasExtra(EXTRA_SUBKEY_ID) && intent.hasExtra(EXTRA_KEY_ID)) {
 
-                mPassphraseCache.clear();
+                    long keyId;
+                    if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
+                        keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
+                    } else {
+                        keyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
+                    }
+                    // Stop specific ttl alarm and
+                    am.cancel(buildIntent(this, keyId));
+                    mPassphraseCache.delete(keyId);
+
+                } else {
+
+                    // Stop all ttl alarms
+                    for (int i = 0; i < mPassphraseCache.size(); i++) {
+                        am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
+                    }
+                    mPassphraseCache.clear();
+
+                }
 
                 updateService();
             } else {
