@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
@@ -135,9 +135,12 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 intent.setAction(KeychainIntentService.ACTION_DELETE);
 
                 // Message is received after importing is done in KeychainIntentService
-                KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                        getActivity(), getString(R.string.progress_deleting),
-                        ProgressDialog.STYLE_HORIZONTAL, true) {
+                ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                        getActivity(),
+                        getString(R.string.progress_deleting),
+                        ProgressDialog.STYLE_HORIZONTAL,
+                        true,
+                        ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
                     @Override
                     public void handleMessage(Message message) {
                         super.handleMessage(message);

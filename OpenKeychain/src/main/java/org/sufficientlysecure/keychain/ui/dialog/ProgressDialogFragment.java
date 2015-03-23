@@ -32,23 +32,43 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
+    private static final String ARG_SERVICE_TYPE = "service_class";
+
+    public static enum ServiceType {
+        KEYCHAIN_INTENT,
+        CLOUD_IMPORT
+    }
+
+    ServiceType mServiceType;
 
     boolean mCanCancel = false, mPreventCancel = false, mIsCancelled = false;
 
-    /** Creates new instance of this fragment */
-    public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable) {
+    /**
+     * creates a new instance of this fragment
+     * @param message the message to be displayed initially above the progress bar
+     * @param style the progress bar style, as defined in ProgressDialog (horizontal or spinner)
+     * @param cancelable should we let the user cancel this operation
+     * @param serviceType which Service this progress dialog is meant for
+     * @return
+     */
+    public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable,
+                                                     ServiceType serviceType) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_MESSAGE, message);
         args.putInt(ARG_STYLE, style);
         args.putBoolean(ARG_CANCELABLE, cancelable);
+        args.putSerializable(ARG_SERVICE_TYPE, serviceType);
 
         frag.setArguments(args);
 
@@ -106,6 +126,7 @@ public class ProgressDialogFragment extends DialogFragment {
         String message = getArguments().getString(ARG_MESSAGE);
         int style = getArguments().getInt(ARG_STYLE);
         mCanCancel = getArguments().getBoolean(ARG_CANCELABLE);
+        mServiceType = (ServiceType) getArguments().getSerializable(ARG_SERVICE_TYPE);
 
         dialog.setMessage(message);
         dialog.setProgressStyle(style);
@@ -175,9 +196,22 @@ public class ProgressDialogFragment extends DialogFragment {
                 // send a cancel message. note that this message will be handled by
                 // KeychainIntentService.onStartCommand, which runs in this thread,
                 // not the service one, and will not queue up a command.
-                Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-                intent.setAction(KeychainIntentService.ACTION_CANCEL);
-                getActivity().startService(intent);
+                Intent serviceIntent = null;
+
+                switch (mServiceType) {
+                    case CLOUD_IMPORT:
+                        serviceIntent = new Intent(getActivity(), CloudImportService.class);
+                        break;
+                    case KEYCHAIN_INTENT:
+                        serviceIntent = new Intent(getActivity(), KeychainIntentService.class);
+                        break;
+                    default:
+                        //should never happen, unless we forget to include a ServiceType enum case
+                        Log.e(Constants.TAG, "Unrecognized ServiceType at ProgressDialogFragment");
+                }
+
+                serviceIntent.setAction(KeychainIntentService.ACTION_CANCEL);
+                getActivity().startService(serviceIntent);
             }
         });
 

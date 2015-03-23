@@ -58,16 +58,21 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -78,6 +83,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -477,6 +483,10 @@ public class KeyListFragment extends LoaderFragment
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
 
+            case R.id.menu_key_list_update_all_keys:
+                updateAllKeys();
+                return true;
+
             case R.id.menu_key_list_debug_cons:
                 consolidate();
                 return true;
@@ -561,12 +571,90 @@ public class KeyListFragment extends LoaderFragment
         startActivityForResult(intent, 0);
     }
 
+    private void updateAllKeys() {
+        Context context = getActivity();
+
+        ProviderHelper providerHelper = new ProviderHelper(context);
+
+        Cursor cursor = providerHelper.getContentResolver().query(
+                KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+                        KeyRings.FINGERPRINT
+                }, null, null, null
+        );
+
+        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            byte[] blob = cursor.getBlob(0);//fingerprint column is 0
+            String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+            ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+            keyList.add(keyEntry);
+        }
+
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_updating),
+                ProgressDialog.STYLE_HORIZONTAL,
+                true,
+                ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ImportKeyResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
+                        return;
+                    }
+
+                    result.createNotify(getActivity()).show();
+                }
+            }
+        };
+
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(getActivity(), CloudImportService.class);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(getActivity());
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            data.putString(CloudImportService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+        }
+
+        data.putParcelableArrayList(CloudImportService.IMPORT_KEY_LIST, keyList);
+
+        intent.putExtra(CloudImportService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(serviceHandler);
+        intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        serviceHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
     private void consolidate() {
         // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

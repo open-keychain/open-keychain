@@ -39,7 +39,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -123,11 +124,12 @@ public class SafeSlingerActivity extends BaseActivity {
             final FragmentActivity activity = SafeSlingerActivity.this;
 
             // Message is received after importing is done in KeychainIntentService
-            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+            ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                     activity,
                     getString(R.string.progress_importing),
                     ProgressDialog.STYLE_HORIZONTAL,
-                    true) {
+                    true,
+                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
                 public void handleMessage(Message message) {
                     // handle messages by standard KeychainIntentServiceHandler first
                     super.handleMessage(message);

@@ -38,8 +38,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -197,8 +198,11 @@ public class DecryptFilesFragment extends DecryptFragment {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after decrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_decrypting),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -271,8 +275,11 @@ public class DecryptFilesFragment extends DecryptFragment {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after decrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_decrypting),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
