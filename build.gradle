@@ -15,14 +15,14 @@ allprojects {
         jcenter()
 
         maven {
-            // for https://github.com/journeyapps/zxing-android-embedded
+            // for zxing-android-embedded lib
             url "http://dl.bintray.com/journeyapps/maven"
         }
     }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+    gradleVersion = '2.3'
 }
 
 subprojects {
@@ -43,6 +43,6 @@ project(':extern:spongycastle') {
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 21
-    buildToolsVersion = '21.1.2'
+    compileSdkVersion = 22
+    buildToolsVersion = '22.0.1'
 }

@@ -6,21 +6,21 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:21.0.3'
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:recyclerview-v7:21.0.3'
-    compile 'com.android.support:cardview-v7:21.0.3'
-    
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
+    compile 'com.android.support:cardview-v7:22.0.0'
+
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
-    compile 'com.journeyapps:zxing-android-embedded:2.0.1@aar'
-    compile 'com.journeyapps:zxing-android-integration:2.0.1@aar'
-    compile 'com.google.zxing:core:3.0.1'
+    compile 'com.journeyapps:zxing-android-embedded:2.1.0@aar'
+    compile 'com.journeyapps:zxing-android-integration:2.1.0@aar'
+    compile 'com.google.zxing:core:3.2.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
-    compile 'it.neokree:MaterialNavigationDrawer:1.3.1'
-    compile 'com.getbase:floatingactionbutton:1.8.0'
+    compile 'it.neokree:MaterialNavigationDrawer:1.3.2'
+    compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
-    
+
     // libs as submodules
     compile project(':extern:openpgp-api-lib')
     compile project(':extern:openkeychain-api-lib')
@@ -41,33 +41,33 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-        'com.android.support:support-v4:703572d3015a088cc5604b7e38885af3d307c829d0c5ceaf8654ff41c71cd160',
-        'com.android.support:appcompat-v7:5dbeb5316d0a6027d646ae552804c3baa5e3bd53f7f33db50904d51505c8a0e5',
-        'com.android.support:recyclerview-v7:e525ad3f33c84bb12b73d2dc975b55364a53f0f2d0697e043efba59ba73e22d2',
-        'com.android.support:cardview-v7:45c48c2ab056bc7a8573970b10f8902742c5d443f180dae43c56557397ac39af',
-        'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
-        'com.journeyapps:zxing-android-embedded:5d6ba3931bd0b999695e363b571e95bd6bc9956340c1e6ce740cd0bff3d89a50',
-        'com.journeyapps:zxing-android-integration:6f50bb07c057ac94319777ddfbb66f5d4f6190393418b2fc861e0e60d06f3c0d',
-        'com.google.zxing:core:38c49045765281e4c170062fa3f48e4e988629bf985cab850c7497be5eaa72a1',
-        'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
-        'it.neokree:MaterialNavigationDrawer:1174d751a54689fccf53c1fbcdf439745926ae19024f4f1017afb6b29643c57d',
-        // 'com.nispok:snackbar:59dc092a44c877e9ce5f9040c632d99e62d8932b0a4d67ba0ec9e35467d9047c',
-        'com.getbase:floatingactionbutton:e63966148212e9685afad2370780ea239b6dbd2a06f6a3f919b98882318e6a32',
-        'com.android.support:support-annotations:fdee2354787ef66b268e75958de3f7f6c4f8f325510a6dac9f49c929f83a63de',
-        'com.balysv:material-ripple:587f19c1e27f16c7dc67ff9ac73838aa1451086ef05a15cee38bee3e4e1454ae',
-        'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
-        //'OpenKeychain.extern:openpgp-api-lib:b17bb282321351e4b00b4cd6422a57aadc13decae264019a88707bcb556439ea',
-        //'OpenKeychain.extern:openkeychain-api-lib:5f95f01c066069d4bde68992fd8da5faac21510d009b1fdae7a2e28e43e82cf4',
-        //'OpenKeychain.extern:html-textview:b58e343cf4c145e91f888806d06a2a7770a9e9331a72f08cfcf1128db30dcff3',
-        //'OpenKeychain.extern.StickyListHeaders:library:24e25da422efc08e4e7a06efbe927fdf17f7a9aa722db2b983385e2bf0004da5',
-        //'com.madgag.spongycastle:core:a9e4f60afe6b2661e0713190ade92c099b3f74ebbc67c1bc3e3fced0144307f4',
-        //'com.madgag.spongycastle:pg:29d544ff289fcaafcf6c3904185f5a6fbdb623cf1a1e377fcb239edc31ee9c17',
-        //'com.madgag.spongycastle:pkix:950d6eac8205c6a24aa87066fbf9cd0af50b95858b8d2b18d53e2fada2dbb2e3',
-        //'com.madgag.spongycastle:prov:0b78ffd7a59b1b690a05ebe9bb31d43405046a44a18e0529d7c826acb56350b7',
-        //'OpenKeychain.extern:minidns:cf332e993d7fcdc0a3821f5b997944df40582dc6c9f0ea36b5e20c1e289cb19f',
-        //'OpenKeychain.extern.KeybaseLib:Lib:af9bff087148e0859430d0b99ece096c41b315c5dc1ed500a68580b9b0e5ab11',
-        //'OpenKeychain.extern.TokenAutoComplete:library:40d4212a95e947efdb02f2ca66c95a27d49fba848471a6317eca2b9cc18e8780',
-        //'OpenKeychain.extern:safeslinger-exchange:94a1ce68217af7499579a042758283b1530912c53241bdfa06d1a079a5ae3faf',
+            'com.android.support:support-v4:355a11466727e8ba00e239416aec55ac3cd3fb4ffc9d20c4a33373085c050bd1',
+            'com.android.support:appcompat-v7:40114cb756fecffa4a51c5645593cf64509c576594f77e41e801368051115c7b',
+            'com.android.support:recyclerview-v7:859ed80e3761f8fc3126901260b208505120b5678bcf36ad2cfe9c453958b9c7',
+            'com.android.support:cardview-v7:4c03f2acce9925aa4f8845cb8cb37b3772c712b2438ff15f76c9e3d3bc63ead7',
+            'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
+            'com.journeyapps:zxing-android-embedded:57fdf8a262135976201fd89f1bd8016ed16510be92e7ea721b999daeeeab8f7e',
+            'com.journeyapps:zxing-android-integration:12caeb2608f11b6df77d27edc505ac8580abfc97a09a814b638cb9df0ba06906',
+            'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
+            'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
+            'it.neokree:MaterialNavigationDrawer:a1221a410c5f71bf078c5c4768fdf06b402d6006c74f8e7b61199e4edc2aea57',
+            'com.getbase:floatingactionbutton:052aa2a94e49e5dccc97cb99f2add87e8698b84859f0e3ac181100c0bc7640ca',
+            'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
+//            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
+//            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
+//            'OpenKeychain.extern:html-textview:536822e8fdcd3e4628d0a1cd6c252285ba5f8e5bfb20d71ff80fdbdb6cc8be8c',
+//            'OpenKeychain.extern.StickyListHeaders:library:d9937cf9d9992863e32cee1f18ffec12df7b97dd83939bb75ee6cf747c54bed1',
+//            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
+//            'com.madgag.spongycastle:pg:160b345b10a2c92dc731453eec87037377f66a8e14a0648d404d7b193c4e380d',
+//            'com.madgag.spongycastle:pkix:0b4f3301ea12dd9f25d71770e6ea9f75e0611bf53062543e47be5bc15340a7e4',
+//            'com.madgag.spongycastle:prov:7325942e0b39f5fb35d6380818eed4b826e7dfc7570ad35b696d778049d8c36a',
+//            'OpenKeychain.extern:minidns:77b1786d29469e3b21f9404827cab811edc857cd68bc732cd57f11307c332eae',
+//            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
+//            'OpenKeychain.extern.TokenAutoComplete:library:9333f1c269996812baa18c0494e42f931309ab00a3cdb65a6e4d70f82d4c7107',
+//            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
+//            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
+            'com.android.support:support-annotations:ab6b131ab0e1edd165d21fb4c3edadeacbee9539aa166f7f7cbae05b60dc207a',
+            'com.balysv:material-ripple:b2580520bcb5e5d77bd8c42b030317accaf8f88e7e57c46a29c47c8a62d4ff45',
     ]
 }
 
@@ -77,7 +77,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 22
     }
 
     compileOptions {
@@ -98,7 +98,7 @@ android {
             project.hasProperty('signingKeyAlias') &&
             project.hasProperty('signingKeyPassword')) {
         println "Found sign properties in gradle.properties! Signing build…"
-        
+
         signingConfigs {
             release {
                 storeFile file(signingStoreLocation)
@@ -112,7 +112,7 @@ android {
     } else {
         buildTypes.release.signingConfig = null
     }
-    
+
     // NOTE: Lint is disabled because it slows down builds,
     // to enable it comment out the code at the bottom of this build.gradle
     lintOptions {
@@ -123,7 +123,7 @@ android {
         htmlReport true
         htmlOutput file('lint-report.html')
     }
-    
+
     // Disable preDexing, causes com.android.dx.cf.iface.ParseException: bad class file magic (cafebabe) or version (0034.0000) on some systems
     dexOptions {
         preDexLibraries = false
