@@ -1,3 +1,4 @@
+[comment]: <> (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## How do I activate OpenKeychain in K-9 Mail?
 To use OpenKeychain with K-9 Mail, you want to follow these steps:
