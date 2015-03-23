@@ -26,24 +26,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import org.markdown4j.Markdown4jProcessor;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.util.Log;
 
-public class HelpHtmlFragment extends Fragment {
+import java.io.IOException;
+
+public class HelpMarkdownFragment extends Fragment {
     private Activity mActivity;
 
     private int mHtmlFile;
 
-    public static final String ARG_HTML_FILE = "htmlFile";
+    public static final String ARG_MARKDOWN_FILE = "htmlFile";
 
     /**
      * Create a new instance of HelpHtmlFragment, providing "htmlFile" as an argument.
      */
-    static HelpHtmlFragment newInstance(int htmlFile) {
-        HelpHtmlFragment f = new HelpHtmlFragment();
+    static HelpMarkdownFragment newInstance(int htmlFile) {
+        HelpMarkdownFragment f = new HelpMarkdownFragment();
 
         // Supply html raw file input as an argument.
         Bundle args = new Bundle();
-        args.putInt(ARG_HTML_FILE, htmlFile);
+        args.putInt(ARG_MARKDOWN_FILE, htmlFile);
         f.setArguments(args);
 
         return f;
@@ -53,7 +58,7 @@ public class HelpHtmlFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = getActivity();
 
-        mHtmlFile = getArguments().getInt(ARG_HTML_FILE);
+        mHtmlFile = getArguments().getInt(ARG_MARKDOWN_FILE);
 
         ScrollView scroller = new ScrollView(mActivity);
         HtmlTextView text = new HtmlTextView(mActivity);
@@ -65,8 +70,13 @@ public class HelpHtmlFragment extends Fragment {
 
         scroller.addView(text);
 
-        // load html from raw resource (Parsing handled by HtmlTextView library)
-        text.setHtmlFromRawResource(getActivity(), mHtmlFile, true);
+        // load mardown from raw resource
+        try {
+            String html = new Markdown4jProcessor().process(getActivity().getResources().openRawResource(mHtmlFile));
+            text.setHtmlFromString(html, true);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException", e);
+        }
 
         // no flickering when clicking textview for Android < 4
         text.setTextColor(getResources().getColor(android.R.color.black));
