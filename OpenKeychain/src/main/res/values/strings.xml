@@ -172,6 +172,11 @@
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
 
+    <string name="pref_keyserver">"Search Keyserver"</string>
+    <string name="pref_keyserver_summary">"Search HKP keyserver"</string>
+    <string name="pref_keybase">"Search Keybase.io"</string>
+    <string name="pref_keybase_summary">"Search Keybase.io index"</string>
+
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
 
@@ -234,9 +239,9 @@
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
     <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
-    <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists."</string>
-    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists."</string>
-    <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists."</string>
+    <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
     <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and lose all key confirmations done with it!"</string>
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
@@ -1213,7 +1218,7 @@
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
-    <string name="certify_text">"The keys you are importing contain “identities”: names and emails. Select exactly those for confirmation which match what you expected."</string>
+    <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
     <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
     <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
