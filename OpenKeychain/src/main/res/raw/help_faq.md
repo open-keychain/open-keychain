@@ -1,4 +1,4 @@
-[comment]: <> (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 # Frequently Asked Questions
 
