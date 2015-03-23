@@ -96,7 +96,7 @@
   * Notification showing cached passphrases
   * Keys are connected to Android's contacts
 
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
@@ -130,9 +130,9 @@
 
 
 ## 2.4
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
+Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
+Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
   * New unified key list
   * Colorized key fingerprint
