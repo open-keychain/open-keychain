@@ -6,6 +6,8 @@
   <!--title-->
   <string name="title_select_recipients">Seleccionar claves</string>
   <string name="title_select_secret_key">Seleccionar su clave</string>
+  <string name="title_encrypt_text">Cifrar</string>
+  <string name="title_encrypt_files">Cifrar</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_unlock">Desbloquear clave</string>
   <string name="title_add_subkey">Añadir subclave</string>
@@ -18,6 +20,7 @@
   <string name="title_share_fingerprint_with">Compartir huella de validación de clave con...</string>
   <string name="title_share_key">Compartir clave con...</string>
   <string name="title_share_file">Compartir fichero con...</string>
+  <string name="title_share_message">Compartir texto con...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -34,10 +37,12 @@
   <string name="title_exchange_keys">Intercambiar claves</string>
   <string name="title_advanced_key_info">Información avanzada de clave</string>
   <string name="title_keys">Claves</string>
-  <string name="title_delete_secret_key">¿Borrar SU clave \'%s\'?</string>
+  <string name="title_delete_secret_key">¿Borrar la clave DE USTED \'%s\'?</string>
   <string name="title_export_log">Exportar registro (log)</string>
+  <string name="title_manage_my_keys">Administrar mis claves</string>
   <!--section-->
   <string name="section_user_ids">Identificaciones</string>
+  <string name="section_linked_system_contact">Contacto de sistema enlazado</string>
   <string name="section_should_you_trust">¿Debe confiar en esta clave?</string>
   <string name="section_proof_details">Comprobante de verificación</string>
   <string name="section_cloud_evidence">Comprobantes desde la nube</string>
@@ -62,8 +67,10 @@
   <string name="section_new_expiry">Nueva caducidad</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Descifrar, verificar, y guardar fichero</string>
+  <string name="btn_decrypt_verify_message">Descifrar y verificar texto</string>
   <string name="btn_encrypt_file">Cifrar y guardar fichero</string>
   <string name="btn_encrypt_share_file">Cifrar y compartir fichero</string>
+  <string name="btn_encrypt_save_file">Cifrar y guardar fichero</string>
   <string name="btn_save">Guardar</string>
   <string name="btn_do_not_save">Cancelar</string>
   <string name="btn_delete">Eliminar</string>
@@ -75,6 +82,8 @@
   <string name="btn_no">No</string>
   <string name="btn_match">Las huellas de validación coinciden</string>
   <string name="btn_lookup_key">Buscar clave</string>
+  <string name="btn_share_encrypted_signed">Cifrar y compartir texto</string>
+  <string name="btn_copy_encrypted_signed">Cifrar y copiar texto</string>
   <string name="btn_view_cert_key">Ver clave de verificación</string>
   <string name="btn_create_key">Crear clave</string>
   <string name="btn_add_files">Añadir fichero(s)</string>
@@ -84,12 +93,13 @@
   <string name="btn_decrypt_files">Descifrar ficheros</string>
   <string name="btn_encrypt_files">Cifrar ficheros</string>
   <string name="btn_encrypt_text">Cifrar texto</string>
+  <string name="btn_add_email">Añadir dirección de correo electrónico adicional</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
   <string name="menu_help">Ayuda</string>
   <string name="menu_export_key">Exportar hacia archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
-  <string name="menu_manage_keys">Crear mi clave</string>
+  <string name="menu_manage_keys">Administrar mis claves</string>
   <string name="menu_import_existing_key">Importar desde fichero</string>
   <string name="menu_search">Buscar</string>
   <string name="menu_nfc_preferences">Configuraciones NFC</string>
@@ -104,6 +114,7 @@
   <string name="menu_certify_fingerprint">Confirmar mediante comparación de la huella de validación (fingerprint)</string>
   <string name="menu_export_log">Exportar registro (log)</string>
   <!--label-->
+  <string name="label_message">Texto</string>
   <string name="label_file">Archivo</string>
   <string name="label_files">Fichero(s)</string>
   <string name="label_file_colon">Fichero:</string>
@@ -111,6 +122,7 @@
   <string name="label_passphrase">Frase de contraseña</string>
   <string name="label_unlock">Desbloqueando...</string>
   <string name="label_passphrase_again">Repetir frase-contraseña</string>
+  <string name="label_show_passphrase">Mostrar frase-contraseña</string>
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_ascii_armor">Armadura ASCII del fichero</string>
   <string name="label_file_ascii_armor">Habilitar armadura ASCII</string>
@@ -121,13 +133,14 @@
   <string name="label_label_use_default_yubikey_pin_summary">Utiliza el PIN predeterminado (123456) para acceder a las YubiKeys sobre NFC</string>
   <string name="label_asymmetric_from">Firmado por:</string>
   <string name="label_to">Cifrar hacia:</string>
-  <string name="label_delete_after_encryption">Eliminar fichero después del cifrado</string>
+  <string name="label_delete_after_encryption">Borrar ficheros después del cifrado</string>
   <string name="label_delete_after_decryption">Eliminar fichero después del descifrado</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo de identificación criptográfica (hash)</string>
   <string name="label_symmetric">Cifrar con frase-contraseña</string>
   <string name="label_passphrase_cache_ttl">Duración en caché</string>
   <string name="label_passphrase_cache_subs">Almacenar en caché frases-contraseña por subclave</string>
+  <string name="label_message_compression">Compresión de texto</string>
   <string name="label_file_compression">Compresión del fichero</string>
   <string name="label_keyservers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
@@ -146,6 +159,8 @@
   <string name="label_first_keyserver_is_used">(Se prefiere el primer servidor de claves listado)</string>
   <string name="label_preferred">preferido</string>
   <string name="label_enable_compression">Habilitar compresión</string>
+  <string name="label_encrypt_filenames">Cifrar nombres de ficheros</string>
+  <string name="label_hidden_recipients">Ocultar receptores</string>
   <string name="user_id_no_name">&lt;sin nombre&gt;</string>
   <string name="none">&lt;ninguna&gt;</string>
   <plurals name="n_keys">
@@ -194,7 +209,10 @@
   <string name="pin_for">Introduzca el PIN para \'%s\'</string>
   <string name="yubikey_pin_for">Introduzca el PIN para acceder a la YubiKey para \'%s\'</string>
   <string name="nfc_text">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
-    <string name="no_file_selected">Selecciona un archivo antes.</string>
+  <string name="file_delete_confirmation_title">¿Borrar ficheros originales?</string>
+  <string name="file_delete_confirmation">Los siguientes ficheros se borrarán:%s</string>
+  <string name="file_delete_successful">%1$d de %2$d ficheros han sido borrados.%3$s</string>
+  <string name="no_file_selected">Selecciona un archivo antes.</string>
   <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
   <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
@@ -227,6 +245,8 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">no ha sido borrado. ¡Borrarlos manualmente!</string>
+  <string name="error_file_added_already">%s ya ha sido añadida.</string>
   <string name="error_file_not_found">archivo no encontrado</string>
   <string name="error_no_secret_key_found">no se ha encontrado una clave secreta adecuada</string>
   <string name="error_external_storage_not_ready">el almacenamiento externo no está preparado</string>
@@ -431,7 +451,7 @@
   <string name="api_settings_hide_advanced">Ocultar la configuración avanzada</string>
   <string name="api_settings_no_key">No se ha seleccionado ninguna clave</string>
   <string name="api_settings_select_key">Seleccionar clave</string>
-  <string name="api_settings_create_key">Crear una nueva clave para esta cuenta</string>
+  <string name="api_settings_create_key">Crear nueva clave</string>
   <string name="api_settings_save">Guardar</string>
   <string name="api_settings_save_msg">Se ha guardado la cuenta</string>
   <string name="api_settings_cancel">Cancelar</string>
@@ -457,6 +477,7 @@
   <string name="api_select_pub_keys_text">¡Por favor, revisa la lista de destinatarios!</string>
   <string name="api_select_pub_keys_text_no_user_ids">¡Por favor seleccione los receptores!</string>
   <string name="api_error_wrong_signature">¡La comprobación de la firma ha fallado! ¿Has instalado esta app desde una fuente distinta? Si estás seguro de que esto no es un ataque, revoca el registro de esta app en OpenKeychain y regístrala de nuevo.</string>
+  <string name="api_select_sign_key_text">Por favor, seleccione una de sus claves existentes o cree una nueva.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Compartir con código QR</string>
   <string name="share_nfc_dialog">Compartir con NFC</string>
@@ -496,6 +517,7 @@
   <string name="key_trust_maybe">Esta clave no está revocada ni ha caducado.\nNo la ha confirmado, pero puede elegir confiar en ella.</string>
   <string name="key_trust_revoked">Esta clave ha sido revocada por su propietario. No debe confiar en ella.</string>
   <string name="key_trust_expired">Esta clave ha caducado. No debe confiar en ella.</string>
+  <string name="key_trust_old_keys">Puede ser correcto utilizar esta para descifrar un mensaje antiguo que data del momento en que esta clave era válida.</string>
   <string name="key_trust_no_cloud_evidence">No hay comprobantes desde la nube sobre la confiabilidad de esta clave.</string>
   <string name="key_trust_start_cloud_search">Comenzar búsqueda</string>
   <string name="key_trust_results_prefix">Keybase.io ofrece \"comprobantes\" que sostienen que el propietario de esta clave:</string>
@@ -560,7 +582,13 @@
   <string name="create_key_final_robot_text">Crear una clave puede llevar un tiempo, tómese una taza de café entre tanto...</string>
   <string name="create_key_rsa">(3 subclaves, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuración de clave personalizada)</string>
+  <string name="create_key_name_text">Elija un nombre asociado con esta clave. Este puede ser un nombre completo, ej. \'Juan Nadie\', o un apodo, ej. \'Juanito\'.</string>
+  <string name="create_key_email_text">Introduzca su dirección principal de correo electrónico para comunicación segura.</string>
+  <string name="create_key_passphrase_text">Elija una frase-contraseña robusta. Protege su clave cuando su dispositivo es robado.</string>
+  <string name="create_key_hint_full_name">Nombre completo o apodo</string>
   <string name="create_key_edit">Cambiar configuración de clave</string>
+  <string name="create_key_add_email">Añadir dirección de correo electrónico</string>
+  <string name="create_key_add_email_text">Las direcciones adicionales de correo electrónico también están asociadas a esta clave y pueden utilizarse para asegurar la comunicación.</string>
   <!--View key-->
   <string name="view_key_revoked">Revocada: ¡La clave no debe volver a ser usada!</string>
   <string name="view_key_expired">Caducada: ¡El contacto necesita extender la vigencia de la clave!</string>
@@ -568,6 +596,7 @@
   <string name="view_key_my_key">Mi clave</string>
   <string name="view_key_verified">Clave confirmada</string>
   <string name="view_key_unverified">No confirmada: ¡Escanee el código QR para confirmar clave!</string>
+  <string name="view_key_fragment_no_system_contact">&lt;ninguno&gt;</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Claves</string>
   <string name="nav_encrypt_decrypt">Cifrar/Descifrar</string>
@@ -1082,8 +1111,9 @@
   <string name="passp_cache_notif_pwd">Frase-contraseña</string>
   <!--First Time-->
   <string name="first_time_text1">¡Recupere su privacidad con OpenKeychain!</string>
-  <string name="first_time_create_key">Crear mi clave</string>
-  <string name="first_time_import_key">Importar desde fichero</string>
+  <string name="first_time_create_key">Crear mi clave (recomendado)</string>
+  <string name="first_time_import_key">Importar clave desde fichero</string>
+  <string name="first_time_yubikey">Usar Yubikey NEO</string>
   <string name="first_time_skip">Omitir configuración</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificador</string>
@@ -1144,5 +1174,4 @@
   <string name="nfc_write_succesful">Se escribió con éxito en la etiqueta NFC</string>
   <string name="unlocked">Desbloqueado</string>
   <string name="nfc_settings">Configuración</string>
-    <string name="file_delete_successful"></string>
 </resources>

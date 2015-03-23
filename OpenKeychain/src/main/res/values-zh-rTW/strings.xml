@@ -65,7 +65,6 @@
   <string name="menu_help">說明</string>
   <string name="menu_export_key">匯出到檔案</string>
   <string name="menu_delete_key">刪除金鑰</string>
-  <string name="menu_manage_keys">建立金鑰</string>
   <string name="menu_import_existing_key">從檔案匯入</string>
   <string name="menu_search">搜尋</string>
   <string name="menu_beam_preferences">Beam 設定</string>
@@ -85,7 +84,6 @@
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
   <string name="label_asymmetric_from">簽名自:</string>
   <string name="label_to">加密給:</string>
-  <string name="label_delete_after_encryption">加密後刪除檔案</string>
   <string name="label_delete_after_decryption">解密後刪除檔案</string>
   <string name="label_encryption_algorithm">加密演算法</string>
   <string name="label_hash_algorithm">雜湊演算法</string>
@@ -139,7 +137,7 @@
   <string name="passphrases_do_not_match">口令不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入口令。</string>
   <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
-    <string name="no_file_selected">請先選擇檔案。</string>
+  <string name="no_file_selected">請先選擇檔案。</string>
   <string name="encrypt_sign_successful">成功簽名並/或加密。</string>
   <string name="encrypt_sign_clipboard_successful">成功簽名並/或加密到剪貼簿。</string>
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
@@ -292,7 +290,6 @@
   <string name="api_settings_hide_advanced">隱藏進階設定</string>
   <string name="api_settings_no_key">沒有選擇金鑰</string>
   <string name="api_settings_select_key">選擇金鑰</string>
-  <string name="api_settings_create_key">為此帳戶建立金鑰</string>
   <string name="api_settings_save">儲存</string>
   <string name="api_settings_save_msg">帳戶已儲存</string>
   <string name="api_settings_cancel">取消</string>
@@ -421,8 +418,7 @@
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
   <string name="info_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

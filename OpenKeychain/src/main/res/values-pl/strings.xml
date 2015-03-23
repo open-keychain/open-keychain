@@ -78,7 +78,6 @@
   <string name="menu_help">Pomoc</string>
   <string name="menu_export_key">Eksportuj do pliku</string>
   <string name="menu_delete_key">Usuń klucz</string>
-  <string name="menu_manage_keys">Utwórz mój klucz</string>
   <string name="menu_import_existing_key">Importuj z pliku</string>
   <string name="menu_search">Szukaj</string>
   <string name="menu_beam_preferences">Ustawienia Beam</string>
@@ -106,7 +105,6 @@
   <string name="label_label_use_default_yubikey_pin_summary">Używa domyślnego PIN-u (123456) do dostępu do YubiKeys przez NFC</string>
   <string name="label_asymmetric_from">Podpisane przez:</string>
   <string name="label_to">Szyfruj do:</string>
-  <string name="label_delete_after_encryption">Usuń plik po zaszyfrowaniu</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
   <string name="label_hash_algorithm">Funkcja skrótu</string>
@@ -179,7 +177,7 @@
   <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="nfc_text">Trzymaj YubiKey z tyłu Twojego urządzenia.</string>
-    <string name="no_file_selected">Najpierw wskaż plik.</string>
+  <string name="no_file_selected">Najpierw wskaż plik.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
@@ -418,7 +416,6 @@
   <string name="api_settings_hide_advanced">Ukryj zaawansowane ustawienia</string>
   <string name="api_settings_no_key">Nie wybrano klucza</string>
   <string name="api_settings_select_key">Wybierz klucz</string>
-  <string name="api_settings_create_key">Utwórz nowy klucz dla tego konta</string>
   <string name="api_settings_save">Zapisz</string>
   <string name="api_settings_save_msg">Konto zostało zapisane</string>
   <string name="api_settings_cancel">Anuluj</string>
@@ -630,7 +627,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="passp_cache_notif_pwd">Hasło</string>
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
-  <string name="first_time_create_key">Utwórz mój klucz</string>
   <string name="first_time_skip">Pomiń ustawienia</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certyfikujący</string>
@@ -656,8 +652,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

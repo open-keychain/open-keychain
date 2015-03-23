@@ -38,17 +38,17 @@ public class HelpMarkdownFragment extends Fragment {
 
     private int mHtmlFile;
 
-    public static final String ARG_MARKDOWN_FILE = "htmlFile";
+    public static final String ARG_MARKDOWN_RES = "htmlFile";
 
     /**
      * Create a new instance of HelpHtmlFragment, providing "htmlFile" as an argument.
      */
-    static HelpMarkdownFragment newInstance(int htmlFile) {
+    static HelpMarkdownFragment newInstance(int markdownRes) {
         HelpMarkdownFragment f = new HelpMarkdownFragment();
 
         // Supply html raw file input as an argument.
         Bundle args = new Bundle();
-        args.putInt(ARG_MARKDOWN_FILE, htmlFile);
+        args.putInt(ARG_MARKDOWN_RES, markdownRes);
         f.setArguments(args);
 
         return f;
@@ -58,7 +58,7 @@ public class HelpMarkdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = getActivity();
 
-        mHtmlFile = getArguments().getInt(ARG_MARKDOWN_FILE);
+        mHtmlFile = getArguments().getInt(ARG_MARKDOWN_RES);
 
         ScrollView scroller = new ScrollView(mActivity);
         HtmlTextView text = new HtmlTextView(mActivity);
@@ -70,7 +70,7 @@ public class HelpMarkdownFragment extends Fragment {
 
         scroller.addView(text);
 
-        // load mardown from raw resource
+        // load markdown from raw resource
         try {
             String html = new Markdown4jProcessor().process(getActivity().getResources().openRawResource(mHtmlFile));
             text.setHtmlFromString(html, true);

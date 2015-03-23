@@ -2,34 +2,48 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
   <string name="title_select_recipients">选择密钥</string>
   <string name="title_select_secret_key">选择私钥</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">添加子密钥</string>
   <string name="title_edit_key">编辑密钥</string>
+  <string name="title_preferences">设置</string>
+  <string name="title_cloud_search_preferences">云搜索设置</string>
   <string name="title_api_registered_apps">已注册应用</string>
+  <string name="title_key_server_preference">密钥服务器</string>
   <string name="title_change_passphrase">变更密码</string>
   <string name="title_share_fingerprint_with">分享签名</string>
   <string name="title_share_key">分享密钥</string>
   <string name="title_share_file">分享文件</string>
+  <string name="title_share_message">分享文本</string>
   <string name="title_encrypt_to_file">加密至文件</string>
   <string name="title_decrypt_to_file">解密至文件</string>
   <string name="title_import_keys">导入密钥</string>
+  <string name="title_add_keys">添加密钥</string>
   <string name="title_export_key">导出密钥</string>
   <string name="title_export_keys">导出密钥</string>
   <string name="title_key_not_found">无法找到密钥</string>
   <string name="title_send_key">上传到密钥服务器</string>
+  <string name="title_certify_key">确认密钥</string>
   <string name="title_key_details">密钥详情</string>
   <string name="title_help">帮助</string>
+  <string name="title_log_display">日志</string>
   <string name="title_create_key">创建密钥</string>
+  <string name="title_advanced_key_info">更多密钥详情</string>
+  <string name="title_keys">密钥</string>
+  <string name="title_export_log">导出日志</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
-  <string name="section_keys">密钥</string>
+  <string name="section_should_you_trust">应该相信此密钥?</string>
+  <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">在线搜索</string>
   <string name="section_general">常规</string>
   <string name="section_defaults">缺省</string>
   <string name="section_advanced">高级</string>
+  <string name="section_passphrase_cache">密语缓存</string>
+  <string name="section_certify">确认</string>
   <string name="section_key_server">密钥服务器</string>
   <string name="section_fingerprint">签名</string>
   <string name="section_decrypt_files">解密文件</string>
@@ -57,7 +71,6 @@
   <string name="menu_help">帮助</string>
   <string name="menu_export_key">导出密钥</string>
   <string name="menu_delete_key">删除密钥</string>
-  <string name="menu_manage_keys">创建密钥</string>
   <string name="menu_search">搜索</string>
   <string name="menu_beam_preferences">参数</string>
   <string name="menu_key_edit_cancel">取消</string>
@@ -74,7 +87,6 @@
   <string name="label_passphrase_again">确认密码</string>
   <string name="label_algorithm">算法</string>
   <string name="label_write_version_header">写入文件头信息</string>
-  <string name="label_delete_after_encryption">加密后删除原文件</string>
   <string name="label_main_user_id">用户名</string>
   <string name="label_name">姓名</string>
   <string name="label_comment">注解</string>
@@ -195,9 +207,7 @@
   <string name="api_select_pub_keys_text">请重审收件人列表</string>
   <!--Share-->
   <string name="share_nfc_dialog">使用NFC分享</string>
-    <string name="file_delete_successful"></string>
-    <string name="file_delete_confirmation"></string>
-    <!--Key list-->
+  <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
   <!--keybase proof stuff-->

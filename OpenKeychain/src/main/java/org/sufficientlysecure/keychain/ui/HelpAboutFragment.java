@@ -47,7 +47,7 @@ public class HelpAboutFragment extends Fragment {
 
         HtmlTextView aboutTextView = (HtmlTextView) view.findViewById(R.id.help_about_text);
 
-        // load mardown from raw resource
+        // load markdown from raw resource
         try {
             String html = new Markdown4jProcessor().process(
                     getActivity().getResources().openRawResource(R.raw.help_about));

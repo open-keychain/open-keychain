@@ -135,7 +135,7 @@ Translations are hosted on Transifex, which is configured by ".tx/config".
 1. To pull newest translations install transifex client (e.g. ``apt-get install transifex-client``)
 2. Config Transifex client with "~/.transifexrc"
 3. Go into root folder of git repo
-4. execute ``tx pull`` (``tx pull -a`` to get all languages)
+4. execute ``tx pull -af --skip``
 
 see http://help.transifex.net/features/client/index.html#user-client
 

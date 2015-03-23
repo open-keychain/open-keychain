@@ -64,22 +64,22 @@ public class HelpActivity extends BaseActivity {
         }
 
         Bundle startBundle = new Bundle();
-        startBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_FILE, R.raw.help_start);
+        startBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_start);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, startBundle,
                 getString(R.string.help_tab_start));
 
         Bundle certificationBundle = new Bundle();
-        certificationBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_FILE, R.raw.help_certification);
+        certificationBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_certification);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, certificationBundle,
                 getString(R.string.help_tab_wot));
 
         Bundle faqBundle = new Bundle();
-        faqBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_FILE, R.raw.help_faq);
+        faqBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_faq);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, faqBundle,
                 getString(R.string.help_tab_faq));
 
         Bundle changelogBundle = new Bundle();
-        changelogBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_FILE, R.raw.help_changelog);
+        changelogBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_changelog);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, changelogBundle,
                 getString(R.string.help_tab_changelog));
 
