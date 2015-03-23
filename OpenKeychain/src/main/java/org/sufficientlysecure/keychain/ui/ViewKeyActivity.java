@@ -93,8 +93,8 @@ public class ViewKeyActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_DELETE= 2;
-    static final int REQUEST_EXPORT= 3;
+    static final int REQUEST_DELETE = 2;
+    static final int REQUEST_EXPORT = 3;
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -135,6 +135,8 @@ public class ViewKeyActivity extends BaseActivity implements
     private View mRefresh;
     private String mFingerprint;
     private long mMasterKeyId;
+
+    private ViewKeyFragment mViewKeyFragment;
 
     @SuppressLint("InflateParams")
     @Override
@@ -283,12 +285,12 @@ public class ViewKeyActivity extends BaseActivity implements
         }
 
         // Create an instance of the fragment
-        ViewKeyFragment frag = ViewKeyFragment.newInstance(dataUri);
+        mViewKeyFragment = ViewKeyFragment.newInstance(dataUri);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.view_key_fragment, frag)
+                .replace(R.id.view_key_fragment, mViewKeyFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
@@ -515,7 +517,7 @@ public class ViewKeyActivity extends BaseActivity implements
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{ mMasterKeyId });
+                new long[]{mMasterKeyId});
         deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
@@ -546,11 +548,11 @@ public class ViewKeyActivity extends BaseActivity implements
             return;
         }
 
-        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK) {
             deleteKey();
         }
 
-        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK){
+        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK) {
             exportToFile(mDataUri, mExportHelper, mProviderHelper);
         }
 
@@ -983,6 +985,8 @@ public class ViewKeyActivity extends BaseActivity implements
                             color = getResources().getColor(R.color.android_orange_light);
 
                             mFab.setVisibility(View.VISIBLE);
+                            mViewKeyFragment.setLinkedContactCardVisibility(View.GONE);
+
                         }
                     }
 

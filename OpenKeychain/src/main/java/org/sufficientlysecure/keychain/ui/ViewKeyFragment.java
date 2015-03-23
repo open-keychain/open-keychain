@@ -32,12 +32,15 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
@@ -57,6 +60,7 @@ public class ViewKeyFragment extends LoaderFragment implements
     boolean mIsSecret = false;
     boolean mSystemContactLoaded = false;
 
+    View mSystemContactCard;
     LinearLayout mSystemContactLayout;
     ImageView mSystemContactPicture;
     TextView mSystemContactName;
@@ -95,6 +99,7 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
+        mSystemContactCard = view.findViewById(R.id.linked_system_contact_card);
         mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
         mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
         mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
@@ -298,6 +303,14 @@ public class ViewKeyFragment extends LoaderFragment implements
                 break;
             }
         }
+    }
+
+    /**
+     * Sets the visibility of the Linked Contact Card.
+     */
+    public void setLinkedContactCardVisibility(int visibility) {
+        if (mSystemContactCard != null)
+            mSystemContactCard.setVisibility(visibility);
     }
 
 }
