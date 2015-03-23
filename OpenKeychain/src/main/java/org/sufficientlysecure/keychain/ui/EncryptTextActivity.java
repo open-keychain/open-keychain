@@ -136,7 +136,9 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
     @Override
     public void setPassphrase(Passphrase passphrase) {
-        mPassphrase.removeFromMemory();
+        if (mPassphrase != null) {
+            mPassphrase.removeFromMemory();
+        }
         mPassphrase = passphrase;
     }
 
