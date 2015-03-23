@@ -1185,7 +1185,7 @@
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
-    <string name="first_time_create_key">"Create my key (recommended)"</string>
+    <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
