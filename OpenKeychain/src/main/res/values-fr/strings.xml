@@ -508,7 +508,7 @@
   <string name="user_id_info_certified_title">Certifié</string>
   <string name="user_id_info_certified_text">Vous avez certifié cette identité.</string>
   <string name="user_id_info_uncertified_title">Non certifié</string>
-  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne spécifique.</string>
+  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne déterminée.</string>
   <string name="user_id_info_invalid_title">Invalide</string>
   <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
   <!--Key trust-->
@@ -594,8 +594,8 @@
   <string name="view_key_expired">Expirée : le contact doit prolonger la validité de la clef !</string>
   <string name="view_key_expired_secret">Expirée : vous pouvez prolonger la validité de la clef en la modifiant !</string>
   <string name="view_key_my_key">Ma clef</string>
-  <string name="view_key_verified">Confirmer la clef</string>
-  <string name="view_key_unverified">Non vérifiée : balayez le code QR pour confirmer la clef !</string>
+  <string name="view_key_verified">Clef confirmée</string>
+  <string name="view_key_unverified">Non confirmée : balayez le code QR pour confirmer la clef !</string>
   <string name="view_key_fragment_no_system_contact">&lt;aucun&gt;</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>

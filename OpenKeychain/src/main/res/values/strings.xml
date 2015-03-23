@@ -9,8 +9,6 @@
     <string name="app_name">"OpenKeychain"</string>
 
     <!-- title -->
-    <string name="title_select_recipients">"Select Keys"</string>
-    <string name="title_select_secret_key">"Select Your Key"</string>
     <string name="title_encrypt_text">"Encrypt"</string>
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
@@ -18,7 +16,6 @@
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Settings"</string>
-    <string name="title_cloud_search_preferences">"Cloud Search Preferences"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"Keyservers"</string>
     <string name="title_change_passphrase">"Change Passphrase"</string>
@@ -29,7 +26,6 @@
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
-    <string name="title_add_keys">"Add Keys"</string>
     <string name="title_export_key">"Export Key"</string>
     <string name="title_export_keys">"Export Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
@@ -38,10 +34,8 @@
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
-    <string name="title_create_key">"Create Key"</string>
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced Key Info"</string>
-    <string name="title_keys">"Keys"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
@@ -54,19 +48,12 @@
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
-    <string name="section_general">"General"</string>
-    <string name="section_defaults">"Defaults"</string>
-    <string name="section_advanced">"Advanced"</string>
     <string name="section_passphrase_cache">"Passphrase Cache"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
-    <string name="section_upload_key">"Synchronize Key"</string>
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
-    <string name="section_decrypt_files">"Files"</string>
-    <string name="section_decrypt_text">"Text"</string>
-    <string name="section_certs">"Certificates"</string>
     <string name="section_encrypt">"Encrypt"</string>
     <string name="section_decrypt">"Decrypt"</string>
     <string name="section_current_expiry">"Current expiry"</string>
@@ -74,8 +61,6 @@
 
     <!-- button -->
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
-    <string name="btn_decrypt_verify_message">"Decrypt and verify text"</string>
-    <string name="btn_encrypt_file">"Encrypt and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
     <string name="btn_save">"Save"</string>
@@ -88,7 +73,6 @@
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
-    <string name="btn_lookup_key">"Lookup key"</string>
     <string name="btn_share_encrypted_signed">"Encrypt and share text"</string>
     <string name="btn_copy_encrypted_signed">"Encrypt and copy text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
@@ -108,15 +92,11 @@
     <string name="menu_export_key">"Export to file"</string>
     <string name="menu_delete_key">"Delete key"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
-    <string name="menu_import_existing_key">"Import from file"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_nfc_preferences">"NFC settings"</string>
     <string name="menu_beam_preferences">"Beam settings"</string>
-    <string name="menu_key_edit_cancel">"Cancel"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
     <string name="menu_select_all">"Select all"</string>
-    <string name="menu_add_keys">"Add keys"</string>
-    <string name="menu_search_cloud">"Search cloud"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Show advanced info"</string>

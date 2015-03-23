@@ -1,27 +1,27 @@
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The most simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+## Confirmation de clef
+Sans confirmation, vous ne pouvez pas être certain que la clef appartient à une personne déterminée.
+La façon la plus simple de confirmer une clef est en balayant le code QR ou en l'échangeant par NFC.
+Pour confirmer des clefs entre plus de deux personnes, nous suggérons d'utiliser la méthode d'échange de clef proposée pour vos clefs.
 
-## Key Status
+## État de la clef
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Confirmée : vous avez déjà confirmé cette clef, p. ex. en balayant le code QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Non confirmée : cette clef n'a pas encore été confirmée. Vous ne pouvez pas être certain que la clef appartient à une personne déterminée.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+Expirée : cette clef n'est plus valide. Seul le propriétaire peut prolonger sa validité.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Révoquée : cette n'est plus valide. Elle a été révoquée par son propriétaire.
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+## Informations avancées
+Avec OpenKeychain une « confirmation de clef » est effectuée en créant une certification d'après la norme OpenPGP.
+Cette certification est une [« certification générique » (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) décrite ainsi dans la norme :
+« L'émetteur de cette certification n'affirme aucunement que le certificateur a bien vérifié que le propriétaire de la clef est bel et bien la personne décrite par l'ID utilisateur »
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Habituellement, les certifications (il en est de même avec les niveaux supérieurs de certification, tels que le « certifications positives » (0x13)) sont organisées dans la toile de confiance d'OpenPGP.
+Notre modèle de confirmation de clef est un concept bien plus simple pour éviter les problèmes habituels de convivialité associés à cette toile de confiance.
+Nous assumons que les clefs sont vérifiées seulement jusqu'à un certain degré qui est quand même assez utilisable pour être exécuté « à la volée ». 
+Nous ne mettons pas non plus en place des signatures de confiance (potentiellement transitives) ou une base de données « ownertrust » comme dans GnuPG.
+De plus, les clefs contenant au moins un ID utilisateur certifié par une clef de confiance seront marquées « confirmée » dans les listages de clefs.

@@ -1,51 +1,51 @@
 
 ## 3.2beta2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * Diseño estilo Material
+  * Integración de QR Scanner (se requieren nuevos permisos)
+  * Asistente de creación de clave mejorado
+  * Repara contactos perdidos después de la sincronización
+  * Requiere Android 4
+  * Pantalla de clave rediseñada
+  * Simplifica las preferencias de criptografía, mejor selección de algoritmos de cifrado seguro
+  * API: Firmas desacopladas, selección libre de clave de firmado...
+  * Reparación: Algunas claves válidas se mostraron revocadas o caducadas
+  * No acepte algo firmado por subclaves caducadas o revocadas
+  * Soporte Keybase.io en la vista avanzada
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Repara la exportación de claves a ficheros (ahora de verdad)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Repara la exportación de claves a ficheros (se escribían parcialmente)
+  * Repara un fallo con caída en Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Repara un fallo con caída en Android 5
+  * Nueva pantalla de certificación
+  * Intercambio seguro directamente desde la lista de claves (librería SafeSlinger)
+  * Nuevo control de flujo del programa QR Code
+  * Pantalla de descifrado rediseñada
+  * Nuevo uso del icono y colores
+  * Repara la importación de clave secretas (privadas) desde Symantec Encryption Desktop
+  * Las identificaciones de subclaves sobre Yubikeys ahora están comprobadas correctamente
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Mejor manejo de importaciones de claves largas
+  * Selección de subclaves mejorada
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
+  * ¡Soporte completo para generación de firma y descifrado de Yubikey!
   * Propose installable compatible apps in apps list
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
