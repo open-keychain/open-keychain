@@ -4,10 +4,10 @@ import android.content.Context;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -86,7 +87,23 @@ public abstract class LinkedCookieResource extends LinkedResource {
         log.add(LogType.MSG_LV, 0);
 
         // Try to fetch resource. Logs for itself
-        String res = fetchResource(log, 1);
+        String res = null;
+        try {
+            res = fetchResource(log, 1);
+        } catch (HttpStatusException e) {
+            // log verbose output to logcat
+            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            log.add(LogType.MSG_LV_FETCH_ERROR, 2, Integer.toString(e.getStatus()));
+        } catch (MalformedURLException e) {
+            log.add(LogType.MSG_LV_FETCH_ERROR_URL, 2);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_IO, 2);
+        } catch (JSONException e) {
+            Log.e(Constants.TAG, "json error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, 2);
+        }
+
         if (res == null) {
             // if this is null, an error was recorded in fetchResource above
             return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
@@ -98,7 +115,8 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
     }
 
-    protected abstract String fetchResource (OperationLog log, int indent);
+    protected abstract String fetchResource (OperationLog log, int indent) throws HttpStatusException, IOException,
+            JSONException;
 
     protected Matcher matchResource (OperationLog log, int indent, String res) {
         return magicPattern.matcher(res);
@@ -129,6 +147,8 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
     public static String getResponseBody(HttpRequestBase request) throws IOException, HttpStatusException {
         StringBuilder sb = new StringBuilder();
+
+        request.setHeader("User-Agent", "Open Keychain");
 
         DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
         HttpResponse response = httpClient.execute(request);

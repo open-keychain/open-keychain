@@ -1175,6 +1175,12 @@
     <string name="msg_lv_fp_ok">"Fingerprint ok."</string>
     <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
 
+    <string name="msg_lv_error_twitter_auth">"Error obtaining Twitter auth token!"</string>
+    <string name="msg_lv_error_twitter_handle">"Twitter account handle mismatch in response!"</string>
+    <string name="msg_lv_error_twitter_response">"Unexpected response from Twitter API!"</string>
+    <string name="msg_lv_error_github_handle">"Github account handle mismatch in response!"</string>
+    <string name="msg_lv_error_github_not_found">"Gist contains no matching files!"</string>
+
     <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
     <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>
     <string name="msg_lv_fetch_ok">"Successfully fetched (HTTP %s)"</string>
@@ -1182,6 +1188,7 @@
     <string name="msg_lv_fetch_error_url">"URL is malformed!"</string>
     <string name="msg_lv_fetch_error_io">"IO Error!"</string>
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
+    <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
 
     <string name="msg_acc_saved">"Account saved"</string>
 

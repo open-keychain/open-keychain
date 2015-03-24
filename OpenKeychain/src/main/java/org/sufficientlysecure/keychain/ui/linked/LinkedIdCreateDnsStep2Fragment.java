@@ -31,6 +31,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -104,7 +105,7 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
     }
 
     @Override
-    LinkedCookieResource getResource() {
+    LinkedCookieResource getResource(OperationLog log) {
         return DnsResource.createNew(mResourceDomain);
     }
 

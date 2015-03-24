@@ -48,58 +48,43 @@ public class GithubResource extends LinkedCookieResource {
     }
 
     @Override
-    protected String fetchResource (OperationLog log, int indent) {
+    protected String fetchResource (OperationLog log, int indent)
+            throws HttpStatusException, IOException, JSONException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
-        try {
+        HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
+        String response = getResponseBody(httpGet);
 
-            HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
-            httpGet.setHeader("User-Agent", "OpenKeychain");
+        JSONObject obj = new JSONObject(response);
 
-            String response = getResponseBody(httpGet);
-
-            JSONObject obj = new JSONObject(response);
-
-            JSONObject owner = obj.getJSONObject("owner");
-            if (!mHandle.equals(owner.getString("login"))) {
-                log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
-                return null;
-            }
-
-            JSONObject files = obj.getJSONObject("files");
-            Iterator<String> it = files.keys();
-            if (it.hasNext()) {
-                // TODO can there be multiple candidates?
-                JSONObject file = files.getJSONObject(it.next());
-                return file.getString("content");
-            }
-
-        } catch (HttpStatusException e) {
-            // log verbose output to logcat
-            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
-            log.add(LogType.MSG_LV_FETCH_ERROR, indent, Integer.toString(e.getStatus()));
-        } catch (MalformedURLException e) {
-            log.add(LogType.MSG_LV_FETCH_ERROR_URL, indent);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "io error", e);
-            log.add(LogType.MSG_LV_FETCH_ERROR_IO, indent);
-        } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error", e);
-            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
+        JSONObject owner = obj.getJSONObject("owner");
+        if (!mHandle.equals(owner.getString("login"))) {
+            log.add(LogType.MSG_LV_ERROR_GITHUB_HANDLE, indent);
+            return null;
         }
+
+        JSONObject files = obj.getJSONObject("files");
+        Iterator<String> it = files.keys();
+        if (it.hasNext()) {
+            // TODO can there be multiple candidates?
+            JSONObject file = files.getJSONObject(it.next());
+            return file.getString("content");
+        }
+
+        log.add(LogType.MSG_LV_ERROR_GITHUB_NOT_FOUND, indent);
         return null;
 
     }
 
-    public static GithubResource searchInGithubStream(String screenName, String needle) {
+    public static GithubResource searchInGithubStream(String screenName, String needle,
+            OperationLog log) {
 
         // narrow the needle down to important part
         Matcher matcher = magicPattern.matcher(needle);
         if (!matcher.find()) {
-            Log.e(Constants.TAG, "needle didn't contain cookie!");
-            return null;
+            throw new AssertionError("Needle must contain cookie pattern! This is a programming error, please report.");
         }
         needle = matcher.group();
 
@@ -150,9 +135,21 @@ public class GithubResource extends LinkedCookieResource {
             }
 
             // update the results with the body of the response
+            log.add(LogType.MSG_LV_FETCH_ERROR_NOTHING, 2);
             return null;
-        } catch (JSONException | HttpStatusException | IOException e) {
-            Log.e(Constants.TAG, "exception parsing stream", e);
+
+        } catch (HttpStatusException e) {
+            // log verbose output to logcat
+            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            log.add(LogType.MSG_LV_FETCH_ERROR, 2, Integer.toString(e.getStatus()));
+        } catch (MalformedURLException e) {
+            log.add(LogType.MSG_LV_FETCH_ERROR_URL, 2);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_IO, 2);
+        } catch (JSONException e) {
+            Log.e(Constants.TAG, "json error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, 2);
         }
 
         return null;

@@ -30,6 +30,7 @@ import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -66,7 +67,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     }
 
     @Override
-    GenericHttpsResource getResource() {
+    GenericHttpsResource getResource(OperationLog log) {
         return GenericHttpsResource.createNew(mResourceUri);
     }
 

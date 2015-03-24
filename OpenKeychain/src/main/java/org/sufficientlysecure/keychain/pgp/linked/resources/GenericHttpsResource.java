@@ -8,6 +8,7 @@ import android.support.annotation.StringRes;
 
 import com.textuality.keybase.lib.Search;
 
+import org.apache.http.client.methods.HttpGet;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -40,53 +41,15 @@ public class GenericHttpsResource extends LinkedCookieResource {
     }
 
     @Override
-    protected String fetchResource (OperationLog log, int indent) {
+    protected String fetchResource (OperationLog log, int indent) throws HttpStatusException, IOException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
-        try {
+        HttpGet httpGet = new HttpGet(mSubUri);
+        return getResponseBody(httpGet);
 
-            HttpsURLConnection conn = null;
-            URL url = mSubUri.toURL();
-            int status = 0;
-            int redirects = 0;
-
-            while (redirects < 5) {
-                conn = (HttpsURLConnection) url.openConnection();
-                conn.addRequestProperty("User-Agent", "OpenKeychain");
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(25000);
-                conn.connect();
-                status = conn.getResponseCode();
-                if (status == 301) {
-                    redirects++;
-                    url = new URL(conn.getHeaderFields().get("Location").get(0));
-                    log.add(LogType.MSG_LV_FETCH_REDIR, indent, url.toString());
-                } else {
-                    break;
-                }
-            }
-
-            if (status >= 200 && status < 300) {
-                log.add(LogType.MSG_LV_FETCH_OK, indent, Integer.toString(status));
-                return Search.snarf(conn.getInputStream());
-            } else {
-                // log verbose output to logcat
-                Log.e(Constants.TAG, Search.snarf(conn.getErrorStream()));
-                log.add(LogType.MSG_LV_FETCH_ERROR, indent, Integer.toString(status));
-                return null;
-            }
-
-        } catch (MalformedURLException e) {
-            log.add(LogType.MSG_LV_FETCH_ERROR_URL, indent);
-            return null;
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "io error", e);
-            e.printStackTrace();
-            log.add(LogType.MSG_LV_FETCH_ERROR_IO, indent);
-            return null;
-        }
+        // log.add(LogType.MSG_LV_FETCH_REDIR, indent, url.toString());
 
     }
 

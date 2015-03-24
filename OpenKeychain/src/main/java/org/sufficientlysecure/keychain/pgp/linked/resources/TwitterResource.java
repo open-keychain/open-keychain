@@ -22,6 +22,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,11 +67,14 @@ public class TwitterResource extends LinkedCookieResource {
     }
 
     @Override
-    protected String fetchResource(OperationLog log, int indent) {
+    protected String fetchResource(OperationLog log, int indent) throws IOException, HttpStatusException,
+            JSONException {
 
-        String authToken = getAuthToken();
-
-        if (authToken == null) {
+        String authToken;
+        try {
+            authToken = getAuthToken();
+        } catch (IOException | HttpStatusException | JSONException e) {
+            log.add(LogType.MSG_LV_ERROR_TWITTER_AUTH, indent);
             return null;
         }
 
@@ -87,32 +91,19 @@ public class TwitterResource extends LinkedCookieResource {
         try {
             String response = getResponseBody(httpGet);
             JSONObject obj = new JSONObject(response);
-
-            if (!obj.has("text")) {
-                return null;
-            }
-
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
-                log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
+                log.add(LogType.MSG_LV_ERROR_TWITTER_HANDLE, indent);
                 return null;
             }
 
             // update the results with the body of the response
             return obj.getString("text");
-        } catch (HttpStatusException e) {
-            // log verbose output to logcat
-            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
-            log.add(LogType.MSG_LV_FETCH_ERROR, indent, Integer.toString(e.getStatus()));
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "io error", e);
-            log.add(LogType.MSG_LV_FETCH_ERROR_IO, indent);
         } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error", e);
-            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
+            log.add(LogType.MSG_LV_ERROR_TWITTER_RESPONSE, indent);
+            return null;
         }
 
-        return null;
     }
 
     @Override
@@ -148,11 +139,14 @@ public class TwitterResource extends LinkedCookieResource {
         return intent;
     }
 
-    public static TwitterResource searchInTwitterStream(String screenName, String needle) {
+    public static TwitterResource searchInTwitterStream(
+            String screenName, String needle, OperationLog log) {
 
-        String authToken = getAuthToken();
-
-        if (authToken == null) {
+        String authToken;
+        try {
+            authToken = getAuthToken();
+        } catch (IOException | HttpStatusException | JSONException e) {
+            log.add(LogType.MSG_LV_ERROR_TWITTER_AUTH, 1);
             return null;
         }
 
@@ -184,45 +178,50 @@ public class TwitterResource extends LinkedCookieResource {
             }
 
             // update the results with the body of the response
+            log.add(LogType.MSG_LV_FETCH_ERROR_NOTHING, 1);
             return null;
-        } catch (JSONException | HttpStatusException | IOException e) {
-            Log.e(Constants.TAG, "exception parsing stream", e);
+
+        } catch (HttpStatusException e) {
+            // log verbose output to logcat
+            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            log.add(LogType.MSG_LV_FETCH_ERROR, 1, Integer.toString(e.getStatus()));
+        } catch (MalformedURLException e) {
+            log.add(LogType.MSG_LV_FETCH_ERROR_URL, 1);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_IO, 1);
+        } catch (JSONException e) {
+            Log.e(Constants.TAG, "json error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, 1);
         }
 
         return null;
     }
 
-    private static String authToken;
+    private static String cachedAuthToken;
 
-    private static String getAuthToken() {
-        if (authToken != null) {
-            return authToken;
+    private static String getAuthToken() throws IOException, HttpStatusException, JSONException {
+        if (cachedAuthToken != null) {
+            return cachedAuthToken;
         }
-        try {
+        String base64Encoded = rot13("D293FQqanH0jH29KIaWJER5DomqSGRE2Ewc1LJACn3cbD1c"
+                    + "Fq1bmqSAQAz5MI2cIHKOuo3cPoRAQI1OyqmIVFJS6LHMXq2g6MRLkIj") + "==";
 
-            String base64Encoded = rot13("D293FQqanH0jH29KIaWJER5DomqSGRE2Ewc1LJACn3cbD1c"
-                        + "Fq1bmqSAQAz5MI2cIHKOuo3cPoRAQI1OyqmIVFJS6LHMXq2g6MRLkIj") + "==";
+        // Step 2: Obtain a bearer token
+        HttpPost httpPost = new HttpPost("https://api.twitter.com/oauth2/token");
+        httpPost.setHeader("Authorization", "Basic " + base64Encoded);
+        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+        httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
+        JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost));
 
-            // Step 2: Obtain a bearer token
-            HttpPost httpPost = new HttpPost("https://api.twitter.com/oauth2/token");
-            httpPost.setHeader("Authorization", "Basic " + base64Encoded);
-            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-            httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
-            JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost));
-
-            // Applications should verify that the value associated with the
-            // token_type key of the returned object is bearer
-            if (!"bearer".equals(JWalk.getString(rawAuthorization, "token_type"))) {
-                return null;
-            }
-
-            authToken = JWalk.getString(rawAuthorization, "access_token");
-            return authToken;
-
-        } catch (JSONException | IllegalStateException | HttpStatusException | IOException ex) {
-            Log.e(Constants.TAG, "exception fetching auth token", ex);
-            return null;
+        // Applications should verify that the value associated with the
+        // token_type key of the returned object is bearer
+        if (!"bearer".equals(JWalk.getString(rawAuthorization, "token_type"))) {
+            throw new JSONException("Expected bearer token in response!");
         }
+
+        cachedAuthToken = rawAuthorization.getString("access_token");
+        return cachedAuthToken;
 
     }
 

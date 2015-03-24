@@ -20,6 +20,7 @@ import android.widget.ViewAnimator;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
@@ -28,6 +29,8 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
@@ -95,7 +98,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         return view;
     }
 
-    abstract LinkedCookieResource getResource();
+    abstract LinkedCookieResource getResource(OperationLog log);
 
     private void setVerifyProgress(boolean on, Boolean success) {
         if (success == null) {
@@ -133,7 +136,12 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
             protected LinkedVerifyResult doInBackground(Void... params) {
                 long timer = System.currentTimeMillis();
 
-                LinkedCookieResource resource = getResource();
+                OperationLog log = new OperationLog();
+                LinkedCookieResource resource = getResource(log);
+                if (resource == null) {
+                    return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
+                }
+
                 LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint);
 
                 // ux flow: this operation should take at last a second
@@ -178,7 +186,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
     }
 
-    private void certifyLinkedIdentity (String passphrase) {
+    private void certifyLinkedIdentity (Passphrase passphrase) {
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
@@ -227,7 +235,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putString(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
         data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, skp);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -249,8 +257,8 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase =
-                            data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    Passphrase passphrase =
+                            data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     certifyLinkedIdentity(passphrase);
                 }
                 break;

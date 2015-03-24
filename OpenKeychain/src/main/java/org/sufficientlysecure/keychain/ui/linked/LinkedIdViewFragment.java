@@ -133,7 +133,7 @@ public class LinkedIdViewFragment extends Fragment implements
             case LOADER_ID_LINKED_ID:
 
                 if (!cursor.moveToFirst()) {
-                    Notify.createNotify(getActivity(), "Error loading identity!",
+                    Notify.create(getActivity(), "Error loading identity!",
                             Notify.LENGTH_LONG, Style.ERROR).show();
                     finishFragment();
                     break;
