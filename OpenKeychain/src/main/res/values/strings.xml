@@ -1287,13 +1287,22 @@
     <string name="linked_create_https_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_twitter_1_1">"By creating a Linked Identity of this type, you can link your key to a Twitter account you control."</string>
-    <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this tweet."</string>
+    <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this Tweet."</string>
     <string name="linked_create_twitter_1_3">"Please enter your Twitter screen name to proceed."</string>
     <string name="linked_create_twitter_handle">Twitter Handle</string>
     <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
     <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
     <string name="linked_create_twitter_2_3">"Once your Tweet is published, click the Verify button to scan your timeline for it."</string>
     <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_github_1_1">"By creating a Linked Identity of this type, you can link your key to a Github account you control."</string>
+    <string name="linked_create_github_1_2">"To do this, you publish a specific Gist on your timeline, then create a Linked Identity which links to this Gist."</string>
+    <string name="linked_create_github_1_3">"Please enter your Twitter screen name to proceed."</string>
+    <string name="linked_create_github_handle">Github Handle</string>
+    <string name="linked_create_github_2_1">"Click either button to post the gist!"</string>
+    <string name="linked_create_github_2_2">"You can edit the Gist before posting it, so long as the text inside the brackets is unmodified."</string>
+    <string name="linked_create_github_2_3">"Once your Gist is published, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_github_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_dns_1_1">"By creating a Linked Identity of this type, you can link your key to a domain name you control."</string>
     <string name="linked_create_dns_1_2">"To do this, you create a specific TXT record for the domain, then create a Linked Identity which links to this record."</string>

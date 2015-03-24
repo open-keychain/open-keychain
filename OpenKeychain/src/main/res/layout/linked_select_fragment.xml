@@ -148,6 +148,41 @@
             android:layout_marginBottom="4dp"
             android:background="?android:attr/listDivider" />
 
+        <LinearLayout
+            android:id="@+id/linked_create_github_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:paddingRight="4dp"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:padding="8dp"
+                android:src="@drawable/github"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="Github"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
     </LinearLayout>
 
 </ScrollView>

@@ -7,6 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
 import org.apache.http.client.methods.HttpGet;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -88,6 +90,15 @@ public class GithubResource extends LinkedCookieResource {
         }
         return null;
 
+    }
+
+    public static GithubResource searchInGithubStream(String screenName, String needle) {
+        // TODO implement
+        return null;
+    }
+
+    public static GithubResource create(URI uri) {
+        return create(new HashSet<String>(), new HashMap<String,String>(), uri);
     }
 
     public static GithubResource create(Set<String> flags, HashMap<String,String> params, URI uri) {

@@ -78,6 +78,18 @@ public class LinkedIdSelectFragment extends Fragment {
                     }
                 });
 
+        view.findViewById(R.id.linked_create_github_button)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        LinkedIdCreateGithubStep1Fragment frag =
+                                LinkedIdCreateGithubStep1Fragment.newInstance();
+
+                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
+                    }
+                });
+
+
         return view;
     }
 
