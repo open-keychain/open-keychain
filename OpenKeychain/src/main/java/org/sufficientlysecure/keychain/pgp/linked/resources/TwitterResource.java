@@ -9,27 +9,19 @@ import android.util.Log;
 
 import com.textuality.keybase.lib.JWalk;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,7 +53,7 @@ public class TwitterResource extends LinkedCookieResource {
             return null;
         }
 
-        Pattern p = Pattern.compile("https://twitter.com/([a-zA-Z0-9_]+)/status/([0-9]+)");
+        Pattern p = Pattern.compile("https://twitter\\.com/([a-zA-Z0-9_]+)/status/([0-9]+)");
         Matcher match = p.matcher(uri.toString());
         if (!match.matches()) {
             return null;
@@ -102,16 +94,25 @@ public class TwitterResource extends LinkedCookieResource {
 
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
+                log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
                 return null;
             }
 
             // update the results with the body of the response
             return obj.getString("text");
+        } catch (HttpStatusException e) {
+            // log verbose output to logcat
+            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            log.add(LogType.MSG_LV_FETCH_ERROR, indent, Integer.toString(e.getStatus()));
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_IO, indent);
         } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error parsing stream", e);
-            return null;
+            Log.e(Constants.TAG, "json error", e);
+            log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, indent);
         }
 
+        return null;
     }
 
     @Override
@@ -184,10 +185,11 @@ public class TwitterResource extends LinkedCookieResource {
 
             // update the results with the body of the response
             return null;
-        } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error parsing stream", e);
-            return null;
+        } catch (JSONException | HttpStatusException | IOException e) {
+            Log.e(Constants.TAG, "exception parsing stream", e);
         }
+
+        return null;
     }
 
     private static String authToken;
@@ -217,40 +219,11 @@ public class TwitterResource extends LinkedCookieResource {
             authToken = JWalk.getString(rawAuthorization, "access_token");
             return authToken;
 
-        } catch (UnsupportedEncodingException | JSONException | IllegalStateException ex) {
-            Log.e(Constants.TAG, "auth token fetching error", ex);
+        } catch (JSONException | IllegalStateException | HttpStatusException | IOException ex) {
+            Log.e(Constants.TAG, "exception fetching auth token", ex);
             return null;
         }
 
-    }
-
-    private static String getResponseBody(HttpRequestBase request) {
-        StringBuilder sb = new StringBuilder();
-        try {
-
-            DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
-            HttpResponse response = httpClient.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
-            String reason = response.getStatusLine().getReasonPhrase();
-
-            if (statusCode == 200) {
-
-                HttpEntity entity = response.getEntity();
-                InputStream inputStream = entity.getContent();
-
-                BufferedReader bReader = new BufferedReader(
-                        new InputStreamReader(inputStream, "UTF-8"), 8);
-                String line;
-                while ((line = bReader.readLine()) != null) {
-                    sb.append(line);
-                }
-            } else {
-                sb.append(reason);
-            }
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "http request error", e);
-        }
-        return sb.toString();
     }
 
     public static String rot13(String input) {

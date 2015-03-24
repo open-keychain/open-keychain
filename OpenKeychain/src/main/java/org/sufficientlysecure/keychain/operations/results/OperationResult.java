@@ -777,6 +777,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_LV_FETCH_ERROR (LogLevel.ERROR, R.string.msg_lv_fetch_error),
         MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
         MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
+        MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
 
         //export log
         MSG_EXPORT_LOG(LogLevel.START,R.string.msg_export_log_start),

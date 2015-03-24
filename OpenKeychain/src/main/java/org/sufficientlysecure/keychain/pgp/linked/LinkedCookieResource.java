@@ -2,6 +2,12 @@ package org.sufficientlysecure.keychain.pgp.linked;
 
 import android.content.Context;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -9,6 +15,10 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -114,6 +124,51 @@ public abstract class LinkedCookieResource extends LinkedResource {
         log.add(LogType.MSG_LV_FP_OK, indent);
 
         return new LinkedVerifyResult(LinkedVerifyResult.RESULT_OK, log);
+
+    }
+
+    public static String getResponseBody(HttpRequestBase request) throws IOException, HttpStatusException {
+        StringBuilder sb = new StringBuilder();
+
+        DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
+        HttpResponse response = httpClient.execute(request);
+        int statusCode = response.getStatusLine().getStatusCode();
+        String reason = response.getStatusLine().getReasonPhrase();
+
+        if (statusCode != 200) {
+            throw new HttpStatusException(statusCode, reason);
+        }
+
+        HttpEntity entity = response.getEntity();
+        InputStream inputStream = entity.getContent();
+
+        BufferedReader bReader = new BufferedReader(
+                new InputStreamReader(inputStream, "UTF-8"), 8);
+        String line;
+        while ((line = bReader.readLine()) != null) {
+            sb.append(line);
+        }
+
+        return sb.toString();
+    }
+
+    public static class HttpStatusException extends Throwable {
+
+        private final int mStatusCode;
+        private final String mReason;
+
+        HttpStatusException(int statusCode, String reason) {
+            mStatusCode = statusCode;
+            mReason = reason;
+        }
+
+        public int getStatus() {
+            return mStatusCode;
+        }
+
+        public String getReason() {
+            return mReason;
+        }
 
     }
 
