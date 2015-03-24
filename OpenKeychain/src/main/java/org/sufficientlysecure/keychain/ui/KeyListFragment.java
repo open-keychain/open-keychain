@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -71,6 +72,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
@@ -97,6 +99,9 @@ public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
 
+    static final int REQUEST_REPEAT_PASSPHRASE = 1;
+    static final int REQUEST_ACTION = 2;
+
     ExportHelper mExportHelper;
 
     private KeyListAdapter mAdapter;
@@ -108,6 +113,11 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
 
     private FloatingActionsMenu mFab;
+
+    // This ids for multiple key export.
+    private ArrayList<Long> mIdsForRepeatAskPassphrase;
+    // This index for remembering the number of master key.
+    private int mIndex;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -231,8 +241,29 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_export: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        ExportHelper mExportHelper = new ExportHelper(getActivity());
-                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
+                        mIdsForRepeatAskPassphrase = new ArrayList<Long>();
+                        for(long id: ids) {
+                            try {
+                                if (PassphraseCacheService.getCachedPassphrase(
+                                        getActivity(), id, id) == null) {
+                                    mIdsForRepeatAskPassphrase.add(Long.valueOf(id));
+                                }
+                            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                                // This happens when the master key is stripped
+                                // and ignore this key.
+                                continue;
+                            }
+                        }
+                        mIndex = 0;
+                        if (mIdsForRepeatAskPassphrase.size() != 0) {
+                            startPassphraseActivity();
+                            break;
+                        }
+                        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
+                        for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i)
+                            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+                        mExportHelper.showExportKeysDialog(idsForMultiExport,
+                                Constants.Path.APP_DIR_FILE,
                                 mAdapter.isAnySecretSelected());
                         break;
                     }
@@ -383,7 +414,7 @@ public class KeyListFragment extends LoaderFragment
         intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
         intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_ACTION);
 
         mode.finish();
     }
@@ -557,18 +588,18 @@ public class KeyListFragment extends LoaderFragment
     private void scanQrCode() {
         Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
         scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_IMPORT);
-        startActivityForResult(scanQrCode, 0);
+        startActivityForResult(scanQrCode, REQUEST_ACTION);
     }
 
     private void importFile() {
         Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
         intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-        startActivityForResult(intentImportExisting, 0);
+        startActivityForResult(intentImportExisting, REQUEST_ACTION);
     }
 
     private void createKey() {
         Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_ACTION);
     }
 
     private void updateAllKeys() {
@@ -697,14 +728,38 @@ public class KeyListFragment extends LoaderFragment
         getActivity().startService(intent);
     }
 
+    private void startPassphraseActivity() {
+        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++).longValue();
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(getActivity()).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
+            if(resultCode != Activity.RESULT_OK)
+                return;
+            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
+                startPassphraseActivity();
+                return;
+            }
+            long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
+            for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i)
+                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+            mExportHelper.showExportKeysDialog(idsForMultiExport,
+                    Constants.Path.APP_DIR_FILE,
+                    mAdapter.isAnySecretSelected());
+        }
+
+        if (requestCode == REQUEST_ACTION) {
+            // if a result has been returned, display a notify
+            if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                result.createNotify(getActivity()).show();
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
@@ -776,7 +831,7 @@ public class KeyListFragment extends LoaderFragment
                     if (holder.mMasterKeyId != null) {
                         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
                         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
-                        startActivityForResult(safeSlingerIntent, 0);
+                        startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
                     }
                 }
             });
