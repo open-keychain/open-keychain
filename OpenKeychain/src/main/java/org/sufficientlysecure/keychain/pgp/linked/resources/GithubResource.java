@@ -41,7 +41,7 @@ public class GithubResource extends LinkedCookieResource {
         mGistId = gistId;
     }
 
-    public static String generateText (Context context, byte[] fingerprint) {
+    public static String generate(Context context, byte[] fingerprint) {
         String cookie = LinkedCookieResource.generate(context, fingerprint);
 
         return String.format(context.getResources().getString(R.string.linked_id_github_text), cookie);
@@ -56,6 +56,7 @@ public class GithubResource extends LinkedCookieResource {
         try {
 
             HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
+            httpGet.setHeader("User-Agent", "OpenKeychain");
 
             String response = getResponseBody(httpGet);
 
@@ -93,7 +94,67 @@ public class GithubResource extends LinkedCookieResource {
     }
 
     public static GithubResource searchInGithubStream(String screenName, String needle) {
-        // TODO implement
+
+        // narrow the needle down to important part
+        Matcher matcher = magicPattern.matcher(needle);
+        if (!matcher.find()) {
+            Log.e(Constants.TAG, "needle didn't contain cookie!");
+            return null;
+        }
+        needle = matcher.group();
+
+        try {
+
+            JSONArray array; {
+                HttpGet httpGet =
+                        new HttpGet("https://api.github.com/users/" + screenName + "/gists");
+                httpGet.setHeader("Content-Type", "application/json");
+                httpGet.setHeader("User-Agent", "OpenKeychain");
+
+                String response = getResponseBody(httpGet);
+                array = new JSONArray(response);
+            }
+
+            for (int i = 0, j = Math.min(array.length(), 5); i < j; i++) {
+                JSONObject obj = array.getJSONObject(i);
+
+                JSONObject files = obj.getJSONObject("files");
+                Iterator<String> it = files.keys();
+                if (it.hasNext()) {
+
+                    JSONObject file = files.getJSONObject(it.next());
+                    String type = file.getString("type");
+                    if (!"text/plain".equals(type)) {
+                        continue;
+                    }
+                    String id = obj.getString("id");
+                    HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + id);
+                    httpGet.setHeader("User-Agent", "OpenKeychain");
+
+                    JSONObject gistObj = new JSONObject(getResponseBody(httpGet));
+                    JSONObject gistFiles = gistObj.getJSONObject("files");
+                    Iterator<String> gistIt = gistFiles.keys();
+                    if (!gistIt.hasNext()) {
+                        continue;
+                    }
+                    // TODO can there be multiple candidates?
+                    JSONObject gistFile = gistFiles.getJSONObject(gistIt.next());
+                    String content = gistFile.getString("content");
+                    if (!content.contains(needle)) {
+                        continue;
+                    }
+
+                    URI uri = URI.create("https://gist.github.com/" + screenName + "/" + id);
+                    return create(uri);
+                }
+            }
+
+            // update the results with the body of the response
+            return null;
+        } catch (JSONException | HttpStatusException | IOException e) {
+            Log.e(Constants.TAG, "exception parsing stream", e);
+        }
+
         return null;
     }
 

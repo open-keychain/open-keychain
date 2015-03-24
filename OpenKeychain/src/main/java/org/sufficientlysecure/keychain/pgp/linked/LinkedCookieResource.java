@@ -158,6 +158,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
         private final String mReason;
 
         HttpStatusException(int statusCode, String reason) {
+            super("http status " + statusCode + ": " + reason);
             mStatusCode = statusCode;
             mReason = reason;
         }

@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.pgp.linked;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.pgp.linked.resources.GithubResource;
 import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -24,7 +25,7 @@ public abstract class LinkedResource {
     protected final Set<String> mFlags;
     protected final HashMap<String,String> mParams;
 
-    static Pattern magicPattern =
+    public static Pattern magicPattern =
             Pattern.compile("\\[Verifying my PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
 
     protected LinkedResource(Set<String> flags, HashMap<String, String> params, URI uri) {
@@ -95,6 +96,10 @@ public abstract class LinkedResource {
             return res;
         }
         res = TwitterResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
+        res = GithubResource.create(flags, params, subUri);
         if (res != null) {
             return res;
         }
