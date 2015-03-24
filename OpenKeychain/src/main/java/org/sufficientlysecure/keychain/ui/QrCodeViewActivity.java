@@ -80,7 +80,7 @@ public class QrCodeViewActivity extends BaseActivity {
                     KeychainContract.KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if (blob == null) {
                 Log.e(Constants.TAG, "key not found!");
-                Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
+                Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
                 ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             }
 
@@ -102,7 +102,7 @@ public class QrCodeViewActivity extends BaseActivity {
                     });
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
-            Notify.showNotify(this, R.string.error_key_not_found, Style.ERROR);
+            Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
         }
     }

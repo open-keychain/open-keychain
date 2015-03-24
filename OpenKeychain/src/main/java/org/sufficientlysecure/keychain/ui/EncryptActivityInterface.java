@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.net.Uri;
 
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 import java.util.ArrayList;
 
 public interface EncryptActivityInterface {
@@ -29,6 +31,8 @@ public interface EncryptActivityInterface {
 
     public boolean isUseArmor();
     public boolean isUseCompression();
+    public boolean isEncryptFilenames();
+    public boolean isHiddenRecipients();
 
     public long getSignatureKey();
     public long[] getEncryptionKeys();
@@ -37,7 +41,7 @@ public interface EncryptActivityInterface {
     public void setEncryptionKeys(long[] encryptionKeys);
     public void setEncryptionUsers(String[] encryptionUsers);
 
-    public void setPassphrase(String passphrase);
+    public void setPassphrase(Passphrase passphrase);
 
     // ArrayList on purpose as only those are parcelable
     public ArrayList<Uri> getInputUris();

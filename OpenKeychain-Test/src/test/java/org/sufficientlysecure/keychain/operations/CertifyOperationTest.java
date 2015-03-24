@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
@@ -65,8 +66,8 @@ import java.util.Random;
 public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
-    static String mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static String mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -255,13 +256,13 @@ public class CertifyOperationTest {
     }
 
     private CertifyOperation operationWithFakePassphraseCache(
-            final Long checkMasterKeyId, final Long checkSubKeyId, final String passphrase) {
+            final Long checkMasterKeyId, final Long checkSubKeyId, final Passphrase passphrase) {
 
         return new CertifyOperation(Robolectric.application,
                 new ProviderHelper(Robolectric.application),
                 null, null) {
             @Override
-            public String getCachedPassphrase(long masterKeyId, long subKeyId)
+            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
                     throws NoSecretKeyException {
                 if (checkMasterKeyId != null) {
                     Assert.assertEquals("requested passphrase should be for expected master key id",

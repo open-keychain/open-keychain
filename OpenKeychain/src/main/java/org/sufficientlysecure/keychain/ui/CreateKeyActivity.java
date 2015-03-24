@@ -20,31 +20,74 @@ package org.sufficientlysecure.keychain.ui;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.util.ArrayList;
 
 public class CreateKeyActivity extends BaseActivity {
 
     public static final String EXTRA_NAME = "name";
     public static final String EXTRA_EMAIL = "email";
+    public static final String EXTRA_FIRST_TIME = "first_time";
+    public static final String EXTRA_ADDITIONAL_EMAILS = "additional_emails";
+    public static final String EXTRA_PASSPHRASE = "passphrase";
 
-    public static enum FragAction {
-        START,
-        TO_RIGHT,
-        TO_LEFT
-    }
+    public static final String FRAGMENT_TAG = "currentFragment";
+
+    String mName;
+    String mEmail;
+    ArrayList<String> mAdditionalEmails;
+    Passphrase mPassphrase;
+    boolean mFirstTime;
+
+    Fragment mCurrentFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // pass extras into fragment
-        CreateKeyNameFragment frag =
-                CreateKeyNameFragment.newInstance(
-                        getIntent().getStringExtra(EXTRA_NAME),
-                        getIntent().getStringExtra(EXTRA_EMAIL)
-                );
-        loadFragment(null, frag, FragAction.START);
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            mName = savedInstanceState.getString(EXTRA_NAME);
+            mEmail = savedInstanceState.getString(EXTRA_EMAIL);
+            mAdditionalEmails = savedInstanceState.getStringArrayList(EXTRA_ADDITIONAL_EMAILS);
+            mPassphrase = savedInstanceState.getParcelable(EXTRA_PASSPHRASE);
+            mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
+
+            mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        } else {
+            // Initialize members with default values for a new instance
+            mName = getIntent().getStringExtra(EXTRA_NAME);
+            mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
+            mFirstTime = getIntent().getBooleanExtra(EXTRA_FIRST_TIME, false);
+
+            // Start with first fragment of wizard
+            CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
+            loadFragment(frag, FragAction.START);
+        }
+
+        if (mFirstTime) {
+            setTitle(R.string.app_name);
+            setActionBarIcon(R.drawable.ic_launcher);
+            mToolbar.setNavigationOnClickListener(null);
+        } else {
+            setTitle(R.string.title_manage_my_keys);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(EXTRA_NAME, mName);
+        outState.putString(EXTRA_EMAIL, mEmail);
+        outState.putStringArrayList(EXTRA_ADDITIONAL_EMAILS, mAdditionalEmails);
+        outState.putParcelable(EXTRA_PASSPHRASE, mPassphrase);
+        outState.putBoolean(EXTRA_FIRST_TIME, mFirstTime);
     }
 
     @Override
@@ -52,23 +95,23 @@ public class CreateKeyActivity extends BaseActivity {
         setContentView(R.layout.create_key_activity);
     }
 
-    public void loadFragment(Bundle savedInstanceState, Fragment fragment, FragAction action) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
+    public static enum FragAction {
+        START,
+        TO_RIGHT,
+        TO_LEFT
+    }
+
+    public void loadFragment(Fragment fragment, FragAction action) {
+        mCurrentFragment = fragment;
 
         // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         switch (action) {
             case START:
                 transaction.setCustomAnimations(0, 0);
-                transaction.replace(R.id.create_key_fragment_container, fragment)
-                        .commitAllowingStateLoss();
+                transaction.replace(R.id.create_key_fragment_container, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
             case TO_LEFT:
                 getSupportFragmentManager().popBackStackImmediate();
@@ -77,8 +120,8 @@ public class CreateKeyActivity extends BaseActivity {
                 transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
                         R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
                 transaction.addToBackStack(null);
-                transaction.replace(R.id.create_key_fragment_container, fragment)
-                        .commitAllowingStateLoss();
+                transaction.replace(R.id.create_key_fragment_container, fragment, FRAGMENT_TAG)
+                        .commit();
                 break;
 
         }

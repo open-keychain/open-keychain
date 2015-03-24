@@ -63,32 +63,7 @@ We are using the newest [Android Studio](http://developer.android.com/sdk/instal
 1. Clone the project from Github
 2. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
-## OpenKeychain's API
-
-OpenKeychain provides two APIs, namely the Intent API and the Remote OpenPGP API.
-The Intent API can be used without permissions to start OpenKeychain's activities for cryptographic operations, import of keys, etc.
-However, it always requires user input, so that no malicious application can use this API without user intervention.  
-The Remote OpenPGP API is more sophisticated and allows to to operations without user interaction in the background.
-When utilizing this API, OpenKeychain asks the user on first use to grant access for the calling client application.
-
-More technical information and examples about these APIs can be found in the project's wiki:  
-* [Intent API](https://github.com/open-keychain/open-keychain/wiki/Intent-API)
-* [Remote OpenPGP API](https://github.com/open-keychain/open-keychain/wiki/OpenPGP-API)
-
-
 ## Libraries
-
-
-### ZXing Barcode Scanner Android Integration
-
-Classes can be found under https://github.com/open-keychain/zxing-android-integration.
-
-1. Copy all classes from https://github.com/zxing/zxing/tree/master/android-integration folder to our git repository.
-
-### ZXing QR-Code Classes
-
-Classes can be found under https://github.com/open-keychain/zxing-qr-code.
-All QR Code related classes were extracted from the ZXing library (https://github.com/zxing/zxing).
 
 ### Bouncy Castle
 
@@ -184,17 +159,17 @@ The full coding style can be found at http://source.android.com/source/code-styl
 
 ### Automated syntax check with CheckStyle
 
-####Linux
+#### Linux
 1. Paste the `tools/checkstyle.xml` file to `~/.AndroidStudioPreview/config/codestyles/`
 2. Go to Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
 
-####Mac OSX
+#### Mac OSX
 1. Paste the `tools/checkstyle.xml` file to `~/Library/Preferences/AndroidStudioPreview/codestyles`
 2. Go to Preferences > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
 
-####Windows
+#### Windows
 1. Paste the `tools/checkstyle.xml` file to `C:\Users\<UserName>\.AndroidStudioPreview\config\codestyles`
 2. Go to File > Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio.

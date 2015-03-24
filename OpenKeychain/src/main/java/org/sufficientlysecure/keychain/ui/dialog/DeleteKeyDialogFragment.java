@@ -100,9 +100,9 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         }
                 );
                 String name;
-                String[] mainUserId = KeyRing.splitUserId((String) data.get(KeyRings.USER_ID));
-                if (mainUserId[0] != null) {
-                    name = mainUserId[0];
+                KeyRing.UserId mainUserId = KeyRing.splitUserId((String) data.get(KeyRings.USER_ID));
+                if (mainUserId.name != null) {
+                    name = mainUserId.name;
                 } else {
                     name = getString(R.string.user_id_no_name);
                 }

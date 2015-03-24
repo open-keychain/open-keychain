@@ -54,7 +54,9 @@ public class MainActivity extends MaterialNavigationDrawer implements FabContain
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.isFirstTime()) {
-            startActivity(new Intent(this, FirstTimeActivity.class));
+            Intent intent = new Intent(this, CreateKeyActivity.class);
+            intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+            startActivity(intent);
             finish();
             return;
         }

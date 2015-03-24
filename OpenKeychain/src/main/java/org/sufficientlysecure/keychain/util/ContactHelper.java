@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.util;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -28,7 +27,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.Patterns;
 
@@ -37,7 +35,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -303,10 +300,9 @@ public class ContactHelper {
         return new ArrayList<>(names);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static Uri dataUriFromContactUri(Context context, Uri contactUri) {
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
-                new String[]{ContactsContract.Data.DATA2}, null, null, null, null);
+                new String[]{ContactsContract.Data.DATA2}, null, null, null);
         if (contactMasterKey != null) {
             if (contactMasterKey.moveToNext()) {
                 return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
@@ -447,7 +443,7 @@ public class ContactHelper {
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                KeyRing.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
@@ -470,19 +466,19 @@ public class ContactHelper {
                     if (rawContactId != -1) {
                         deleteRawContactById(resolver, rawContactId);
                     }
-                } else if (userIdSplit[0] != null) {
+                } else if (userIdSplit.name != null) {
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
                         Log.d(Constants.TAG, "Insert new raw contact with masterKeyId " + masterKeyId);
 
                         insertContact(ops, context, masterKeyId);
-                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit[0]);
+                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit.name);
                     }
 
                     // We always update the display name (which is derived from primary user id)
                     // and email addresses from user id
-                    writeContactDisplayName(ops, rawContactId, userIdSplit[0]);
+                    writeContactDisplayName(ops, rawContactId, userIdSplit.name);
                     writeContactEmail(ops, resolver, rawContactId, masterKeyId);
                     try {
                         resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -521,9 +517,9 @@ public class ContactHelper {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                String[] userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
+                KeyRing.UserId userIdSplit = KeyRing.splitUserId(cursor.getString(INDEX_USER_ID));
 
-                if (!isExpired && !isRevoked && userIdSplit[0] != null) {
+                if (!isExpired && !isRevoked && userIdSplit.name != null) {
                     // if expired or revoked will not be removed from keysToDelete or inserted
                     // into main profile ("me" contact)
                     boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
@@ -534,7 +530,7 @@ public class ContactHelper {
 
                         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                         insertMainProfileRawContact(ops, masterKeyId);
-                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit[0]);
+                        writeContactKey(ops, context, rawContactId, masterKeyId, userIdSplit.name);
 
                         try {
                             resolver.applyBatch(ContactsContract.AUTHORITY, ops);
@@ -715,7 +711,6 @@ public class ContactHelper {
      *
      * @return raw contact id or -1 if not found
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private static long findRawContactId(ContentResolver resolver, long masterKeyId) {
         long rawContactId = -1;
         Cursor raw = resolver.query(ContactsContract.RawContacts.CONTENT_URI,
@@ -725,7 +720,7 @@ public class ContactHelper {
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " + ContactsContract.RawContacts.SOURCE_ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
-                }, null, null);
+                }, null);
         if (raw != null) {
             if (raw.moveToNext()) {
                 rawContactId = raw.getLong(0);
@@ -776,14 +771,14 @@ public class ContactHelper {
                 null, null);
         if (ids != null) {
             while (ids.moveToNext()) {
-                String[] userId = KeyRing.splitUserId(ids.getString(0));
-                if (userId[1] != null) {
+                KeyRing.UserId userId = KeyRing.splitUserId(ids.getString(0));
+                if (userId.email != null) {
                     ops.add(referenceRawContact(
                             ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),
                             rawContactId)
                             .withValue(ContactsContract.Data.MIMETYPE,
                                     ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                            .withValue(ContactsContract.CommonDataKinds.Email.DATA, userId[1])
+                            .withValue(ContactsContract.CommonDataKinds.Email.DATA, userId.email)
                             .build());
                 }
             }

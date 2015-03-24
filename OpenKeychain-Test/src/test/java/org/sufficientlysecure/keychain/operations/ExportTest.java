@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
@@ -51,11 +52,11 @@ import java.util.Iterator;
 @org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
 public class ExportTest {
 
-    static String mPassphrase = TestingUtils.genPassphrase(true);
+    static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
-    static String mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static String mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -94,7 +95,7 @@ public class ExportTest {
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("snails");
-            parcel.mNewUnlock = new ChangeUnlockParcel(null, "1234");
+            parcel.mNewUnlock = new ChangeUnlockParcel(null, new Passphrase("1234"));
 
             PgpEditKeyResult result = op.createSecretKeyRing(parcel);
             Assert.assertTrue("initial test key creation must succeed", result.success());

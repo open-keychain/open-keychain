@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -63,16 +63,19 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
+    private boolean mShareAfterEncrypt = false;
+    private boolean mUseCompression = true;
+    private boolean mHiddenRecipients = false;
+
     private long mEncryptionKeyIds[] = null;
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
-    private boolean mShareAfterEncrypt = false;
+    private Passphrase mPassphrase = new Passphrase();
+
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
-    private boolean mUseCompression = true;
 
     public boolean isModeSymmetric() {
         return MODE_SYMMETRIC == mCurrentMode;
@@ -84,8 +87,18 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     }
 
     @Override
+    public boolean isEncryptFilenames() {
+        return false;
+    }
+
+    @Override
     public boolean isUseCompression() {
         return mUseCompression;
+    }
+
+    @Override
+    public boolean isHiddenRecipients() {
+        return mHiddenRecipients;
     }
 
     @Override
@@ -122,7 +135,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     }
 
     @Override
-    public void setPassphrase(String passphrase) {
+    public void setPassphrase(Passphrase passphrase) {
+        mPassphrase.removeFromMemory();
         mPassphrase = passphrase;
     }
 
@@ -184,8 +198,9 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             // Copy to clipboard
             copyToClipboard(result.getResultBytes());
             result.createNotify(EncryptTextActivity.this).show();
-            // Notify.showNotify(EncryptTextActivity.this,
-            // R.string.encrypt_sign_clipboard_successful, Notify.Style.INFO);
+            // Notify.create(EncryptTextActivity.this,
+            // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
+            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
         }
     }
 
@@ -202,6 +217,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setHiddenRecipients(mHiddenRecipients);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
@@ -210,8 +226,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passphrase = mPassphrase;
-            if (passphrase.length() == 0) {
+            Passphrase passphrase = mPassphrase;
+            if (passphrase.isEmpty()) {
                 passphrase = null;
             }
             data.setSymmetricPassphrase(passphrase);
@@ -247,15 +263,15 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
     private Intent createSendIntent(byte[] resultBytes) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.setType("text/plain");
+        sendIntent.setType(Constants.ENCRYPTED_TEXT_MIME);
         sendIntent.putExtra(Intent.EXTRA_TEXT, new String(resultBytes));
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
-                String[] userId = KeyRing.splitUserId(user);
-                if (userId[1] != null) {
-                    users.add(userId[1]);
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
                 }
             }
             // pass trough email addresses as extra for email applications
@@ -266,7 +282,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
     protected boolean inputIsValid() {
         if (mMessage == null) {
-            Notify.showNotify(this, R.string.error_message, Notify.Style.ERROR);
+            Notify.create(this, R.string.error_message, Notify.Style.ERROR)
+                    .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
             return false;
         }
 
@@ -274,11 +291,13 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             // symmetric encryption checks
 
             if (mPassphrase == null) {
-                Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
             if (mPassphrase.isEmpty()) {
-                Notify.showNotify(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
 
@@ -289,7 +308,8 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                     && mEncryptionKeyIds.length > 0);
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
-                Notify.showNotify(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR);
+                Notify.create(this, R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
                 return false;
             }
         }
@@ -353,6 +373,11 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
                 notifyUpdate();
                 break;
             }
+//            case R.id.check_hidden_recipients: {
+//                mHiddenRecipients = item.isChecked();
+//                notifyUpdate();
+//                break;
+//            }
             default: {
                 return super.onOptionsItemSelected(item);
             }

@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -34,19 +35,12 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CreateKeyPassphraseFragment extends Fragment {
-
-    public static final String ARG_NAME = "name";
-    public static final String ARG_EMAIL = "email";
-    public static final String ARG_ADDITIONAL_EMAILS = "emails";
-
-    // model
-    String mName;
-    String mEmail;
-    ArrayList<String> mAdditionalEmails;
 
     // view
     CreateKeyActivity mCreateKeyActivity;
@@ -59,15 +53,10 @@ public class CreateKeyPassphraseFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static CreateKeyPassphraseFragment newInstance(String name, String email,
-                                                          ArrayList<String> additionalEmails) {
+    public static CreateKeyPassphraseFragment newInstance() {
         CreateKeyPassphraseFragment frag = new CreateKeyPassphraseFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_NAME, name);
-        args.putString(ARG_EMAIL, email);
-        args.putStringArrayList(ARG_ADDITIONAL_EMAILS, additionalEmails);
-
         frag.setArguments(args);
 
         return frag;
@@ -83,7 +72,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
      */
     private static boolean isEditTextNotEmpty(Context context, EditText editText) {
         boolean output = true;
-        if (editText.getText().toString().length() == 0) {
+        if (editText.getText().length() == 0) {
             editText.setError(context.getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
@@ -95,11 +84,13 @@ public class CreateKeyPassphraseFragment extends Fragment {
     }
 
     private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
-        boolean output = true;
-        if (!editText1.getText().toString().equals(editText2.getText().toString())) {
+        Passphrase p1 = new Passphrase(editText1);
+        Passphrase p2 = new Passphrase(editText2);
+        boolean output = (p1.equals(p2));
+
+        if (!output) {
             editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
             editText2.requestFocus();
-            output = false;
         } else {
             editText2.setError(null);
         }
@@ -118,9 +109,12 @@ public class CreateKeyPassphraseFragment extends Fragment {
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
         // initial values
-        mName = getArguments().getString(ARG_NAME);
-        mEmail = getArguments().getString(ARG_EMAIL);
-        mAdditionalEmails = getArguments().getStringArrayList(ARG_ADDITIONAL_EMAILS);
+        // TODO: using String here is unsafe...
+        if (mCreateKeyActivity.mPassphrase != null) {
+            mPassphraseEdit.setText(Arrays.toString(mCreateKeyActivity.mPassphrase.getCharArray()));
+            mPassphraseEditAgain.setText(Arrays.toString(mCreateKeyActivity.mPassphrase.getCharArray()));
+        }
+
         mPassphraseEdit.requestFocus();
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +125,7 @@ public class CreateKeyPassphraseFragment extends Fragment {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createKeyCheck();
+                nextClicked();
             }
         });
         mShowPassphrase.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -159,23 +153,19 @@ public class CreateKeyPassphraseFragment extends Fragment {
 
     private void back() {
         hideKeyboard();
-        mCreateKeyActivity.loadFragment(null, null, FragAction.TO_LEFT);
+        mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
     }
 
-    private void createKeyCheck() {
+    private void nextClicked() {
         if (isEditTextNotEmpty(getActivity(), mPassphraseEdit)
                 && areEditTextsEqual(getActivity(), mPassphraseEdit, mPassphraseEditAgain)) {
 
-            CreateKeyFinalFragment frag =
-                    CreateKeyFinalFragment.newInstance(
-                            mName,
-                            mEmail,
-                            mAdditionalEmails,
-                            mPassphraseEdit.getText().toString()
-                    );
+            // save state
+            mCreateKeyActivity.mPassphrase = new Passphrase(mPassphraseEdit);
 
+            CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
             hideKeyboard();
-            mCreateKeyActivity.loadFragment(null, frag, FragAction.TO_RIGHT);
+            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
 

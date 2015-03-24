@@ -118,7 +118,7 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
 
     private void proofToClipboard() {
         ClipboardReflection.copyToClipboard(getActivity(), mResourceString);
-        Notify.showNotify(getActivity(), R.string.linked_text_clipboard, Notify.Style.OK);
+        Notify.create(getActivity(), R.string.linked_text_clipboard, Notify.Style.OK).show();
     }
 
     private void saveFile(Uri uri) {
@@ -127,10 +127,10 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
                     new PrintWriter(getActivity().getContentResolver().openOutputStream(uri));
             out.print(mResourceString);
             if (out.checkError()) {
-                Notify.showNotify(getActivity(), "Error writing file!", Style.ERROR);
+                Notify.create(getActivity(), "Error writing file!", Style.ERROR).show();
             }
         } catch (FileNotFoundException e) {
-            Notify.showNotify(getActivity(), "File could not be opened for writing!", Style.ERROR);
+            Notify.create(getActivity(), "File could not be opened for writing!", Style.ERROR).show();
             e.printStackTrace();
         }
     }

@@ -125,7 +125,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     private void proofSave () {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            Notify.showNotify(getActivity(), "External storage not available!", Style.ERROR);
+            Notify.create(getActivity(), "External storage not available!", Style.ERROR);
             return;
         }
 
@@ -146,11 +146,10 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
                     new PrintWriter(getActivity().getContentResolver().openOutputStream(uri));
             out.print(mResourceString);
             if (out.checkError()) {
-                Notify.showNotify(getActivity(), "Error writing file!", Style.ERROR);
+                Notify.create(getActivity(), "Error writing file!", Style.ERROR).show();
             }
         } catch (FileNotFoundException e) {
-            Notify.showNotify(getActivity(), "File could not be opened for writing!", Style.ERROR);
-            e.printStackTrace();
+            Notify.create(getActivity(), "File could not be opened for writing!", Style.ERROR).show();
         }
     }
 

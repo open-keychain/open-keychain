@@ -122,16 +122,16 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         ViewHolderItem h = (ViewHolderItem) view.getTag();
 
         String userId = cursor.getString(mIndexUserId);
-        String[] userIdSplit = KeyRing.splitUserId(userId);
+        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
-        if (userIdSplit[0] != null) {
-            h.mainUserId.setText(highlighter.highlight(userIdSplit[0]));
+        if (userIdSplit.name != null) {
+            h.mainUserId.setText(highlighter.highlight(userIdSplit.name));
         } else {
             h.mainUserId.setText(R.string.user_id_no_name);
         }
-        if (userIdSplit[1] != null) {
+        if (userIdSplit.email != null) {
             h.mainUserIdRest.setVisibility(View.VISIBLE);
-            h.mainUserIdRest.setText(highlighter.highlight(userIdSplit[1]));
+            h.mainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
         } else {
             h.mainUserIdRest.setVisibility(View.GONE);
         }

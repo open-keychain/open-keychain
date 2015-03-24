@@ -39,7 +39,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Calendar;
@@ -158,9 +157,9 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
                     TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
                     TextView vDuplicate = (TextView) view.findViewById(R.id.keyspinner_duplicate);
 
-                    String[] userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
-                    vKeyName.setText(userId[2] == null ? userId[0] : (userId[0] + " (" + userId[2] + ")"));
-                    vKeyEmail.setText(userId[1]);
+                    KeyRing.UserId userId = KeyRing.splitUserId(cursor.getString(mIndexUserId));
+                    vKeyName.setText(userId.name);
+                    vKeyEmail.setText(userId.email);
 
                     boolean duplicate = cursor.getLong(mIndexDuplicate) > 0;
                     if (duplicate) {

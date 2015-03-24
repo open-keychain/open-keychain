@@ -80,14 +80,14 @@ public class LinkedIdCreateGithubStep1Fragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result == null) {
-                            Notify.showNotify(getActivity(),
-                                    "Connection error while checking username!", Notify.Style.ERROR);
+                            Notify.create(getActivity(),
+                                    "Connection error while checking username!", Notify.Style.ERROR).show();
                             return;
                         }
 
                         if (!result) {
-                            Notify.showNotify(getActivity(),
-                                    "This handle does not exist on Github!", Notify.Style.ERROR);
+                            Notify.create(getActivity(),
+                                    "This handle does not exist on Github!", Notify.Style.ERROR).show();
                             return;
                         }
 

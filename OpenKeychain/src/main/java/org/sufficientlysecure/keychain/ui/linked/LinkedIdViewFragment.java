@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 public class LinkedIdViewFragment extends Fragment implements
@@ -153,7 +154,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error parsing identity", e);
-                    Notify.createNotify(getActivity(), "Error parsing identity!",
+                    Notify.create(getActivity(), "Error parsing identity!",
                             Notify.LENGTH_LONG, Style.ERROR).show();
                     finishFragment();
                 }
@@ -492,7 +493,7 @@ public class LinkedIdViewFragment extends Fragment implements
         }
 
         // get the user's passphrase for this key (if required)
-        String passphrase;
+        Passphrase passphrase;
         long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(

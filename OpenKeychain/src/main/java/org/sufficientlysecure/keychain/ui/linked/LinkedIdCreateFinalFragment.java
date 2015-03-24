@@ -168,7 +168,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     private void startCertify() {
 
         if (mVerifiedResource == null) {
-            Notify.showNotify(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR).show();
             return;
         }
 

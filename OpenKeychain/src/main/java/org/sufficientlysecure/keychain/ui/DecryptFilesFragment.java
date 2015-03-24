@@ -139,7 +139,7 @@ public class DecryptFilesFragment extends DecryptFragment {
 
     private void decryptAction() {
         if (mInputUri == null) {
-            Notify.showNotify(getActivity(), R.string.no_file_selected, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
             return;
         }
 
@@ -147,7 +147,9 @@ public class DecryptFilesFragment extends DecryptFragment {
     }
 
     private String removeEncryptedAppend(String name) {
-        if (name.endsWith(".asc") || name.endsWith(".gpg") || name.endsWith(".pgp")) {
+        if (name.endsWith(Constants.FILE_EXTENSION_ASC)
+                || name.endsWith(Constants.FILE_EXTENSION_PGP_MAIN)
+                || name.endsWith(Constants.FILE_EXTENSION_PGP_ALTERNATE)) {
             return name.substring(0, name.length() - 4);
         }
         return name;
@@ -189,7 +191,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -263,7 +265,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
-        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
         data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -339,7 +341,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     decryptOriginalFilename();
                 }
                 return;

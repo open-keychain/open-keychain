@@ -186,7 +186,7 @@ public class RemoteServiceActivity extends BaseActivity {
 
                                 // user needs to select a key if it has explicitly requested (None is only allowed for new accounts)
                                 if (mUpdateExistingAccount && mAccSettingsFragment.getAccSettings().getKeyId() == Constants.key.none) {
-                                    Notify.showNotify(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Notify.Style.ERROR);
+                                    Notify.create(RemoteServiceActivity.this, getString(R.string.api_register_error_select_key), Notify.Style.ERROR).show();
                                 } else {
                                     if (mUpdateExistingAccount) {
                                         Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(packageName);

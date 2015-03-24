@@ -78,13 +78,13 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result == null) {
-                            Notify.showNotify(getActivity(),
+                            Notify.create(getActivity(),
                                     "Connection error while checking username!", Notify.Style.ERROR);
                             return;
                         }
 
                         if (!result) {
-                            Notify.showNotify(getActivity(),
+                            Notify.create(getActivity(),
                                     "This handle does not exist on Twitter!", Notify.Style.ERROR);
                             return;
                         }

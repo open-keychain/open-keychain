@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.lang.reflect.Method;
@@ -168,8 +169,8 @@ public class CertifyKeyFragment extends LoaderFragment
             @Override
             public void onClick(View v) {
                 if (mSignMasterKeyId == Constants.key.none) {
-                    Notify.showNotify(getActivity(), getString(R.string.select_key_to_certify),
-                            Notify.Style.ERROR);
+                    Notify.create(getActivity(), getString(R.string.select_key_to_certify),
+                            Notify.Style.ERROR).show();
                 } else {
                     initiateCertifying();
                 }
@@ -246,14 +247,14 @@ public class CertifyKeyFragment extends LoaderFragment
         while (!data.isAfterLast()) {
             long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
             String userId = data.getString(INDEX_USER_ID);
-            String[] pieces = KeyRing.splitUserId(userId);
+            KeyRing.UserId pieces = KeyRing.splitUserId(userId);
 
             // Two cases:
 
             boolean grouped = masterKeyId == lastMasterKeyId;
-            boolean subGrouped = data.isFirst() || grouped && lastName.equals(pieces[0]);
+            boolean subGrouped = data.isFirst() || grouped && lastName.equals(pieces.name);
             // Remember for next loop
-            lastName = pieces[0];
+            lastName = pieces.name;
 
             Log.d(Constants.TAG, Long.toString(masterKeyId, 16) + (grouped ? "grouped" : "not grouped"));
 
@@ -318,7 +319,7 @@ public class CertifyKeyFragment extends LoaderFragment
      */
     private void initiateCertifying() {
         // get the user's passphrase for this key (if required)
-        String passphrase;
+        Passphrase passphrase;
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(getActivity(), mSignMasterKeyId, mSignMasterKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
@@ -341,7 +342,6 @@ public class CertifyKeyFragment extends LoaderFragment
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     startCertifying();
                 }
                 return;
@@ -360,8 +360,8 @@ public class CertifyKeyFragment extends LoaderFragment
         // Bail out if there is not at least one user id selected
         ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
         if (certifyActions.isEmpty()) {
-            Notify.showNotify(getActivity(), "No identities selected!",
-                    Notify.Style.ERROR);
+            Notify.create(getActivity(), "No identities selected!",
+                    Notify.Style.ERROR).show();
             return;
         }
 

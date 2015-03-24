@@ -89,7 +89,7 @@
   <string name="menu_help">ヘルプ</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
-  <string name="menu_create_key">自分の鍵の生成</string>
+  <string name="menu_manage_keys">自分の鍵の生成</string>
   <string name="menu_import_existing_key">ファイルからインポート</string>
   <string name="menu_search">検索</string>
   <string name="menu_nfc_preferences">NFC設定</string>

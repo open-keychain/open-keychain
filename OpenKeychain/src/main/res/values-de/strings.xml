@@ -88,7 +88,7 @@
   <string name="menu_help">Hilfe</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
-  <string name="menu_create_key">Erzeuge meinen Schlüssel</string>
+  <string name="menu_manage_keys">Erzeuge meinen Schlüssel</string>
   <string name="menu_import_existing_key">Von Datei importieren</string>
   <string name="menu_search">Suchen</string>
   <string name="menu_nfc_preferences">NFC-Einstellungen</string>

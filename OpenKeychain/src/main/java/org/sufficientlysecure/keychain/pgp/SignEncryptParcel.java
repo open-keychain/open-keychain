@@ -1,8 +1,28 @@
+/*
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.pgp;
 
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,12 +59,12 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         mEnableAsciiArmorOutput  = src.readInt() == 1;
         mCompressionId = src.readInt();
         mEncryptionMasterKeyIds = src.createLongArray();
-        mSymmetricPassphrase = src.readString();
+        mSymmetricPassphrase = src.readParcelable(Passphrase.class.getClassLoader());
         mSymmetricEncryptionAlgorithm = src.readInt();
         mSignatureMasterKeyId = src.readLong();
         mSignatureSubKeyId = src.readInt() == 1 ? src.readLong() : null;
         mSignatureHashAlgorithm = src.readInt();
-        mSignaturePassphrase = src.readString();
+        mSignaturePassphrase = src.readParcelable(Passphrase.class.getClassLoader());
         mAdditionalEncryptId = src.readLong();
         mNfcSignedHash = src.createByteArray();
         mNfcCreationTimestamp = src.readInt() == 1 ? new Date(src.readLong()) : null;
@@ -52,6 +72,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         mCharset = src.readString();
         mCleartextSignature = src.readInt() == 1;
         mDetachedSignature = src.readInt() == 1;
+        mHiddenRecipients = src.readInt() == 1;
 
         mInputUris = src.createTypedArrayList(Uri.CREATOR);
         mOutputUris = src.createTypedArrayList(Uri.CREATOR);
@@ -93,7 +114,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
         dest.writeInt(mCompressionId);
         dest.writeLongArray(mEncryptionMasterKeyIds);
-        dest.writeString(mSymmetricPassphrase);
+        dest.writeParcelable(mSymmetricPassphrase, flags);
         dest.writeInt(mSymmetricEncryptionAlgorithm);
         dest.writeLong(mSignatureMasterKeyId);
         if (mSignatureSubKeyId != null) {
@@ -103,7 +124,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
             dest.writeInt(0);
         }
         dest.writeInt(mSignatureHashAlgorithm);
-        dest.writeString(mSignaturePassphrase);
+        dest.writeParcelable(mSignaturePassphrase, flags);
         dest.writeLong(mAdditionalEncryptId);
         dest.writeByteArray(mNfcSignedHash);
         if (mNfcCreationTimestamp != null) {
@@ -116,6 +137,7 @@ public class SignEncryptParcel extends PgpSignEncryptInput implements Parcelable
         dest.writeString(mCharset);
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
+        dest.writeInt(mHiddenRecipients ? 1 : 0);
 
         dest.writeTypedList(mInputUris);
         dest.writeTypedList(mOutputUris);

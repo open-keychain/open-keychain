@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.Date;
 
@@ -41,7 +42,7 @@ public abstract class EncryptActivity extends BaseActivity {
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
     // For NFC data
-    protected String mSigningKeyPassphrase = null;
+    protected Passphrase mSigningKeyPassphrase = null;
     protected Date mNfcTimestamp = null;
     protected byte[] mNfcHash = null;
 
@@ -64,7 +65,7 @@ public abstract class EncryptActivity extends BaseActivity {
         startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
     }
 
-    protected void startNfcSign(long keyId, String pin, byte[] hashToSign, int hashAlgo) {
+    protected void startNfcSign(long keyId, Passphrase pin, byte[] hashToSign, int hashAlgo) {
         // build PendingIntent for Yubikey NFC operations
         Intent intent = new Intent(this, NfcActivity.class);
         intent.setAction(NfcActivity.ACTION_SIGN_HASH);
@@ -84,7 +85,7 @@ public abstract class EncryptActivity extends BaseActivity {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == RESULT_OK && data != null) {
-                    mSigningKeyPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mSigningKeyPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     startEncrypt();
                     return;
                 }

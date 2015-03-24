@@ -67,6 +67,7 @@ import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class EditKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -100,7 +101,7 @@ public class EditKeyFragment extends LoaderFragment implements
     private SaveKeyringParcel mSaveKeyringParcel;
 
     private String mPrimaryUserId;
-    private String mCurrentPassphrase;
+    private Passphrase mCurrentPassphrase;
 
     /**
      * Creates new instance of this fragment
@@ -267,7 +268,7 @@ public class EditKeyFragment extends LoaderFragment implements
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mCurrentPassphrase = data.getStringExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+                    mCurrentPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
                     // Prepare the loaders. Either re-connect with an existing ones,
                     // or start new ones.
                     getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, EditKeyFragment.this);
@@ -386,7 +387,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            data.getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
                             null
                     );
                 }
@@ -545,7 +546,7 @@ public class EditKeyFragment extends LoaderFragment implements
         Messenger messenger = new Messenger(returnHandler);
 
         // pre-fill out primary name
-        String predefinedName = KeyRing.splitUserId(mPrimaryUserId)[0];
+        String predefinedName = KeyRing.splitUserId(mPrimaryUserId).name;
         AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
                 predefinedName);
 
@@ -576,11 +577,11 @@ public class EditKeyFragment extends LoaderFragment implements
 
     private void returnKeyringParcel() {
         if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
-            Notify.showNotify(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR).show();
             return;
         }
         if (mSaveKeyringParcel.mAddSubKeys.size() == 0) {
-            Notify.showNotify(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR);
+            Notify.create(getActivity(), R.string.edit_key_error_add_subkey, Notify.Style.ERROR).show();
             return;
         }
 
@@ -593,7 +594,7 @@ public class EditKeyFragment extends LoaderFragment implements
         getActivity().finish();
     }
 
-    private void saveInDatabase(String passphrase) {
+    private void saveInDatabase(Passphrase passphrase) {
         Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel.toString());
 
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
@@ -640,7 +641,7 @@ public class EditKeyFragment extends LoaderFragment implements
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putString(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
+        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
         data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

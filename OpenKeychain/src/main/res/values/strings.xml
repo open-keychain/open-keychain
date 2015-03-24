@@ -45,6 +45,7 @@
     <string name="title_keys">"Keys"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
+    <string name="title_manage_my_keys">"Manage my keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
@@ -107,7 +108,7 @@
     <string name="menu_help">"Help"</string>
     <string name="menu_export_key">"Export to file"</string>
     <string name="menu_delete_key">"Delete key"</string>
-    <string name="menu_create_key">"Create my key"</string>
+    <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_import_existing_key">"Import from file"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_nfc_preferences">"NFC settings"</string>
@@ -142,7 +143,7 @@
     <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access YubiKeys over NFC"</string>
     <string name="label_asymmetric_from">"Signed by:"</string>
     <string name="label_to">"Encrypt to:"</string>
-    <string name="label_delete_after_encryption">"Delete file after encryption"</string>
+    <string name="label_delete_after_encryption">"Delete files after encryption"</string>
     <string name="label_delete_after_decryption">"Delete after decryption"</string>
     <string name="label_encryption_algorithm">"Encryption algorithm"</string>
     <string name="label_hash_algorithm">"Hash algorithm"</string>
@@ -168,6 +169,8 @@
     <string name="label_first_keyserver_is_used">"(First keyserver listed is preferred)"</string>
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
+    <string name="label_encrypt_filenames">"Encrypt filenames"</string>
+    <string name="label_hidden_recipients">"Hide recipients"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
@@ -1211,8 +1214,9 @@
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
-    <string name="first_time_create_key">"Create my key"</string>
-    <string name="first_time_import_key">"Import from file"</string>
+    <string name="first_time_create_key">"Create my key (recommended)"</string>
+    <string name="first_time_import_key">"Import key from file"</string>
+    <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
 
     <!-- unsorted -->

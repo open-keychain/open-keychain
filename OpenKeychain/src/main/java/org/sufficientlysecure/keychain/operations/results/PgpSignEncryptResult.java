@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 import java.util.Date;
 
 public class PgpSignEncryptResult extends OperationResult {
@@ -36,7 +38,7 @@ public class PgpSignEncryptResult extends OperationResult {
     byte[] mNfcHash;
     int mNfcAlgo;
     Date mNfcTimestamp;
-    String mNfcPassphrase;
+    Passphrase mNfcPassphrase;
     byte[] mDetachedSignature;
 
     public long getKeyIdPassphraseNeeded() {
@@ -47,7 +49,7 @@ public class PgpSignEncryptResult extends OperationResult {
         mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
     }
 
-    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, String passphrase) {
+    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Date nfcTimestamp, Passphrase passphrase) {
         mNfcKeyId = nfcKeyId;
         mNfcHash = nfcHash;
         mNfcAlgo = nfcAlgo;
@@ -75,7 +77,7 @@ public class PgpSignEncryptResult extends OperationResult {
         return mNfcTimestamp;
     }
 
-    public String getNfcPassphrase() {
+    public Passphrase getNfcPassphrase() {
         return mNfcPassphrase;
     }
 

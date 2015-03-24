@@ -18,7 +18,6 @@ dependencies {
     compile 'com.google.zxing:core:3.0.1'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'it.neokree:MaterialNavigationDrawer:1.3.1'
-    compile 'com.nispok:snackbar:2.9.1'
     compile 'com.getbase:floatingactionbutton:1.8.0'
     compile 'com.ocpsoft:ocpsoft-pretty-time:1.0.6'
     
@@ -35,6 +34,7 @@ dependencies {
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:TokenAutoComplete:library')
     compile project(':extern:safeslinger-exchange')
+    compile project(':extern:snackbar:lib')
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -51,7 +51,7 @@ dependencyVerification {
         'com.google.zxing:core:38c49045765281e4c170062fa3f48e4e988629bf985cab850c7497be5eaa72a1',
         'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
         'it.neokree:MaterialNavigationDrawer:1174d751a54689fccf53c1fbcdf439745926ae19024f4f1017afb6b29643c57d',
-        'com.nispok:snackbar:59dc092a44c877e9ce5f9040c632d99e62d8932b0a4d67ba0ec9e35467d9047c',
+        // 'com.nispok:snackbar:59dc092a44c877e9ce5f9040c632d99e62d8932b0a4d67ba0ec9e35467d9047c',
         'com.getbase:floatingactionbutton:e63966148212e9685afad2370780ea239b6dbd2a06f6a3f919b98882318e6a32',
         'com.android.support:support-annotations:fdee2354787ef66b268e75958de3f7f6c4f8f325510a6dac9f49c929f83a63de',
         'com.balysv:material-ripple:587f19c1e27f16c7dc67ff9ac73838aa1451086ef05a15cee38bee3e4e1454ae',

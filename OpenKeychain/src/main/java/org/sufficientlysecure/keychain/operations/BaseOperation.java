@@ -24,6 +24,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -101,7 +102,7 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
     }
 
     @Override
-    public String getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
+    public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
         try {
             long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
             return getCachedPassphrase(masterKeyId, subKeyId);
@@ -111,7 +112,7 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
     }
 
     @Override
-    public String getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
+    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
         try {
             return PassphraseCacheService.getCachedPassphrase(
                     mContext, masterKeyId, subKeyId);

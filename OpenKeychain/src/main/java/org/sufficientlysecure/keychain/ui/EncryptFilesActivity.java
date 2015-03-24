@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.ArrayList;
@@ -62,14 +63,18 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     private static final int MODE_SYMMETRIC = 1;
 
     // model used by fragments
-    private long mEncryptionKeyIds[] = null;
-    private String mEncryptionUserIds[] = null;
-    private long mSigningKeyId = Constants.key.none;
-    private String mPassphrase = "";
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
+    private boolean mEncryptFilenames = true;
+    private boolean mHiddenRecipients = false;
+
+    private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
+    private long mSigningKeyId = Constants.key.none;
+    private Passphrase mPassphrase = new Passphrase();
+
     private ArrayList<Uri> mInputUris;
     private ArrayList<Uri> mOutputUris;
     private String mMessage = "";
@@ -86,6 +91,16 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     @Override
     public boolean isUseCompression() {
         return mUseCompression;
+    }
+
+    @Override
+    public boolean isEncryptFilenames() {
+        return mEncryptFilenames;
+    }
+
+    @Override
+    public boolean isHiddenRecipients() {
+        return mHiddenRecipients;
     }
 
     @Override
@@ -122,7 +137,7 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
     }
 
     @Override
-    public void setPassphrase(String passphrase) {
+    public void setPassphrase(Passphrase passphrase) {
         mPassphrase = passphrase;
     }
 
@@ -222,14 +237,15 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         } else {
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
+        data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
         if (isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passphrase = mPassphrase;
-            if (passphrase.length() == 0) {
+            Passphrase passphrase = mPassphrase;
+            if (passphrase.isEmpty()) {
                 passphrase = null;
             }
             data.setSymmetricPassphrase(passphrase);
@@ -268,14 +284,14 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
             sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
         }
-        sendIntent.setType("application/octet-stream");
+        sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
 
         if (!isModeSymmetric() && mEncryptionUserIds != null) {
             Set<String> users = new HashSet<>();
             for (String user : mEncryptionUserIds) {
-                String[] userId = KeyRing.splitUserId(user);
-                if (userId[1] != null) {
-                    users.add(userId[1]);
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
                 }
             }
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
@@ -287,7 +303,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
         // file checks
 
         if (mInputUris.isEmpty()) {
-            Notify.showNotify(this, R.string.no_file_selected, Notify.Style.ERROR);
+            Notify.create(this, R.string.no_file_selected, Notify.Style.ERROR)
+                    .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
             return false;
         } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
             // This should be impossible...
@@ -301,11 +318,13 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
             // symmetric encryption checks
 
             if (mPassphrase == null) {
-                Notify.showNotify(this, R.string.passphrases_do_not_match, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
             if (mPassphrase.isEmpty()) {
-                Notify.showNotify(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR);
+                Notify.create(this, R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
 
@@ -317,7 +336,8 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
 
             // Files must be encrypted, only text can be signed-only right now
             if (!gotEncryptionKeys) {
-                Notify.showNotify(this, R.string.select_encryption_key, Notify.Style.ERROR);
+                Notify.create(this, R.string.select_encryption_key, Notify.Style.ERROR)
+                        .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_file_fragment));
                 return false;
             }
         }
@@ -371,6 +391,16 @@ public class EncryptFilesActivity extends EncryptActivity implements EncryptActi
                 notifyUpdate();
                 break;
             }
+            case R.id.check_encrypt_filenames: {
+                mEncryptFilenames = item.isChecked();
+                notifyUpdate();
+                break;
+            }
+//            case R.id.check_hidden_recipients: {
+//                mHiddenRecipients = item.isChecked();
+//                notifyUpdate();
+//                break;
+//            }
             default: {
                 return super.onOptionsItemSelected(item);
             }

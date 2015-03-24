@@ -85,7 +85,7 @@
   <string name="menu_help">Помощь</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
-  <string name="menu_create_key">Создать свой ключ</string>
+  <string name="menu_manage_keys">Создать свой ключ</string>
   <string name="menu_import_existing_key">Импорт из файла</string>
   <string name="menu_search">Поиск</string>
   <string name="menu_nfc_preferences">Настройки NFC</string>

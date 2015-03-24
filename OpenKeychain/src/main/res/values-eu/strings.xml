@@ -76,7 +76,7 @@
   <string name="menu_help">Laguntza</string>
   <string name="menu_export_key">Esportatu agirira</string>
   <string name="menu_delete_key">Ezabatu giltza</string>
-  <string name="menu_create_key">Sortu nire giltza</string>
+  <string name="menu_manage_keys">Sortu nire giltza</string>
   <string name="menu_import_existing_key">inportatu agiritik</string>
   <string name="menu_search">Bilatu</string>
   <string name="menu_nfc_preferences">NFC ezarpenak</string>

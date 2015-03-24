@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
@@ -60,7 +60,6 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** This class supports a single, low-level, sign/encrypt operation.
@@ -117,7 +116,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
                 + "\nenableEncryption:" + enableEncryption
                 + "\nenableCompression:" + enableCompression
-                + "\nenableAsciiArmorOutput:" + input.ismEnableAsciiArmorOutput());
+                + "\nenableAsciiArmorOutput:" + input.isEnableAsciiArmorOutput()
+                + "\nisHiddenRecipients:" + input.isHiddenRecipients());
 
         // add additional key id to encryption ids (mostly to do self-encryption)
         if (enableEncryption && input.getAdditionalEncryptId() != Constants.key.none) {
@@ -127,7 +127,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
         ArmoredOutputStream armorOut = null;
         OutputStream out;
-        if (input.ismEnableAsciiArmorOutput()) {
+        if (input.isEnableAsciiArmorOutput()) {
             armorOut = new ArmoredOutputStream(outputStream);
             if (input.getVersionHeader() != null) {
                 armorOut.setHeader("Version", input.getVersionHeader());
@@ -243,7 +243,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 log.add(LogType.MSG_PSE_SYMMETRIC, indent);
 
                 JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
-                        new JcePBEKeyEncryptionMethodGenerator(input.getSymmetricPassphrase().toCharArray());
+                        new JcePBEKeyEncryptionMethodGenerator(input.getSymmetricPassphrase().getCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
                 log.add(LogType.MSG_PSE_ASYMMETRIC, indent);
@@ -254,19 +254,19 @@ public class PgpSignEncryptOperation extends BaseOperation {
                         CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
-                        cPk.addMethod(key.getPubKeyEncryptionGenerator());
+                        cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
                         log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
                     } catch (PgpKeyNotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
-                        if (input.ismFailOnMissingEncryptionKeyIds()) {
+                        if (input.isFailOnMissingEncryptionKeyIds()) {
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,
                                 KeyFormattingUtils.convertKeyIdToHex(id));
-                        if (input.ismFailOnMissingEncryptionKeyIds()) {
+                        if (input.isFailOnMissingEncryptionKeyIds()) {
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
                     }
@@ -280,7 +280,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
             updateProgress(R.string.progress_preparing_signature, 4, 100);
 
             try {
-                boolean cleartext = input.isCleartextSignature() && input.ismEnableAsciiArmorOutput() && !enableEncryption;
+                boolean cleartext = input.isCleartextSignature() && input.isEnableAsciiArmorOutput() && !enableEncryption;
                 signatureGenerator = signingKey.getSignatureGenerator(
                         input.getSignatureHashAlgorithm(), cleartext, input.getNfcSignedHash(), input.getNfcCreationTimestamp());
             } catch (PgpGeneralException e) {
@@ -358,7 +358,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 literalGen.close();
                 indent -= 1;
 
-            } else if (enableSignature && input.isCleartextSignature() && input.ismEnableAsciiArmorOutput()) {
+            } else if (enableSignature && input.isCleartextSignature() && input.isEnableAsciiArmorOutput()) {
                 /* cleartext signature: sign-only of ascii text */
 
                 updateProgress(R.string.progress_signing, 8, 100);
@@ -404,7 +404,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 // handle output stream separately for detached signatures
                 detachedByteOut = new ByteArrayOutputStream();
                 OutputStream detachedOut = detachedByteOut;
-                if (input.ismEnableAsciiArmorOutput()) {
+                if (input.isEnableAsciiArmorOutput()) {
                     detachedArmorOut = new ArmoredOutputStream(detachedOut);
                     if (input.getVersionHeader() != null) {
                         detachedArmorOut.setHeader("Version", input.getVersionHeader());

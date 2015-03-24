@@ -184,7 +184,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
 
     public class EncryptionKey {
         private String mUserIdFull;
-        private String[] mUserId;
+        private KeyRing.UserId mUserId;
         private long mKeyId;
         private boolean mHasDuplicate;
         private Date mCreation;
@@ -222,23 +222,23 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView {
         }
 
         public String getPrimary() {
-            if (mUserId[0] != null) {
-                return mUserId[0];
+            if (mUserId.name != null) {
+                return mUserId.name;
             } else {
-                return mUserId[1];
+                return mUserId.email;
             }
         }
 
         public String getSecondary() {
-            if (mUserId[1] != null) {
-                return mUserId[1];
+            if (mUserId.email != null) {
+                return mUserId.email;
             } else {
                 return getCreationDate();
             }
         }
 
         public String getTertiary() {
-            if (mUserId[0] != null) {
+            if (mUserId.name != null) {
                 return getCreationDate();
             } else {
                 return null;

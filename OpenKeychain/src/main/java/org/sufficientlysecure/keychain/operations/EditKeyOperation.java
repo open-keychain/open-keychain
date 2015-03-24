@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,7 +56,7 @@ public class EditKeyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public EditKeyResult execute(SaveKeyringParcel saveParcel, String passphrase) {
+    public EditKeyResult execute(SaveKeyringParcel saveParcel, Passphrase passphrase) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_ED, 0);

@@ -307,24 +307,22 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public void updateMergedUserIds() {
         mMergedUserIds = new HashMap<>();
         for (String userId : mUserIds) {
-            String[] userIdSplit = KeyRing.splitUserId(userId);
+            KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
             // TODO: comment field?
 
-            // name
-            if (userIdSplit[0] != null) {
-                // email
-                if (userIdSplit[1] != null) {
-                    if (!mMergedUserIds.containsKey(userIdSplit[0])) {
+            if (userIdSplit.name != null) {
+                if (userIdSplit.email != null) {
+                    if (!mMergedUserIds.containsKey(userIdSplit.name)) {
                         HashSet<String> emails = new HashSet<>();
-                        emails.add(userIdSplit[1]);
-                        mMergedUserIds.put(userIdSplit[0], emails);
+                        emails.add(userIdSplit.email);
+                        mMergedUserIds.put(userIdSplit.name, emails);
                     } else {
-                        mMergedUserIds.get(userIdSplit[0]).add(userIdSplit[1]);
+                        mMergedUserIds.get(userIdSplit.name).add(userIdSplit.email);
                     }
                 } else {
                     // name only
-                    mMergedUserIds.put(userIdSplit[0], new HashSet<String>());
+                    mMergedUserIds.put(userIdSplit.name, new HashSet<String>());
                 }
             } else {
                 // fallback

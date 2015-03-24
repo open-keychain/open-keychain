@@ -42,9 +42,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
     private Uri mAppUri;
     private String mPreferredUserId;
+    private Intent mData;
 
     private SelectSignKeyIdListFragment mListFragment;
     private TextView mActionCreateKey;
+    private TextView mNone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,27 +69,38 @@ public class SelectSignKeyIdActivity extends BaseActivity {
                 createKey(mPreferredUserId);
             }
         });
+        mNone = (TextView) findViewById(R.id.api_select_sign_key_none);
+        mNone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 0 is "none"
+                mData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, 0);
+
+                setResult(Activity.RESULT_OK, mData);
+                finish();
+            }
+        });
 
         Intent intent = getIntent();
         mAppUri = intent.getData();
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
-        Intent data = intent.getParcelableExtra(EXTRA_DATA);
+        mData = intent.getParcelableExtra(EXTRA_DATA);
         if (mAppUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
             return;
         } else {
             Log.d(Constants.TAG, "uri: " + mAppUri);
-            startListFragments(savedInstanceState, mAppUri, data);
+            startListFragments(savedInstanceState, mAppUri, mData);
         }
     }
 
     private void createKey(String userId) {
-        String[] userIdSplit = KeyRing.splitUserId(userId);
+        KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
         Intent intent = new Intent(this, CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit[0]);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit[1]);
+        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);
+        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit.email);
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 
