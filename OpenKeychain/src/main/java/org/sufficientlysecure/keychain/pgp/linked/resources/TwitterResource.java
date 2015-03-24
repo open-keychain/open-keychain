@@ -113,13 +113,13 @@ public class TwitterResource extends LinkedCookieResource {
 
     @Override
     public @StringRes
-    int getVerifiedText() {
-        return R.string.linked_verified_twitter;
+    int getVerifiedText(boolean isSecret) {
+        return isSecret ? R.string.linked_verified_secret_twitter : R.string.linked_verified_twitter;
     }
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "Twitter";
+        return context.getString(R.string.linked_title_twitter);
     }
 
     @Override

@@ -109,7 +109,7 @@ public abstract class LinkedResource {
     }
 
     public abstract @DrawableRes int getDisplayIcon();
-    public abstract @StringRes int getVerifiedText();
+    public abstract @StringRes int getVerifiedText(boolean isSecret);
     public abstract String getDisplayTitle(Context context);
     public abstract String getDisplayComment(Context context);
     public boolean isViewable() {

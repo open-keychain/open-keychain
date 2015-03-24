@@ -315,13 +315,13 @@ public class LinkedIdViewFragment extends Fragment implements
             }
         }
 
-        void showVerifyingContainer(boolean show) {
+        void showVerifyingContainer(boolean show, boolean isSecret) {
             if (vVerifyingContainer.getDisplayedChild() == (show ? 1 : 0)) {
                 return;
             }
 
             vVerifyingContainer.setDisplayedChild(show ? 1 : 0);
-            vItemCertified.setDisplayedChild(show ? 1 : 0);
+            vItemCertified.setDisplayedChild(show && !isSecret ? 1 : 0);
         }
 
         void showButton(int which) {
@@ -363,7 +363,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
             mViewHolder.showButton(0);
             mViewHolder.vKeySpinner.setVisibility(View.GONE);
-            mViewHolder.showVerifyingContainer(false);
+            mViewHolder.showVerifyingContainer(false, mIsSecret);
             return;
         }
 
@@ -376,7 +376,7 @@ public class LinkedIdViewFragment extends Fragment implements
         manager.beginTransaction().addToBackStack("verification").commit();
         manager.executePendingTransactions();
         manager.addOnBackStackChangedListener(this);
-        mViewHolder.showVerifyingContainer(true);
+        mViewHolder.showVerifyingContainer(true, mIsSecret);
 
     }
 
@@ -474,7 +474,7 @@ public class LinkedIdViewFragment extends Fragment implements
                     return;
                 }
                 if (result.success()) {
-                    mViewHolder.vText.setText(mLinkedResource.getVerifiedText());
+                    mViewHolder.vText.setText(mLinkedResource.getVerifiedText(mIsSecret));
                     mViewHolder.setVerifyingState(VerifyState.VERIFY_OK, mIsSecret);
                 } else {
                     mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR, mIsSecret);

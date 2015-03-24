@@ -106,8 +106,8 @@ public class DnsResource extends LinkedCookieResource {
 
     @Override
     public @StringRes
-    int getVerifiedText() {
-        return R.string.linked_verified_dns;
+    int getVerifiedText(boolean isSecret) {
+        return isSecret ? R.string.linked_verified_secret_dns : R.string.linked_verified_dns;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class DnsResource extends LinkedCookieResource {
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "Domain Name";
+        return context.getString(R.string.linked_title_dns);
     }
 
     @Override

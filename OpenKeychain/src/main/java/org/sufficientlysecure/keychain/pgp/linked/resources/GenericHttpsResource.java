@@ -6,26 +6,19 @@ import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
 
-import com.textuality.keybase.lib.Search;
-
 import org.apache.http.client.methods.HttpGet;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.net.ssl.HttpsURLConnection;
 
 public class GenericHttpsResource extends LinkedCookieResource {
 
@@ -77,13 +70,13 @@ public class GenericHttpsResource extends LinkedCookieResource {
 
     @Override
     public @StringRes
-    int getVerifiedText() {
-        return R.string.linked_verified_https;
+    int getVerifiedText(boolean isSecret) {
+        return isSecret ? R.string.linked_verified_secret_https : R.string.linked_verified_https;
     }
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "Website (HTTPS)";
+        return context.getString(R.string.linked_title_https);
     }
 
     @Override

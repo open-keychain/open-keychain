@@ -187,13 +187,13 @@ public class GithubResource extends LinkedCookieResource {
 
     @Override
     public @StringRes
-    int getVerifiedText() {
-        return R.string.linked_verified_github;
+    int getVerifiedText(boolean isSecret) {
+        return isSecret ? R.string.linked_verified_secret_github : R.string.linked_verified_github;
     }
 
     @Override
     public String getDisplayTitle(Context context) {
-        return "Github";
+        return context.getString(R.string.linked_title_github);
     }
 
     @Override

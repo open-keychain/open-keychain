@@ -1331,6 +1331,11 @@
     <string name="linked_verified_github">"The Gist has been fetched and verified."</string>
     <string name="linked_verified_dns">"The DNS record has been fetched and verified."</string>
     <string name="linked_verified_twitter">"The Tweet has been fetched and verified."</string>
+    <string name="linked_verified_secret_https">"Your Website has been fetched and verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_github">"Your Gist has been fetched and verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_dns">"Your DNS record has been fetched and verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_twitter">"Your Tweet has been fetched and verified. Everything looks in order."</string>
+
     <plurals name="linked_id_expand">
         <item quantity="one">"There is one more unknown identity type"</item>
         <item quantity="other">"There are %d more unknown identity types"</item>
@@ -1348,5 +1353,9 @@
     <string name="menu_linked_add_identity">"Add Linked Identity"</string>
     <string name="section_linked_identities">"Linked Identities"</string>
     <string name="btn_finish">"Finish"</string>
+    <string name="linked_title_https">Website (HTTPS)</string>
+    <string name="linked_title_dns">Domain Name</string>
+    <string name="linked_title_github">Github</string>
+    <string name="linked_title_twitter">Twitter</string>
 
 </resources>
