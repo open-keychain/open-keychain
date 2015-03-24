@@ -6,6 +6,8 @@
   <!--title-->
   <string name="title_select_recipients">Vybrat klíče</string>
   <string name="title_select_secret_key">Vybrat svůj klíč</string>
+  <string name="title_encrypt_text">Zašifrovat</string>
+  <string name="title_encrypt_files">Zašifrovat</string>
   <string name="title_decrypt">Rozšifrovat</string>
   <string name="title_unlock">Odemknout klíč</string>
   <string name="title_add_subkey">Přidat podklíč</string>
@@ -17,6 +19,7 @@
   <string name="title_share_fingerprint_with">Sdílet otisk s...</string>
   <string name="title_share_key">Sdílet klíč s...</string>
   <string name="title_share_file">Sdílet soubor s...</string>
+  <string name="title_share_message">Sdílet text s...</string>
   <string name="title_encrypt_to_file">Zašifrovat do souboru</string>
   <string name="title_decrypt_to_file">Rozšifrovat do souboru</string>
   <string name="title_import_keys">Importovat klíče</string>
@@ -25,20 +28,26 @@
   <string name="title_export_keys">Exportovat klíče</string>
   <string name="title_key_not_found">Klíč nebyl nalezen</string>
   <string name="title_send_key">Nahrát na keyserver</string>
+  <string name="title_certify_key">Potvrdit klíč</string>
   <string name="title_key_details">Detaily klíče</string>
   <string name="title_help">Nápověda</string>
   <string name="title_log_display">Log</string>
   <string name="title_create_key">Vytvořit klíč</string>
   <string name="title_exchange_keys">Vyměnit klíče</string>
   <string name="title_advanced_key_info">Další informace ke klíči</string>
+  <string name="title_keys">Klíče</string>
+  <string name="title_delete_secret_key">Smazat Váš klíč \'%s\'?</string>
+  <string name="title_export_log">Exportovat log</string>
   <!--section-->
   <string name="section_user_ids">Identity</string>
+  <string name="section_should_you_trust">Důvěřujete tomuto klíči?</string>
   <string name="section_keys">Podklíče</string>
   <string name="section_cloud_search">Vyhledávání v Cloud službě</string>
   <string name="section_general">Obecné</string>
   <string name="section_defaults">Výchozí hodnoty</string>
   <string name="section_advanced">Pokročilé</string>
   <string name="section_passphrase_cache">Cache hesel</string>
+  <string name="section_certify">Potvrdit</string>
   <string name="section_actions">Akce</string>
   <string name="section_share_key">Klíč</string>
   <string name="section_upload_key">Synchronizovat klíč</string>
@@ -47,6 +56,8 @@
   <string name="section_decrypt_files">Soubory</string>
   <string name="section_decrypt_text">Text</string>
   <string name="section_certs">Certifikáty</string>
+  <string name="section_encrypt">Zašifrovat</string>
+  <string name="section_decrypt">Rozšifrovat</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dešifrovat, ověřit a uložit soubor</string>
   <string name="btn_encrypt_file">Zaširovat a uložit soubor</string>
@@ -71,7 +82,6 @@
   <string name="menu_help">Nápověda</string>
   <string name="menu_export_key">Exportovat do souboru</string>
   <string name="menu_delete_key">Smazat klíč</string>
-  <string name="menu_manage_keys">Vytvořit moje klíče</string>
   <string name="menu_import_existing_key">Importovat ze souboru</string>
   <string name="menu_search">Hledat</string>
   <string name="menu_beam_preferences">Beam settings</string>
@@ -99,7 +109,6 @@
   <string name="label_label_use_default_yubikey_pin_summary">Používá základní PIN (123456) pro přístup k YubiKey přes NFC</string>
   <string name="label_asymmetric_from">Podepsáno:</string>
   <string name="label_to">Zašifrovat pro:</string>
-  <string name="label_delete_after_encryption">Smazat soubor po zašifrování</string>
   <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
   <string name="label_encryption_algorithm">Šifrovací algoritmus</string>
   <string name="label_hash_algorithm">Hashovací algoritmus</string>
@@ -173,7 +182,7 @@
   <string name="pin_for">Zadat PIN pro \'%s\'</string>
   <string name="yubikey_pin_for">Zadejte PIN pro přístup k YubiKey pro \'%s\'</string>
   <string name="nfc_text">Přidržte YubiKey u zadní strany vašeho přístroje.</string>
-    <string name="no_file_selected">Nejprve vyberte soubor.</string>
+  <string name="no_file_selected">Nejprve vyberte soubor.</string>
   <string name="encrypt_sign_successful">Úspěšně podepsáno a/nebo zašifrováno.</string>
   <string name="encrypt_sign_clipboard_successful">Úspěšně podepsání a/nebo zašifrováno do schránky.</string>
   <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
@@ -348,7 +357,6 @@
   <string name="api_settings_hide_advanced">Schovat pokročilá nastavení</string>
   <string name="api_settings_no_key">Žádný klíč nebyl vybrán</string>
   <string name="api_settings_select_key">Vybrat klíč</string>
-  <string name="api_settings_create_key">Vytvořit nový klíč pro tento účet</string>
   <string name="api_settings_save">Uložit</string>
   <string name="api_settings_save_msg">Účet byl uložen</string>
   <string name="api_settings_cancel">Zrušit</string>
@@ -486,7 +494,6 @@
   <string name="passp_cache_notif_pwd">Heslo</string>
   <!--First Time-->
   <string name="first_time_text1">Převezměte opět kontrolu nad svým soukromím s OpenKeychain!</string>
-  <string name="first_time_create_key">Vytvořit vlastní klíč</string>
   <string name="first_time_skip">Přeskočit nastavení</string>
   <!--unsorted-->
   <string name="section_cert">Detaily certifikátu</string>
@@ -506,8 +513,7 @@
   <string name="error_no_encrypt_subkey">Není dostupný šifrovací podklíč!</string>
   <string name="contact_show_key">Zobrazit klíč (%s)</string>
   <string name="swipe_to_update">Potáhnout dolů pro aktualizaci z keyserveru</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

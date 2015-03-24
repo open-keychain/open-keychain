@@ -60,8 +60,8 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -137,7 +137,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         private static final IOType[] values = values();
 
         public static IOType fromInt(int n) {
-            if(n < 0 || n >= values.length) {
+            if (n < 0 || n >= values.length) {
                 return UNKNOWN;
             } else {
                 return values[n];
@@ -398,12 +398,12 @@ public class KeychainIntentService extends IntentService implements Progressable
                     }
 
                     Bundle resultData = new Bundle();
-                    resultData.putString(KeychainIntentServiceHandler.DATA_MESSAGE, "OK");
+                    resultData.putString(ServiceProgressHandler.DATA_MESSAGE, "OK");
 
                     // these help the handler construct a useful human-readable message
-                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
-                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
-                    resultData.putString(KeychainIntentServiceHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
+                    resultData.putString(ServiceProgressHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
+                    resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
+                    resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL, prover.getPresenceLabel());
                     sendMessageToHandler(MessageStatus.OKAY, resultData);
                 } catch (Exception e) {
                     sendErrorToHandler(e);
@@ -600,7 +600,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     private void sendProofError(String msg) {
         Bundle bundle = new Bundle();
-        bundle.putString(KeychainIntentServiceHandler.DATA_ERROR, msg);
+        bundle.putString(ServiceProgressHandler.DATA_ERROR, msg);
         sendMessageToHandler(MessageStatus.OKAY, bundle);
     }
 
@@ -617,7 +617,7 @@ public class KeychainIntentService extends IntentService implements Progressable
         Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
 
         Bundle data = new Bundle();
-        data.putString(KeychainIntentServiceHandler.DATA_ERROR, message);
+        data.putString(ServiceProgressHandler.DATA_ERROR, message);
         sendMessageToHandler(MessageStatus.EXCEPTION, null, data);
     }
 
@@ -665,10 +665,10 @@ public class KeychainIntentService extends IntentService implements Progressable
 
         Bundle data = new Bundle();
         if (message != null) {
-            data.putString(KeychainIntentServiceHandler.DATA_MESSAGE, message);
+            data.putString(ServiceProgressHandler.DATA_MESSAGE, message);
         }
-        data.putInt(KeychainIntentServiceHandler.DATA_PROGRESS, progress);
-        data.putInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX, max);
+        data.putInt(ServiceProgressHandler.DATA_PROGRESS, progress);
+        data.putInt(ServiceProgressHandler.DATA_PROGRESS_MAX, max);
 
         sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, null, data);
     }

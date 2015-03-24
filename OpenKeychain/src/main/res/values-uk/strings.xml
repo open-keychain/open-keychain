@@ -69,7 +69,6 @@
   <string name="menu_help">Довідка</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
-  <string name="menu_manage_keys">Створити мій ключ</string>
   <string name="menu_import_existing_key">Імпорт з файлу</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
@@ -97,7 +96,6 @@
   <string name="label_label_use_default_yubikey_pin_summary">Вживається типовий PIN (123456) для доступу до YubiKey чреез NFC</string>
   <string name="label_asymmetric_from">Підписано:</string>
   <string name="label_to">Зашифрувати до:</string>
-  <string name="label_delete_after_encryption">Вилучити файл після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
@@ -168,7 +166,7 @@
   <string name="passphrase_must_not_be_empty">Будь ласка, введіть парольну фразу.</string>
   <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="passphrase_for">Введіть парольну фразу для \'%s\'</string>
-    <string name="no_file_selected">Виберіть спершу файл.</string>
+  <string name="no_file_selected">Виберіть спершу файл.</string>
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
@@ -354,7 +352,6 @@
   <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
   <string name="api_settings_select_key">Вибрати ключ</string>
-  <string name="api_settings_create_key">Створити новий ключ для цього профілю</string>
   <string name="api_settings_save">Зберегти</string>
   <string name="api_settings_cancel">Скасувати</string>
   <string name="api_settings_revoke">Відкликати доступ</string>
@@ -569,7 +566,6 @@
   <string name="passp_cache_notif_clear">Очистити кеш</string>
   <!--First Time-->
   <string name="first_time_text1">Заберіть вашу приватність із OpenKeychain!</string>
-  <string name="first_time_create_key">Створити мій ключ</string>
   <string name="first_time_skip">Пропустити установку</string>
   <!--unsorted-->
   <string name="section_certifier_id">Ким підписаний</string>
@@ -588,8 +584,7 @@
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

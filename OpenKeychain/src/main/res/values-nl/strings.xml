@@ -39,8 +39,10 @@
   <string name="title_keys">Sleutels</string>
   <string name="title_delete_secret_key">JOUW sleutel \'%s\' verwijderen?</string>
   <string name="title_export_log">Log exporteren</string>
+  <string name="title_manage_my_keys">Beheer mijn sleutels</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
+  <string name="section_linked_system_contact">Verbonden systeemcontact</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
   <string name="section_proof_details">Bewijs van verificatie</string>
   <string name="section_cloud_evidence">Bewijzen van de cloud</string>
@@ -91,12 +93,13 @@
   <string name="btn_decrypt_files">Bestanden ontcijferen</string>
   <string name="btn_encrypt_files">Bestanden versleutelen</string>
   <string name="btn_encrypt_text">Tekst versleutelen</string>
+  <string name="btn_add_email">Bijkomstig e-mailadres toevoegen</string>
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
   <string name="menu_export_key">Exporteren naar bestand</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
-  <string name="menu_manage_keys">Mijn sleutel aanmaken</string>
+  <string name="menu_manage_keys">Beheer mijn sleutels</string>
   <string name="menu_import_existing_key">Importeren van bestand</string>
   <string name="menu_search">Zoeken</string>
   <string name="menu_nfc_preferences">NFC-instellingen</string>
@@ -130,7 +133,7 @@
   <string name="label_label_use_default_yubikey_pin_summary">Gebruikt standaard PIN (123456) om YubiKeys over NFC te bereiken</string>
   <string name="label_asymmetric_from">Ondertekend door:</string>
   <string name="label_to">Versleutelen naar:</string>
-  <string name="label_delete_after_encryption">Verwijder bestand na versleuteling</string>
+  <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijder na ontcijfering</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Hashalgoritme</string>
@@ -156,6 +159,8 @@
   <string name="label_first_keyserver_is_used">(Voorkeur gaat uit naar de eerste keyserver in de lijst)</string>
   <string name="label_preferred">voorkeur</string>
   <string name="label_enable_compression">Compressie aanzetten</string>
+  <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
+  <string name="label_hidden_recipients">Verberg ontvangers</string>
   <string name="user_id_no_name">&lt;no naam&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <plurals name="n_keys">
@@ -204,7 +209,10 @@
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
   <string name="yubikey_pin_for">Voer PIN in om toegang te verkrijgen tot YubiKey voor \'%s\'</string>
   <string name="nfc_text">Hou YubiKey tegen de achterkant van je toestel</string>
-    <string name="no_file_selected">Selecteer eerst een bestand.</string>
+  <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
+  <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
+  <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
+  <string name="no_file_selected">Selecteer eerst een bestand.</string>
   <string name="encrypt_sign_successful">Succesvol gesigneerd en/of gecodeerd.</string>
   <string name="encrypt_sign_clipboard_successful">Succesvol gesigneerd en/of gecodeerd naar klembord.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
@@ -237,7 +245,9 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-    <string name="error_file_not_found">bestand niet gevonden</string>
+  <string name="error_file_delete_failed">zijn niet verwijderd. Verwijder ze handmatig!</string>
+  <string name="error_file_added_already">%s is al toegevoegd.</string>
+  <string name="error_file_not_found">bestand niet gevonden</string>
   <string name="error_no_secret_key_found">geen geschikte privésleutel gevonden</string>
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
@@ -441,7 +451,7 @@
   <string name="api_settings_hide_advanced">Verberg geavanceerde instellingen</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
-  <string name="api_settings_create_key">Maak nieuwe sleutel voor dit account</string>
+  <string name="api_settings_create_key">Nieuwe sleutel aanmaken</string>
   <string name="api_settings_save">Opslaan</string>
   <string name="api_settings_save_msg">Account is opgeslaan</string>
   <string name="api_settings_cancel">Annuleren</string>
@@ -467,6 +477,7 @@
   <string name="api_select_pub_keys_text">Bekijkt u a.u.b. de ontvangers</string>
   <string name="api_select_pub_keys_text_no_user_ids">Gelieve de ontvangers te selecteren!</string>
   <string name="api_error_wrong_signature">Handtekening check mislukt! Hebt u deze app van een andere bron geïnstalleerd? Als u zeker weet dat dit geen aanval is, haal dan de registratie van deze app in OpenKeychain weg en registreer de app opnieuw.</string>
+  <string name="api_select_sign_key_text">Gelieve een van je bestaande sleutels te selecteren of een nieuwe aan te maken.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Delen met QR-code</string>
   <string name="share_nfc_dialog">Deel met NFC</string>
@@ -506,6 +517,7 @@
   <string name="key_trust_maybe">Deze sleutel is ingetrokken noch verlopen.\nJe hebt ze niet bevestigd, maar je kan kiezen ze te vertrouwen.</string>
   <string name="key_trust_revoked">Deze sleutel is door de eigenaar ingetrokken. Je zou ze niet moeten vertrouwen.</string>
   <string name="key_trust_expired">Deze sleutel is verlopen. Je zou ze niet moeten vertrouwen.</string>
+  <string name="key_trust_old_keys">Het kan oké zijn deze sleutel te gebruiken om een oud bericht te ontsleutelen van een moment waarop de sleutel nog geldig was.</string>
   <string name="key_trust_no_cloud_evidence">Geen bewijs van de cloud voor de betrouwbaarheid van deze sleutel.</string>
   <string name="key_trust_start_cloud_search">Zoeken starten</string>
   <string name="key_trust_results_prefix">Keybase.io geeft “bewijzen” die stellen dat de eigenaar van deze sleutel:</string>
@@ -570,8 +582,13 @@
   <string name="create_key_final_robot_text">Een sleutel aanmaken kan even duren, maak intussen een tasje thee klaar…</string>
   <string name="create_key_rsa">(3 subsleutels, RSA, 4096 bit)</string>
   <string name="create_key_custom">(aangepaste sleutelconfiguratie)</string>
+  <string name="create_key_name_text">Kies een naam verbonden met deze sleutel. Dit kan een volledige naam zijn, zoals \'Jan Smit\', of een bijnaam, \'Jantje\'.</string>
+  <string name="create_key_email_text">Voer je standaard-e-mailadres in dat je gebruikt voor beveiligde communicatie.</string>
+  <string name="create_key_passphrase_text">Kies een sterk wachtwoord. Het beschermt je sleutel als je toestel zou worden gestolen.</string>
+  <string name="create_key_hint_full_name">Volledige naam of bijnaam</string>
   <string name="create_key_edit">Sleutelconfiguratie wijzigen</string>
   <string name="create_key_add_email">E-mailadres toevoegen</string>
+  <string name="create_key_add_email_text">Bijkomstige e-mailadressen zijn ook verbonden met deze sleutel en kunnen gebruikt worden voor veilige communicatie.</string>
   <!--View key-->
   <string name="view_key_revoked">Ingetrokken: sleutel mag niet meer gebruikt worden!</string>
   <string name="view_key_expired">Verlopen: het contact moet de geldigheid van de sleutel verlengen!</string>
@@ -1094,8 +1111,9 @@
   <string name="passp_cache_notif_pwd">Wachtwoord</string>
   <!--First Time-->
   <string name="first_time_text1">Neem je privacy terug met OpenKeychain!</string>
-  <string name="first_time_create_key">Maak mijn sleutel aan</string>
-  <string name="first_time_import_key">Importeren van bestand</string>
+  <string name="first_time_create_key">Maak mijn sleutel aan (aanbevolen)</string>
+  <string name="first_time_import_key">Sleutel importeren uit bestand</string>
+  <string name="first_time_yubikey">Gebruik YubiKey NEO</string>
   <string name="first_time_skip">Setup overslaan</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
@@ -1156,5 +1174,4 @@
   <string name="nfc_write_succesful">Succesvol geschreven op NFC-tag</string>
   <string name="unlocked">Ontgrendeld</string>
   <string name="nfc_settings">Instellingen</string>
-    <string name="file_delete_successful"></string>
 </resources>

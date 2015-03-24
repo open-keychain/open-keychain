@@ -135,7 +135,7 @@ Translations are hosted on Transifex, which is configured by ".tx/config".
 1. To pull newest translations install transifex client (e.g. ``apt-get install transifex-client``)
 2. Config Transifex client with "~/.transifexrc"
 3. Go into root folder of git repo
-4. execute ``tx pull`` (``tx pull -a`` to get all languages)
+4. execute ``tx pull -af --skip``
 
 see http://help.transifex.net/features/client/index.html#user-client
 
@@ -189,7 +189,7 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 
 ### Libraries
 
-See https://github.com/open-keychain/open-keychain/blob/development/OpenKeychain/src/main/res/raw/help_about.html
+See https://github.com/open-keychain/open-keychain/blob/development/OpenKeychain/src/main/res/raw/help_about.md
 
 ### Images
 * icon.svg  

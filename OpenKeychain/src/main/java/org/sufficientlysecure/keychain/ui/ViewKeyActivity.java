@@ -66,8 +66,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -415,7 +415,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void startCertifyIntent(Intent intent) {
         // Message is received after signing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -656,7 +656,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         entries.add(keyEntry);
 
         // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

@@ -8,22 +8,22 @@ source_file = OpenKeychain/src/main/res/values/strings.xml
 source_lang = en
 
 [open-keychain.help-about]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_about.html
-source_file = OpenKeychain/src/main/res/raw/help_about.html
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_about.md
+source_file = OpenKeychain/src/main/res/raw/help_about.md
 source_lang = en
 
 [open-keychain.help-changelog]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_changelog.html
-source_file = OpenKeychain/src/main/res/raw/help_changelog.html
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_changelog.md
+source_file = OpenKeychain/src/main/res/raw/help_changelog.md
 source_lang = en
 
 [open-keychain.help-certification]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_certification.html
-source_file = OpenKeychain/src/main/res/raw/help_certification.html
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_certification.md
+source_file = OpenKeychain/src/main/res/raw/help_certification.md
 source_lang = en
 
 [open-keychain.help-start]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_start.html
-source_file = OpenKeychain/src/main/res/raw/help_start.html
+file_filter = OpenKeychain/src/main/res/raw-<lang>/help_start.md
+source_file = OpenKeychain/src/main/res/raw/help_start.md
 source_lang = en
 

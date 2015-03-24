@@ -36,8 +36,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -108,8 +109,11 @@ public class UploadKeyActivity extends BaseActivity {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after uploading is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_uploading), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                this,
+                getString(R.string.progress_uploading),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

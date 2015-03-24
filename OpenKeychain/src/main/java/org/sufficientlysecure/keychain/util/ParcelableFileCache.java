@@ -83,10 +83,22 @@ public class ParcelableFileCache<E extends Parcelable> {
 
     }
 
+    /**
+     * Reads from cache file and deletes it afterward. Convenience function for readCache(boolean).
+     * @return an IteratorWithSize object containing entries read from the cache file
+     * @throws IOException
+     */
     public IteratorWithSize<E> readCache() throws IOException {
         return readCache(true);
     }
 
+    /**
+     * Reads entries from a cache file and returns an IteratorWithSize object containing the entries
+     * @param deleteAfterRead if true, the cache file will be deleted after being read
+     * @return an IteratorWithSize object containing entries read from the cache file
+     * @throws IOException if cache directory/parcel import file does not exist, or a read error
+     * occurs
+     */
     public IteratorWithSize<E> readCache(final boolean deleteAfterRead) throws IOException {
 
         File cacheDir = mContext.getCacheDir();

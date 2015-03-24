@@ -93,7 +93,6 @@ public class PassphraseCacheService extends Service {
     public static final String EXTRA_MESSENGER = "messenger";
     public static final String EXTRA_USER_ID = "user_id";
 
-    private static final int REQUEST_ID = 0;
     private static final long DEFAULT_TTL = 15;
 
     private static final int NOTIFICATION_ID = 1;
@@ -327,7 +326,8 @@ public class PassphraseCacheService extends Service {
     private static PendingIntent buildIntent(Context context, long keyId) {
         Intent intent = new Intent(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
         intent.putExtra(EXTRA_KEY_ID, keyId);
-        return PendingIntent.getBroadcast(context, REQUEST_ID, intent,
+        // request code should be unique for each PendingIntent, thus keyId is used
+        return PendingIntent.getBroadcast(context, (int) keyId, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 

@@ -37,7 +37,8 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ShareHelper;
@@ -167,8 +168,11 @@ public class DecryptTextFragment extends DecryptFragment {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
-                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_decrypting),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

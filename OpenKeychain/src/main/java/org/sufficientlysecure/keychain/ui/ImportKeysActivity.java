@@ -35,10 +35,10 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.service.CloudImportService;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -297,12 +297,13 @@ public class ImportKeysActivity extends BaseNfcActivity {
      * Import keys with mImportData
      */
     public void importKeys() {
-        // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        // Message is received after importing is done in CloudImportService
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_importing),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true) {
+                true,
+                ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -345,9 +346,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(this, KeychainIntentService.class);
-
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+            Intent intent = new Intent(this, CloudImportService.class);
 
             // fill values for this action
             Bundle data = new Bundle();
@@ -365,11 +364,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
                         new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+                intent.putExtra(CloudImportService.EXTRA_DATA, data);
 
                 // Create a new Messenger for the communication back
                 Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
                 saveHandler.showProgressDialog(this);
@@ -385,14 +384,12 @@ public class ImportKeysActivity extends BaseNfcActivity {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
 
             // Send all information needed to service to query keys in other thread
-            Intent intent = new Intent(this, KeychainIntentService.class);
-
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+            Intent intent = new Intent(this, CloudImportService.class);
 
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
+            data.putString(CloudImportService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
 
             // get selected key entries
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
@@ -405,13 +402,13 @@ public class ImportKeysActivity extends BaseNfcActivity {
                     );
                 }
             }
-            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keys);
+            data.putParcelableArrayList(CloudImportService.IMPORT_KEY_LIST, keys);
 
-            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+            intent.putExtra(CloudImportService.EXTRA_DATA, data);
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+            intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
             saveHandler.showProgressDialog(this);

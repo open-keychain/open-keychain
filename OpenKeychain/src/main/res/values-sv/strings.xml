@@ -6,6 +6,8 @@
   <!--title-->
   <string name="title_select_recipients">Välj nycklar</string>
   <string name="title_select_secret_key">Välj din nyckel</string>
+  <string name="title_encrypt_text">Kryptera</string>
+  <string name="title_encrypt_files">Kryptera</string>
   <string name="title_decrypt">Dekryptera</string>
   <string name="title_unlock">Lås upp nyckel</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
@@ -18,6 +20,7 @@
   <string name="title_share_fingerprint_with">Dela fingeravtryck med…</string>
   <string name="title_share_key">Dela nyckel med…</string>
   <string name="title_share_file">Dela fil med…</string>
+  <string name="title_share_message">Dela text med...</string>
   <string name="title_encrypt_to_file">Kryptera till fil</string>
   <string name="title_decrypt_to_file">Dekryptera till fil</string>
   <string name="title_import_keys">Importera nycklar</string>
@@ -26,6 +29,7 @@
   <string name="title_export_keys">Exportera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
   <string name="title_send_key">Ladda upp till nyckelserver</string>
+  <string name="title_certify_key">Bekräfta nyckel</string>
   <string name="title_key_details">Nyckelinformation</string>
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
@@ -33,14 +37,20 @@
   <string name="title_exchange_keys">Utbyt nycklar</string>
   <string name="title_advanced_key_info">Avancerad nyckelinfo</string>
   <string name="title_keys">Nycklar</string>
+  <string name="title_delete_secret_key">Radera DIN nyckel \'%s\'?</string>
+  <string name="title_export_log">Exportera logg</string>
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
+  <string name="section_should_you_trust">Skulle du lita på denna nyckel?</string>
+  <string name="section_proof_details">Bevisverifiering</string>
+  <string name="section_cloud_evidence">Bevis från molnet</string>
   <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Molnsökning</string>
   <string name="section_general">Allmänt</string>
   <string name="section_defaults">Förval</string>
   <string name="section_advanced">Avancerat</string>
   <string name="section_passphrase_cache">Cache för lösenordsfras</string>
+  <string name="section_certify">Bekräfta</string>
   <string name="section_actions">Åtgärder</string>
   <string name="section_share_key">Nyckel</string>
   <string name="section_upload_key">Synkronisera nyckel</string>
@@ -51,10 +61,14 @@
   <string name="section_certs">Certifikat</string>
   <string name="section_encrypt">Kryptera</string>
   <string name="section_decrypt">Dekryptera</string>
+  <string name="section_current_expiry">Aktuellt utgångsdatum</string>
+  <string name="section_new_expiry">Nytt utgångsdaum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dekryptera, verifiera och spara fil</string>
+  <string name="btn_decrypt_verify_message">Avkryptera och verifiera text</string>
   <string name="btn_encrypt_file">Kryptera och spara fil</string>
   <string name="btn_encrypt_share_file">Kryptera och dela fil</string>
+  <string name="btn_encrypt_save_file">Kryptera och spara fil</string>
   <string name="btn_save">Spara</string>
   <string name="btn_do_not_save">Avbryt</string>
   <string name="btn_delete">Radera</string>
@@ -63,7 +77,11 @@
   <string name="btn_export_to_server">Ladda upp till nyckelserver</string>
   <string name="btn_next">Nästa</string>
   <string name="btn_back">Föregående</string>
+  <string name="btn_no">Nej</string>
+  <string name="btn_match">Fingeravtrycken matchar</string>
   <string name="btn_lookup_key">Sök efter nyckel</string>
+  <string name="btn_share_encrypted_signed">Kryptera och dela text</string>
+  <string name="btn_copy_encrypted_signed">Kryptera och kopiera text</string>
   <string name="btn_view_cert_key">Visa nyckel för certifiering</string>
   <string name="btn_create_key">Skapa nyckel</string>
   <string name="btn_add_files">Lägg till fil(er)</string>
@@ -73,14 +91,15 @@
   <string name="btn_decrypt_files">Dekryptera filer</string>
   <string name="btn_encrypt_files">Kryptera filer</string>
   <string name="btn_encrypt_text">Kryptera text</string>
+  <string name="btn_add_email">Lägg till extra e-postadress</string>
   <!--menu-->
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
   <string name="menu_export_key">Exportera till fil</string>
   <string name="menu_delete_key">Radera nyckel</string>
-  <string name="menu_manage_keys">Skapa min nyckel</string>
   <string name="menu_import_existing_key">Importera från fil</string>
   <string name="menu_search">Sök</string>
+  <string name="menu_nfc_preferences">NFC-inställningar</string>
   <string name="menu_beam_preferences">Beam-inställningar</string>
   <string name="menu_key_edit_cancel">Avbryt</string>
   <string name="menu_encrypt_to">Kryptera till…</string>
@@ -89,7 +108,10 @@
   <string name="menu_search_cloud">Sök i molnet</string>
   <string name="menu_export_all_keys">Exportera alla nycklar</string>
   <string name="menu_advanced">Visa avancerad information</string>
+  <string name="menu_certify_fingerprint">Bekräfta via fingeravtrycksjämförelse</string>
+  <string name="menu_export_log">Exportera logg</string>
   <!--label-->
+  <string name="label_message">Text</string>
   <string name="label_file">Fil</string>
   <string name="label_files">Fil(er)</string>
   <string name="label_file_colon">Fil:</string>
@@ -97,6 +119,7 @@
   <string name="label_passphrase">Lösenordsfras</string>
   <string name="label_unlock">Låser upp…</string>
   <string name="label_passphrase_again">Upprepa lösenordsfras</string>
+  <string name="label_show_passphrase">Visa lösenordsfras</string>
   <string name="label_algorithm">Algoritm</string>
   <string name="label_ascii_armor">Fil i ASCII-format</string>
   <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
@@ -107,13 +130,14 @@
   <string name="label_label_use_default_yubikey_pin_summary">Använder förvald PIN (123456) för att få åtkomst till YubiKeys via NFC</string>
   <string name="label_asymmetric_from">Signerat av:</string>
   <string name="label_to">Kryptera till:</string>
-  <string name="label_delete_after_encryption">Radera fil efter kryptering</string>
+  <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
   <string name="label_delete_after_decryption">Radera efter dekryptering</string>
   <string name="label_encryption_algorithm">Krypteringsalgoritm</string>
   <string name="label_hash_algorithm">Hash-algoritm</string>
   <string name="label_symmetric">Kryptera med lösenordsfras</string>
   <string name="label_passphrase_cache_ttl">Tid i cache</string>
   <string name="label_passphrase_cache_subs">Cacha lösenordsfraser efter undernyckel</string>
+  <string name="label_message_compression">Textkompression</string>
   <string name="label_file_compression">Filkompression</string>
   <string name="label_keyservers">Nyckelservrar</string>
   <string name="label_key_id">Nyckel-ID</string>
@@ -130,6 +154,9 @@
   <string name="expiry_date_dialog_title">Ställ in utgångsdatum</string>
   <string name="label_first_keyserver_is_used">(Nyckelservern först i listan är den som föredras)</string>
   <string name="label_preferred">föredraget</string>
+  <string name="label_enable_compression">Aktivera kompression</string>
+  <string name="label_encrypt_filenames">Kryptera filnamn</string>
+  <string name="label_hidden_recipients">Dölj mottagare</string>
   <string name="user_id_no_name">&lt;inget namn&gt;</string>
   <string name="none">&lt;ingen&gt;</string>
   <plurals name="n_keys">
@@ -178,7 +205,10 @@
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="yubikey_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
   <string name="nfc_text">Håll YubiKey mot baksidan av din enhet.</string>
-    <string name="no_file_selected">Välj en fil först.</string>
+  <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
+  <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
+  <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
+  <string name="no_file_selected">Välj en fil först.</string>
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
@@ -186,6 +216,9 @@
   <string name="specify_file_to_encrypt_to">Ange vilken fil som du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil som du vill dekryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
   <string name="specify_file_to_export_to">Ange vilken fil som du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
+  <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
+  <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
+  <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>
   <string name="also_export_secret_keys">Exportera även privata nycklar</string>
   <string name="reinstall_openkeychain">Du stötte på en känd bugg hos Android. Installera om OpenKeychain om du vill koppla ihop dina kontaker med nycklar.</string>
   <string name="key_exported">Exporterade 1 nyckel.</string>
@@ -193,6 +226,7 @@
   <string name="no_keys_exported">Inga nycklar exporterades.</string>
   <string name="key_creation_el_gamal_info">Obs: endast undernycklar har stöd för ElGamal.</string>
   <string name="key_not_found">Kunde inte hitta nyckeln %08X.</string>
+  <string name="specify_file_to_export_log_to">Ange en fil att exportera till. \nVARNING: Filen kommer skrivas över om den redan existerar.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d dålig privat nyckel hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
     <item quantity="other">%d dåliga privata nycklar hoppades över. Du kanske exporterade med alternativet \n --export-secret-subkeys\nSe till att du exporterar med\n --export-secret-keys\nistället.\"</item>
@@ -201,11 +235,14 @@
   <string name="nfc_successful">Skickade nyckel med NFC Beam!</string>
   <string name="key_copied_to_clipboard">Nyckel har kopierats till urklipp!</string>
   <string name="fingerprint_copied_to_clipboard">Fingeravtryck har kopierats till urklipp!</string>
+  <string name="select_key_to_certify">Välj en nyckel att använda för bekräftning!</string>
   <string name="key_too_big_for_sharing">Nyckeln är för stor för att dela på detta sätt!</string>
   <string name="text_copied_to_clipboard">Text har kopierats till urklipp!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">har inte raderats. Radera dem manuellt!</string>
+  <string name="error_file_added_already">%s har redan lagts till.</string>
   <string name="error_file_not_found">fil hittades inte</string>
   <string name="error_no_secret_key_found">ingen passande privat nyckel hittades</string>
   <string name="error_external_storage_not_ready">extern lagring inte redo</string>
@@ -221,6 +258,8 @@
   <string name="error_could_not_extract_private_key">kunde inte extrahera privat nyckel</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
+  <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
+  <string name="error_beam_needed">Beam måste vara aktiverat!</string>
   <string name="error_nothing_import">Inga nycklar hittades!</string>
   <string name="error_contacts_key_id_missing">Det gick inte att hämta nyckel-ID:t från kontakter!</string>
   <string name="error_generic_report_bug">Ett generiskt fel inträffade, skapa en ny buggrapport för OpenKeychain.</string>
@@ -290,6 +329,7 @@
   <string name="progress_con_saving">konsolidera: sparar till cache…</string>
   <string name="progress_con_reimport">konsolidera: återimporterar…</string>
   <!--action strings-->
+  <string name="hint_cloud_search_hint">Söker via Namn, E-post...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -315,7 +355,9 @@
   <string name="compression_fast">snabb</string>
   <string name="compression_very_slow">väldigt långsam</string>
   <!--Help-->
+  <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">Vanliga frågor</string>
+  <string name="help_tab_wot">Nyckelbekräftning</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Ändringslogg</string>
   <string name="help_tab_about">Om</string>
@@ -405,7 +447,7 @@
   <string name="api_settings_hide_advanced">Göm avancerade inställningar</string>
   <string name="api_settings_no_key">Ingen nyckel vald</string>
   <string name="api_settings_select_key">Välj nyckel</string>
-  <string name="api_settings_create_key">Skapa ny nyckel för det här kontot</string>
+  <string name="api_settings_create_key">Skapa ny nyckel</string>
   <string name="api_settings_save">Spara</string>
   <string name="api_settings_save_msg">Konto har sparats</string>
   <string name="api_settings_cancel">Avbryt</string>
@@ -431,6 +473,7 @@
   <string name="api_select_pub_keys_text">Se över listan med mottagare!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Välj mottagare!</string>
   <string name="api_error_wrong_signature">Signaturkontroll misslyckades! Har du installerat appen från en annan källa? Om du är säker på att det här inte är en attack, återkalla den här appens registrering i OpenKeychain och registrera sen om appen igen.</string>
+  <string name="api_select_sign_key_text">Välj en av dina existerande nycklar eller skapa en ny.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Dela med QR-kod</string>
   <string name="share_nfc_dialog">Dela med NFC</string>
@@ -446,6 +489,7 @@
   <string name="key_view_action_edit">Redigera nyckel</string>
   <string name="key_view_action_encrypt">Kryptera text</string>
   <string name="key_view_action_encrypt_files">filer</string>
+  <string name="key_view_action_certify">Bekräfta nyckel</string>
   <string name="key_view_action_update">Uppdatera från nyckelserver</string>
   <string name="key_view_action_share_with">Dela med…</string>
   <string name="key_view_action_share_nfc">Dela via NFC</string>
@@ -454,6 +498,7 @@
   <string name="key_view_tab_share">Dela</string>
   <string name="key_view_tab_keys">Undernycklar</string>
   <string name="key_view_tab_certs">Certifikat</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Återkallad</string>
   <string name="user_id_info_revoked_text">Den här identiteten har återkallats av nyckelns ägare. Den är inte längre giltig.</string>
   <string name="user_id_info_certified_title">Certifierad</string>
@@ -463,7 +508,23 @@
   <string name="user_id_info_invalid_title">Ogiltig</string>
   <string name="user_id_info_invalid_text">Något är fel med den här identiteten!</string>
   <!--Key trust-->
+  <string name="key_trust_already_verified">Du har redan bekräftat den här nyckeln!</string>
+  <string name="key_trust_it_is_yours">Det här är en av dina nycklar!</string>
+  <string name="key_trust_maybe">Den här nyckeln är varken återkallad eller utgången.\nDu har inte bekräftat den, men du kan välja att lita på den.</string>
+  <string name="key_trust_revoked">Den här nyckeln har återkallats av sin ägare. Du borde inte lita på den.</string>
+  <string name="key_trust_expired">Den här nyckeln har gått ut. Du borde inte lita på den.</string>
+  <string name="key_trust_old_keys">Det kan vara okej att använda den här för att avkryptera ett gammalt medelande från tiden när den här nyckeln var giltig.</string>
+  <string name="key_trust_no_cloud_evidence">Inget bevis från molnet angående den här nyckelns trovärdighet.</string>
+  <string name="key_trust_start_cloud_search">Påbörja sökning</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">Postar på Twitter som</string>
+  <string name="keybase_narrative_github">Är känd på GitHub som</string>
+  <string name="keybase_narrative_dns">Kontrollerar domännamne(t|s)</string>
+  <string name="keybase_narrative_reddit">Postar på Reddit som</string>
+  <string name="keybase_narrative_coinbase">Är känd på Coinbase som</string>
+  <string name="keybase_narrative_hackernews">Postar på Hacker News som</string>
+  <string name="keybase_narrative_unknown">Okänd bevistyp</string>
+  <string name="keybase_proof_failure">Tyvärr kan detta bevis inte verifieras.</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Ändra lösenordsfras</string>
   <string name="edit_key_action_add_identity">Lägg till identitet</string>
@@ -812,8 +873,6 @@
   <string name="passp_cache_notif_pwd">Lösenordsfras</string>
   <!--First Time-->
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
-  <string name="first_time_create_key">Skapa min nyckel!</string>
-  <string name="first_time_import_key">Importera från fil</string>
   <string name="first_time_skip">Hoppa över inställning</string>
   <!--unsorted-->
   <string name="section_cert">Certifikatinformation</string>
@@ -863,5 +922,4 @@
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
-    <string name="file_delete_successful"></string>
 </resources>

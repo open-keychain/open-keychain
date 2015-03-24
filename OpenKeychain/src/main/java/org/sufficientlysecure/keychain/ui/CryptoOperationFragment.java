@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler.MessageStatus;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
@@ -73,7 +73,7 @@ public abstract class CryptoOperationFragment extends Fragment {
 
     public boolean handlePendingMessage(Message message) {
 
-        if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
             Bundle data = message.getData();
 
             OperationResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);

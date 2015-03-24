@@ -30,10 +30,11 @@ import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
@@ -126,8 +127,11 @@ public abstract class EncryptActivity extends BaseActivity {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
-        KeychainIntentServiceHandler serviceHandler = new KeychainIntentServiceHandler(this,
-                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                this,
+                getString(R.string.progress_encrypting),
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

@@ -6,6 +6,8 @@
   <!--title-->
   <string name="title_select_recipients">鍵を選択</string>
   <string name="title_select_secret_key">あなたの鍵を選択</string>
+  <string name="title_encrypt_text">暗号化</string>
+  <string name="title_encrypt_files">暗号化</string>
   <string name="title_decrypt">復号化</string>
   <string name="title_unlock">鍵のロック解除</string>
   <string name="title_add_subkey">副鍵の追加</string>
@@ -18,6 +20,7 @@
   <string name="title_share_fingerprint_with">...で指紋の共有</string>
   <string name="title_share_key">...で鍵の共有</string>
   <string name="title_share_file">...でファイルの共有</string>
+  <string name="title_share_message">...でテキストの共有</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
@@ -36,8 +39,10 @@
   <string name="title_keys">鍵</string>
   <string name="title_delete_secret_key">あなたの鍵 \'%s\' を削除しますか?</string>
   <string name="title_export_log">エクスポートログ</string>
+  <string name="title_manage_my_keys">自分の鍵の管理</string>
   <!--section-->
   <string name="section_user_ids">ユーザID</string>
+  <string name="section_linked_system_contact">リンクしているシステムの連絡先</string>
   <string name="section_should_you_trust">この鍵を信頼しますか?</string>
   <string name="section_proof_details">証明検証</string>
   <string name="section_cloud_evidence">クラウドからの証明</string>
@@ -62,8 +67,10 @@
   <string name="section_new_expiry">新しい期限</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
+  <string name="btn_decrypt_verify_message">テキストの復号化と検証</string>
   <string name="btn_encrypt_file">暗号化してファイルを保存</string>
   <string name="btn_encrypt_share_file">暗号化してファイルを共有</string>
+  <string name="btn_encrypt_save_file">暗号化してファイルを保存</string>
   <string name="btn_save">保存</string>
   <string name="btn_do_not_save">キャンセル</string>
   <string name="btn_delete">削除</string>
@@ -75,6 +82,8 @@
   <string name="btn_no">なし</string>
   <string name="btn_match">指紋一致</string>
   <string name="btn_lookup_key">鍵検出</string>
+  <string name="btn_share_encrypted_signed">暗号化してテキストを共有</string>
+  <string name="btn_copy_encrypted_signed">暗号化してテキストをコピー</string>
   <string name="btn_view_cert_key">検証した鍵を見る</string>
   <string name="btn_create_key">鍵の生成</string>
   <string name="btn_add_files">ファイルの追加</string>
@@ -84,12 +93,13 @@
   <string name="btn_decrypt_files">ファイルの復号化</string>
   <string name="btn_encrypt_files">ファイルの暗号化</string>
   <string name="btn_encrypt_text">テキストの暗号化</string>
+  <string name="btn_add_email">追加のEメールアドレスを追加</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
-  <string name="menu_manage_keys">自分の鍵の生成</string>
+  <string name="menu_manage_keys">自分の鍵の管理</string>
   <string name="menu_import_existing_key">ファイルからインポート</string>
   <string name="menu_search">検索</string>
   <string name="menu_nfc_preferences">NFC設定</string>
@@ -104,6 +114,7 @@
   <string name="menu_certify_fingerprint">指紋比較による確認</string>
   <string name="menu_export_log">エクスポートログ</string>
   <!--label-->
+  <string name="label_message">テキスト</string>
   <string name="label_file">ファイル</string>
   <string name="label_files">ファイル</string>
   <string name="label_file_colon">ファイル:</string>
@@ -111,6 +122,7 @@
   <string name="label_passphrase">パスフレーズ</string>
   <string name="label_unlock">アンロック...</string>
   <string name="label_passphrase_again">再度パスフレーズを入力</string>
+  <string name="label_show_passphrase">パスフレーズ表示</string>
   <string name="label_algorithm">アルゴリズム</string>
   <string name="label_ascii_armor">アスキー形式ファイル</string>
   <string name="label_file_ascii_armor">アスキー形式ファイルを有効</string>
@@ -128,6 +140,7 @@
   <string name="label_symmetric">パスフレーズで暗号化</string>
   <string name="label_passphrase_cache_ttl">キャッシュ時間</string>
   <string name="label_passphrase_cache_subs">副鍵のパスフレーズをキャッシュ</string>
+  <string name="label_message_compression">テキストの圧縮</string>
   <string name="label_file_compression">ファイルの圧縮</string>
   <string name="label_keyservers">鍵サーバ</string>
   <string name="label_key_id">鍵ID</string>
@@ -146,6 +159,8 @@
   <string name="label_first_keyserver_is_used">(リストの最初の鍵サーバが優先されます)</string>
   <string name="label_preferred">優先</string>
   <string name="label_enable_compression">圧縮を有効</string>
+  <string name="label_encrypt_filenames">暗号化するファイル名</string>
+  <string name="label_hidden_recipients">受信者を隠す</string>
   <string name="user_id_no_name">&lt;名前なし&gt;</string>
   <string name="none">&lt;無し&gt;</string>
   <plurals name="n_keys">
@@ -192,7 +207,10 @@
   <string name="pin_for">\'%s\' にPINを入力してください</string>
   <string name="yubikey_pin_for">\'%s\' の Yubikey にアクセスするためのPINを入力してください</string>
   <string name="nfc_text">あなたのデバイスの背面にYubiKeyを固定してください。</string>
-    <string name="no_file_selected">最初にファイルを選択してください。</string>
+  <string name="file_delete_confirmation_title">オリジナルのファイルを削除しますか?</string>
+  <string name="file_delete_confirmation">以下のファイルを削除します:%s</string>
+  <string name="file_delete_successful">%1$d 中の %2$d のファイルの削除が完了しました。%3$s</string>
+  <string name="no_file_selected">最初にファイルを選択してください。</string>
   <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
   <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
@@ -203,6 +221,8 @@
 注意: 既存のファイルがあると上書きされます。</string>
   <string name="specify_file_to_export_to">どのファイルをエクスポートするか決めてください。
 注意: 既存のファイルがあると上書きされます。</string>
+  <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?</string>
+  <string name="secret_key_deletion_confirmation">削除後はこの鍵で暗号化されたメッセージが読めなくなります、またその鍵で行われたすべての鍵確認を失います!</string>
   <string name="public_key_deletetion_confirmation">鍵 \'%s\' を削除しますか?</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートします</string>
   <string name="reinstall_openkeychain">あなたは既知のAndroidのバグに遭遇しました。もし鍵とあなたの連絡先をリンクさせたいならOpenKeychainを再インストールしてください。</string>
@@ -211,6 +231,8 @@
   <string name="no_keys_exported">鍵をエクスポートしていません。</string>
   <string name="key_creation_el_gamal_info">ノート: 副鍵はElGamalでのみサポートされます。</string>
   <string name="key_not_found">鍵 %08X は見付かりませんでした。</string>
+  <string name="specify_file_to_export_log_to">ファイルをどこにエクスポートするか決めてください。
+注意: 既存のファイルがあると上書きされます。</string>
   <plurals name="bad_keys_encountered">
     <item quantity="other">%d の問題ある鍵を無視しました。 おそらく次のオプションでエクスポートしています
  --export-secret-subkeys
@@ -228,6 +250,8 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">まだ削除されていません。手動での削除です!</string>
+  <string name="error_file_added_already">%s はすでに追加済みです。</string>
   <string name="error_file_not_found">ファイルが見付かりません</string>
   <string name="error_no_secret_key_found">組になっている秘密鍵が見付かりません</string>
   <string name="error_external_storage_not_ready">外部ストレージが準備できていません</string>
@@ -418,7 +442,7 @@
   <string name="api_settings_hide_advanced">拡張設定を隠す</string>
   <string name="api_settings_no_key">鍵が選択されていない</string>
   <string name="api_settings_select_key">鍵の選択</string>
-  <string name="api_settings_create_key">このアカウントで新しい鍵を生成</string>
+  <string name="api_settings_create_key">新しい鍵の生成</string>
   <string name="api_settings_save">保存</string>
   <string name="api_settings_save_msg">アカウントが保存されました</string>
   <string name="api_settings_cancel">キャンセル</string>
@@ -449,6 +473,7 @@
   <string name="api_select_pub_keys_text">受信者リストを確認してください!</string>
   <string name="api_select_pub_keys_text_no_user_ids">受信者を選択してください!</string>
   <string name="api_error_wrong_signature">署名チェックが失敗! 違うところからこのアプリをインストールしましたか? もし攻撃されてでなくそうであるなら、OpenKeychainにあるこのアプリの登録を破棄し、再度アプリを登録してください。</string>
+  <string name="api_select_sign_key_text">すでにある鍵1つを選択するか新規に作成してください。</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">QRコードで共有</string>
   <string name="share_nfc_dialog">NFCで共有</string>
@@ -484,8 +509,10 @@
   <!--Key trust-->
   <string name="key_trust_already_verified">鍵はすでに確認されています!</string>
   <string name="key_trust_it_is_yours">これはあなたの鍵の内のひとつです!</string>
+  <string name="key_trust_maybe">この鍵はすでに破棄されたか期限切れです。\n確認済みではなく、しかしあなたは信頼すると選択することもできます。</string>
   <string name="key_trust_revoked">このIDは鍵の所有者により破棄されています。信頼することはできません。</string>
   <string name="key_trust_expired">この鍵は期限切れです。信頼することができません。</string>
+  <string name="key_trust_no_cloud_evidence">この鍵の信頼性についてのクラウドでの検証がありません。</string>
   <string name="key_trust_start_cloud_search">検索開始</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Twitterへ以下のIDで投稿</string>
@@ -495,14 +522,25 @@
   <string name="keybase_narrative_coinbase">Coinbaseでは以下で知られています</string>
   <string name="keybase_narrative_hackernews">Hacker Newsへ以下のIDで投稿</string>
   <string name="keybase_narrative_unknown">不明な確認種別</string>
+  <string name="keybase_proof_failure">不幸にもこの証明は検証されていません。</string>
+  <string name="keybase_unknown_proof_failure">証明チェッカで正当に評価されない問題</string>
   <string name="keybase_problem_fetching_evidence">確認に問題があります</string>
+  <string name="keybase_key_mismatch">鍵の指紋が証明のポストと一致しませんでした</string>
   <string name="keybase_dns_query_failure">DNS TXTレコードの確認に失敗</string>
+  <string name="keybase_no_prover_found">検証チェッカを見付けることができませんでした</string>
+  <string name="keybase_message_payload_mismatch">復号化した検証ポストが指定した値と一致しない</string>
+  <string name="keybase_message_fetching_data">検証を取得</string>
   <string name="keybase_proof_succeeded">この証明は検証されています!</string>
+  <string name="keybase_a_post">投稿</string>
+  <string name="keybase_fetched_from">取得は</string>
+  <string name="keybase_for_the_domain">ドメイン名</string>
+  <string name="keybase_contained_signature">この鍵のオーナーだけが生成することができるメッセージを含んでいます。</string>
   <string name="keybase_twitter_proof">ツィート</string>
   <string name="keybase_dns_proof">DNSのTXTレコード</string>
   <string name="keybase_web_site_proof">テキストファイル</string>
   <string name="keybase_github_proof">gist</string>
   <string name="keybase_reddit_proof">JSONファイル</string>
+  <string name="keybase_reddit_attribution">Redditの属性</string>
   <string name="keybase_verify">検証</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">パスフレーズの変更</string>
@@ -535,12 +573,21 @@
   <string name="create_key_final_robot_text">しばらくの間鍵を生成しています、その間はコーヒーでもどうぞ....</string>
   <string name="create_key_rsa">(3副鍵、RSA, 4096 bit)</string>
   <string name="create_key_custom">(個別の鍵設定)</string>
+  <string name="create_key_name_text">この鍵に紐付ける名前を選択してください。これにはフルネーム、例えば「山田太郎」かニックネーム、例えば「たろすけ」にできます。</string>
+  <string name="create_key_email_text">あなたが秘密の通信で使うメインのEメールアドレスを入力してください。</string>
+  <string name="create_key_passphrase_text">強度の高いパスフレーズを選択してください。そうすることであなたのデバイスが盗まれてもあなたの鍵を守ります。</string>
+  <string name="create_key_hint_full_name">フルネームかニックネーム</string>
   <string name="create_key_edit">鍵の設定変更</string>
+  <string name="create_key_add_email">Eメールアドレスの追加</string>
+  <string name="create_key_add_email_text">追加のEメールアドレスがこの鍵に紐付きそしてセキュアな通信に使うことができます。</string>
   <!--View key-->
   <string name="view_key_revoked">破棄: 鍵はもう使われません!</string>
+  <string name="view_key_expired">期限切れ: この連絡先は鍵の妥当性を拡張する必要があります!</string>
   <string name="view_key_expired_secret">期限切れ: 編集で鍵の妥当性を拡張することができます!</string>
   <string name="view_key_my_key">自分の鍵</string>
   <string name="view_key_verified">確認済みの鍵</string>
+  <string name="view_key_unverified">未確認: QRコードをスキャンして鍵を確認!</string>
+  <string name="view_key_fragment_no_system_contact">&lt;なし&gt;</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">鍵</string>
   <string name="nav_encrypt_decrypt">暗号化/復号化</string>
@@ -692,6 +739,7 @@
   <string name="msg_kc_sub">副鍵 %s の処理中</string>
   <string name="msg_kc_sub_bad">証明が付随する無効な副鍵を破棄中</string>
   <string name="msg_kc_sub_bad_err">証明が付随する問題のある副鍵を破棄中</string>
+  <string name="msg_kc_sub_bad_local">\'ローカル\'フラグ付きの証明が付随する副鍵を破棄中</string>
   <string name="msg_kc_sub_bad_keyid">副鍵の発行者のIDと付随するIDがミスマッチ</string>
   <string name="msg_kc_sub_bad_time">未来にタイムスタンプがある証明が付随する副鍵を破棄中</string>
   <string name="msg_kc_sub_bad_type">不明な検証のタイプ: %sの副鍵</string>
@@ -899,6 +947,8 @@
   <string name="msg_dc_old_symmetric_encryption_algo">セキュアでない可能性がある暗号化アルゴリズムが利用されています!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">署名の確認開始</string>
+  <string name="msg_vl_error_no_siglist">署名済み固定データに署名リストがありません</string>
+  <string name="msg_vl_error_wrong_key">メッセージが正しい鍵で署名されていません</string>
   <string name="msg_vl_error_missing_literal">署名済み固定データにペイロードがありません</string>
   <string name="msg_vl_clear_meta_file">ファイル名: %s</string>
   <string name="msg_vl_clear_meta_mime">MIME種別: %s</string>
@@ -910,7 +960,10 @@
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">署名/暗号化操作を開始します</string>
   <string name="msg_se_input_bytes">バイト配列からの入力処理中</string>
+  <string name="msg_se_input_uri">URIからの入力処理中</string>
   <string name="msg_se_error_no_input">入力がありません!</string>
+  <string name="msg_se_error_input_uri_not_found">読み出すためにURIを開く時にエラー!</string>
+  <string name="msg_se_error_output_uri_not_found">書き込むためにURIを開く時にエラー!</string>
   <string name="msg_se_error_too_many_inputs">不明な出力以上の入力過多です! これはプログラミングのエラーで、バグレポートの提出をお願いします!</string>
   <string name="msg_se_warn_output_left">得られた出力が入力から乖離している。これはプログラミングのエラーで、バグレポートの提出をお願いします!</string>
   <string name="msg_se_success">署名/暗号化操作に成功!</string>
@@ -1028,8 +1081,9 @@
   <string name="passp_cache_notif_pwd">パスフレーズ</string>
   <!--First Time-->
   <string name="first_time_text1">OpenKeychainであなたのプライバシーを取り戻しましょう!</string>
-  <string name="first_time_create_key">自分の鍵の生成</string>
-  <string name="first_time_import_key">ファイルからインポート</string>
+  <string name="first_time_create_key">自分の鍵の生成(推奨)</string>
+  <string name="first_time_import_key">ファイルから鍵をインポート</string>
+  <string name="first_time_yubikey">YubiKey NEOを使用する</string>
   <string name="first_time_skip">セットアップをスキップ</string>
   <!--unsorted-->
   <string name="section_certifier_id">検証者</string>
@@ -1090,5 +1144,4 @@
   <string name="nfc_write_succesful">NFCタグに書けました!</string>
   <string name="unlocked">アンロック</string>
   <string name="nfc_settings">設定</string>
-    <string name="file_delete_successful"></string>
 </resources>

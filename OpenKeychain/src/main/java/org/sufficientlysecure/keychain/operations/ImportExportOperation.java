@@ -168,7 +168,7 @@ public class ImportExportOperation extends BaseOperation {
             return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, log);
         }
 
-        int newKeys = 0, oldKeys = 0, badKeys = 0, secret = 0;
+        int newKeys = 0, updatedKeys = 0, badKeys = 0, secret = 0;
         ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
 
         boolean cancelled = false;
@@ -302,7 +302,7 @@ public class ImportExportOperation extends BaseOperation {
                 if (!result.success()) {
                     badKeys += 1;
                 } else if (result.updated()) {
-                    oldKeys += 1;
+                    updatedKeys += 1;
                     importedMasterKeyIds.add(key.getMasterKeyId());
                 } else {
                     newKeys += 1;
@@ -333,7 +333,9 @@ public class ImportExportOperation extends BaseOperation {
         }
 
         // Special: make sure new data is synced into contacts
-        ContactSyncAdapterService.requestSync();
+        // disabling sync right now since it reduces speed while multi-threading
+        // so, we expect calling functions to take care of it. KeychainIntentService handles this
+        //ContactSyncAdapterService.requestSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
@@ -348,18 +350,18 @@ public class ImportExportOperation extends BaseOperation {
         }
 
         // special return case: no new keys at all
-        if (badKeys == 0 && newKeys == 0 && oldKeys == 0) {
+        if (badKeys == 0 && newKeys == 0 && updatedKeys == 0) {
             resultType = ImportKeyResult.RESULT_FAIL_NOTHING;
         } else {
             if (newKeys > 0) {
                 resultType |= ImportKeyResult.RESULT_OK_NEWKEYS;
             }
-            if (oldKeys > 0) {
+            if (updatedKeys > 0) {
                 resultType |= ImportKeyResult.RESULT_OK_UPDATED;
             }
             if (badKeys > 0) {
                 resultType |= ImportKeyResult.RESULT_WITH_ERRORS;
-                if (newKeys == 0 && oldKeys == 0) {
+                if (newKeys == 0 && updatedKeys == 0) {
                     resultType |= ImportKeyResult.RESULT_ERROR;
                 }
             }
@@ -369,15 +371,15 @@ public class ImportExportOperation extends BaseOperation {
         }
 
         // Final log entry, it's easier to do this individually
-        if ( (newKeys > 0 || oldKeys > 0) && badKeys > 0) {
+        if ( (newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
             log.add(LogType.MSG_IMPORT_PARTIAL, 1);
-        } else if (newKeys > 0 || oldKeys > 0) {
+        } else if (newKeys > 0 || updatedKeys > 0) {
             log.add(LogType.MSG_IMPORT_SUCCESS, 1);
         } else {
             log.add(LogType.MSG_IMPORT_ERROR, 1);
         }
 
-        return new ImportKeyResult(resultType, log, newKeys, oldKeys, badKeys, secret,
+        return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
                 importedMasterKeyIdsArray);
     }
 

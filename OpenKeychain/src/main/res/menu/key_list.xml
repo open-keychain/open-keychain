@@ -20,6 +20,11 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_key_list_update_all_keys"
+        android:title="@string/menu_update_all_keys"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_key_list_debug_cons"
         android:title="Debug / Consolidate"
         android:visible="false"

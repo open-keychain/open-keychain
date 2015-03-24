@@ -55,9 +55,11 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
@@ -342,9 +344,12 @@ public class CertifyKeyFragment extends CryptoOperationFragment
         } else {
 
             // Message is received after signing is done in KeychainIntentService
-            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                    getActivity(), getString(R.string.progress_certifying),
-                    ProgressDialog.STYLE_SPINNER, true) {
+            ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+                    getActivity(),
+                    getString(R.string.progress_certifying),
+                    ProgressDialog.STYLE_SPINNER,
+                    true,
+                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
                 public void handleMessage(Message message) {
                     // handle messages by KeychainIntentCryptoServiceHandler first
                     super.handleMessage(message);
