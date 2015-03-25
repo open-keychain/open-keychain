@@ -151,7 +151,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         if (mDataUri == null) {
                             returnKeyringParcel();
                         } else {
-                            cryptoOperation(new CryptoInputParcel(new Date()));
+                            cryptoOperation(new CryptoInputParcel());
                         }
                     }
                 }, new OnClickListener() {
