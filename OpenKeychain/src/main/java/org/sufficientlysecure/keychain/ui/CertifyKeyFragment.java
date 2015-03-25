@@ -25,8 +25,6 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -55,19 +53,16 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 
@@ -218,17 +213,6 @@ public class CertifyKeyFragment extends CryptoOperationFragment
         }) {
             @Override
             public byte[] getBlob(int column) {
-                // For some reason, getBlob was not implemented before ICS
-                if (VERSION.SDK_INT < VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    try {
-                        // haha, yes there is int.class
-                        Method m = MatrixCursor.class.getDeclaredMethod("get", new Class[]{int.class});
-                        m.setAccessible(true);
-                        return (byte[]) m.invoke(this, 1);
-                    } catch (Exception e) {
-                        throw new UnsupportedOperationException(e);
-                    }
-                }
                 return super.getBlob(column);
             }
         };
