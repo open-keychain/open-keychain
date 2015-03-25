@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 
 import java.util.ArrayList;
@@ -122,19 +123,33 @@ public class CreateKeyEmailFragment extends Fragment {
         mEmailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // initial values
-        mAdditionalEmailModels = new ArrayList<>();
-        if (mCreateKeyActivity.mAdditionalEmails != null) {
-            setAdditionalEmails(mCreateKeyActivity.mAdditionalEmails);
-        }
-        mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addEmail();
+        if(mAdditionalEmailModels == null) {
+            mAdditionalEmailModels = new ArrayList<>();
+            if (mCreateKeyActivity.mAdditionalEmails != null) {
+                setAdditionalEmails(mCreateKeyActivity.mAdditionalEmails);
             }
-        });
+        }
+
+        if(mEmailAdapter == null) {
+            mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addEmail();
+                }
+            });
+        }
+
         mEmailsRecyclerView.setAdapter(mEmailAdapter);
 
         return view;
+    }
+
+    /**
+     * Notifies the user with a message
+     * @param msg
+     */
+    private void notifyUser(String msg) {
+        Notify.create(getActivity(), msg, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
     }
 
     private void addEmail() {
@@ -143,6 +158,23 @@ public class CreateKeyEmailFragment extends Fragment {
             public void handleMessage(Message message) {
                 if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
+
+                    String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
+
+                    if(email.length() > 0 && mEmailEdit.getText().length() > 0 && email.equals(mEmailEdit.getText().toString()))
+                    {
+                        notifyUser(getString(R.string.create_key_email_already_exists_text));
+                        return;
+                    }
+                    //check for duplicated emails inside the adapter
+                    for(EmailAdapter.ViewModel model : mAdditionalEmailModels)
+                    {
+                        if(email.equals(model.email))
+                        {
+                            notifyUser(getString(R.string.create_key_email_already_exists_text));
+                            return;
+                        }
+                    }
 
                     // add new user id
                     mEmailAdapter.add(
