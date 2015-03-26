@@ -23,7 +23,7 @@
         <include layout="@layout/notify_area" />
 
         <FrameLayout
-            android:id="@+id/encrypt_pager_mode"
+            android:id="@+id/encrypt_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" />

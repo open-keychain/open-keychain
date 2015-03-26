@@ -19,14 +19,18 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,39 +39,108 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpConstants;
+import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public class EncryptFilesFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
-    public static final String ARG_URIS = "uris";
+public class EncryptFilesFragment extends CryptoOperationFragment {
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    private EncryptActivityInterface mEncryptInterface;
+    public interface IMode {
 
-    // view
-    private View mAddView;
+        public void onModeChanged(boolean symmetric);
+    }
+
+    private IMode mModeInterface;
+
+    // model used by fragments
+    private boolean mSymmetricMode = true;
+    private boolean mUseArmor = false;
+    private boolean mUseCompression = true;
+    private boolean mDeleteAfterEncrypt = false;
+    private boolean mShareAfterEncrypt = false;
+    private boolean mEncryptFilenames = true;
+    private boolean mHiddenRecipients = false;
+
+    private long mEncryptionKeyIds[] = null;
+    private String mEncryptionUserIds[] = null;
+    private long mSigningKeyId = Constants.key.none;
+    private Passphrase mPassphrase = new Passphrase();
+
+    private ArrayList<Uri> mInputUris = new ArrayList<Uri>();
+    private ArrayList<Uri> mOutputUris = new ArrayList<Uri>();
+
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
     private final Map<Uri, Bitmap> thumbnailCache = new HashMap<>();
+
+
+    public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
+    public static final String ARG_URIS = "uris";
+
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static EncryptFilesFragment newInstance(ArrayList<Uri> uris, boolean useArmor) {
+        EncryptFilesFragment frag = new EncryptFilesFragment();
+
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_USE_ASCII_ARMOR, useArmor);
+        args.putParcelableArrayList(ARG_URIS, uris);
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    public void setEncryptionKeyIds(long[] encryptionKeyIds) {
+        mEncryptionKeyIds = encryptionKeyIds;
+    }
+
+    public void setEncryptionUserIds(String[] encryptionUserIds) {
+        mEncryptionUserIds = encryptionUserIds;
+    }
+
+    public void setSigningKeyId(long signingKeyId) {
+        mSigningKeyId = signingKeyId;
+    }
+
+    public void setPassphrase(Passphrase passphrase) {
+        mPassphrase = passphrase;
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mEncryptInterface = (EncryptActivityInterface) activity;
+            mModeInterface = (IMode) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement EncryptActivityInterface");
+            throw new ClassCastException(activity.toString() + " must be IMode");
         }
     }
 
@@ -78,15 +151,15 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_files_fragment, container, false);
 
-        mAddView = inflater.inflate(R.layout.file_list_entry_add, null);
-        mAddView.setOnClickListener(new View.OnClickListener() {
+        View addView = inflater.inflate(R.layout.file_list_entry_add, null);
+        addView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addInputUri();
             }
         });
         mSelectedFiles = (ListView) view.findViewById(R.id.selected_files_list);
-        mSelectedFiles.addFooterView(mAddView);
+        mSelectedFiles.addFooterView(addView);
         mSelectedFiles.setAdapter(mAdapter);
 
         return view;
@@ -95,16 +168,18 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
+
+        mInputUris = getArguments().getParcelableArrayList(ARG_URIS);
+        mUseArmor = getArguments().getBoolean(ARG_USE_ASCII_ARMOR);
     }
 
     private void addInputUri() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
         } else {
-            FileHelper.openFile(EncryptFilesFragment.this, mEncryptInterface.getInputUris().isEmpty() ?
-                            null : mEncryptInterface.getInputUris().get(mEncryptInterface.getInputUris().size() - 1),
+            FileHelper.openFile(EncryptFilesFragment.this, mInputUris.isEmpty() ?
+                            null : mInputUris.get(mInputUris.size() - 1),
                     "*/*", REQUEST_CODE_INPUT);
         }
     }
@@ -114,32 +189,30 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             return;
         }
 
-        if (mEncryptInterface.getInputUris().contains(inputUri)) {
+        if (mInputUris.contains(inputUri)) {
             Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
                     Notify.Style.ERROR).show(this);
             return;
         }
 
-        mEncryptInterface.getInputUris().add(inputUri);
-        mEncryptInterface.notifyUpdate();
+        mInputUris.add(inputUri);
         mSelectedFiles.requestFocus();
     }
 
     private void delInputUri(int position) {
-        mEncryptInterface.getInputUris().remove(position);
-        mEncryptInterface.notifyUpdate();
+        mInputUris.remove(position);
         mSelectedFiles.requestFocus();
     }
 
     private void showOutputFileDialog() {
-        if (mEncryptInterface.getInputUris().size() > 1 || mEncryptInterface.getInputUris().isEmpty()) {
+        if (mInputUris.size() > 1 || mInputUris.isEmpty()) {
             throw new IllegalStateException();
         }
-        Uri inputUri = mEncryptInterface.getInputUris().get(0);
+        Uri inputUri = mInputUris.get(0);
         String targetName =
-                (mEncryptInterface.isEncryptFilenames() ? "1" : FileHelper.getFilename(getActivity(), inputUri))
-                        + (mEncryptInterface.isUseArmor() ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+                (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), inputUri))
+                        + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
@@ -152,23 +225,23 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     }
 
     private void encryptClicked(boolean share) {
-        if (mEncryptInterface.getInputUris().isEmpty()) {
+        if (mInputUris.isEmpty()) {
             Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show(this);
             return;
         }
         if (share) {
-            mEncryptInterface.getOutputUris().clear();
+            mOutputUris.clear();
             int filenameCounter = 1;
-            for (Uri uri : mEncryptInterface.getInputUris()) {
+            for (Uri uri : mInputUris) {
                 String targetName =
-                        (mEncryptInterface.isEncryptFilenames() ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), uri))
-                                + (mEncryptInterface.isUseArmor() ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-                mEncryptInterface.getOutputUris().add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), uri))
+                                + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
                 filenameCounter++;
             }
-            mEncryptInterface.startEncrypt(true);
+            startEncrypt(true);
         } else {
-            if (mEncryptInterface.getInputUris().size() > 1) {
+            if (mInputUris.size() > 1) {
                 Notify.create(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR).show(this);
                 return;
             }
@@ -189,7 +262,16 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.encrypt_file_activity, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.isCheckable()) {
+            item.setChecked(!item.isChecked());
+        }
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
                 encryptClicked(false);
@@ -199,11 +281,286 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
                 encryptClicked(true);
                 break;
             }
+            case R.id.check_use_symmetric: {
+                mSymmetricMode = item.isChecked();
+                mModeInterface.onModeChanged(mSymmetricMode);
+                break;
+            }
+            case R.id.check_use_armor: {
+                mUseArmor = item.isChecked();
+//                notifyUpdate();
+                break;
+            }
+            case R.id.check_delete_after_encrypt: {
+                mDeleteAfterEncrypt = item.isChecked();
+//                notifyUpdate();
+                break;
+            }
+            case R.id.check_enable_compression: {
+                mUseCompression = item.isChecked();
+//                onNotifyUpdate();
+                break;
+            }
+            case R.id.check_encrypt_filenames: {
+                mEncryptFilenames = item.isChecked();
+//                onNotifyUpdate();
+                break;
+            }
+//            case R.id.check_hidden_recipients: {
+//                mHiddenRecipients = item.isChecked();
+//                notifyUpdate();
+//                break;
+//            }
             default: {
                 return super.onOptionsItemSelected(item);
             }
         }
         return true;
+    }
+
+    protected boolean inputIsValid() {
+        // file checks
+
+        if (mInputUris.isEmpty()) {
+            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
+                    .show(this);
+            return false;
+        } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
+            // This should be impossible...
+            return false;
+        } else if (mInputUris.size() != mOutputUris.size()) {
+            // This as well
+            return false;
+        }
+
+        if (mSymmetricMode) {
+            // symmetric encryption checks
+
+            if (mPassphrase == null) {
+                Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(this);
+                return false;
+            }
+            if (mPassphrase.isEmpty()) {
+                Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(this);
+                return false;
+            }
+
+        } else {
+            // asymmetric encryption checks
+
+            boolean gotEncryptionKeys = (mEncryptionKeyIds != null
+                    && mEncryptionKeyIds.length > 0);
+
+            // Files must be encrypted, only text can be signed-only right now
+            if (!gotEncryptionKeys) {
+                Notify.create(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR)
+                        .show(this);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void startEncrypt(boolean share) {
+        mShareAfterEncrypt = share;
+        startEncrypt();
+    }
+
+    public void onEncryptSuccess(final SignEncryptResult result) {
+        if (mDeleteAfterEncrypt) {
+            final Uri[] inputUris = mInputUris.toArray(new Uri[mInputUris.size()]);
+            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUris);
+            deleteFileDialog.setOnDeletedListener(new DeleteFileDialogFragment.OnDeletedListener() {
+
+                @Override
+                public void onDeleted() {
+                    if (mShareAfterEncrypt) {
+                        // Share encrypted message/file
+                        startActivity(sendWithChooserExcludingEncrypt());
+                    } else {
+                        // Save encrypted file
+                        result.createNotify(getActivity()).show();
+                    }
+                }
+
+            });
+            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+
+            mInputUris.clear();
+            onNotifyUpdate();
+        } else {
+            if (mShareAfterEncrypt) {
+                // Share encrypted message/file
+                startActivity(sendWithChooserExcludingEncrypt());
+            } else {
+                // Save encrypted file
+                result.createNotify(getActivity()).show();
+            }
+        }
+    }
+
+    protected SignEncryptParcel createEncryptBundle() {
+        // fill values for this action
+        SignEncryptParcel data = new SignEncryptParcel();
+
+        data.addInputUris(mInputUris);
+        data.addOutputUris(mOutputUris);
+
+        if (mUseCompression) {
+            data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.get(0));
+        } else {
+            data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
+        }
+        data.setHiddenRecipients(mHiddenRecipients);
+        data.setEnableAsciiArmorOutput(mUseArmor);
+        data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+        data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+
+        if (mSymmetricMode) {
+            Log.d(Constants.TAG, "Symmetric encryption enabled!");
+            Passphrase passphrase = mPassphrase;
+            if (passphrase.isEmpty()) {
+                passphrase = null;
+            }
+            data.setSymmetricPassphrase(passphrase);
+        } else {
+            data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
+            data.setSignatureMasterKeyId(mSigningKeyId);
+//            data.setSignaturePassphrase(mSigningKeyPassphrase);
+        }
+        return data;
+    }
+
+    /**
+     * Create Intent Chooser but exclude OK's EncryptActivity.
+     */
+    private Intent sendWithChooserExcludingEncrypt() {
+        Intent prototype = createSendIntent();
+        String title = getString(R.string.title_share_file);
+
+        // we don't want to encrypt the encrypted, no inception ;)
+        String[] blacklist = new String[]{
+                Constants.PACKAGE_NAME + ".ui.EncryptFileActivity",
+                "org.thialfihar.android.apg.ui.EncryptActivity"
+        };
+
+        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
+    }
+
+    private Intent createSendIntent() {
+        Intent sendIntent;
+        // file
+        if (mOutputUris.size() == 1) {
+            sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris.get(0));
+        } else {
+            sendIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+            sendIntent.putExtra(Intent.EXTRA_STREAM, mOutputUris);
+        }
+        sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
+
+        if (!mSymmetricMode && mEncryptionUserIds != null) {
+            Set<String> users = new HashSet<>();
+            for (String user : mEncryptionUserIds) {
+                KeyRing.UserId userId = KeyRing.splitUserId(user);
+                if (userId.email != null) {
+                    users.add(userId.email);
+                }
+            }
+            sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
+        }
+        return sendIntent;
+    }
+
+    public void startEncrypt() {
+        cryptoOperation(new CryptoInputParcel());
+    }
+
+    //    public void startEncrypt(CryptoInputParcel cryptoInput) {
+    @Override
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+
+        if (!inputIsValid()) {
+            // Notify was created by inputIsValid.
+            return;
+        }
+
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
+
+        final SignEncryptParcel input = createEncryptBundle();
+        if (cryptoInput != null) {
+            input.setCryptoInput(cryptoInput);
+        }
+
+        Bundle data = new Bundle();
+        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after encrypting is done in KeychainIntentService
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_encrypting),
+                ProgressDialog.STYLE_HORIZONTAL,
+                true,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                // handle pending messages
+                if (handlePendingMessage(message)) {
+                    return;
+                }
+
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                    SignEncryptResult result =
+                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
+
+//                    PgpSignEncryptResult pgpResult = result.getPending();
+//
+//                    if (pgpResult != null && pgpResult.isPending()) {
+//                        if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
+//                                PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
+//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+//                        } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
+//                                PgpSignEncryptResult.RESULT_PENDING_NFC) {
+//
+//                            RequiredInputParcel parcel = RequiredInputParcel.createNfcSignOperation(
+//                                    pgpResult.getNfcHash(),
+//                                    pgpResult.getNfcAlgo(),
+//                                    input.getSignatureTime());
+//                            startNfcSign(pgpResult.getNfcKeyId(), parcel);
+//
+//                        } else {
+//                            throw new RuntimeException("Unhandled pending result!");
+//                        }
+//                        return;
+//                    }
+
+                    if (result.success()) {
+                        onEncryptSuccess(result);
+                    } else {
+                        result.createNotify(getActivity()).show();
+                    }
+
+                    // no matter the result, reset parameters
+//                    mSigningKeyPassphrase = null;
+                }
+            }
+        };
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(serviceHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        serviceHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
     }
 
     @Override
@@ -220,10 +577,10 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mEncryptInterface.getOutputUris().clear();
-                    mEncryptInterface.getOutputUris().add(data.getData());
-                    mEncryptInterface.notifyUpdate();
-                    mEncryptInterface.startEncrypt(false);
+                    mOutputUris.clear();
+                    mOutputUris.add(data.getData());
+                    onNotifyUpdate();
+                    startEncrypt(false);
                 }
                 return;
             }
@@ -236,11 +593,10 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
         }
     }
 
-    @Override
     public void onNotifyUpdate() {
         // Clear cache if needed
         for (Uri uri : new HashSet<>(thumbnailCache.keySet())) {
-            if (!mEncryptInterface.getInputUris().contains(uri)) {
+            if (!mInputUris.contains(uri)) {
                 thumbnailCache.remove(uri);
             }
         }
@@ -251,12 +607,12 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
     private class SelectedFilesAdapter extends BaseAdapter {
         @Override
         public int getCount() {
-            return mEncryptInterface.getInputUris().size();
+            return mInputUris.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mEncryptInterface.getInputUris().get(position);
+            return mInputUris.get(position);
         }
 
         @Override
@@ -266,7 +622,7 @@ public class EncryptFilesFragment extends Fragment implements EncryptActivityInt
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            Uri inputUri = mEncryptInterface.getInputUris().get(position);
+            Uri inputUri = mInputUris.get(position);
             View view;
             if (convertView == null) {
                 view = getActivity().getLayoutInflater().inflate(R.layout.file_list_entry, null);

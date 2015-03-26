@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -43,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptTextActivity extends EncryptActivity implements EncryptActivityInterface {
+public class EncryptTextActivity extends EncryptActivity {
 
     /* Intents */
     public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
@@ -81,60 +80,38 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         return MODE_SYMMETRIC == mCurrentMode;
     }
 
-    @Override
-    public boolean isUseArmor() {
-        return true;
-    }
-
-    @Override
-    public boolean isEncryptFilenames() {
-        return false;
-    }
-
-    @Override
     public boolean isUseCompression() {
         return mUseCompression;
     }
 
-    @Override
     public boolean isHiddenRecipients() {
         return mHiddenRecipients;
     }
 
-    @Override
     public long getSignatureKey() {
         return mSigningKeyId;
     }
 
-    @Override
     public long[] getEncryptionKeys() {
         return mEncryptionKeyIds;
     }
 
-    @Override
     public String[] getEncryptionUsers() {
         return mEncryptionUserIds;
     }
 
-    @Override
     public void setSignatureKey(long signatureKey) {
         mSigningKeyId = signatureKey;
-        notifyUpdate();
     }
 
-    @Override
     public void setEncryptionKeys(long[] encryptionKeys) {
         mEncryptionKeyIds = encryptionKeys;
-        notifyUpdate();
     }
 
-    @Override
     public void setEncryptionUsers(String[] encryptionUsers) {
         mEncryptionUserIds = encryptionUsers;
-        notifyUpdate();
     }
 
-    @Override
     public void setPassphrase(Passphrase passphrase) {
         if (mPassphrase != null) {
             mPassphrase.removeFromMemory();
@@ -142,50 +119,32 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
         mPassphrase = passphrase;
     }
 
-    @Override
     public ArrayList<Uri> getInputUris() {
         if (mInputUris == null) mInputUris = new ArrayList<>();
         return mInputUris;
     }
 
-    @Override
     public ArrayList<Uri> getOutputUris() {
         if (mOutputUris == null) mOutputUris = new ArrayList<>();
         return mOutputUris;
     }
 
-    @Override
     public void setInputUris(ArrayList<Uri> uris) {
         mInputUris = uris;
-        notifyUpdate();
     }
 
-    @Override
     public void setOutputUris(ArrayList<Uri> uris) {
         mOutputUris = uris;
-        notifyUpdate();
     }
 
-    @Override
     public String getMessage() {
         return mMessage;
     }
 
-    @Override
     public void setMessage(String message) {
         mMessage = message;
     }
 
-    @Override
-    public void notifyUpdate() {
-        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            if (fragment instanceof UpdateListener) {
-                ((UpdateListener) fragment).onNotifyUpdate();
-            }
-        }
-    }
-
-    @Override
     public void startEncrypt(boolean share) {
         mShareAfterEncrypt = share;
         startEncrypt();
@@ -348,7 +307,7 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
 
     private void updateModeFragment() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.encrypt_pager_mode,
+                .replace(R.id.encrypt_mode,
                         mCurrentMode == MODE_SYMMETRIC
                                 ? new EncryptSymmetricFragment()
                                 : new EncryptAsymmetricFragment()
@@ -366,12 +325,10 @@ public class EncryptTextActivity extends EncryptActivity implements EncryptActiv
             case R.id.check_use_symmetric: {
                 mCurrentMode = item.isChecked() ? MODE_SYMMETRIC : MODE_ASYMMETRIC;
                 updateModeFragment();
-                notifyUpdate();
                 break;
             }
             case R.id.check_enable_compression: {
                 mUseCompression = item.isChecked();
-                notifyUpdate();
                 break;
             }
 //            case R.id.check_hidden_recipients: {

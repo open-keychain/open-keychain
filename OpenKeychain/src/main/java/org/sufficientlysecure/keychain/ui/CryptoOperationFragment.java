@@ -51,8 +51,9 @@ public abstract class CryptoOperationFragment extends Fragment {
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
                     cryptoOperation(cryptoInput);
+                    return;
                 }
-                return;
+                break;
             }
 
             case REQUEST_CODE_NFC: {
