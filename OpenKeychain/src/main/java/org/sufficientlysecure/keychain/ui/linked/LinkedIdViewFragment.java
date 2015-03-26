@@ -478,6 +478,7 @@ public class LinkedIdViewFragment extends Fragment implements
                 if (result.success()) {
                     mViewHolder.vText.setText(getString(mLinkedResource.getVerifiedText(mIsSecret)));
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_OK, mIsSecret);
+                    
                 } else {
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_ERROR, mIsSecret);
                     result.createNotify(getActivity()).show();
@@ -498,6 +499,7 @@ public class LinkedIdViewFragment extends Fragment implements
         long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
         if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
             Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
+            return;
         }
 
         Passphrase passphrase;
