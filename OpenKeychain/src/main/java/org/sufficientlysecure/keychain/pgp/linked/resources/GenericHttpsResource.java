@@ -65,7 +65,7 @@ public class GenericHttpsResource extends LinkedCookieResource {
     @Override
     public @DrawableRes
     int getDisplayIcon() {
-        return R.drawable.ssl_lock;
+        return R.drawable.linked_https;
     }
 
     @Override

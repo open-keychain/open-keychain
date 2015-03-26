@@ -1354,8 +1354,16 @@
     <string name="section_linked_identities">"Linked Identities"</string>
     <string name="btn_finish">"Finish"</string>
     <string name="linked_title_https">Website (HTTPS)</string>
-    <string name="linked_title_dns">Domain Name</string>
+    <string name="linked_title_dns">Domain Name (DNS)</string>
     <string name="linked_title_github">Github</string>
     <string name="linked_title_twitter">Twitter</string>
+    <string name="card_linked_identity">Linked Identity</string>
+    <string name="linked_button_verify">Verify</string>
+    <string name="linked_button_retry">Retry</string>
+    <string name="linked_button_confirm">Confirm</string>
+    <string name="linked_button_view">View</string>
+    <string name="linked_text_verifying">Verifying…</string>
+    <string name="linked_text_error">Error</string>
+    <string name="linked_text_confirming">Confirming…</string>
 
 </resources>

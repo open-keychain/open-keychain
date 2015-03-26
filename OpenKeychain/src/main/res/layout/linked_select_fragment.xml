@@ -48,7 +48,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            android:paddingRight="4dp"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
@@ -58,15 +57,16 @@
                 android:layout_width="60dip"
                 android:layout_height="60dip"
                 android:padding="8dp"
-                android:src="@drawable/ssl_lock"
+                android:src="@drawable/linked_https"
                 android:layout_gravity="center_vertical" />
 
             <TextView
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="Website (HTTPS)"
+                android:text="@string/linked_title_https"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 
@@ -83,7 +83,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            android:paddingRight="4dp"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
@@ -92,16 +91,17 @@
                 android:layout_width="60dip"
                 android:layout_height="60dip"
                 android:padding="8dp"
-                android:src="@drawable/dns"
+                android:src="@drawable/linked_dns"
                 android:layout_gravity="center"
                 />
 
             <TextView
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="Domain Name (DNS)"
+                android:text="@string/linked_title_dns"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 
@@ -118,7 +118,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            android:paddingRight="4dp"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
@@ -127,16 +126,17 @@
                 android:layout_width="60dip"
                 android:layout_height="60dip"
                 android:padding="8dp"
-                android:src="@drawable/twitter"
+                android:src="@drawable/linked_twitter"
                 android:layout_gravity="center"
                 />
 
             <TextView
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="Twitter"
+                android:text="@string/linked_title_twitter"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 
@@ -153,7 +153,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            android:paddingRight="4dp"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
 
@@ -162,16 +161,17 @@
                 android:layout_width="60dip"
                 android:layout_height="60dip"
                 android:padding="8dp"
-                android:src="@drawable/github"
+                android:src="@drawable/linked_github"
                 android:layout_gravity="center"
                 />
 
             <TextView
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="0dip"
                 android:layout_height="match_parent"
-                android:text="Github"
+                android:text="@string/linked_title_github"
                 android:layout_weight="1"
                 android:gravity="center_vertical" />
 

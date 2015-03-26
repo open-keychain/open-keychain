@@ -182,7 +182,7 @@ public class GithubResource extends LinkedCookieResource {
     @Override
     public @DrawableRes
     int getDisplayIcon() {
-        return R.drawable.github;
+        return R.drawable.linked_github;
     }
 
     @Override

@@ -108,7 +108,7 @@ public class TwitterResource extends LinkedCookieResource {
 
     @Override
     public @DrawableRes int getDisplayIcon() {
-        return R.drawable.twitter;
+        return R.drawable.linked_twitter;
     }
 
     @Override

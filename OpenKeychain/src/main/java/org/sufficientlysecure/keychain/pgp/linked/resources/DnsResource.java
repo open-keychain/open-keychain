@@ -112,7 +112,7 @@ public class DnsResource extends LinkedCookieResource {
 
     @Override
     public @DrawableRes int getDisplayIcon() {
-        return R.drawable.dns;
+        return R.drawable.linked_dns;
     }
 
     @Override

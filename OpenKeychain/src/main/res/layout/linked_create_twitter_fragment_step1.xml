@@ -12,32 +12,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:padding="16dp"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/certify_key_action_certify_image"
-                    android:layout_width="60dip"
-                    android:layout_height="60dip"
-                    android:padding="8dp"
-                    android:src="@drawable/twitter"
-                    android:layout_gravity="center_vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/linked_create_twitter_1_1" />
-
-            </LinearLayout>
+                android:drawableLeft="@drawable/linked_twitter"
+                android:drawablePadding="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/linked_create_twitter_1_1" />
 
             <TextView
                 android:layout_width="wrap_content"

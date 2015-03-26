@@ -25,10 +25,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.TextSwitcher;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
@@ -180,16 +181,12 @@ public class LinkedIdViewFragment extends Fragment implements
     private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
         mLinkedId = linkedId;
 
-        setShowVerifying(false);
-
         if (mLinkedId instanceof LinkedIdentity) {
             LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
             mLinkedResource = (LinkedCookieResource) res;
         }
 
         if (!mIsSecret) {
-            mViewHolder.mLinkedIdHolder.vVerified.setVisibility(View.VISIBLE);
-
             switch (certStatus) {
                 case Certs.VERIFIED_SECRET:
                     KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
@@ -204,11 +201,11 @@ public class LinkedIdViewFragment extends Fragment implements
                             null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
-        } else {
-            mViewHolder.mLinkedIdHolder.vVerified.setVisibility(View.GONE);
         }
 
         mViewHolder.mLinkedIdHolder.setData(mContext, mLinkedId);
+
+        setShowVerifying(false);
 
         // no resource, nothing further we can do…
         if (mLinkedResource == null) {
@@ -255,7 +252,7 @@ public class LinkedIdViewFragment extends Fragment implements
         private final View vButtonBack;
 
         private final ViewAnimator vProgress;
-        private final TextView vText;
+        private final TextSwitcher vText;
 
         ViewHolder(View root) {
             vLinkedCerts = (CertListWidget) root.findViewById(R.id.linked_id_certs);
@@ -274,18 +271,18 @@ public class LinkedIdViewFragment extends Fragment implements
             vItemCertified = (ViewAnimator) root.findViewById(R.id.linked_id_certified);
 
             vProgress = (ViewAnimator) root.findViewById(R.id.linked_cert_progress);
-            vText = (TextView) root.findViewById(R.id.linked_cert_text);
+            vText = (TextSwitcher) root.findViewById(R.id.linked_cert_text);
         }
 
         enum VerifyState {
             VERIFYING, VERIFY_OK, VERIFY_ERROR, CERTIFYING
         }
 
-        void setVerifyingState(VerifyState state, boolean isSecret) {
+        void setVerifyingState(Context context, VerifyState state, boolean isSecret) {
             switch (state) {
                 case VERIFYING:
                     vProgress.setDisplayedChild(0);
-                    vText.setText("Verifying…");
+                    vText.setText(context.getString(R.string.linked_text_verifying));
                     vKeySpinner.setVisibility(View.GONE);
                     break;
 
@@ -303,25 +300,30 @@ public class LinkedIdViewFragment extends Fragment implements
                 case VERIFY_ERROR:
                     showButton(1);
                     vProgress.setDisplayedChild(2);
-                    vText.setText("Error");
+                    vText.setText(context.getString(R.string.linked_text_error));
                     vKeySpinner.setVisibility(View.GONE);
                     break;
 
                 case CERTIFYING:
                     vProgress.setDisplayedChild(0);
-                    vText.setText("Confirming…");
+                    vText.setText(context.getString(R.string.linked_text_confirming));
                     vKeySpinner.setVisibility(View.GONE);
                     break;
             }
         }
 
-        void showVerifyingContainer(boolean show, boolean isSecret) {
+        void showVerifyingContainer(Context context, boolean show, boolean isSecret) {
             if (vVerifyingContainer.getDisplayedChild() == (show ? 1 : 0)) {
                 return;
             }
 
+            vVerifyingContainer.setInAnimation(context, show ? R.anim.fade_in_up : R.anim.fade_in_down);
+            vVerifyingContainer.setOutAnimation(context, show ? R.anim.fade_out_up : R.anim.fade_out_down);
             vVerifyingContainer.setDisplayedChild(show ? 1 : 0);
-            vItemCertified.setDisplayedChild(show && !isSecret ? 1 : 0);
+
+            vItemCertified.setInAnimation(context, show ? R.anim.fade_in_up : R.anim.fade_in_down);
+            vItemCertified.setOutAnimation(context, show ? R.anim.fade_out_up : R.anim.fade_out_down);
+            vItemCertified.setDisplayedChild(show || isSecret ? 1 : 0);
         }
 
         void showButton(int which) {
@@ -363,7 +365,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
             mViewHolder.showButton(0);
             mViewHolder.vKeySpinner.setVisibility(View.GONE);
-            mViewHolder.showVerifyingContainer(false, mIsSecret);
+            mViewHolder.showVerifyingContainer(mContext, false, mIsSecret);
             return;
         }
 
@@ -376,7 +378,7 @@ public class LinkedIdViewFragment extends Fragment implements
         manager.beginTransaction().addToBackStack("verification").commit();
         manager.executePendingTransactions();
         manager.addOnBackStackChangedListener(this);
-        mViewHolder.showVerifyingContainer(true, mIsSecret);
+        mViewHolder.showVerifyingContainer(mContext, true, mIsSecret);
 
     }
 
@@ -449,7 +451,7 @@ public class LinkedIdViewFragment extends Fragment implements
         setShowVerifying(true);
 
         mViewHolder.vKeySpinner.setVisibility(View.GONE);
-        mViewHolder.setVerifyingState(VerifyState.VERIFYING, mIsSecret);
+        mViewHolder.setVerifyingState(mContext, VerifyState.VERIFYING, mIsSecret);
 
         mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
@@ -474,10 +476,10 @@ public class LinkedIdViewFragment extends Fragment implements
                     return;
                 }
                 if (result.success()) {
-                    mViewHolder.vText.setText(mLinkedResource.getVerifiedText(mIsSecret));
-                    mViewHolder.setVerifyingState(VerifyState.VERIFY_OK, mIsSecret);
+                    mViewHolder.vText.setText(getString(mLinkedResource.getVerifiedText(mIsSecret)));
+                    mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_OK, mIsSecret);
                 } else {
-                    mViewHolder.setVerifyingState(VerifyState.VERIFY_ERROR, mIsSecret);
+                    mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_ERROR, mIsSecret);
                     result.createNotify(getActivity()).show();
                 }
                 mInProgress = null;
@@ -493,8 +495,12 @@ public class LinkedIdViewFragment extends Fragment implements
         }
 
         // get the user's passphrase for this key (if required)
-        Passphrase passphrase;
         long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
+        if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
+            Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
+        }
+
+        Passphrase passphrase;
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(
                     getActivity(), certifyKeyId, certifyKeyId);
@@ -541,7 +547,7 @@ public class LinkedIdViewFragment extends Fragment implements
             return;
         }
 
-        mViewHolder.setVerifyingState(VerifyState.CERTIFYING, false);
+        mViewHolder.setVerifyingState(mContext, VerifyState.CERTIFYING, false);
 
         Bundle data = new Bundle();
         {
@@ -577,6 +583,7 @@ public class LinkedIdViewFragment extends Fragment implements
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
+                    // no need to do anything else, we will get a loader refresh!
                 }
 
             }

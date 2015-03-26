@@ -12,30 +12,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:padding="16dp"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:drawableLeft="@drawable/linked_dns"
+                android:drawablePadding="8dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="60dip"
-                    android:layout_height="60dip"
-                    android:padding="8dp"
-                    android:src="@drawable/dns"
-                    android:layout_gravity="center_vertical" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/linked_create_dns_1_1" />
-
-            </LinearLayout>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/linked_create_dns_1_1" />
 
             <TextView
                 android:layout_width="wrap_content"

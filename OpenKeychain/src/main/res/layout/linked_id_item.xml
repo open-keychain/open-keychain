@@ -14,7 +14,7 @@
         android:id="@+id/linked_id_type_icon"
         android:layout_marginLeft="14dp"
         android:layout_marginStart="14dp"
-        android:src="@drawable/dns"
+        tools:src="@drawable/linked_dns"
         android:layout_gravity="center_vertical"
         android:scaleType="fitCenter" />
 
@@ -32,16 +32,18 @@
             android:id="@+id/linked_id_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Title"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            tools:text="Title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
 
         <TextView
             android:id="@+id/linked_id_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/tertiary_text_light"
-            android:text="comment"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            tools:text="comment"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            />
 
     </LinearLayout>
 

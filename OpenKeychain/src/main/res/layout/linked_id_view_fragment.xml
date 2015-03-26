@@ -28,7 +28,7 @@
                 style="@style/CardViewHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Linked Identity" />
+                android:text="@string/card_linked_identity" />
 
             <include layout="@layout/linked_id_item" />
 
@@ -36,10 +36,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/linked_verify_container"
-                android:inAnimation="@anim/fade_in"
-                android:outAnimation="@anim/fade_out"
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
+                android:measureAllChildren="false"
                 >
 
                 <include layout="@layout/cert_list_widget" />
@@ -47,28 +46,33 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="?android:attr/listPreferredItemHeight"
                     android:orientation="horizontal"
-                    android:singleLine="true">
+                    android:baselineAligned="false"
+                    android:animateLayoutChanges="true"
+                    >
 
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_gravity="center_vertical"
+                    <TextSwitcher
+                        android:id="@+id/linked_cert_text"
+                        android:layout_height="wrap_content"
                         android:layout_width="0dip"
                         android:layout_marginLeft="8dp"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
-                        android:layout_height="wrap_content"
+                        android:inAnimation="@anim/fade_in_quick"
+                        android:outAnimation="@anim/fade_out_quick"
                         android:layout_weight="1">
 
                         <TextView
-                            android:id="@+id/linked_cert_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Verifying…"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                    </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    </TextSwitcher>
 
                     <ViewAnimator
                         android:layout_width="22dp"
@@ -137,7 +141,7 @@
                     android:id="@+id/button_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View"
+                    android:text="@string/linked_button_view"
                     android:textColor="@color/link_text_material_light"
                     style="?android:attr/borderlessButtonStyle"
                     />
@@ -152,21 +156,21 @@
                         android:id="@+id/button_verify"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Verify"
+                        android:text="@string/linked_button_verify"
                         android:textColor="@color/link_text_material_light"
                         style="?android:attr/borderlessButtonStyle" />
                     <Button
                         android:id="@+id/button_retry"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Retry"
+                        android:text="@string/linked_button_retry"
                         android:textColor="@color/link_text_material_light"
                         style="?android:attr/borderlessButtonStyle" />
                     <Button
                         android:id="@+id/button_confirm"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Confirm"
+                        android:text="@string/linked_button_confirm"
                         android:textColor="@color/link_text_material_light"
                         style="?android:attr/borderlessButtonStyle" />
                 </ViewAnimator>
