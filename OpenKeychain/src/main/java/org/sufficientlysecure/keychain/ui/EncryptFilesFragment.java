@@ -68,17 +68,18 @@ import java.util.Set;
 
 public class EncryptFilesFragment extends CryptoOperationFragment {
 
-    private static final int REQUEST_CODE_INPUT = 0x00007003;
-    private static final int REQUEST_CODE_OUTPUT = 0x00007007;
-
     public interface IMode {
-
         public void onModeChanged(boolean symmetric);
     }
 
+    public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
+    public static final String ARG_URIS = "uris";
+
+    private static final int REQUEST_CODE_INPUT = 0x00007003;
+    private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+
     private IMode mModeInterface;
 
-    // model used by fragments
     private boolean mSymmetricMode = true;
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
@@ -98,11 +99,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
     private final Map<Uri, Bitmap> thumbnailCache = new HashMap<>();
-
-
-    public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
-    public static final String ARG_URIS = "uris";
-
 
     /**
      * Creates new instance of this fragment

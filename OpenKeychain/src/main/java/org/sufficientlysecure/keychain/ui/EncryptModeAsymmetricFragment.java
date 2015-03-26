@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class EncryptAsymmetricFragment extends Fragment {
+public class EncryptModeAsymmetricFragment extends Fragment {
 
     public interface IAsymmetric {
 
@@ -74,8 +74,8 @@ public class EncryptAsymmetricFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static EncryptAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
-        EncryptAsymmetricFragment frag = new EncryptAsymmetricFragment();
+    public static EncryptModeAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
+        EncryptModeAsymmetricFragment frag = new EncryptModeAsymmetricFragment();
 
         Bundle args = new Bundle();
         args.putLong(ARG_SINGATURE_KEY_ID, signatureKey);

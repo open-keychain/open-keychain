@@ -30,7 +30,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class EncryptSymmetricFragment extends Fragment {
+public class EncryptModeSymmetricFragment extends Fragment {
 
     public interface ISymmetric {
 
@@ -45,8 +45,8 @@ public class EncryptSymmetricFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static EncryptSymmetricFragment newInstance() {
-        EncryptSymmetricFragment frag = new EncryptSymmetricFragment();
+    public static EncryptModeSymmetricFragment newInstance() {
+        EncryptModeSymmetricFragment frag = new EncryptModeSymmetricFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);

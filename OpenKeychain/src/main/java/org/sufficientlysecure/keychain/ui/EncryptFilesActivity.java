@@ -18,11 +18,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -33,7 +35,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.util.ArrayList;
 
 public class EncryptFilesActivity extends BaseActivity implements
-        EncryptAsymmetricFragment.IAsymmetric, EncryptSymmetricFragment.ISymmetric,
+        EncryptModeAsymmetricFragment.IAsymmetric, EncryptModeSymmetricFragment.ISymmetric,
         EncryptFilesFragment.IMode {
 
     /* Intents */
@@ -52,6 +54,13 @@ public class EncryptFilesActivity extends BaseActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        }, false);
 
         // Handle intent actions
         handleActions(getIntent(), savedInstanceState);
@@ -101,7 +110,7 @@ public class EncryptFilesActivity extends BaseActivity implements
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            mModeFragment = EncryptAsymmetricFragment.newInstance(mSigningKeyId, mEncryptionKeyIds);
+            mModeFragment = EncryptModeAsymmetricFragment.newInstance(mSigningKeyId, mEncryptionKeyIds);
             transaction.replace(R.id.encrypt_mode_container, mModeFragment, "mode");
 
             mEncryptFragment = EncryptFilesFragment.newInstance(uris, useArmor);
@@ -119,8 +128,8 @@ public class EncryptFilesActivity extends BaseActivity implements
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.encrypt_mode_container,
                         symmetric
-                                ? EncryptSymmetricFragment.newInstance()
-                                : EncryptAsymmetricFragment.newInstance(0, null)
+                                ? EncryptModeSymmetricFragment.newInstance()
+                                : EncryptModeAsymmetricFragment.newInstance(0, null)
                 )
                 .commitAllowingStateLoss();
         getSupportFragmentManager().executePendingTransactions();

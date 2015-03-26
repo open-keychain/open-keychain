@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-
 public abstract class EncryptActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
