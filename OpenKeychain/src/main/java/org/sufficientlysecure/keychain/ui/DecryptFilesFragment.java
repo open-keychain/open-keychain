@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -144,7 +145,7 @@ public class DecryptFilesFragment extends DecryptFragment {
             return;
         }
 
-        decryptOriginalFilename();
+//        decryptOriginalFilename();
     }
 
     private String removeEncryptedAppend(String name) {
@@ -174,82 +175,93 @@ public class DecryptFilesFragment extends DecryptFragment {
         }
     }
 
-    private void decryptOriginalFilename() {
-        Log.d(Constants.TAG, "decryptOriginalFilename");
 
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+    // TODO: also needs to use cryptoOperation!!! (switch between this and normal decrypt
+//    private void decryptOriginalFilename() {
+//        Log.d(Constants.TAG, "decryptOriginalFilename");
+//
+//        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+//
+//        // fill values for this action
+//        Bundle data = new Bundle();
+//        intent.setAction(KeychainIntentService.ACTION_DECRYPT_METADATA);
+//
+//        // data
+//        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
+//
+//        data.putInt(KeychainIntentService.SOURCE, IOType.URI.ordinal());
+//        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
+//
+//        data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
+//        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
+//
+//        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+//        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
+//
+//        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+//
+//        // Message is received after decrypting is done in KeychainIntentService
+//        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
+//                getActivity(),
+//                getString(R.string.progress_decrypting),
+//                ProgressDialog.STYLE_HORIZONTAL,
+//                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+//            public void handleMessage(Message message) {
+//                // handle messages by standard KeychainIntentServiceHandler first
+//                super.handleMessage(message);
+//
+//    // handle pending messages
+//    if (handlePendingMessage(message)) {
+//        return;
+//    }
+//
+//                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+//                    // get returned data bundle
+//                    Bundle returnData = message.getData();
+//
+//                    DecryptVerifyResult pgpResult =
+//                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
+//
+//                    if (pgpResult.isPending()) {
+//                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+//                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+//                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
+//                            startPassphraseDialog(Constants.key.symmetric);
+//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+//                                DecryptVerifyResult.RESULT_PENDING_NFC) {
+//                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
+//                        } else {
+//                            throw new RuntimeException("Unhandled pending result!");
+//                        }
+//                    } else if (pgpResult.success()) {
+//                        // go on...
+//                        askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
+//                    } else {
+//                        pgpResult.createNotify(getActivity()).show();
+//                    }
+//                }
+//            }
+//        };
+//
+//        // Create a new Messenger for the communication back
+//        Messenger messenger = new Messenger(saveHandler);
+//        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+//
+//        // show progress dialog
+//        saveHandler.showProgressDialog(getActivity());
+//
+//        // start service with intent
+//        getActivity().startService(intent);
+//    }
 
-        // fill values for this action
-        Bundle data = new Bundle();
-        intent.setAction(KeychainIntentService.ACTION_DECRYPT_METADATA);
-
-        // data
-        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
-
-        data.putInt(KeychainIntentService.SOURCE, IOType.URI.ordinal());
-        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
-
-        data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
-        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
-
-        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
-        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
-
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-        // Message is received after decrypting is done in KeychainIntentService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    DecryptVerifyResult pgpResult =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    if (pgpResult.isPending()) {
-                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                            startPassphraseDialog(Constants.key.symmetric);
-                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-                                DecryptVerifyResult.RESULT_PENDING_NFC) {
-                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
-                        } else {
-                            throw new RuntimeException("Unhandled pending result!");
-                        }
-                    } else if (pgpResult.success()) {
-                        // go on...
-                        askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
-                    } else {
-                        pgpResult.createNotify(getActivity()).show();
-                    }
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
+    private void decryptStart() {
+        cryptoOperation(new CryptoInputParcel());
     }
 
     @Override
-    protected void decryptStart() {
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         Log.d(Constants.TAG, "decryptStart");
 
         // Send all information needed to service to decrypt in other thread
@@ -284,6 +296,11 @@ public class DecryptFilesFragment extends DecryptFragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
+                // handle pending messages
+                if (handlePendingMessage(message)) {
+                    return;
+                }
+
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
@@ -291,20 +308,21 @@ public class DecryptFilesFragment extends DecryptFragment {
                     DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (pgpResult.isPending()) {
-                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                            startPassphraseDialog(Constants.key.symmetric);
-                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-                                DecryptVerifyResult.RESULT_PENDING_NFC) {
-                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
-                        } else {
-                            throw new RuntimeException("Unhandled pending result!");
-                        }
-                    } else if (pgpResult.success()) {
+//                    if (pgpResult.isPending()) {
+//                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
+//                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
+//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
+//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
+//                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
+//                            startPassphraseDialog(Constants.key.symmetric);
+//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
+//                                DecryptVerifyResult.RESULT_PENDING_NFC) {
+//                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
+//                        } else {
+//                            throw new RuntimeException("Unhandled pending result!");
+//                        }
+
+                    if (pgpResult.success()) {
 
                         // display signature result in activity
                         onResult(pgpResult);
@@ -346,21 +364,21 @@ public class DecryptFilesFragment extends DecryptFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CODE_PASSPHRASE: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    decryptOriginalFilename();
-                }
-                return;
-            }
-
-            case REQUEST_CODE_NFC_DECRYPT: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
-                    decryptOriginalFilename();
-                }
-                return;
-            }
+//            case REQUEST_CODE_PASSPHRASE: {
+//                if (resultCode == Activity.RESULT_OK && data != null) {
+//                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
+////                    decryptOriginalFilename();
+//                }
+//                return;
+//            }
+//
+//            case REQUEST_CODE_NFC_DECRYPT: {
+//                if (resultCode == Activity.RESULT_OK && data != null) {
+//                    mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
+////                    decryptOriginalFilename();
+//                }
+//                return;
+//            }
 
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -383,4 +401,5 @@ public class DecryptFilesFragment extends DecryptFragment {
             }
         }
     }
+
 }
