@@ -722,7 +722,7 @@ public class KeyListFragment extends LoaderFragment
         mIndex = 0;
         if (mIdsForRepeatAskPassphrase.size() != 0) {
             startPassphraseActivity();
-            break;
+            return;
         }
         long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
         for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
