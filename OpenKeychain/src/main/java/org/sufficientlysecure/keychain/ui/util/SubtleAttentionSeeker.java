@@ -17,12 +17,18 @@
 
 package org.sufficientlysecure.keychain.ui.util;
 
+import android.animation.AnimatorInflater;
+import android.animation.ArgbEvaluator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
+
+import org.sufficientlysecure.keychain.R;
+
 
 @TargetApi(VERSION_CODES.ICE_CREAM_SANDWICH)
 /** Simple animation helper for subtle attention seeker stuff.
@@ -36,6 +42,10 @@ public class SubtleAttentionSeeker {
     }
 
     public static ObjectAnimator tada(View view, float shakeFactor) {
+        return tada(view, shakeFactor, 1400);
+    }
+
+    public static ObjectAnimator tada(View view, float shakeFactor, int duration) {
 
         PropertyValuesHolder pvhScaleX = PropertyValuesHolder.ofKeyframe(View.SCALE_X,
                 Keyframe.ofFloat(0f, 1f),
@@ -80,7 +90,13 @@ public class SubtleAttentionSeeker {
         );
 
         return ObjectAnimator.ofPropertyValuesHolder(view, pvhScaleX, pvhScaleY, pvhRotate).
-                setDuration(1400);
+                setDuration(duration);
+    }
+
+    @TargetApi(VERSION_CODES.LOLLIPOP)
+    public static ObjectAnimator tint(View view, int duration) {
+        return ObjectAnimator.ofArgb(view, "backgroundColor",
+                0x00FF0000, 0x33FF0000, 0x00FF0000).setDuration(duration);
     }
 
 }

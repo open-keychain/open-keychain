@@ -60,17 +60,18 @@
                         android:layout_marginBottom="4dp"
                         android:inAnimation="@anim/fade_in_quick"
                         android:outAnimation="@anim/fade_out_quick"
+                        android:measureAllChildren="false"
                         android:layout_weight="1">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     </TextSwitcher>
 
@@ -110,32 +111,28 @@
 
             </ViewAnimator>
 
-            <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
-                android:layout_marginLeft="14dp"
-                android:layout_marginRight="14dp"
+            <FrameLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/cert_key_spinner"
-                android:visibility="gone">
-            </org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner>
+                android:id="@+id/cert_key_spincontainer"
+                android:visibility="gone"
+                >
+
+                <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cert_key_spinner">
+                </org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner>
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/back_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_chevron_left_grey_24dp"
-                    android:visibility="gone"
-                    style="?android:attr/borderlessButtonStyle" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                android:orientation="horizontal"
+                android:gravity="right|end">
 
                 <Button
                     android:id="@+id/button_view"

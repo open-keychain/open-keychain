@@ -3,13 +3,18 @@ package org.sufficientlysecure.keychain.ui.linked;
 import java.io.IOException;
 import java.util.Arrays;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,6 +58,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -241,6 +247,7 @@ public class LinkedIdViewFragment extends Fragment implements
         private final View vButtonView;
         private final ViewAnimator vVerifyingContainer;
         private final ViewAnimator vItemCertified;
+        private final View vKeySpinnerContainer;
         LinkedIdsAdapter.ViewHolder mLinkedIdHolder;
 
         private ViewAnimator vButtonSwitcher;
@@ -257,6 +264,7 @@ public class LinkedIdViewFragment extends Fragment implements
         ViewHolder(View root) {
             vLinkedCerts = (CertListWidget) root.findViewById(R.id.linked_id_certs);
             vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
+            vKeySpinnerContainer = root.findViewById(R.id.cert_key_spincontainer);
             vButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
 
             mLinkedIdHolder = new LinkedIdsAdapter.ViewHolder(root);
@@ -283,17 +291,17 @@ public class LinkedIdViewFragment extends Fragment implements
                 case VERIFYING:
                     vProgress.setDisplayedChild(0);
                     vText.setText(context.getString(R.string.linked_text_verifying));
-                    vKeySpinner.setVisibility(View.GONE);
+                    vKeySpinnerContainer.setVisibility(View.GONE);
                     break;
 
                 case VERIFY_OK:
                     vProgress.setDisplayedChild(1);
                     if (!isSecret) {
                         showButton(2);
-                        vKeySpinner.setVisibility(View.VISIBLE);
+                        vKeySpinnerContainer.setVisibility(View.VISIBLE);
                     } else {
                         showButton(1);
-                        vKeySpinner.setVisibility(View.GONE);
+                        vKeySpinnerContainer.setVisibility(View.GONE);
                     }
                     break;
 
@@ -301,13 +309,13 @@ public class LinkedIdViewFragment extends Fragment implements
                     showButton(1);
                     vProgress.setDisplayedChild(2);
                     vText.setText(context.getString(R.string.linked_text_error));
-                    vKeySpinner.setVisibility(View.GONE);
+                    vKeySpinnerContainer.setVisibility(View.GONE);
                     break;
 
                 case CERTIFYING:
                     vProgress.setDisplayedChild(0);
                     vText.setText(context.getString(R.string.linked_text_confirming));
-                    vKeySpinner.setVisibility(View.GONE);
+                    vKeySpinnerContainer.setVisibility(View.GONE);
                     break;
             }
         }
@@ -364,7 +372,7 @@ public class LinkedIdViewFragment extends Fragment implements
             mVerificationState = false;
 
             mViewHolder.showButton(0);
-            mViewHolder.vKeySpinner.setVisibility(View.GONE);
+            mViewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
             mViewHolder.showVerifyingContainer(mContext, false, mIsSecret);
             return;
         }
@@ -450,7 +458,7 @@ public class LinkedIdViewFragment extends Fragment implements
 
         setShowVerifying(true);
 
-        mViewHolder.vKeySpinner.setVisibility(View.GONE);
+        mViewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
         mViewHolder.setVerifyingState(mContext, VerifyState.VERIFYING, mIsSecret);
 
         mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
@@ -478,7 +486,9 @@ public class LinkedIdViewFragment extends Fragment implements
                 if (result.success()) {
                     mViewHolder.vText.setText(getString(mLinkedResource.getVerifiedText(mIsSecret)));
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_OK, mIsSecret);
-                    
+                    ObjectAnimator anim = SubtleAttentionSeeker.tada(mViewHolder.vButtonConfirm, 0.6f, 1000);
+                    anim.setStartDelay(800);
+                    anim.start();
                 } else {
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_ERROR, mIsSecret);
                     result.createNotify(getActivity()).show();
@@ -498,6 +508,9 @@ public class LinkedIdViewFragment extends Fragment implements
         // get the user's passphrase for this key (if required)
         long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
         if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                SubtleAttentionSeeker.tint(mViewHolder.vKeySpinnerContainer, 600).start();
+            }
             Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
             return;
         }

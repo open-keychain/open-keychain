@@ -1327,14 +1327,14 @@
 
     <string name="linked_create_verify">"Verify"</string>
     <string name="linked_text_clipboard">Text has been copied to clipboard</string>
-    <string name="linked_verified_https">"The Website has been fetched and verified."</string>
-    <string name="linked_verified_github">"The Gist has been fetched and verified."</string>
-    <string name="linked_verified_dns">"The DNS record has been fetched and verified."</string>
-    <string name="linked_verified_twitter">"The Tweet has been fetched and verified."</string>
-    <string name="linked_verified_secret_https">"Your Website has been fetched and verified. Everything looks in order."</string>
-    <string name="linked_verified_secret_github">"Your Gist has been fetched and verified. Everything looks in order."</string>
-    <string name="linked_verified_secret_dns">"Your DNS record has been fetched and verified. Everything looks in order."</string>
-    <string name="linked_verified_secret_twitter">"Your Tweet has been fetched and verified. Everything looks in order."</string>
+    <string name="linked_verified_https">"The link between this Website and key was securely verified. If you believe the Website is genuine, you may confirm this Identity with your key."</string>
+    <string name="linked_verified_github">"The link between this Github account and key was securely verified. If you believe the account is genuine, you may confirm this Identity with your key."</string>
+    <string name="linked_verified_dns">"The link between this Domain Name and key was securely verified. If you believe the Domain is genuine, you may confirm this Identity with your key."</string>
+    <string name="linked_verified_twitter">"The link between this Twitter account and key was securely verified. If you believe the account is genuine, you may confirm this Identity with your key."</string>
+    <string name="linked_verified_secret_https">"The link between your Website and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_github">"The link between your Github account and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_dns">"The link between your Domain Name and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_twitter">"The link between this Twitter account and key was securely verified. Everything looks in order."</string>
 
     <plurals name="linked_id_expand">
         <item quantity="one">"There is one more unknown identity type"</item>
