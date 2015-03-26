@@ -241,30 +241,7 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_export: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        mIdsForRepeatAskPassphrase = new ArrayList<Long>();
-                        for(long id: ids) {
-                            try {
-                                if (PassphraseCacheService.getCachedPassphrase(
-                                        getActivity(), id, id) == null) {
-                                    mIdsForRepeatAskPassphrase.add(Long.valueOf(id));
-                                }
-                            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                                // This happens when the master key is stripped
-                                // and ignore this key.
-                                continue;
-                            }
-                        }
-                        mIndex = 0;
-                        if (mIdsForRepeatAskPassphrase.size() != 0) {
-                            startPassphraseActivity();
-                            break;
-                        }
-                        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-                        for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i)
-                            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
-                        mExportHelper.showExportKeysDialog(idsForMultiExport,
-                                Constants.Path.APP_DIR_FILE,
-                                mAdapter.isAnySecretSelected());
+                        showMultiExportDialog(ids);
                         break;
                     }
                     case R.id.menu_key_list_multi_select_all: {
@@ -728,6 +705,34 @@ public class KeyListFragment extends LoaderFragment
         getActivity().startService(intent);
     }
 
+    private void showMultiExportDialog(long[] masterKeyIds) {
+        mIdsForRepeatAskPassphrase = new ArrayList<Long>();
+        for(long id: masterKeyIds) {
+            try {
+                if (PassphraseCacheService.getCachedPassphrase(
+                        getActivity(), id, id) == null) {
+                    mIdsForRepeatAskPassphrase.add(Long.valueOf(id));
+                }
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                // This happens when the master key is stripped
+                // and ignore this key.
+                continue;
+            }
+        }
+        mIndex = 0;
+        if (mIdsForRepeatAskPassphrase.size() != 0) {
+            startPassphraseActivity();
+            break;
+        }
+        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
+        for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
+            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+        }
+        mExportHelper.showExportKeysDialog(idsForMultiExport,
+                Constants.Path.APP_DIR_FILE,
+                mAdapter.isAnySecretSelected());
+    }
+
     private void startPassphraseActivity() {
         Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
         long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++).longValue();
@@ -738,15 +743,17 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if(resultCode != Activity.RESULT_OK)
+            if(resultCode != Activity.RESULT_OK) {
                 return;
+            }
             if (mIndex < mIdsForRepeatAskPassphrase.size()) {
                 startPassphraseActivity();
                 return;
             }
             long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-            for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i)
+            for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
                 idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+            }
             mExportHelper.showExportKeysDialog(idsForMultiExport,
                     Constants.Path.APP_DIR_FILE,
                     mAdapter.isAnySecretSelected());
