@@ -123,14 +123,14 @@ public class CreateKeyEmailFragment extends Fragment {
         mEmailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // initial values
-        if(mAdditionalEmailModels == null) {
+        if (mAdditionalEmailModels == null) {
             mAdditionalEmailModels = new ArrayList<>();
             if (mCreateKeyActivity.mAdditionalEmails != null) {
                 setAdditionalEmails(mCreateKeyActivity.mAdditionalEmails);
             }
         }
 
-        if(mEmailAdapter == null) {
+        if (mEmailAdapter == null) {
             mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -146,6 +146,7 @@ public class CreateKeyEmailFragment extends Fragment {
 
     /**
      * Notifies the user with a message
+     *
      * @param msg
      */
     private void notifyUser(String msg) {
@@ -161,16 +162,14 @@ public class CreateKeyEmailFragment extends Fragment {
 
                     String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
 
-                    if(email.length() > 0 && mEmailEdit.getText().length() > 0 && email.equals(mEmailEdit.getText().toString()))
-                    {
+                    if (email.length() > 0 && mEmailEdit.getText().length() > 0 &&
+                            email.equals(mEmailEdit.getText().toString())) {
                         notifyUser(getString(R.string.create_key_email_already_exists_text));
                         return;
                     }
                     //check for duplicated emails inside the adapter
-                    for(EmailAdapter.ViewModel model : mAdditionalEmailModels)
-                    {
-                        if(email.equals(model.email))
-                        {
+                    for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
+                        if (email.equals(model.email)) {
                             notifyUser(getString(R.string.create_key_email_already_exists_text));
                             return;
                         }
