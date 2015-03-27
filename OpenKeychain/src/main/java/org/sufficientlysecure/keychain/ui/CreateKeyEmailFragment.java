@@ -144,15 +144,6 @@ public class CreateKeyEmailFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Notifies the user with a message
-     *
-     * @param msg
-     */
-    private void notifyUser(String msg) {
-        Notify.create(getActivity(), msg, Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-    }
-
     private void addEmail() {
         Handler returnHandler = new Handler() {
             @Override
@@ -164,21 +155,23 @@ public class CreateKeyEmailFragment extends Fragment {
 
                     if (email.length() > 0 && mEmailEdit.getText().length() > 0 &&
                             email.equals(mEmailEdit.getText().toString())) {
-                        notifyUser(getString(R.string.create_key_email_already_exists_text));
+                        Notify.create(getActivity(),
+                                getString(R.string.create_key_email_already_exists_text),
+                                Notify.LENGTH_LONG, Notify.Style.ERROR).show();
                         return;
                     }
                     //check for duplicated emails inside the adapter
                     for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
                         if (email.equals(model.email)) {
-                            notifyUser(getString(R.string.create_key_email_already_exists_text));
+                            Notify.create(getActivity(),
+                                    getString(R.string.create_key_email_already_exists_text),
+                                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
                             return;
                         }
                     }
 
                     // add new user id
-                    mEmailAdapter.add(
-                            data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL)
-                    );
+                    mEmailAdapter.add(email);
                 }
             }
         };
