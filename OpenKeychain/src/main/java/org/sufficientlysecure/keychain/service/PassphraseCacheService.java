@@ -434,7 +434,12 @@ public class PassphraseCacheService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder.setSmallIcon(R.drawable.ic_launcher)
+            int icon = R.drawable.ic_cached;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                icon = R.drawable.ic_cached_material;
+            }
+
+            builder.setSmallIcon(icon)
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
                             mPassphraseCache.size()));
@@ -466,7 +471,7 @@ public class PassphraseCacheService extends Service {
             );
         } else {
             // Fallback, since expandable notifications weren't available back then
-            builder.setSmallIcon(R.drawable.ic_launcher)
+            builder.setSmallIcon(R.drawable.ic_cached)
                     .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys),
                             mPassphraseCache.size()))
                     .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
