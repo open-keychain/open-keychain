@@ -162,7 +162,7 @@ public class ImportKeyResult extends OperationResult {
             if (isOkWithErrors()) {
                 // definitely switch to warning-style message in this case!
                 duration = 0;
-                style = Style.ERROR;
+                style = Style.WARN;
                 str += " " + activity.getResources().getQuantityString(
                         R.plurals.import_keys_with_errors, mBadKeys, mBadKeys);
             }
@@ -175,7 +175,10 @@ public class ImportKeyResult extends OperationResult {
                         ? R.string.import_error_nothing_cancelled
                         : R.string.import_error_nothing);
             } else {
-                str = activity.getResources().getQuantityString(R.plurals.import_error, mBadKeys);
+                str = activity.getResources().getQuantityString(
+                        R.plurals.import_error,
+                        mBadKeys,
+                        mBadKeys);
             }
         }
 
