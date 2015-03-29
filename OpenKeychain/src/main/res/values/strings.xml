@@ -262,7 +262,7 @@
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
     <string name="error_key_size_minimum512bit">"key size must be at least 512bit"</string>
     <string name="error_unknown_algorithm_choice">"unknown algorithm choice"</string>
-    <string name="error_user_id_no_email">"no email found"</string>
+    <string name="error_user_id_no_email">"no email address found"</string>
     <string name="error_key_needs_a_user_id">"need at least one identity"</string>
     <string name="error_no_signature_passphrase">"no passphrase given"</string>
     <string name="error_no_signature_key">"no signature key given"</string>
@@ -630,7 +630,7 @@
     <string name="create_key_edit">"Change key configuration"</string>
     <string name="create_key_add_email">"Add email address"</string>
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
-    <string name="create_key_email_already_exists_text">"Email has already been added"</string>
+    <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
