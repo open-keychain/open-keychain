@@ -191,9 +191,6 @@ public class NfcHelper {
         mNfcAdapter.invokeBeam(mActivity);
     }
 
-    /**
-     * A static subclass of {@link Handler} with a {@link WeakReference} to an {@link Activity} to avoid memory leaks.
-     */
     private static class NfcHandler extends Handler {
         private final WeakReference<Activity> mActivityReference;
 
@@ -203,12 +200,10 @@ public class NfcHelper {
 
         @Override
         public void handleMessage(Message msg) {
-            Activity activity = mActivityReference.get();
-
-            if (activity != null) {
+            if (mActivityReference.get() != null) {
                 switch (msg.what) {
                     case NFC_SENT:
-                        Notify.create(activity, R.string.nfc_successful, Notify.Style.OK).show();
+                        Notify.create(mActivityReference.get(), R.string.nfc_successful, Notify.Style.OK).show();
                         break;
                 }
             }

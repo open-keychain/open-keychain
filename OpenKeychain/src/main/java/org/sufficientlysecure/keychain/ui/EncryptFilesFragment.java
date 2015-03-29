@@ -80,7 +80,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     private IMode mModeInterface;
 
-    private boolean mSymmetricMode = true;
+    private boolean mSymmetricMode = false;
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
@@ -188,7 +188,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         if (mInputUris.contains(inputUri)) {
             Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
-                    Notify.Style.ERROR).show(this);
+                    Notify.Style.ERROR).show();
             return;
         }
 
@@ -222,7 +222,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     private void encryptClicked(boolean share) {
         if (mInputUris.isEmpty()) {
-            Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show(this);
+            Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show();
             return;
         }
         if (share) {
@@ -238,7 +238,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             startEncrypt(true);
         } else {
             if (mInputUris.size() > 1) {
-                Notify.create(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR).show(this);
+                Notify.create(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR).show();
                 return;
             }
             showOutputFileDialog();
@@ -260,7 +260,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.encrypt_file_activity, menu);
+        inflater.inflate(R.menu.encrypt_file_fragment, menu);
     }
 
     @Override
@@ -319,12 +319,14 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
         if (mInputUris.isEmpty()) {
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
-                    .show(this);
+                    .show();
             return false;
         } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
+            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
             // This should be impossible...
             return false;
         } else if (mInputUris.size() != mOutputUris.size()) {
+            Log.e(Constants.TAG, "Aborting: mInputUris.size() != mOutputUris.size()");
             // This as well
             return false;
         }
@@ -334,12 +336,12 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
             if (mPassphrase == null) {
                 Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
             if (mPassphrase.isEmpty()) {
                 Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
 
@@ -352,7 +354,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             // Files must be encrypted, only text can be signed-only right now
             if (!gotEncryptionKeys) {
                 Notify.create(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
         }
@@ -361,7 +363,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     public void startEncrypt(boolean share) {
         mShareAfterEncrypt = share;
-        startEncrypt();
+        cryptoOperation(new CryptoInputParcel());
     }
 
     public void onEncryptSuccess(final SignEncryptResult result) {
@@ -470,18 +472,15 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         return sendIntent;
     }
 
-    public void startEncrypt() {
-        cryptoOperation(new CryptoInputParcel());
-    }
-
-    //    public void startEncrypt(CryptoInputParcel cryptoInput) {
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
 
         if (!inputIsValid()) {
             // Notify was created by inputIsValid.
+            Log.d(Constants.TAG, "Input not valid!");
             return;
         }
+        Log.d(Constants.TAG, "Input valid!");
 
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);

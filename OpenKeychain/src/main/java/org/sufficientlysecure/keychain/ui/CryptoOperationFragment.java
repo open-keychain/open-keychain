@@ -1,5 +1,22 @@
-package org.sufficientlysecure.keychain.ui;
+/*
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,14 +24,15 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-
+/**
+ * All fragments executing crypto operations need to extend this class.
+ */
 public abstract class CryptoOperationFragment extends Fragment {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
@@ -40,7 +58,6 @@ public abstract class CryptoOperationFragment extends Fragment {
         }
 
         throw new RuntimeException("Unhandled pending result!");
-
     }
 
     @Override
@@ -77,8 +94,8 @@ public abstract class CryptoOperationFragment extends Fragment {
         if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
             Bundle data = message.getData();
 
-            OperationResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
-            if (result == null || ! (result instanceof InputPendingResult)) {
+            OperationResult result = data.getParcelable(OperationResult.EXTRA_RESULT);
+            if (result == null || !(result instanceof InputPendingResult)) {
                 return false;
             }
 

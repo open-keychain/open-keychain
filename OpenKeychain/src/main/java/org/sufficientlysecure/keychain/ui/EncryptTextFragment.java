@@ -64,7 +64,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
     private IMode mModeInterface;
 
-    private boolean mSymmetricMode = true;
+    private boolean mSymmetricMode = false;
     private boolean mShareAfterEncrypt = false;
     private boolean mUseCompression = true;
     private boolean mHiddenRecipients = false;
@@ -159,7 +159,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.encrypt_text_activity, menu);
+        inflater.inflate(R.menu.encrypt_text_fragment, menu);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     protected boolean inputIsValid() {
         if (mMessage == null) {
             Notify.create(getActivity(), R.string.error_message, Notify.Style.ERROR)
-                    .show(this);
+                    .show();
             return false;
         }
 
@@ -298,12 +298,12 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
             if (mPassphrase == null) {
                 Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
             if (mPassphrase.isEmpty()) {
                 Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
 
@@ -315,7 +315,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
                 Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
-                        .show(this);
+                        .show();
                 return false;
             }
         }
@@ -348,7 +348,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
             input.setCryptoInput(cryptoInput);
         }
 
-        Bundle data = new Bundle();
+        final Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -362,10 +362,11 @@ public class EncryptTextFragment extends CryptoOperationFragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                // handle pending messages
-                if (handlePendingMessage(message)) {
-                    return;
-                }
+                // TODO: We need a InputPendingResult!
+//                // handle pending messages
+//                if (handlePendingMessage(message)) {
+//                    return;
+//                }
 
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     SignEncryptResult result =
