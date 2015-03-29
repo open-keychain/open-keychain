@@ -133,8 +133,6 @@ public class CertListWidget extends ViewAnimator
             vCollapsed.setText("This identity is not yet verified or confirmed.");
         }
 
-        setVisibility(View.VISIBLE);
-
     }
 
     @Override

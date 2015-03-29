@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
@@ -137,5 +138,10 @@ public class CertifyKeySpinner extends KeySpinner {
         // valid key
         return true;
     }
+
+    public @StringRes int getNoneString() {
+        return R.string.choice_select_cert;
+    }
+
 
 }

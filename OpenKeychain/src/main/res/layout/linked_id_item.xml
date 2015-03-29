@@ -62,8 +62,9 @@
             android:id="@+id/linked_id_certified_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/status_signature_unknown_cutout_24dp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            tools:src="@drawable/status_signature_unknown_cutout_24dp"
+            />
 
         <Space
             android:layout_height="wrap_content"

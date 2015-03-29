@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -277,7 +278,7 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
                 TextView vKeyEmail = (TextView) view.findViewById(R.id.keyspinner_key_email);
                 TextView vKeyDuplicate = (TextView) view.findViewById(R.id.keyspinner_duplicate);
 
-                vKeyName.setText(R.string.choice_none);
+                vKeyName.setText(getNoneString());
                 vKeyEmail.setVisibility(View.GONE);
                 vKeyDuplicate.setVisibility(View.GONE);
                 vKeyStatus.setVisibility(View.GONE);
@@ -294,6 +295,10 @@ public abstract class KeySpinner extends TintSpinner implements LoaderManager.Lo
 
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
         return true;
+    }
+
+    public @StringRes int getNoneString() {
+        return R.string.choice_none;
     }
 
 }

@@ -3,15 +3,12 @@ package org.sufficientlysecure.keychain.ui.linked;
 import java.io.IOException;
 import java.util.Arrays;
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -139,10 +136,14 @@ public class LinkedIdViewFragment extends Fragment implements
         switch (loader.getId()) {
             case LOADER_ID_LINKED_ID:
 
+                // Nothing to load means break if we are *expected* to load
                 if (!cursor.moveToFirst()) {
-                    Notify.create(getActivity(), "Error loading identity!",
-                            Notify.LENGTH_LONG, Style.ERROR).show();
-                    finishFragment();
+                    if (mIdLoadedListener != null) {
+                        Notify.create(getActivity(), "Error loading identity!",
+                                Notify.LENGTH_LONG, Style.ERROR).show();
+                        finishFragment();
+                    }
+                    // Or just ignore, this is probably some intermediate state during certify
                     break;
                 }
 
@@ -171,9 +172,14 @@ public class LinkedIdViewFragment extends Fragment implements
     }
 
     public void finishFragment() {
-        FragmentManager manager = getFragmentManager();
-        manager.removeOnBackStackChangedListener(this);
-        manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                FragmentManager manager = getFragmentManager();
+                manager.removeOnBackStackChangedListener(LinkedIdViewFragment.this);
+                manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+        });
     }
 
     public interface OnIdentityLoadedListener {
@@ -256,7 +262,6 @@ public class LinkedIdViewFragment extends Fragment implements
         private final View vButtonVerify;
         private final View vButtonRetry;
         private final View vButtonConfirm;
-        private final View vButtonBack;
 
         private final ViewAnimator vProgress;
         private final TextSwitcher vText;
@@ -269,7 +274,6 @@ public class LinkedIdViewFragment extends Fragment implements
 
             mLinkedIdHolder = new LinkedIdsAdapter.ViewHolder(root);
 
-            vButtonBack = root.findViewById(R.id.back_button);
             vButtonVerify = root.findViewById(R.id.button_verify);
             vButtonRetry = root.findViewById(R.id.button_retry);
             vButtonConfirm = root.findViewById(R.id.button_confirm);
@@ -409,16 +413,6 @@ public class LinkedIdViewFragment extends Fragment implements
                 .setColorFilter(mContext.getResources().getColor(R.color.android_red_light),
                         PorterDuff.Mode.SRC_IN);
 
-
-
-        mViewHolder.vButtonBack.setClickable(true);
-        mViewHolder.vButtonBack.findViewById(R.id.back_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack();
-            }
-        });
-
         mViewHolder.vButtonVerify.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -510,8 +504,9 @@ public class LinkedIdViewFragment extends Fragment implements
         if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 SubtleAttentionSeeker.tint(mViewHolder.vKeySpinnerContainer, 600).start();
+            } else {
+                Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
             }
-            Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
             return;
         }
 

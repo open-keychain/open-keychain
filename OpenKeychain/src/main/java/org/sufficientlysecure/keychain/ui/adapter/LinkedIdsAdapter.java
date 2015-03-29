@@ -113,7 +113,6 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         if (!mIsSecret) {
-            holder.vVerified.setVisibility(View.VISIBLE);
             int isVerified = cursor.getInt(INDEX_VERIFIED);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
@@ -129,8 +128,6 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
                             null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
-        } else {
-            holder.vVerified.setVisibility(View.GONE);
         }
 
         RawLinkedIdentity id = getItemAtPosition(cursor);

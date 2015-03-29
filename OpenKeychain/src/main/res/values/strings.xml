@@ -201,6 +201,7 @@
     <string name="choice_4hours">"4 hours"</string>
     <string name="choice_8hours">"8 hours"</string>
     <string name="choice_forever">"forever"</string>
+    <string name="choice_select_cert">"Select a Key"</string>
     <string name="dsa">"DSA"</string>
     <string name="elgamal">"ElGamal"</string>
     <string name="rsa">"RSA"</string>
