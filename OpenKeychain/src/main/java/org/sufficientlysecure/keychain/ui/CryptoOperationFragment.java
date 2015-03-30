@@ -62,6 +62,11 @@ public abstract class CryptoOperationFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_CANCELED) {
+            onCryptoOperationCancelled();
+            return;
+        }
+
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -115,5 +120,9 @@ public abstract class CryptoOperationFragment extends Fragment {
     }
 
     protected abstract void cryptoOperation(CryptoInputParcel cryptoInput);
+
+    protected void onCryptoOperationCancelled() {
+        // Nothing to do here, in most cases
+    }
 
 }

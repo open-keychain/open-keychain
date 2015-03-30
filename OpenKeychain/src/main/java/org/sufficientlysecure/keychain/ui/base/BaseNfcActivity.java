@@ -4,6 +4,7 @@ package org.sufficientlysecure.keychain.ui.base;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -130,6 +131,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE:
+                if (resultCode != Activity.RESULT_OK) {
+                    setResult(resultCode);
+                    finish();
+                    return;
+                }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 mPin = input.getPassphrase();
                 break;

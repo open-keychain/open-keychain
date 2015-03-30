@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.BufferedReader;
@@ -164,18 +165,41 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                if (signingKey.getSecretKeyType() != SecretKeyType.DIVERT_TO_CARD) {
-                    if (cryptoInput.getPassphrase() == null) {
-                        log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                        return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredPassphrase(
-                                signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
-                                cryptoInput.getSignatureTime()));
+                switch (signingKey.getSecretKeyType()) {
+                    case DIVERT_TO_CARD:
+                    case PASSPHRASE_EMPTY: {
+                        if (!signingKey.unlock(new Passphrase())) {
+                            throw new AssertionError(
+                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD keyphrase not unlocked with empty passphrase."
+                                            + " This is a programming error!");
+                        }
+                        break;
                     }
-                }
 
-                if (!signingKey.unlock(cryptoInput.getPassphrase())) {
-                    log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
-                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                    case PIN:
+                    case PATTERN:
+                    case PASSPHRASE: {
+                        if (cryptoInput.getPassphrase() == null) {
+                            log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredPassphrase(
+                                    signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
+                                    cryptoInput.getSignatureTime()));
+                        }
+                        if (!signingKey.unlock(cryptoInput.getPassphrase())) {
+                            log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
+                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                        }
+                        break;
+                    }
+
+                    case GNU_DUMMY: {
+                        log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                    }
+                    default: {
+                        throw new AssertionError("Unhandled SecretKeyType! (should not happen)");
+                    }
+
                 }
 
             } catch (ProviderHelper.NotFoundException e) {
