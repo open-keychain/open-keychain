@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -48,8 +46,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -61,16 +57,13 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.Highlighter;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -278,26 +271,6 @@ public class KeyListFragment extends LoaderFragment
         getLoaderManager().initLoader(0, null, this);
     }
 
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            KeyRings._ID,
-            KeyRings.MASTER_KEY_ID,
-            KeyRings.USER_ID,
-            KeyRings.IS_REVOKED,
-            KeyRings.IS_EXPIRED,
-            KeyRings.VERIFIED,
-            KeyRings.HAS_ANY_SECRET,
-            KeyRings.HAS_DUPLICATE_USER_ID,
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_USER_ID = 2;
-    static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_IS_EXPIRED = 4;
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
-    static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
-
     static final String ORDER =
             KeyRings.HAS_ANY_SECRET + " DESC, UPPER(" + KeyRings.USER_ID + ") ASC";
 
@@ -325,7 +298,8 @@ public class KeyListFragment extends LoaderFragment
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, ORDER);
+        return new CursorLoader(getActivity(), baseUri,
+                KeyListAdapter.PROJECTION, where, whereArgs, ORDER);
     }
 
     @Override
@@ -637,148 +611,54 @@ public class KeyListFragment extends LoaderFragment
         anim.start();
     }
 
-    /**
-     * Implements StickyListHeadersAdapter from library
-     */
-    private class KeyListAdapter extends CursorAdapter implements StickyListHeadersAdapter {
-        private String mQuery;
-        private LayoutInflater mInflater;
+    public class KeyListAdapter extends KeyAdapter implements StickyListHeadersAdapter {
 
         private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
         public KeyListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
-
-            mInflater = LayoutInflater.from(context);
-        }
-
-        public void setSearchQuery(String query) {
-            mQuery = query;
-        }
-
-        @Override
-        public Cursor swapCursor(Cursor newCursor) {
-            return super.swapCursor(newCursor);
-        }
-
-        private class ItemViewHolder {
-            Long mMasterKeyId;
-            TextView mMainUserId;
-            TextView mMainUserIdRest;
-            ImageView mStatus;
-            View mSlinger;
-            ImageButton mSlingerButton;
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = mInflater.inflate(R.layout.key_list_item, parent, false);
-            final ItemViewHolder holder = new ItemViewHolder();
-            holder.mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
-            holder.mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
-            holder.mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
-            holder.mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
-            holder.mSlingerButton = (ImageButton) view.findViewById(R.id.key_list_item_slinger_button);
-            holder.mSlingerButton.setColorFilter(context.getResources().getColor(R.color.tertiary_text_light),
-                    PorterDuff.Mode.SRC_IN);
-            view.setTag(holder);
-            view.findViewById(R.id.key_list_item_slinger_button).setOnClickListener(new OnClickListener() {
+            View view = super.newView(context, cursor, parent);
+
+            final KeyItemViewHolder holder = (KeyItemViewHolder) view.getTag();
+
+            holder.mSlinger.setVisibility(View.VISIBLE);
+            holder.mSlingerButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (holder.mMasterKeyId != null) {
-                        Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
+                        Intent safeSlingerIntent = new Intent(mContext, SafeSlingerActivity.class);
                         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
                         startActivityForResult(safeSlingerIntent, 0);
                     }
                 }
             });
+
             return view;
         }
 
-        /**
-         * Bind cursor data to the item list view
-         */
         @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            Highlighter highlighter = new Highlighter(context, mQuery);
-            ItemViewHolder h = (ItemViewHolder) view.getTag();
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // let the adapter handle setting up the row views
+            View v = super.getView(position, convertView, parent);
 
-            { // set name and stuff, common to both key types
-                String userId = cursor.getString(INDEX_USER_ID);
-                KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
-                if (userIdSplit.name != null) {
-                    h.mMainUserId.setText(highlighter.highlight(userIdSplit.name));
-                } else {
-                    h.mMainUserId.setText(R.string.user_id_no_name);
-                }
-                if (userIdSplit.email != null) {
-                    h.mMainUserIdRest.setText(highlighter.highlight(userIdSplit.email));
-                    h.mMainUserIdRest.setVisibility(View.VISIBLE);
-                } else {
-                    h.mMainUserIdRest.setVisibility(View.GONE);
-                }
+            if (mSelection.get(position) != null) {
+                // selected position color
+                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+            } else {
+                // default color
+                v.setBackgroundColor(Color.TRANSPARENT);
             }
 
-            { // set edit button and status, specific by key type
-
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
-                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                boolean hasDuplicate = cursor.getInt(INDEX_HAS_DUPLICATE_USER_ID) == 1;
-
-                h.mMasterKeyId = masterKeyId;
-
-                // Note: order is important!
-                if (isRevoked) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.REVOKED, R.color.bg_gray);
-                    h.mStatus.setVisibility(View.VISIBLE);
-                    h.mSlinger.setVisibility(View.GONE);
-                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                } else if (isExpired) {
-                    KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, null, State.EXPIRED, R.color.bg_gray);
-                    h.mStatus.setVisibility(View.VISIBLE);
-                    h.mSlinger.setVisibility(View.GONE);
-                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                } else if (isSecret) {
-                    h.mStatus.setVisibility(View.GONE);
-                    h.mSlinger.setVisibility(View.VISIBLE);
-                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
-                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
-                } else {
-                    // this is a public key - show if it's verified
-                    if (isVerified) {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.VERIFIED);
-                        h.mStatus.setVisibility(View.VISIBLE);
-                    } else {
-                        KeyFormattingUtils.setStatusImage(getActivity(), h.mStatus, State.UNVERIFIED);
-                        h.mStatus.setVisibility(View.VISIBLE);
-                    }
-                    h.mSlinger.setVisibility(View.GONE);
-                    h.mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
-                    h.mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
-                }
-            }
-
+            return v;
         }
 
-        public boolean isSecretAvailable(int id) {
-            if (!mCursor.moveToPosition(id)) {
-                throw new IllegalStateException("couldn't move cursor to position " + id);
-            }
-
-            return mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
-        }
-
-        public long getMasterKeyId(int id) {
-            if (!mCursor.moveToPosition(id)) {
-                throw new IllegalStateException("couldn't move cursor to position " + id);
-            }
-
-            return mCursor.getLong(INDEX_MASTER_KEY_ID);
+        private class HeaderViewHolder {
+            TextView mText;
+            TextView mCount;
         }
 
         /**
@@ -811,10 +691,10 @@ public class KeyListFragment extends LoaderFragment
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
 
-            if (mCursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
+            if (mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
                 { // set contact count
                     int num = mCursor.getCount();
-                    String contactsTotal = getResources().getQuantityString(R.plurals.n_keys, num, num);
+                    String contactsTotal = mContext.getResources().getQuantityString(R.plurals.n_keys, num, num);
                     holder.mCount.setText(contactsTotal);
                     holder.mCount.setVisibility(View.VISIBLE);
                 }
@@ -824,7 +704,7 @@ public class KeyListFragment extends LoaderFragment
             }
 
             // set header text as first char in user id
-            String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
+            String userId = mCursor.getString(INDEX_USER_ID);
             String headerText = convertView.getResources().getString(R.string.user_id_no_name);
             if (userId != null && userId.length() > 0) {
                 headerText = "" + userId.charAt(0);
@@ -850,21 +730,16 @@ public class KeyListFragment extends LoaderFragment
             }
 
             // early breakout: all secret keys are assigned id 0
-            if (mCursor.getInt(KeyListFragment.INDEX_HAS_ANY_SECRET) != 0) {
+            if (mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
                 return 1L;
             }
             // otherwise, return the first character of the name as ID
-            String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
+            String userId = mCursor.getString(INDEX_USER_ID);
             if (userId != null && userId.length() > 0) {
                 return Character.toUpperCase(userId.charAt(0));
             } else {
                 return Long.MAX_VALUE;
             }
-        }
-
-        private class HeaderViewHolder {
-            TextView mText;
-            TextView mCount;
         }
 
         /**
@@ -877,7 +752,7 @@ public class KeyListFragment extends LoaderFragment
 
         public boolean isAnySecretSelected() {
             for (int pos : mSelection.keySet()) {
-                if (mAdapter.isSecretAvailable(pos))
+                if (isSecretAvailable(pos))
                     return true;
             }
             return false;
@@ -888,7 +763,7 @@ public class KeyListFragment extends LoaderFragment
             int i = 0;
             // get master key ids
             for (int pos : mSelection.keySet()) {
-                ids[i++] = mAdapter.getMasterKeyId(pos);
+                ids[i++] = getMasterKeyId(pos);
             }
             return ids;
         }
@@ -903,26 +778,6 @@ public class KeyListFragment extends LoaderFragment
             notifyDataSetChanged();
         }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            // let the adapter handle setting up the row views
-            View v = super.getView(position, convertView, parent);
-
-            /**
-             * Change color for multi-selection
-             */
-            if (mSelection.get(position) != null) {
-                // selected position color
-                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
-            } else {
-                // default color
-                v.setBackgroundColor(Color.TRANSPARENT);
-            }
-
-            return v;
-        }
-
     }
-
 
 }
