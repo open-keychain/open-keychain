@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -62,6 +63,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -194,14 +196,14 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             return;
         }
 
-        if (mFilesAdapter.getAsArrayList().contains(inputUri)) {
+        try {
+            mFilesAdapter.add(inputUri);
+        } catch (IOException e) {
             Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
                     Notify.Style.ERROR).show();
             return;
         }
-
-        mFilesAdapter.add(inputUri);
         mSelectedFiles.requestFocus();
     }
 
@@ -428,7 +430,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         } else {
             data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
             data.setSignatureMasterKeyId(mSigningKeyId);
-//            data.setSignaturePassphrase(mSigningKeyPassphrase);
         }
         return data;
     }
@@ -578,11 +579,32 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             String filename;
             long fileSize;
 
-            ViewModel(Uri inputUri, Bitmap thumbnail, String filename, long fileSize) {
+            ViewModel(Context context, Uri inputUri) {
                 this.inputUri = inputUri;
-                this.thumbnail = thumbnail;
-                this.filename = filename;
-                this.fileSize = fileSize;
+                int px = FormattingUtils.dpToPx(context, 48);
+                this.thumbnail = FileHelper.getThumbnail(context, inputUri, new Point(px, px));
+                this.filename = FileHelper.getFilename(context, inputUri);
+                this.fileSize = FileHelper.getFileSize(context, inputUri);
+            }
+
+            /**
+             * Depends on inputUri only
+             */
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                ViewModel viewModel = (ViewModel) o;
+                return !(inputUri != null ? !inputUri.equals(viewModel.inputUri)
+                        : viewModel.inputUri != null);
+            }
+
+            /**
+             * Depends on inputUri only
+             */
+            @Override
+            public int hashCode() {
+                return inputUri != null ? inputUri.hashCode() : 0;
             }
 
             @Override
@@ -691,26 +713,27 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             return position == mDataset.size();
         }
 
-        public void add(Uri inputUri) {
-            mDataset.add(createModel(inputUri));
+        public void add(Uri inputUri) throws IOException {
+            ViewModel newModel = new ViewModel(mActivity, inputUri);
+            if (mDataset.contains(newModel)) {
+                throw new IOException("Already added!");
+            }
+            mDataset.add(newModel);
             notifyItemInserted(mDataset.size() - 1);
         }
 
         public void addAll(ArrayList<Uri> inputUris) {
             if (inputUris != null) {
                 for (Uri inputUri : inputUris) {
-                    mDataset.add(createModel(inputUri));
+                    ViewModel newModel = new ViewModel(mActivity, inputUri);
+                    if (mDataset.contains(newModel)) {
+                        Log.e(Constants.TAG, "Skipped duplicate " + inputUri.toString());
+                    } else {
+                        mDataset.add(newModel);
+                    }
                 }
             }
             // TODO: notifyItemInserted?
-        }
-
-        private ViewModel createModel(Uri inputUri) {
-            int px = FormattingUtils.dpToPx(mActivity, 48);
-            Bitmap thumbnail = FileHelper.getThumbnail(mActivity, inputUri, new Point(px, px));
-            String filename = FileHelper.getFilename(mActivity, inputUri);
-            long size = FileHelper.getFileSize(mActivity, inputUri);
-            return new ViewModel(inputUri, thumbnail, filename, size);
         }
 
         public void remove(ViewModel model) {
