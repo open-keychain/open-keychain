@@ -147,6 +147,8 @@ public class KeyAdapter extends CursorAdapter {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
                         mSlinger.setVisibility(View.VISIBLE);
+                    } else {
+                        mSlinger.setVisibility(View.GONE);
                     }
                     mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
