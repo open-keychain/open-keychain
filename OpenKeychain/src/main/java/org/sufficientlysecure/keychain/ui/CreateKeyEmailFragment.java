@@ -126,7 +126,7 @@ public class CreateKeyEmailFragment extends Fragment {
         if (mAdditionalEmailModels == null) {
             mAdditionalEmailModels = new ArrayList<>();
             if (mCreateKeyActivity.mAdditionalEmails != null) {
-                setAdditionalEmails(mCreateKeyActivity.mAdditionalEmails);
+                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
             }
         }
 
@@ -209,12 +209,6 @@ public class CreateKeyEmailFragment extends Fragment {
         return emails;
     }
 
-    private void setAdditionalEmails(ArrayList<String> emails) {
-        for (String email : emails) {
-            mAdditionalEmailModels.add(new EmailAdapter.ViewModel(email));
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -244,8 +238,7 @@ public class CreateKeyEmailFragment extends Fragment {
         // Provide a reference to the views for each data item
         // Complex data items may need more than one view per item, and
         // you provide access to all the views for a data item in a view holder
-        public static class ViewHolder extends RecyclerView.ViewHolder {
-            // each data item is just a string in this case
+        class ViewHolder extends RecyclerView.ViewHolder {
             public TextView mTextView;
             public ImageButton mDeleteButton;
 
@@ -289,7 +282,10 @@ public class CreateKeyEmailFragment extends Fragment {
         // Replace the contents of a view (invoked by the layout manager)
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-            if (holder instanceof ViewHolder) {
+            if (holder instanceof FooterHolder) {
+                FooterHolder thisHolder = (FooterHolder) holder;
+                thisHolder.mAddButton.setOnClickListener(mFooterOnClickListener);
+            } else if (holder instanceof ViewHolder) {
                 ViewHolder thisHolder = (ViewHolder) holder;
                 // - get element from your dataset at this position
                 // - replace the contents of the view with that element
@@ -302,9 +298,6 @@ public class CreateKeyEmailFragment extends Fragment {
                         remove(model);
                     }
                 });
-            } else if (holder instanceof FooterHolder) {
-                FooterHolder thisHolder = (FooterHolder) holder;
-                thisHolder.mAddButton.setOnClickListener(mFooterOnClickListener);
             }
         }
 
@@ -330,6 +323,12 @@ public class CreateKeyEmailFragment extends Fragment {
         public void add(String email) {
             mDataset.add(new ViewModel(email));
             notifyItemInserted(mDataset.size() - 1);
+        }
+
+        private void addAll(ArrayList<String> emails) {
+            for (String email : emails) {
+                mDataset.add(new EmailAdapter.ViewModel(email));
+            }
         }
 
         public void remove(ViewModel model) {

@@ -44,11 +44,24 @@ public class DeleteFileDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteFileDialogFragment newInstance(Uri... deleteUris) {
+    public static DeleteFileDialogFragment newInstance(ArrayList<Uri> deleteUris) {
         DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
         Bundle args = new Bundle();
 
-        args.putParcelableArray(ARG_DELETE_URIS, deleteUris);
+        args.putParcelableArrayList(ARG_DELETE_URIS, deleteUris);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    public static DeleteFileDialogFragment newInstance(Uri deleteUri) {
+        DeleteFileDialogFragment frag = new DeleteFileDialogFragment();
+        Bundle args = new Bundle();
+
+        ArrayList<Uri> list = new ArrayList<>();
+        list.add(deleteUri);
+        args.putParcelableArrayList(ARG_DELETE_URIS, list);
 
         frag.setArguments(args);
 
@@ -62,7 +75,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        final Uri[] deleteUris = (Uri[]) getArguments().getParcelableArray(ARG_DELETE_URIS);
+        final ArrayList<Uri> deleteUris = getArguments().getParcelableArrayList(ARG_DELETE_URIS);
 
         final StringBuilder deleteFileNames = new StringBuilder();
         //Retrieving file names after deletion gives unexpected results
@@ -127,7 +140,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 // NOTE: Use Toasts, not Snackbars. When sharing to another application snackbars
                 // would not show up!
                 Toast.makeText(getActivity(), getActivity().getString(R.string.file_delete_successful,
-                                deleteUris.length - failedFileNameList.size(), deleteUris.length, failedFileNames.toString()),
+                                deleteUris.size() - failedFileNameList.size(), deleteUris.size(), failedFileNames.toString()),
                         Toast.LENGTH_LONG).show();
 
                 if (onDeletedListener != null) {

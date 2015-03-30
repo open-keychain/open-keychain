@@ -65,7 +65,7 @@ public class EncryptModeAsymmetricFragment extends Fragment {
     private IAsymmetric mEncryptInterface;
 
 //    @Override
-//    public void onNotifyUpdate() {
+//    public void updateUi() {
 //        if (mSign != null) {
 //            mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
 //        }
