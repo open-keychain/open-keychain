@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -242,6 +243,10 @@ public class OpenPgpService extends RemoteService {
             InputData inputData = new InputData(is, inputLength);
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+            }
 
             // sign-only
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
@@ -374,6 +379,10 @@ public class OpenPgpService extends RemoteService {
             }
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+            }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
 
@@ -455,6 +464,10 @@ public class OpenPgpService extends RemoteService {
             );
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
+                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+            }
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
 
