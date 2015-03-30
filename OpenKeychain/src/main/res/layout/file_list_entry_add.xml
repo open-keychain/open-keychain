@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="4dp"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="true"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    style="?android:attr/borderlessButtonStyle">
+    android:minHeight="16dp"
+    android:orientation="horizontal"
+    android:singleLine="true">
 
-    <TextView
+    <Button
+        android:id="@+id/file_list_entry_add"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center"
         android:text="@string/btn_add_files"
+        style="?android:attr/borderlessButtonStyle"
         android:drawableLeft="@drawable/ic_folder_grey_24dp"
-        android:drawablePadding="8dp"
-        android:gravity="center" />
-</FrameLayout>
+        android:drawablePadding="16dp"
+        android:gravity="left|center_vertical" />
+
+</LinearLayout>

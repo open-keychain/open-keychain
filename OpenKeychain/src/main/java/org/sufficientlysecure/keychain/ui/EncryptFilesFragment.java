@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -28,15 +27,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -50,6 +51,7 @@ import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -61,9 +63,8 @@ import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 public class EncryptFilesFragment extends CryptoOperationFragment {
@@ -93,12 +94,12 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     private long mSigningKeyId = Constants.key.none;
     private Passphrase mPassphrase = new Passphrase();
 
-    private ArrayList<Uri> mInputUris = new ArrayList<>();
     private ArrayList<Uri> mOutputUris = new ArrayList<>();
 
-    private ListView mSelectedFiles;
-    private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
-    private final Map<Uri, Bitmap> thumbnailCache = new HashMap<>();
+    private RecyclerView mSelectedFiles;
+
+    ArrayList<FilesAdapter.ViewModel> mFilesModels;
+    FilesAdapter mFilesAdapter;
 
     /**
      * Creates new instance of this fragment
@@ -146,17 +147,28 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_files_fragment, container, false);
+        mSelectedFiles = (RecyclerView) view.findViewById(R.id.selected_files_list);
 
-        View addView = inflater.inflate(R.layout.file_list_entry_add, null);
-        addView.setOnClickListener(new View.OnClickListener() {
+        mSelectedFiles.addItemDecoration(new SpacesItemDecoration(
+                FormattingUtils.dpToPx(getActivity(), 4)));
+        mSelectedFiles.setHasFixedSize(true);
+        mSelectedFiles.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSelectedFiles.setItemAnimator(new DefaultItemAnimator());
+
+        mFilesModels = new ArrayList<>();
+        mFilesAdapter = new FilesAdapter(getActivity(), mFilesModels, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addInputUri();
             }
         });
-        mSelectedFiles = (ListView) view.findViewById(R.id.selected_files_list);
-        mSelectedFiles.addFooterView(addView);
-        mSelectedFiles.setAdapter(mAdapter);
+
+        ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_URIS);
+        if (inputUris != null) {
+            mFilesAdapter.addAll(inputUris);
+        }
+        mUseArmor = getArguments().getBoolean(ARG_USE_ASCII_ARMOR);
+        mSelectedFiles.setAdapter(mFilesAdapter);
 
         return view;
     }
@@ -165,17 +177,14 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        mInputUris = getArguments().getParcelableArrayList(ARG_URIS);
-        mUseArmor = getArguments().getBoolean(ARG_USE_ASCII_ARMOR);
     }
 
     private void addInputUri() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
         } else {
-            FileHelper.openFile(EncryptFilesFragment.this, mInputUris.isEmpty() ?
-                            null : mInputUris.get(mInputUris.size() - 1),
+            FileHelper.openFile(EncryptFilesFragment.this, mFilesModels.isEmpty() ?
+                            null : mFilesModels.get(mFilesModels.size() - 1).inputUri,
                     "*/*", REQUEST_CODE_INPUT);
         }
     }
@@ -185,32 +194,27 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             return;
         }
 
-        if (mInputUris.contains(inputUri)) {
+        if (mFilesAdapter.getAsArrayList().contains(inputUri)) {
             Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
                     Notify.Style.ERROR).show();
             return;
         }
 
-        mInputUris.add(inputUri);
-        mSelectedFiles.requestFocus();
-    }
-
-    private void delInputUri(int position) {
-        mInputUris.remove(position);
+        mFilesAdapter.add(inputUri);
         mSelectedFiles.requestFocus();
     }
 
     private void showOutputFileDialog() {
-        if (mInputUris.size() > 1 || mInputUris.isEmpty()) {
+        if (mFilesModels.size() > 1 || mFilesModels.isEmpty()) {
             throw new IllegalStateException();
         }
-        Uri inputUri = mInputUris.get(0);
+        FilesAdapter.ViewModel model = mFilesModels.get(0);
         String targetName =
-                (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), inputUri))
+                (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(inputUri.getPath());
+            File file = new File(model.inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
             File targetFile = new File(parentDir, targetName);
             FileHelper.saveFile(this, getString(R.string.title_encrypt_to_file),
@@ -221,40 +225,48 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     }
 
     private void encryptClicked(boolean share) {
-        if (mInputUris.isEmpty()) {
-            Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show();
+        if (mFilesModels.isEmpty()) {
+            Notify.create(getActivity(), R.string.error_no_file_selected,
+                    Notify.Style.ERROR).show();
             return;
         }
         if (share) {
             mOutputUris.clear();
             int filenameCounter = 1;
-            for (Uri uri : mInputUris) {
+            for (FilesAdapter.ViewModel model : mFilesModels) {
                 String targetName =
-                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), uri))
+                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
                                 + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
                 mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
                 filenameCounter++;
             }
             startEncrypt(true);
         } else {
-            if (mInputUris.size() > 1) {
-                Notify.create(getActivity(), R.string.error_multi_not_supported, Notify.Style.ERROR).show();
+            if (mFilesModels.size() > 1) {
+                Notify.create(getActivity(), R.string.error_multi_not_supported,
+                        Notify.Style.ERROR).show();
                 return;
             }
             showOutputFileDialog();
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public boolean handleClipData(Intent data) {
-        if (data.getClipData() != null && data.getClipData().getItemCount() > 0) {
-            for (int i = 0; i < data.getClipData().getItemCount(); i++) {
-                Uri uri = data.getClipData().getItemAt(i).getUri();
-                if (uri != null) addInputUri(uri);
+    public void addFile(Intent data) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            addInputUri(data.getData());
+        } else {
+            if (data.getClipData() != null && data.getClipData().getItemCount() > 0) {
+                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                    Uri uri = data.getClipData().getItemAt(i).getUri();
+                    if (uri != null) {
+                        addInputUri(uri);
+                    }
+                }
+            } else {
+                // fallback, try old method to get single uri
+                addInputUri(data.getData());
             }
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -284,22 +296,18 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             }
             case R.id.check_use_armor: {
                 mUseArmor = item.isChecked();
-//                notifyUpdate();
                 break;
             }
             case R.id.check_delete_after_encrypt: {
                 mDeleteAfterEncrypt = item.isChecked();
-//                notifyUpdate();
                 break;
             }
             case R.id.check_enable_compression: {
                 mUseCompression = item.isChecked();
-//                onNotifyUpdate();
                 break;
             }
             case R.id.check_encrypt_filenames: {
                 mEncryptFilenames = item.isChecked();
-//                onNotifyUpdate();
                 break;
             }
 //            case R.id.check_hidden_recipients: {
@@ -317,15 +325,15 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     protected boolean inputIsValid() {
         // file checks
 
-        if (mInputUris.isEmpty()) {
+        if (mFilesModels.isEmpty()) {
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
                     .show();
             return false;
-        } else if (mInputUris.size() > 1 && !mShareAfterEncrypt) {
+        } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
             Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
             // This should be impossible...
             return false;
-        } else if (mInputUris.size() != mOutputUris.size()) {
+        } else if (mFilesModels.size() != mOutputUris.size()) {
             Log.e(Constants.TAG, "Aborting: mInputUris.size() != mOutputUris.size()");
             // This as well
             return false;
@@ -363,8 +371,8 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     public void onEncryptSuccess(final SignEncryptResult result) {
         if (mDeleteAfterEncrypt) {
-            final Uri[] inputUris = mInputUris.toArray(new Uri[mInputUris.size()]);
-            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(inputUris);
+            DeleteFileDialogFragment deleteFileDialog =
+                    DeleteFileDialogFragment.newInstance(mFilesAdapter.getAsArrayList());
             deleteFileDialog.setOnDeletedListener(new DeleteFileDialogFragment.OnDeletedListener() {
 
                 @Override
@@ -381,8 +389,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             });
             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
 
-            mInputUris.clear();
-            onNotifyUpdate();
+            mFilesModels.clear();
         } else {
             if (mShareAfterEncrypt) {
                 // Share encrypted message/file
@@ -398,7 +405,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         // fill values for this action
         SignEncryptParcel data = new SignEncryptParcel();
 
-        data.addInputUris(mInputUris);
+        data.addInputUris(mFilesAdapter.getAsArrayList());
         data.addOutputUris(mOutputUris);
 
         if (mUseCompression) {
@@ -536,9 +543,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         switch (requestCode) {
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT || !handleClipData(data)) {
-                        addInputUri(data.getData());
-                    }
+                    addFile(data);
                 }
                 return;
             }
@@ -547,7 +552,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUris.clear();
                     mOutputUris.add(data.getData());
-                    onNotifyUpdate();
                     startEncrypt(false);
                 }
                 return;
@@ -561,66 +565,167 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         }
     }
 
-    public void onNotifyUpdate() {
-        // Clear cache if needed
-        for (Uri uri : new HashSet<>(thumbnailCache.keySet())) {
-            if (!mInputUris.contains(uri)) {
-                thumbnailCache.remove(uri);
+    public static class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private Activity mActivity;
+        private List<ViewModel> mDataset;
+        private View.OnClickListener mFooterOnClickListener;
+        private static final int TYPE_FOOTER = 0;
+        private static final int TYPE_ITEM = 1;
+
+        public static class ViewModel {
+            Uri inputUri;
+            Bitmap thumbnail;
+            String filename;
+            long fileSize;
+
+            ViewModel(Uri inputUri, Bitmap thumbnail, String filename, long fileSize) {
+                this.inputUri = inputUri;
+                this.thumbnail = thumbnail;
+                this.filename = filename;
+                this.fileSize = fileSize;
+            }
+
+            @Override
+            public String toString() {
+                return inputUri.toString();
             }
         }
 
-        mAdapter.notifyDataSetChanged();
-    }
+        // Provide a reference to the views for each data item
+        // Complex data items may need more than one view per item, and
+        // you provide access to all the views for a data item in a view holder
+        class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView filename;
+            public TextView fileSize;
+            public View removeButton;
+            public ImageView thumbnail;
 
-    private class SelectedFilesAdapter extends BaseAdapter {
-        @Override
-        public int getCount() {
-            return mInputUris.size();
+            public ViewHolder(View itemView) {
+                super(itemView);
+                filename = (TextView) itemView.findViewById(R.id.filename);
+                fileSize = (TextView) itemView.findViewById(R.id.filesize);
+                removeButton = itemView.findViewById(R.id.action_remove_file_from_list);
+                thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+            }
         }
 
-        @Override
-        public Object getItem(int position) {
-            return mInputUris.get(position);
+        class FooterHolder extends RecyclerView.ViewHolder {
+            public Button mAddButton;
+
+            public FooterHolder(View itemView) {
+                super(itemView);
+                mAddButton = (Button) itemView.findViewById(R.id.file_list_entry_add);
+            }
         }
 
-        @Override
-        public long getItemId(int position) {
-            return getItem(position).hashCode();
+        // Provide a suitable constructor (depends on the kind of dataset)
+        public FilesAdapter(Activity activity, List<ViewModel> myDataset, View.OnClickListener onFooterClickListener) {
+            mActivity = activity;
+            mDataset = myDataset;
+            mFooterOnClickListener = onFooterClickListener;
         }
 
+        // Create new views (invoked by the layout manager)
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            Uri inputUri = mInputUris.get(position);
-            View view;
-            if (convertView == null) {
-                view = getActivity().getLayoutInflater().inflate(R.layout.file_list_entry, null);
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_FOOTER) {
+                View v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.file_list_entry_add, parent, false);
+                return new FooterHolder(v);
             } else {
-                view = convertView;
+                //inflate your layout and pass it to view holder
+                View v = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.file_list_entry, parent, false);
+                return new ViewHolder(v);
             }
-            ((TextView) view.findViewById(R.id.filename)).setText(FileHelper.getFilename(getActivity(), inputUri));
-            long size = FileHelper.getFileSize(getActivity(), inputUri);
-            if (size == -1) {
-                ((TextView) view.findViewById(R.id.filesize)).setText("");
-            } else {
-                ((TextView) view.findViewById(R.id.filesize)).setText(FileHelper.readableFileSize(size));
-            }
-            view.findViewById(R.id.action_remove_file_from_list).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    delInputUri(position);
+        }
+
+        // Replace the contents of a view (invoked by the layout manager)
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+            if (holder instanceof FooterHolder) {
+                FooterHolder thisHolder = (FooterHolder) holder;
+                thisHolder.mAddButton.setOnClickListener(mFooterOnClickListener);
+            } else if (holder instanceof ViewHolder) {
+                ViewHolder thisHolder = (ViewHolder) holder;
+                // - get element from your dataset at this position
+                // - replace the contents of the view with that element
+                final ViewModel model = mDataset.get(position);
+
+                thisHolder.filename.setText(model.filename);
+                if (model.fileSize == -1) {
+                    thisHolder.fileSize.setText("");
+                } else {
+                    thisHolder.fileSize.setText(FileHelper.readableFileSize(model.fileSize));
                 }
-            });
-            int px = FormattingUtils.dpToPx(getActivity(), 48);
-            if (!thumbnailCache.containsKey(inputUri)) {
-                thumbnailCache.put(inputUri, FileHelper.getThumbnail(getActivity(), inputUri, new Point(px, px)));
+                thisHolder.removeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        remove(model);
+                    }
+                });
+                if (model.thumbnail != null) {
+                    thisHolder.thumbnail.setImageBitmap(model.thumbnail);
+                } else {
+                    thisHolder.thumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+                }
             }
-            Bitmap bitmap = thumbnailCache.get(inputUri);
-            if (bitmap != null) {
-                ((ImageView) view.findViewById(R.id.thumbnail)).setImageBitmap(bitmap);
-            } else {
-                ((ImageView) view.findViewById(R.id.thumbnail)).setImageResource(R.drawable.ic_doc_generic_am);
-            }
-            return view;
         }
+
+        // Return the size of your dataset (invoked by the layout manager)
+        @Override
+        public int getItemCount() {
+            return mDataset.size() + 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (isPositionFooter(position)) {
+                return TYPE_FOOTER;
+            } else {
+                return TYPE_ITEM;
+            }
+        }
+
+        private boolean isPositionFooter(int position) {
+            return position == mDataset.size();
+        }
+
+        public void add(Uri inputUri) {
+            mDataset.add(createModel(inputUri));
+            notifyItemInserted(mDataset.size() - 1);
+        }
+
+        public void addAll(ArrayList<Uri> inputUris) {
+            if (inputUris != null) {
+                for (Uri inputUri : inputUris) {
+                    mDataset.add(createModel(inputUri));
+                }
+            }
+            // TODO: notifyItemInserted?
+        }
+
+        private ViewModel createModel(Uri inputUri) {
+            int px = FormattingUtils.dpToPx(mActivity, 48);
+            Bitmap thumbnail = FileHelper.getThumbnail(mActivity, inputUri, new Point(px, px));
+            String filename = FileHelper.getFilename(mActivity, inputUri);
+            long size = FileHelper.getFileSize(mActivity, inputUri);
+            return new ViewModel(inputUri, thumbnail, filename, size);
+        }
+
+        public void remove(ViewModel model) {
+            int position = mDataset.indexOf(model);
+            mDataset.remove(position);
+            notifyItemRemoved(position);
+        }
+
+        public ArrayList<Uri> getAsArrayList() {
+            ArrayList<Uri> uris = new ArrayList<>();
+            for (ViewModel model : mDataset) {
+                uris.add(model.inputUri);
+            }
+            return uris;
+        }
+
     }
 }
