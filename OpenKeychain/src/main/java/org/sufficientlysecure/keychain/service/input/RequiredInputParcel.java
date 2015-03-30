@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.service.input;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
@@ -56,11 +57,11 @@ public class RequiredInputParcel implements Parcelable {
 
     }
 
-    public long getMasterKeyId() {
+    public Long getMasterKeyId() {
         return mMasterKeyId;
     }
 
-    public long getSubKeyId() {
+    public Long getSubKeyId() {
         return mSubKeyId;
     }
 
@@ -87,7 +88,6 @@ public class RequiredInputParcel implements Parcelable {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
                 null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId);
     }
-
 
     @Override
     public int describeContents() {
@@ -142,10 +142,10 @@ public class RequiredInputParcel implements Parcelable {
         Date mSignatureTime;
         ArrayList<Integer> mSignAlgos = new ArrayList<>();
         ArrayList<byte[]> mInputHashes = new ArrayList<>();
-        long mMasterKeyId;
-        long mSubKeyId;
+        Long mMasterKeyId;
+        Long mSubKeyId;
 
-        public NfcSignOperationsBuilder(Date signatureTime, long masterKeyId, long subKeyId) {
+        public NfcSignOperationsBuilder(Date signatureTime, Long masterKeyId, Long subKeyId) {
             mSignatureTime = signatureTime;
             mMasterKeyId = masterKeyId;
             mSubKeyId = subKeyId;

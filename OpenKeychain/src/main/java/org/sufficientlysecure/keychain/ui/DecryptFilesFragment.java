@@ -198,7 +198,7 @@ public class DecryptFilesFragment extends DecryptFragment {
 //        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
 //        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 //
-//        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+//        intent.putExtra(KeychainIntentService.EXTRA_SERVICE_INTENT, data);
 //
 //        // Message is received after decrypting is done in KeychainIntentService
 //        ServiceProgressHandler saveHandler = new ServiceProgressHandler(

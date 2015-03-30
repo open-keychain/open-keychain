@@ -10,8 +10,10 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.WindowManager;
 
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -34,9 +36,13 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
 
+    // passthrough for OpenPgpService
+    public static final String EXTRA_SERVICE_INTENT = "data";
+
     public static final String RESULT_DATA = "result_data";
 
-    RequiredInputParcel mRequiredInput;
+    private RequiredInputParcel mRequiredInput;
+    private Intent mServiceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +55,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         Bundle data = intent.getExtras();
 
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
+        mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
         // obtain passphrase for this subkey
         obtainYubikeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
@@ -84,10 +91,15 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 break;
         }
 
-        // give data through for new service call
-        Intent result = new Intent();
-        result.putExtra(NfcOperationActivity.RESULT_DATA, resultData);
-        setResult(RESULT_OK, result);
+        if (mServiceIntent != null) {
+            mServiceIntent.putExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT, resultData);
+            setResult(RESULT_OK, mServiceIntent);
+        } else {
+            Intent result = new Intent();
+            result.putExtra(NfcOperationActivity.RESULT_DATA, resultData);
+            setResult(RESULT_OK, result);
+        }
+
         finish();
 
     }

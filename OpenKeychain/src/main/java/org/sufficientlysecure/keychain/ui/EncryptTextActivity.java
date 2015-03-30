@@ -160,6 +160,6 @@ public class EncryptTextActivity extends BaseActivity implements
 
     @Override
     public void onPassphraseChanged(Passphrase passphrase) {
-        mEncryptFragment.setPassphrase(passphrase);
+        mEncryptFragment.setSymmetricPassphrase(passphrase);
     }
 }

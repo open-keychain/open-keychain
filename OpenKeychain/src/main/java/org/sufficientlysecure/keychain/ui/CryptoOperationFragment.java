@@ -66,7 +66,7 @@ public abstract class CryptoOperationFragment extends Fragment {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
+                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
                     return;
                 }
@@ -108,6 +108,10 @@ public abstract class CryptoOperationFragment extends Fragment {
         }
 
         return false;
+    }
+
+    protected void cryptoOperation() {
+        cryptoOperation(new CryptoInputParcel());
     }
 
     protected abstract void cryptoOperation(CryptoInputParcel cryptoInput);

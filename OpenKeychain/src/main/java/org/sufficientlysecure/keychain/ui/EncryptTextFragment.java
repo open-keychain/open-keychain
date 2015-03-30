@@ -37,7 +37,6 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -73,7 +72,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     private String mEncryptionUserIds[] = null;
     // TODO Constants.key.none? What's wrong with a null value?
     private long mSigningKeyId = Constants.key.none;
-    private Passphrase mPassphrase = new Passphrase();
+    private Passphrase mSymmetricPassphrase = new Passphrase();
     private String mMessage = "";
 
     private TextView mText;
@@ -90,8 +89,8 @@ public class EncryptTextFragment extends CryptoOperationFragment {
         mSigningKeyId = signingKeyId;
     }
 
-    public void setPassphrase(Passphrase passphrase) {
-        mPassphrase = passphrase;
+    public void setSymmetricPassphrase(Passphrase passphrase) {
+        mSymmetricPassphrase = passphrase;
     }
 
     /**
@@ -233,7 +232,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
         if (mSymmetricMode) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            Passphrase passphrase = mPassphrase;
+            Passphrase passphrase = mSymmetricPassphrase;
             if (passphrase.isEmpty()) {
                 passphrase = null;
             }
@@ -241,7 +240,6 @@ public class EncryptTextFragment extends CryptoOperationFragment {
         } else {
             data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
             data.setSignatureMasterKeyId(mSigningKeyId);
-//            data.setSignaturePassphrase(mSigningKeyPassphrase);
         }
         return data;
     }
@@ -296,12 +294,12 @@ public class EncryptTextFragment extends CryptoOperationFragment {
         if (mSymmetricMode) {
             // symmetric encryption checks
 
-            if (mPassphrase == null) {
+            if (mSymmetricPassphrase == null) {
                 Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
                         .show();
                 return false;
             }
-            if (mPassphrase.isEmpty()) {
+            if (mSymmetricPassphrase.isEmpty()) {
                 Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
                         .show();
                 return false;
@@ -325,11 +323,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
     public void startEncrypt(boolean share) {
         mShareAfterEncrypt = share;
-        startEncrypt();
-    }
-
-    public void startEncrypt() {
-        cryptoOperation(null);
+        cryptoOperation();
     }
 
     @Override
@@ -359,45 +353,19 @@ public class EncryptTextFragment extends CryptoOperationFragment {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                // TODO: We need a InputPendingResult!
-//                // handle pending messages
-//                if (handlePendingMessage(message)) {
-//                    return;
-//                }
+                if (handlePendingMessage(message)) {
+                    return;
+                }
 
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     SignEncryptResult result =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-
-                    PgpSignEncryptResult pgpResult = result.getPending();
-
-//                    if (pgpResult != null && pgpResult.isPending()) {
-//                        if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-//                                PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-//                        } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
-//                                PgpSignEncryptResult.RESULT_PENDING_NFC) {
-//
-//                            RequiredInputParcel parcel = RequiredInputParcel.createNfcSignOperation(
-//                                    pgpResult.getNfcHash(),
-//                                    pgpResult.getNfcAlgo(),
-//                                    input.getSignatureTime());
-//                            startNfcSign(pgpResult.getNfcKeyId(), parcel);
-//
-//                        } else {
-//                            throw new RuntimeException("Unhandled pending result!");
-//                        }
-//                        return;
-//                    }
 
                     if (result.success()) {
                         onEncryptSuccess(result);
                     } else {
                         result.createNotify(getActivity()).show();
                     }
-
-                    // no matter the result, reset parameters
-//                    mSigningKeyPassphrase = null;
                 }
             }
         };

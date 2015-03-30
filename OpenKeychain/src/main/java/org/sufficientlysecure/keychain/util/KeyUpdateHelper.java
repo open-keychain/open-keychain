@@ -57,7 +57,7 @@ public class KeyUpdateHelper {
                 Bundle importData = new Bundle();
                 importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
                         new ArrayList<ImportKeysListEntry>(keys));
-                importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
+                importIntent.putExtra(KeychainIntentService.EXTRA_SERVICE_INTENT, importData);
 
                 importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, new Messenger(mHandler));
 

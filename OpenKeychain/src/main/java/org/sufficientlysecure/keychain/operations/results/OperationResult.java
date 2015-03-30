@@ -671,7 +671,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_SE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
         MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
         MSG_SE_ERROR_TOO_MANY_INPUTS (LogLevel.ERROR, R.string.msg_se_error_too_many_inputs),
-        MSG_SE_WARN_OUTPUT_LEFT (LogLevel.WARN, R.string.msg_se_warn_output_left),
         MSG_SE_SUCCESS (LogLevel.OK, R.string.msg_se_success),
 
         // pgpsignencrypt

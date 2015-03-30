@@ -40,11 +40,13 @@ import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -146,48 +148,39 @@ public class PgpSignEncryptOperation extends BaseOperation {
         CanonicalizedSecretKey signingKey = null;
         if (enableSignature) {
 
+            updateProgress(R.string.progress_extracting_signature_key, 0, 100);
+
             try {
                 // fetch the indicated master key id (the one whose name we sign in)
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mProviderHelper.getCanonicalizedSecretKeyRing(input.getSignatureMasterKeyId());
 
-                long signKeyId;
-                // use specified signing subkey, or find the one to use
-                if (input.getSignatureSubKeyId() == null) {
-                    signKeyId = signingKeyRing.getSecretSignId();
-                } else {
-                    signKeyId = input.getSignatureSubKeyId();
+                // fetch the specific subkey to sign with, or just use the master key if none specified
+                signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+
+                // Make sure we are allowed to sign here!
+                if (!signingKey.canSign()) {
+                    log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
+                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                // fetch the specific subkey to sign with, or just use the master key if none specified
-                signingKey = signingKeyRing.getSecretKey(signKeyId);
+                if (signingKey.getSecretKeyType() != SecretKeyType.DIVERT_TO_CARD) {
+                    if (cryptoInput.getPassphrase() == null) {
+                        log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                        return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredPassphrase(
+                                signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
+                                cryptoInput.getSignatureTime()));
+                    }
+                }
 
-            } catch (ProviderHelper.NotFoundException | PgpGeneralException e) {
-                log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
-                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            }
-
-            // Make sure we are allowed to sign here!
-            if (!signingKey.canSign()) {
-                log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
-                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            }
-
-            // if no passphrase was explicitly set try to get it from the cache service
-            if (cryptoInput.getPassphrase() == null) {
-                log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE, log);
-                result.setKeyIdPassphraseNeeded(signingKey.getKeyId());
-                return result;
-            }
-
-            updateProgress(R.string.progress_extracting_signature_key, 0, 100);
-
-            try {
                 if (!signingKey.unlock(cryptoInput.getPassphrase())) {
                     log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
+
+            } catch (ProviderHelper.NotFoundException e) {
+                log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
+                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -473,20 +466,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
                     // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
                     log.add(LogType.MSG_PSE_PENDING_NFC, indent);
-                    PgpSignEncryptResult result =
-                            new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_NFC, log);
-
-                    // SignatureSubKeyId can be null.
-                    if (input.getSignatureSubKeyId() == null) {
-                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                    }
-
-                    // Note that the checked key here is the master key, not the signing key
-                    // (although these are always the same on Yubikeys)
-                    result.setNfcData(signingKey.getKeyId(), e.hashToSign, e.hashAlgo,
-                            cryptoInput.getPassphrase());
-                    Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
-                    return result;
+                    return new PgpSignEncryptResult(log, RequiredInputParcel.createNfcSignOperation(
+                            e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()));
                 }
             }
 

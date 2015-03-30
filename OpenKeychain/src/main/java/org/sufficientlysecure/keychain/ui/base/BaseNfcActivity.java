@@ -130,7 +130,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE:
-                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_DATA);
+                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 mPin = input.getPassphrase();
                 break;
 

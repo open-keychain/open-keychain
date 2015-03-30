@@ -105,7 +105,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment {
 //        // build PendingIntent for Yubikey NFC operations
 //        Intent intent = new Intent(getActivity(), NfcActivity.class);
 //        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
-//        intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
+//        intent.putExtra(NfcActivity.EXTRA_SERVICE_INTENT, new Intent()); // not used, only relevant to OpenPgpService
 //        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
 //        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
 //

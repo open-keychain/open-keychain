@@ -20,15 +20,21 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.net.Uri;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -68,6 +74,20 @@ public class SignEncryptOperation extends BaseOperation {
 
         int total = inputBytes != null ? 1 : inputUris.size(), count = 0;
         ArrayList<PgpSignEncryptResult> results = new ArrayList<>();
+
+        NfcSignOperationsBuilder pendingInputBuilder = null;
+
+        if (input.getSignatureMasterKeyId() != Constants.key.none
+                && input.getSignatureSubKeyId() == null) {
+            try {
+                long signKeyId = mProviderHelper.getCachedPublicKeyRing(
+                        input.getSignatureMasterKeyId()).getSecretSignId();
+                input.setSignatureSubKeyId(signKeyId);
+            } catch (PgpKeyNotFoundException e) {
+                e.printStackTrace();
+                return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
+            }
+        }
 
         do {
 
@@ -129,10 +149,17 @@ public class SignEncryptOperation extends BaseOperation {
             log.add(result, 2);
 
             if (result.isPending()) {
-                return new SignEncryptResult(SignEncryptResult.RESULT_PENDING, log, results);
-            }
-
-            if (!result.success()) {
+                RequiredInputParcel requiredInput = result.getRequiredInputParcel();
+                // Passphrase returns immediately, nfc are aggregated
+                if (requiredInput.mType == RequiredInputType.PASSPHRASE) {
+                    return new SignEncryptResult(log, requiredInput, results);
+                }
+                if (pendingInputBuilder == null) {
+                    pendingInputBuilder = new NfcSignOperationsBuilder(requiredInput.mSignatureTime,
+                            input.getSignatureMasterKeyId(), input.getSignatureSubKeyId());
+                }
+                pendingInputBuilder.addAll(requiredInput);
+            } else if (!result.success()) {
                 return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
             }
 
@@ -142,9 +169,12 @@ public class SignEncryptOperation extends BaseOperation {
 
         } while (!inputUris.isEmpty());
 
+        if (pendingInputBuilder != null && !pendingInputBuilder.isEmpty()) {
+            return new SignEncryptResult(log, pendingInputBuilder.build(), results);
+        }
+
         if (!outputUris.isEmpty()) {
-            // Any output URIs left are indicative of a programming error
-            log.add(LogType.MSG_SE_WARN_OUTPUT_LEFT, 1);
+            throw new AssertionError("Got outputs left but no inputs. This is a programming error, please report!");
         }
 
         log.add(LogType.MSG_SE_SUCCESS, 1);

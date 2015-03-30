@@ -41,7 +41,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import junit.framework.Assert;
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -67,14 +67,13 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * This activity encapsulates a DialogFragment to emulate a dialog.
  */
 public class PassphraseDialogActivity extends FragmentActivity {
-    public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
-    public static final String RESULT_DATA = "result_data";
+    public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
 
     // special extra for OpenPgpService
-    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_SERVICE_INTENT = "data";
 
     private static final int REQUEST_CODE_ENTER_PATTERN = 2;
 
@@ -104,7 +103,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             keyId = requiredInput.getSubKeyId();
         }
 
-        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
+        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);
 
         show(this, keyId, serviceIntent);
     }
@@ -155,7 +154,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 PassphraseDialogFragment frag = new PassphraseDialogFragment();
                 Bundle args = new Bundle();
                 args.putLong(EXTRA_SUBKEY_ID, keyId);
-                args.putParcelable(EXTRA_DATA, serviceIntent);
+                args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
 
                 frag.setArguments(args);
 
@@ -188,7 +187,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     R.style.Theme_AppCompat_Light_Dialog);
 
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
-            mServiceIntent = getArguments().getParcelable(EXTRA_DATA);
+            mServiceIntent = getArguments().getParcelable(EXTRA_SERVICE_INTENT);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
@@ -418,15 +417,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
 
             if (mServiceIntent != null) {
-                // TODO: Not routing passphrase through OpenPGP API currently
-                // due to security concerns...
-                // BUT this means you need to _cache_ passphrases!
+                // TODO really pass this through the PendingIntent?
+                mServiceIntent.putExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT, new CryptoInputParcel(null, passphrase));
                 getActivity().setResult(RESULT_OK, mServiceIntent);
             } else {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
-                returnIntent.putExtra(RESULT_DATA, new CryptoInputParcel(null, passphrase));
+                returnIntent.putExtra(RESULT_CRYPTO_INPUT, new CryptoInputParcel(null, passphrase));
                 getActivity().setResult(RESULT_OK, returnIntent);
             }
 

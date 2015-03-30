@@ -100,7 +100,7 @@ public class NfcActivity extends BaseActivity {
                 Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
                 Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
                 Log.d(Constants.TAG, "NfcActivity mHashToSign as hex: " + getHex(mHashToSign));
-                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent);
                 break;
             case ACTION_DECRYPT_SESSION_KEY:
                 mAction = action;
@@ -111,7 +111,7 @@ public class NfcActivity extends BaseActivity {
                 Log.d(Constants.TAG, "NfcActivity mAction: " + mAction);
                 Log.d(Constants.TAG, "NfcActivity mPin: " + mPin);
                 Log.d(Constants.TAG, "NfcActivity mEncryptedSessionKey as hex: " + getHex(mEncryptedSessionKey));
-                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent.toString());
+                Log.d(Constants.TAG, "NfcActivity mServiceIntent: " + mServiceIntent);
                 break;
             case NfcAdapter.ACTION_TAG_DISCOVERED:
                 Log.e(Constants.TAG, "This should not happen! NfcActivity.onCreate() is being called instead of onNewIntent()!");

@@ -21,22 +21,17 @@ import android.os.Parcel;
 
 import java.util.ArrayList;
 
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-public class SignEncryptResult extends OperationResult {
+
+public class SignEncryptResult extends InputPendingResult {
 
     ArrayList<PgpSignEncryptResult> mResults;
     byte[] mResultBytes;
 
-    public static final int RESULT_PENDING = RESULT_ERROR + 8;
-
-
-    public PgpSignEncryptResult getPending() {
-        for (PgpSignEncryptResult sub : mResults) {
-            if (sub.isPending()) {
-                return sub;
-            }
-        }
-        return null;
+    public SignEncryptResult(OperationLog log, RequiredInputParcel requiredInput, ArrayList<PgpSignEncryptResult> results) {
+        super(log, requiredInput);
+        mResults = results;
     }
 
     public SignEncryptResult(int result, OperationLog log, ArrayList<PgpSignEncryptResult> results) {

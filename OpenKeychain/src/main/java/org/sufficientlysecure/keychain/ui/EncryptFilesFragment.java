@@ -363,7 +363,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     public void startEncrypt(boolean share) {
         mShareAfterEncrypt = share;
-        cryptoOperation(new CryptoInputParcel());
+        cryptoOperation();
     }
 
     public void onEncryptSuccess(final SignEncryptResult result) {
@@ -512,36 +512,11 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
                     SignEncryptResult result =
                             message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-
-//                    PgpSignEncryptResult pgpResult = result.getPending();
-//
-//                    if (pgpResult != null && pgpResult.isPending()) {
-//                        if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
-//                                PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) {
-//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-//                        } else if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_NFC) ==
-//                                PgpSignEncryptResult.RESULT_PENDING_NFC) {
-//
-//                            RequiredInputParcel parcel = RequiredInputParcel.createNfcSignOperation(
-//                                    pgpResult.getNfcHash(),
-//                                    pgpResult.getNfcAlgo(),
-//                                    input.getSignatureTime());
-//                            startNfcSign(pgpResult.getNfcKeyId(), parcel);
-//
-//                        } else {
-//                            throw new RuntimeException("Unhandled pending result!");
-//                        }
-//                        return;
-//                    }
-
                     if (result.success()) {
                         onEncryptSuccess(result);
                     } else {
                         result.createNotify(getActivity()).show();
                     }
-
-                    // no matter the result, reset parameters
-//                    mSigningKeyPassphrase = null;
                 }
             }
         };

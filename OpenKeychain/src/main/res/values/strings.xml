@@ -1048,7 +1048,6 @@
     <string name="msg_se_error_input_uri_not_found">"Error opening URI for reading!"</string>
     <string name="msg_se_error_output_uri_not_found">"Error opening URI for writing!"</string>
     <string name="msg_se_error_too_many_inputs">"More inputs than outputs specified! This is probably a programming error, please report!"</string>
-    <string name="msg_se_warn_output_left">"Got outputs left but no inputs. This is probably a programming error, please report!"</string>
     <string name="msg_se_success">"Sign/encrypt operation successful"</string>
 
     <!-- Messages for PgpSignEncrypt operation -->

@@ -19,76 +19,31 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-public class PgpSignEncryptResult extends OperationResult {
 
-    // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
-    public static final int RESULT_PENDING = RESULT_ERROR + 8;
+public class PgpSignEncryptResult extends InputPendingResult {
 
-    // fifth to sixth bit in addition indicate specific type of pending
-    public static final int RESULT_PENDING_PASSPHRASE = RESULT_PENDING + 16;
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 32;
-
-    long mKeyIdPassphraseNeeded;
-
-    long mNfcKeyId;
-    byte[] mNfcHash;
-    int mNfcAlgo;
-    Passphrase mNfcPassphrase;
     byte[] mDetachedSignature;
-
-    public long getKeyIdPassphraseNeeded() {
-        return mKeyIdPassphraseNeeded;
-    }
-
-    public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
-        mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
-    }
-
-    public void setNfcData(long nfcKeyId, byte[] nfcHash, int nfcAlgo, Passphrase passphrase) {
-        mNfcKeyId = nfcKeyId;
-        mNfcHash = nfcHash;
-        mNfcAlgo = nfcAlgo;
-        mNfcPassphrase = passphrase;
-    }
 
     public void setDetachedSignature(byte[] detachedSignature) {
         mDetachedSignature = detachedSignature;
-    }
-
-    public long getNfcKeyId() {
-        return mNfcKeyId;
-    }
-
-    public byte[] getNfcHash() {
-        return mNfcHash;
-    }
-
-    public int getNfcAlgo() {
-        return mNfcAlgo;
-    }
-
-    public Passphrase getNfcPassphrase() {
-        return mNfcPassphrase;
     }
 
     public byte[] getDetachedSignature() {
         return mDetachedSignature;
     }
 
-    public boolean isPending() {
-        return (mResult & RESULT_PENDING) == RESULT_PENDING;
-    }
-
     public PgpSignEncryptResult(int result, OperationLog log) {
         super(result, log);
     }
 
+    public PgpSignEncryptResult(OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+    }
+
     public PgpSignEncryptResult(Parcel source) {
         super(source);
-        mNfcHash = source.readInt() != 0 ? source.createByteArray() : null;
-        mNfcAlgo = source.readInt();
         mDetachedSignature = source.readInt() != 0 ? source.createByteArray() : null;
     }
 
@@ -98,13 +53,6 @@ public class PgpSignEncryptResult extends OperationResult {
 
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        if (mNfcHash != null) {
-            dest.writeInt(1);
-            dest.writeByteArray(mNfcHash);
-        } else {
-            dest.writeInt(0);
-        }
-        dest.writeInt(mNfcAlgo);
         if (mDetachedSignature != null) {
             dest.writeInt(1);
             dest.writeByteArray(mDetachedSignature);
