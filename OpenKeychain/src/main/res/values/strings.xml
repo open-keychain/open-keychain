@@ -12,7 +12,6 @@
     <string name="title_encrypt_text">"Encrypt"</string>
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
-    <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Settings"</string>
@@ -86,6 +85,7 @@
     <string name="btn_encrypt_files">"Encrypt files"</string>
     <string name="btn_encrypt_text">"Encrypt text"</string>
     <string name="btn_add_email">"Add additional email address"</string>
+    <string name="btn_unlock">"Unlock"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>

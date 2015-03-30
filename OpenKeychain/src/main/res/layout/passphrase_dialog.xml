@@ -26,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:imeOptions="actionDone"
             android:hint="@string/label_passphrase"
             android:ems="10"

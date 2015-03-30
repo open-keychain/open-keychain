@@ -191,7 +191,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
-            alert.setTitle(R.string.title_unlock);
+            // No title, see http://www.google.com/design/spec/components/dialogs.html#dialogs-alerts
+            //alert.setTitle()
 
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.passphrase_dialog, null);
@@ -319,7 +320,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             AlertDialog dialog = alert.create();
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                    activity.getString(android.R.string.ok), (DialogInterface.OnClickListener) null);
+                    activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
 
             return dialog;
         }
