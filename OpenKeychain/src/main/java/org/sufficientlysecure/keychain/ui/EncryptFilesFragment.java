@@ -361,11 +361,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         return true;
     }
 
-    public void startEncrypt(boolean share) {
-        mShareAfterEncrypt = share;
-        cryptoOperation();
-    }
-
     public void onEncryptSuccess(final SignEncryptResult result) {
         if (mDeleteAfterEncrypt) {
             final Uri[] inputUris = mInputUris.toArray(new Uri[mInputUris.size()]);
@@ -470,6 +465,11 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
         }
         return sendIntent;
+    }
+
+    public void startEncrypt(boolean share) {
+        mShareAfterEncrypt = share;
+        cryptoOperation();
     }
 
     @Override

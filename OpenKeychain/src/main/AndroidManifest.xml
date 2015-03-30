@@ -671,12 +671,6 @@
               taskAffinity and allowTaskReparenting somehow prevents this from happening!
          -->
         <activity
-            android:name=".ui.NfcActivity"
-            android:launchMode="singleTop"
-            android:taskAffinity=":Nfc"
-            android:allowTaskReparenting="true" />
-
-        <activity
             android:name=".ui.NfcOperationActivity"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc"
