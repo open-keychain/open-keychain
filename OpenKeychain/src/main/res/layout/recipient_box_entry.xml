@@ -19,5 +19,7 @@
         android:layout_marginLeft="12dip"
         android:cropToPadding="true"
         android:background="#ccc"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_person_grey_24dp" />
+
 </LinearLayout>
