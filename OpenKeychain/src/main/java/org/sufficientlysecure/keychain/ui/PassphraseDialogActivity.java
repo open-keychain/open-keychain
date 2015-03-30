@@ -253,8 +253,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             message = getString(R.string.yubikey_pin_for, userId);
                             break;
                         default:
-                            message = "This should not happen!";
-                            break;
+                            throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }
 
                 } catch (ProviderHelper.NotFoundException e) {
