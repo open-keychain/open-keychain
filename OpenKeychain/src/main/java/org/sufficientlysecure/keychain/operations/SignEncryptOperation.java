@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -55,7 +56,7 @@ public class SignEncryptOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public SignEncryptResult execute(SignEncryptParcel input) {
+    public SignEncryptResult execute(SignEncryptParcel input, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_SE, 0);
@@ -123,7 +124,7 @@ public class SignEncryptOperation extends BaseOperation {
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mProviderHelper,
                     new ProgressScaler(mProgressable, 100 * count / total, 100 * ++count / total, 100), mCancelled);
-            PgpSignEncryptResult result = op.execute(input, inputData, outStream);
+            PgpSignEncryptResult result = op.execute(input, cryptoInput, inputData, outStream);
             results.add(result);
             log.add(result, 2);
 

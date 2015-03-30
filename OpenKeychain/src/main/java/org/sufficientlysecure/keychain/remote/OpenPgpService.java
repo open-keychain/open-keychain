@@ -284,23 +284,21 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
-            CryptoInputParcel cryptoInput = new CryptoInputParcel(nfcCreationDate);
+            CryptoInputParcel cryptoInput = new CryptoInputParcel(nfcCreationDate, passphrase);
             cryptoInput.addCryptoData(null, nfcSignedHash); // TODO fix
 
             // sign-only
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
-                    .setSignaturePassphrase(passphrase)
                     .setEnableAsciiArmorOutput(asciiArmor)
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(null)
                     .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
-                    .setSignatureMasterKeyId(signKeyId)
-                    .setCryptoInput(cryptoInput);
+                    .setSignatureMasterKeyId(signKeyId);
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
-            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputData, os);
+            PgpSignEncryptResult pgpResult = pse.execute(pseInput, cryptoInput, inputData, os);
 
             if (pgpResult.isPending()) {
                 if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==
@@ -407,9 +405,10 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength, originalFilename);
 
+            CryptoInputParcel cryptoInput;
+
             PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel();
-            pseInput.setSignaturePassphrase(passphrase)
-                    .setEnableAsciiArmorOutput(asciiArmor)
+            pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionId(compressionId)
                     .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED)
@@ -439,20 +438,21 @@ public class OpenPgpService extends RemoteService {
                     nfcCreationDate = new Date();
                 }
 
-                CryptoInputParcel cryptoInput = new CryptoInputParcel(nfcCreationDate);
+                cryptoInput = new CryptoInputParcel(nfcCreationDate, passphrase);
                 cryptoInput.addCryptoData(null, nfcSignedHash); // TODO fix!
 
                 // sign and encrypt
                 pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
                         .setSignatureMasterKeyId(signKeyId)
-                        .setCryptoInput(cryptoInput)
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
+            } else {
+                cryptoInput = new CryptoInputParcel();
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
 
             // execute PGP operation!
-            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputData, os);
+            PgpSignEncryptResult pgpResult = op.execute(pseInput, cryptoInput, inputData, os);
 
             if (pgpResult.isPending()) {
                 if ((pgpResult.getResult() & PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE) ==

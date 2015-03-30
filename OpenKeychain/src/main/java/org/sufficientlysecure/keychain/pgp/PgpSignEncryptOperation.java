@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -99,7 +100,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
     /**
      * Signs and/or encrypts data based on parameters of class
      */
-    public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input,
+    public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input, CryptoInputParcel cryptoInput,
                                      InputData inputData, OutputStream outputStream) {
 
         int indent = 0;
@@ -173,31 +174,17 @@ public class PgpSignEncryptOperation extends BaseOperation {
             }
 
             // if no passphrase was explicitly set try to get it from the cache service
-            if (input.getSignaturePassphrase() == null) {
-                try {
-                    // returns "" if key has no passphrase
-                    input.setSignaturePassphrase(getCachedPassphrase(signingKey.getKeyId()));
-                    // TODO
-//                    log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                    // TODO
-//                    log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                }
-
-                // if passphrase was not cached, return here indicating that a passphrase is missing!
-                if (input.getSignaturePassphrase() == null) {
-                    log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                    PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE, log);
-                    result.setKeyIdPassphraseNeeded(signingKey.getKeyId());
-                    return result;
-                }
+            if (cryptoInput.getPassphrase() == null) {
+                log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE, log);
+                result.setKeyIdPassphraseNeeded(signingKey.getKeyId());
+                return result;
             }
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             try {
-                if (!signingKey.unlock(input.getSignaturePassphrase())) {
+                if (!signingKey.unlock(cryptoInput.getPassphrase())) {
                     log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
@@ -283,7 +270,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 boolean cleartext = input.isCleartextSignature() && input.isEnableAsciiArmorOutput() && !enableEncryption;
                 signatureGenerator = signingKey.getDataSignatureGenerator(
                         input.getSignatureHashAlgorithm(), cleartext,
-                        input.getCryptoData(), input.getSignatureTime());
+                        cryptoInput.getCryptoData(), cryptoInput.getSignatureTime());
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_NFC, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -497,7 +484,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     // Note that the checked key here is the master key, not the signing key
                     // (although these are always the same on Yubikeys)
                     result.setNfcData(signingKey.getKeyId(), e.hashToSign, e.hashAlgo,
-                            input.getSignaturePassphrase());
+                            cryptoInput.getPassphrase());
                     Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
                     return result;
                 }

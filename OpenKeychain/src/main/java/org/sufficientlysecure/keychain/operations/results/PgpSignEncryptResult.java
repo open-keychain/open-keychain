@@ -21,8 +21,6 @@ import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.util.Date;
-
 public class PgpSignEncryptResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)

@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -284,14 +283,13 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_DECRYPT_METADATA: {
 
                 try {
-                /* Input */
+                    /* Input */
                     Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
                     byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
 
                     InputData inputData = createDecryptInputData(data);
 
-                /* Operation */
-
+                    /* Operation */
                     Bundle resultData = new Bundle();
 
                     // verifyText and decrypt returning additional resultData values for the
@@ -549,11 +547,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                 // Operation
                 SignEncryptOperation op = new SignEncryptOperation(
                         this, new ProviderHelper(this), this, mActionCanceled);
-                SignEncryptResult result = op.execute(inputParcel);
+                SignEncryptResult result = op.execute(inputParcel, cryptoInput);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);

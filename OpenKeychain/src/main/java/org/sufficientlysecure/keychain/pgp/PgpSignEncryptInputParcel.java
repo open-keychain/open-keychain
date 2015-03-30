@@ -42,14 +42,12 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
     protected int mSignatureHashAlgorithm = PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED;
-    protected Passphrase mSignaturePassphrase = null;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected boolean mFailOnMissingEncryptionKeyIds = false;
     protected String mCharset;
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
     protected boolean mHiddenRecipients = false;
-    protected CryptoInputParcel mCryptoInput = new CryptoInputParcel();
 
     public PgpSignEncryptInputParcel() {
 
@@ -69,15 +67,12 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         mSignatureMasterKeyId = source.readLong();
         mSignatureSubKeyId = source.readInt() == 1 ? source.readLong() : null;
         mSignatureHashAlgorithm = source.readInt();
-        mSignaturePassphrase = source.readParcelable(loader);
         mAdditionalEncryptId = source.readLong();
         mFailOnMissingEncryptionKeyIds = source.readInt() == 1;
         mCharset = source.readString();
         mCleartextSignature = source.readInt() == 1;
         mDetachedSignature = source.readInt() == 1;
         mHiddenRecipients = source.readInt() == 1;
-
-        mCryptoInput = source.readParcelable(loader);
     }
 
     @Override
@@ -101,15 +96,12 @@ public class PgpSignEncryptInputParcel implements Parcelable {
             dest.writeInt(0);
         }
         dest.writeInt(mSignatureHashAlgorithm);
-        dest.writeParcelable(mSignaturePassphrase, 0);
         dest.writeLong(mAdditionalEncryptId);
         dest.writeInt(mFailOnMissingEncryptionKeyIds ? 1 : 0);
         dest.writeString(mCharset);
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
         dest.writeInt(mHiddenRecipients ? 1 : 0);
-
-        dest.writeParcelable(mCryptoInput, 0);
     }
 
     public String getCharset() {
@@ -130,15 +122,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public PgpSignEncryptInputParcel setAdditionalEncryptId(long additionalEncryptId) {
         mAdditionalEncryptId = additionalEncryptId;
-        return this;
-    }
-
-    public Passphrase getSignaturePassphrase() {
-        return mSignaturePassphrase;
-    }
-
-    public PgpSignEncryptInputParcel  setSignaturePassphrase(Passphrase signaturePassphrase) {
-        mSignaturePassphrase = signaturePassphrase;
         return this;
     }
 
@@ -253,19 +236,6 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public boolean isHiddenRecipients() {
         return mHiddenRecipients;
-    }
-
-    public PgpSignEncryptInputParcel setCryptoInput(CryptoInputParcel cryptoInput) {
-        mCryptoInput = cryptoInput;
-        return this;
-    }
-
-    public Map<ByteBuffer, byte[]> getCryptoData() {
-        return mCryptoInput.getCryptoData();
-    }
-
-    public Date getSignatureTime() {
-        return mCryptoInput.getSignatureTime();
     }
 
     public static final Creator<PgpSignEncryptInputParcel> CREATOR = new Creator<PgpSignEncryptInputParcel>() {

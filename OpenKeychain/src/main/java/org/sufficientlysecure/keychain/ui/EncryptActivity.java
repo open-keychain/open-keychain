@@ -106,7 +106,7 @@ public abstract class EncryptActivity extends BaseActivity {
         startEncrypt(null);
     }
 
-    public void startEncrypt(CryptoInputParcel cryptoInput) {
+    public void startEncrypt(final CryptoInputParcel cryptoInput) {
         if (!inputIsValid()) {
             // Notify was created by inputIsValid.
             return;
@@ -117,12 +117,10 @@ public abstract class EncryptActivity extends BaseActivity {
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
         final SignEncryptParcel input = createEncryptBundle();
-        if (cryptoInput != null) {
-            input.setCryptoInput(cryptoInput);
-        }
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
@@ -151,7 +149,7 @@ public abstract class EncryptActivity extends BaseActivity {
                             RequiredInputParcel parcel = RequiredInputParcel.createNfcSignOperation(
                                     pgpResult.getNfcHash(),
                                     pgpResult.getNfcAlgo(),
-                                    input.getSignatureTime());
+                                    cryptoInput.getSignatureTime());
                             startNfcSign(pgpResult.getNfcKeyId(), parcel);
 
                         } else {

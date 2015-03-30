@@ -93,8 +93,8 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     private long mSigningKeyId = Constants.key.none;
     private Passphrase mPassphrase = new Passphrase();
 
-    private ArrayList<Uri> mInputUris = new ArrayList<Uri>();
-    private ArrayList<Uri> mOutputUris = new ArrayList<Uri>();
+    private ArrayList<Uri> mInputUris = new ArrayList<>();
+    private ArrayList<Uri> mOutputUris = new ArrayList<>();
 
     private ListView mSelectedFiles;
     private SelectedFilesAdapter mAdapter = new SelectedFilesAdapter();
@@ -136,7 +136,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         try {
             mModeInterface = (IMode) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must be IMode");
+            throw new ClassCastException(activity + " must be IMode");
         }
     }
 
@@ -487,12 +487,10 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
         final SignEncryptParcel input = createEncryptBundle();
-        if (cryptoInput != null) {
-            input.setCryptoInput(cryptoInput);
-        }
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService

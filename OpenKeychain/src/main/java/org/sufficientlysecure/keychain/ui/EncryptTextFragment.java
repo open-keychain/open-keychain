@@ -344,12 +344,9 @@ public class EncryptTextFragment extends CryptoOperationFragment {
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
         final SignEncryptParcel input = createEncryptBundle();
-        if (cryptoInput != null) {
-            input.setCryptoInput(cryptoInput);
-        }
-
         final Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
