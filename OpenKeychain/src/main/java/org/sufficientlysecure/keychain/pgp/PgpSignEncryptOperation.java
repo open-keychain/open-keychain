@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -128,7 +129,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
         ArmoredOutputStream armorOut = null;
         OutputStream out;
         if (input.isEnableAsciiArmorOutput()) {
-            armorOut = new ArmoredOutputStream(outputStream);
+            armorOut = new ArmoredOutputStream(new BufferedOutputStream(outputStream, 1 << 16));
             if (input.getVersionHeader() != null) {
                 armorOut.setHeader("Version", input.getVersionHeader());
             }
@@ -418,7 +419,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 int length;
                 byte[] buffer = new byte[1 << 16];
                 while ((length = in.read(buffer)) > 0) {
-                    // no output stream is written, no changed to original data!
+                    // no output stream is written, no change to original data!
 
                     signatureGenerator.update(buffer, 0, length);
 
