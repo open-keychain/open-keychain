@@ -28,10 +28,14 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -91,7 +95,7 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         try {
             mEncryptInterface = (IAsymmetric) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement IAsymmetric");
+            throw new ClassCastException(activity + " must implement IAsymmetric");
         }
     }
 
@@ -128,14 +132,14 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         mEncryptKeyView.setTokenListener(new TokenCompleteTextView.TokenListener() {
             @Override
             public void onTokenAdded(Object token) {
-                if (token instanceof EncryptKeyCompletionView.EncryptionKey) {
+                if (token instanceof KeyItem) {
                     updateEncryptionKeys();
                 }
             }
 
             @Override
             public void onTokenRemoved(Object token) {
-                if (token instanceof EncryptKeyCompletionView.EncryptionKey) {
+                if (token instanceof KeyItem) {
                     updateEncryptionKeys();
                 }
             }
@@ -162,10 +166,10 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         if (encryptionKeyIds != null) {
             for (long preselectedId : encryptionKeyIds) {
                 try {
-                    CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(preselectedId));
-                    mEncryptKeyView.addObject(mEncryptKeyView.new EncryptionKey(ring));
-                } catch (PgpKeyNotFoundException e) {
+                    CanonicalizedPublicKeyRing ring =
+                            mProviderHelper.getCanonicalizedPublicKeyRing(preselectedId);
+                    mEncryptKeyView.addObject(new KeyItem(ring));
+                } catch (NotFoundException e) {
                     Log.e(Constants.TAG, "key not found!", e);
                 }
             }
@@ -173,6 +177,7 @@ public class EncryptModeAsymmetricFragment extends Fragment {
             mEncryptKeyView.requestFocus();
             updateEncryptionKeys();
         }
+
     }
 
     private void updateEncryptionKeys() {
@@ -180,9 +185,9 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         List<Long> keyIds = new ArrayList<>();
         List<String> userIds = new ArrayList<>();
         for (Object object : objects) {
-            if (object instanceof EncryptKeyCompletionView.EncryptionKey) {
-                keyIds.add(((EncryptKeyCompletionView.EncryptionKey) object).getKeyId());
-                userIds.add(((EncryptKeyCompletionView.EncryptionKey) object).getUserId());
+            if (object instanceof KeyItem) {
+                keyIds.add(((KeyItem) object).mKeyId);
+                userIds.add(((KeyItem) object).mUserIdFull);
             }
         }
         long[] keyIdsArr = new long[keyIds.size()];

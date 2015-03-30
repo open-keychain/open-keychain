@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="48dip"
@@ -21,7 +22,8 @@
             android:layout_height="wrap_content"
             android:paddingLeft="8dip"
             android:singleLine="true"
-            android:ellipsize="end" />
+            android:ellipsize="end"
+            tools:text="Alice" />
 
         <TextView
             android:id="@android:id/text1"
@@ -32,7 +34,8 @@
             android:paddingLeft="16dip"
             android:singleLine="true"
             android:ellipsize="end"
-            android:layout_marginTop="-4dip" />
+            android:layout_marginTop="-4dip"
+            tools:text="alice@example.com" />
 
         <TextView
             android:id="@android:id/text2"
@@ -43,15 +46,18 @@
             android:paddingLeft="16dip"
             android:singleLine="true"
             android:ellipsize="end"
-            android:layout_marginTop="-4dip" />
+            android:layout_marginTop="-4dip"
+            tools:text="Creation 12.03.2015" />
+
     </LinearLayout>
 
     <ImageView
-        android:id="@android:id/icon"
-        android:layout_width="56dip"
-        android:layout_height="56dip"
-        android:layout_marginLeft="12dip"
-        android:cropToPadding="true"
-        android:background="#ccc"
-        android:scaleType="centerCrop" />
+        android:id="@+id/status_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        tools:src="@drawable/status_signature_revoked_cutout_24dp"
+        />
+
 </LinearLayout>
