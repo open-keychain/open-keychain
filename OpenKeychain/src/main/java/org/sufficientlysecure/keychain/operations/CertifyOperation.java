@@ -80,7 +80,7 @@ public class CertifyOperation extends BaseOperation {
             certificationKey = secretKeyRing.getSecretKey();
 
             if (!cryptoInput.hasPassphrase()) {
-                return new CertifyResult(log, RequiredInputParcel.createRequiredPassphrase(
+                return new CertifyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                         certificationKey.getKeyId(), certificationKey.getKeyId(), null));
             }
 

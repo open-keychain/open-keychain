@@ -40,6 +40,7 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFac
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -264,14 +265,16 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
-    public PublicKeyDataDecryptorFactory getDecryptorFactory(byte[] nfcDecryptedSessionKey) {
+    public PublicKeyDataDecryptorFactory getDecryptorFactory(CryptoInputParcel cryptoInput) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             return new NfcSyncPublicKeyDataDecryptorFactoryBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(nfcDecryptedSessionKey);
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                            cryptoInput.getCryptoData()
+                    );
         } else {
             return new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);

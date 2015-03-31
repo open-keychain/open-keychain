@@ -93,9 +93,6 @@ public class DecryptFilesFragment extends DecryptFragment {
         mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
         view.findViewById(R.id.decrypt_file_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // reset state
-                mPassphrase = null;
-                mNfcDecryptedSessionKey = null;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
@@ -207,8 +204,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
         data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
 
-//        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
-//        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -234,20 +230,6 @@ public class DecryptFilesFragment extends DecryptFragment {
 
                     DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-//                    if (pgpResult.isPending()) {
-//                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-//                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-//                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-//                            startPassphraseDialog(Constants.key.symmetric);
-//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-//                                DecryptVerifyResult.RESULT_PENDING_NFC) {
-//                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
-//                        } else {
-//                            throw new RuntimeException("Unhandled pending result!");
-//                        }
 
                     if (pgpResult.success()) {
 
@@ -304,22 +286,6 @@ public class DecryptFilesFragment extends DecryptFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-//            case REQUEST_CODE_PASSPHRASE: {
-//                if (resultCode == Activity.RESULT_OK && data != null) {
-//                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-////                    decryptOriginalFilename();
-//                }
-//                return;
-//            }
-//
-//            case REQUEST_CODE_NFC_DECRYPT: {
-//                if (resultCode == Activity.RESULT_OK && data != null) {
-//                    mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
-////                    decryptOriginalFilename();
-//                }
-//                return;
-//            }
-
             case REQUEST_CODE_INPUT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     setInputUri(data.getData());

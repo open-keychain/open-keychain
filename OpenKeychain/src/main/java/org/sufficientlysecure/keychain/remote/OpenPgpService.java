@@ -473,31 +473,23 @@ public class OpenPgpService extends RemoteService {
 
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
-            builder.setPassphrase(cryptoInput.getPassphrase()) // TODO proper CryptoInputParcel support
-                    .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(allowedKeyIds)
-                    .setDecryptMetadataOnly(decryptMetadataOnly)
-                    .setNfcState(null) // TODO proper CryptoInputParcel support
-                    .setDetachedSignature(detachedSignature);
+            builder.setAllowSymmetricDecryption(false)
+                   .setAllowedKeyIds(allowedKeyIds)
+                   .setDecryptMetadataOnly(decryptMetadataOnly)
+                   .setDetachedSignature(detachedSignature);
 
-            DecryptVerifyResult pgpResult = builder.build().execute();
+            DecryptVerifyResult pgpResult = builder.build().execute(cryptoInput);
 
             if (pgpResult.isPending()) {
-                if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-                        DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-                    throw new AssertionError("not implemented"); // TODO
-                    // return returnPassphraseIntent(data, pgpResult.getKeyIdPassphraseNeeded());
-                } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-                        DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-                    throw new PgpGeneralException(
-                            "Decryption of symmetric content not supported by API!");
-                } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-                        DecryptVerifyResult.RESULT_PENDING_NFC) {
-                    throw new AssertionError("not implemented"); // TODO
-                } else {
-                    throw new PgpGeneralException(
-                            "Encountered unhandled type of pending action not supported by API!");
-                }
+                // prepare and return PendingIntent to be executed by client
+                RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
+                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data, requiredInput);
+
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_INTENT, pIntent);
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                return result;
+
             } else if (pgpResult.success()) {
                 Intent result = new Intent();
 

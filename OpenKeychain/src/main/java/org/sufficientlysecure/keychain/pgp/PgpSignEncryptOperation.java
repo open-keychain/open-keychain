@@ -33,14 +33,12 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
-import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -181,7 +179,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     case PASSPHRASE: {
                         if (cryptoInput.getPassphrase() == null) {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredPassphrase(
+                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                                     signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
                                     cryptoInput.getSignatureTime()));
                         }

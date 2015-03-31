@@ -151,8 +151,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
-    public static final String DECRYPT_PASSPHRASE = "passphrase";
-    public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
 
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
@@ -284,13 +282,9 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 try {
                     /* Input */
-                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
-                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                     InputData inputData = createDecryptInputData(data);
-
-                    /* Operation */
-                    Bundle resultData = new Bundle();
 
                     // verifyText and decrypt returning additional resultData values for the
                     // verification of signatures
@@ -298,11 +292,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                             this, new ProviderHelper(this), this, inputData, null
                     );
                     builder.setAllowSymmetricDecryption(true)
-                            .setPassphrase(passphrase)
-                            .setDecryptMetadataOnly(true)
-                            .setNfcState(nfcDecryptedSessionKey);
+                            .setDecryptMetadataOnly(true);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
 
                     sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
                 } catch (Exception e) {
@@ -377,7 +369,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                     );
                     builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(
+                            new CryptoInputParcel());
                     outStream.close();
 
                     if (!decryptVerifyResult.success()) {
@@ -412,15 +405,13 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_DECRYPT_VERIFY: {
 
                 try {
-                /* Input */
-                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
-                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    /* Input */
+                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                     InputData inputData = createDecryptInputData(data);
                     OutputStream outStream = createCryptOutputStream(data);
 
-                /* Operation */
-
+                    /* Operation */
                     Bundle resultData = new Bundle();
 
                     // verifyText and decrypt returning additional resultData values for the
@@ -429,24 +420,22 @@ public class KeychainIntentService extends IntentService implements Progressable
                             this, new ProviderHelper(this), this,
                             inputData, outStream
                     );
-                    builder.setAllowSymmetricDecryption(true)
-                            .setPassphrase(passphrase)
-                            .setNfcState(nfcDecryptedSessionKey);
+                    builder.setAllowSymmetricDecryption(true);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
 
                     outStream.close();
 
                     resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
-                /* Output */
-
+                    /* Output */
                     finalizeDecryptOutputStream(data, resultData, outStream);
-
                     Log.logDebugBundle(resultData, "resultData");
 
                     sendMessageToHandler(MessageStatus.OKAY, resultData);
-                } catch (Exception e) {
+
+                } catch (IOException | PgpGeneralException e) {
+                    // TODO get rid of this!
                     sendErrorToHandler(e);
                 }
 

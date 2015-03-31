@@ -49,7 +49,8 @@ public abstract class CryptoOperationFragment extends Fragment {
                 return;
             }
 
-            case PASSPHRASE: {
+            case PASSPHRASE:
+            case PASSPHRASE_SYMMETRIC: {
                 Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);

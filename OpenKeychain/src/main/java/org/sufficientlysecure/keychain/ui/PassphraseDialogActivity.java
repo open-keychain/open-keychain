@@ -97,10 +97,19 @@ public class PassphraseDialogActivity extends FragmentActivity {
             keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
         } else {
             RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
-            if (requiredInput.mType != RequiredInputType.PASSPHRASE) {
-                throw new AssertionError("Wrong required input type for PassphraseDialogActivity!");
+            switch (requiredInput.mType) {
+                case PASSPHRASE_SYMMETRIC: {
+                    keyId = Constants.key.symmetric;
+                    break;
+                }
+                case PASSPHRASE: {
+                    keyId = requiredInput.getSubKeyId();
+                    break;
+                }
+                default: {
+                    throw new AssertionError("Unsupported required input type for PassphraseDialogActivity!");
+                }
             }
-            keyId = requiredInput.getSubKeyId();
         }
 
         Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);

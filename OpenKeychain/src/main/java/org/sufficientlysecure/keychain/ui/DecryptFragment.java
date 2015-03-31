@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,13 +31,9 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 public abstract class DecryptFragment extends CryptoOperationFragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
-
-//    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
-//    public static final int REQUEST_CODE_NFC_DECRYPT = 0x00008002;
 
     protected long mSignatureKeyId = 0;
 
@@ -55,11 +50,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment {
     protected TextView mSignatureName;
     protected TextView mSignatureEmail;
     protected TextView mSignatureAction;
-
-
-    // State
-    protected Passphrase mPassphrase;
-    protected byte[] mNfcDecryptedSessionKey;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

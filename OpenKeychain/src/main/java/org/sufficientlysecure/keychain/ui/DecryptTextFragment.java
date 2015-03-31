@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -52,10 +50,7 @@ public class DecryptTextFragment extends DecryptFragment {
     // view
     private LinearLayout mValidLayout;
     private LinearLayout mInvalidLayout;
-    private Button mInvalidButton;
     private TextView mText;
-    private View mShareButton;
-    private View mCopyButton;
 
     // model
     private String mCiphertext;
@@ -82,23 +77,26 @@ public class DecryptTextFragment extends DecryptFragment {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
         mValidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_valid);
         mInvalidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_invalid);
-        mInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
         mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
-        mShareButton = view.findViewById(R.id.action_decrypt_share_plaintext);
-        mCopyButton = view.findViewById(R.id.action_decrypt_copy_plaintext);
-        mShareButton.setOnClickListener(new View.OnClickListener() {
+
+        View vShareButton = view.findViewById(R.id.action_decrypt_share_plaintext);
+        vShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(sendWithChooserExcludingEncrypt(mText.getText().toString()));
             }
         });
-        mCopyButton.setOnClickListener(new View.OnClickListener() {
+
+        View vCopyButton = view.findViewById(R.id.action_decrypt_copy_plaintext);
+        vCopyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 copyToClipboard(mText.getText().toString());
             }
         });
-        mInvalidButton.setOnClickListener(new View.OnClickListener() {
+
+        Button vInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
+        vInvalidButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mInvalidLayout.setVisibility(View.GONE);
@@ -162,8 +160,7 @@ public class DecryptTextFragment extends DecryptFragment {
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
-//        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
-//        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -189,19 +186,6 @@ public class DecryptTextFragment extends DecryptFragment {
                     DecryptVerifyResult pgpResult =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-//                    if (pgpResult.isPending()) {
-//                        if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) ==
-//                                DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE) {
-//                            startPassphraseDialog(pgpResult.getKeyIdPassphraseNeeded());
-//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) ==
-//                                DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE) {
-//                            startPassphraseDialog(Constants.key.symmetric);
-//                        } else if ((pgpResult.getResult() & DecryptVerifyResult.RESULT_PENDING_NFC) ==
-//                                DecryptVerifyResult.RESULT_PENDING_NFC) {
-//                            startNfcDecrypt(pgpResult.getNfcSubKeyId(), pgpResult.getNfcPassphrase(), pgpResult.getNfcEncryptedSessionKey());
-//                        } else {
-//                            throw new RuntimeException("Unhandled pending result!");
-//                        }
                     if (pgpResult.success()) {
 
                         byte[] decryptedMessage = returnData
@@ -249,35 +233,5 @@ public class DecryptTextFragment extends DecryptFragment {
         // start service with intent
         getActivity().startService(intent);
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//
-//            case REQUEST_CODE_PASSPHRASE: {
-//                if (resultCode == Activity.RESULT_OK && data != null) {
-//                    mPassphrase = data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-//                    decryptStart();
-//                } else {
-//                    getActivity().finish();
-//                }
-//                return;
-//            }
-//
-//            case REQUEST_CODE_NFC_DECRYPT: {
-//                if (resultCode == Activity.RESULT_OK && data != null) {
-//                    mNfcDecryptedSessionKey = data.getByteArrayExtra(OpenPgpApi.EXTRA_NFC_DECRYPTED_SESSION_KEY);
-//                    decryptStart();
-//                } else {
-//                    getActivity().finish();
-//                }
-//                return;
-//            }
-//
-//            default: {
-//                super.onActivityResult(requestCode, resultCode, data);
-//            }
-//        }
-//    }
 
 }

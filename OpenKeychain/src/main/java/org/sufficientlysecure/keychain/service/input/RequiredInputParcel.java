@@ -1,18 +1,19 @@
 package org.sufficientlysecure.keychain.service.input;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.Constants.key;
+
 
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, NFC_SIGN, NFC_DECRYPT
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT
     }
 
     public Date mSignatureTime;
@@ -38,13 +39,22 @@ public class RequiredInputParcel implements Parcelable {
     public RequiredInputParcel(Parcel source) {
         mType = RequiredInputType.values()[source.readInt()];
 
-        if (source.readInt() != 0) {
+        // 0 = none, 1 = both, 2 = only hashes (decrypt)
+        int hashTypes = source.readInt();
+        if (hashTypes != 0) {
             int count = source.readInt();
             mInputHashes = new byte[count][];
-            mSignAlgos = new int[count];
-            for (int i = 0; i < count; i++) {
-                mInputHashes[i] = source.createByteArray();
-                mSignAlgos[i] = source.readInt();
+            if (hashTypes == 1) {
+                mSignAlgos = new int[count];
+                for (int i = 0; i < count; i++) {
+                    mInputHashes[i] = source.createByteArray();
+                    mSignAlgos[i] = source.readInt();
+                }
+            } else {
+                mSignAlgos = null;
+                for (int i = 0; i < count; i++) {
+                    mInputHashes[i] = source.createByteArray();
+                }
             }
         } else {
             mInputHashes = null;
@@ -72,15 +82,26 @@ public class RequiredInputParcel implements Parcelable {
                 signatureTime, null, null);
     }
 
-    public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash) {
+    public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash, long subKeyId) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
-                new byte[][] { inputHash }, null, null, null, null);
+                new byte[][] { inputHash }, null, null, null, subKeyId);
     }
 
-    public static RequiredInputParcel createRequiredPassphrase(
+    public static RequiredInputParcel createRequiredSignPassphrase(
             long masterKeyId, long subKeyId, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
                 null, null, signatureTime, masterKeyId, subKeyId);
+    }
+
+    public static RequiredInputParcel createRequiredDecryptPassphrase(
+            long masterKeyId, long subKeyId) {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+                null, null, null, masterKeyId, subKeyId);
+    }
+
+    public static RequiredInputParcel createRequiredSymmetricPassphrase() {
+        return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SYMMETRIC,
+                null, null, null, null, null);
     }
 
     public static RequiredInputParcel createRequiredPassphrase(
@@ -98,11 +119,13 @@ public class RequiredInputParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mType.ordinal());
         if (mInputHashes != null) {
-            dest.writeInt(1);
+            dest.writeInt(mSignAlgos != null ? 1 : 2);
             dest.writeInt(mInputHashes.length);
             for (int i = 0; i < mInputHashes.length; i++) {
                 dest.writeByteArray(mInputHashes[i]);
-                dest.writeInt(mSignAlgos[i]);
+                if (mSignAlgos != null) {
+                    dest.writeInt(mSignAlgos[i]);
+                }
             }
         } else {
             dest.writeInt(0);

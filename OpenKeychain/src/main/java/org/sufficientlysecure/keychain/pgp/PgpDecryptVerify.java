@@ -47,16 +47,15 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFac
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -84,10 +83,8 @@ public class PgpDecryptVerify extends BaseOperation {
     private OutputStream mOutStream;
 
     private boolean mAllowSymmetricDecryption;
-    private Passphrase mPassphrase;
     private Set<Long> mAllowedKeyIds;
     private boolean mDecryptMetadataOnly;
-    private byte[] mDecryptedSessionKey;
     private byte[] mDetachedSignature;
     private String mRequiredSignerFingerprint;
     private boolean mSignedLiteralData;
@@ -100,10 +97,8 @@ public class PgpDecryptVerify extends BaseOperation {
         this.mOutStream = builder.mOutStream;
 
         this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
-        this.mPassphrase = builder.mPassphrase;
         this.mAllowedKeyIds = builder.mAllowedKeyIds;
         this.mDecryptMetadataOnly = builder.mDecryptMetadataOnly;
-        this.mDecryptedSessionKey = builder.mDecryptedSessionKey;
         this.mDetachedSignature = builder.mDetachedSignature;
         this.mSignedLiteralData = builder.mSignedLiteralData;
         this.mRequiredSignerFingerprint = builder.mRequiredSignerFingerprint;
@@ -119,10 +114,8 @@ public class PgpDecryptVerify extends BaseOperation {
         private OutputStream mOutStream = null;
         private Progressable mProgressable = null;
         private boolean mAllowSymmetricDecryption = true;
-        private Passphrase mPassphrase = null;
         private Set<Long> mAllowedKeyIds = null;
         private boolean mDecryptMetadataOnly = false;
-        private byte[] mDecryptedSessionKey = null;
         private byte[] mDetachedSignature = null;
         private String mRequiredSignerFingerprint = null;
         private boolean mSignedLiteralData = false;
@@ -160,11 +153,6 @@ public class PgpDecryptVerify extends BaseOperation {
             return this;
         }
 
-        public Builder setPassphrase(Passphrase passphrase) {
-            mPassphrase = passphrase;
-            return this;
-        }
-
         /**
          * Allow these key ids alone for decryption.
          * This means only ciphertexts encrypted for one of these private key can be decrypted.
@@ -180,11 +168,6 @@ public class PgpDecryptVerify extends BaseOperation {
          */
         public Builder setDecryptMetadataOnly(boolean decryptMetadataOnly) {
             mDecryptMetadataOnly = decryptMetadataOnly;
-            return this;
-        }
-
-        public Builder setNfcState(byte[] decryptedSessionKey) {
-            mDecryptedSessionKey = decryptedSessionKey;
             return this;
         }
 
@@ -204,7 +187,7 @@ public class PgpDecryptVerify extends BaseOperation {
     /**
      * Decrypts and/or verifies data based on parameters of class
      */
-    public DecryptVerifyResult execute() {
+    public DecryptVerifyResult execute(CryptoInputParcel cryptoInput) {
         try {
             if (mDetachedSignature != null) {
                 Log.d(Constants.TAG, "Detached signature present, verifying with this signature only");
@@ -226,10 +209,10 @@ public class PgpDecryptVerify extends BaseOperation {
                         return verifyCleartextSignature(aIn, 0);
                     } else {
                         // else: ascii armored encryption! go on...
-                        return decryptVerify(in, 0);
+                        return decryptVerify(cryptoInput, in, 0);
                     }
                 } else {
-                    return decryptVerify(in, 0);
+                    return decryptVerify(cryptoInput, in, 0);
                 }
             }
         } catch (PGPException e) {
@@ -248,7 +231,8 @@ public class PgpDecryptVerify extends BaseOperation {
     /**
      * Verify Keybase.io style signed literal data
      */
-    private DecryptVerifyResult verifySignedLiteralData(InputStream in, int indent) throws IOException, PGPException {
+    private DecryptVerifyResult verifySignedLiteralData(InputStream in, int indent)
+            throws IOException, PGPException {
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_VL, indent);
 
@@ -378,7 +362,8 @@ public class PgpDecryptVerify extends BaseOperation {
     /**
      * Decrypt and/or verifies binary or ascii armored pgp
      */
-    private DecryptVerifyResult decryptVerify(InputStream in, int indent) throws IOException, PGPException {
+    private DecryptVerifyResult decryptVerify(CryptoInputParcel cryptoInput,
+            InputStream in, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
@@ -432,6 +417,8 @@ public class PgpDecryptVerify extends BaseOperation {
                 }
             }
         }
+
+        Passphrase passphrase = null;
 
         // go through all objects and find one we can decrypt
         while (it.hasNext()) {
@@ -492,11 +479,15 @@ public class PgpDecryptVerify extends BaseOperation {
 
                 encryptedDataAsymmetric = encData;
 
-                // if no passphrase was explicitly set try to get it from the cache service
-                if (mPassphrase == null) {
+                if (secretEncryptionKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
+                    passphrase = null;
+                } else if (cryptoInput.hasPassphrase()) {
+                    passphrase = cryptoInput.getPassphrase();
+                } else {
+                    // if no passphrase was explicitly set try to get it from the cache service
                     try {
                         // returns "" if key has no passphrase
-                        mPassphrase = getCachedPassphrase(subKeyId);
+                        passphrase = getCachedPassphrase(subKeyId);
                         log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
                     } catch (PassphraseCacheInterface.NoSecretKeyException e) {
                         log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
@@ -504,12 +495,11 @@ public class PgpDecryptVerify extends BaseOperation {
                     }
 
                     // if passphrase was not cached, return here indicating that a passphrase is missing!
-                    if (mPassphrase == null) {
+                    if (passphrase == null) {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                        DecryptVerifyResult result =
-                                new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_ASYM_PASSPHRASE, log);
-                        result.setKeyIdPassphraseNeeded(subKeyId);
-                        return result;
+                        return new DecryptVerifyResult(log,
+                                RequiredInputParcel.createRequiredDecryptPassphrase(
+                                    secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()));
                     }
                 }
 
@@ -536,10 +526,13 @@ public class PgpDecryptVerify extends BaseOperation {
 
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
-                if (mPassphrase == null) {
+                if (!cryptoInput.hasPassphrase()) {
                     log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                    return new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_SYM_PASSPHRASE, log);
+                    return new DecryptVerifyResult(log,
+                            RequiredInputParcel.createRequiredSymmetricPassphrase());
                 }
+
+                passphrase = cryptoInput.getPassphrase();
 
                 // break out of while, only decrypt the first packet
                 break;
@@ -573,7 +566,7 @@ public class PgpDecryptVerify extends BaseOperation {
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
             PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
                     digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                    mPassphrase.getCharArray());
+                    passphrase.getCharArray());
 
             clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
             encryptedData = encryptedDataSymmetric;
@@ -585,7 +578,7 @@ public class PgpDecryptVerify extends BaseOperation {
 
             try {
                 log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
-                if (!secretEncryptionKey.unlock(mPassphrase)) {
+                if (!secretEncryptionKey.unlock(passphrase)) {
                     log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
                     return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
                 }
@@ -599,16 +592,15 @@ public class PgpDecryptVerify extends BaseOperation {
 
             try {
                 PublicKeyDataDecryptorFactory decryptorFactory
-                        = secretEncryptionKey.getDecryptorFactory(mDecryptedSessionKey);
+                        = secretEncryptionKey.getDecryptorFactory(cryptoInput);
                 clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
 
                 symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
             } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
                 log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
-                DecryptVerifyResult result =
-                        new DecryptVerifyResult(DecryptVerifyResult.RESULT_PENDING_NFC, log);
-                result.setNfcState(secretEncryptionKey.getKeyId(), e.encryptedSessionKey, mPassphrase);
-                return result;
+                return new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
+                        e.encryptedSessionKey, secretEncryptionKey.getKeyId()
+                ));
             }
             encryptedData = encryptedDataAsymmetric;
         } else {
@@ -878,8 +870,8 @@ public class PgpDecryptVerify extends BaseOperation {
      * The method is heavily based on
      * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
      */
-    private DecryptVerifyResult verifyCleartextSignature(ArmoredInputStream aIn, int indent)
-            throws IOException, PGPException {
+    private DecryptVerifyResult verifyCleartextSignature(
+            ArmoredInputStream aIn, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
