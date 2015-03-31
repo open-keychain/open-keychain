@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.service.input;
 
 import java.nio.ByteBuffer;
@@ -11,9 +28,8 @@ import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-
-/** This is a base class for the input of crypto operations.
- *
+/**
+ * This is a base class for the input of crypto operations.
  */
 public class CryptoInputParcel implements Parcelable {
 
@@ -22,7 +38,7 @@ public class CryptoInputParcel implements Parcelable {
 
     // this map contains both decrypted session keys and signed hashes to be
     // used in the crypto operation described by this parcel.
-    private HashMap<ByteBuffer,byte[]> mCryptoData = new HashMap<>();
+    private HashMap<ByteBuffer, byte[]> mCryptoData = new HashMap<>();
 
     public CryptoInputParcel() {
         mSignatureTime = new Date();
@@ -71,7 +87,7 @@ public class CryptoInputParcel implements Parcelable {
         dest.writeParcelable(mPassphrase, 0);
 
         dest.writeInt(mCryptoData.size());
-        for (HashMap.Entry<ByteBuffer,byte[]> entry : mCryptoData.entrySet()) {
+        for (HashMap.Entry<ByteBuffer, byte[]> entry : mCryptoData.entrySet()) {
             dest.writeByteArray(entry.getKey().array());
             dest.writeByteArray(entry.getValue());
         }

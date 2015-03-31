@@ -144,19 +144,12 @@ public class DecryptTextFragment extends DecryptFragment {
         String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
         if (ciphertext != null) {
             mCiphertext = ciphertext;
-            decryptStart();
+            cryptoOperation(new CryptoInputParcel());
         }
-    }
-
-    private void decryptStart() {
-        cryptoOperation(new CryptoInputParcel());
     }
 
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-
-        Log.d(Constants.TAG, "decryptStart");
-
         // Send all information needed to service to decrypt in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -166,10 +159,11 @@ public class DecryptTextFragment extends DecryptFragment {
         intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
         // data
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
-        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
-        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
+//        data.putParcelable(KeychainIntentService.DECRYPT_PASSPHRASE, mPassphrase);
+//        data.putByteArray(KeychainIntentService.DECRYPT_NFC_DECRYPTED_SESSION_KEY, mNfcDecryptedSessionKey);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
