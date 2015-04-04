@@ -390,8 +390,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
             });
             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-
-            mFilesModels.clear();
         } else {
             if (mShareAfterEncrypt) {
                 // Share encrypted message/file
@@ -724,6 +722,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
         public void addAll(ArrayList<Uri> inputUris) {
             if (inputUris != null) {
+                int startIndex = mDataset.size();
                 for (Uri inputUri : inputUris) {
                     ViewModel newModel = new ViewModel(mActivity, inputUri);
                     if (mDataset.contains(newModel)) {
@@ -732,8 +731,8 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                         mDataset.add(newModel);
                     }
                 }
+                notifyItemRangeInserted(startIndex, mDataset.size() - startIndex);
             }
-            // TODO: notifyItemInserted?
         }
 
         public void remove(ViewModel model) {

@@ -123,9 +123,6 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_text_fragment, container, false);
 
-        if (mMessage != null) {
-            mText.setText(mMessage);
-        }
         mText = (TextView) view.findViewById(R.id.encrypt_text_text);
         mText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -143,6 +140,11 @@ public class EncryptTextFragment extends CryptoOperationFragment {
                 mMessage = s.toString();
             }
         });
+
+        // set initial text
+        if (mMessage != null) {
+            mText.setText(mMessage);
+        }
 
         return view;
     }
