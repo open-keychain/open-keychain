@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.Patterns;
 
@@ -220,15 +221,14 @@ public class ContactHelper {
      */
     public static long getMainProfileContactId(ContentResolver resolver) {
         Cursor profileCursor = resolver.query(ContactsContract.Profile.CONTENT_URI,
-                new String[]{ ContactsContract.Profile._ID}, null, null, null);
+                new String[]{ContactsContract.Profile._ID}, null, null, null);
 
-        if(profileCursor != null && profileCursor.getCount() != 0 && profileCursor.moveToNext()) {
+        if (profileCursor != null && profileCursor.getCount() != 0 && profileCursor.moveToNext()) {
             long contactId = profileCursor.getLong(0);
             profileCursor.close();
             return contactId;
-        }
-        else {
-            if(profileCursor != null) {
+        } else {
+            if (profileCursor != null) {
                 profileCursor.close();
             }
             return -1;
@@ -330,7 +330,9 @@ public class ContactHelper {
                         ContactsContract.RawContacts.SOURCE_ID + "=? AND " +
                         ContactsContract.RawContacts.DELETED + "=?",
                 new String[]{//"0" for "not deleted"
-                        Constants.ACCOUNT_TYPE, Long.toString(masterKeyId), "0"
+                        Constants.ACCOUNT_TYPE,
+                        Long.toString(masterKeyId),
+                        "0"
                 }, null);
         if (raw != null) {
             if (raw.moveToNext()) {
@@ -385,21 +387,36 @@ public class ContactHelper {
             return null;
         }
         try {
-            long rawContactId = findRawContactId(contentResolver, masterKeyId);
-            if (rawContactId == -1) {
-                return null;
-            }
-            Uri rawContactUri = ContentUris.withAppendedId(ContactsContract.RawContacts.CONTENT_URI, rawContactId);
-            Uri contactUri = ContactsContract.RawContacts.getContactLookupUri(contentResolver, rawContactUri);
-            InputStream photoInputStream =
-                    ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, contactUri, highRes);
-            if (photoInputStream == null) {
-                return null;
-            }
-            return BitmapFactory.decodeStream(photoInputStream);
+            long contactId = findContactId(contentResolver, masterKeyId);
+            return loadPhotoByContactId(contentResolver, contactId, highRes);
+
         } catch (Throwable ignored) {
             return null;
         }
+    }
+
+    public static Bitmap loadPhotoByContactId(ContentResolver contentResolver, long contactId,
+                                              boolean highRes) {
+        if (contactId == -1) {
+            return null;
+        }
+        Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId);
+        // older android versions (tested on API level 15) fail on lookupuris being passed to
+        // openContactPhotoInputStream
+        // http://stackoverflow.com/a/21214524/3000919
+        // Uri lookupUri = ContactsContract.Contacts.getLookupUri(contentResolver, contactUri);
+        // also, we aren't storing the contact image for long term use. Hence it is okay to use
+        // contactUri.
+
+        InputStream photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(
+                contentResolver,
+                contactUri,
+                highRes);
+
+        if (photoInputStream == null) {
+            return null;
+        }
+        return BitmapFactory.decodeStream(photoInputStream);
     }
 
     public static final String[] KEYS_TO_CONTACT_PROJECTION = new String[]{
