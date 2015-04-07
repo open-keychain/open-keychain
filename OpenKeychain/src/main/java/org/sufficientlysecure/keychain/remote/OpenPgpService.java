@@ -36,11 +36,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
+import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -162,7 +163,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private static PendingIntent getRequiredInputPendingIntent(Context context,
-            Intent data, RequiredInputParcel requiredInput) {
+                                                               Intent data, RequiredInputParcel requiredInput) {
 
         switch (requiredInput.mType) {
             case NFC_DECRYPT:
@@ -221,15 +222,35 @@ public class OpenPgpService extends RemoteService {
         try {
             boolean asciiArmor = cleartextSign || data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
+            // sign-only
+            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
+                    .setEnableAsciiArmorOutput(asciiArmor)
+                    .setCleartextSignature(cleartextSign)
+                    .setDetachedSignature(!cleartextSign)
+                    .setVersionHeader(null)
+                    .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED);
+
             Intent signKeyIdIntent = getSignKeyMasterId(data);
             // NOTE: Fallback to return account settings (Old API)
             if (signKeyIdIntent.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)
                     == OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED) {
                 return signKeyIdIntent;
             }
+
             long signKeyId = signKeyIdIntent.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
             if (signKeyId == Constants.key.none) {
-                Log.e(Constants.TAG, "No signing key given!");
+                throw new Exception("No signing key given");
+            } else {
+                pseInput.setSignatureMasterKeyId(signKeyId);
+
+                // get first usable subkey capable of signing
+                try {
+                    long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                            pseInput.getSignatureMasterKeyId()).getSecretSignId();
+                    pseInput.setSignatureSubKeyId(signSubKeyId);
+                } catch (PgpKeyNotFoundException e) {
+                    throw new Exception("signing subkey not found!", e);
+                }
             }
 
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -243,19 +264,13 @@ public class OpenPgpService extends RemoteService {
             InputData inputData = new InputData(is, inputLength);
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (cryptoInput == null) {
+                cryptoInput = new CryptoInputParcel();
+            }
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
-                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
-
-            // sign-only
-            PgpSignEncryptInputParcel pseInput = new PgpSignEncryptInputParcel()
-                    .setEnableAsciiArmorOutput(asciiArmor)
-                    .setCleartextSignature(cleartextSign)
-                    .setDetachedSignature(!cleartextSign)
-                    .setVersionHeader(null)
-                    .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
-                    .setSignatureMasterKeyId(signKeyId);
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
@@ -369,19 +384,32 @@ public class OpenPgpService extends RemoteService {
                 }
                 long signKeyId = signKeyIdIntent.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
                 if (signKeyId == Constants.key.none) {
-                    Log.e(Constants.TAG, "No signing key given!");
+                    throw new Exception("No signing key given");
+                } else {
+                    pseInput.setSignatureMasterKeyId(signKeyId);
+
+                    // get first usable subkey capable of signing
+                    try {
+                        long signSubKeyId = mProviderHelper.getCachedPublicKeyRing(
+                                pseInput.getSignatureMasterKeyId()).getSecretSignId();
+                        pseInput.setSignatureSubKeyId(signSubKeyId);
+                    } catch (PgpKeyNotFoundException e) {
+                        throw new Exception("signing subkey not found!", e);
+                    }
                 }
 
                 // sign and encrypt
                 pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED)
-                        .setSignatureMasterKeyId(signKeyId)
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (cryptoInput == null) {
+                cryptoInput = new CryptoInputParcel();
+            }
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
-                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
@@ -464,9 +492,12 @@ public class OpenPgpService extends RemoteService {
             );
 
             CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
+            if (cryptoInput == null) {
+                cryptoInput = new CryptoInputParcel();
+            }
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
-                        new Passphrase(data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
@@ -474,9 +505,9 @@ public class OpenPgpService extends RemoteService {
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
             builder.setAllowSymmetricDecryption(false)
-                   .setAllowedKeyIds(allowedKeyIds)
-                   .setDecryptMetadataOnly(decryptMetadataOnly)
-                   .setDetachedSignature(detachedSignature);
+                    .setAllowedKeyIds(allowedKeyIds)
+                    .setDecryptMetadataOnly(decryptMetadataOnly)
+                    .setDetachedSignature(detachedSignature);
 
             DecryptVerifyResult pgpResult = builder.build().execute(cryptoInput);
 

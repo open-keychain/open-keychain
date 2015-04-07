@@ -77,6 +77,7 @@ public class SignEncryptOperation extends BaseOperation {
 
         NfcSignOperationsBuilder pendingInputBuilder = null;
 
+        // if signing subkey has not explicitly been set, get first usable subkey capable of signing
         if (input.getSignatureMasterKeyId() != Constants.key.none
                 && input.getSignatureSubKeyId() == null) {
             try {
