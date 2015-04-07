@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.util.Patterns;
 
@@ -405,8 +404,7 @@ public class ContactHelper {
         // openContactPhotoInputStream
         // http://stackoverflow.com/a/21214524/3000919
         // Uri lookupUri = ContactsContract.Contacts.getLookupUri(contentResolver, contactUri);
-        // also, we aren't storing the contact image for long term use. Hence it is okay to use
-        // contactUri.
+        // Also, we don't need a permanent shortcut to the contact since we load it afresh each time
 
         InputStream photoInputStream = ContactsContract.Contacts.openContactPhotoInputStream(
                 contentResolver,

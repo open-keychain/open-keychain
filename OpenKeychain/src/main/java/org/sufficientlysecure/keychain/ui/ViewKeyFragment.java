@@ -29,6 +29,7 @@ import android.provider.ContactsContract;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,6 @@ import android.widget.*;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
@@ -56,6 +56,7 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     boolean mIsSecret = false;
 
+    CardView mSystemContactCard;
     LinearLayout mSystemContactLayout;
     ImageView mSystemContactPicture;
     TextView mSystemContactName;
@@ -64,9 +65,9 @@ public class ViewKeyFragment extends LoaderFragment implements
     private static final int LOADER_ID_USER_IDS = 1;
     private static final int LOADER_ID_LINKED_CONTACT = 2;
 
-    private static final String LOADER_LINKED_CONTACT_MASTER_KEY_ID
+    private static final String LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID
             = "loader_linked_contact_master_key_id";
-    private static final String LOADER_LINKED_CONTACT_IS_SECRET
+    private static final String LOADER_EXTRA_LINKED_CONTACT_IS_SECRET
             = "loader_linked_contact_is_secret";
 
     private UserIdsAdapter mUserIdsAdapter;
@@ -100,6 +101,7 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
         });
 
+        mSystemContactCard = (CardView) view.findViewById(R.id.linked_system_contact_card);
         mSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
         mSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
         mSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
@@ -124,9 +126,9 @@ public class ViewKeyFragment extends LoaderFragment implements
     }
 
     /**
-     * Expects to be called only if a linked system contact exists. Sets name, picture
+     * Hides card if no linked system contact exists. Sets name, picture
      * and onClickListener for the linked system contact's layout.
-     * In the case of a secret key, "me" contact details are loaded.
+     * In the case of a secret key, "me" (own profile) contact details are loaded.
      *
      * @param contactId
      */
@@ -147,6 +149,8 @@ public class ViewKeyFragment extends LoaderFragment implements
         }
 
         if (contactName != null) {//contact name exists for given master key
+            showLinkedSystemContact();
+
             mSystemContactName.setText(contactName);
 
             Bitmap picture;
@@ -163,7 +167,17 @@ public class ViewKeyFragment extends LoaderFragment implements
                     launchContactActivity(contactId, context);
                 }
             });
+        } else {
+            hideLinkedSystemContact();
         }
+    }
+
+    private void hideLinkedSystemContact() {
+        mSystemContactCard.setVisibility(View.GONE);
+    }
+
+    private void showLinkedSystemContact() {
+        mSystemContactCard.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -249,8 +263,8 @@ public class ViewKeyFragment extends LoaderFragment implements
             //we need a separate loader for linked contact to ensure refreshing on verification
             case LOADER_ID_LINKED_CONTACT: {
                 //passed in args to explicitly specify their need
-                long masterKeyId = args.getLong(LOADER_LINKED_CONTACT_MASTER_KEY_ID);
-                boolean isSecret = args.getBoolean(LOADER_LINKED_CONTACT_IS_SECRET);
+                long masterKeyId = args.getLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID);
+                boolean isSecret = args.getBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET);
 
                 Uri baseUri;
                 if (isSecret)
@@ -309,8 +323,8 @@ public class ViewKeyFragment extends LoaderFragment implements
                     loadLinkedSystemContact(contactId);
 
                     Bundle linkedContactData = new Bundle();
-                    linkedContactData.putLong(LOADER_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
-                    linkedContactData.putBoolean(LOADER_LINKED_CONTACT_IS_SECRET, mIsSecret);
+                    linkedContactData.putLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
+                    linkedContactData.putBoolean(LOADER_EXTRA_LINKED_CONTACT_IS_SECRET, mIsSecret);
 
                     // initialises loader for contact query so we can listen to any updates
                     getLoaderManager().initLoader(LOADER_ID_LINKED_CONTACT, linkedContactData, this);
