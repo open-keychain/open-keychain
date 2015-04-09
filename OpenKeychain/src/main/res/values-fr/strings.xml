@@ -6,6 +6,8 @@
   <!--title-->
   <string name="title_select_recipients">Choisir des clefs</string>
   <string name="title_select_secret_key">Choisir ma clef</string>
+  <string name="title_encrypt_text">Chiffrer</string>
+  <string name="title_encrypt_files">Chiffrer</string>
   <string name="title_decrypt">Déchiffrer</string>
   <string name="title_unlock">Déverrouiller la clef</string>
   <string name="title_add_subkey">Ajouter une sous-clef</string>
@@ -18,6 +20,7 @@
   <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_key">Partager la clef avec...</string>
   <string name="title_share_file">Partager le fichier avec...</string>
+  <string name="title_share_message">Partager le texte avec...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
   <string name="title_import_keys">importer des clefs</string>
@@ -34,10 +37,12 @@
   <string name="title_exchange_keys">Échanger des clefs</string>
   <string name="title_advanced_key_info">Infos avancées sur les clefs</string>
   <string name="title_keys">Clefs</string>
-  <string name="title_delete_secret_key">Supprimer VOTRE clef \'%s\' ?</string>
+  <string name="title_delete_secret_key">Supprimer VOTRE clef « %s » ?</string>
   <string name="title_export_log">Exporter le journal</string>
+  <string name="title_manage_my_keys">Gérer mes clefs</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
+  <string name="section_linked_system_contact">Contact système relié</string>
   <string name="section_should_you_trust">Devriez-vous faire confiance à cette clef ?</string>
   <string name="section_proof_details">Vérification de preuve</string>
   <string name="section_cloud_evidence">Preuves provenant du nuage</string>
@@ -45,7 +50,7 @@
   <string name="section_cloud_search">Recherche nuagique</string>
   <string name="section_general">Général</string>
   <string name="section_defaults">Valeurs par défaut</string>
-  <string name="section_advanced">Avancé</string>
+  <string name="section_advanced">Avancée</string>
   <string name="section_passphrase_cache">Cache de la phrase de passe</string>
   <string name="section_certify">Confirmer</string>
   <string name="section_actions">Actions</string>
@@ -62,8 +67,10 @@
   <string name="section_new_expiry">Nouvelle expiration</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
+  <string name="btn_decrypt_verify_message">Déchiffrer et vérifier le texte</string>
   <string name="btn_encrypt_file">Chiffrer et enregistrer le fichier</string>
   <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
+  <string name="btn_encrypt_save_file">Chiffrer et enregistrer un fichier</string>
   <string name="btn_save">Enregistrer</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
@@ -75,6 +82,8 @@
   <string name="btn_no">Non</string>
   <string name="btn_match">Les empreintes correspondent</string>
   <string name="btn_lookup_key">Rechercher la clef</string>
+  <string name="btn_share_encrypted_signed">Chiffrer et partager du texte</string>
+  <string name="btn_copy_encrypted_signed">Chiffrer et copier du texte</string>
   <string name="btn_view_cert_key">Voir la clef de certification</string>
   <string name="btn_create_key">Créer la clef</string>
   <string name="btn_add_files">Ajouter un/des fichier(s)</string>
@@ -84,13 +93,14 @@
   <string name="btn_decrypt_files">Déchiffrer les fichiers</string>
   <string name="btn_encrypt_files">Chiffrer des fichiers</string>
   <string name="btn_encrypt_text">Chiffrer du texte</string>
+  <string name="btn_add_email">Ajouter une adresse courriel supplémentaire</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
-  <string name="menu_manage_keys">Créer ma clef</string>
-  <string name="menu_import_existing_key">Importer depuis un fichier</string>
+  <string name="menu_manage_keys">Gérer mes clefs</string>
+  <string name="menu_import_existing_key">Importer d\'un fichier</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_nfc_preferences">Paramètres NFC</string>
   <string name="menu_beam_preferences">Paramètres Beam</string>
@@ -104,6 +114,7 @@
   <string name="menu_certify_fingerprint">Confirmer par une comparaison d\'empreinte</string>
   <string name="menu_export_log">Exporter le journal</string>
   <!--label-->
+  <string name="label_message">Texte</string>
   <string name="label_file">Fichier</string>
   <string name="label_files">Fichier(s)</string>
   <string name="label_file_colon">Fichier :</string>
@@ -111,6 +122,7 @@
   <string name="label_passphrase">Phrase de passe</string>
   <string name="label_unlock">Déverrouillage...</string>
   <string name="label_passphrase_again">Répéter la phrase de passe</string>
+  <string name="label_show_passphrase">Montrer la phrase de passe</string>
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Fichier ASCII Armor</string>
   <string name="label_file_ascii_armor">Activer l\'Armure ASCII</string>
@@ -121,13 +133,14 @@
   <string name="label_label_use_default_yubikey_pin_summary">Utilise le NIP par défaut (123456) pour accéder aux Yubikeys par la NFC</string>
   <string name="label_asymmetric_from">Signé par :</string>
   <string name="label_to">Chiffrer pour :</string>
-  <string name="label_delete_after_encryption">Supprimer le fichier après chiffrement</string>
+  <string name="label_delete_after_encryption">Supprimer les fichiers après chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer le fichier après le déchiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
   <string name="label_symmetric">Chiffrer avec une phrase de passe</string>
   <string name="label_passphrase_cache_ttl">Durée du cache</string>
   <string name="label_passphrase_cache_subs">Mettre en cache une phrase de passe par sous-clef</string>
+  <string name="label_message_compression">Compression de texte</string>
   <string name="label_file_compression">Compression des fichiers</string>
   <string name="label_keyservers">Serveurs de clefs</string>
   <string name="label_key_id">ID de clef</string>
@@ -146,6 +159,8 @@
   <string name="label_first_keyserver_is_used">(Le premier serveur de clefs listé est préféré)</string>
   <string name="label_preferred">préféré</string>
   <string name="label_enable_compression">Activer la compression</string>
+  <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
+  <string name="label_hidden_recipients">Cacher les destinataires</string>
   <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <plurals name="n_keys">
@@ -194,7 +209,10 @@
   <string name="pin_for">Saisir le NIP pour « %s »</string>
   <string name="yubikey_pin_for">Saisir le NIP pour accéder à la Yubikey pour « %s »</string>
   <string name="nfc_text">Tenez la YubiKey contre le dos de votre appareil.</string>
-    <string name="no_file_selected">Choisir d\'abord un fichier.</string>
+  <string name="file_delete_confirmation_title">Supprimer les fichiers originaux ?</string>
+  <string name="file_delete_confirmation">Les fichiers suivants seront détruits : %s</string>
+  <string name="file_delete_successful">%1$d fichiers sur %2$d ont déjà été supprimés. %3$s</string>
+  <string name="no_file_selected">Choisir d\'abord un fichier.</string>
   <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
   <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
@@ -227,6 +245,8 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">n\'ont pas été supprimés. Les supprimer maintenant ?</string>
+  <string name="error_file_added_already">%s a déjà été supprimé.</string>
   <string name="error_file_not_found">fichier introuvable</string>
   <string name="error_no_secret_key_found">aucune clefs secrète adéquate n\'a été trouvée</string>
   <string name="error_external_storage_not_ready">le stockage externe n\'est pas prêt</string>
@@ -344,7 +364,7 @@
   <string name="help_tab_wot">Confirmation de la clef</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Journal des changements</string>
-  <string name="help_tab_about">À propos de</string>
+  <string name="help_tab_about">À propos de l\'appli</string>
   <string name="help_about_version">Version :</string>
   <!--Import-->
   <string name="import_tab_keyserver">Serveur de clefs</string>
@@ -431,7 +451,7 @@
   <string name="api_settings_hide_advanced">Masquer les paramètres avancés</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
   <string name="api_settings_select_key">Choisir une clef</string>
-  <string name="api_settings_create_key">Créer une nouvelle clef pour ce compte</string>
+  <string name="api_settings_create_key">Créer une nouvelle clef</string>
   <string name="api_settings_save">Enregistrer</string>
   <string name="api_settings_save_msg">Le compte a été enregistré</string>
   <string name="api_settings_cancel">Annuler</string>
@@ -457,6 +477,7 @@
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
   <string name="api_select_pub_keys_text_no_user_ids">Veuillez choisir les destinataires !</string>
   <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquez l\'enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
+  <string name="api_select_sign_key_text">Veuillez choisir une de vos clefs existantes ou en créer une nouvelle.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Partager par un code QR</string>
   <string name="share_nfc_dialog">Partager par la NFC</string>
@@ -473,7 +494,7 @@
   <string name="key_view_action_encrypt">Chiffrer un texte</string>
   <string name="key_view_action_encrypt_files">fichiers</string>
   <string name="key_view_action_certify">Confirmer la clef</string>
-  <string name="key_view_action_update">Mise à jour depuis le serveur de clefs</string>
+  <string name="key_view_action_update">Mise à jour en provenance du serveur de clefs</string>
   <string name="key_view_action_share_with">Partager avec...</string>
   <string name="key_view_action_share_nfc">Partager par la NFC</string>
   <string name="key_view_action_upload">Téléverser vers le serveur de clefs</string>
@@ -487,7 +508,7 @@
   <string name="user_id_info_certified_title">Certifié</string>
   <string name="user_id_info_certified_text">Vous avez certifié cette identité.</string>
   <string name="user_id_info_uncertified_title">Non certifié</string>
-  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne spécifique.</string>
+  <string name="user_id_info_uncertified_text">Cette identité n\'a pas encore été certifiée. Vous ne pouvez pas être sûr que l\'identité correspond vraiment à une personne déterminée.</string>
   <string name="user_id_info_invalid_title">Invalide</string>
   <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité !</string>
   <!--Key trust-->
@@ -496,6 +517,7 @@
   <string name="key_trust_maybe">Cette clef n\'est ni révoquée, ni expirée.\nVous ne l\'avez pas confirmée, mais vous pourriez décider de lui faire confiance.</string>
   <string name="key_trust_revoked">Cette clef a été révoquée par son propriétaire. Vous ne devriez pas lui faire confiance.</string>
   <string name="key_trust_expired">Cette clef est expirée. Vous ne devriez pas lui faire confiance.</string>
+  <string name="key_trust_old_keys">Vous pourriez l\'utiliser pour déchiffrer un ancien message datant de la période de validité de la clef.</string>
   <string name="key_trust_no_cloud_evidence">Aucune preuve de fiabilité provenant du nuage pour cette clef.</string>
   <string name="key_trust_start_cloud_search">Lancer la recherche</string>
   <string name="key_trust_results_prefix">Keybase.io offre des « preuves » affirmant que le propriétaire de cette clef : </string>
@@ -560,14 +582,21 @@
   <string name="create_key_final_robot_text">Créer une clef peut prendre du temps, prenez donc un café en attendant...</string>
   <string name="create_key_rsa">(3 sous-clefs, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuration personnalisée de la clef)</string>
+  <string name="create_key_name_text">Choisissez un nom associé à cette clef. Ce peut être un nom complet, p. ex. « Maxime Tremblay », ou un pseudo, p. ex. « Maxou ».</string>
+  <string name="create_key_email_text">Saisissez votre adresse courriel principale utilisée pour les communications sécurisées.</string>
+  <string name="create_key_passphrase_text">Choisissez une phrase de passe forte. Elle protège votre clef en cas de vol de votre appareil.</string>
+  <string name="create_key_hint_full_name">Nom complet ou pseudo</string>
   <string name="create_key_edit">Changer la configuration de la clef</string>
+  <string name="create_key_add_email">Ajouter une adresse courriel</string>
+  <string name="create_key_add_email_text">Des adresses courriel supplémentaires sont aussi associées à cette clef et peuvent être utilisées pour des communications sécurisées.</string>
   <!--View key-->
   <string name="view_key_revoked">Révoquée : la clef ne doit plus être utilisée !</string>
   <string name="view_key_expired">Expirée : le contact doit prolonger la validité de la clef !</string>
   <string name="view_key_expired_secret">Expirée : vous pouvez prolonger la validité de la clef en la modifiant !</string>
   <string name="view_key_my_key">Ma clef</string>
-  <string name="view_key_verified">Confirmer la clef</string>
-  <string name="view_key_unverified">Non vérifiée : balayez le code QR pour confirmer la clef !</string>
+  <string name="view_key_verified">Clef confirmée</string>
+  <string name="view_key_unverified">Non confirmée : balayez le code QR pour confirmer la clef !</string>
+  <string name="view_key_fragment_no_system_contact">&lt;aucun&gt;</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
   <string name="nav_encrypt_decrypt">Chiffrer/déchiffrer</string>
@@ -576,7 +605,7 @@
   <string name="drawer_close">Fermer le tiroir de navigation</string>
   <string name="my_keys">Mes clefs</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Taper le texte</string>
+  <string name="encrypt_content_edit_text_hint">Saisir le texte</string>
   <!--certs-->
   <string name="cert_default">valeur par défaut</string>
   <string name="cert_none">aucun</string>
@@ -936,6 +965,7 @@
   <string name="msg_vl">Lancement de la vérification de la signature</string>
   <string name="msg_vl_error_no_siglist">Aucune liste de signatures dans les données littérales signées</string>
   <string name="msg_vl_error_wrong_key">Le message n\'est pas signé avec la bonne clef</string>
+  <string name="msg_vl_error_missing_literal">Aucune information utile dans les données littérales signées </string>
   <string name="msg_vl_clear_meta_file">Nom de fichier : %s</string>
   <string name="msg_vl_clear_meta_mime">Type MIME : %s</string>
   <string name="msg_vl_clear_meta_time">Heure de modification : %s</string>
@@ -981,6 +1011,14 @@
   <string name="msg_pse">Début de l\'opération de signature et/ou de chiffrement</string>
   <string name="msg_pse_symmetric">Préparation du chiffrement symétrique</string>
   <string name="msg_crt_certifying">Générations des certifications</string>
+  <plurals name="msg_crt_certify_uids">
+    <item quantity="one">Certification d\'un ID utilisateur pour la clef %2$s</item>
+    <item quantity="other">Certification de %1$d ID utilisateur pour la clef %2$s</item>
+  </plurals>
+  <plurals name="msg_crt_certify_uats">
+    <item quantity="one">Certification d\'un attribut utilisateur pour la clef %2$s</item>
+    <item quantity="other">Certification de %1$d attributs utilisateur pour la clef %2$s</item>
+  </plurals>
   <string name="msg_crt_error_self">Un auto-certificat ne peut pas être délivré ainsi !</string>
   <string name="msg_crt_error_master_not_found">Clef maîtresse introuvable !</string>
   <string name="msg_crt_error_nothing">Aucune clef certifiée !</string>
@@ -1002,9 +1040,9 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">Erreur de décodage du trousseau récupéré !</string>
   <string name="msg_import_fetch_error">La clef n\'a pas pu être récupérée ! (problèmes réseau ?)</string>
-  <string name="msg_import_fetch_keybase">Récupération depuis keybase.io : %s</string>
+  <string name="msg_import_fetch_keybase">Récupération en provenance du keybase.io : %s</string>
   <string name="msg_import_fetch_keyserver_error">Impossible de récupérer la clef à partir de la base de clefs !</string>
-  <string name="msg_import_fetch_keyserver">Récupération depuis le serveur de clefs : %s</string>
+  <string name="msg_import_fetch_keyserver">Récupération en provenance du serveur de clefs : %s</string>
   <string name="msg_import_fetch_keyserver_ok">Récupération de la clef est réussie !</string>
   <string name="msg_import_keyserver">Utilisation du serveur de clefs %s</string>
   <string name="msg_import_fingerprint_error">L\'empreinte de clef récupérée ne correspond pas à celle attendu !</string>
@@ -1072,9 +1110,10 @@
   <string name="passp_cache_notif_clear">Effacer le cache</string>
   <string name="passp_cache_notif_pwd">Phrase de passe</string>
   <!--First Time-->
-  <string name="first_time_text1">Reprenez le contrôle de votre confidentialité avec OpenKeychain |</string>
-  <string name="first_time_create_key">Créer ma clef</string>
-  <string name="first_time_import_key">Importer depuis un fichier</string>
+  <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
+  <string name="first_time_create_key">Créer ma clef (recommandé)</string>
+  <string name="first_time_import_key">Importer la clef d\'un fichier</string>
+  <string name="first_time_yubikey">Utiliser YubiKey NEO</string>
   <string name="first_time_skip">Ignorer le paramétrage</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificateur</string>
@@ -1135,5 +1174,4 @@
   <string name="nfc_write_succesful">Écrit avec succès sur la balise NFC</string>
   <string name="unlocked">Déverrouillé</string>
   <string name="nfc_settings">Paramètres</string>
-    <string name="file_delete_successful"></string>
 </resources>

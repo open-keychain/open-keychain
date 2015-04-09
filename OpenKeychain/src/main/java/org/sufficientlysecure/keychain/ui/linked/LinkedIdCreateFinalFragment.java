@@ -25,12 +25,12 @@ import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment.ServiceType;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
 
 public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
@@ -187,11 +187,11 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
     }
 
     private void certifyLinkedIdentity (Passphrase passphrase) {
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true) {
+                true, ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

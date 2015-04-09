@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -54,16 +55,24 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -71,6 +80,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -84,6 +94,9 @@ public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
 
+    static final int REQUEST_REPEAT_PASSPHRASE = 1;
+    static final int REQUEST_ACTION = 2;
+
     ExportHelper mExportHelper;
 
     private KeyListAdapter mAdapter;
@@ -95,6 +108,11 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
 
     private FloatingActionsMenu mFab;
+
+    // This ids for multiple key export.
+    private ArrayList<Long> mIdsForRepeatAskPassphrase;
+    // This index for remembering the number of master key.
+    private int mIndex;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -218,9 +236,7 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_export: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        ExportHelper mExportHelper = new ExportHelper(getActivity());
-                        mExportHelper.showExportKeysDialog(ids, Constants.Path.APP_DIR_FILE,
-                                mAdapter.isAnySecretSelected());
+                        showMultiExportDialog(ids);
                         break;
                     }
                     case R.id.menu_key_list_multi_select_all: {
@@ -351,7 +367,7 @@ public class KeyListFragment extends LoaderFragment
         intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
         intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_ACTION);
 
         mode.finish();
     }
@@ -451,6 +467,10 @@ public class KeyListFragment extends LoaderFragment
                 mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
 
+            case R.id.menu_key_list_update_all_keys:
+                updateAllKeys();
+                return true;
+
             case R.id.menu_key_list_debug_cons:
                 consolidate();
                 return true;
@@ -521,26 +541,104 @@ public class KeyListFragment extends LoaderFragment
     private void scanQrCode() {
         Intent scanQrCode = new Intent(getActivity(), ImportKeysProxyActivity.class);
         scanQrCode.setAction(ImportKeysProxyActivity.ACTION_SCAN_IMPORT);
-        startActivityForResult(scanQrCode, 0);
+        startActivityForResult(scanQrCode, REQUEST_ACTION);
     }
 
     private void importFile() {
         Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
         intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-        startActivityForResult(intentImportExisting, 0);
+        startActivityForResult(intentImportExisting, REQUEST_ACTION);
     }
 
     private void createKey() {
         Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_ACTION);
+    }
+
+    private void updateAllKeys() {
+        Context context = getActivity();
+
+        ProviderHelper providerHelper = new ProviderHelper(context);
+
+        Cursor cursor = providerHelper.getContentResolver().query(
+                KeyRings.buildUnifiedKeyRingsUri(), new String[]{
+                        KeyRings.FINGERPRINT
+                }, null, null, null
+        );
+
+        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            byte[] blob = cursor.getBlob(0);//fingerprint column is 0
+            String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+            ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+            keyList.add(keyEntry);
+        }
+
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                getActivity(),
+                getString(R.string.progress_updating),
+                ProgressDialog.STYLE_HORIZONTAL,
+                true,
+                ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+                    final ImportKeyResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+                    if (result == null) {
+                        Log.e(Constants.TAG, "result == null");
+                        return;
+                    }
+
+                    result.createNotify(getActivity()).show();
+                }
+            }
+        };
+
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(getActivity(), CloudImportService.class);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(getActivity());
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            data.putString(CloudImportService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+        }
+
+        data.putParcelableArrayList(CloudImportService.IMPORT_KEY_LIST, keyList);
+
+        intent.putExtra(CloudImportService.EXTRA_DATA, data);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(serviceHandler);
+        intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        serviceHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
     }
 
     private void consolidate() {
         // Message is received after importing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -583,14 +681,68 @@ public class KeyListFragment extends LoaderFragment
         getActivity().startService(intent);
     }
 
+    private void showMultiExportDialog(long[] masterKeyIds) {
+        mIdsForRepeatAskPassphrase = new ArrayList<Long>();
+        for(long id: masterKeyIds) {
+            try {
+                if (PassphraseCacheService.getCachedPassphrase(
+                        getActivity(), id, id) == null) {
+                    mIdsForRepeatAskPassphrase.add(Long.valueOf(id));
+                }
+            } catch (PassphraseCacheService.KeyNotFoundException e) {
+                // This happens when the master key is stripped
+                // and ignore this key.
+                continue;
+            }
+        }
+        mIndex = 0;
+        if (mIdsForRepeatAskPassphrase.size() != 0) {
+            startPassphraseActivity();
+            return;
+        }
+        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
+        for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
+            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+        }
+        mExportHelper.showExportKeysDialog(idsForMultiExport,
+                Constants.Path.APP_DIR_FILE,
+                mAdapter.isAnySecretSelected());
+    }
+
+    private void startPassphraseActivity() {
+        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++).longValue();
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(getActivity()).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
+            if(resultCode != Activity.RESULT_OK) {
+                return;
+            }
+            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
+                startPassphraseActivity();
+                return;
+            }
+            long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
+            for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
+                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+            }
+            mExportHelper.showExportKeysDialog(idsForMultiExport,
+                    Constants.Path.APP_DIR_FILE,
+                    mAdapter.isAnySecretSelected());
+        }
+
+        if (requestCode == REQUEST_ACTION) {
+            // if a result has been returned, display a notify
+            if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                result.createNotify(getActivity()).show();
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 
@@ -632,7 +784,7 @@ public class KeyListFragment extends LoaderFragment
                     if (holder.mMasterKeyId != null) {
                         Intent safeSlingerIntent = new Intent(mContext, SafeSlingerActivity.class);
                         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, holder.mMasterKeyId);
-                        startActivityForResult(safeSlingerIntent, 0);
+                        startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
                     }
                 }
             });

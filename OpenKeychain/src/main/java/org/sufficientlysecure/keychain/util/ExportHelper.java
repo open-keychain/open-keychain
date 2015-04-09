@@ -19,9 +19,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
@@ -29,11 +27,9 @@ import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 import java.io.File;
 
@@ -102,9 +98,10 @@ public class ExportHelper {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after exporting is done in KeychainIntentService
-        KeychainIntentServiceHandler exportHandler = new KeychainIntentServiceHandler(mActivity,
+        ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity,
                 mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_HORIZONTAL,
+                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

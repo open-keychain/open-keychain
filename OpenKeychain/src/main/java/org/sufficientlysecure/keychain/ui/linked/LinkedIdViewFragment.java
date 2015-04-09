@@ -45,8 +45,8 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -583,7 +583,7 @@ public class LinkedIdViewFragment extends Fragment implements
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in KeychainIntentService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity()) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

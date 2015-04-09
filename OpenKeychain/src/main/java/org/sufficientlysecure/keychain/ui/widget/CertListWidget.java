@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import com.ocpsoft.pretty.time.PrettyTime;
+import org.ocpsoft.prettytime.PrettyTime;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;

@@ -34,7 +34,6 @@
   <string name="title_exchange_keys">Izmenjava ključev</string>
   <string name="title_advanced_key_info">Napredne informacije o ključu</string>
   <string name="title_keys">Ključi</string>
-  <string name="title_delete_secret_key">Izbrišem VAŠ ključ \'%s\'?</string>
   <!--section-->
   <string name="section_user_ids">Identitete</string>
   <string name="section_should_you_trust">Ali zaupate temu ključu?</string>
@@ -75,7 +74,6 @@
   <string name="menu_help">Pomoč</string>
   <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
-  <string name="menu_manage_keys">Ustvari zasebni ključ</string>
   <string name="menu_import_existing_key">Uvozi iz datoteke</string>
   <string name="menu_search">Išči</string>
   <string name="menu_beam_preferences">Nastavitve Beam</string>
@@ -100,7 +98,6 @@
   <string name="label_write_version_header_summary">Zapiše \'OpenKeychain v2.7\' v OpenPGP podpis, šifrirano besedilo in izvožene ključe</string>
   <string name="label_asymmetric_from">Podpisal:</string>
   <string name="label_to">Šifriraj za:</string>
-  <string name="label_delete_after_encryption">Izbriši datoteko po dešifriranju</string>
   <string name="label_delete_after_decryption">Izbriši po dešifriranju</string>
   <string name="label_encryption_algorithm">Šifrirni algoritem</string>
   <string name="label_hash_algorithm">Zgostitveni algoritem</string>
@@ -168,7 +165,7 @@
   <string name="passphrase_must_not_be_empty">Vnesite geslo.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrično šifriranje.</string>
   <string name="passphrase_for">Vnesite geslo za \'%s\'</string>
-    <string name="no_file_selected">Najprej izberite datoteko.</string>
+  <string name="no_file_selected">Najprej izberite datoteko.</string>
   <string name="encrypt_sign_successful">Uspešno podpisano in/ali šifrirano.</string>
   <string name="encrypt_sign_clipboard_successful">Uspešno podpisano in/ali šifrirano ter poslano v odložišče.</string>
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
@@ -320,7 +317,6 @@
   <string name="api_settings_hide_advanced">Skrij napredne nastavitve</string>
   <string name="api_settings_no_key">Izbran ni bil noben ključ</string>
   <string name="api_settings_select_key">Izberite ključ</string>
-  <string name="api_settings_create_key">Ustvari nov ključ za ta račun</string>
   <string name="api_settings_save">Shrani</string>
   <string name="api_settings_cancel">Prekliči</string>
   <string name="api_settings_revoke">Prekliči dostop</string>
@@ -455,8 +451,6 @@
   <string name="passp_cache_notif_pwd">Geslo</string>
   <!--First Time-->
   <string name="first_time_text1">Vzemite si svojo zasebnost nazaj v svoje roke z OpenKeychain!</string>
-  <string name="first_time_create_key">Ustvari zasebni ključ</string>
-  <string name="first_time_import_key">Uvozi iz datoteke</string>
   <string name="first_time_skip">Preskoči nastavitev</string>
   <!--unsorted-->
   <string name="section_certifier_id">Overovitelj</string>
@@ -478,8 +472,7 @@
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

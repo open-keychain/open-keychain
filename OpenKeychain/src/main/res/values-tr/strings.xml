@@ -69,7 +69,6 @@
   <string name="menu_help">Yardım</string>
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
-  <string name="menu_manage_keys">Anahtarımı oluştur</string>
   <string name="menu_import_existing_key">Dosyadan al</string>
   <string name="menu_search">Ara</string>
   <string name="menu_beam_preferences">NFC ayarları</string>
@@ -97,7 +96,6 @@
   <string name="label_label_use_default_yubikey_pin_summary">NFC üzerinden YubiKey\'e ulaşmak için varsayılan PIN\'i (123456) kullanır</string>
   <string name="label_asymmetric_from">İmzalayan:</string>
   <string name="label_to">Şuna şifrele:</string>
-  <string name="label_delete_after_encryption">Şifreleme sonrası dosyayı sil</string>
   <string name="label_delete_after_decryption">Şifre çözme sonrasında sil</string>
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
   <string name="label_hash_algorithm">Özet algoritması</string>
@@ -167,7 +165,7 @@
   <string name="passphrase_for_symmetric_encryption">Simetrik şifreleme.</string>
   <string name="passphrase_for">\'%s\' için bir parola girin</string>
   <string name="nfc_text">YubiKey\'inizi cihazınızın arkasında tutun.</string>
-    <string name="no_file_selected">Önce bir dosya seçin.</string>
+  <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
@@ -348,7 +346,6 @@
   <string name="api_settings_hide_advanced">Gelişmiş ayarları gizle</string>
   <string name="api_settings_no_key">Anahtar seçilmedi</string>
   <string name="api_settings_select_key">Anahtar seç</string>
-  <string name="api_settings_create_key">Bu hesap için yeni anahtar oluştur</string>
   <string name="api_settings_save">Kaydet</string>
   <string name="api_settings_save_msg">Hesap kaydedildi</string>
   <string name="api_settings_cancel">İptal</string>
@@ -480,8 +477,6 @@
   <string name="passp_cache_notif_pwd">Parola</string>
   <!--First Time-->
   <string name="first_time_text1">Gizliliğinizi OpenKeychain ile geri alın!</string>
-  <string name="first_time_create_key">Anahtarımı oluştur</string>
-  <string name="first_time_import_key">Dosyadan içe aktar</string>
   <string name="first_time_skip">Kurulumu Atla</string>
   <!--unsorted-->
   <string name="section_cert">Sertifika Detayları</string>
@@ -508,8 +503,7 @@
   <string name="error_multi_not_supported">Birden çok dosyanın kaydedilmesi desteklenmiyor. Bu şu anki Android\'in bir kısıtlamasıdır.</string>
   <string name="key_colon">Anahtar:</string>
   <string name="exchange_description">Anahtar değiş tokuşu başlatmak için sağ taraftan katılımcıların sayısını seçin ve \"Değiş tokuşu başlat\" tuşuna tıklayın.\n\nSadece istenilen katılımcıların değişim işleminde olduğundan ve parmak izlerinin doğruluğundan emin olmak için size iki soru daha sorulacak.</string>
-    <string name="file_delete_successful"></string>
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

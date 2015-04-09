@@ -70,7 +70,6 @@
   <string name="menu_help">Apua</string>
   <string name="menu_export_key">Vie tiedostoon</string>
   <string name="menu_delete_key">Poista avain</string>
-  <string name="menu_manage_keys">Luo minun avaimeni</string>
   <string name="menu_import_existing_key">Tuo tiedostosta</string>
   <string name="menu_search">Etsi</string>
   <string name="menu_beam_preferences">Beam asetukset</string>
@@ -99,7 +98,6 @@
   <string name="label_label_use_default_yubikey_pin_summary">Käyttää vakio-PIN:iä (123456) käyttääkseen YubiKeyssejä NFC kautta</string>
   <string name="label_asymmetric_from">Allekirjoittaja:</string>
   <string name="label_to">Salaa:</string>
-  <string name="label_delete_after_encryption">Poista tiedosto salauksen jälkeen</string>
   <string name="label_delete_after_decryption">Poista salauksen purkamisen jälkeen</string>
   <string name="label_encryption_algorithm">Salausalgoritmi</string>
   <string name="label_hash_algorithm">Tiivistealgoritmi</string>
@@ -169,11 +167,9 @@
   <string name="passphrase_for_symmetric_encryption">Symmetrinen salaus.</string>
   <string name="passphrase_for">Syötä salasana \'%s\':lle</string>
   <string name="pin_for">Syötä PIN \'%s\':lle</string>
-    <string name="file_delete_successful"></string>
-    <string name="file_delete_confirmation"></string>
-    <!--errors
-           no punctuation, all lowercase,
-           they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->

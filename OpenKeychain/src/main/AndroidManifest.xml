@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="31202"
-    android:versionName="3.2beta2">
+    android:versionCode="31203"
+    android:versionName="3.2beta3">
 
     <!--
         General remarks
@@ -700,6 +700,9 @@
             android:process=":passphrase_cache" />
         <service
             android:name=".service.KeychainIntentService"
+            android:exported="false" />
+        <service
+            android:name=".service.CloudImportService"
             android:exported="false" />
 
         <provider
