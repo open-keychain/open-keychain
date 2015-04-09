@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="16dp"
@@ -111,22 +112,33 @@
 
             </ViewAnimator>
 
-            <FrameLayout
+            <!-- this layout is used for a highlight thing, so we use padding instead of margin -->
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
                 android:id="@+id/cert_key_spincontainer"
                 android:visibility="gone"
+                tools:visibility="visible"
                 >
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/add_keys_my_key" />
+
                 <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
-                    android:layout_marginLeft="14dp"
-                    android:layout_marginRight="14dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/cert_key_spinner">
                 </org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner>
 
-            </FrameLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
