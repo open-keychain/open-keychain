@@ -33,75 +33,33 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableCache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-/** Represent the result of an operation.
+/**
+ * Represent the result of an operation.
  *
  * This class holds a result and the log of an operation. It can be subclassed
  * to include typed additional information specific to the operation. To keep
  * the class structure (somewhat) simple, this class contains an exhaustive
  * list (ie, enum) of all possible log types, which should in all cases be tied
  * to string resource ids.
- *
  */
 public abstract class OperationResult implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
-    public static final UUID NULL_UUID = new UUID(0,0);
 
     /**
-     * A HashMap of UUID:OperationLog which contains logs that we don't need
-     * to care about. This is used such that when we become parceled, we are
-     * well below the 1Mbit boundary that is specified.
+     * Instead of parceling the logs, they are cached to overcome the 1 MB boundary of
+     * Android's Binder. See ParcelableCache
      */
-    private static ConcurrentHashMap<UUID, OperationLog> dehydratedLogs;
+    private static ParcelableCache<OperationLog> logCache;
     static {
-        // Static initializer for ConcurrentHashMap
-        dehydratedLogs = new ConcurrentHashMap<UUID,OperationLog>();
-    }
-
-    /**
-     * Dehydrate a log (such that it is available after deparcelization)
-     *
-     * Returns the NULL uuid (0) if you hand it null.
-     * @param log An OperationLog to dehydrate
-     * @return a UUID, the ticket for your dehydrated log
-     *
-     */
-    private static UUID dehydrateLog(OperationLog log) {
-        if(log == null) {
-            return NULL_UUID;
-        }
-        else {
-            UUID ticket = UUID.randomUUID();
-            dehydratedLogs.put(ticket, log);
-            return ticket;
-        }
-    }
-
-    /***
-     * Rehydrate a log after going through parcelization, invalidating its place in the
-     * dehydration pool.
-     * This is used such that when parcelized, the parcel is no larger than 1mbit.
-     * @param ticket A UUID ticket that identifies the log in question.
-     * @return An OperationLog.
-     */
-    private static OperationLog rehydrateLog(UUID ticket) {
-        // UUID.equals isn't well documented; we use compareTo instead.
-        if( NULL_UUID.compareTo(ticket) == 0 ) {
-            return null;
-        }
-        else {
-            OperationLog log = dehydratedLogs.get(ticket);
-            dehydratedLogs.remove(ticket);
-            return log;
-        }
+        logCache = new ParcelableCache<>();
     }
 
     /** Holds the overall result, the number specifying varying degrees of success:
@@ -126,11 +84,8 @@ public abstract class OperationResult implements Parcelable {
 
     public OperationResult(Parcel source) {
         mResult = source.readInt();
-        long mostSig = source.readLong();
-        long leastSig = source.readLong();
-        UUID mTicket = new UUID(mostSig, leastSig);
-        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
-        mLog = rehydrateLog(mTicket);
+        // get log out of cache based on UUID from source
+        mLog = logCache.readFromParcelAndGetFromCache(source);
     }
 
     public int getResult() {
@@ -813,11 +768,8 @@ public abstract class OperationResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        // Get a ticket for our log.
-        UUID mTicket = dehydrateLog(mLog);
-        // And write out the UUID most and least significant bits.
-        dest.writeLong(mTicket.getMostSignificantBits());
-        dest.writeLong(mTicket.getLeastSignificantBits());
+        // cache log and write UUID to dest
+        logCache.cacheAndWriteToParcel(mLog, dest);
     }
 
     public static class OperationLog implements Iterable<LogEntryParcel> {
