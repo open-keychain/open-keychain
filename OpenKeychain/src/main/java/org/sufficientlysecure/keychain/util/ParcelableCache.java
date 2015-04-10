@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcel;
 
 import java.util.UUID;
@@ -75,6 +77,17 @@ public class ParcelableCache<E extends Object> {
         }
     }
 
+    public E readFromIntentAndGetFromCache(Intent data, String key1, String key2) {
+        if (!data.getExtras().containsKey(key1) || !data.getExtras().containsKey(key2)) {
+            return null;
+        }
+        long mostSig = data.getLongExtra(key1, 0);
+        long leastSig = data.getLongExtra(key2, 0);
+        UUID mTicket = new UUID(mostSig, leastSig);
+        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
+        return rehydrateParcelable(mTicket);
+    }
+
     public E readFromParcelAndGetFromCache(Parcel source) {
         long mostSig = source.readLong();
         long leastSig = source.readLong();
@@ -83,13 +96,20 @@ public class ParcelableCache<E extends Object> {
         return rehydrateParcelable(mTicket);
     }
 
-
     public void cacheAndWriteToParcel(E parcelable, Parcel dest) {
         // Get a ticket for our log.
         UUID mTicket = dehydrateParcelable(parcelable);
         // And write out the UUID most and least significant bits.
         dest.writeLong(mTicket.getMostSignificantBits());
         dest.writeLong(mTicket.getLeastSignificantBits());
+    }
+
+    public void cacheAndWriteToIntent(E parcelable, Intent data, String key1, String key2) {
+        // Get a ticket for our log.
+        UUID mTicket = dehydrateParcelable(parcelable);
+        // And write out the UUID most and least significant bits.
+        data.putExtra(key1, mTicket.getMostSignificantBits());
+        data.putExtra(key2, mTicket.getLeastSignificantBits());
     }
 
 }

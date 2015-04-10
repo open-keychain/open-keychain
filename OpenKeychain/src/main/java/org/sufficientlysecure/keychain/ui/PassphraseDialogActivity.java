@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.OpenPgpService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -425,14 +426,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return;
             }
 
+            CryptoInputParcel inputParcel = new CryptoInputParcel(null, passphrase);
             if (mServiceIntent != null) {
-                // TODO really pass this through the PendingIntent?
-                mServiceIntent.putExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT, new CryptoInputParcel(null, passphrase));
+                OpenPgpService.cacheCryptoInputParcel(mServiceIntent, inputParcel);
                 getActivity().setResult(RESULT_OK, mServiceIntent);
             } else {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(RESULT_CRYPTO_INPUT, new CryptoInputParcel(null, passphrase));
+                returnIntent.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
                 getActivity().setResult(RESULT_OK, returnIntent);
             }
 

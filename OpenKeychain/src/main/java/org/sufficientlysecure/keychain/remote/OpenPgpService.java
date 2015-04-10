@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableCache;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -66,6 +67,25 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
+
+    /**
+     * Instead of parceling the CryptoInputParcel, they are cached on our side to prevent
+     * leakage of passphrases, symmetric keys, an yubikey related pass-through values
+     */
+    private static ParcelableCache<CryptoInputParcel> inputParcelCache;
+    static {
+        inputParcelCache = new ParcelableCache<>();
+    }
+
+    public static void cacheCryptoInputParcel(Intent data, CryptoInputParcel inputParcel) {
+        inputParcelCache.cacheAndWriteToIntent(inputParcel, data,
+                OpenPgpApi.EXTRA_CALL_UUID1, OpenPgpApi.EXTRA_CALL_UUID2);
+    }
+
+    public static CryptoInputParcel getCryptoInputParcel(Intent data) {
+        return inputParcelCache.readFromIntentAndGetFromCache(data,
+                OpenPgpApi.EXTRA_CALL_UUID1, OpenPgpApi.EXTRA_CALL_UUID2);
+    }
 
     static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
             KeyRings._ID,
@@ -263,18 +283,19 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
-            CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
-            if (cryptoInput == null) {
-                cryptoInput = new CryptoInputParcel();
+            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            if (inputParcel == null) {
+                inputParcel = new CryptoInputParcel();
             }
+            // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             // execute PGP operation!
             PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
-            PgpSignEncryptResult pgpResult = pse.execute(pseInput, cryptoInput, inputData, os);
+            PgpSignEncryptResult pgpResult = pse.execute(pseInput, inputParcel, inputData, os);
 
             if (pgpResult.isPending()) {
 
@@ -403,19 +424,20 @@ public class OpenPgpService extends RemoteService {
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
-            CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
-            if (cryptoInput == null) {
-                cryptoInput = new CryptoInputParcel();
+            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            if (inputParcel == null) {
+                inputParcel = new CryptoInputParcel();
             }
+            // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
 
             // execute PGP operation!
-            PgpSignEncryptResult pgpResult = op.execute(pseInput, cryptoInput, inputData, os);
+            PgpSignEncryptResult pgpResult = op.execute(pseInput, inputParcel, inputData, os);
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
@@ -491,12 +513,13 @@ public class OpenPgpService extends RemoteService {
                     this, new ProviderHelper(getContext()), null, inputData, os
             );
 
-            CryptoInputParcel cryptoInput = data.getParcelableExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT);
-            if (cryptoInput == null) {
-                cryptoInput = new CryptoInputParcel();
+            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            if (inputParcel == null) {
+                inputParcel = new CryptoInputParcel();
             }
+            // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
+                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
@@ -509,7 +532,7 @@ public class OpenPgpService extends RemoteService {
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature);
 
-            DecryptVerifyResult pgpResult = builder.build().execute(cryptoInput);
+            DecryptVerifyResult pgpResult = builder.build().execute(inputParcel);
 
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client

@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.remote.OpenPgpService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -69,7 +70,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void onNfcPerform() throws IOException {
 
-        CryptoInputParcel resultData = new CryptoInputParcel(mRequiredInput.mSignatureTime);
+        CryptoInputParcel inputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
 
         switch (mRequiredInput.mType) {
 
@@ -77,7 +78,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
                     byte[] hash = mRequiredInput.mInputHashes[i];
                     byte[] decryptedSessionKey = nfcDecryptSessionKey(hash);
-                    resultData.addCryptoData(hash, decryptedSessionKey);
+                    inputParcel.addCryptoData(hash, decryptedSessionKey);
                 }
                 break;
 
@@ -86,17 +87,17 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     byte[] hash = mRequiredInput.mInputHashes[i];
                     int algo = mRequiredInput.mSignAlgos[i];
                     byte[] signedHash = nfcCalculateSignature(hash, algo);
-                    resultData.addCryptoData(hash, signedHash);
+                    inputParcel.addCryptoData(hash, signedHash);
                 }
                 break;
         }
 
         if (mServiceIntent != null) {
-            mServiceIntent.putExtra(OpenPgpApi.EXTRA_CRYPTO_INPUT, resultData);
+            OpenPgpService.cacheCryptoInputParcel(mServiceIntent, inputParcel);
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
-            result.putExtra(NfcOperationActivity.RESULT_DATA, resultData);
+            result.putExtra(NfcOperationActivity.RESULT_DATA, inputParcel);
             setResult(RESULT_OK, result);
         }
 
