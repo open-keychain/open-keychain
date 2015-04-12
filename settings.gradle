@@ -1,7 +1,6 @@
 include ':OpenKeychain'
 include ':extern:openpgp-api-lib'
 include ':extern:openkeychain-api-lib'
-include ':extern:html-textview'
 include ':extern:StickyListHeaders:library'
 include ':extern:spongycastle:core'
 include ':extern:spongycastle:pg'
