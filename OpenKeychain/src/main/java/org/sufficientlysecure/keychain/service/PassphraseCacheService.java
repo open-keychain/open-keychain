@@ -322,11 +322,11 @@ public class PassphraseCacheService extends Service {
     /**
      * Build pending intent that is executed by alarm manager to time out a specific passphrase
      */
-    private static PendingIntent buildIntent(Context context, long keyId) {
+    private static PendingIntent buildIntent(Context context, long referenceKeyId) {
         Intent intent = new Intent(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
-        intent.putExtra(EXTRA_KEY_ID, keyId);
+        intent.putExtra(EXTRA_KEY_ID, referenceKeyId);
         // request code should be unique for each PendingIntent, thus keyId is used
-        return PendingIntent.getBroadcast(context, (int) keyId, intent,
+        return PendingIntent.getBroadcast(context, (int) referenceKeyId, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
@@ -400,15 +400,15 @@ public class PassphraseCacheService extends Service {
 
                 if (intent.hasExtra(EXTRA_SUBKEY_ID) && intent.hasExtra(EXTRA_KEY_ID)) {
 
-                    long keyId;
+                    long referenceKeyId;
                     if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                        keyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
+                        referenceKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
                     } else {
-                        keyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
+                        referenceKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
                     }
                     // Stop specific ttl alarm and
-                    am.cancel(buildIntent(this, keyId));
-                    mPassphraseCache.delete(keyId);
+                    am.cancel(buildIntent(this, referenceKeyId));
+                    mPassphraseCache.delete(referenceKeyId);
 
                 } else {
 
