@@ -355,25 +355,21 @@ public class PassphraseCacheService extends Service {
                                 + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + ttl + ", usrId: " + primaryUserID
                 );
 
-                // if we don't cache by specific subkey id, or the requested subkey is the master key,
-                // just add master key id to the cache
+                long referenceKeyId;
                 if (subKeyId == masterKeyId || !Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                    mPassphraseCache.put(masterKeyId, new CachedPassphrase(passphrase, primaryUserID));
-                    if (ttl > 0) {
-                        // register new alarm with keyId for this passphrase
-                        long triggerTime = new Date().getTime() + (ttl * 1000);
-                        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-                        am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, masterKeyId));
-                    }
+                    // if we don't cache by specific subkey id, or the requested subkey is the master key,
+                    // just add master key id to the cache
+                    referenceKeyId = masterKeyId;
                 } else {
                     // otherwise, add this specific subkey to the cache
-                    mPassphraseCache.put(subKeyId, new CachedPassphrase(passphrase, primaryUserID));
-                    if (ttl > 0) {
-                        // register new alarm with keyId for this passphrase
-                        long triggerTime = new Date().getTime() + (ttl * 1000);
-                        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-                        am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, subKeyId));
-                    }
+                    referenceKeyId = subKeyId;
+                }
+                mPassphraseCache.put(referenceKeyId, new CachedPassphrase(passphrase, primaryUserID));
+                if (ttl > 0) {
+                    // register new alarm with keyId for this passphrase
+                    long triggerTime = new Date().getTime() + (ttl * 1000);
+                    AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+                    am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, referenceKeyId));
                 }
 
                 updateService();
