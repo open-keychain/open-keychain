@@ -52,27 +52,26 @@ import java.util.Date;
  * This service runs in its own process, but is available to all other processes as the main
  * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
  * convenience.
- *
+ * <p/>
  * The passphrase cache service always works with both a master key id and a subkey id. The master
  * key id is always used to retrieve relevant info from the database, while the subkey id is used
  * to determine the type behavior (regular passphrase, empty passphrase, stripped key,
  * divert-to-card) for the specific key requested.
- *
+ * <p/>
  * Caching behavior for subkeys depends on the cacheSubs preference:
- *
- *  - If cacheSubs is NOT set, passphrases will be cached and retrieved by master key id. The
- *      checks for special subkeys will still be done, but otherwise it is assumed that all subkeys
- *      from the same master key will use the same passphrase. This can lead to bad passphrase
- *      errors if two subkeys are encrypted differently. This is the default behavior.
- *
- *  - If cacheSubs IS set, passphrases will be cached per subkey id. This means that if a keyring
- *      has two subkeys for different purposes, passphrases will be cached independently and the
- *      user will be asked for a passphrase once per subkey even if it is the same one. This mode
- *      of operation is more precise, since we can assume that all passphrases returned from cache
- *      will be correct without fail. Since keyrings with differently encrypted subkeys are a very
- *      rare occurrence, and caching by keyring is what the user expects in the vast majority of
- *      cases, this is not the default behavior.
- *
+ * <p/>
+ * - If cacheSubs is NOT set, passphrases will be cached and retrieved by master key id. The
+ * checks for special subkeys will still be done, but otherwise it is assumed that all subkeys
+ * from the same master key will use the same passphrase. This can lead to bad passphrase
+ * errors if two subkeys are encrypted differently. This is the default behavior.
+ * <p/>
+ * - If cacheSubs IS set, passphrases will be cached per subkey id. This means that if a keyring
+ * has two subkeys for different purposes, passphrases will be cached independently and the
+ * user will be asked for a passphrase once per subkey even if it is the same one. This mode
+ * of operation is more precise, since we can assume that all passphrases returned from cache
+ * will be correct without fail. Since keyrings with differently encrypted subkeys are a very
+ * rare occurrence, and caching by keyring is what the user expects in the vast majority of
+ * cases, this is not the default behavior.
  */
 public class PassphraseCacheService extends Service {
 
@@ -153,7 +152,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Gets a cached passphrase from memory by sending an intent to the service. This method is
      * designed to wait until the service returns the passphrase.
-
+     *
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
@@ -231,7 +230,7 @@ public class PassphraseCacheService extends Service {
         }
 
         // on "none" key, just do nothing
-        if(masterKeyId == Constants.key.none) {
+        if (masterKeyId == Constants.key.none) {
             return null;
         }
 
@@ -355,15 +354,10 @@ public class PassphraseCacheService extends Service {
                                 + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + ttl + ", usrId: " + primaryUserID
                 );
 
-                long referenceKeyId;
-                if (subKeyId == masterKeyId || !Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                    // if we don't cache by specific subkey id, or the requested subkey is the master key,
-                    // just add master key id to the cache
-                    referenceKeyId = masterKeyId;
-                } else {
-                    // otherwise, add this specific subkey to the cache
-                    referenceKeyId = subKeyId;
-                }
+                // if we don't cache by specific subkey id, or the requested subkey is the master key,
+                // just add master key id to the cache, otherwise, add this specific subkey to the cache
+                long referenceKeyId =
+                        Preferences.getPreferences(mContext).getPassphraseCacheSubs() ? subKeyId : masterKeyId;
                 mPassphraseCache.put(referenceKeyId, new CachedPassphrase(passphrase, primaryUserID));
                 if (ttl > 0) {
                     // register new alarm with keyId for this passphrase
