@@ -22,7 +22,7 @@ dependencies {
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile "com.splitwise:tokenautocomplete:1.3.3@aar"
     compile 'se.emilsjolander:stickylistheaders:2.5.2'
-    compile 'org.sufficientlysecure:html-textview:1.0'
+    compile 'org.sufficientlysecure:html-textview:1.1'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib')
@@ -55,7 +55,7 @@ dependencyVerification {
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
             'se.emilsjolander:stickylistheaders:bc158f51be842a5f92c6e2adc5782f6329b69796d76ebb8f39c77f611cdef573',
-            'org.sufficientlysecure:html-textview:e0f0862f6080bffb2aaf2f5c0fecbf246dec850fd156d329406931093f598423',
+            'org.sufficientlysecure:html-textview:ca24b1522be88378634093815ce9ff1b4920c72e7513a045a7846e14069ef988',
 //            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
 //            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
 //            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
