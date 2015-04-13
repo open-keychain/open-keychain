@@ -52,19 +52,19 @@ import java.util.Date;
  * This service runs in its own process, but is available to all other processes as the main
  * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
  * convenience.
- * <p/>
+ *
  * The passphrase cache service always works with both a master key id and a subkey id. The master
  * key id is always used to retrieve relevant info from the database, while the subkey id is used
  * to determine the type behavior (regular passphrase, empty passphrase, stripped key,
  * divert-to-card) for the specific key requested.
- * <p/>
+ *
  * Caching behavior for subkeys depends on the cacheSubs preference:
- * <p/>
+ *
  * - If cacheSubs is NOT set, passphrases will be cached and retrieved by master key id. The
  * checks for special subkeys will still be done, but otherwise it is assumed that all subkeys
  * from the same master key will use the same passphrase. This can lead to bad passphrase
  * errors if two subkeys are encrypted differently. This is the default behavior.
- * <p/>
+ *
  * - If cacheSubs IS set, passphrases will be cached per subkey id. This means that if a keyring
  * has two subkeys for different purposes, passphrases will be cached independently and the
  * user will be asked for a passphrase once per subkey even if it is the same one. This mode
@@ -72,6 +72,7 @@ import java.util.Date;
  * will be correct without fail. Since keyrings with differently encrypted subkeys are a very
  * rare occurrence, and caching by keyring is what the user expects in the vast majority of
  * cases, this is not the default behavior.
+ *
  */
 public class PassphraseCacheService extends Service {
 
