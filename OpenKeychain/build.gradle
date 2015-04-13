@@ -13,15 +13,15 @@ dependencies {
 
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
-    compile 'com.journeyapps:zxing-android-embedded:2.1.0@aar'
-    compile 'com.journeyapps:zxing-android-integration:2.1.0@aar'
+    compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
+    compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'it.neokree:MaterialNavigationDrawer:1.3.2'
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile "com.splitwise:tokenautocomplete:1.3.3@aar"
-    compile 'se.emilsjolander:stickylistheaders:2.5.2'
+    compile 'se.emilsjolander:stickylistheaders:2.6.0'
     compile 'org.sufficientlysecure:html-textview:1.1'
 
     // libs as submodules
@@ -46,15 +46,15 @@ dependencyVerification {
             'com.android.support:recyclerview-v7:859ed80e3761f8fc3126901260b208505120b5678bcf36ad2cfe9c453958b9c7',
             'com.android.support:cardview-v7:4c03f2acce9925aa4f8845cb8cb37b3772c712b2438ff15f76c9e3d3bc63ead7',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
-            'com.journeyapps:zxing-android-embedded:57fdf8a262135976201fd89f1bd8016ed16510be92e7ea721b999daeeeab8f7e',
-            'com.journeyapps:zxing-android-integration:12caeb2608f11b6df77d27edc505ac8580abfc97a09a814b638cb9df0ba06906',
+            'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
+            'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
             'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
             'com.jpardogo.materialtabstrip:library:c6ef812fba4f74be7dc4a905faa4c2908cba261a94c13d4f96d5e67e4aad4aaa',
             'it.neokree:MaterialNavigationDrawer:a1221a410c5f71bf078c5c4768fdf06b402d6006c74f8e7b61199e4edc2aea57',
             'com.getbase:floatingactionbutton:052aa2a94e49e5dccc97cb99f2add87e8698b84859f0e3ac181100c0bc7640ca',
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
-            'se.emilsjolander:stickylistheaders:bc158f51be842a5f92c6e2adc5782f6329b69796d76ebb8f39c77f611cdef573',
+            'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
             'org.sufficientlysecure:html-textview:ca24b1522be88378634093815ce9ff1b4920c72e7513a045a7846e14069ef988',
 //            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
 //            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
