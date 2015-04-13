@@ -41,7 +41,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -53,11 +52,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.remote.OpenPgpService;
+import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -428,7 +426,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CryptoInputParcel inputParcel = new CryptoInputParcel(null, passphrase);
             if (mServiceIntent != null) {
-                OpenPgpService.cacheCryptoInputParcel(mServiceIntent, inputParcel);
+                CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), mServiceIntent, inputParcel);
                 getActivity().setResult(RESULT_OK, mServiceIntent);
             } else {
                 // also return passphrase back to activity

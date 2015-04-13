@@ -337,11 +337,17 @@ public class PassphraseCacheService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Constants.TAG, "PassphraseCacheService.onStartCommand()");
 
+        if (intent == null || intent.getAction() == null) {
+            updateService();
+            return START_STICKY;
+        }
+
         // register broadcastreceiver
         registerReceiver();
 
-        if (intent != null && intent.getAction() != null) {
-            if (ACTION_PASSPHRASE_CACHE_ADD.equals(intent.getAction())) {
+        String action = intent.getAction();
+        switch (action) {
+            case ACTION_PASSPHRASE_CACHE_ADD: {
                 long ttl = intent.getLongExtra(EXTRA_TTL, DEFAULT_TTL);
                 long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, -1);
@@ -365,9 +371,9 @@ public class PassphraseCacheService extends Service {
                     AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
                     am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, referenceKeyId));
                 }
-
-                updateService();
-            } else if (ACTION_PASSPHRASE_CACHE_GET.equals(intent.getAction())) {
+                break;
+            }
+            case ACTION_PASSPHRASE_CACHE_GET: {
                 long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, Constants.key.symmetric);
                 long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, Constants.key.symmetric);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
@@ -395,7 +401,9 @@ public class PassphraseCacheService extends Service {
                 } catch (RemoteException e) {
                     Log.e(Constants.TAG, "PassphraseCacheService: Sending message failed", e);
                 }
-            } else if (ACTION_PASSPHRASE_CACHE_CLEAR.equals(intent.getAction())) {
+                break;
+            }
+            case ACTION_PASSPHRASE_CACHE_CLEAR: {
                 AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
                 if (intent.hasExtra(EXTRA_SUBKEY_ID) && intent.hasExtra(EXTRA_KEY_ID)) {
@@ -419,12 +427,15 @@ public class PassphraseCacheService extends Service {
                     mPassphraseCache.clear();
 
                 }
-
-                updateService();
-            } else {
+                break;
+            }
+            default: {
                 Log.e(Constants.TAG, "PassphraseCacheService: Intent or Intent Action not supported!");
+                break;
             }
         }
+
+        updateService();
 
         return START_STICKY;
     }

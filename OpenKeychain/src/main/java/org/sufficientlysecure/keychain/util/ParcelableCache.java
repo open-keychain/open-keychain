@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Parcel;
 
 import java.util.UUID;
@@ -30,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * To overcome this issue this class allows to cache Parcelables, mapped by unique UUIDs,
  * which are written to the parcel instead of the whole Parcelable.
  */
-public class ParcelableCache<E extends Object> {
+public class ParcelableCache<E> {
 
     private static final UUID NULL_UUID = new UUID(0, 0);
 
@@ -39,7 +37,7 @@ public class ParcelableCache<E extends Object> {
      * This is used such that when we become parceled, we are
      * well below the 1 MB boundary that is specified.
      */
-    private ConcurrentHashMap<UUID, E> dehydratedLogs = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<UUID, E> objectCache = new ConcurrentHashMap<>();
 
     /**
      * Dehydrate a Parcelable (such that it is available after deparcelization)
@@ -52,9 +50,9 @@ public class ParcelableCache<E extends Object> {
         if (parcelable == null) {
             return NULL_UUID;
         } else {
-            UUID ticket = UUID.randomUUID();
-            dehydratedLogs.put(ticket, parcelable);
-            return ticket;
+            UUID uuid = UUID.randomUUID();
+            objectCache.put(uuid, parcelable);
+            return uuid;
         }
     }
 
@@ -63,53 +61,34 @@ public class ParcelableCache<E extends Object> {
      * invalidating its place in the dehydration pool.
      * This is used such that when parcelized, the Parcelable is no larger than 1 MB.
      *
-     * @param ticket A UUID ticket that identifies the log in question.
+     * @param uuid A UUID ticket that identifies the log in question.
      * @return An OperationLog.
      */
-    private E rehydrateParcelable(UUID ticket) {
+    private E rehydrateParcelable(UUID uuid) {
         // UUID.equals isn't well documented; we use compareTo instead.
-        if (NULL_UUID.compareTo(ticket) == 0) {
+        if (NULL_UUID.compareTo(uuid) == 0) {
             return null;
         } else {
-            E parcelable = dehydratedLogs.get(ticket);
-            dehydratedLogs.remove(ticket);
+            E parcelable = objectCache.get(uuid);
+            objectCache.remove(uuid);
             return parcelable;
         }
-    }
-
-    public E readFromIntentAndGetFromCache(Intent data, String key1, String key2) {
-        if (!data.getExtras().containsKey(key1) || !data.getExtras().containsKey(key2)) {
-            return null;
-        }
-        long mostSig = data.getLongExtra(key1, 0);
-        long leastSig = data.getLongExtra(key2, 0);
-        UUID mTicket = new UUID(mostSig, leastSig);
-        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
-        return rehydrateParcelable(mTicket);
     }
 
     public E readFromParcelAndGetFromCache(Parcel source) {
         long mostSig = source.readLong();
         long leastSig = source.readLong();
         UUID mTicket = new UUID(mostSig, leastSig);
-        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
+        // fetch the dehydrated parcelable out of storage (this removes it from the dehydration pool)
         return rehydrateParcelable(mTicket);
     }
 
     public void cacheAndWriteToParcel(E parcelable, Parcel dest) {
-        // Get a ticket for our log.
+        // Get a ticket for our parcelable.
         UUID mTicket = dehydrateParcelable(parcelable);
         // And write out the UUID most and least significant bits.
         dest.writeLong(mTicket.getMostSignificantBits());
         dest.writeLong(mTicket.getLeastSignificantBits());
-    }
-
-    public void cacheAndWriteToIntent(E parcelable, Intent data, String key1, String key2) {
-        // Get a ticket for our log.
-        UUID mTicket = dehydrateParcelable(parcelable);
-        // And write out the UUID most and least significant bits.
-        data.putExtra(key1, mTicket.getMostSignificantBits());
-        data.putExtra(key2, mTicket.getLeastSignificantBits());
     }
 
 }

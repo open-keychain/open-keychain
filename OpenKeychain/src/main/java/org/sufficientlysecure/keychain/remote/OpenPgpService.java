@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
@@ -57,7 +56,6 @@ import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableCache;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -67,25 +65,6 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class OpenPgpService extends RemoteService {
-
-    /**
-     * Instead of parceling the CryptoInputParcel, they are cached on our side to prevent
-     * leakage of passphrases, symmetric keys, an yubikey related pass-through values
-     */
-    private static ParcelableCache<CryptoInputParcel> inputParcelCache;
-    static {
-        inputParcelCache = new ParcelableCache<>();
-    }
-
-    public static void cacheCryptoInputParcel(Intent data, CryptoInputParcel inputParcel) {
-        inputParcelCache.cacheAndWriteToIntent(inputParcel, data,
-                OpenPgpApi.EXTRA_CALL_UUID1, OpenPgpApi.EXTRA_CALL_UUID2);
-    }
-
-    public static CryptoInputParcel getCryptoInputParcel(Intent data) {
-        return inputParcelCache.readFromIntentAndGetFromCache(data,
-                OpenPgpApi.EXTRA_CALL_UUID1, OpenPgpApi.EXTRA_CALL_UUID2);
-    }
 
     static final String[] EMAIL_SEARCH_PROJECTION = new String[]{
             KeyRings._ID,
@@ -283,7 +262,7 @@ public class OpenPgpService extends RemoteService {
             long inputLength = is.available();
             InputData inputData = new InputData(is, inputLength);
 
-            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
                 inputParcel = new CryptoInputParcel();
             }
@@ -424,7 +403,7 @@ public class OpenPgpService extends RemoteService {
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
-            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
                 inputParcel = new CryptoInputParcel();
             }
@@ -513,7 +492,7 @@ public class OpenPgpService extends RemoteService {
                     this, new ProviderHelper(getContext()), null, inputData, os
             );
 
-            CryptoInputParcel inputParcel = getCryptoInputParcel(data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
                 inputParcel = new CryptoInputParcel();
             }
@@ -768,9 +747,7 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
-    // TODO: multi-threading
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
-
         @Override
         public Intent execute(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
             try {
@@ -780,30 +757,42 @@ public class OpenPgpService extends RemoteService {
                 }
 
                 String action = data.getAction();
-                if (OpenPgpApi.ACTION_CLEARTEXT_SIGN.equals(action)) {
-                    return signImpl(data, input, output, true);
-                } else if (OpenPgpApi.ACTION_SIGN.equals(action)) {
-                    // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
-                    Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
-                    return signImpl(data, input, output, true);
-                } else if (OpenPgpApi.ACTION_DETACHED_SIGN.equals(action)) {
-                    return signImpl(data, input, output, false);
-                } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
-                    return encryptAndSignImpl(data, input, output, false);
-                } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
-                    return encryptAndSignImpl(data, input, output, true);
-                } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
-                    return decryptAndVerifyImpl(data, input, output, false);
-                } else if (OpenPgpApi.ACTION_DECRYPT_METADATA.equals(action)) {
-                    return decryptAndVerifyImpl(data, input, output, true);
-                } else if (OpenPgpApi.ACTION_GET_SIGN_KEY_ID.equals(action)) {
-                    return getSignKeyIdImpl(data);
-                } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
-                    return getKeyIdsImpl(data);
-                } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
-                    return getKeyImpl(data);
-                } else {
-                    return null;
+                switch (action) {
+                    case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
+                        return signImpl(data, input, output, true);
+                    }
+                    case OpenPgpApi.ACTION_SIGN: {
+                        // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                        Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                        return signImpl(data, input, output, true);
+                    }
+                    case OpenPgpApi.ACTION_DETACHED_SIGN: {
+                        return signImpl(data, input, output, false);
+                    }
+                    case OpenPgpApi.ACTION_ENCRYPT: {
+                        return encryptAndSignImpl(data, input, output, false);
+                    }
+                    case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
+                        return encryptAndSignImpl(data, input, output, true);
+                    }
+                    case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
+                        return decryptAndVerifyImpl(data, input, output, false);
+                    }
+                    case OpenPgpApi.ACTION_DECRYPT_METADATA: {
+                        return decryptAndVerifyImpl(data, input, output, true);
+                    }
+                    case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
+                        return getSignKeyIdImpl(data);
+                    }
+                    case OpenPgpApi.ACTION_GET_KEY_IDS: {
+                        return getKeyIdsImpl(data);
+                    }
+                    case OpenPgpApi.ACTION_GET_KEY: {
+                        return getKeyImpl(data);
+                    }
+                    default: {
+                        return null;
+                    }
                 }
             } finally {
                 // always close input and output file descriptors even in error cases

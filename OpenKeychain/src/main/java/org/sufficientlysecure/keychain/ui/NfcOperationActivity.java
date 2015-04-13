@@ -10,13 +10,11 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.WindowManager;
 
-import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote.OpenPgpService;
+import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -93,7 +91,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         }
 
         if (mServiceIntent != null) {
-            OpenPgpService.cacheCryptoInputParcel(mServiceIntent, inputParcel);
+            CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, inputParcel);
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
