@@ -51,6 +51,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -130,7 +131,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
         ArmoredOutputStream armorOut = null;
         OutputStream out;
         if (input.isEnableAsciiArmorOutput()) {
-            armorOut = new ArmoredOutputStream(outputStream);
+            armorOut = new ArmoredOutputStream(new BufferedOutputStream(outputStream, 1 << 16));
             if (input.getVersionHeader() != null) {
                 armorOut.setHeader("Version", input.getVersionHeader());
             }
@@ -408,7 +409,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 detachedByteOut = new ByteArrayOutputStream();
                 OutputStream detachedOut = detachedByteOut;
                 if (input.isEnableAsciiArmorOutput()) {
-                    detachedArmorOut = new ArmoredOutputStream(detachedOut);
+                    detachedArmorOut = new ArmoredOutputStream(new BufferedOutputStream(detachedOut, 1 << 16));
                     if (input.getVersionHeader() != null) {
                         detachedArmorOut.setHeader("Version", input.getVersionHeader());
                     }
