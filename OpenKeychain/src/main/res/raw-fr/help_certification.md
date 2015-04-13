@@ -1,3 +1,4 @@
+[//] : # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## Confirmation de clef
 Sans confirmation, vous ne pouvez pas être certain que la clef appartient à une personne déterminée.

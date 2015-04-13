@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">鍵を選択</string>
-  <string name="title_select_secret_key">あなたの鍵を選択</string>
   <string name="title_encrypt_text">暗号化</string>
   <string name="title_encrypt_files">暗号化</string>
   <string name="title_decrypt">復号化</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">副鍵の追加</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_preferences">設定</string>
-  <string name="title_cloud_search_preferences">クラウド検索設定</string>
   <string name="title_api_registered_apps">アプリ</string>
   <string name="title_key_server_preference">鍵サーバ</string>
   <string name="title_change_passphrase">パスフレーズの変更</string>
@@ -24,7 +21,6 @@
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
-  <string name="title_add_keys">鍵の追加</string>
   <string name="title_export_key">鍵のエクスポート</string>
   <string name="title_export_keys">複数鍵のエクスポート</string>
   <string name="title_key_not_found">鍵が見当りません</string>
@@ -33,10 +29,8 @@
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
-  <string name="title_create_key">鍵の生成</string>
   <string name="title_exchange_keys">鍵の交換</string>
   <string name="title_advanced_key_info">鍵の詳細情報</string>
-  <string name="title_keys">鍵</string>
   <string name="title_delete_secret_key">あなたの鍵 \'%s\' を削除しますか?</string>
   <string name="title_export_log">エクスポートログ</string>
   <string name="title_manage_my_keys">自分の鍵の管理</string>
@@ -48,27 +42,18 @@
   <string name="section_cloud_evidence">クラウドからの証明</string>
   <string name="section_keys">副鍵</string>
   <string name="section_cloud_search">クラウド検索</string>
-  <string name="section_general">一般</string>
-  <string name="section_defaults">デフォルト</string>
-  <string name="section_advanced">拡張</string>
   <string name="section_passphrase_cache">パスフレーズキャッシュ</string>
   <string name="section_certify">確認</string>
   <string name="section_actions">アクション</string>
   <string name="section_share_key">鍵</string>
-  <string name="section_upload_key">鍵の同期</string>
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_fingerprint">指紋</string>
-  <string name="section_decrypt_files">ファイル</string>
-  <string name="section_decrypt_text">テキスト</string>
-  <string name="section_certs">証明</string>
   <string name="section_encrypt">暗号化</string>
   <string name="section_decrypt">復号化</string>
   <string name="section_current_expiry">現在の期限</string>
   <string name="section_new_expiry">新しい期限</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">復号化と検証、そしてファイルの保存</string>
-  <string name="btn_decrypt_verify_message">テキストの復号化と検証</string>
-  <string name="btn_encrypt_file">暗号化してファイルを保存</string>
   <string name="btn_encrypt_share_file">暗号化してファイルを共有</string>
   <string name="btn_encrypt_save_file">暗号化してファイルを保存</string>
   <string name="btn_save">保存</string>
@@ -81,7 +66,6 @@
   <string name="btn_back">戻る</string>
   <string name="btn_no">なし</string>
   <string name="btn_match">指紋一致</string>
-  <string name="btn_lookup_key">鍵検出</string>
   <string name="btn_share_encrypted_signed">暗号化してテキストを共有</string>
   <string name="btn_copy_encrypted_signed">暗号化してテキストをコピー</string>
   <string name="btn_view_cert_key">検証した鍵を見る</string>
@@ -100,16 +84,13 @@
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
   <string name="menu_manage_keys">自分の鍵の管理</string>
-  <string name="menu_import_existing_key">ファイルからインポート</string>
   <string name="menu_search">検索</string>
   <string name="menu_nfc_preferences">NFC設定</string>
   <string name="menu_beam_preferences">Beamの設定</string>
-  <string name="menu_key_edit_cancel">キャンセル</string>
   <string name="menu_encrypt_to">暗号化...</string>
   <string name="menu_select_all">すべて選択</string>
-  <string name="menu_add_keys">鍵の追加</string>
-  <string name="menu_search_cloud">クラウドを検索</string>
   <string name="menu_export_all_keys">すべての鍵のエクスポート</string>
+  <string name="menu_update_all_keys">全部のキーをアップデートする</string>
   <string name="menu_advanced">詳細情報を表示</string>
   <string name="menu_certify_fingerprint">指紋比較による確認</string>
   <string name="menu_export_log">エクスポートログ</string>
@@ -161,6 +142,10 @@
   <string name="label_enable_compression">圧縮を有効</string>
   <string name="label_encrypt_filenames">暗号化するファイル名</string>
   <string name="label_hidden_recipients">受信者を隠す</string>
+  <string name="pref_keyserver">キーサーバーで探す</string>
+  <string name="pref_keyserver_summary">HKPキーサーバーで探す</string>
+  <string name="pref_keybase">Keybase.ioで探す</string>
+  <string name="pref_keybase_summary">Keybase.ioのインデックスで探す</string>
   <string name="user_id_no_name">&lt;名前なし&gt;</string>
   <string name="none">&lt;無し&gt;</string>
   <plurals name="n_keys">
@@ -215,12 +200,9 @@
   <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
   <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
-  <string name="specify_file_to_encrypt_to">どのファイルを暗号化するか決めてください。
-注意: 既存のファイルがあると上書きされます。</string>
-  <string name="specify_file_to_decrypt_to">どのファイルを復号化するか決めてください。
-注意: 既存のファイルがあると上書きされます。</string>
-  <string name="specify_file_to_export_to">どのファイルをエクスポートするか決めてください。
-注意: 既存のファイルがあると上書きされます。</string>
+  <string name="specify_file_to_encrypt_to">どれのファイルを暗号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
+  <string name="specify_file_to_decrypt_to">どれのファイルを暗号するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
+  <string name="specify_file_to_export_to">どれのファイルを復号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
   <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?</string>
   <string name="secret_key_deletion_confirmation">削除後はこの鍵で暗号化されたメッセージが読めなくなります、またその鍵で行われたすべての鍵確認を失います!</string>
   <string name="public_key_deletetion_confirmation">鍵 \'%s\' を削除しますか?</string>
@@ -294,6 +276,7 @@
   <string name="progress_cancelling">キャンセル中...</string>
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">インポート...</string>
+  <string name="progress_updating">キーをアップデート中。。。</string>
   <string name="progress_exporting">エクスポート...</string>
   <string name="progress_uploading">アップロード中...</string>
   <string name="progress_building_key">鍵の構築中...</string>
@@ -512,12 +495,16 @@
   <string name="key_trust_maybe">この鍵はすでに破棄されたか期限切れです。\n確認済みではなく、しかしあなたは信頼すると選択することもできます。</string>
   <string name="key_trust_revoked">このIDは鍵の所有者により破棄されています。信頼することはできません。</string>
   <string name="key_trust_expired">この鍵は期限切れです。信頼することができません。</string>
+  <string name="key_trust_old_keys">このキーの有効な日付の時で書いてあるメッセージを復号化 するのは恐らく大丈夫です。</string>
   <string name="key_trust_no_cloud_evidence">この鍵の信頼性についてのクラウドでの検証がありません。</string>
   <string name="key_trust_start_cloud_search">検索開始</string>
+  <string name="key_trust_results_prefix">Keybase.ioはこのキーのオーナーだと言う証拠を提供している：</string>
+  <string name="key_trust_header_text">注意：Keybase.ioのオーナー証拠は実験的な機会です。キーを確認することに加えて、QRコードや、NFCでキーを交換するのもお勧めする。</string>
   <!--keybase proof stuff-->
   <string name="keybase_narrative_twitter">Twitterへ以下のIDで投稿</string>
   <string name="keybase_narrative_github">Githubでは以下のIDで知られています</string>
   <string name="keybase_narrative_dns">制御下にあるドメイン名(たち)</string>
+  <string name="keybase_narrative_web_site">サイトに投稿できる</string>
   <string name="keybase_narrative_reddit">Redditへ以下のIDで投稿</string>
   <string name="keybase_narrative_coinbase">Coinbaseでは以下で知られています</string>
   <string name="keybase_narrative_hackernews">Hacker Newsへ以下のIDで投稿</string>
@@ -580,6 +567,7 @@
   <string name="create_key_edit">鍵の設定変更</string>
   <string name="create_key_add_email">Eメールアドレスの追加</string>
   <string name="create_key_add_email_text">追加のEメールアドレスがこの鍵に紐付きそしてセキュアな通信に使うことができます。</string>
+  <string name="create_key_email_already_exists_text">メールはすでに追加している</string>
   <!--View key-->
   <string name="view_key_revoked">破棄: 鍵はもう使われません!</string>
   <string name="view_key_expired">期限切れ: この連絡先は鍵の妥当性を拡張する必要があります!</string>
@@ -1081,7 +1069,7 @@
   <string name="passp_cache_notif_pwd">パスフレーズ</string>
   <!--First Time-->
   <string name="first_time_text1">OpenKeychainであなたのプライバシーを取り戻しましょう!</string>
-  <string name="first_time_create_key">自分の鍵の生成(推奨)</string>
+  <string name="first_time_create_key">自分のキーを作る</string>
   <string name="first_time_import_key">ファイルから鍵をインポート</string>
   <string name="first_time_yubikey">YubiKey NEOを使用する</string>
   <string name="first_time_skip">セットアップをスキップ</string>

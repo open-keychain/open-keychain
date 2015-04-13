@@ -1,12 +1,13 @@
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](http://www.openkeychain.org) は Android における OpenPGP 実装です。
 
-License: GPLv3+
+ライセンス: GPLv3以降
 
-## Developers
-  * Dominik Schürmann (Maintainer)
+## Developers## 開発者
+  * Dominik Schürmann (メンテナ)
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -27,7 +28,7 @@ License: GPLv3+
   * Tim Bray
   * Vincent Breitmoser
 
-## Libraries
+## ライブラリ
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 License)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT License)
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
@@ -37,7 +38,7 @@ License: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache License v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache License v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache License v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
   * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Apache License v2)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT License)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)

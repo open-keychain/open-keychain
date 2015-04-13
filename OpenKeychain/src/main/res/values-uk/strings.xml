@@ -4,12 +4,9 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Вибрати ключі</string>
-  <string name="title_select_secret_key">Виберіть ваш ключ</string>
   <string name="title_decrypt">Розшифрувати</string>
   <string name="title_add_subkey">Додати підключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
-  <string name="title_cloud_search_preferences">Налаштування хмарного пошуку</string>
   <string name="title_api_registered_apps">Програми</string>
   <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_share_fingerprint_with">Поділитися відбитком із…</string>
@@ -18,7 +15,6 @@
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
-  <string name="title_add_keys">Додати ключі</string>
   <string name="title_export_key">Експортувати ключ</string>
   <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
@@ -26,28 +22,19 @@
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <string name="title_log_display">Журнал</string>
-  <string name="title_create_key">Створити ключ</string>
   <string name="title_exchange_keys">Обміняти ключі</string>
   <string name="title_advanced_key_info">Додаткова інформація про ключ</string>
   <!--section-->
   <string name="section_user_ids">Сутності</string>
   <string name="section_keys">Підключі</string>
   <string name="section_cloud_search">Хмарний пошук</string>
-  <string name="section_general">Загальне</string>
-  <string name="section_defaults">Типове</string>
-  <string name="section_advanced">Додаткове</string>
   <string name="section_passphrase_cache">Кеш парольної фрази</string>
   <string name="section_actions">Дії</string>
   <string name="section_share_key">Ключ</string>
-  <string name="section_upload_key">Синхронізувати ключ</string>
   <string name="section_key_server">Сервер ключів</string>
   <string name="section_fingerprint">Відбиток</string>
-  <string name="section_decrypt_files">Файли</string>
-  <string name="section_decrypt_text">Текст</string>
-  <string name="section_certs">Сертифікати</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Розшифрувати, перевірити та зберегти файл</string>
-  <string name="btn_encrypt_file">Шифрувати і зберегти файл</string>
   <string name="btn_encrypt_share_file">Зашифрувати та поширити файл</string>
   <string name="btn_save">Зберегти</string>
   <string name="btn_do_not_save">Скасувати</string>
@@ -57,7 +44,6 @@
   <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
-  <string name="btn_lookup_key">Шукати ключ</string>
   <string name="btn_view_cert_key">Переглянути ключ сертифікації</string>
   <string name="btn_create_key">Створити ключ</string>
   <string name="btn_add_files">Додати файл(и)</string>
@@ -69,13 +55,10 @@
   <string name="menu_help">Довідка</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
-  <string name="menu_import_existing_key">Імпорт з файлу</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
-  <string name="menu_key_edit_cancel">Скасувати</string>
   <string name="menu_encrypt_to">Зашифрувати…</string>
   <string name="menu_select_all">Вибрати усе</string>
-  <string name="menu_add_keys">Додати ключі</string>
   <string name="menu_export_all_keys">Експортувати усі ключі</string>
   <string name="menu_advanced">Показати додаткову інформацію</string>
   <!--label-->
@@ -171,9 +154,6 @@
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
-  <string name="specify_file_to_encrypt_to">Будь ласка, виберіть файл для шифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
-  <string name="specify_file_to_decrypt_to">Будь ласка, виберіть файл для розшифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
-  <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>

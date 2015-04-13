@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Hautatu Giltzak</string>
-  <string name="title_select_secret_key">Hautatu Zure Giltza</string>
   <string name="title_encrypt_text">Enkriptatu</string>
   <string name="title_encrypt_files">Enkriptatu</string>
   <string name="title_decrypt">Dekriptatu</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">Gehitu azpigiltza</string>
   <string name="title_edit_key">Editatu Giltza</string>
   <string name="title_preferences">Ezarpenak</string>
-  <string name="title_cloud_search_preferences">Hodei Bilaketa Hobespenak</string>
   <string name="title_api_registered_apps">Aplikazioak</string>
   <string name="title_key_server_preference">Giltza-zerbitzariak</string>
   <string name="title_change_passphrase">Aldatu Sar-esaldia</string>
@@ -23,7 +20,6 @@
   <string name="title_encrypt_to_file">Enkriptatu Agirira</string>
   <string name="title_decrypt_to_file">Dekriptatu Agirira</string>
   <string name="title_import_keys">Inportatu Giltzak</string>
-  <string name="title_add_keys">Gehitu Giltzak</string>
   <string name="title_export_key">Esportatu Giltza</string>
   <string name="title_export_keys">Esportatu Giltzak</string>
   <string name="title_key_not_found">Giltza Ez da Aurkitu</string>
@@ -32,10 +28,8 @@
   <string name="title_key_details">Giltzaren Xehetasunak</string>
   <string name="title_help">Laguntza</string>
   <string name="title_log_display">Oharra</string>
-  <string name="title_create_key">Sortu Giltza</string>
   <string name="title_exchange_keys">Trukatu Giltzak</string>
   <string name="title_advanced_key_info">Giltza Argibide Aurreratuak</string>
-  <string name="title_keys">Giltzak</string>
   <string name="title_export_log">Esportatu Oharra</string>
   <string name="title_manage_my_keys">Kudeatu nire giltzak</string>
   <!--section-->
@@ -44,26 +38,17 @@
   <string name="section_should_you_trust">Fildatu behar zara giltza honetaz?</string>
   <string name="section_keys">Azpigiltzak</string>
   <string name="section_cloud_search">Hodei bilaketa</string>
-  <string name="section_general">Orokorra</string>
-  <string name="section_defaults">Berezkoak</string>
-  <string name="section_advanced">Aurreratua</string>
   <string name="section_passphrase_cache">Sar-esaldi Katxea</string>
   <string name="section_certify">Baieztatu</string>
   <string name="section_actions">Ekintzak</string>
   <string name="section_share_key">Giltza</string>
-  <string name="section_upload_key">Aldiberetu Giltza</string>
   <string name="section_key_server">Giltza-zerbitzaria</string>
-  <string name="section_decrypt_files">Agiriak</string>
-  <string name="section_decrypt_text">Idazkia</string>
-  <string name="section_certs">Egiaztagiriak</string>
   <string name="section_encrypt">Enkriptatu</string>
   <string name="section_decrypt">Dekriptatu</string>
   <string name="section_current_expiry">Oraingo epemuga</string>
   <string name="section_new_expiry">Epemuga berria</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dekriptatu, egiaztatu eta gorde agiria</string>
-  <string name="btn_decrypt_verify_message">Dekriptatu eta egiaztatu idazkia</string>
-  <string name="btn_encrypt_file">Enkriptatu eta gorde agiria</string>
   <string name="btn_encrypt_share_file">Enkriptatu eta elkarbanatu agiria</string>
   <string name="btn_encrypt_save_file">Enkriptatu eta gorde agiria</string>
   <string name="btn_save">Gorde</string>
@@ -93,15 +78,11 @@
   <string name="menu_export_key">Esportatu agirira</string>
   <string name="menu_delete_key">Ezabatu giltza</string>
   <string name="menu_manage_keys">Kudeatu nire giltzak</string>
-  <string name="menu_import_existing_key">inportatu agiritik</string>
   <string name="menu_search">Bilatu</string>
   <string name="menu_nfc_preferences">NFC ezarpenak</string>
   <string name="menu_beam_preferences">Beam ezarpenak</string>
-  <string name="menu_key_edit_cancel">Ezeztatu</string>
   <string name="menu_encrypt_to">Enkriptatu hona...</string>
   <string name="menu_select_all">Hautatu denak</string>
-  <string name="menu_add_keys">Gehitu giltzak</string>
-  <string name="menu_search_cloud">Bilatu hodeian</string>
   <string name="menu_export_all_keys">Esportatu giltza guztiak</string>
   <string name="menu_advanced">Erakutsi argibide aurreratuak</string>
   <string name="menu_export_log">Esportatu Oharra</string>

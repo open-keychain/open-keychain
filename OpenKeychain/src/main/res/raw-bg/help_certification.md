@@ -1,7 +1,8 @@
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## Key Confirmation
 Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The most simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
+The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
 To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
 
 ## Key Status

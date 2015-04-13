@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Selecteer sleutels</string>
-  <string name="title_select_secret_key">Selecteer je sleutel</string>
   <string name="title_encrypt_text">Versleutelen</string>
   <string name="title_encrypt_files">Versleutelen</string>
   <string name="title_decrypt">Ontsleutelen</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">Voeg subsleutel toe</string>
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
-  <string name="title_cloud_search_preferences">Cloud-zoekvoorkeuren</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Sleutelservers</string>
   <string name="title_change_passphrase">Wachtwoord wijzigen</string>
@@ -24,7 +21,6 @@
   <string name="title_encrypt_to_file">Versleutelen naar bestand</string>
   <string name="title_decrypt_to_file">Ontsleutelen naar bestand</string>
   <string name="title_import_keys">Sleutels importeren</string>
-  <string name="title_add_keys">Voeg sleutels toe</string>
   <string name="title_export_key">Sleutels exporteren</string>
   <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
@@ -33,10 +29,8 @@
   <string name="title_key_details">Sleutel Details</string>
   <string name="title_help">Help</string>
   <string name="title_log_display">Log</string>
-  <string name="title_create_key">Sleutel aanmaken</string>
   <string name="title_exchange_keys">Sleutels uitwisselen</string>
   <string name="title_advanced_key_info">Geavanceerde sleutelinfo</string>
-  <string name="title_keys">Sleutels</string>
   <string name="title_delete_secret_key">JOUW sleutel \'%s\' verwijderen?</string>
   <string name="title_export_log">Log exporteren</string>
   <string name="title_manage_my_keys">Beheer mijn sleutels</string>
@@ -48,27 +42,18 @@
   <string name="section_cloud_evidence">Bewijzen van de cloud</string>
   <string name="section_keys">Subsleutels</string>
   <string name="section_cloud_search">Cloud zoeken</string>
-  <string name="section_general">Algemeen</string>
-  <string name="section_defaults">Standaard</string>
-  <string name="section_advanced">Geavanceerd</string>
   <string name="section_passphrase_cache">Wachtwoordcache</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
-  <string name="section_upload_key">Synchroniseer sleutel</string>
   <string name="section_key_server">Sleutelserver</string>
   <string name="section_fingerprint">Vingerafdruk</string>
-  <string name="section_decrypt_files">Bestanden</string>
-  <string name="section_decrypt_text">Tekst</string>
-  <string name="section_certs">Certificaten</string>
   <string name="section_encrypt">Versleutelen</string>
   <string name="section_decrypt">Ontsleutelen</string>
   <string name="section_current_expiry">Huidige verloopdatum</string>
   <string name="section_new_expiry">Nieuwe verloopdatum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Decodeer, verifiëer en sla bestand op</string>
-  <string name="btn_decrypt_verify_message">Tekst ontsleutelen en verifiëren</string>
-  <string name="btn_encrypt_file">Codeer en sla bestanden op</string>
   <string name="btn_encrypt_share_file">Bestand versleutelen en delen</string>
   <string name="btn_encrypt_save_file">Bestand versleutelen en opslaan</string>
   <string name="btn_save">Opslaan</string>
@@ -81,7 +66,6 @@
   <string name="btn_back">Terug</string>
   <string name="btn_no">Nee</string>
   <string name="btn_match">Vingerafdrukken komen overeen</string>
-  <string name="btn_lookup_key">Opzoeksleutel</string>
   <string name="btn_share_encrypted_signed">Tekst versleutelen en opslaan</string>
   <string name="btn_copy_encrypted_signed">Tekst versleutelen en kopiëren</string>
   <string name="btn_view_cert_key">Toon certificatiesleutel</string>
@@ -100,16 +84,13 @@
   <string name="menu_export_key">Exporteren naar bestand</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_manage_keys">Beheer mijn sleutels</string>
-  <string name="menu_import_existing_key">Importeren van bestand</string>
   <string name="menu_search">Zoeken</string>
   <string name="menu_nfc_preferences">NFC-instellingen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
-  <string name="menu_key_edit_cancel">Annuleren</string>
   <string name="menu_encrypt_to">Versleutelen naar…</string>
   <string name="menu_select_all">Alles selecteren</string>
-  <string name="menu_add_keys">Sleutels toevoegen</string>
-  <string name="menu_search_cloud">Zoeken</string>
   <string name="menu_export_all_keys">Alle sleutels exporteren</string>
+  <string name="menu_update_all_keys">Alle sleutels bijwerken</string>
   <string name="menu_advanced">Geavanceerde info tonen</string>
   <string name="menu_certify_fingerprint">Bevestigen door vingerafdrukken te vergelijken</string>
   <string name="menu_export_log">Log exporteren</string>
@@ -161,6 +142,10 @@
   <string name="label_enable_compression">Compressie aanzetten</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
+  <string name="pref_keyserver">Zoeken op sleutelserver</string>
+  <string name="pref_keyserver_summary">Zoeken op HKP sleutelserver</string>
+  <string name="pref_keybase">Zoeken op Keybase.io</string>
+  <string name="pref_keybase_summary">Zoeken in Keybase.io-index</string>
   <string name="user_id_no_name">&lt;no naam&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <plurals name="n_keys">
@@ -217,9 +202,9 @@
   <string name="encrypt_sign_clipboard_successful">Succesvol gesigneerd en/of gecodeerd naar klembord.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
   <string name="select_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>
-  <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden.</string>
-  <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontcijferd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden.</string>
-  <string name="specify_file_to_export_to">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden.</string>
+  <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
+  <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontcijferd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
+  <string name="specify_file_to_export_to">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="key_deletion_confirmation_multi">Ben je zeker dat je alle geselecteerde sleutels wil verwijderen?</string>
   <string name="secret_key_deletion_confirmation">Na verwijderen zal je niet langer berichten versleuteld met deze sleutel kunnen lezen, en alle sleutelbevestigingen die ermee gedaan zijn verliezen!</string>
   <string name="public_key_deletetion_confirmation">Sleutel \'%s\' verwijderen?</string>
@@ -289,6 +274,7 @@
   <string name="progress_cancelling">bezig met annuleren…</string>
   <string name="progress_saving">opslaan…</string>
   <string name="progress_importing">importeren…</string>
+  <string name="progress_updating">Bezig met bijwerken van sleutels…</string>
   <string name="progress_exporting">exporteren…</string>
   <string name="progress_uploading">bezig met uploaden…</string>
   <string name="progress_building_key">sleutel maken…</string>
@@ -589,6 +575,7 @@
   <string name="create_key_edit">Sleutelconfiguratie wijzigen</string>
   <string name="create_key_add_email">E-mailadres toevoegen</string>
   <string name="create_key_add_email_text">Bijkomstige e-mailadressen zijn ook verbonden met deze sleutel en kunnen gebruikt worden voor veilige communicatie.</string>
+  <string name="create_key_email_already_exists_text">E-mail is al toegevoegd</string>
   <!--View key-->
   <string name="view_key_revoked">Ingetrokken: sleutel mag niet meer gebruikt worden!</string>
   <string name="view_key_expired">Verlopen: het contact moet de geldigheid van de sleutel verlengen!</string>
@@ -1111,7 +1098,7 @@
   <string name="passp_cache_notif_pwd">Wachtwoord</string>
   <!--First Time-->
   <string name="first_time_text1">Neem je privacy terug met OpenKeychain!</string>
-  <string name="first_time_create_key">Maak mijn sleutel aan (aanbevolen)</string>
+  <string name="first_time_create_key">Mijn sleutel aanmaken</string>
   <string name="first_time_import_key">Sleutel importeren uit bestand</string>
   <string name="first_time_yubikey">Gebruik YubiKey NEO</string>
   <string name="first_time_skip">Setup overslaan</string>

@@ -1,11 +1,12 @@
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 3.2beta2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
+  * Material-Design
+  * QR-Scanner-Integration (benötigt neue Berechtigungen)
+  * Schlüsselerzeugungsassistent verbessert
+  * Fehlende Kontakte nach Synchronisierung behoben
+  * Benötigt Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
@@ -22,17 +23,17 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Absturz unter Android 2.3 behoben
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
+  * Absturz unter Android 5 behoben
+  * Neuer Beglaubigungsbildschirm
   * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
+  * Neuer Programmablauf für QR-Codes
   * Redesigned decrypt screen
-  * New icon usage and colors
+  * Verwendung neuer Symbole und Farben
   * Fix import of secret keys from Symantec Encryption Desktop
   * Subkey IDs on Yubikeys are now checked correctly
 
@@ -70,7 +71,7 @@
   * Key sharing via SafeSlinger
   * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  * Standardmäßig SHA256 aufgrund von Kompatibilität
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
 
@@ -78,7 +79,7 @@
 ## 2.9
 
   * Fixing crashes introduced in v2.8
-  * Experimental ECC support
+  * Experimentelle ECC-Unterstützung
   * Experimental Yubikey support (signing-only with imported keys)
 
 
@@ -87,7 +88,7 @@
   * So many bugs have been fixed in this release that we focus on the main new features
   * Key edit: awesome new design, key revocation
   * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
+  * Neuer Bildschirm bei der ersten Öffnung
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
   * File encryption: awesome new design, support for encrypting multiple files
   * New icons to show status of key (by Brennan Novak)
@@ -95,15 +96,15 @@
   * Notification showing cached passphrases
   * Keys are connected to Android's contacts
 
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
-  * Purple! (Dominik, Vincent)
+  * Lila! (Dominik, Vincent)
   * New key view design (Dominik, Vincent)
   * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * API-Korrekturen (Dominik)
+  * Import aus keybase.io (Tim Bray)
 
 
 ## 2.6.1
@@ -116,7 +117,7 @@
   * Key certifications (thanks to Vincent Breitmoser)
   * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
   * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
+  * Benutzerdefinierte Schlüssellänge (Dank an Greg Witczak)
   * Fix share-functionality from other apps
 
 
@@ -129,9 +130,9 @@
 
 
 ## 2.4
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
+Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
+Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
   * New unified key list
   * Colorized key fingerprint
@@ -142,7 +143,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Keyserver query based on machine-readable output
   * Lock navigation drawer on tablets
   * Suggestions for emails on creation of keys
-  * Search in public key lists
+  * Suchen in öffentlichen Schlüssellisten
   * And much more improvements and fixes…
 
 
@@ -168,7 +169,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * New design with navigation drawer
   * New public key list design
-  * New public key view
+  * Neue Ansicht für öffentliche Schlüssel
   * Bug fixes for importing of keys
   * Key cross-certification (thanks to Ash Hughes)
   * Handle UTF-8 passwords properly (thanks to Ash Hughes)
@@ -185,7 +186,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.1
 
   * Lots of bug fixes
-  * New API for developers
+  * Neue API für Entwickler
   * PRNG bug fix by Google
 
 
@@ -193,20 +194,20 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Complete redesign
   * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
+  * Schlüssel unterschreiben
+  * Schlüssel auf den Server hochladen
   * Fixes import issues
-  * New AIDL API
+  * Neue AIDL-API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Grundlegende Schlüsselserverunterstützung
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Fehlerbehebungen
+  * Optimierungen
 
 
 ## 1.0.7
@@ -218,19 +219,19 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.6
 
   * Account adding crash on Froyo fixed
-  * Secure file deletion
+  * Sichere Dateilöschung
   * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
+  * Streamverschlüsselung/-entschlüsselung (Galerie, usw.)
   * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Oberflächenänderungen
+  * Fehlerbehebungen
 
 
 ## 1.0.5
 
-  * German and Italian translation
+  * Deutsche und Italienische Übersetzung
   * Much smaller package, due to reduced BC sources
-  * New preferences GUI
+  * Neues Einstellungen-Benutzeroberfläche
   * Layout adjustment for localization
   * Signature bugfix
 
@@ -247,7 +248,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.2
 
-  * Filterable key lists
+  * Filterbare Schlüsselliste
   * Smarter pre-selection of encryption keys
   * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
   * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
@@ -261,8 +262,8 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.0
 
   * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
+  * Unterstützung von mehr Dateimanagern (einschließlich ASTRO)
+  * Slowenische Übersetzung
+  * Neue Datenbank, viel schneller, weniger Speicherbelegung
   * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Fehlerbehebungen

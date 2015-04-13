@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Choisir des clefs</string>
-  <string name="title_select_secret_key">Choisir ma clef</string>
   <string name="title_encrypt_text">Chiffrer</string>
   <string name="title_encrypt_files">Chiffrer</string>
   <string name="title_decrypt">Déchiffrer</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">Ajouter une sous-clef</string>
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Paramètres</string>
-  <string name="title_cloud_search_preferences">Préférences de recherche nuagique</string>
   <string name="title_api_registered_apps">Applis</string>
   <string name="title_key_server_preference">Serveurs de clefs</string>
   <string name="title_change_passphrase">Modifier la phrase de passe</string>
@@ -24,7 +21,6 @@
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
   <string name="title_import_keys">importer des clefs</string>
-  <string name="title_add_keys">Ajouter des clefs</string>
   <string name="title_export_key">Exporter la clef</string>
   <string name="title_export_keys">Exporter les clefs</string>
   <string name="title_key_not_found">Clef introuvable</string>
@@ -33,10 +29,8 @@
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <string name="title_log_display">Journal</string>
-  <string name="title_create_key">Créer une clef</string>
   <string name="title_exchange_keys">Échanger des clefs</string>
   <string name="title_advanced_key_info">Infos avancées sur les clefs</string>
-  <string name="title_keys">Clefs</string>
   <string name="title_delete_secret_key">Supprimer VOTRE clef « %s » ?</string>
   <string name="title_export_log">Exporter le journal</string>
   <string name="title_manage_my_keys">Gérer mes clefs</string>
@@ -48,27 +42,18 @@
   <string name="section_cloud_evidence">Preuves provenant du nuage</string>
   <string name="section_keys">Sous-clefs</string>
   <string name="section_cloud_search">Recherche nuagique</string>
-  <string name="section_general">Général</string>
-  <string name="section_defaults">Valeurs par défaut</string>
-  <string name="section_advanced">Avancée</string>
   <string name="section_passphrase_cache">Cache de la phrase de passe</string>
   <string name="section_certify">Confirmer</string>
   <string name="section_actions">Actions</string>
   <string name="section_share_key">Clef</string>
-  <string name="section_upload_key">Synchroniser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
   <string name="section_fingerprint">Empreinte</string>
-  <string name="section_decrypt_files">Fichiers</string>
-  <string name="section_decrypt_text">Texte</string>
-  <string name="section_certs">Certificats</string>
   <string name="section_encrypt">Chiffrer</string>
   <string name="section_decrypt">Déchiffrer</string>
   <string name="section_current_expiry">Expiration actuelle</string>
   <string name="section_new_expiry">Nouvelle expiration</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
-  <string name="btn_decrypt_verify_message">Déchiffrer et vérifier le texte</string>
-  <string name="btn_encrypt_file">Chiffrer et enregistrer le fichier</string>
   <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
   <string name="btn_encrypt_save_file">Chiffrer et enregistrer un fichier</string>
   <string name="btn_save">Enregistrer</string>
@@ -81,7 +66,6 @@
   <string name="btn_back">Retour</string>
   <string name="btn_no">Non</string>
   <string name="btn_match">Les empreintes correspondent</string>
-  <string name="btn_lookup_key">Rechercher la clef</string>
   <string name="btn_share_encrypted_signed">Chiffrer et partager du texte</string>
   <string name="btn_copy_encrypted_signed">Chiffrer et copier du texte</string>
   <string name="btn_view_cert_key">Voir la clef de certification</string>
@@ -100,16 +84,13 @@
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_manage_keys">Gérer mes clefs</string>
-  <string name="menu_import_existing_key">Importer d\'un fichier</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_nfc_preferences">Paramètres NFC</string>
   <string name="menu_beam_preferences">Paramètres Beam</string>
-  <string name="menu_key_edit_cancel">Annuler</string>
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
-  <string name="menu_add_keys">Ajouter des clefs</string>
-  <string name="menu_search_cloud">Rechercher dans le nuage</string>
   <string name="menu_export_all_keys">Exporter toutes les clefs</string>
+  <string name="menu_update_all_keys">Mettre toutes les clefs à jour</string>
   <string name="menu_advanced">Afficher les infos avancées</string>
   <string name="menu_certify_fingerprint">Confirmer par une comparaison d\'empreinte</string>
   <string name="menu_export_log">Exporter le journal</string>
@@ -161,6 +142,10 @@
   <string name="label_enable_compression">Activer la compression</string>
   <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
   <string name="label_hidden_recipients">Cacher les destinataires</string>
+  <string name="pref_keyserver">Rechercher dans le serveur de clef</string>
+  <string name="pref_keyserver_summary">Rechercher dans le serveur de clef HKP</string>
+  <string name="pref_keybase">Rechercher dans Keybase.io</string>
+  <string name="pref_keybase_summary">Rechercher dans l\'index de Keybase.io</string>
   <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <plurals name="n_keys">
@@ -217,9 +202,9 @@
   <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
-  <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
-  <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe.</string>
-  <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
+  <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
+  <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs sélectionnées ?</string>
   <string name="secret_key_deletion_confirmation">Après suppression vous ne pourrez plus lire les messages chiffrés avec cette clef et vous perdrez toutes les confirmations de clefs faites avec elle !</string>
   <string name="public_key_deletetion_confirmation">Supprimer la clef \'%s\' ?</string>
@@ -289,6 +274,7 @@
   <string name="progress_cancelling">annulation...</string>
   <string name="progress_saving">sauvegarde...</string>
   <string name="progress_importing">importation...</string>
+  <string name="progress_updating">Mise à jour des clefs...</string>
   <string name="progress_exporting">exportation...</string>
   <string name="progress_uploading">téléversement...</string>
   <string name="progress_building_key">assemblage de la clef...</string>
@@ -589,6 +575,7 @@
   <string name="create_key_edit">Changer la configuration de la clef</string>
   <string name="create_key_add_email">Ajouter une adresse courriel</string>
   <string name="create_key_add_email_text">Des adresses courriel supplémentaires sont aussi associées à cette clef et peuvent être utilisées pour des communications sécurisées.</string>
+  <string name="create_key_email_already_exists_text">Le courriel a déjà été ajouté</string>
   <!--View key-->
   <string name="view_key_revoked">Révoquée : la clef ne doit plus être utilisée !</string>
   <string name="view_key_expired">Expirée : le contact doit prolonger la validité de la clef !</string>
@@ -1111,7 +1098,7 @@
   <string name="passp_cache_notif_pwd">Phrase de passe</string>
   <!--First Time-->
   <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
-  <string name="first_time_create_key">Créer ma clef (recommandé)</string>
+  <string name="first_time_create_key">Créer ma clef</string>
   <string name="first_time_import_key">Importer la clef d\'un fichier</string>
   <string name="first_time_yubikey">Utiliser YubiKey NEO</string>
   <string name="first_time_skip">Ignorer le paramétrage</string>

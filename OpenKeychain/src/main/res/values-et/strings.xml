@@ -12,8 +12,6 @@
   <string name="title_send_key">Lae võtmeserverisse</string>
   <string name="title_help">Abi</string>
   <!--section-->
-  <string name="section_general">Üldine</string>
-  <string name="section_defaults">Vaikeseaded</string>
   <!--button-->
   <string name="btn_save">Salvesta</string>
   <string name="btn_do_not_save">Katkesta</string>
