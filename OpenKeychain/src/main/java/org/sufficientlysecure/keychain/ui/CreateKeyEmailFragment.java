@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CreateKeyEmailFragment extends Fragment {
 
@@ -73,14 +74,13 @@ public class CreateKeyEmailFragment extends Fragment {
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.
      *
-     * @param context
      * @param editText
      * @return true if EditText is not empty
      */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
+    private boolean isMainEmailValid(EditText editText) {
         boolean output = true;
-        if (editText.getText().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
+        if (!checkEmail(editText.getText().toString(), false)) {
+            editText.setError(getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
         } else {
@@ -125,7 +125,7 @@ public class CreateKeyEmailFragment extends Fragment {
         // initial values
         if (mAdditionalEmailModels == null) {
             mAdditionalEmailModels = new ArrayList<>();
-            if (mCreateKeyActivity.mAdditionalEmails != null) {
+            if (mCreateKeyActivity.mAdditionalEmails != null && mEmailAdapter != null) {
                 mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
             }
         }
@@ -144,6 +144,65 @@ public class CreateKeyEmailFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Checks if a given email is valid
+     *
+     * @param email
+     * @param additionalEmail
+     * @return
+     */
+    private boolean checkEmail(String email, boolean additionalEmail) {
+        //check for email format or if the user did any input
+        if (!isEmailFormatValid(email)) {
+            Notify.create(getActivity(),
+                    getString(R.string.create_key_email_invalid_email),
+                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            return false;
+        }
+
+        //check for duplicated emails
+        if (!additionalEmail && isEmailDuplicatedInsideAdapter(email) || additionalEmail &&
+                mEmailEdit.getText().length() > 0 && email.equals(mEmailEdit.getText().toString())) {
+            Notify.create(getActivity(),
+                    getString(R.string.create_key_email_already_exists_text),
+                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the email format
+     * Uses the default Android Email Pattern
+     *
+     * @param email
+     * @return
+     */
+    private boolean isEmailFormatValid(String email) {
+        Pattern emailPattern = Patterns.EMAIL_ADDRESS;
+
+        //check for email format or if the user did any input
+        return !(email.length() == 0 || !emailPattern.matcher(email).matches());
+    }
+
+    /**
+     * Checks for duplicated emails inside the additional email adapter.
+     *
+     * @param email
+     * @return
+     */
+    private boolean isEmailDuplicatedInsideAdapter(String email) {
+        //check for duplicated emails inside the adapter
+        for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
+            if (email.equals(model.email)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void addEmail() {
         Handler returnHandler = new Handler() {
             @Override
@@ -152,26 +211,10 @@ public class CreateKeyEmailFragment extends Fragment {
                     Bundle data = message.getData();
 
                     String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
-
-                    if (email.length() > 0 && mEmailEdit.getText().length() > 0 &&
-                            email.equals(mEmailEdit.getText().toString())) {
-                        Notify.create(getActivity(),
-                                getString(R.string.create_key_email_already_exists_text),
-                                Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-                        return;
+                    if (checkEmail(email, true)) {
+                        // add new user id
+                        mEmailAdapter.add(email);
                     }
-                    //check for duplicated emails inside the adapter
-                    for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
-                        if (email.equals(model.email)) {
-                            Notify.create(getActivity(),
-                                    getString(R.string.create_key_email_already_exists_text),
-                                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-                            return;
-                        }
-                    }
-
-                    // add new user id
-                    mEmailAdapter.add(email);
                 }
             }
         };
@@ -191,7 +234,7 @@ public class CreateKeyEmailFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mEmailEdit)) {
+        if (isMainEmailValid(mEmailEdit)) {
             // save state
             mCreateKeyActivity.mEmail = mEmailEdit.getText().toString();
             mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();
