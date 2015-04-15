@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
@@ -83,25 +84,22 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
             returnResult = false;
             processScannedContent(dataUri);
-        } else if (ACTION_SCAN_IMPORT.equals(action)) {
+        } else if (ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
             returnResult = false;
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getString(R.string.import_qr_code_text))
-                    .setResultDisplayDuration(0)
-                    .initiateScan();
+                    .setResultDisplayDuration(0);
+            integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            integrator.initiateScan();
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)) {
             returnResult = true;
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getString(R.string.import_qr_code_text))
-                    .setResultDisplayDuration(0)
-                    .initiateScan();
-        } else if (ACTION_QR_CODE_API.equals(action)) {
-            // scan using xzing's Barcode Scanner from outside OpenKeychain
-
-            returnResult = false;
-            new IntentIntegrator(this).initiateScan();
+                    .setResultDisplayDuration(0);
+            integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            integrator.initiateScan();
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             // Check to see if the Activity started due to an Android Beam
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
