@@ -185,25 +185,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
             throw new IOException("Initialization failed!");
         }
 
-        if (mPin != null) {
-
-            byte[] pin = new String(mPin.getCharArray()).getBytes();
-
-            // Command APDU for VERIFY command (page 32)
-            String login =
-                    "00" // CLA
-                            + "20" // INS
-                            + "00" // P1
-                            + "82" // P2 (PW1)
-                            + String.format("%02x", pin.length) // Lc
-                            + Hex.toHexString(pin);
-            if (!nfcCommunicate(login).equals(accepted)) { // login
-                handlePinError();
-                return;
-            }
-
-        }
-
         onNfcPerform();
 
         mIsoDep.close();
@@ -320,6 +301,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return a big integer representing the MPI for the given hash
      */
     public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
+        nfcVerifyPIN(0x81); // (Verify PW1 with mode 81 for signing)
 
         // dsi, including Lc
         String dsi;
@@ -413,6 +395,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return the decoded session key
      */
     public byte[] nfcDecryptSessionKey(byte[] encryptedSessionKey) throws IOException {
+        nfcVerifyPIN(0x82); // (Verify PW1 with mode 82 for decryption)
+
         String firstApdu = "102a8086fe";
         String secondApdu = "002a808603";
         String le = "00";
@@ -434,6 +418,32 @@ public abstract class BaseNfcActivity extends BaseActivity {
         Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
 
         return Hex.decode(decryptedSessionKey);
+    }
+
+    /** Verifies the user's PW1 with the appropriate mode.
+     *
+     * @param mode This is 0x81 for signing, 0x82 for everything else
+     */
+    public void nfcVerifyPIN(int mode) throws IOException {
+        if (mPin != null) {
+            byte[] pin = new String(mPin.getCharArray()).getBytes();
+            // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
+            // See specification, page 51
+            String accepted = "9000";
+
+            // Command APDU for VERIFY command (page 32)
+            String login =
+            "00" // CLA
+            + "20" // INS
+            + "00" // P1
+            + String.format("%02x", mode) // P2
+            + String.format("%02x", pin.length) // Lc
+            + Hex.toHexString(pin);
+            if (!nfcCommunicate(login).equals(accepted)) { // login
+                handlePinError();
+                throw new IOException("Bad PIN!");
+            }
+        }
     }
 
     /**
