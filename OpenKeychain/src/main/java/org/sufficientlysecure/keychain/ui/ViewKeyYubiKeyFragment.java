@@ -4,7 +4,6 @@ package org.sufficientlysecure.keychain.ui;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -29,11 +28,10 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-public class ViewKeyYubikeyFragment extends Fragment
+public class ViewKeyYubiKeyFragment extends Fragment
         implements LoaderCallbacks<Cursor> {
 
     public static final String ARG_FINGERPRINT = "fingerprint";
@@ -46,9 +44,9 @@ public class ViewKeyYubikeyFragment extends Fragment
     private Button vButton;
     private TextView vStatus;
 
-    public static ViewKeyYubikeyFragment newInstance(byte[] fingerprints, String userId, byte[] aid) {
+    public static ViewKeyYubiKeyFragment newInstance(byte[] fingerprints, String userId, byte[] aid) {
 
-        ViewKeyYubikeyFragment frag = new ViewKeyYubikeyFragment();
+        ViewKeyYubiKeyFragment frag = new ViewKeyYubiKeyFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINT, fingerprints);

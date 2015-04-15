@@ -6,9 +6,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
 
@@ -56,7 +54,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
         // obtain passphrase for this subkey
-        obtainYubikeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
+        obtainYubiKeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
     }
 
     @Override
@@ -106,7 +104,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         // avoid a loop
         Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubikeyPin()) {
+        if (prefs.useDefaultYubiKeyPin()) {
             toast(getString(R.string.error_pin_nodefault));
             setResult(RESULT_CANCELED);
             finish();
@@ -117,7 +115,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
 
-        obtainYubikeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
+        obtainYubiKeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
     }
 
 }

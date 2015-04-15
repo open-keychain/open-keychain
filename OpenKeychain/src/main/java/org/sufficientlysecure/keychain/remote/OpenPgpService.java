@@ -167,7 +167,7 @@ public class OpenPgpService extends RemoteService {
         switch (requiredInput.mType) {
             case NFC_DECRYPT:
             case NFC_SIGN: {
-                // build PendingIntent for Yubikey NFC operations
+                // build PendingIntent for YubiKey NFC operations
                 Intent intent = new Intent(context, NfcOperationActivity.class);
                 // pass params through to activity that it can be returned again later to repeat pgp operation
                 intent.putExtra(NfcOperationActivity.EXTRA_SERVICE_INTENT, data);

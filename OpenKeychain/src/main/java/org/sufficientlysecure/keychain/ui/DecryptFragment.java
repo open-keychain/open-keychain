@@ -85,25 +85,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment {
         startActivity(viewKeyIntent);
     }
 
-//    protected void startPassphraseDialog(long subkeyId) {
-//        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-//        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-//        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-//    }
-//
-//    protected void startNfcDecrypt(long subKeyId, Passphrase pin, byte[] encryptedSessionKey) {
-//        // build PendingIntent for Yubikey NFC operations
-//        Intent intent = new Intent(getActivity(), NfcActivity.class);
-//        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
-//        intent.putExtra(NfcActivity.EXTRA_SERVICE_INTENT, new Intent()); // not used, only relevant to OpenPgpService
-//        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
-//        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-//
-//        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
-//
-//        startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
-//    }
-
     /**
      *
      * @return returns false if signature is invalid, key is revoked or expired.

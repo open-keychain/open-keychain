@@ -1,5 +1,21 @@
-package org.sufficientlysecure.keychain.ui.base;
+/*
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
+package org.sufficientlysecure.keychain.ui.base;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -34,7 +50,6 @@ import org.sufficientlysecure.keychain.util.Iso7816TLV;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
 
 public abstract class BaseNfcActivity extends BaseActivity {
 
@@ -108,10 +123,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
         enableNfcForegroundDispatch();
     }
 
-    protected void obtainYubikeyPin(RequiredInputParcel requiredInput) {
+    protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
         Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubikeyPin()) {
+        if (prefs.useDefaultYubiKeyPin()) {
             mPin = new Passphrase("123456");
             return;
         }
@@ -123,7 +138,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
-    protected void setYubikeyPin(Passphrase pin) {
+    protected void setYubiKeyPin(Passphrase pin) {
         mPin = pin;
     }
 

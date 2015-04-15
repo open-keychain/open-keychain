@@ -281,7 +281,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
             String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
             byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
-            showYubikeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+            showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
         }
 
     }
@@ -593,12 +593,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             }
         }
 
-        showYubikeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+        showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
 
     }
 
-    public void showYubikeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
-        ViewKeyYubikeyFragment frag = ViewKeyYubikeyFragment.newInstance(
+    public void showYubiKeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
+        ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
                 nfcFingerprints, nfcUserId, nfcAid);
 
         FragmentManager manager = getSupportFragmentManager();

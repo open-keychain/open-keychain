@@ -107,10 +107,10 @@ public class SettingsActivity extends PreferenceActivity {
                 values[i] = "" + valueIds[i];
             }
 
-            initializeUseDefaultYubikeyPin(
+            initializeUseDefaultYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
-            initializeUseNumKeypadForYubikeyPin(
+            initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
         }
@@ -262,10 +262,10 @@ public class SettingsActivity extends PreferenceActivity {
                 values[i] = "" + valueIds[i];
             }
 
-            initializeUseDefaultYubikeyPin(
+            initializeUseDefaultYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
-            initializeUseNumKeypadForYubikeyPin(
+            initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
         }
     }
@@ -335,23 +335,23 @@ public class SettingsActivity extends PreferenceActivity {
         return serverSummary + "; " + context.getString(R.string.label_preferred) + ": " + sPreferences.getPreferredKeyserver();
     }
 
-    private static void initializeUseDefaultYubikeyPin(final CheckBoxPreference mUseDefaultYubikeyPin) {
-        mUseDefaultYubikeyPin.setChecked(sPreferences.useDefaultYubikeyPin());
-        mUseDefaultYubikeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeUseDefaultYubiKeyPin(final CheckBoxPreference mUseDefaultYubiKeyPin) {
+        mUseDefaultYubiKeyPin.setChecked(sPreferences.useDefaultYubiKeyPin());
+        mUseDefaultYubiKeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mUseDefaultYubikeyPin.setChecked((Boolean) newValue);
-                sPreferences.setUseDefaultYubikeyPin((Boolean) newValue);
+                mUseDefaultYubiKeyPin.setChecked((Boolean) newValue);
+                sPreferences.setUseDefaultYubiKeyPin((Boolean) newValue);
                 return false;
             }
         });
     }
 
-    private static void initializeUseNumKeypadForYubikeyPin(final CheckBoxPreference mUseNumKeypadForYubikeyPin) {
-        mUseNumKeypadForYubikeyPin.setChecked(sPreferences.useNumKeypadForYubikeyPin());
-        mUseNumKeypadForYubikeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeUseNumKeypadForYubiKeyPin(final CheckBoxPreference mUseNumKeypadForYubiKeyPin) {
+        mUseNumKeypadForYubiKeyPin.setChecked(sPreferences.useNumKeypadForYubiKeyPin());
+        mUseNumKeypadForYubiKeyPin.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mUseNumKeypadForYubikeyPin.setChecked((Boolean) newValue);
-                sPreferences.setUseNumKeypadForYubikeyPin((Boolean) newValue);
+                mUseNumKeypadForYubiKeyPin.setChecked((Boolean) newValue);
+                sPreferences.setUseNumKeypadForYubiKeyPin((Boolean) newValue);
                 return false;
             }
         });
