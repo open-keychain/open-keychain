@@ -433,12 +433,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
             // Command APDU for VERIFY command (page 32)
             String login =
-            "00" // CLA
-            + "20" // INS
-            + "00" // P1
-            + String.format("%02x", mode) // P2
-            + String.format("%02x", pin.length) // Lc
-            + Hex.toHexString(pin);
+                    "00" // CLA
+                        + "20" // INS
+                        + "00" // P1
+                        + String.format("%02x", mode) // P2
+                        + String.format("%02x", pin.length) // Lc
+                        + Hex.toHexString(pin);
             if (!nfcCommunicate(login).equals(accepted)) { // login
                 handlePinError();
                 throw new IOException("Bad PIN!");
