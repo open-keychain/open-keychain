@@ -27,10 +27,9 @@ import java.io.IOException;
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * NFC devices.
- *
+ * <p/>
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class NfcOperationActivity extends BaseNfcActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
@@ -71,16 +70,15 @@ public class NfcOperationActivity extends BaseNfcActivity {
         CryptoInputParcel inputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
 
         switch (mRequiredInput.mType) {
-
-            case NFC_DECRYPT:
+            case NFC_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
                     byte[] hash = mRequiredInput.mInputHashes[i];
                     byte[] decryptedSessionKey = nfcDecryptSessionKey(hash);
                     inputParcel.addCryptoData(hash, decryptedSessionKey);
                 }
                 break;
-
-            case NFC_SIGN:
+            }
+            case NFC_SIGN: {
                 for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
                     byte[] hash = mRequiredInput.mInputHashes[i];
                     int algo = mRequiredInput.mSignAlgos[i];
@@ -88,6 +86,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     inputParcel.addCryptoData(hash, signedHash);
                 }
                 break;
+            }
         }
 
         if (mServiceIntent != null) {
@@ -100,7 +99,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
         }
 
         finish();
-
     }
 
     @Override
@@ -120,6 +118,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
 
         obtainYubikeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
-
     }
+
 }
