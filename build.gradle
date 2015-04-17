@@ -16,7 +16,7 @@ allprojects {
 
         maven {
             // for zxing-android-embedded lib
-            url "http://dl.bintray.com/journeyapps/maven"
+            url "https://dl.bintray.com/journeyapps/maven"
         }
     }
 }
