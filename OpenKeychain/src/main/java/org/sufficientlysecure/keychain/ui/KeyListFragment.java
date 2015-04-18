@@ -681,17 +681,16 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void showMultiExportDialog(long[] masterKeyIds) {
-        mIdsForRepeatAskPassphrase = new ArrayList<Long>();
-        for(long id: masterKeyIds) {
+        mIdsForRepeatAskPassphrase = new ArrayList<>();
+        for (long id : masterKeyIds) {
             try {
                 if (PassphraseCacheService.getCachedPassphrase(
                         getActivity(), id, id) == null) {
-                    mIdsForRepeatAskPassphrase.add(Long.valueOf(id));
+                    mIdsForRepeatAskPassphrase.add(id);
                 }
             } catch (PassphraseCacheService.KeyNotFoundException e) {
                 // This happens when the master key is stripped
                 // and ignore this key.
-                continue;
             }
         }
         mIndex = 0;
@@ -700,8 +699,8 @@ public class KeyListFragment extends LoaderFragment
             return;
         }
         long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-        for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
-            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+        for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
+            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
         }
         mExportHelper.showExportKeysDialog(idsForMultiExport,
                 Constants.Path.APP_DIR_FILE,
@@ -710,7 +709,7 @@ public class KeyListFragment extends LoaderFragment
 
     private void startPassphraseActivity() {
         Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++).longValue();
+        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
@@ -718,7 +717,7 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if(resultCode != Activity.RESULT_OK) {
+            if (resultCode != Activity.RESULT_OK) {
                 return;
             }
             if (mIndex < mIdsForRepeatAskPassphrase.size()) {
@@ -726,8 +725,8 @@ public class KeyListFragment extends LoaderFragment
                 return;
             }
             long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-            for(int i=0; i<mIdsForRepeatAskPassphrase.size(); ++i) {
-                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i).longValue();
+            for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
+                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
             }
             mExportHelper.showExportKeysDialog(idsForMultiExport,
                     Constants.Path.APP_DIR_FILE,
