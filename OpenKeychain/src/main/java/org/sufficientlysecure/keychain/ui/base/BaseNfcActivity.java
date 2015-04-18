@@ -476,6 +476,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public void enableNfcForegroundDispatch() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            return;
+        }
         Intent nfcI = new Intent(this, getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -497,6 +500,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * Disable foreground dispatch in onPause!
      */
     public void disableNfcForegroundDispatch() {
+        if (mNfcAdapter == null) {
+            return;
+        }
         mNfcAdapter.disableForegroundDispatch(this);
         Log.d(Constants.TAG, "NfcForegroundDispatch has been disabled!");
     }
