@@ -82,12 +82,12 @@ public class ImportKeysListLoader
 
     @Override
     protected void onStartLoading() {
-        forceLoad();
+        super.forceLoad();
     }
 
     @Override
     protected void onStopLoading() {
-        cancelLoad();
+        super.cancelLoad();
     }
 
     @Override

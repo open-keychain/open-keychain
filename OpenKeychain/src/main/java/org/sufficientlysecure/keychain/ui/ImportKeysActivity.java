@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -62,6 +63,8 @@ public class ImportKeysActivity extends BaseNfcActivity {
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE";
+    public static final String ACTION_SEARCH_KEYSERVER_FROM_URL = Constants.INTENT_PREFIX
+            + "SEARCH_KEYSERVER_FROM_URL";
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
@@ -112,15 +115,19 @@ public class ImportKeysActivity extends BaseNfcActivity {
         }
 
         if (action == null) {
-            startCloudFragment(savedInstanceState, null, false);
-            startListFragment(savedInstanceState, null, null, null);
+            startCloudFragment(savedInstanceState, null, false, null);
+            startListFragment(savedInstanceState, null, null, null, null);
             return;
         }
 
         if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-            // delegate action to ACTION_IMPORT_KEY
-            action = ACTION_IMPORT_KEY;
+            if (scheme.equals("http") || scheme.equals("https")) {
+                action = ACTION_SEARCH_KEYSERVER_FROM_URL;
+            } else {
+                // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
+                // delegate action to ACTION_IMPORT_KEY
+                action = ACTION_IMPORT_KEY;
+            }
         }
 
         switch (action) {
@@ -130,12 +137,12 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
                 if (dataUri != null) {
                     // action: directly load data
-                    startListFragment(savedInstanceState, null, dataUri, null);
+                    startListFragment(savedInstanceState, null, dataUri, null, null);
                 } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
                     byte[] importData = extras.getByteArray(EXTRA_KEY_BYTES);
 
                     // action: directly load data
-                    startListFragment(savedInstanceState, importData, null, null);
+                    startListFragment(savedInstanceState, importData, null, null, null);
                 }
                 break;
             }
@@ -162,10 +169,10 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
                     if (query != null && query.length() > 0) {
                         // display keyserver fragment with query
-                        startCloudFragment(savedInstanceState, query, false);
+                        startCloudFragment(savedInstanceState, query, false, null);
 
                         // action: search immediately
-                        startListFragment(savedInstanceState, null, null, query);
+                        startListFragment(savedInstanceState, null, null, query, null);
                     } else {
                         Log.e(Constants.TAG, "Query is empty!");
                         return;
@@ -181,10 +188,10 @@ public class ImportKeysActivity extends BaseNfcActivity {
                         String query = "0x" + fingerprint;
 
                         // display keyserver fragment with query
-                        startCloudFragment(savedInstanceState, query, true);
+                        startCloudFragment(savedInstanceState, query, true, null);
 
                         // action: search immediately
-                        startListFragment(savedInstanceState, null, null, query);
+                        startListFragment(savedInstanceState, null, null, query, null);
                     }
                 } else {
                     Log.e(Constants.TAG,
@@ -200,7 +207,29 @@ public class ImportKeysActivity extends BaseNfcActivity {
                 startFileFragment(savedInstanceState);
 
                 // no immediate actions!
-                startListFragment(savedInstanceState, null, null, null);
+                startListFragment(savedInstanceState, null, null, null, null);
+                break;
+            }
+            case ACTION_SEARCH_KEYSERVER_FROM_URL: {
+                // need to process URL to get search query and keyserver authority
+                String query = dataUri.getQueryParameter("search");
+                String keyserver = dataUri.getAuthority();
+                // if query not specified, we still allow users to search the keyserver in the link
+                if (query == null) {
+                    Notify.create(this, R.string.import_url_warn_no_search_parameter, Notify.LENGTH_INDEFINITE,
+                            Notify.Style.WARN).show(mTopFragment);
+                    // we just set the keyserver
+                    startCloudFragment(savedInstanceState, null, false, keyserver);
+                    // it's not necessary to set the keyserver for ImportKeysListFragment since
+                    // it'll be taken care of by ImportKeysCloudFragment when the user clicks
+                    // the search button
+                    startListFragment(savedInstanceState, null, null, null, null);
+                } else {
+                    // we allow our users to edit the query if they wish
+                    startCloudFragment(savedInstanceState, query, false, keyserver);
+                    // search immediately
+                    startListFragment(savedInstanceState, null, null, query, keyserver);
+                }
                 break;
             }
             case ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN: {
@@ -208,18 +237,31 @@ public class ImportKeysActivity extends BaseNfcActivity {
                 startFileFragment(savedInstanceState);
 
                 // no immediate actions!
-                startListFragment(savedInstanceState, null, null, null);
+                startListFragment(savedInstanceState, null, null, null, null);
                 break;
             }
             default: {
-                startCloudFragment(savedInstanceState, null, false);
-                startListFragment(savedInstanceState, null, null, null);
+                startCloudFragment(savedInstanceState, null, false, null);
+                startListFragment(savedInstanceState, null, null, null, null);
                 break;
             }
         }
     }
 
-    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
+
+    /**
+     * if the fragment is started with non-null bytes/dataUri/serverQuery, it will immediately
+     * load content
+     *
+     * @param savedInstanceState
+     * @param bytes              bytes containing list of keyrings to import
+     * @param dataUri            uri to file to import keyrings from
+     * @param serverQuery        query to search for on the keyserver
+     * @param keyserver          keyserver authority to search on. If null will use keyserver from
+     *                           user preferences
+     */
+    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri,
+                                   String serverQuery, String keyserver) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -227,8 +269,8 @@ public class ImportKeysActivity extends BaseNfcActivity {
             return;
         }
 
-        // Create an instance of the fragment
-        mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery);
+        mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery, false,
+                keyserver);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
@@ -259,7 +301,18 @@ public class ImportKeysActivity extends BaseNfcActivity {
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit) {
+    /**
+     * loads the CloudFragment, which consists of the search bar, search button and settings icon
+     * visually.
+     *
+     * @param savedInstanceState
+     * @param query              search query
+     * @param disableQueryEdit   if true, user will not be able to edit the search query
+     * @param keyserver          keyserver authority to use for search, if null will use keyserver
+     *                           specified in user preferences
+     */
+
+    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String keyserver) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -268,7 +321,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
         }
 
         // Create an instance of the fragment
-        mTopFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit);
+        mTopFragment = ImportKeysCloudFragment.newInstance(query, disableQueryEdit, keyserver);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
