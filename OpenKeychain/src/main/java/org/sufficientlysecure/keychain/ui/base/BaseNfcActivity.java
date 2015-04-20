@@ -200,7 +200,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + "06" // Lc (number of bytes)
                         + "D27600012401" // Data (6 bytes)
                         + "00"; // Le
-        if ( ! nfcCommunicate(opening).equals(accepted)) { // activate connection
+        if ( ! nfcCommunicate(opening).endsWith(accepted)) { // activate connection
             throw new IOException("Initialization failed!");
         }
 
