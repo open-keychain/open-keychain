@@ -242,7 +242,7 @@ public class HkpKeyserver extends Keyserver {
 
         String encodedQuery;
         try {
-            encodedQuery = URLEncoder.encode(query, "utf8");
+            encodedQuery = URLEncoder.encode(query, "UTF8");
         } catch (UnsupportedEncodingException e) {
             return null;
         }
@@ -286,7 +286,7 @@ public class HkpKeyserver extends Keyserver {
             entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
-            // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
+            // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
             String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.ENGLISH);
             if (fingerprintOrKeyId.length() > 16) {
                 entry.setFingerprintHex(fingerprintOrKeyId);
@@ -312,14 +312,13 @@ public class HkpKeyserver extends Keyserver {
                 String tmp = uidMatcher.group(1).trim();
                 if (tmp.contains("%")) {
                     if (tmp.contains("%%")) {
-                        // This is a fix for issue #683
                         // The server encodes a percent sign as %%, so it is swapped out with its
                         // urlencoded counterpart to prevent errors
                         tmp = tmp.replace("%%", "%25");
                     }
                     try {
                         // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
-                        tmp = (URLDecoder.decode(tmp, "UTF8"));
+                        tmp = URLDecoder.decode(tmp, "UTF8");
                     } catch (UnsupportedEncodingException ignored) {
                         // will never happen, because "UTF8" is supported
                     }
