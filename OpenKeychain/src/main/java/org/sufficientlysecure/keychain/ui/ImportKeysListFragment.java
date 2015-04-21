@@ -217,7 +217,7 @@ public class ImportKeysListFragment extends ListFragment implements
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
             Preferences.CloudSearchPrefs cloudSearchPrefs;
-            if (keyserver != null) {
+            if (keyserver == null) {
                 cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
             } else {
                 cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, keyserver);
