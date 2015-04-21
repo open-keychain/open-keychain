@@ -82,14 +82,8 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             // Scanning a fingerprint directly with Barcode Scanner, thus we already have scanned
 
             processScannedContent(dataUri);
-        } else if (ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
-            IntentIntegrator integrator = new IntentIntegrator(this);
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
-                    .setPrompt(getString(R.string.import_qr_code_text))
-                    .setResultDisplayDuration(0);
-            integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            integrator.initiateScan();
-        } else if (ACTION_SCAN_WITH_RESULT.equals(action)) {
+        } else if (ACTION_SCAN_WITH_RESULT.equals(action)
+                || ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getString(R.string.import_qr_code_text))
@@ -142,34 +136,28 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     }
 
     private void processScannedContent(Uri uri) {
-
         String action = getIntent().getAction();
 
         Log.d(Constants.TAG, "scanned: " + uri);
 
-        String fingerprint = null;
-
         // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
         if (uri != null && uri.getScheme() != null && uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
-            fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
-        }
+            String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
 
-        if (fingerprint == null) {
+            if (ACTION_SCAN_WITH_RESULT.equals(action)) {
+                Intent result = new Intent();
+                result.putExtra(EXTRA_FINGERPRINT, fingerprint);
+                setResult(RESULT_OK, result);
+                finish();
+            } else {
+                importKeys(fingerprint);
+            }
+        } else {
             SingletonResult result = new SingletonResult(
                     SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_WRONG_QR_CODE);
             Intent intent = new Intent();
             intent.putExtra(SingletonResult.EXTRA_RESULT, result);
             returnResult(intent);
-            return;
-        }
-
-        if (ACTION_SCAN_WITH_RESULT.equals(action)) {
-            Intent result = new Intent();
-            result.putExtra(EXTRA_FINGERPRINT, fingerprint);
-            setResult(RESULT_OK, result);
-            finish();
-        } else {
-            importKeys(fingerprint);
         }
     }
 
@@ -189,23 +177,19 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     }
 
     public void importKeys(byte[] keyringData) {
-
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
         startImportService(selectedEntries);
-
     }
 
     public void importKeys(String fingerprint) {
-
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
         startImportService(selectedEntries);
-
     }
 
     private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
@@ -281,7 +265,6 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
         // start service with intent
         startService(intent);
-
     }
 
     /**
