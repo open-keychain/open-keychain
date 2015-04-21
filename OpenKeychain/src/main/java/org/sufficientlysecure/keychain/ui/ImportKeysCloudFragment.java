@@ -45,6 +45,7 @@ import java.util.List;
 public class ImportKeysCloudFragment extends Fragment {
     public static final String ARG_QUERY = "query";
     public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
+    public static final String ARG_KEYSERVER = "keyserver";
 
     private ImportKeysActivity mImportActivity;
 
@@ -54,13 +55,20 @@ public class ImportKeysCloudFragment extends Fragment {
 
     /**
      * Creates new instance of this fragment
+     *
+     * @param query            query to search for
+     * @param disableQueryEdit if true, user cannot edit query
+     * @param keyserver        specified keyserver authority to use. If null, will use keyserver
+     *                         specified in user preferences
      */
-    public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit) {
+    public static ImportKeysCloudFragment newInstance(String query, boolean disableQueryEdit,
+                                                      String keyserver) {
         ImportKeysCloudFragment frag = new ImportKeysCloudFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
         args.putBoolean(ARG_DISABLE_QUERY_EDIT, disableQueryEdit);
+        args.putString(ARG_KEYSERVER, keyserver);
 
         frag.setArguments(args);
 
@@ -151,8 +159,17 @@ public class ImportKeysCloudFragment extends Fragment {
     }
 
     private void search(String query) {
-        Preferences prefs = Preferences.getPreferences(getActivity());
-        mImportActivity.loadCallback(new ImportKeysListFragment.CloudLoaderState(query, prefs.getCloudSearchPrefs()));
+        Preferences.CloudSearchPrefs cloudSearchPrefs;
+        String explicitKeyserver = getArguments().getString(ARG_KEYSERVER);
+        // no explicit keyserver passed
+        if (explicitKeyserver == null) {
+            cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
+        } else {
+            // assume we are also meant to search keybase.io
+            cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, explicitKeyserver);
+        }
+        mImportActivity.loadCallback(
+                new ImportKeysListFragment.CloudLoaderState(query, cloudSearchPrefs));
         toggleKeyboard(false);
     }
 
