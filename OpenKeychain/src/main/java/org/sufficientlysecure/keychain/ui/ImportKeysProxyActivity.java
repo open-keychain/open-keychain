@@ -58,12 +58,11 @@ import java.util.Locale;
 public class ImportKeysProxyActivity extends FragmentActivity {
 
     public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
+    // implies activity returns scanned fingerprint as extra and does not import
     public static final String ACTION_SCAN_WITH_RESULT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_WITH_RESULT";
     public static final String ACTION_SCAN_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";
 
     public static final String EXTRA_FINGERPRINT = "fingerprint";
-
-    boolean returnResult;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,10 +81,8 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             // Scanning a fingerprint directly with Barcode Scanner, thus we already have scanned
 
-            returnResult = false;
             processScannedContent(dataUri);
         } else if (ACTION_SCAN_IMPORT.equals(action) || ACTION_QR_CODE_API.equals(action)) {
-            returnResult = false;
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getString(R.string.import_qr_code_text))
@@ -93,7 +90,6 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             integrator.setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             integrator.initiateScan();
         } else if (ACTION_SCAN_WITH_RESULT.equals(action)) {
-            returnResult = true;
             IntentIntegrator integrator = new IntentIntegrator(this);
             integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
                     .setPrompt(getString(R.string.import_qr_code_text))
@@ -103,7 +99,6 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             // Check to see if the Activity started due to an Android Beam
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                returnResult = false;
                 handleActionNdefDiscovered(getIntent());
             } else {
                 Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
@@ -148,6 +143,8 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     private void processScannedContent(Uri uri) {
 
+        String action = getIntent().getAction();
+
         Log.d(Constants.TAG, "scanned: " + uri);
 
         String fingerprint = null;
@@ -166,7 +163,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             return;
         }
 
-        if (returnResult) {
+        if (ACTION_SCAN_WITH_RESULT.equals(action)) {
             Intent result = new Intent();
             result.putExtra(EXTRA_FINGERPRINT, fingerprint);
             setResult(RESULT_OK, result);
@@ -177,14 +174,16 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     }
 
     public void returnResult(Intent data) {
-        if (returnResult) {
-            setResult(RESULT_OK, data);
-            finish();
-        } else {
+        String action = getIntent().getAction();
+
+        if (ACTION_QR_CODE_API.equals(action)) {
             // display last log message but as Toast for calls from outside OpenKeychain
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             String str = getString(result.getLog().getLast().mType.getMsgId());
             Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            setResult(RESULT_OK, data);
             finish();
         }
     }
@@ -209,7 +208,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     }
 
-    private void startImportService (ArrayList<ParcelableKeyRing> keyRings) {
+    private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
 
         // Message is received after importing is done in KeychainIntentService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
