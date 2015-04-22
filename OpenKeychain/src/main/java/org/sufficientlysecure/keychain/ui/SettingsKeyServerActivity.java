@@ -20,6 +20,9 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +31,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.dialog.AddKeyserverDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
@@ -95,7 +100,7 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
         Intent intent = getIntent();
         String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
         makeServerList(servers);
-   }
+    }
 
     @Override
     protected void initLayout() {
@@ -124,10 +129,63 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
 
     }
 
+    // button to add keyserver clicked
     public void onClick(View v) {
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                Bundle data = message.getData();
+                switch (message.what) {
+                    case AddKeyserverDialogFragment.MESSAGE_OKAY: {
+                        boolean verified = data.getBoolean(AddKeyserverDialogFragment.MESSAGE_VERIFIED);
+                        if (verified) {
+                            Notify.create(SettingsKeyServerActivity.this,
+                                    R.string.add_keyserver_verified, Notify.Style.OK).show();
+                        } else {
+                            Notify.create(SettingsKeyServerActivity.this,
+                                    R.string.add_keyserver_without_verification,
+                                    Notify.Style.WARN).show();
+                        }
+                        String keyserver = data.getString(AddKeyserverDialogFragment.MESSAGE_KEYSERVER);
+                        addKeyserver(keyserver);
+                        break;
+                    }
+                    case AddKeyserverDialogFragment.MESSAGE_VERIFICATION_FAILED: {
+                        AddKeyserverDialogFragment.FailureReason failureReason =
+                                (AddKeyserverDialogFragment.FailureReason) data.getSerializable(
+                                        AddKeyserverDialogFragment.MESSAGE_FAILURE_REASON);
+                        switch (failureReason) {
+                            case CONNECTION_FAILED: {
+                                Notify.create(SettingsKeyServerActivity.this,
+                                        R.string.add_keyserver_connection_failed,
+                                        Notify.Style.ERROR).show();
+                                break;
+                            }
+                            case INVALID_URL: {
+                                Notify.create(SettingsKeyServerActivity.this,
+                                        R.string.add_keyserver_invalid_url,
+                                        Notify.Style.ERROR).show();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+        AddKeyserverDialogFragment dialogFragment = AddKeyserverDialogFragment
+                .newInstance(messenger, R.string.add_keyserver_dialog_title);
+        dialogFragment.show(getSupportFragmentManager(), "addKeyserverDialog");
+    }
+
+    public void addKeyserver(String keyserverUrl) {
         KeyServerEditor view = (KeyServerEditor) mInflater.inflate(R.layout.key_server_editor,
                 mEditors, false);
         view.setEditorListener(this);
+        view.setValue(keyserverUrl);
         mEditors.addView(view);
     }
 
