@@ -86,6 +86,7 @@
     <string name="btn_encrypt_text">"Encrypt text"</string>
     <string name="btn_add_email">"Add additional email address"</string>
     <string name="btn_unlock">"Unlock"</string>
+    <string name="btn_add_keyserver">"Add"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -152,6 +153,8 @@
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
+    <string name="label_verify_keyserver">"Verify Keyserver"</string>
+    <string name="label_enter_keyserver_url">"Enter Keyserver URL"</string>
 
     <string name="pref_keyserver">"Search Keyserver"</string>
     <string name="pref_keyserver_summary">"Search HKP keyserver"</string>
@@ -352,6 +355,8 @@
 
     <string name="progress_con_saving">"consolidate: saving to cache…"</string>
     <string name="progress_con_reimport">"consolidate: reimporting…"</string>
+
+    <string name="progress_verifying_keyserver_url">"verifying keyserver…"</string>
 
     <!-- action strings -->
     <string name="hint_cloud_search_hint">"Search via Name, Email…"</string>
@@ -644,6 +649,13 @@
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
 
     <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
+
+    <!-- Add keyserver -->
+    <string name="add_keyserver_dialog_title">"Add Keyserver"</string>
+    <string name="add_keyserver_verified">"Keyserver verified!"</string>
+    <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
+    <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
+    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your internet connection."</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
