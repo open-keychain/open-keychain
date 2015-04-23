@@ -11,6 +11,12 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.0.0'
     compile 'com.android.support:cardview-v7:22.0.0'
 
+    // UI testing libs
+    androidTestCompile 'com.android.support.test:runner:0.2'
+    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
+
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
@@ -85,6 +91,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -134,6 +142,10 @@ android {
     // Disable preDexing, causes com.android.dx.cf.iface.ParseException: bad class file magic (cafebabe) or version (0034.0000) on some systems
     dexOptions {
         preDexLibraries = false
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
     }
 }
 
