@@ -47,16 +47,13 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class CreateKeyEmailFragment extends Fragment {
-
-    CreateKeyActivity mCreateKeyActivity;
-    EmailEditText mEmailEdit;
-    RecyclerView mEmailsRecyclerView;
-    View mBackButton;
-    View mNextButton;
-
-    ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
-
-    EmailAdapter mEmailAdapter;
+    private CreateKeyActivity mCreateKeyActivity;
+    private EmailEditText mEmailEdit;
+    private RecyclerView mEmailsRecyclerView;
+    private View mBackButton;
+    private View mNextButton;
+    private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
+    private EmailAdapter mEmailAdapter;
 
     /**
      * Creates new instance of this fragment
@@ -125,9 +122,6 @@ public class CreateKeyEmailFragment extends Fragment {
         // initial values
         if (mAdditionalEmailModels == null) {
             mAdditionalEmailModels = new ArrayList<>();
-            if (mCreateKeyActivity.mAdditionalEmails != null && mEmailAdapter != null) {
-                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
-            }
         }
 
         if (mEmailAdapter == null) {
@@ -137,6 +131,10 @@ public class CreateKeyEmailFragment extends Fragment {
                     addEmail();
                 }
             });
+
+            if (mCreateKeyActivity.mAdditionalEmails != null) {
+                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
+            }
         }
 
         mEmailsRecyclerView.setAdapter(mEmailAdapter);
@@ -203,6 +201,9 @@ public class CreateKeyEmailFragment extends Fragment {
         return false;
     }
 
+    /**
+     * Displays a dialog fragment for the user to input a valid email.
+     */
     private void addEmail() {
         Handler returnHandler = new Handler() {
             @Override
@@ -218,12 +219,11 @@ public class CreateKeyEmailFragment extends Fragment {
                 }
             }
         };
-
         // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
+        Messenger messenger =  new Messenger(returnHandler);
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
-
+        addEmailDialog.setTargetFragment(this, -1);
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
     }
 
