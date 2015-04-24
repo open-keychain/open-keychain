@@ -15,7 +15,10 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.operator.PGPDataDecryptor;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 
+import java.nio.ByteBuffer;
 import java.security.Provider;
+import java.util.Map;
+
 
 /**
  * This class is based on JcePublicKeyDataDecryptorFactoryBuilder
@@ -88,7 +91,7 @@ public class NfcSyncPublicKeyDataDecryptorFactoryBuilder
         return this;
     }
 
-    public PublicKeyDataDecryptorFactory build(final byte[] nfcDecrypted) {
+    public PublicKeyDataDecryptorFactory build(final Map<ByteBuffer,byte[]> nfcDecryptedMap) {
         return new PublicKeyDataDecryptorFactory()
         {
             public byte[] recoverSessionData(int keyAlgorithm, byte[][] secKeyData)
@@ -99,7 +102,7 @@ public class NfcSyncPublicKeyDataDecryptorFactoryBuilder
                     throw new PGPException("ECDH not supported!");
                 }
 
-                return decryptSessionData(keyAlgorithm, secKeyData, nfcDecrypted);
+                return decryptSessionData(keyAlgorithm, secKeyData, nfcDecryptedMap);
             }
 
             public PGPDataDecryptor createDataDecryptor(boolean withIntegrityPacket, int encAlgorithm, byte[] key)
@@ -197,8 +200,9 @@ public class NfcSyncPublicKeyDataDecryptorFactoryBuilder
 //        }
 //    }
 
-    private byte[] decryptSessionData(int keyAlgorithm, byte[][] secKeyData, byte[] nfcDecrypted)
-            throws PGPException
+    private byte[] decryptSessionData(int keyAlgorithm, byte[][] secKeyData,
+            Map<ByteBuffer,byte[]> nfcDecryptedMap)
+        throws PGPException
     {
 //        Cipher c1 = helper.createPublicKeyCipher(keyAlgorithm);
 //
@@ -214,15 +218,14 @@ public class NfcSyncPublicKeyDataDecryptorFactoryBuilder
         if (keyAlgorithm == PGPPublicKey.RSA_ENCRYPT
                 || keyAlgorithm == PGPPublicKey.RSA_GENERAL)
         {
-            byte[] bi = secKeyData[0];  // encoded MPI
+            ByteBuffer bi = ByteBuffer.wrap(secKeyData[0]);  // encoded MPI
 
-            if (nfcDecrypted != null) {
-                // we already have the decrypted bytes from a previous execution, return this!
-                return nfcDecrypted;
+            if (nfcDecryptedMap.containsKey(bi)) {
+                return nfcDecryptedMap.get(bi);
             } else {
                 // catch this when decryptSessionData() is executed and divert digest to card,
                 // when doing the operation again reuse nfcDecrypted
-                throw new NfcInteractionNeeded(bi);
+                throw new NfcInteractionNeeded(bi.array());
             }
 
 //            c1.update(bi, 2, bi.length - 2);

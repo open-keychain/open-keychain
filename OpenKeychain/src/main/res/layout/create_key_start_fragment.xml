@@ -50,22 +50,22 @@
             android:clickable="true"
             style="?android:attr/borderlessButtonStyle" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/create_key_yubikey_button"-->
-            <!--android:paddingLeft="16dp"-->
-            <!--android:paddingRight="16dp"-->
-            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="@string/first_time_yubikey"-->
-            <!--android:textAllCaps="true"-->
-            <!--android:minHeight="?android:attr/listPreferredItemHeight"-->
-            <!--android:drawableRight="@drawable/ic_chevron_right_grey_24dp"-->
-            <!--android:drawablePadding="8dp"-->
-            <!--android:gravity="right|center_vertical"-->
-            <!--android:clickable="true"-->
-            <!--style="?android:attr/borderlessButtonStyle" />-->
+        <TextView
+            android:id="@+id/create_key_yubikey_button"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/first_time_yubikey"
+            android:textAllCaps="true"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="right|center_vertical"
+            android:clickable="true"
+            style="?android:attr/borderlessButtonStyle" />
 
         <TextView
             android:id="@+id/create_key_import_button"

@@ -90,6 +90,8 @@
             android:name=".ui.CreateKeyActivity"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/title_manage_my_keys"
+            android:launchMode="singleTop"
+            android:allowTaskReparenting="true"
             android:parentActivityName=".ui.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -673,7 +675,7 @@
               taskAffinity and allowTaskReparenting somehow prevents this from happening!
          -->
         <activity
-            android:name=".ui.NfcActivity"
+            android:name=".ui.NfcOperationActivity"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc"
             android:allowTaskReparenting="true" />
@@ -698,6 +700,10 @@
             android:name=".service.PassphraseCacheService"
             android:exported="false"
             android:process=":passphrase_cache" />
+        <service
+            android:name=".remote.CryptoInputParcelCacheService"
+            android:exported="false"
+            android:process=":remote_api" />
         <service
             android:name=".service.KeychainIntentService"
             android:exported="false" />

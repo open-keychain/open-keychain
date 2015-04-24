@@ -4,47 +4,53 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">選擇金鑰</string>
-  <string name="title_select_secret_key">選擇私鑰</string>
+  <string name="title_encrypt_text">加密</string>
+  <string name="title_encrypt_files">加密</string>
   <string name="title_decrypt">解密</string>
+  <string name="title_unlock">解鎖金鑰</string>
   <string name="title_add_subkey">新增子金鑰</string>
   <string name="title_edit_key">編輯金鑰</string>
-  <string name="title_cloud_search_preferences">雲端查詢設定</string>
+  <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">應用程式</string>
+  <string name="title_key_server_preference">金鑰伺服器</string>
   <string name="title_change_passphrase">變更口令</string>
   <string name="title_share_fingerprint_with">分享指紋…</string>
   <string name="title_share_key">分享金鑰…</string>
   <string name="title_share_file">分享檔案…</string>
+  <string name="title_share_message">分享文字...</string>
   <string name="title_encrypt_to_file">加密到檔案</string>
   <string name="title_decrypt_to_file">解密到檔案</string>
   <string name="title_import_keys">匯入金鑰</string>
-  <string name="title_add_keys">新增金鑰</string>
   <string name="title_export_key">匯出金鑰</string>
   <string name="title_export_keys">匯出所有金鑰</string>
   <string name="title_key_not_found">找不到金鑰</string>
   <string name="title_send_key">上傳到金鑰伺服器</string>
+  <string name="title_certify_key">確認金鑰</string>
   <string name="title_key_details">金鑰內容</string>
   <string name="title_help">說明</string>
   <string name="title_log_display">紀錄</string>
-  <string name="title_create_key">建立金鑰</string>
   <string name="title_exchange_keys">交換金鑰</string>
   <string name="title_advanced_key_info">進階資訊</string>
+  <string name="title_delete_secret_key">刪除您的金鑰 \'%s\'？</string>
+  <string name="title_export_log">匯出記錄</string>
+  <string name="title_manage_my_keys">管理我的金鑰</string>
   <!--section-->
   <string name="section_user_ids">身份</string>
+  <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_keys">子金鑰</string>
   <string name="section_cloud_search">雲端查詢</string>
-  <string name="section_general">一般</string>
-  <string name="section_defaults">預設</string>
-  <string name="section_advanced">進階</string>
   <string name="section_passphrase_cache">口令快取</string>
+  <string name="section_certify">確認</string>
+  <string name="section_actions">操作</string>
+  <string name="section_share_key">金鑰</string>
   <string name="section_key_server">金鑰伺服器</string>
   <string name="section_fingerprint">指紋</string>
-  <string name="section_decrypt_files">檔案</string>
-  <string name="section_decrypt_text">文字</string>
+  <string name="section_encrypt">加密</string>
+  <string name="section_decrypt">解密</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">解密並驗證檔案</string>
-  <string name="btn_encrypt_file">加密檔案</string>
   <string name="btn_encrypt_share_file">加密並分享檔案</string>
+  <string name="btn_encrypt_save_file">加密並儲存檔案</string>
   <string name="btn_save">儲存</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">刪除</string>
@@ -53,42 +59,61 @@
   <string name="btn_export_to_server">上傳到金鑰伺服器</string>
   <string name="btn_next">下一步</string>
   <string name="btn_back">返回</string>
-  <string name="btn_lookup_key">尋找金鑰</string>
+  <string name="btn_no">不</string>
+  <string name="btn_match">指紋符合</string>
+  <string name="btn_share_encrypted_signed">加密並分享文字</string>
+  <string name="btn_copy_encrypted_signed">加密並複製文字</string>
   <string name="btn_view_cert_key">檢視簽署的金鑰</string>
   <string name="btn_create_key">建立金鑰</string>
   <string name="btn_add_files">加入檔案</string>
   <string name="btn_add_share_decrypted_text">解密並分享訊息</string>
+  <string name="btn_decrypt_clipboard">解密剪貼簿裏的文字</string>
   <string name="btn_decrypt_and_verify">並且驗證簽名</string>
   <string name="btn_decrypt_files">解密檔案</string>
+  <string name="btn_encrypt_files">加密檔案</string>
+  <string name="btn_encrypt_text">加密文字</string>
+  <string name="btn_add_email">增加額外的電子郵件信箱</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">說明</string>
   <string name="menu_export_key">匯出到檔案</string>
   <string name="menu_delete_key">刪除金鑰</string>
-  <string name="menu_import_existing_key">從檔案匯入</string>
+  <string name="menu_manage_keys">管理我的金鑰</string>
   <string name="menu_search">搜尋</string>
+  <string name="menu_nfc_preferences">NFC 設定</string>
   <string name="menu_beam_preferences">Beam 設定</string>
-  <string name="menu_key_edit_cancel">取消</string>
+  <string name="menu_encrypt_to">加密到...</string>
   <string name="menu_select_all">全選</string>
-  <string name="menu_add_keys">加入金鑰</string>
   <string name="menu_export_all_keys">匯出所有金鑰</string>
+  <string name="menu_update_all_keys">上傳所有金鑰</string>
   <string name="menu_advanced">顯示進階資訊</string>
+  <string name="menu_certify_fingerprint">藉由指紋比對來認證</string>
+  <string name="menu_export_log">匯出記錄</string>
   <!--label-->
+  <string name="label_message">文字</string>
   <string name="label_file">檔案</string>
   <string name="label_files">檔案</string>
+  <string name="label_file_colon">檔案：</string>
   <string name="label_no_passphrase">沒有口令</string>
   <string name="label_passphrase">口令</string>
+  <string name="label_unlock">解鎖中...</string>
   <string name="label_passphrase_again">再次輸入口令</string>
+  <string name="label_show_passphrase">顯示口令</string>
   <string name="label_algorithm">演算法</string>
   <string name="label_write_version_header">讓別人知道我在使用OpenKeychain</string>
   <string name="label_write_version_header_summary">在簽名、密文與匯出的金鑰裡寫入\'OpenKeychain v2.7\'</string>
+  <string name="label_use_default_yubikey_pin">使用預設的 Yubikey PIN</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
+  <string name="label_label_use_default_yubikey_pin_summary">使用預設的 PIN (123456) 來使用 NFC 存取 Yubikeys</string>
   <string name="label_asymmetric_from">簽名自:</string>
   <string name="label_to">加密給:</string>
+  <string name="label_delete_after_encryption">加密後刪除檔案</string>
   <string name="label_delete_after_decryption">解密後刪除檔案</string>
   <string name="label_encryption_algorithm">加密演算法</string>
   <string name="label_hash_algorithm">雜湊演算法</string>
   <string name="label_symmetric">使用口令加密</string>
   <string name="label_passphrase_cache_ttl">快取時間</string>
+  <string name="label_message_compression">文字壓縮</string>
   <string name="label_file_compression">檔案壓縮</string>
   <string name="label_keyservers">金鑰伺服器</string>
   <string name="label_key_id">金鑰ID</string>
@@ -100,12 +125,30 @@
   <string name="label_main_user_id">主身份</string>
   <string name="label_name">名字</string>
   <string name="label_comment">註記</string>
-  <string name="label_email">Email</string>
+  <string name="label_email">電子郵件</string>
   <string name="label_send_key">與雲端同步</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">設定效期</string>
+  <string name="label_first_keyserver_is_used">(先列出的金鑰伺服器爲優先)</string>
+  <string name="label_preferred">優先</string>
+  <string name="label_enable_compression">啓用壓縮</string>
+  <string name="label_encrypt_filenames">加密檔名</string>
+  <string name="label_hidden_recipients">隱藏收件人</string>
+  <string name="pref_keyserver">搜尋金鑰伺服器</string>
+  <string name="pref_keyserver_summary">搜尋 HKP 金鑰伺服器</string>
+  <string name="pref_keybase">搜尋 Keybase.io</string>
+  <string name="pref_keybase_summary">搜尋 Keybase.io 索引</string>
+  <string name="user_id_no_name">&lt;無名&gt;</string>
+  <string name="none">&lt;無&gt;</string>
+  <plurals name="n_keys">
+    <item quantity="other">%d 金鑰</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="other">%d 金鑰伺服器</item>
+  </plurals>
   <string name="secret_key">密鑰:</string>
   <!--choice-->
+  <string name="choice_none">無</string>
   <string name="choice_15secs">15秒</string>
   <string name="choice_1min">1分鐘</string>
   <string name="choice_3mins">3分鐘</string>
@@ -137,58 +180,93 @@
   <string name="passphrases_do_not_match">口令不相符。</string>
   <string name="passphrase_must_not_be_empty">請輸入口令。</string>
   <string name="passphrase_for_symmetric_encryption">對稱加密。</string>
+  <string name="passphrase_for">輸入 \'%s\' 的口令</string>
+  <string name="pin_for">輸入 \'%s\' 的 PIN</string>
+  <string name="yubikey_pin_for">輸入 PIN 來存取 \'%s\' 的 YubiKey</string>
+  <string name="file_delete_confirmation_title">刪除原始檔案？</string>
+  <string name="file_delete_confirmation">下列的檔案將會被刪除：%s</string>
+  <string name="file_delete_successful">%1$d 之 %2$d 的檔案已經被刪除。%3$s</string>
   <string name="no_file_selected">請先選擇檔案。</string>
   <string name="encrypt_sign_successful">成功簽名並/或加密。</string>
   <string name="encrypt_sign_clipboard_successful">成功簽名並/或加密到剪貼簿。</string>
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
   <string name="select_encryption_or_signature_key">選擇至少一把加密或簽名金鑰。</string>
-  <string name="specify_file_to_encrypt_to">請選擇要將檔案加密到哪。\n警告：已經存在的檔案將被覆蓋。</string>
-  <string name="specify_file_to_decrypt_to">請選擇要將檔案解密到哪。\n警告：已經存在的檔案將被覆蓋。</string>
-  <string name="specify_file_to_export_to">請選擇要將檔案匯出到哪。\n警告：已經存在的檔案將被覆蓋。</string>
+  <string name="specify_file_to_encrypt_to">請指定欲加密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
+  <string name="specify_file_to_decrypt_to">請指定欲解密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
+  <string name="specify_file_to_export_to">請指定欲輸出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
+  <string name="key_deletion_confirmation_multi">您真的想要刪除所有已選金鑰嗎？</string>
+  <string name="secret_key_deletion_confirmation">刪除之後您將無法閱讀以這把金鑰加密的訊息，而且所有用這把金鑰做的認證都會失效！</string>
+  <string name="public_key_deletetion_confirmation">刪除金鑰 \'%s\' ?</string>
   <string name="also_export_secret_keys">一併匯出私鑰</string>
+  <string name="reinstall_openkeychain">您遇到了一個已知的 Android 錯誤。如果您想要鏈接聯絡人和金鑰，請重新安裝 OpenKeychain。</string>
   <string name="key_exported">成功匯出 1 把金鑰。</string>
   <string name="keys_exported">成功匯出 %d 把金鑰。</string>
+  <string name="no_keys_exported">沒有金鑰被匯出。</string>
+  <string name="key_creation_el_gamal_info">注意：只有子金鑰支援 ElGamal。</string>
+  <string name="key_not_found">無法找到金鑰 %08X。</string>
+  <string name="specify_file_to_export_log_to">請指定欲匯出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="other">%d 忽略不良的密鑰。或許您在輸出時使用\n --export-secret-subkeys 選項\n 請確認您使用\n --export-secret-keys\n 作爲選項。\"</item>
+  </plurals>
+  <string name="list_empty">這個清單是空的 !</string>
   <string name="nfc_successful">NFC Beam發送金鑰成功!</string>
   <string name="key_copied_to_clipboard">金鑰已複製到剪貼簿!</string>
   <string name="fingerprint_copied_to_clipboard">指紋已複製到剪貼簿!</string>
+  <string name="select_key_to_certify">請選擇一把金鑰來做認證 !</string>
   <string name="key_too_big_for_sharing">金鑰太大無法使用此方式分享!</string>
   <string name="text_copied_to_clipboard">文字已複製到剪貼簿!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">尚未被刪除。請手動刪除他們 !</string>
+  <string name="error_file_added_already">%s 已經加入。</string>
   <string name="error_file_not_found">找不到檔案</string>
   <string name="error_no_secret_key_found">沒有適合的私鑰</string>
   <string name="error_external_storage_not_ready">外部儲存空間尚未就緒</string>
   <string name="error_key_size_minimum512bit">金鑰長度必須大於512位元</string>
+  <string name="error_unknown_algorithm_choice">不明的演算法選擇</string>
   <string name="error_user_id_no_email">沒有找到電子郵件</string>
   <string name="error_key_needs_a_user_id">需要至少一個身分識別</string>
   <string name="error_no_signature_passphrase">沒有提供口令</string>
   <string name="error_no_signature_key">找不到簽名金鑰</string>
+  <string name="error_invalid_data">沒有有效的 OpenPGP 加密或簽署內容 !</string>
   <string name="error_integrity_check_failed">完整性檢查失敗！資料已被修改！</string>
   <string name="error_wrong_passphrase">口令錯誤</string>
   <string name="error_could_not_extract_private_key">無法抽取私鑰</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">需要Android 4.1以上才能使用NFC Beam功能！</string>
+  <string name="error_nfc_needed">NFC 必須開啓 !</string>
+  <string name="error_beam_needed">Bean 必須開啓 !</string>
   <string name="error_nothing_import">找不到金鑰！</string>
+  <string name="error_contacts_key_id_missing">從聯絡人取回金鑰 ID 失敗 !</string>
+  <string name="error_generic_report_bug">發生錯誤，請建立一個新的錯誤回報給 OpenKeychain。</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">尚未簽名</string>
   <string name="decrypt_result_invalid_signature">無效的簽章!</string>
+  <string name="decrypt_result_signature_uncertified">簽署自 (未認證 !)</string>
+  <string name="decrypt_result_signature_certified">簽署自</string>
   <string name="decrypt_result_signature_expired_key">金鑰已過期！</string>
   <string name="decrypt_result_signature_revoked_key">金鑰已被撤銷！</string>
   <string name="decrypt_result_signature_missing_key">未知的公鑰</string>
   <string name="decrypt_result_encrypted">已加密</string>
   <string name="decrypt_result_not_encrypted">未加密</string>
+  <string name="decrypt_result_action_show">顯示</string>
+  <string name="decrypt_result_action_Lookup">查詢</string>
   <string name="decrypt_invalid_text">簽名無效或是金鑰已經過期/被撤銷，無法確認訊息內容的作者。是否繼續顯示？</string>
   <string name="decrypt_invalid_button">我明白這樣做的風險，顯示它！</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">我的金鑰：</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完成。</string>
   <string name="progress_cancel">取消</string>
   <string name="progress_cancelling">正在取消…</string>
   <string name="progress_saving">正在儲存…</string>
   <string name="progress_importing">匯入中…</string>
+  <string name="progress_updating">正在更新金鑰...</string>
   <string name="progress_exporting">匯出中…</string>
   <string name="progress_uploading">正在上傳…</string>
+  <string name="progress_building_key">正在建立金鑰...</string>
+  <string name="progress_building_master_key">正在建立主環...</string>
   <string name="progress_generating_rsa">正在產生新的RSA金鑰…</string>
   <string name="progress_generating_dsa">正在產生新的DSA金鑰…</string>
   <string name="progress_generating_elgamal">正在產生新的ElGamal金鑰…</string>
@@ -197,10 +275,12 @@
   <string name="progress_modify">正在變更鑰匙圈…</string>
   <string name="progress_modify_unlock">正在解鎖鑰匙圈…</string>
   <string name="progress_modify_adduid">正在新增使用者身份…</string>
+  <string name="progress_modify_adduat">正在增加使用者屬性...</string>
   <string name="progress_modify_revokeuid">正在撤銷使用者身份…</string>
   <string name="progress_modify_primaryuid">正在變更主要使用者身份…</string>
   <string name="progress_modify_subkeychange">正在變更子金鑰…</string>
   <string name="progress_modify_subkeyrevoke">正在撤銷子金鑰…</string>
+  <string name="progress_modify_subkeystrip">正在卸下子金鑰...</string>
   <string name="progress_modify_subkeyadd">正在新增子金鑰…</string>
   <string name="progress_modify_passphrase">正在變更口令…</string>
   <plurals name="progress_exporting_key">
@@ -221,8 +301,10 @@
   <string name="progress_finding_key">正在尋找金鑰…</string>
   <string name="progress_decompressing_data">正在解壓縮…</string>
   <string name="progress_verifying_integrity">正在驗證完整性…</string>
+  <string name="progress_deleting_securely">正在安全地刪除 \'%s\'...</string>
   <string name="progress_deleting">正在刪除金鑰…</string>
   <!--action strings-->
+  <string name="hint_cloud_search_hint">使用姓名，電子郵件尋找...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -233,6 +315,9 @@
   <string name="key_size_4096">4096</string>
   <string name="key_size_8192">8192</string>
   <string name="key_size_custom">自訂金鑰長度</string>
+  <string name="key_size_custom_info">輸入自定金鑰長度 (位元數)：</string>
+  <string name="key_size_custom_info_rsa">RSA 金鑰長度必須要大於 1024 最多 16384。且必須爲 8 的倍數。</string>
+  <string name="key_size_custom_info_dsa">DSA 金鑰長度必須要大於 512 最多 1024。且必須爲 64 的倍數。</string>
   <!--elliptic curve names-->
   <string name="key_curve_nist_p256">NIST P-256</string>
   <string name="key_curve_nist_p384">NIST P-384</string>
@@ -247,6 +332,7 @@
   <!--Help-->
   <string name="help_tab_start">快速上手</string>
   <string name="help_tab_faq">常見問題</string>
+  <string name="help_tab_wot">金鑰認證</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">更新紀錄</string>
   <string name="help_tab_about">關於</string>
@@ -257,8 +343,14 @@
   <string name="import_tab_direct">檔案/剪貼簿</string>
   <string name="import_tab_qr_code">二維條碼/NFC</string>
   <string name="import_import">匯入選擇的金鑰</string>
+  <string name="import_qr_code_wrong">QR Code 異常 ! 請再試一次 !</string>
+  <string name="import_qr_code_too_short_fingerprint">指紋過短 (&lt; 16 個字元)</string>
   <string name="import_qr_code_button">掃描二維條碼</string>
+  <string name="import_qr_code_text">將您的相機對準 QR Code !</string>
   <!--Generic result toast-->
+  <string name="view_log">詳細</string>
+  <string name="with_warnings">，包含警告</string>
+  <string name="with_cancelled">，直到被取消</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="other">成功匯入%1$d金鑰</item>
@@ -272,12 +364,39 @@
   <plurals name="import_keys_updated">
     <item quantity="other">成功更新%1$d金鑰%2$s。</item>
   </plurals>
+  <plurals name="import_keys_with_errors">
+    <item quantity="other">匯入 %d 金鑰失敗 !</item>
+  </plurals>
+  <plurals name="import_error">
+    <item quantity="other">匯入 %d 金鑰失敗 !</item>
+  </plurals>
   <string name="import_error_nothing">沒有東西可以匯入。</string>
   <string name="import_error_nothing_cancelled">匯入已取消。</string>
   <!--Delete result toast-->
+  <plurals name="delete_ok_but_fail_1">
+    <item quantity="other">成功刪除 %1$d 金鑰</item>
+  </plurals>
+  <plurals name="delete_ok_but_fail_2">
+    <item quantity="other">，但刪除 %1$d 金鑰%2$s 失敗。</item>
+  </plurals>
+  <plurals name="delete_ok">
+    <item quantity="other">成功刪除 %1$d 金鑰%2$s。</item>
+  </plurals>
+  <plurals name="delete_fail">
+    <item quantity="other">錯誤刪除 %1$d 金鑰。</item>
+  </plurals>
   <string name="delete_nothing">沒有東西可以刪除。</string>
   <string name="delete_cancelled">刪除已取消。</string>
   <!--Certify result toast-->
+  <plurals name="certify_keys_ok">
+    <item quantity="other">成功認證 %1$d 金鑰%2$s。</item>
+  </plurals>
+  <plurals name="certify_keys_with_errors">
+    <item quantity="other">認證 %d 金鑰失敗 !</item>
+  </plurals>
+  <plurals name="certify_error">
+    <item quantity="other">認證 %d 金鑰失敗 !</item>
+  </plurals>
   <!--Intent labels-->
   <string name="intent_decrypt_file">使用OpenKeychain解密檔案</string>
   <string name="intent_import_key">匯入金鑰至OpenKeychain</string>
@@ -290,12 +409,15 @@
   <string name="api_settings_hide_advanced">隱藏進階設定</string>
   <string name="api_settings_no_key">沒有選擇金鑰</string>
   <string name="api_settings_select_key">選擇金鑰</string>
+  <string name="api_settings_create_key">建立新金鑰</string>
   <string name="api_settings_save">儲存</string>
   <string name="api_settings_save_msg">帳戶已儲存</string>
   <string name="api_settings_cancel">取消</string>
   <string name="api_settings_revoke">撤銷存取</string>
   <string name="api_settings_start">開啟應用程式</string>
   <string name="api_settings_delete_account">移除帳戶</string>
+  <string name="api_settings_package_name">打包名稱</string>
+  <string name="api_settings_package_signature">SHA-256 所打包的簽章</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_settings_key">帳戶金鑰：</string>
   <string name="api_settings_accounts_empty">沒有帳戶被指派給這個應用程式。</string>
@@ -421,5 +543,15 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <string name="passphrase_again">再一次</string>
+  <string name="unlock_method">解鎖方法</string>
+  <string name="set_passphrase">設定口令</string>
+  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_wrong_tag">錯誤的標籤。請再試一次。</string>
+  <string name="enable_nfc">請在您的設定中啓用 NFC</string>
+  <string name="no_nfc_support">該裝置不支援 NFC</string>
+  <string name="nfc_write_succesful">成功寫入 NFC 標籤</string>
+  <string name="unlocked">解鎖</string>
+  <string name="nfc_settings">設定</string>
 </resources>

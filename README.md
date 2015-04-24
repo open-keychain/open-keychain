@@ -22,7 +22,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 ### Contribute Code
 
 1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
-2. Lookout for interesting issues on our issue page at Github: https://github.com/open-keychain/open-keychain/issues
+2. Lookout for interesting issues on Github. We have tagged issues were we explicitly like to see contributions: https://github.com/open-keychain/open-keychain/labels/help-wanted
 3. Tell us about your plans on the mailinglist
 4. Read this README, especially the notes about coding style
 5. Fork OpenKeychain and contribute code (the best part ;) )

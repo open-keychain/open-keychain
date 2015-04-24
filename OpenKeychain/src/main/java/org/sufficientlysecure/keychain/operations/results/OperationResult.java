@@ -33,75 +33,33 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableCache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-/** Represent the result of an operation.
+/**
+ * Represent the result of an operation.
  *
  * This class holds a result and the log of an operation. It can be subclassed
  * to include typed additional information specific to the operation. To keep
  * the class structure (somewhat) simple, this class contains an exhaustive
  * list (ie, enum) of all possible log types, which should in all cases be tied
  * to string resource ids.
- *
  */
 public abstract class OperationResult implements Parcelable {
 
     public static final String EXTRA_RESULT = "operation_result";
-    public static final UUID NULL_UUID = new UUID(0,0);
 
     /**
-     * A HashMap of UUID:OperationLog which contains logs that we don't need
-     * to care about. This is used such that when we become parceled, we are
-     * well below the 1Mbit boundary that is specified.
+     * Instead of parceling the logs, they are cached to overcome the 1 MB boundary of
+     * Android's Binder. See ParcelableCache
      */
-    private static ConcurrentHashMap<UUID, OperationLog> dehydratedLogs;
+    private static ParcelableCache<OperationLog> logCache;
     static {
-        // Static initializer for ConcurrentHashMap
-        dehydratedLogs = new ConcurrentHashMap<UUID,OperationLog>();
-    }
-
-    /**
-     * Dehydrate a log (such that it is available after deparcelization)
-     *
-     * Returns the NULL uuid (0) if you hand it null.
-     * @param log An OperationLog to dehydrate
-     * @return a UUID, the ticket for your dehydrated log
-     *
-     */
-    private static UUID dehydrateLog(OperationLog log) {
-        if(log == null) {
-            return NULL_UUID;
-        }
-        else {
-            UUID ticket = UUID.randomUUID();
-            dehydratedLogs.put(ticket, log);
-            return ticket;
-        }
-    }
-
-    /***
-     * Rehydrate a log after going through parcelization, invalidating its place in the
-     * dehydration pool.
-     * This is used such that when parcelized, the parcel is no larger than 1mbit.
-     * @param ticket A UUID ticket that identifies the log in question.
-     * @return An OperationLog.
-     */
-    private static OperationLog rehydrateLog(UUID ticket) {
-        // UUID.equals isn't well documented; we use compareTo instead.
-        if( NULL_UUID.compareTo(ticket) == 0 ) {
-            return null;
-        }
-        else {
-            OperationLog log = dehydratedLogs.get(ticket);
-            dehydratedLogs.remove(ticket);
-            return log;
-        }
+        logCache = new ParcelableCache<>();
     }
 
     /** Holds the overall result, the number specifying varying degrees of success:
@@ -126,11 +84,8 @@ public abstract class OperationResult implements Parcelable {
 
     public OperationResult(Parcel source) {
         mResult = source.readInt();
-        long mostSig = source.readLong();
-        long leastSig = source.readLong();
-        UUID mTicket = new UUID(mostSig, leastSig);
-        // fetch the dehydrated log out of storage (this removes it from the dehydration pool)
-        mLog = rehydrateLog(mTicket);
+        // get log out of cache based on UUID from source
+        mLog = logCache.readFromParcelAndGetFromCache(source);
     }
 
     public int getResult() {
@@ -250,12 +205,20 @@ public abstract class OperationResult implements Parcelable {
 
     public Showable createNotify(final Activity activity) {
 
-        Log.d(Constants.TAG, "mLog.getLast()"+mLog.getLast());
-        Log.d(Constants.TAG, "mLog.getLast().mType"+mLog.getLast().mType);
-        Log.d(Constants.TAG, "mLog.getLast().mType.getMsgId()"+mLog.getLast().mType.getMsgId());
-
         // Take the last message as string
-        int msgId = mLog.getLast().mType.getMsgId();
+        String logText;
+
+        LogEntryParcel entryParcel = mLog.getLast();
+        // special case: first parameter may be a quantity
+        if (entryParcel.mParameters != null && entryParcel.mParameters.length > 0
+                && entryParcel.mParameters[0] instanceof Integer) {
+            logText = activity.getResources().getQuantityString(entryParcel.mType.getMsgId(),
+                    (Integer) entryParcel.mParameters[0],
+                    entryParcel.mParameters);
+        } else {
+            logText = activity.getString(entryParcel.mType.getMsgId(),
+                    entryParcel.mParameters);
+        }
 
         Style style;
 
@@ -273,19 +236,19 @@ public abstract class OperationResult implements Parcelable {
         }
 
         if (getLog() == null || getLog().isEmpty()) {
-            return Notify.create(activity, msgId, Notify.LENGTH_LONG, style);
+            return Notify.create(activity, logText, Notify.LENGTH_LONG, style);
         }
 
-        return Notify.create(activity, msgId, Notify.LENGTH_LONG, style,
-                new ActionListener() {
-                    @Override
-                    public void onAction() {
-                        Intent intent = new Intent(
-                                activity, LogDisplayActivity.class);
-                        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                        activity.startActivity(intent);
-                    }
-                }, R.string.view_log);
+        return Notify.create(activity, logText, Notify.LENGTH_LONG, style,
+            new ActionListener() {
+                @Override
+                public void onAction() {
+                    Intent intent = new Intent(
+                            activity, LogDisplayActivity.class);
+                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                    activity.startActivity(intent);
+                }
+            }, R.string.view_log);
 
     }
 
@@ -512,6 +475,7 @@ public abstract class OperationResult implements Parcelable {
 
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
+        MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
         MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (LogLevel.ERROR, R.string.msg_mf_error_fingerprint),
@@ -521,6 +485,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_NO_CERTIFY (LogLevel.ERROR, R.string.msg_cr_error_no_certify),
         MSG_MF_ERROR_NOEXIST_PRIMARY (LogLevel.ERROR, R.string.msg_mf_error_noexist_primary),
         MSG_MF_ERROR_NOEXIST_REVOKE (LogLevel.ERROR, R.string.msg_mf_error_noexist_revoke),
+        MSG_MF_ERROR_NOOP (LogLevel.ERROR, R.string.msg_mf_error_noop),
         MSG_MF_ERROR_NULL_EXPIRY (LogLevel.ERROR, R.string.msg_mf_error_null_expiry),
         MSG_MF_ERROR_PASSPHRASE_MASTER(LogLevel.ERROR, R.string.msg_mf_error_passphrase_master),
         MSG_MF_ERROR_PAST_EXPIRY(LogLevel.ERROR, R.string.msg_mf_error_past_expiry),
@@ -538,6 +503,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_PASSPHRASE_FAIL (LogLevel.WARN, R.string.msg_mf_passphrase_fail),
         MSG_MF_PRIMARY_REPLACE_OLD (LogLevel.DEBUG, R.string.msg_mf_primary_replace_old),
         MSG_MF_PRIMARY_NEW (LogLevel.DEBUG, R.string.msg_mf_primary_new),
+        MSG_MF_RESTRICTED_MODE (LogLevel.INFO, R.string.msg_mf_restricted_mode),
+        MSG_MF_REQUIRE_DIVERT (LogLevel.OK, R.string.msg_mf_require_divert),
+        MSG_MF_REQUIRE_PASSPHRASE (LogLevel.OK, R.string.msg_mf_require_passphrase),
         MSG_MF_SUBKEY_CHANGE (LogLevel.INFO, R.string.msg_mf_subkey_change),
         MSG_MF_SUBKEY_NEW_ID (LogLevel.DEBUG, R.string.msg_mf_subkey_new_id),
         MSG_MF_SUBKEY_NEW (LogLevel.INFO, R.string.msg_mf_subkey_new),
@@ -590,13 +558,11 @@ public abstract class OperationResult implements Parcelable {
 
         // promote key
         MSG_PR (LogLevel.START, R.string.msg_pr),
-        MSG_PR_ERROR_ALREADY_SECRET (LogLevel.ERROR, R.string.msg_pr_error_already_secret),
         MSG_PR_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_pr_error_key_not_found),
         MSG_PR_FETCHING (LogLevel.DEBUG, R.string.msg_pr_fetching),
         MSG_PR_SUCCESS (LogLevel.OK, R.string.msg_pr_success),
 
         // messages used in UI code
-        MSG_EK_ERROR_DIVERT (LogLevel.ERROR, R.string.msg_ek_error_divert),
         MSG_EK_ERROR_DUMMY (LogLevel.ERROR, R.string.msg_ek_error_dummy),
         MSG_EK_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_ek_error_not_found),
 
@@ -660,7 +626,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_SE_ERROR_INPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_input_uri_not_found),
         MSG_SE_ERROR_OUTPUT_URI_NOT_FOUND (LogLevel.ERROR, R.string.msg_se_error_output_uri_not_found),
         MSG_SE_ERROR_TOO_MANY_INPUTS (LogLevel.ERROR, R.string.msg_se_error_too_many_inputs),
-        MSG_SE_WARN_OUTPUT_LEFT (LogLevel.WARN, R.string.msg_se_warn_output_left),
         MSG_SE_SUCCESS (LogLevel.OK, R.string.msg_se_success),
 
         // pgpsignencrypt
@@ -697,9 +662,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_ERROR_MASTER_NOT_FOUND (LogLevel.ERROR, R.string.msg_crt_error_master_not_found),
         MSG_CRT_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_crt_error_nothing),
         MSG_CRT_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_crt_error_unlock),
-        MSG_CRT_ERROR_DIVERT (LogLevel.ERROR, R.string.msg_crt_error_divert),
         MSG_CRT (LogLevel.START, R.string.msg_crt),
         MSG_CRT_MASTER_FETCH (LogLevel.DEBUG, R.string.msg_crt_master_fetch),
+        MSG_CRT_NFC_RETURN (LogLevel.OK, R.string.msg_crt_nfc_return),
         MSG_CRT_SAVE (LogLevel.DEBUG, R.string.msg_crt_save),
         MSG_CRT_SAVING (LogLevel.DEBUG, R.string.msg_crt_saving),
         MSG_CRT_SUCCESS (LogLevel.OK, R.string.msg_crt_success),
@@ -823,11 +788,8 @@ public abstract class OperationResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mResult);
-        // Get a ticket for our log.
-        UUID mTicket = dehydrateLog(mLog);
-        // And write out the UUID most and least significant bits.
-        dest.writeLong(mTicket.getMostSignificantBits());
-        dest.writeLong(mTicket.getLeastSignificantBits());
+        // cache log and write UUID to dest
+        logCache.cacheAndWriteToParcel(mLog, dest);
     }
 
     public static class OperationLog implements Iterable<LogEntryParcel> {

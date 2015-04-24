@@ -27,9 +27,12 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -101,7 +104,7 @@ public class PromoteKeyOperationTest {
         PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
                 new ProviderHelper(Robolectric.application), null, null);
 
-        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId());
+        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -113,15 +116,35 @@ public class PromoteKeyOperationTest {
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
             while (it.hasNext()) {
                 long keyId = it.next().getKeyId();
-                Assert.assertEquals("all subkeys must be divert-to-card",
+                Assert.assertEquals("all subkeys must be gnu dummy",
                         SecretKeyType.GNU_DUMMY, ring.getSecretKeyType(keyId));
             }
         }
 
-        // second attempt should fail
-        result = op.execute(mStaticRing.getMasterKeyId());
-        Assert.assertFalse("promotion of secret key must fail", result.success());
-
     }
 
+    @Test
+    public void testPromoteDivert() throws Exception {
+        PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
+
+        byte[] aid = Hex.decode("D2760001240102000000012345670000");
+
+        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), aid);
+
+        Assert.assertTrue("promotion must succeed", result.success());
+
+        {
+            CanonicalizedSecretKeyRing ring = new ProviderHelper(Robolectric.application)
+                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+
+            for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
+                Assert.assertEquals("all subkeys must be divert-to-card",
+                        SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                Assert.assertArrayEquals("all subkeys must have correct iv",
+                        aid, key.getIv());
+            }
+
+        }
+    }
 }

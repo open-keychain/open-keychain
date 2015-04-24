@@ -5,7 +5,7 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.1.3'
         classpath files('gradle-witness.jar')
     }
 }
@@ -16,7 +16,7 @@ allprojects {
 
         maven {
             // for zxing-android-embedded lib
-            url "http://dl.bintray.com/journeyapps/maven"
+            url "https://dl.bintray.com/journeyapps/maven"
         }
     }
 }

@@ -37,10 +37,6 @@ import java.util.regex.Matcher;
 
 public class EncryptDecryptOverviewFragment extends Fragment {
 
-    View mEncryptFile;
-    View mEncryptText;
-    View mDecryptFile;
-    View mDecryptFromClipboard;
     View mClipboardIcon;
 
     @Override
@@ -53,10 +49,10 @@ public class EncryptDecryptOverviewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_decrypt_overview_fragment, container, false);
 
-        mEncryptFile = view.findViewById(R.id.encrypt_files);
-        mEncryptText = view.findViewById(R.id.encrypt_text);
-        mDecryptFile = view.findViewById(R.id.decrypt_files);
-        mDecryptFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
+        View mEncryptFile = view.findViewById(R.id.encrypt_files);
+        View mEncryptText = view.findViewById(R.id.encrypt_text);
+        View mDecryptFile = view.findViewById(R.id.decrypt_files);
+        View mDecryptFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
         mClipboardIcon = view.findViewById(R.id.clipboard_icon);
 
         mEncryptFile.setOnClickListener(new View.OnClickListener() {

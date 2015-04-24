@@ -14,8 +14,12 @@ import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
 
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.security.Provider;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * This class is based on JcaPGPContentSignerBuilder.
@@ -31,31 +35,27 @@ public class NfcSyncPGPContentSignerBuilder
     private int     keyAlgorithm;
     private long    keyID;
 
-    private byte[] signedHash;
-    private Date creationTimestamp;
+    private Map signedHashes;
 
     public static class NfcInteractionNeeded extends RuntimeException
     {
         public byte[] hashToSign;
-        public Date creationTimestamp;
         public int hashAlgo;
 
-        public NfcInteractionNeeded(byte[] hashToSign, int hashAlgo, Date creationTimestamp)
+        public NfcInteractionNeeded(byte[] hashToSign, int hashAlgo)
         {
             super("NFC interaction required!");
             this.hashToSign = hashToSign;
             this.hashAlgo = hashAlgo;
-            this.creationTimestamp = creationTimestamp;
         }
     }
 
-    public NfcSyncPGPContentSignerBuilder(int keyAlgorithm, int hashAlgorithm, long keyID, byte[] signedHash, Date creationTimestamp)
+    public NfcSyncPGPContentSignerBuilder(int keyAlgorithm, int hashAlgorithm, long keyID, Map signedHashes)
     {
         this.keyAlgorithm = keyAlgorithm;
         this.hashAlgorithm = hashAlgorithm;
         this.keyID = keyID;
-        this.signedHash = signedHash;
-        this.creationTimestamp = creationTimestamp;
+        this.signedHashes = signedHashes;
     }
 
     public NfcSyncPGPContentSignerBuilder setProvider(Provider provider)
@@ -125,14 +125,14 @@ public class NfcSyncPGPContentSignerBuilder
             }
 
             public byte[] getSignature() {
-                if (signedHash != null) {
-                    // we already have the signed hash from a previous execution, return this!
-                    return signedHash;
-                } else {
-                    // catch this when signatureGenerator.generate() is executed and divert digest to card,
-                    // when doing the operation again reuse creationTimestamp (this will be hashed)
-                    throw new NfcInteractionNeeded(digestCalculator.getDigest(), getHashAlgorithm(), creationTimestamp);
+                byte[] digest = digestCalculator.getDigest();
+                ByteBuffer buf = ByteBuffer.wrap(digest);
+                if (signedHashes.containsKey(buf)) {
+                    return (byte[]) signedHashes.get(buf);
                 }
+                // catch this when signatureGenerator.generate() is executed and divert digest to card,
+                // when doing the operation again reuse creationTimestamp (this will be hashed)
+                throw new NfcInteractionNeeded(digest, getHashAlgorithm());
             }
 
             public byte[] getDigest()

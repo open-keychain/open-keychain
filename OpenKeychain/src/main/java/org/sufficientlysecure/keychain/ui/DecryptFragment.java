@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,15 +29,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
-public abstract class DecryptFragment extends Fragment {
+public abstract class DecryptFragment extends CryptoOperationFragment {
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
-
-    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
-    public static final int REQUEST_CODE_NFC_DECRYPT = 0x00008002;
 
     protected long mSignatureKeyId = 0;
 
@@ -55,11 +51,6 @@ public abstract class DecryptFragment extends Fragment {
     protected TextView mSignatureName;
     protected TextView mSignatureEmail;
     protected TextView mSignatureAction;
-
-
-    // State
-    protected Passphrase mPassphrase;
-    protected byte[] mNfcDecryptedSessionKey;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -93,25 +84,6 @@ public abstract class DecryptFragment extends Fragment {
         viewKeyIntent.setData(KeychainContract.KeyRings
                 .buildGenericKeyRingUri(keyId));
         startActivity(viewKeyIntent);
-    }
-
-    protected void startPassphraseDialog(long subkeyId) {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, subkeyId);
-        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-    }
-
-    protected void startNfcDecrypt(long subKeyId, Passphrase pin, byte[] encryptedSessionKey) {
-        // build PendingIntent for Yubikey NFC operations
-        Intent intent = new Intent(getActivity(), NfcActivity.class);
-        intent.setAction(NfcActivity.ACTION_DECRYPT_SESSION_KEY);
-        intent.putExtra(NfcActivity.EXTRA_DATA, new Intent()); // not used, only relevant to OpenPgpService
-        intent.putExtra(NfcActivity.EXTRA_KEY_ID, subKeyId);
-        intent.putExtra(NfcActivity.EXTRA_PIN, pin);
-
-        intent.putExtra(NfcActivity.EXTRA_NFC_ENC_SESSION_KEY, encryptedSessionKey);
-
-        startActivityForResult(intent, REQUEST_CODE_NFC_DECRYPT);
     }
 
     /**
@@ -252,10 +224,5 @@ public abstract class DecryptFragment extends Fragment {
             }
         });
     }
-
-    /**
-     * Should be overridden by MessageFragment and FileFragment to start actual decryption
-     */
-    protected abstract void decryptStart();
 
 }

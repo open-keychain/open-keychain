@@ -23,14 +23,12 @@
         <include layout="@layout/notify_area" />
 
         <FrameLayout
-            android:id="@+id/encrypt_pager_mode"
+            android:id="@+id/encrypt_mode_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:layout_height="wrap_content" />
 
-        <fragment
-            android:id="@+id/encrypt_file_fragment"
-            android:name="org.sufficientlysecure.keychain.ui.EncryptFilesFragment"
+        <FrameLayout
+            android:id="@+id/encrypt_file_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

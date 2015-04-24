@@ -12,14 +12,13 @@
     <string name="title_encrypt_text">"Encrypt"</string>
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
-    <string name="title_unlock">"Unlock Key"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"Keyservers"</string>
-    <string name="title_change_passphrase">"Change Passphrase"</string>
+    <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
     <string name="title_share_file">"Share file with…"</string>
@@ -36,20 +35,21 @@
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
     <string name="title_exchange_keys">"Exchange Keys"</string>
-    <string name="title_advanced_key_info">"Advanced Key Info"</string>
+    <string name="title_advanced_key_info">"Extended Information"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_export_log">"Export Log"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
+    <string name="section_yubikey">"Yubikey"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
-    <string name="section_passphrase_cache">"Passphrase Cache"</string>
+    <string name="section_passphrase_cache">"Password Cache"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -86,6 +86,7 @@
     <string name="btn_encrypt_files">"Encrypt files"</string>
     <string name="btn_encrypt_text">"Encrypt text"</string>
     <string name="btn_add_email">"Add additional email address"</string>
+    <string name="btn_unlock">"Unlock"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -100,7 +101,7 @@
     <string name="menu_select_all">"Select all"</string>
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
-    <string name="menu_advanced">"Show advanced info"</string>
+    <string name="menu_advanced">"Extended information"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
     <string name="menu_export_log">"Export Log"</string>
 
@@ -109,11 +110,11 @@
     <string name="label_file">"File"</string>
     <string name="label_files">"File(s)"</string>
     <string name="label_file_colon">"File:"</string>
-    <string name="label_no_passphrase">"No Passphrase"</string>
-    <string name="label_passphrase">"Passphrase"</string>
+    <string name="label_no_passphrase">"No Password"</string>
+    <string name="label_passphrase">"Password"</string>
     <string name="label_unlock">"Unlocking…"</string>
-    <string name="label_passphrase_again">"Repeat Passphrase"</string>
-    <string name="label_show_passphrase">"Show Passphrase"</string>
+    <string name="label_passphrase_again">"Repeat Password"</string>
+    <string name="label_show_passphrase">"Show Password"</string>
     <string name="label_algorithm">"Algorithm"</string>
     <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
@@ -128,9 +129,9 @@
     <string name="label_delete_after_decryption">"Delete after decryption"</string>
     <string name="label_encryption_algorithm">"Encryption algorithm"</string>
     <string name="label_hash_algorithm">"Hash algorithm"</string>
-    <string name="label_symmetric">"Encrypt with passphrase"</string>
+    <string name="label_symmetric">"Encrypt with password"</string>
     <string name="label_passphrase_cache_ttl">"Cache time"</string>
-    <string name="label_passphrase_cache_subs">"Cache passphrases by subkey"</string>
+    <string name="label_passphrase_cache_subs">"Cache passwords by subkey"</string>
     <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>
@@ -204,12 +205,12 @@
     <string name="flag_authenticate">"Authenticate"</string>
 
     <!-- sentences -->
-    <string name="wrong_passphrase">"Wrong passphrase."</string>
+    <string name="wrong_passphrase">"Wrong password."</string>
     <string name="no_filemanager_installed">"No compatible file manager installed."</string>
-    <string name="passphrases_do_not_match">"The passphrases didn't match."</string>
-    <string name="passphrase_must_not_be_empty">"Please enter a passphrase."</string>
+    <string name="passphrases_do_not_match">"The passwords didn't match."</string>
+    <string name="passphrase_must_not_be_empty">"Please enter a password."</string>
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
-    <string name="passphrase_for">"Enter passphrase for '%s'"</string>
+    <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
@@ -263,13 +264,13 @@
     <string name="error_external_storage_not_ready">"external storage not ready"</string>
     <string name="error_key_size_minimum512bit">"key size must be at least 512bit"</string>
     <string name="error_unknown_algorithm_choice">"unknown algorithm choice"</string>
-    <string name="error_user_id_no_email">"no email found"</string>
+    <string name="error_user_id_no_email">"no email address found"</string>
     <string name="error_key_needs_a_user_id">"need at least one identity"</string>
-    <string name="error_no_signature_passphrase">"no passphrase given"</string>
+    <string name="error_no_signature_passphrase">"no password given"</string>
     <string name="error_no_signature_key">"no signature key given"</string>
     <string name="error_invalid_data">"No valid encrypted or signed OpenPGP content!"</string>
     <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
-    <string name="error_wrong_passphrase">"wrong passphrase"</string>
+    <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
 
     <!-- errors without preceeding Error: -->
@@ -326,7 +327,7 @@
     <string name="progress_modify_subkeyrevoke">"revoking subkeys…"</string>
     <string name="progress_modify_subkeystrip">"stripping subkeys…"</string>
     <string name="progress_modify_subkeyadd">"adding subkeys…"</string>
-    <string name="progress_modify_passphrase">"changing passphrase…"</string>
+    <string name="progress_modify_passphrase">"changing passwords…"</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">"exporting key…"</item>
@@ -479,10 +480,10 @@
     <string name="intent_send_decrypt">"Decrypt with OpenKeychain"</string>
 
     <!-- Remote API -->
-    <string name="api_settings_show_info">"Show advanced information"</string>
-    <string name="api_settings_hide_info">"Hide advanced information"</string>
-    <string name="api_settings_show_advanced">"Show advanced settings"</string>
-    <string name="api_settings_hide_advanced">"Hide advanced settings"</string>
+    <string name="api_settings_show_info">"Show extended information"</string>
+    <string name="api_settings_hide_info">"Hide extended information"</string>
+    <string name="api_settings_show_advanced">"Show extended settings"</string>
+    <string name="api_settings_hide_advanced">"Hide extended settings"</string>
     <string name="api_settings_no_key">"No key selected"</string>
     <string name="api_settings_select_key">"Select key"</string>
     <string name="api_settings_create_key">"Create new key"</string>
@@ -495,7 +496,7 @@
     <string name="api_settings_package_name">"Package Name"</string>
     <string name="api_settings_package_signature">"SHA-256 of Package Signature"</string>
     <string name="api_settings_accounts">"Accounts (deprecated API)"</string>
-    <string name="api_settings_advanced">"Advanced Information"</string>
+    <string name="api_settings_advanced">"Extended Information"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
     <string name="api_settings_settings">"Settings"</string>
     <string name="api_settings_key">"Account key:"</string>
@@ -593,7 +594,7 @@
     <string name="keybase_verify">"Verify"</string>
 
     <!-- Edit key -->
-    <string name="edit_key_action_change_passphrase">"Change Passphrase"</string>
+    <string name="edit_key_action_change_passphrase">"Change Password"</string>
     <string name="edit_key_action_add_identity">"Add Identity"</string>
     <string name="edit_key_action_add_subkey">"Add Subkey"</string>
     <string name="edit_key_edit_user_id_title">"Select an action!"</string>
@@ -619,19 +620,19 @@
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the cloud"</string>
     <string name="create_key_empty">"This field is required"</string>
-    <string name="create_key_passphrases_not_equal">"Passphrases do not match"</string>
+    <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
     <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
     <string name="create_key_custom">"(custom key configuration)"</string>
     <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
     <string name="create_key_email_text">"Enter your main email address used for secure communication."</string>
-    <string name="create_key_passphrase_text">"Choose a strong passphrase. It protects your key when your device gets stolen."</string>
+    <string name="create_key_passphrase_text">"Choose a strong password. It protects your key when your device gets stolen."</string>
     <string name="create_key_hint_full_name">"Full Name or Nickname"</string>
     <string name="create_key_edit">"Change key configuration"</string>
     <string name="create_key_add_email">"Add email address"</string>
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
-    <string name="create_key_email_already_exists_text">"Email has already been added"</string>
+    <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
@@ -778,7 +779,7 @@
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
     <string name="msg_is_subkey_ok">"Marked secret subkey %s as available"</string>
-    <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty passphrase"</string>
+    <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
     <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
     <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
@@ -888,6 +889,7 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
+    <string name="msg_mf_divert">"Will divert to card/nfc for crypto operations"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a divert-to-card key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
@@ -896,23 +898,27 @@
     <string name="msg_mf_error_master_none">"No master certificate found to operate on! (All revoked?)"</string>
     <string name="msg_mf_error_noexist_primary">"Bad primary user ID specified!"</string>
     <string name="msg_mf_error_noexist_revoke">"Bad user ID for revocation specified!"</string>
-    <string name="msg_mf_error_restricted">"Tried to execute restricted operation without passphrase! This is a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_restricted">"Tried to execute restricted operation without password! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_revoked_primary">"Revoked user IDs cannot be primary!"</string>
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_noop">"Nothing to do!"</string>
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
+    <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
-    <string name="msg_mf_passphrase">"Changing passphrase for keyring"</string>
-    <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new passphrase"</string>
-    <string name="msg_mf_passphrase_empty_retry">"Setting new passphrase failed, trying again with empty old passphrase"</string>
-    <string name="msg_mf_passphrase_fail">"Passphrase for subkey could not be changed! (Does it have a different one from the other keys?)"</string>
+    <string name="msg_mf_passphrase">"Changing password for keyring"</string>
+    <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new password"</string>
+    <string name="msg_mf_passphrase_empty_retry">"Setting new password failed, trying again with empty old password"</string>
+    <string name="msg_mf_passphrase_fail">"Password for subkey could not be changed! (Does it have a different one from the other keys?)"</string>
     <string name="msg_mf_primary_replace_old">"Replacing certificate of previous primary user ID"</string>
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
+    <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
+    <string name="msg_mf_require_divert">"Diverting to card/nfc for crypto operations"</string>
+    <string name="msg_mf_require_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
@@ -964,7 +970,7 @@
 
     <!-- Edit Key (higher level than modify) -->
     <string name="msg_ed">"Performing key operation"</string>
-    <string name="msg_ed_caching_new">"Caching new passphrase"</string>
+    <string name="msg_ed_caching_new">"Caching new password"</string>
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
@@ -972,13 +978,11 @@
 
     <!-- Promote key -->
     <string name="msg_pr">"Promoting public key to secret key"</string>
-    <string name="msg_pr_error_already_secret">"Key is already a secret key!"</string>
     <string name="msg_pr_error_key_not_found">"Key not found!"</string>
     <string name="msg_pr_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->
-    <string name="msg_ek_error_divert">"Editing of NFC keys is not (yet) supported!"</string>
     <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
@@ -1000,7 +1004,7 @@
     <string name="msg_dc_clear_signature_ok">"Signature check OK"</string>
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
-    <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad passphrase!"</string>
+    <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_dc_error_integrity_missing">"Missing integrity check! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
@@ -1012,9 +1016,9 @@
     <string name="msg_dc_integrity_check_ok">"Integrity check OK!"</string>
     <string name="msg_dc_ok_meta_only">"Only metadata was requested, skipping decryption"</string>
     <string name="msg_dc_ok">"Decryption/Verification finished"</string>
-    <string name="msg_dc_pass_cached">"Using passphrase from cache"</string>
+    <string name="msg_dc_pass_cached">"Using password from cache"</string>
     <string name="msg_dc_pending_nfc">"NFC token required, requesting user input…"</string>
-    <string name="msg_dc_pending_passphrase">"Passphrase required, requesting user input…"</string>
+    <string name="msg_dc_pending_passphrase">"Password required, requesting user input…"</string>
     <string name="msg_dc_prep_streams">"Preparing streams for decryption"</string>
     <string name="msg_dc">"Starting decrypt operation…"</string>
     <string name="msg_dc_sym_skip">"Symmetric data not allowed, skipping…"</string>
@@ -1046,7 +1050,6 @@
     <string name="msg_se_error_input_uri_not_found">"Error opening URI for reading!"</string>
     <string name="msg_se_error_output_uri_not_found">"Error opening URI for writing!"</string>
     <string name="msg_se_error_too_many_inputs">"More inputs than outputs specified! This is probably a programming error, please report!"</string>
-    <string name="msg_se_warn_output_left">"Got outputs left but no inputs. This is probably a programming error, please report!"</string>
     <string name="msg_se_success">"Sign/encrypt operation successful"</string>
 
     <!-- Messages for PgpSignEncrypt operation -->
@@ -1054,13 +1057,13 @@
     <string name="msg_pse_clearsign_only">"Signing of cleartext input not supported!"</string>
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
-    <string name="msg_pse_error_bad_passphrase">"Bad passphrase!"</string>
+    <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>
     <string name="msg_pse_error_hash_algo">"Requested hashing algorithm is not supported by this key!"</string>
     <string name="msg_pse_error_io">"Encountered IO Exception during operation!"</string>
     <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
     <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
     <string name="msg_pse_error_nfc">"NFC data error!"</string>
-    <string name="msg_pse_error_no_passphrase">"No passphrase provided!"</string>
+    <string name="msg_pse_error_no_passphrase">"No password provided!"</string>
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
     <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
@@ -1069,7 +1072,7 @@
     <string name="msg_pse_key_warn">"Bad key for encryption: %s"</string>
     <string name="msg_pse_ok">"Sign/Encrypt operation successful!"</string>
     <string name="msg_pse_pending_nfc">"NFC token required, requesting user input…"</string>
-    <string name="msg_pse_pending_passphrase">"Passphrase required, requesting user input…"</string>
+    <string name="msg_pse_pending_passphrase">"Password required, requesting user input…"</string>
     <string name="msg_pse_signing">"Signing data (without encryption)"</string>
     <string name="msg_pse_signing_cleartext">"Creating cleartext signature"</string>
     <string name="msg_pse_signing_detached">"Creating detached signature"</string>
@@ -1090,9 +1093,9 @@
     <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
     <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
-    <string name="msg_crt_error_divert">"Certification with NFC is not (yet) supported!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
     <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
+    <string name="msg_crt_nfc_return">"Returning for NFC input"</string>
     <string name="msg_crt_save">"Saving certified key %s"</string>
     <string name="msg_crt_saving">"Saving keyrings"</string>
     <string name="msg_crt_unlock">"Unlocking master key"</string>
@@ -1110,7 +1113,7 @@
     <string name="msg_import_fetch_error_decode">"Error decoding retrieved keyring!"</string>
     <string name="msg_import_fetch_error">"Key could not be retrieved! (Network problems?)"</string>
     <string name="msg_import_fetch_keybase">"Retrieving from keybase.io: %s"</string>
-    <string name="msg_import_fetch_keyserver_error">"Could not retrieve key from keybase!"</string>
+    <string name="msg_import_fetch_keyserver_error">"Could not retrieve key from keyservers: %s"</string>
     <string name="msg_import_fetch_keyserver">"Retrieving from keyserver: %s"</string>
     <string name="msg_import_fetch_keyserver_ok">"Key retrieval successful"</string>
     <string name="msg_import_keyserver">"Using keyserver %s"</string>
@@ -1202,11 +1205,11 @@
     <string name="msg_export_log_success">"Log exported successfully!"</string>
 
     <!-- PassphraseCache -->
-    <string name="passp_cache_notif_click_to_clear">"Click to clear cached passphrases"</string>
-    <string name="passp_cache_notif_n_keys">"OpenKeychain has cached %d passphrases"</string>
-    <string name="passp_cache_notif_keys">"Cached Passphrases:"</string>
+    <string name="passp_cache_notif_click_to_clear">"Click to clear cached passwords"</string>
+    <string name="passp_cache_notif_n_keys">"OpenKeychain has cached %d passwords"</string>
+    <string name="passp_cache_notif_keys">"Cached Passwords:"</string>
     <string name="passp_cache_notif_clear">"Clear Cache"</string>
-    <string name="passp_cache_notif_pwd">"Passphrase"</string>
+    <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
@@ -1232,7 +1235,7 @@
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
     <string name="key_divert">"divert to smartcard/NFC"</string>
-    <string name="key_no_passphrase">"no passphrase"</string>
+    <string name="key_no_passphrase">"no password"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
     <string name="title_view_cert">"View Certificate Details"</string>
@@ -1252,20 +1255,20 @@
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
     <string name="title_unlock_method">Choose an unlock method</string>
-    <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
-    <string name="enter_passphrase">Enter passphrase</string>
-    <string name="passphrase">Passphrase</string>
-    <string name="noPassphrase">No passphrase</string>
-    <string name="no_passphrase_set">No passphrase set</string>
-    <string name="passphrases_match">Passphrases do match</string>
-    <string name="passphrase_saved">Passphrase saved</string>
-    <string name="passphrase_invalid">Passphrase invalid</string>
-    <string name="missing_passphrase">Missing passphrase</string>
+    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+    <string name="enter_passphrase">Enter password</string>
+    <string name="passphrase">Password</string>
+    <string name="noPassphrase">No password</string>
+    <string name="no_passphrase_set">No password set</string>
+    <string name="passphrases_match">Passwords do match</string>
+    <string name="passphrase_saved">Password saved</string>
+    <string name="passphrase_invalid">Password invalid</string>
+    <string name="missing_passphrase">Missing password</string>
     <string name="passphrase_again">Again</string>
     <string name="lockpattern">Lockpattern</string>
     <string name="lockpatternNFC">NFC + Lockpattern</string>
     <string name="unlock_method">Unlock method</string>
-    <string name="set_passphrase">Set passphrase</string>
+    <string name="set_passphrase">Set password</string>
     <string name="draw_lockpattern">Draw lockpattern</string>
     <string name="nfc_title">NFC</string>
     <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
@@ -1275,6 +1278,19 @@
     <string name="nfc_write_succesful">Successfully written on NFC tag</string>
     <string name="unlocked">Unlocked</string>
     <string name="nfc_settings">Settings</string>
+    <string name="snack_yubikey_view">"View"</string>
+    <string name="snack_yubikey_import">"Import"</string>
+    <string name="button_bind_key">"Bind Key"</string>
+    <string name="yubikey_serno">"Serial No: %s"</string>
+    <string name="yubikey_key_holder">"Key holder: "</string>
+    <string name="yubikey_key_holder_unset">"Key holder: &lt;unset&gt;"</string>
+    <string name="yubikey_status_bound">"Yubikey matches and is bound to key"</string>
+    <string name="yubikey_status_unbound">"Yubikey matches, can be bound to key"</string>
+    <string name="yubikey_status_partly">"Yubikey matches, partly bound to key"</string>
+    <string name="btn_import">"Import"</string>
+    <string name="snack_yubi_other">Different key stored on Yubikey!</string>
+    <string name="error_nfc">"NFC Error: %s"</string>
+    <string name="error_pin_nodefault">Default PIN was rejected!</string>
 
     <string name="linked_create_https_1_1">"By creating a Linked Identity of this type, you can link your key to a website you control."</string>
     <string name="linked_create_https_1_2">"To do this, you publish a text file on this website, then create a Linked Identity which links to it."</string>

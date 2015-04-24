@@ -1,268 +1,269 @@
+[//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 3.2beta2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * Conception matérielle
+  * Intégration du lecteur QR (nouvelles permissions exigées)
+  * Amélioration de l'assistant de création de clef
+  * Correctif - Contacts manquants après la synchro
+  * Android 4 exigé
+  * Nouvelle conception de l'écran des clefs
+  * Simplification des préférences cryptographiques, meilleure sélection de codes de chiffrement sécurisés
+  * API : signatures détachées, sélection libre de la clef de signature...
+  * Correctif - Certaines clefs valides apparaissaient comme révoquées ou expirées
+  * Ne pas accepter de signatures par des sous-clefs expirées ou révoquées
+  * Prise en charge de keybase.io dans la vue avancée
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Correctif - Exportation des clefs vers des fichiers (vraiment, maintenant)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Correctif - Exportation des clefs vers des fichiers (elles n'étaient écrites que partiellement)
+  * Correctif - Plantage sur Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Correctif - Plantage sur Android 5
+  * Nouvel écran de certification
+  * Échange sécurisé directement de la liste des clefs (bibliothèque SafeSlinger)
+  * Nouveau flux de programme pour les codes QR
+  * Écran de déchiffrement redessiné
+  * Nouveaux agencement et couleurs d'icônes
+  * Importation des clefs secrètes corrigée de Symantec Encryption Desktop
+  * Les ID de sous-clefs des Yubikeys sont maintenant vérifiés correctement
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Meilleure gestion de l'importation de nombreuses clefs
+  * Sélection des sous-clefs améliorée
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * Prise en charge complète de la génération de signature par Yubikey et de leur déchiffrement !
+  * Des applis compatibles installables sont proposées dans la liste des applis
+  * Nouvelle conception pour les écrans de déchiffrement
+  * Nombreux correctifs d'importation des clefs, corrigent aussi les clefs dépouillées
+  * Accepter et afficher les drapeaux d'authentification des clefs
+  * Interface utilisateur pour générer des clefs personnalisées
+  * Corrigé - Certificats de révocation des ID utilisateurs
+  * Nouvelle recherche nuagique (dans les serveurs traditionnels et dans keybase.io)
+  * Prise en charge du dépouillement des clefs dans OpenKeychain
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * Correctif - Clefs brisées dans 2.9.1
+  * Le déchiffrement des Yukukeys par l'API fonctionne maintenant
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * Partage de l'écran de chiffrement en deux
+  * Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)
+  * Gestion des phrases de passe améliorée
+  * Partage de clefs par SafeSlinger
+  * Yubikey : préférence pour permette d'autre NIP, seule la signature par l'API OpenPGP fonctionne présentement, mais pas à l'intérieur d'OpenKeychain
+  * Correctif - Utilisation de clefs dépouillées
+  * SHA256 par défaut pour la compatibilité
+  * L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * L'API d'OpenPGP gère maintenant les clefs révoquées/expirées et retourne tous les ID utilisateurs
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Correction des plantages présents dans v2.8
+  * Prise en charge expérimentale CCE
+  * Prise en charge expérimentale de Yubikey (signature seulement avec les clefs importées)
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * Tellement de bogues ont été réglés dans cette version que nous nous concentrons sur les nouvelles caractéristiques principales.
+  * Modification des clefs : nouvelle et superbe conception, révocations des clefs
+  * Importation des clefs : nouvelle et superbe conception, connexion sécurisé aux serveurs de clefs par hkps, résolution des serveurs de clefs par transactions DNS SRV
+  * Nouvel écran de premier lancement
+  * Nouvel écran de création de clef : auto-remplissage du nom et du courriel d'après vos coordonnées Android
+  * Chiffrement des fichiers : nouvelle et superbe conception, prise en charge du chiffrement de fichiers multiples
+  * Nouvelles icônes d'état des clefs (par Brennan Novak)
+  * Correctif important de bogue : l'importation de grandes collections de clefs à partir d'un fichier est maintenant possible
+  * Notification montrant les phrases de passe en cache
+  * Les clefs sont connectées aux contacts d'Android
 
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
-  * Purple! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * Violet ! (Dominik, Vincent)
+  * Nouvelle présentation de la visualisation des clefs (Dominik, Vincent)
+  * Nouveaux boutons Android plats (Dominik, Vincent)
+  * Correctifs de l'API (Dominik)
+  * Importation de Keybase.io (Tim Bray)
 
 
 ## 2.6.1
 
-  * Some fixes for regression bugs
+  * Quelques correctifs de bogues de régression
 
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
-  * Fix share-functionality from other apps
+  * Certifications des clefs (merci à Vincent Breitmoser)
+  * Prise en charge clefs secrètes partielles de GnuPG (merci à Vincent Breitmoser)
+  * Nouvelle conception de la vérification de signatures
+  * Longueur de clef personnalisée (merci à Greg Witczak)
+  * Correctif - Fonctionnalités partagées d'autres applis
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * Correctif - Déchiffrement des messages/fichiers symétriques OpenPGP
+  * Écran de modification des clefs remanié (merci à Ash Hughes)
+  * Nouvelle conception moderne pour les écrans de chiffrement/déchiffrement
+  * API OpenPGP version 3 (comptes multiples d'api, correctifs internes, recherche de clefs)
 
 
 ## 2.4
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
+Merci à tous les participants de « Google Summer of Code 2014 » qui ont rendu cette version riche en fonctions et sans bogue !
+À part plusieurs petits correctifs, un nombre notable de correctifs ont été apportés par les personnes suivantes (par ordre alphabétique) :
+Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
-  * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * Nouvelle liste de clefs unifiée
+  * Empreintes de clefs colorées
+  * Prise en charge des ports des serveurs de clefs
+  * Désactiver la possibilité de générer des clefs faibles
+  * Encore plus de travail interne dans l'API
+  * Certifier les ID utilisateurs
+  * Requêtes des serveurs de clefs basées sur des sorties assimilables par la machine
+  * Verrouiller les tiroirs de navigation sur les tablettes
+  * Suggestion de courriels à la création de clefs
+  * Rechercher dans les listes de clefs publiques
+  * Et bien plus d'améliorations et de correctifs
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * Correctif d'urgence pour le plantage lors de la mise à niveau à partir d'anciennes versions
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
-  * Fix crash and empty lists when coming back from signing screen
-  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-  * Fix upload of key from signing screen
+  * Suppressions de l'exportation non nécessaire des clefs publiques lors de l'exportation de clefs secrètes (merci à Ash Hughes)
+  * Correctif - Définition de la date de péremption des clefs (merci à Ash Hughes)
+  * Plus de correctifs internes affectant la modifications des clefs (merci à Ash hughes)
+  * Interrogation des serveurs de clefs directement de l'écran d'importation
+  * Correctif - Mise en page et du style des fenêtres de dialogue sur Android 2.2-3.0
+  * Correctif - Plantage pour les clefs avec des ID utilisateur vides
+  * Correctif - Plantage et listes vides en revenant de l'écran de signature
+  * Bouncy Castle (bibliothèque cryptographique) mise à jour de 1.47 à 1.50 et compilée de la source
+  * Correctif - Téléversement d'une clef de l'écran de signature
 
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
-  * New public key view
-  * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * Nouvelle conception avec tiroir de navigation
+  * Nouvelle conception de la liste des clefs publics
+  * Nouvelle vue des clefs publics
+  * Correctif de bogues d'importation de clefs
+  * Certification croisée des clefs (merci à Ash Hughes)
+  * Bonne gestion des mots de passe UTF-8 (merci à Ash Hughes)
+  * Première version avec de nouvelles langues (merci aux contributeurs sur Transifex)
+  * Correctif et amélioration du partage de clefs par codes QR
+  * Vérification de la signature des paquets pour l'API
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  * Mise à jour de l'API, préparation à l'intégration à K-9 Mail
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
-  * PRNG bug fix by Google
+  * Beaucoup de bogues corrigés
+  * Nouvelle API pour les développeurs
+  * Correctif du blogue PRNG par Google
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
-  * New AIDL API
+  * Conception complètement repensée
+  * Partage de clefs publiques par codes QR, faisceau NFC
+  * Signer les clefs
+  * Téléverser les clefs vers le serveur
+  * Corrige des problèmes d'importation
+  * Nouvelle API AIDL
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Prise en charge de base du serveur de clefs
   * App2sd
-  * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Plus de choix pour le cache de la phrase de passe : 1, 2, 4, 8 heures
+  * Traductions : norvégien (merci Sander Danielsen), chinois (merci Zhang Fredrick)
+  * Correctifs de bogues
+  * Optimisations
 
 
 ## 1.0.7
 
-  * Fixed problem with signature verification of texts with trailing newline
-  * More options for passphrase cache time to live (20, 40, 60 mins)
+  * Problème corrigé avec la vérification de la signature des textes se terminant par un retour à la ligne
+  * Plus de choix pour la durée de vie de la phrase de passe (20, 40, 60 min)
 
 
 ## 1.0.6
 
-  * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
-  * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Correctif - Plantage lors de l'ajout de compte sur Froyo
+  * Suppression sécurisée de fichiers
+  * Option de suppression du fichier de clef après l'importation
+  * Chiffrement/déchiffrement de flux (galerie, etc.)
+  * Nouvelles options (langue, forcer les signatures v3)
+  * Changements dans l'interface
+  * Correctifs de bogues
 
 
 ## 1.0.5
 
-  * German and Italian translation
-  * Much smaller package, due to reduced BC sources
-  * New preferences GUI
-  * Layout adjustment for localization
-  * Signature bugfix
+  * Traduction allemande et italienne
+  * Paquet beaucoup plus petit grâce à des sources BC réduites
+  * Nouvelle IUG pour les préférences
+  * Ajustement de la mise en page pour les localisations
+  * Correctif de bogue de signature
 
 
 ## 1.0.4
 
-  * Fixed another crash caused by some SDK bug with query builder
+  * Correction d'un autre plantage causé par quelque bogue SDK avec le constructeur de requêtes
 
 
 ## 1.0.3
 
-  * Fixed crashes during encryption/signing and possibly key export
+  * Corrections de plantages durant le chiffrement/la signature et possiblement l'exportation de clefs
 
 
 ## 1.0.2
 
-  * Filterable key lists
-  * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-  * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
+  * Listes de clefs filtrables
+  * Présélection plus intelligente des clefs de chiffrement
+  * Nouvelle gestion des intentions pour VIEW et SEND, permet le chiffrement/déchiffrement des fichiers du gestionnaires de fichiers
+  * Correctifs et fonctions additionnelles (présélection des clefs) pour K-9-Mail, nouvelle version bêta proposée
 
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * Le listage des comptes Gmail ne fonctionnait pas dans 1.0.0, maintenant corrigé
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Intégration à K-9 Mail, APG prenant en charge la version bêta de K-9 Mail
+  * Prise en charge de plus de gestionnaires de fichiers (incluant ASTRO)
+  * Traduction slovène
+  * Nouvelle base de données, bien plus rapide, utilisation de la mémoire moindre
+  * Intentions définies et fournisseur de contenu pour d'autres applis
+  * Correctifs de bogues

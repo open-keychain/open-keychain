@@ -20,11 +20,18 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.Map;
 
-public class PgpSignEncryptInput {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+
+public class PgpSignEncryptInputParcel implements Parcelable {
 
     protected String mVersionHeader = null;
     protected boolean mEnableAsciiArmorOutput = false;
@@ -35,15 +42,67 @@ public class PgpSignEncryptInput {
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
     protected int mSignatureHashAlgorithm = PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED;
-    protected Passphrase mSignaturePassphrase = null;
     protected long mAdditionalEncryptId = Constants.key.none;
-    protected byte[] mNfcSignedHash = null;
-    protected Date mNfcCreationTimestamp = null;
     protected boolean mFailOnMissingEncryptionKeyIds = false;
     protected String mCharset;
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
     protected boolean mHiddenRecipients = false;
+
+    public PgpSignEncryptInputParcel() {
+
+    }
+
+    PgpSignEncryptInputParcel(Parcel source) {
+
+        ClassLoader loader = getClass().getClassLoader();
+
+        // we do all of those here, so the PgpSignEncryptInput class doesn't have to be parcelable
+        mVersionHeader = source.readString();
+        mEnableAsciiArmorOutput  = source.readInt() == 1;
+        mCompressionId = source.readInt();
+        mEncryptionMasterKeyIds = source.createLongArray();
+        mSymmetricPassphrase = source.readParcelable(loader);
+        mSymmetricEncryptionAlgorithm = source.readInt();
+        mSignatureMasterKeyId = source.readLong();
+        mSignatureSubKeyId = source.readInt() == 1 ? source.readLong() : null;
+        mSignatureHashAlgorithm = source.readInt();
+        mAdditionalEncryptId = source.readLong();
+        mFailOnMissingEncryptionKeyIds = source.readInt() == 1;
+        mCharset = source.readString();
+        mCleartextSignature = source.readInt() == 1;
+        mDetachedSignature = source.readInt() == 1;
+        mHiddenRecipients = source.readInt() == 1;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mVersionHeader);
+        dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
+        dest.writeInt(mCompressionId);
+        dest.writeLongArray(mEncryptionMasterKeyIds);
+        dest.writeParcelable(mSymmetricPassphrase, 0);
+        dest.writeInt(mSymmetricEncryptionAlgorithm);
+        dest.writeLong(mSignatureMasterKeyId);
+        if (mSignatureSubKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mSignatureSubKeyId);
+        } else {
+            dest.writeInt(0);
+        }
+        dest.writeInt(mSignatureHashAlgorithm);
+        dest.writeLong(mAdditionalEncryptId);
+        dest.writeInt(mFailOnMissingEncryptionKeyIds ? 1 : 0);
+        dest.writeString(mCharset);
+        dest.writeInt(mCleartextSignature ? 1 : 0);
+        dest.writeInt(mDetachedSignature ? 1 : 0);
+        dest.writeInt(mHiddenRecipients ? 1 : 0);
+    }
 
     public String getCharset() {
         return mCharset;
@@ -57,29 +116,12 @@ public class PgpSignEncryptInput {
         return mFailOnMissingEncryptionKeyIds;
     }
 
-    public Date getNfcCreationTimestamp() {
-        return mNfcCreationTimestamp;
-    }
-
-    public byte[] getNfcSignedHash() {
-        return mNfcSignedHash;
-    }
-
     public long getAdditionalEncryptId() {
         return mAdditionalEncryptId;
     }
 
-    public PgpSignEncryptInput setAdditionalEncryptId(long additionalEncryptId) {
+    public PgpSignEncryptInputParcel setAdditionalEncryptId(long additionalEncryptId) {
         mAdditionalEncryptId = additionalEncryptId;
-        return this;
-    }
-
-    public Passphrase getSignaturePassphrase() {
-        return mSignaturePassphrase;
-    }
-
-    public PgpSignEncryptInput setSignaturePassphrase(Passphrase signaturePassphrase) {
-        mSignaturePassphrase = signaturePassphrase;
         return this;
     }
 
@@ -87,7 +129,7 @@ public class PgpSignEncryptInput {
         return mSignatureHashAlgorithm;
     }
 
-    public PgpSignEncryptInput setSignatureHashAlgorithm(int signatureHashAlgorithm) {
+    public PgpSignEncryptInputParcel setSignatureHashAlgorithm(int signatureHashAlgorithm) {
         mSignatureHashAlgorithm = signatureHashAlgorithm;
         return this;
     }
@@ -96,7 +138,7 @@ public class PgpSignEncryptInput {
         return mSignatureSubKeyId;
     }
 
-    public PgpSignEncryptInput setSignatureSubKeyId(long signatureSubKeyId) {
+    public PgpSignEncryptInputParcel setSignatureSubKeyId(long signatureSubKeyId) {
         mSignatureSubKeyId = signatureSubKeyId;
         return this;
     }
@@ -105,7 +147,7 @@ public class PgpSignEncryptInput {
         return mSignatureMasterKeyId;
     }
 
-    public PgpSignEncryptInput setSignatureMasterKeyId(long signatureMasterKeyId) {
+    public PgpSignEncryptInputParcel setSignatureMasterKeyId(long signatureMasterKeyId) {
         mSignatureMasterKeyId = signatureMasterKeyId;
         return this;
     }
@@ -114,7 +156,7 @@ public class PgpSignEncryptInput {
         return mSymmetricEncryptionAlgorithm;
     }
 
-    public PgpSignEncryptInput setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
+    public PgpSignEncryptInputParcel setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
         mSymmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
         return this;
     }
@@ -123,7 +165,7 @@ public class PgpSignEncryptInput {
         return mSymmetricPassphrase;
     }
 
-    public PgpSignEncryptInput setSymmetricPassphrase(Passphrase symmetricPassphrase) {
+    public PgpSignEncryptInputParcel setSymmetricPassphrase(Passphrase symmetricPassphrase) {
         mSymmetricPassphrase = symmetricPassphrase;
         return this;
     }
@@ -132,7 +174,7 @@ public class PgpSignEncryptInput {
         return mEncryptionMasterKeyIds;
     }
 
-    public PgpSignEncryptInput setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
+    public PgpSignEncryptInputParcel setEncryptionMasterKeyIds(long[] encryptionMasterKeyIds) {
         mEncryptionMasterKeyIds = encryptionMasterKeyIds;
         return this;
     }
@@ -141,7 +183,7 @@ public class PgpSignEncryptInput {
         return mCompressionId;
     }
 
-    public PgpSignEncryptInput setCompressionId(int compressionId) {
+    public PgpSignEncryptInputParcel setCompressionId(int compressionId) {
         mCompressionId = compressionId;
         return this;
     }
@@ -154,28 +196,22 @@ public class PgpSignEncryptInput {
         return mVersionHeader;
     }
 
-    public PgpSignEncryptInput setVersionHeader(String versionHeader) {
+    public PgpSignEncryptInputParcel setVersionHeader(String versionHeader) {
         mVersionHeader = versionHeader;
         return this;
     }
 
-    public PgpSignEncryptInput setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
+    public PgpSignEncryptInputParcel setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
         mEnableAsciiArmorOutput = enableAsciiArmorOutput;
         return this;
     }
 
-    public PgpSignEncryptInput setFailOnMissingEncryptionKeyIds(boolean failOnMissingEncryptionKeyIds) {
+    public PgpSignEncryptInputParcel setFailOnMissingEncryptionKeyIds(boolean failOnMissingEncryptionKeyIds) {
         mFailOnMissingEncryptionKeyIds = failOnMissingEncryptionKeyIds;
         return this;
     }
 
-    public PgpSignEncryptInput setNfcState(byte[] signedHash, Date creationTimestamp) {
-        mNfcSignedHash = signedHash;
-        mNfcCreationTimestamp = creationTimestamp;
-        return this;
-    }
-
-    public PgpSignEncryptInput setCleartextSignature(boolean cleartextSignature) {
+    public PgpSignEncryptInputParcel setCleartextSignature(boolean cleartextSignature) {
         this.mCleartextSignature = cleartextSignature;
         return this;
     }
@@ -184,7 +220,7 @@ public class PgpSignEncryptInput {
         return mCleartextSignature;
     }
 
-    public PgpSignEncryptInput setDetachedSignature(boolean detachedSignature) {
+    public PgpSignEncryptInputParcel setDetachedSignature(boolean detachedSignature) {
         this.mDetachedSignature = detachedSignature;
         return this;
     }
@@ -193,7 +229,7 @@ public class PgpSignEncryptInput {
         return mDetachedSignature;
     }
 
-    public PgpSignEncryptInput setHiddenRecipients(boolean hiddenRecipients) {
+    public PgpSignEncryptInputParcel setHiddenRecipients(boolean hiddenRecipients) {
         this.mHiddenRecipients = hiddenRecipients;
         return this;
     }
@@ -201,5 +237,16 @@ public class PgpSignEncryptInput {
     public boolean isHiddenRecipients() {
         return mHiddenRecipients;
     }
+
+    public static final Creator<PgpSignEncryptInputParcel> CREATOR = new Creator<PgpSignEncryptInputParcel>() {
+        public PgpSignEncryptInputParcel createFromParcel(final Parcel source) {
+            return new PgpSignEncryptInputParcel(source);
+        }
+
+        public PgpSignEncryptInputParcel[] newArray(final int size) {
+            return new PgpSignEncryptInputParcel[size];
+        }
+    };
+
 }
 

@@ -4,12 +4,9 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Anahtarları Seç</string>
-  <string name="title_select_secret_key">Anahtarını Seç</string>
   <string name="title_decrypt">Şifre çöz</string>
   <string name="title_add_subkey">Alt anahtar ekle</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
-  <string name="title_cloud_search_preferences">Bulut Arama Seçenekleri</string>
   <string name="title_api_registered_apps">Uygulamalar</string>
   <string name="title_change_passphrase">Parolayı Değiştir</string>
   <string name="title_share_fingerprint_with">Parmak izini paylaş...</string>
@@ -18,7 +15,6 @@
   <string name="title_encrypt_to_file">Dosyaya Şifrele</string>
   <string name="title_decrypt_to_file">Dosyaya Çözümle</string>
   <string name="title_import_keys">Anahtarları Al</string>
-  <string name="title_add_keys">Anahtarlar Ekle</string>
   <string name="title_export_key">Anahtarı Ver</string>
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
@@ -26,28 +22,19 @@
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <string name="title_log_display">Günlük</string>
-  <string name="title_create_key">Anahtar Oluştur</string>
   <string name="title_exchange_keys">Anahtarları Değiş Tokuş Et</string>
   <string name="title_advanced_key_info">Gelişmiş Anahtar Bilgisi</string>
   <!--section-->
   <string name="section_user_ids">Kimlikler</string>
   <string name="section_keys">Alt anahtarlar</string>
   <string name="section_cloud_search">Bulut araması</string>
-  <string name="section_general">Genel</string>
-  <string name="section_defaults">Varsayılanlar</string>
-  <string name="section_advanced">Gelişmiş</string>
   <string name="section_passphrase_cache">Parola Önbelleği</string>
   <string name="section_actions">Eylemler</string>
   <string name="section_share_key">Anahtar</string>
-  <string name="section_upload_key">Anahtarı Eşitle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <string name="section_fingerprint">Parmak izi</string>
-  <string name="section_decrypt_files">Dosyalar</string>
-  <string name="section_decrypt_text">Metin</string>
-  <string name="section_certs">Sertifikalar</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Şifreyi çöz, doğrula ve dosyayı kaydet</string>
-  <string name="btn_encrypt_file">Şifrele ve dosyayı kaydet</string>
   <string name="btn_encrypt_share_file">Şifrele ve dosyayı paylaş</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
@@ -57,7 +44,6 @@
   <string name="btn_export_to_server">Anahtar Sunucusuna Yükle</string>
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
-  <string name="btn_lookup_key">Anahtarı ara</string>
   <string name="btn_view_cert_key">Tasdikleme anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
   <string name="btn_add_files">Dosya(lar) ekle</string>
@@ -69,13 +55,10 @@
   <string name="menu_help">Yardım</string>
   <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
-  <string name="menu_import_existing_key">Dosyadan al</string>
   <string name="menu_search">Ara</string>
   <string name="menu_beam_preferences">NFC ayarları</string>
-  <string name="menu_key_edit_cancel">İptal</string>
   <string name="menu_encrypt_to">Şuna şifrele...</string>
   <string name="menu_select_all">Hepsini seç</string>
-  <string name="menu_add_keys">Anahtar ekle</string>
   <string name="menu_export_all_keys">Tüm anahtarları ver</string>
   <string name="menu_advanced">Gelişmiş bilgiyi göster</string>
   <!--label-->
@@ -170,9 +153,6 @@
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
   <string name="select_encryption_or_signature_key">En az bir şifreleme anahtarı veya imza anahtarı seçiniz.</string>
-  <string name="specify_file_to_encrypt_to">Lütfen şifreleme sonucu hangi dosyanın oluşturulması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
-  <string name="specify_file_to_decrypt_to">Lütfen şifre çözme sonucu hangi dosyanın oluşturulması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
-  <string name="specify_file_to_export_to">Lütfen dışa aktarım için hangi dosyanın kullanılması gerektiğini belirtin.\nUYARI: Eğer dosya mevcutsa üzerine yazılacaktır.</string>
   <string name="also_export_secret_keys">Özel anahtarları da dışa aktar</string>
   <string name="reinstall_openkeychain">Android için bilinen bir hataya denk geldiniz. Eğer kişilerinizi anahtarlarla eşlemek istiyorsanız, lütfen OpenKeychain uygulamasını yeniden yükleyin.</string>
   <string name="key_exported">1 anahtar başarıyla dışa aktarıldı.</string>

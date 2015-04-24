@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,20 +30,37 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class EncryptSymmetricFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
+public class EncryptModeSymmetricFragment extends Fragment {
 
-    EncryptActivityInterface mEncryptInterface;
+    public interface ISymmetric {
+
+        public void onPassphraseChanged(Passphrase passphrase);
+    }
+
+    private ISymmetric mEncryptInterface;
 
     private EditText mPassphrase;
     private EditText mPassphraseAgain;
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static EncryptModeSymmetricFragment newInstance() {
+        EncryptModeSymmetricFragment frag = new EncryptModeSymmetricFragment();
+
+        Bundle args = new Bundle();
+        frag.setArguments(args);
+
+        return frag;
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mEncryptInterface = (EncryptActivityInterface) activity;
+            mEncryptInterface = (ISymmetric) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement EncryptActivityInterface");
+            throw new ClassCastException(activity.toString() + " must implement ISymmetric");
         }
     }
 
@@ -74,9 +91,9 @@ public class EncryptSymmetricFragment extends Fragment implements EncryptActivit
                 p1.removeFromMemory();
                 p2.removeFromMemory();
                 if (passesEquals) {
-                    mEncryptInterface.setPassphrase(new Passphrase(mPassphrase.getText()));
+                    mEncryptInterface.onPassphraseChanged(new Passphrase(mPassphrase.getText()));
                 } else {
-                    mEncryptInterface.setPassphrase(null);
+                    mEncryptInterface.onPassphraseChanged(null);
                 }
             }
         };
@@ -86,8 +103,4 @@ public class EncryptSymmetricFragment extends Fragment implements EncryptActivit
         return view;
     }
 
-    @Override
-    public void onNotifyUpdate() {
-
-    }
 }

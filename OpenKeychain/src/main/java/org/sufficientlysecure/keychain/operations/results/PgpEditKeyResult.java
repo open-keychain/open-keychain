@@ -22,8 +22,10 @@ import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-public class PgpEditKeyResult extends OperationResult {
+
+public class PgpEditKeyResult extends InputPendingResult {
 
     private transient UncachedKeyRing mRing;
     public final long mRingMasterKeyId;
@@ -33,6 +35,11 @@ public class PgpEditKeyResult extends OperationResult {
         super(result, log);
         mRing = ring;
         mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
+    }
+
+    public PgpEditKeyResult(OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+        mRingMasterKeyId = Constants.key.none;
     }
 
     public UncachedKeyRing getRing() {

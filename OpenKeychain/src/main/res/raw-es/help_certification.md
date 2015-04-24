@@ -1,7 +1,8 @@
+[//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
 ## Confirmación de clave
 Sin confirmación, no puede estar seguro de si una clave corresponde realmente a una persona específica.
-La forma más simple de confirmar una clave es escanear el código QR o intercambiarlo vía NFC.
+La forma más sencilla de confirmar una clave es escaneando el código QR o intercambiándolo vía NFC.
 Para confirmar claves entre más de dos personas, sugerimos usar el método de intercambio de claves disponible para sus claves.
 
 ## Estado de la clave

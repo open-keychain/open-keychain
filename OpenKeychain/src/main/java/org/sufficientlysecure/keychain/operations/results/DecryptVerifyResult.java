@@ -22,55 +22,16 @@ import android.os.Parcel;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class DecryptVerifyResult extends OperationResult {
-
-    // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
-    public static final int RESULT_PENDING = RESULT_ERROR + 8;
-
-    // fifth to sixth bit in addition indicate specific type of pending
-    public static final int RESULT_PENDING_ASYM_PASSPHRASE = RESULT_PENDING + 16;
-    public static final int RESULT_PENDING_SYM_PASSPHRASE = RESULT_PENDING + 32;
-    public static final int RESULT_PENDING_NFC = RESULT_PENDING + 64;
-
-    long mKeyIdPassphraseNeeded;
-
-    long mNfcSubKeyId;
-    byte[] mNfcSessionKey;
-    Passphrase mNfcPassphrase;
+public class DecryptVerifyResult extends InputPendingResult {
 
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
     // This holds the charset which was specified in the ascii armor, if specified
     // https://tools.ietf.org/html/rfc4880#page56
     String mCharset;
-
-    public long getKeyIdPassphraseNeeded() {
-        return mKeyIdPassphraseNeeded;
-    }
-
-    public void setKeyIdPassphraseNeeded(long keyIdPassphraseNeeded) {
-        mKeyIdPassphraseNeeded = keyIdPassphraseNeeded;
-    }
-
-    public void setNfcState(long subKeyId, byte[] sessionKey, Passphrase passphrase) {
-        mNfcSubKeyId = subKeyId;
-        mNfcSessionKey = sessionKey;
-        mNfcPassphrase = passphrase;
-    }
-
-    public long getNfcSubKeyId() {
-        return mNfcSubKeyId;
-    }
-
-    public byte[] getNfcEncryptedSessionKey() {
-        return mNfcSessionKey;
-    }
-
-    public Passphrase getNfcPassphrase() {
-        return mNfcPassphrase;
-    }
 
     public OpenPgpSignatureResult getSignatureResult() {
         return mSignatureResult;
@@ -104,13 +65,14 @@ public class DecryptVerifyResult extends OperationResult {
         super(result, log);
     }
 
+    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+    }
+
     public DecryptVerifyResult(Parcel source) {
         super(source);
-        mKeyIdPassphraseNeeded = source.readLong();
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
-        mNfcSessionKey = source.readInt() != 0 ? source.createByteArray() : null;
-        mNfcPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
     }
 
     public int describeContents() {
@@ -119,16 +81,8 @@ public class DecryptVerifyResult extends OperationResult {
 
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(mKeyIdPassphraseNeeded);
         dest.writeParcelable(mSignatureResult, 0);
         dest.writeParcelable(mDecryptMetadata, 0);
-        if (mNfcSessionKey != null) {
-            dest.writeInt(1);
-            dest.writeByteArray(mNfcSessionKey);
-        } else {
-            dest.writeInt(0);
-        }
-        dest.writeParcelable(mNfcPassphrase, flags);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {

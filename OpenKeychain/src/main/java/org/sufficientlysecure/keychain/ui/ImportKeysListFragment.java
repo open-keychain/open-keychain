@@ -53,9 +53,11 @@ import java.util.List;
 
 public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
+
     private static final String ARG_DATA_URI = "uri";
     private static final String ARG_BYTES = "bytes";
-    private static final String ARG_SERVER_QUERY = "query";
+    public static final String ARG_SERVER_QUERY = "query";
+    public static final String ARG_NON_INTERACTIVE = "non_interactive";
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
@@ -66,6 +68,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final int LOADER_ID_CLOUD = 1;
 
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
+    private boolean mNonInteractive;
 
     public LoaderState getLoaderState() {
         return mLoaderState;
@@ -118,16 +121,19 @@ public class ImportKeysListFragment extends ListFragment implements
 
     }
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery) {
+        return newInstance(bytes, dataUri, serverQuery, false);
+    }
+
+    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri,
+            String serverQuery, boolean nonInteractive) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_BYTES, bytes);
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putString(ARG_SERVER_QUERY, serverQuery);
+        args.putBoolean(ARG_NON_INTERACTIVE, nonInteractive);
 
         frag.setArguments(args);
 
@@ -173,9 +179,11 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        byte[] bytes = getArguments().getByteArray(ARG_BYTES);
-        String query = getArguments().getString(ARG_SERVER_QUERY);
+        Bundle args = getArguments();
+        Uri dataUri = args.containsKey(ARG_DATA_URI) ? args.<Uri>getParcelable(ARG_DATA_URI) : null;
+        byte[] bytes = args.containsKey(ARG_BYTES) ? args.getByteArray(ARG_BYTES) : null;
+        String query = args.containsKey(ARG_SERVER_QUERY) ? args.getString(ARG_SERVER_QUERY) : null;
+        mNonInteractive = args.containsKey(ARG_NON_INTERACTIVE) ? args.getBoolean(ARG_NON_INTERACTIVE) : false;
 
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
@@ -202,6 +210,10 @@ public class ImportKeysListFragment extends ListFragment implements
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+
+        if (mNonInteractive) {
+            return;
+        }
 
         // Select checkbox!
         // Update underlying data and notify adapter of change. The adapter will

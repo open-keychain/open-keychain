@@ -52,7 +52,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -63,13 +66,14 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * This activity encapsulates a DialogFragment to emulate a dialog.
  */
 public class PassphraseDialogActivity extends FragmentActivity {
-    public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
-    public static final String EXTRA_KEY_ID = "key_id";
 
+    public static final String RESULT_CRYPTO_INPUT = "result_data";
+
+    public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
 
     // special extra for OpenPgpService
-    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_SERVICE_INTENT = "data";
 
     private static final int REQUEST_CODE_ENTER_PATTERN = 2;
 
@@ -88,9 +92,27 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // this activity itself has no content view (see manifest)
 
-        long keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
+        long keyId;
+        if (getIntent().hasExtra(EXTRA_SUBKEY_ID)) {
+            keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
+        } else {
+            RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
+            switch (requiredInput.mType) {
+                case PASSPHRASE_SYMMETRIC: {
+                    keyId = Constants.key.symmetric;
+                    break;
+                }
+                case PASSPHRASE: {
+                    keyId = requiredInput.getSubKeyId();
+                    break;
+                }
+                default: {
+                    throw new AssertionError("Unsupported required input type for PassphraseDialogActivity!");
+                }
+            }
+        }
 
-        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_DATA);
+        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);
 
         show(this, keyId, serviceIntent);
     }
@@ -141,7 +163,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 PassphraseDialogFragment frag = new PassphraseDialogFragment();
                 Bundle args = new Bundle();
                 args.putLong(EXTRA_SUBKEY_ID, keyId);
-                args.putParcelable(EXTRA_DATA, serviceIntent);
+                args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
 
                 frag.setArguments(args);
 
@@ -174,11 +196,12 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     R.style.Theme_AppCompat_Light_Dialog);
 
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
-            mServiceIntent = getArguments().getParcelable(EXTRA_DATA);
+            mServiceIntent = getArguments().getParcelable(EXTRA_SERVICE_INTENT);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
-            alert.setTitle(R.string.title_unlock);
+            // No title, see http://www.google.com/design/spec/components/dialogs.html#dialogs-alerts
+            //alert.setTitle()
 
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.passphrase_dialog, null);
@@ -243,8 +266,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case PASSPHRASE_EMPTY:
                             finishCaching(new Passphrase(""));
                         default:
-                            message = "This should not happen!";
-                            break;
+                            throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }
 
                 } catch (ProviderHelper.NotFoundException e) {
@@ -296,7 +318,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
                 mPassphraseEditText.setOnEditorActionListener(this);
 
-                if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubikeyPin()) {
+                if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin()) {
                     mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 } else if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
                     mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -309,7 +331,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             AlertDialog dialog = alert.create();
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                    activity.getString(android.R.string.ok), (DialogInterface.OnClickListener) null);
+                    activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
 
             return dialog;
         }
@@ -406,17 +428,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return;
             }
 
+            CryptoInputParcel inputParcel = new CryptoInputParcel(null, passphrase);
             if (mServiceIntent != null) {
-                // TODO: Not routing passphrase through OpenPGP API currently
-                // due to security concerns...
-                // BUT this means you need to _cache_ passphrases!
+                CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), mServiceIntent, inputParcel);
                 getActivity().setResult(RESULT_OK, mServiceIntent);
             } else {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra(MESSAGE_DATA_PASSPHRASE, passphrase);
-                returnIntent.putExtra(EXTRA_KEY_ID, mSecretRing.getMasterKeyId());
-                returnIntent.putExtra(EXTRA_SUBKEY_ID, mSubKeyId);
+                returnIntent.putExtra(RESULT_CRYPTO_INPUT, inputParcel);
                 getActivity().setResult(RESULT_OK, returnIntent);
             }
 

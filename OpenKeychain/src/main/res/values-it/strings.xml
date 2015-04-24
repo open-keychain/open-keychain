@@ -4,12 +4,9 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Seleziona chiavi</string>
-  <string name="title_select_secret_key">Seleziona la tua chiave</string>
   <string name="title_decrypt">Decodifica</string>
   <string name="title_add_subkey">Aggiungi Sottochiave</string>
   <string name="title_edit_key">Modifica Chiave</string>
-  <string name="title_cloud_search_preferences">Preferenze di ricerca</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_change_passphrase">Cambia Frase Di Accesso</string>
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
@@ -18,7 +15,6 @@
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
   <string name="title_import_keys">Importa Chiavi</string>
-  <string name="title_add_keys">Aggiungi Chiavi</string>
   <string name="title_export_key">Esporta Chiave</string>
   <string name="title_export_keys">Esporta Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
@@ -26,28 +22,19 @@
   <string name="title_key_details">Dettagli Chiave</string>
   <string name="title_help">Aiuto</string>
   <string name="title_log_display">Registro</string>
-  <string name="title_create_key">Crea Chiave</string>
   <string name="title_exchange_keys">Scambia le chiavi</string>
   <string name="title_advanced_key_info">Informazioni avanzate sulla chiave</string>
   <!--section-->
   <string name="section_user_ids">Identità</string>
   <string name="section_keys">Sottochiavi</string>
   <string name="section_cloud_search">Ricerca</string>
-  <string name="section_general">Generale</string>
-  <string name="section_defaults">Predefiniti</string>
-  <string name="section_advanced">Avanzato</string>
   <string name="section_passphrase_cache">Cache Frase di Accesso</string>
   <string name="section_actions">Azioni</string>
   <string name="section_share_key">Chiave</string>
-  <string name="section_upload_key">Sincronizza Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_fingerprint">Impronta</string>
-  <string name="section_decrypt_files">Files</string>
-  <string name="section_decrypt_text">Testo</string>
-  <string name="section_certs">Certificati</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Decodifica, verifica e salva su file</string>
-  <string name="btn_encrypt_file">Codifica e salva file</string>
   <string name="btn_encrypt_share_file">Codifica e condividi file</string>
   <string name="btn_save">Salva</string>
   <string name="btn_do_not_save">Annulla</string>
@@ -57,7 +44,6 @@
   <string name="btn_export_to_server">Carica sul Server delle Chiavi</string>
   <string name="btn_next">Prossimo</string>
   <string name="btn_back">Precedente</string>
-  <string name="btn_lookup_key">Chiave di ricerca</string>
   <string name="btn_view_cert_key">Mostra chiave di certificazione</string>
   <string name="btn_create_key">Crea chiave</string>
   <string name="btn_add_files">Aggiungi file(s)</string>
@@ -69,13 +55,10 @@
   <string name="menu_help">Aiuto</string>
   <string name="menu_export_key">Esporta su un file</string>
   <string name="menu_delete_key">Cancella chiave</string>
-  <string name="menu_import_existing_key">Importa da file</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_beam_preferences">Impostazioni Beam</string>
-  <string name="menu_key_edit_cancel">Annulla</string>
   <string name="menu_encrypt_to">Codifica su...</string>
   <string name="menu_select_all">Seleziona tutto</string>
-  <string name="menu_add_keys">Aggiungi chiavi</string>
   <string name="menu_export_all_keys">Esporta tutte le chiavi</string>
   <string name="menu_advanced">Mostra informazioni avanzate</string>
   <!--label-->
@@ -167,12 +150,6 @@
   <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
   <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
-  <string name="specify_file_to_encrypt_to">Perfavore specifica il file da codificare.
-ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
-  <string name="specify_file_to_decrypt_to">Perfavore specifica il file da decodificare.
-ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
-  <string name="specify_file_to_export_to">Perfavore specifica il file da esportare.
-ATTENZIONE: Il file sara\' sovrascritto se esistente.</string>
   <string name="also_export_secret_keys">Esporta anche chiave segreta</string>
   <string name="reinstall_openkeychain">Hai riscontrato un bug noto con Android. Si prega di reinstallare OpenKeychain se vuoi collegare i tuoi contatti con le chiavi.</string>
   <string name="key_exported">1 chiave esportata correttamente.</string>

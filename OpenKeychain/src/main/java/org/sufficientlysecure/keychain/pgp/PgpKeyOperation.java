@@ -18,7 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
@@ -43,6 +43,8 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -54,6 +56,9 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -86,6 +91,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This indicator may be null.
  */
 public class PgpKeyOperation {
+
     private Stack<Progressable> mProgress;
     private AtomicBoolean mCancelled;
 
@@ -317,7 +323,8 @@ public class PgpKeyOperation {
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
             subProgressPush(50, 100);
-            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, saveParcel, new Passphrase(), log);
+            CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), new Passphrase(""));
+            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log);
 
         } catch (PGPException e) {
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -348,8 +355,9 @@ public class PgpKeyOperation {
      * namely stripping of subkeys and changing the protection mode of dummy keys.
      *
      */
-    public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR, SaveKeyringParcel saveParcel,
-                                                Passphrase passphrase) {
+    public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
+            CryptoInputParcel cryptoInput,
+            SaveKeyringParcel saveParcel) {
 
         OperationLog log = new OperationLog();
         int indent = 0;
@@ -387,9 +395,22 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        // If we have no passphrase, only allow restricted operation
-        if (passphrase == null) {
+        if (saveParcel.isEmpty()) {
+            log.add(LogType.MSG_MF_ERROR_NOOP, indent);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
+        if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
+            log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log);
+        }
+
+        // Do we require a passphrase? If so, pass it along
+        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
+            log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
+            return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
+                    masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
+                    cryptoInput.getSignatureTime()));
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -399,33 +420,45 @@ public class PgpKeyOperation {
         Date expiryTime = wsKR.getPublicKey().getExpiryTime();
         long masterKeyExpiry = expiryTime != null ? expiryTime.getTime() / 1000 : 0L;
 
-        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, saveParcel, passphrase, log);
+        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log);
 
     }
 
     private PgpEditKeyResult internal(PGPSecretKeyRing sKR, PGPSecretKey masterSecretKey,
                                      int masterKeyFlags, long masterKeyExpiry,
-                                     SaveKeyringParcel saveParcel, Passphrase passphrase,
+                                     CryptoInputParcel cryptoInput,
+                                     SaveKeyringParcel saveParcel,
                                      OperationLog log) {
 
         int indent = 1;
+
+        NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
+                cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
+                masterSecretKey.getKeyID());
 
         progress(R.string.progress_modify, 0);
 
         PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
 
-        // 1. Unlock private key
-        progress(R.string.progress_modify_unlock, 10);
-        log.add(LogType.MSG_MF_UNLOCK, indent);
         PGPPrivateKey masterPrivateKey;
-        {
-            try {
-                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
-                masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
-            } catch (PGPException e) {
-                log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
-                return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+
+        if (isDivertToCard(masterSecretKey)) {
+            masterPrivateKey = null;
+            log.add(LogType.MSG_MF_DIVERT, indent);
+        } else {
+
+            // 1. Unlock private key
+            progress(R.string.progress_modify_unlock, 10);
+            log.add(LogType.MSG_MF_UNLOCK, indent);
+            {
+                try {
+                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                            Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(cryptoInput.getPassphrase().getCharArray());
+                    masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
+                } catch (PGPException e) {
+                    log.add(LogType.MSG_MF_UNLOCK_ERROR, indent + 1);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                }
             }
         }
 
@@ -449,7 +482,7 @@ public class PgpKeyOperation {
                     String userId = saveParcel.mAddUserIds.get(i);
                     log.add(LogType.MSG_MF_UID_ADD, indent, userId);
 
-                    if (userId.equals("")) {
+                    if ("".equals(userId)) {
                         log.add(LogType.MSG_MF_UID_ERROR_EMPTY, indent + 1);
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
@@ -480,9 +513,16 @@ public class PgpKeyOperation {
                     boolean isPrimary = saveParcel.mChangePrimaryUserId != null
                             && userId.equals(saveParcel.mChangePrimaryUserId);
                     // generate and add new certificate
-                    PGPSignature cert = generateUserIdSignature(masterPrivateKey,
-                            masterPublicKey, userId, isPrimary, masterKeyFlags, masterKeyExpiry);
-                    modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
+                    try {
+                        PGPSignature cert = generateUserIdSignature(
+                                getSignatureGenerator(masterSecretKey, cryptoInput),
+                                cryptoInput.getSignatureTime(),
+                                masterPrivateKey, masterPublicKey, userId,
+                                isPrimary, masterKeyFlags, masterKeyExpiry);
+                        modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
+                    } catch (NfcInteractionNeeded e) {
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                    }
                 }
                 subProgressPop();
 
@@ -509,9 +549,15 @@ public class PgpKeyOperation {
                     PGPUserAttributeSubpacketVector vector = attribute.getVector();
 
                     // generate and add new certificate
-                    PGPSignature cert = generateUserAttributeSignature(masterPrivateKey,
-                            masterPublicKey, vector);
-                    modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
+                    try {
+                        PGPSignature cert = generateUserAttributeSignature(
+                                getSignatureGenerator(masterSecretKey, cryptoInput),
+                                cryptoInput.getSignatureTime(),
+                                masterPrivateKey, masterPublicKey, vector);
+                        modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
+                    } catch (NfcInteractionNeeded e) {
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                    }
                 }
                 subProgressPop();
 
@@ -539,9 +585,15 @@ public class PgpKeyOperation {
 
                     // a duplicate revocation will be removed during canonicalization, so no need to
                     // take care of that here.
-                    PGPSignature cert = generateRevocationSignature(masterPrivateKey,
-                            masterPublicKey, userId);
-                    modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
+                    try {
+                        PGPSignature cert = generateRevocationSignature(
+                                getSignatureGenerator(masterSecretKey, cryptoInput),
+                                cryptoInput.getSignatureTime(),
+                                masterPrivateKey, masterPublicKey, userId);
+                        modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, userId, cert);
+                    } catch (NfcInteractionNeeded e) {
+                        nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                    }
                 }
                 subProgressPop();
 
@@ -611,11 +663,18 @@ public class PgpKeyOperation {
                             log.add(LogType.MSG_MF_PRIMARY_REPLACE_OLD, indent);
                             modifiedPublicKey = PGPPublicKey.removeCertification(
                                     modifiedPublicKey, userId, currentCert);
-                            PGPSignature newCert = generateUserIdSignature(
-                                    masterPrivateKey, masterPublicKey, userId, false,
-                                    masterKeyFlags, masterKeyExpiry);
-                            modifiedPublicKey = PGPPublicKey.addCertification(
-                                    modifiedPublicKey, userId, newCert);
+                            try {
+                                PGPSignature newCert = generateUserIdSignature(
+                                        getSignatureGenerator(masterSecretKey, cryptoInput),
+                                        cryptoInput.getSignatureTime(),
+                                        masterPrivateKey, masterPublicKey, userId, false,
+                                        masterKeyFlags, masterKeyExpiry);
+                                modifiedPublicKey = PGPPublicKey.addCertification(
+                                        modifiedPublicKey, userId, newCert);
+                            } catch (NfcInteractionNeeded e) {
+                                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                            }
+
                             continue;
                         }
 
@@ -627,11 +686,17 @@ public class PgpKeyOperation {
                             log.add(LogType.MSG_MF_PRIMARY_NEW, indent);
                             modifiedPublicKey = PGPPublicKey.removeCertification(
                                     modifiedPublicKey, userId, currentCert);
-                            PGPSignature newCert = generateUserIdSignature(
-                                    masterPrivateKey, masterPublicKey, userId, true,
-                                    masterKeyFlags, masterKeyExpiry);
-                            modifiedPublicKey = PGPPublicKey.addCertification(
-                                    modifiedPublicKey, userId, newCert);
+                            try {
+                                PGPSignature newCert = generateUserIdSignature(
+                                        getSignatureGenerator(masterSecretKey, cryptoInput),
+                                        cryptoInput.getSignatureTime(),
+                                        masterPrivateKey, masterPublicKey, userId, true,
+                                        masterKeyFlags, masterKeyExpiry);
+                                modifiedPublicKey = PGPPublicKey.addCertification(
+                                        modifiedPublicKey, userId, newCert);
+                            } catch (NfcInteractionNeeded e) {
+                                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                            }
                             ok = true;
                         }
 
@@ -718,8 +783,9 @@ public class PgpKeyOperation {
                     }
 
                     PGPPublicKey pKey =
-                            updateMasterCertificates(masterPrivateKey, masterPublicKey,
-                                    flags, expiry, indent, log);
+                            updateMasterCertificates(
+                                    masterSecretKey, masterPrivateKey, masterPublicKey,
+                                    flags, expiry, cryptoInput,  nfcSignOps, indent, log);
                     if (pKey == null) {
                         // error log entry has already been added by updateMasterCertificates itself
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -756,9 +822,16 @@ public class PgpKeyOperation {
                     pKey = PGPPublicKey.removeCertification(pKey, sig);
                 }
 
+                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                cryptoInput.getPassphrase().getCharArray());
+                PGPPrivateKey subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
+                PGPSignature sig = generateSubkeyBindingSignature(
+                        getSignatureGenerator(masterSecretKey, cryptoInput),
+                        cryptoInput.getSignatureTime(),
+                        masterPublicKey, masterPrivateKey, subPrivateKey, pKey, flags, expiry);
+
                 // generate and add new signature
-                PGPSignature sig = generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey,
-                        sKey, pKey, flags, expiry, passphrase);
                 pKey = PGPPublicKey.addCertification(pKey, sig);
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
             }
@@ -782,10 +855,17 @@ public class PgpKeyOperation {
                 PGPPublicKey pKey = sKey.getPublicKey();
 
                 // generate and add new signature
-                PGPSignature sig = generateRevocationSignature(masterPublicKey, masterPrivateKey, pKey);
+                try {
+                    PGPSignature sig = generateRevocationSignature(
+                            getSignatureGenerator(masterSecretKey, cryptoInput),
+                            cryptoInput.getSignatureTime(),
+                            masterPublicKey, masterPrivateKey, pKey);
 
-                pKey = PGPPublicKey.addCertification(pKey, sig);
-                sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+                    pKey = PGPPublicKey.addCertification(pKey, sig);
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, PGPSecretKey.replacePublicKey(sKey, pKey));
+                } catch (NfcInteractionNeeded e) {
+                    nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                }
             }
             subProgressPop();
 
@@ -828,10 +908,16 @@ public class PgpKeyOperation {
 
                 // add subkey binding signature (making this a sub rather than master key)
                 PGPPublicKey pKey = keyPair.getPublicKey();
-                PGPSignature cert = generateSubkeyBindingSignature(
-                        masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
-                        add.mFlags, add.mExpiry);
-                pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
+                try {
+                    PGPSignature cert = generateSubkeyBindingSignature(
+                            getSignatureGenerator(masterSecretKey, cryptoInput),
+                            cryptoInput.getSignatureTime(),
+                            masterPublicKey, masterPrivateKey, keyPair.getPrivateKey(), pKey,
+                            add.mFlags, add.mExpiry);
+                    pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
+                } catch (NfcInteractionNeeded e) {
+                    nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+                }
 
                 PGPSecretKey sKey; {
                     // Build key encrypter and decrypter based on passphrase
@@ -840,7 +926,8 @@ public class PgpKeyOperation {
                     PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                             PgpConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                             PgpConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                    cryptoInput.getPassphrase().getCharArray());
 
                     PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
@@ -868,7 +955,7 @@ public class PgpKeyOperation {
                 indent += 1;
 
                 sKR = applyNewUnlock(sKR, masterPublicKey, masterPrivateKey,
-                        passphrase, saveParcel.mNewUnlock, log, indent);
+                        cryptoInput.getPassphrase(), saveParcel.mNewUnlock, log, indent);
                 if (sKR == null) {
                     // The error has been logged above, just return a bad state
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -892,6 +979,12 @@ public class PgpKeyOperation {
         }
 
         progress(R.string.progress_done, 100);
+
+        if (!nfcSignOps.isEmpty()) {
+            log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
+            return new PgpEditKeyResult(log, nfcSignOps.build());
+        }
+
         log.add(LogType.MSG_MF_SUCCESS, indent);
         return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
@@ -1064,8 +1157,7 @@ public class PgpKeyOperation {
         PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
                 PgpConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                 PgpConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        newPassphrase.getCharArray());
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(newPassphrase.getCharArray());
 
         // noinspection unchecked
         for (PGPSecretKey sKey : new IterableIterator<PGPSecretKey>(sKR.getSecretKeys())) {
@@ -1116,9 +1208,13 @@ public class PgpKeyOperation {
     }
 
     /** Update all (non-revoked) uid signatures with new flags and expiry time. */
-    private static PGPPublicKey updateMasterCertificates(
-            PGPPrivateKey masterPrivateKey, PGPPublicKey masterPublicKey,
-            int flags, long expiry, int indent, OperationLog log)
+    private PGPPublicKey updateMasterCertificates(
+            PGPSecretKey masterSecretKey, PGPPrivateKey masterPrivateKey,
+            PGPPublicKey masterPublicKey,
+            int flags, long expiry,
+            CryptoInputParcel cryptoInput,
+            NfcSignOperationsBuilder nfcSignOps,
+            int indent, OperationLog log)
             throws PGPException, IOException, SignatureException {
 
         // keep track if we actually changed one
@@ -1173,10 +1269,16 @@ public class PgpKeyOperation {
                     currentCert.getHashedSubPackets().isPrimaryUserID();
             modifiedPublicKey = PGPPublicKey.removeCertification(
                     modifiedPublicKey, userId, currentCert);
-            PGPSignature newCert = generateUserIdSignature(
-                    masterPrivateKey, masterPublicKey, userId, isPrimary, flags, expiry);
-            modifiedPublicKey = PGPPublicKey.addCertification(
-                    modifiedPublicKey, userId, newCert);
+            try {
+                PGPSignature newCert = generateUserIdSignature(
+                        getSignatureGenerator(masterSecretKey, cryptoInput),
+                        cryptoInput.getSignatureTime(),
+                        masterPrivateKey, masterPublicKey, userId, isPrimary, flags, expiry);
+                modifiedPublicKey = PGPPublicKey.addCertification(
+                        modifiedPublicKey, userId, newCert);
+            } catch (NfcInteractionNeeded e) {
+                nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
+            }
             ok = true;
 
         }
@@ -1191,15 +1293,37 @@ public class PgpKeyOperation {
 
     }
 
-    private static PGPSignature generateUserIdSignature(
+    static PGPSignatureGenerator getSignatureGenerator(
+            PGPSecretKey secretKey, CryptoInputParcel cryptoInput) {
+
+        PGPContentSignerBuilder builder;
+
+        S2K s2k = secretKey.getS2K();
+        if (s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
+            // use synchronous "NFC based" SignerBuilder
+            builder = new NfcSyncPGPContentSignerBuilder(
+                    secretKey.getPublicKey().getAlgorithm(),
+                    PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO,
+                    secretKey.getKeyID(), cryptoInput.getCryptoData())
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        } else {
+            // content signer based on signing key algorithm and chosen hash algorithm
+            builder = new JcaPGPContentSignerBuilder(
+                    secretKey.getPublicKey().getAlgorithm(),
+                    PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        }
+
+        return new PGPSignatureGenerator(builder);
+
+    }
+
+    private PGPSignature generateUserIdSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId, boolean primary,
             int flags, long expiry)
             throws IOException, PGPException, SignatureException {
-        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
-                PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
@@ -1223,7 +1347,7 @@ public class PgpKeyOperation {
             hashedPacketsGen.setPrimaryUserID(false, primary);
 
             /* critical subpackets: we consider those important for a modern pgp implementation */
-            hashedPacketsGen.setSignatureCreationTime(true, new Date());
+            hashedPacketsGen.setSignatureCreationTime(true, creationTime);
             // Request that senders add the MDC to the message (authenticate unsigned messages)
             hashedPacketsGen.setFeature(true, Features.FEATURE_MODIFICATION_DETECTION);
             hashedPacketsGen.setKeyFlags(true, flags);
@@ -1239,19 +1363,15 @@ public class PgpKeyOperation {
     }
 
     private static PGPSignature generateUserAttributeSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey,
             PGPUserAttributeSubpacketVector vector)
                 throws IOException, PGPException, SignatureException {
-        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
-                PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
             /* critical subpackets: we consider those important for a modern pgp implementation */
-            hashedPacketsGen.setSignatureCreationTime(true, new Date());
+            hashedPacketsGen.setSignatureCreationTime(true, creationTime);
         }
 
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
@@ -1260,29 +1380,24 @@ public class PgpKeyOperation {
     }
 
     private static PGPSignature generateRevocationSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId)
+
         throws IOException, PGPException, SignatureException {
-        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
-                PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        subHashedPacketsGen.setSignatureCreationTime(true, new Date());
+        subHashedPacketsGen.setSignatureCreationTime(true, creationTime);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         sGen.init(PGPSignature.CERTIFICATION_REVOCATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
     }
 
     private static PGPSignature generateRevocationSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey, PGPPublicKey pKey)
             throws IOException, PGPException, SignatureException {
-        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        subHashedPacketsGen.setSignatureCreationTime(true, new Date());
+        subHashedPacketsGen.setSignatureCreationTime(true, creationTime);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         // Generate key revocation or subkey revocation, depending on master/subkey-ness
         if (masterPublicKey.getKeyID() == pKey.getKeyID()) {
@@ -1294,25 +1409,11 @@ public class PgpKeyOperation {
         }
     }
 
-    private static PGPSignature generateSubkeyBindingSignature(
-            PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
-            PGPSecretKey sKey, PGPPublicKey pKey, int flags, long expiry, Passphrase passphrase)
-            throws IOException, PGPException, SignatureException {
-        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        passphrase.getCharArray());
-        PGPPrivateKey subPrivateKey = sKey.extractPrivateKey(keyDecryptor);
-        return generateSubkeyBindingSignature(masterPublicKey, masterPrivateKey, subPrivateKey,
-                pKey, flags, expiry);
-    }
-
     static PGPSignature generateSubkeyBindingSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
             PGPPrivateKey subPrivateKey, PGPPublicKey pKey, int flags, long expiry)
             throws IOException, PGPException, SignatureException {
-
-        // date for signing
-        Date creationTime = new Date();
 
         PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
@@ -1324,10 +1425,10 @@ public class PgpKeyOperation {
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                     pKey.getAlgorithm(), PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
-            sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
-            sGen.setHashedSubpackets(subHashedPacketsGen.generate());
-            PGPSignature certification = sGen.generateCertification(masterPublicKey, pKey);
+            PGPSignatureGenerator subSigGen = new PGPSignatureGenerator(signerBuilder);
+            subSigGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+            subSigGen.setHashedSubpackets(subHashedPacketsGen.generate());
+            PGPSignature certification = subSigGen.generateCertification(masterPublicKey, pKey);
             unhashedPacketsGen.setEmbeddedSignature(true, certification);
         }
 
@@ -1342,10 +1443,6 @@ public class PgpKeyOperation {
             }
         }
 
-        PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                masterPublicKey.getAlgorithm(), PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
         sGen.setUnhashedSubpackets(unhashedPacketsGen.generate());
@@ -1370,6 +1467,18 @@ public class PgpKeyOperation {
             flags |= sig.getHashedSubPackets().getKeyFlags();
         }
         return flags;
+    }
+
+    private static boolean isDummy(PGPSecretKey secretKey) {
+        S2K s2k = secretKey.getS2K();
+        return s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY;
+    }
+
+    private static boolean isDivertToCard(PGPSecretKey secretKey) {
+        S2K s2k = secretKey.getS2K();
+        return s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD;
     }
 
 }

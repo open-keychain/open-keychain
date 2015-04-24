@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Wähle Schlüssel</string>
-  <string name="title_select_secret_key">Wähle Deinen Schlüssel</string>
   <string name="title_encrypt_text">Verschlüsseln</string>
   <string name="title_encrypt_files">Verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
-  <string name="title_cloud_search_preferences">Einstellungen Cloudsuche</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_passphrase">Passwort ändern</string>
@@ -24,7 +21,6 @@
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
   <string name="title_decrypt_to_file">In eine Datei entschlüsseln</string>
   <string name="title_import_keys">Schlüssel importieren</string>
-  <string name="title_add_keys">Schlüssel hinzufügen</string>
   <string name="title_export_key">Schlüssel exportieren</string>
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
@@ -33,10 +29,8 @@
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <string name="title_log_display">Log</string>
-  <string name="title_create_key">Schlüssel erzeugen</string>
   <string name="title_exchange_keys">Schlüssel austauschen</string>
   <string name="title_advanced_key_info">Erweiterte Schlüsselinformation</string>
-  <string name="title_keys">Schlüssel</string>
   <string name="title_delete_secret_key">DEINEN Schlüssel \'%s\' löschen?</string>
   <string name="title_export_log">Log exportieren</string>
   <string name="title_manage_my_keys">Meine Schlüssel verwalten</string>
@@ -48,27 +42,18 @@
   <string name="section_cloud_evidence">Nachweise aus der Cloud</string>
   <string name="section_keys">Unterschlüssel</string>
   <string name="section_cloud_search">Cloudsuche</string>
-  <string name="section_general">Allgemein</string>
-  <string name="section_defaults">Standardwerte</string>
-  <string name="section_advanced">Fortgeschrittene Einstellungen</string>
   <string name="section_passphrase_cache">Passwort Zwischenspeicher</string>
   <string name="section_certify">Bestätigen</string>
   <string name="section_actions">Aktionen</string>
   <string name="section_share_key">Schlüssel</string>
-  <string name="section_upload_key">Schlüssel synchronisieren</string>
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_fingerprint">Fingerabdruck</string>
-  <string name="section_decrypt_files">Dateien</string>
-  <string name="section_decrypt_text">Text</string>
-  <string name="section_certs">Beglaubigungen</string>
   <string name="section_encrypt">Verschlüsseln</string>
   <string name="section_decrypt">Entschlüsseln</string>
   <string name="section_current_expiry">Aktuelles Ablaufdatum</string>
   <string name="section_new_expiry">Neues Ablaufdatum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
-  <string name="btn_decrypt_verify_message">Nachricht entschlüsseln und überprüfen</string>
-  <string name="btn_encrypt_file">Datei verschlüsseln und speichern</string>
   <string name="btn_encrypt_share_file">Datei verschlüsseln und teilen</string>
   <string name="btn_encrypt_save_file">Datei verschlüsseln und speichern</string>
   <string name="btn_save">Speichern</string>
@@ -81,7 +66,6 @@
   <string name="btn_back">Zurück</string>
   <string name="btn_no">Nein</string>
   <string name="btn_match">Fingerabdrücke stimmen überein</string>
-  <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <string name="btn_share_encrypted_signed">Nachricht verschlüsseln und teilen</string>
   <string name="btn_copy_encrypted_signed">Text verschlüsseln und kopieren</string>
   <string name="btn_view_cert_key">Beglaubigungsschlüssel anzeigen</string>
@@ -100,16 +84,13 @@
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_manage_keys">Meine Schlüssel verwalten</string>
-  <string name="menu_import_existing_key">Von Datei importieren</string>
   <string name="menu_search">Suchen</string>
   <string name="menu_nfc_preferences">NFC-Einstellungen</string>
   <string name="menu_beam_preferences">Beam-Einstellungen</string>
-  <string name="menu_key_edit_cancel">Abbrechen</string>
   <string name="menu_encrypt_to">Verschlüsseln nach…</string>
   <string name="menu_select_all">Alles auswählen</string>
-  <string name="menu_add_keys">Schlüssel hinzufügen</string>
-  <string name="menu_search_cloud">Cloud durchsuchen</string>
   <string name="menu_export_all_keys">Alle Schlüssel exportieren</string>
+  <string name="menu_update_all_keys">Alle Schlüssel aktualisieren</string>
   <string name="menu_advanced">Erweiterte Infos anzeigen</string>
   <string name="menu_certify_fingerprint">Über Fingerabdruckvergleich bestätigen</string>
   <string name="menu_export_log">Log exportieren</string>
@@ -161,6 +142,10 @@
   <string name="label_enable_compression">Komprimierung aktivieren</string>
   <string name="label_encrypt_filenames">Dateinamen verschlüsseln</string>
   <string name="label_hidden_recipients">Empfänger verbergen</string>
+  <string name="pref_keyserver">Schlüsselserver durchsuchen</string>
+  <string name="pref_keyserver_summary">HKP-Schlüsselserver durchsuchen</string>
+  <string name="pref_keybase">Keybase.io durchsuchen</string>
+  <string name="pref_keybase_summary">Keybase.io-Index durchsuchen</string>
   <string name="user_id_no_name">&lt;kein Name&gt;</string>
   <string name="none">&lt;keine&gt;</string>
   <plurals name="n_keys">
@@ -218,8 +203,8 @@
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
-  <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
-  <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
+  <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?</string>
   <string name="secret_key_deletion_confirmation">Nach dem Löschen wird es dir nicht mehr möglich sein mit diesem Schlüssel verschlüsselte Nachrichten zu lesen und zudem wirst du alle damit getätigten Bestätigungen verlieren!</string>
   <string name="public_key_deletetion_confirmation">Schlüssel löschen \'%s\'?</string>
@@ -289,6 +274,7 @@
   <string name="progress_cancelling">Abbrechen...</string>
   <string name="progress_saving">Wird gespeichert…</string>
   <string name="progress_importing">Wird importiert…</string>
+  <string name="progress_updating">Aktualisiere Schlüssel...</string>
   <string name="progress_exporting">Wird exportiert…</string>
   <string name="progress_uploading">Wird hochgeladen...</string>
   <string name="progress_building_key">Schlüssel wird erstellt…</string>
@@ -333,7 +319,7 @@
   <string name="progress_con_saving">Zusammenführung: Im Cache speichern...</string>
   <string name="progress_con_reimport">Zusammenführung: Neuimportierung...</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Suche via Name, E-Mail...</string>
+  <string name="hint_cloud_search_hint">Via Name, E-Mail durchsuchen...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_768">768</string>
@@ -451,7 +437,7 @@
   <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
   <string name="api_settings_select_key">Schlüssel auswählen</string>
-  <string name="api_settings_create_key">Erzeuge meinen Schlüssel</string>
+  <string name="api_settings_create_key">Neuen Schlüssel erzeugen</string>
   <string name="api_settings_save">Speichern</string>
   <string name="api_settings_save_msg">Benutzerkonto wurde gespeichert</string>
   <string name="api_settings_cancel">Abbrechen</string>
@@ -589,6 +575,7 @@
   <string name="create_key_edit">Schlüsselkonfiguration ändern</string>
   <string name="create_key_add_email">E-Mail-Adresse hinzufügen</string>
   <string name="create_key_add_email_text">Es sind zusätzliche E-Mail-Adressen mit diesem Schlüssel verknüpft, die zur sicheren Kommunikation verwendet werden können.</string>
+  <string name="create_key_email_already_exists_text">E-Mail wurde bereits hinzugefügt</string>
   <!--View key-->
   <string name="view_key_revoked">Widerrufen: Schlüssel darf nicht mehr genutzt werden!</string>
   <string name="view_key_expired">Abgelaufen: Der Kontakt muss die Gültigkeit des Schlüssels verlängern!</string>
@@ -1097,7 +1084,7 @@
   <string name="msg_download_query_too_short">Die Suchanfrage ist zu kurz, bitte die Suchanfrage verfeinern!</string>
   <string name="msg_download_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten, bitte die Suchanfrage verfeinern!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden, bitte die Suchanfrage prä­zi­sie­ren!</string>
-  <string name="msg_download_query_failed">Beim suchen der Schlüssel ist ein Fehler aufgetreten.</string>
+  <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Exportiere Protokoll</string>
   <string name="msg_export_log_error_fopen">Fehler beim Öffnen der Datei</string>
@@ -1112,7 +1099,7 @@
   <string name="passp_cache_notif_pwd">Passwort</string>
   <!--First Time-->
   <string name="first_time_text1">Hol dir deine Privatsphäre mit OpenKeychain zurück!</string>
-  <string name="first_time_create_key">Meinen Schlüssel erzeugen (empfohlen)</string>
+  <string name="first_time_create_key">Meinen Schlüssel erzeugen</string>
   <string name="first_time_import_key">Schlüssel aus Datei importieren</string>
   <string name="first_time_yubikey">YubiKey NEO verwenden</string>
   <string name="first_time_skip">Setup überspringen</string>

@@ -21,6 +21,7 @@ import android.content.Context;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -56,7 +58,7 @@ public class EditKeyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public EditKeyResult execute(SaveKeyringParcel saveParcel, Passphrase passphrase) {
+    public OperationResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_ED, 0);
@@ -81,7 +83,10 @@ public class EditKeyOperation extends BaseOperation {
                     CanonicalizedSecretKeyRing secRing =
                             mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
-                    modifyResult = keyOperations.modifySecretKeyRing(secRing, saveParcel, passphrase);
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
+                    if (modifyResult.isPending()) {
+                        return modifyResult;
+                    }
 
                 } catch (NotFoundException e) {
                     log.add(LogType.MSG_ED_ERROR_KEY_NOT_FOUND, 2);

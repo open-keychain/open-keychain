@@ -35,7 +35,7 @@
   * Redesigned decrypt screen
   * New icon usage and colors
   * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Subkey IDs on YubiKeys are now checked correctly
 
 
 ## 3.0.1
@@ -46,7 +46,7 @@
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
+  * Full support for YubiKey signature generation and decryption!
   * Propose installable compatible apps in apps list
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
@@ -60,7 +60,7 @@
 ## 2.9.2
 
   * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * YubiKey decryption now working via API
 
 
 ## 2.9.1
@@ -69,7 +69,7 @@
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
   * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * YubiKey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +80,7 @@
 
   * Fixing crashes introduced in v2.8
   * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Experimental YubiKey support (signing-only with imported keys)
 
 
 ## 2.8

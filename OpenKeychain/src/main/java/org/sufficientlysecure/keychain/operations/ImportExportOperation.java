@@ -230,7 +230,7 @@ public class ImportExportOperation extends BaseOperation {
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
                         }
                     }
 

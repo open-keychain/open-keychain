@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment.ServiceType;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -186,7 +187,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
     }
 
-    private void certifyLinkedIdentity (Passphrase passphrase) {
+    private void certifyLinkedIdentity (CryptoInputParcel cryptoInput) {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
@@ -235,7 +236,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PASSPHRASE, passphrase);
+        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, skp);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -257,9 +258,9 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Passphrase passphrase =
-                            data.getParcelableExtra(PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    certifyLinkedIdentity(passphrase);
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                    certifyLinkedIdentity(cryptoInput);
                 }
                 break;
             default:

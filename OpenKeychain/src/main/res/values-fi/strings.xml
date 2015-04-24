@@ -3,14 +3,11 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
-  <string name="title_select_recipients">Valitse Avaimet</string>
-  <string name="title_select_secret_key">Valitse Oma Avain</string>
   <string name="title_decrypt">Pura Salaus</string>
   <string name="title_unlock">Avaa Avain</string>
   <string name="title_add_subkey">Lisää aliavain</string>
   <string name="title_edit_key">Muokkaa avainta</string>
   <string name="title_preferences">Asetukset</string>
-  <string name="title_cloud_search_preferences">Pilvihaun Asetukset</string>
   <string name="title_api_registered_apps">Sovellukset</string>
   <string name="title_change_passphrase">Vaihda Salasana</string>
   <string name="title_share_fingerprint_with">Jaa sormenjälki...</string>
@@ -19,7 +16,6 @@
   <string name="title_encrypt_to_file">Salaa Tiedostoon</string>
   <string name="title_decrypt_to_file">Pura Tiedostoon</string>
   <string name="title_import_keys">Tuo Avaimia</string>
-  <string name="title_add_keys">Lisää Avaimia</string>
   <string name="title_export_key">Vie Avain</string>
   <string name="title_export_keys">Vie Avaimia</string>
   <string name="title_key_not_found">Avainta Ei Löydy</string>
@@ -27,28 +23,19 @@
   <string name="title_key_details">Avaimen Tiedot</string>
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
-  <string name="title_create_key">Luo Avain</string>
   <string name="title_exchange_keys">Vaihda Avaimia</string>
   <string name="title_advanced_key_info">Lisätietoa Avaimesta</string>
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
   <string name="section_keys">Aliavaimet</string>
   <string name="section_cloud_search">Pilvihaku</string>
-  <string name="section_general">Yleistä</string>
-  <string name="section_defaults">Vakiot</string>
-  <string name="section_advanced">Lisäasetukset</string>
   <string name="section_passphrase_cache">Salasanavälimuisti</string>
   <string name="section_actions">Toiminteet</string>
   <string name="section_share_key">Avain</string>
-  <string name="section_upload_key">Synkronoi Avain</string>
   <string name="section_key_server">Avainpalvelin</string>
   <string name="section_fingerprint">Sormenjälki</string>
-  <string name="section_decrypt_files">Tiedostot</string>
-  <string name="section_decrypt_text">Teksti</string>
-  <string name="section_certs">Varmenteet</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
-  <string name="btn_encrypt_file">Salaa ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
   <string name="btn_save">Tallenna</string>
   <string name="btn_do_not_save">Peruuta</string>
@@ -58,7 +45,6 @@
   <string name="btn_export_to_server">Lataa Avainpalvelimelle</string>
   <string name="btn_next">Seuraava</string>
   <string name="btn_back">Takaisin</string>
-  <string name="btn_lookup_key">Etsi avain</string>
   <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
@@ -70,14 +56,10 @@
   <string name="menu_help">Apua</string>
   <string name="menu_export_key">Vie tiedostoon</string>
   <string name="menu_delete_key">Poista avain</string>
-  <string name="menu_import_existing_key">Tuo tiedostosta</string>
   <string name="menu_search">Etsi</string>
   <string name="menu_beam_preferences">Beam asetukset</string>
-  <string name="menu_key_edit_cancel">Peruuta</string>
   <string name="menu_encrypt_to">Salaa...</string>
   <string name="menu_select_all">Valitse kaikki</string>
-  <string name="menu_add_keys">Lisää avaimia</string>
-  <string name="menu_search_cloud">Etsi pilvestä</string>
   <string name="menu_export_all_keys">Vie kaikki avaimet</string>
   <string name="menu_advanced">Näytä lisäinformaatio</string>
   <!--label-->

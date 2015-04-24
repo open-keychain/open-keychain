@@ -82,10 +82,14 @@ public class SaveKeyringParcel implements Parcelable {
         mRevokeSubKeys = new ArrayList<>();
     }
 
+    public boolean isEmpty() {
+        return isRestrictedOnly() && mChangeSubKeys.isEmpty();
+    }
+
     /** Returns true iff this parcel does not contain any operations which require a passphrase. */
     public boolean isRestrictedOnly() {
         if (mNewUnlock != null || !mAddUserIds.isEmpty() || !mAddUserAttribute.isEmpty()
-                || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeSubKeys .isEmpty()
+                || !mAddSubKeys.isEmpty() || mChangePrimaryUserId != null || !mRevokeUserIds.isEmpty()
                 || !mRevokeSubKeys.isEmpty()) {
             return false;
         }

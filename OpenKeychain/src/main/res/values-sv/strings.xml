@@ -4,8 +4,6 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_select_recipients">Välj nycklar</string>
-  <string name="title_select_secret_key">Välj din nyckel</string>
   <string name="title_encrypt_text">Kryptera</string>
   <string name="title_encrypt_files">Kryptera</string>
   <string name="title_decrypt">Dekryptera</string>
@@ -13,7 +11,6 @@
   <string name="title_add_subkey">Lägg till undernyckel</string>
   <string name="title_edit_key">Redigera nyckel</string>
   <string name="title_preferences">Inställningar</string>
-  <string name="title_cloud_search_preferences">Inställningar för molnsökning</string>
   <string name="title_api_registered_apps">Appar</string>
   <string name="title_key_server_preference">Nyckelservrar</string>
   <string name="title_change_passphrase">Ändra lösenordsfras</string>
@@ -24,7 +21,6 @@
   <string name="title_encrypt_to_file">Kryptera till fil</string>
   <string name="title_decrypt_to_file">Dekryptera till fil</string>
   <string name="title_import_keys">Importera nycklar</string>
-  <string name="title_add_keys">Lägg till nycklar</string>
   <string name="title_export_key">Exportera nyckel</string>
   <string name="title_export_keys">Exportera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
@@ -33,10 +29,8 @@
   <string name="title_key_details">Nyckelinformation</string>
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
-  <string name="title_create_key">Skapa nyckel</string>
   <string name="title_exchange_keys">Utbyt nycklar</string>
   <string name="title_advanced_key_info">Avancerad nyckelinfo</string>
-  <string name="title_keys">Nycklar</string>
   <string name="title_delete_secret_key">Radera DIN nyckel \'%s\'?</string>
   <string name="title_export_log">Exportera logg</string>
   <!--section-->
@@ -46,27 +40,18 @@
   <string name="section_cloud_evidence">Bevis från molnet</string>
   <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Molnsökning</string>
-  <string name="section_general">Allmänt</string>
-  <string name="section_defaults">Förval</string>
-  <string name="section_advanced">Avancerat</string>
   <string name="section_passphrase_cache">Cache för lösenordsfras</string>
   <string name="section_certify">Bekräfta</string>
   <string name="section_actions">Åtgärder</string>
   <string name="section_share_key">Nyckel</string>
-  <string name="section_upload_key">Synkronisera nyckel</string>
   <string name="section_key_server">Nyckelserver</string>
   <string name="section_fingerprint">Fingeravtryck</string>
-  <string name="section_decrypt_files">Filer</string>
-  <string name="section_decrypt_text">Text</string>
-  <string name="section_certs">Certifikat</string>
   <string name="section_encrypt">Kryptera</string>
   <string name="section_decrypt">Dekryptera</string>
   <string name="section_current_expiry">Aktuellt utgångsdatum</string>
   <string name="section_new_expiry">Nytt utgångsdaum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dekryptera, verifiera och spara fil</string>
-  <string name="btn_decrypt_verify_message">Avkryptera och verifiera text</string>
-  <string name="btn_encrypt_file">Kryptera och spara fil</string>
   <string name="btn_encrypt_share_file">Kryptera och dela fil</string>
   <string name="btn_encrypt_save_file">Kryptera och spara fil</string>
   <string name="btn_save">Spara</string>
@@ -79,7 +64,6 @@
   <string name="btn_back">Föregående</string>
   <string name="btn_no">Nej</string>
   <string name="btn_match">Fingeravtrycken matchar</string>
-  <string name="btn_lookup_key">Sök efter nyckel</string>
   <string name="btn_share_encrypted_signed">Kryptera och dela text</string>
   <string name="btn_copy_encrypted_signed">Kryptera och kopiera text</string>
   <string name="btn_view_cert_key">Visa nyckel för certifiering</string>
@@ -97,15 +81,11 @@
   <string name="menu_help">Hjälp</string>
   <string name="menu_export_key">Exportera till fil</string>
   <string name="menu_delete_key">Radera nyckel</string>
-  <string name="menu_import_existing_key">Importera från fil</string>
   <string name="menu_search">Sök</string>
   <string name="menu_nfc_preferences">NFC-inställningar</string>
   <string name="menu_beam_preferences">Beam-inställningar</string>
-  <string name="menu_key_edit_cancel">Avbryt</string>
   <string name="menu_encrypt_to">Kryptera till…</string>
   <string name="menu_select_all">Markera alla</string>
-  <string name="menu_add_keys">Lägg till nycklar</string>
-  <string name="menu_search_cloud">Sök i molnet</string>
   <string name="menu_export_all_keys">Exportera alla nycklar</string>
   <string name="menu_advanced">Visa avancerad information</string>
   <string name="menu_certify_fingerprint">Bekräfta via fingeravtrycksjämförelse</string>
@@ -213,9 +193,6 @@
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
   <string name="select_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
-  <string name="specify_file_to_encrypt_to">Ange vilken fil som du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
-  <string name="specify_file_to_decrypt_to">Ange vilken fil som du vill dekryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
-  <string name="specify_file_to_export_to">Ange vilken fil som du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över.</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>

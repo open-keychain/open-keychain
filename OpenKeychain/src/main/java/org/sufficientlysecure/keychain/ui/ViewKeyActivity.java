@@ -61,18 +61,23 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
@@ -80,15 +85,21 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ViewKeyActivity extends BaseActivity implements
+public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
+    public static final String EXTRA_NFC_AID = "nfc_aid";
+    public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_DELETE = 2;
     static final int REQUEST_EXPORT = 3;
+    public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
     ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
@@ -107,6 +118,8 @@ public class ViewKeyActivity extends BaseActivity implements
     private ImageView mPhoto;
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
+
+    private String mQrCodeLoaded;
 
     // NFC
     private NfcHelper mNfcHelper;
@@ -257,11 +270,55 @@ public class ViewKeyActivity extends BaseActivity implements
         mNfcHelper = new NfcHelper(this, mProviderHelper);
         mNfcHelper.initNfc(mDataUri);
 
+        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
+            OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);
+            result.createNotify(this).show();
+        }
+
+        startFragment(savedInstanceState, mDataUri);
+
+        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_NFC_AID)) {
+            Intent intent = getIntent();
+            byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
+            String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
+            byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
+            showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+        }
+
     }
 
     @Override
     protected void initLayout() {
         setContentView(R.layout.view_key_activity);
+    }
+
+    private void startFragment(Bundle savedInstanceState, final Uri dataUri) {
+        // If we're being restored from a previous state, then we don't
+        // need to do anything and should return or else we could end
+        // up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+
+                FragmentManager manager = getSupportFragmentManager();
+                if (manager.getBackStackEntryCount() == 0) {
+                    // Create an instance of the fragment
+                    final ViewKeyFragment frag = ViewKeyFragment.newInstance(dataUri);
+                    manager.beginTransaction()
+                            .replace(R.id.view_key_fragment, frag)
+                            .commit();
+                    manager.popBackStack();
+                } else {
+                    // not sure yet if we actually want this!
+                    // manager.popBackStack();
+                }
+
+            }
+        });
     }
 
     @Override
@@ -507,6 +564,72 @@ public class ViewKeyActivity extends BaseActivity implements
         }
     }
 
+    @Override
+    protected void onNfcPerform() throws IOException {
+
+        final byte[] nfcFingerprints = nfcGetFingerprints();
+        final String nfcUserId = nfcGetUserId();
+        final byte[] nfcAid = nfcGetAid();
+
+        String fp = KeyFormattingUtils.convertFingerprintToHex(nfcFingerprints);
+        final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+
+        if (!mFingerprint.equals(fp)) {
+            try {
+                CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
+                ring.getMasterKeyId();
+
+                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
+                        Style.WARN, new ActionListener() {
+                            @Override
+                            public void onAction() {
+                                Intent intent = new Intent(
+                                        ViewKeyActivity.this, ViewKeyActivity.class);
+                                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }, R.string.snack_yubikey_view).show();
+                return;
+
+            } catch (PgpKeyNotFoundException e) {
+                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
+                        Style.WARN, new ActionListener() {
+                            @Override
+                            public void onAction() {
+                                Intent intent = new Intent(
+                                        ViewKeyActivity.this, CreateKeyActivity.class);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }, R.string.snack_yubikey_import).show();
+                return;
+            }
+        }
+
+        showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+
+    }
+
+    public void showYubiKeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
+        ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
+                nfcFingerprints, nfcUserId, nfcAid);
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        manager.popBackStack("yubikey", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        manager.beginTransaction()
+                .addToBackStack("yubikey")
+                .replace(R.id.view_key_fragment, frag)
+                .commit();
+    }
+
     private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
         if (!mHasEncrypt) {
@@ -638,6 +761,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
+                        mQrCodeLoaded = fingerprint;
                         // scale the image up to our actual size. we do this in code rather
                         // than let the ImageView do this because we don't require filtering.
                         Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
@@ -705,24 +829,12 @@ public class ViewKeyActivity extends BaseActivity implements
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
+
             case LOADER_ID_UNIFIED: {
-                // if there is no data, just break
+
                 if (!data.moveToFirst()) {
-                    break;
+                    return;
                 }
-
-                String oldFingerprint = mFingerprint;
-                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                byte[] fpData = data.getBlob(INDEX_FINGERPRINT);
-                mFingerprint = KeyFormattingUtils.convertFingerprintToHex(fpData);
-
-                mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
-
-                startFragment(mIsSecret, fpData);
 
                 // get name, email, and comment from USER_ID
                 KeyRing.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
@@ -731,6 +843,15 @@ public class ViewKeyActivity extends BaseActivity implements
                 } else {
                     mName.setText(R.string.user_id_no_name);
                 }
+
+                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
+
+                mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
+                mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                 // if the refresh animation isn't playing
                 if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
@@ -768,7 +889,6 @@ public class ViewKeyActivity extends BaseActivity implements
                 } else if (mIsExpired) {
                     if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_expired_secret);
-                        mName.setText(mainUserId.name);
                     } else {
                         mStatusText.setText(R.string.view_key_expired);
                     }
@@ -787,7 +907,7 @@ public class ViewKeyActivity extends BaseActivity implements
                     mStatusImage.setVisibility(View.GONE);
                     color = getResources().getColor(R.color.primary);
                     // reload qr code only if the fingerprint changed
-                    if (!mFingerprint.equals(oldFingerprint)) {
+                    if (!mFingerprint.equals(mQrCodeLoaded)) {
                         loadQrCode(mFingerprint);
                     }
                     photoTask.execute(mMasterKeyId);
@@ -873,6 +993,7 @@ public class ViewKeyActivity extends BaseActivity implements
                 mStatusImage.setAlpha(80);
 
                 break;
+
             }
         }
     }
@@ -880,29 +1001,6 @@ public class ViewKeyActivity extends BaseActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
-    }
-
-    private void startFragment(final boolean isSecret, final byte[] fingerprint) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-
-                FragmentManager manager = getSupportFragmentManager();
-                if (manager.getBackStackEntryCount() == 0) {
-                    // Create an instance of the fragment
-                    final ViewKeyFragment frag = ViewKeyFragment.newInstance(
-                            mDataUri, isSecret, fingerprint);
-                    manager.beginTransaction()
-                            .replace(R.id.view_key_fragment, frag)
-                            .commit();
-                    manager.popBackStack();
-                } else {
-                    // not sure yet if we actually want this!
-                    // manager.popBackStack();
-                }
-
-            }
-        });
     }
 
 }

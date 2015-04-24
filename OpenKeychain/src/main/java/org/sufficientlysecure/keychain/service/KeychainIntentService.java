@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -68,6 +67,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -159,8 +159,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
-    public static final String DECRYPT_PASSPHRASE = "passphrase";
-    public static final String DECRYPT_NFC_DECRYPTED_SESSION_KEY = "nfc_decrypted_session_key";
 
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
@@ -169,6 +167,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // save keyring
     public static final String EDIT_KEYRING_PARCEL = "save_parcel";
     public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // delete keyring(s)
     public static final String DELETE_KEY_LIST = "delete_list";
@@ -193,7 +192,7 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
-    public static final String PROMOTE_TYPE = "promote_type";
+    public static final String PROMOTE_CARD_AID = "promote_card_aid";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -260,11 +259,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                 String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
 
                 // Operation
                 CertifyOperation op = new CertifyOperation(this, providerHelper, this, mActionCanceled);
-                CertifyResult result = op.certify(parcel, keyServerUri);
+                CertifyResult result = op.certify(parcel, cryptoInput, keyServerUri);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);
@@ -289,15 +289,10 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_DECRYPT_METADATA: {
 
                 try {
-                /* Input */
-                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
-                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    /* Input */
+                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                     InputData inputData = createDecryptInputData(data);
-
-                /* Operation */
-
-                    Bundle resultData = new Bundle();
 
                     // verifyText and decrypt returning additional resultData values for the
                     // verification of signatures
@@ -305,11 +300,9 @@ public class KeychainIntentService extends IntentService implements Progressable
                             this, new ProviderHelper(this), this, inputData, null
                     );
                     builder.setAllowSymmetricDecryption(true)
-                            .setPassphrase(passphrase)
-                            .setDecryptMetadataOnly(true)
-                            .setNfcState(nfcDecryptedSessionKey);
+                            .setDecryptMetadataOnly(true);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
 
                     sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
                 } catch (Exception e) {
@@ -384,7 +377,8 @@ public class KeychainIntentService extends IntentService implements Progressable
                     );
                     builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(
+                            new CryptoInputParcel());
                     outStream.close();
 
                     if (!decryptVerifyResult.success()) {
@@ -419,15 +413,13 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_DECRYPT_VERIFY: {
 
                 try {
-                /* Input */
-                    Passphrase passphrase = data.getParcelable(DECRYPT_PASSPHRASE);
-                    byte[] nfcDecryptedSessionKey = data.getByteArray(DECRYPT_NFC_DECRYPTED_SESSION_KEY);
+                    /* Input */
+                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                     InputData inputData = createDecryptInputData(data);
                     OutputStream outStream = createCryptOutputStream(data);
 
-                /* Operation */
-
+                    /* Operation */
                     Bundle resultData = new Bundle();
 
                     // verifyText and decrypt returning additional resultData values for the
@@ -436,24 +428,22 @@ public class KeychainIntentService extends IntentService implements Progressable
                             this, new ProviderHelper(this), this,
                             inputData, outStream
                     );
-                    builder.setAllowSymmetricDecryption(true)
-                            .setPassphrase(passphrase)
-                            .setNfcState(nfcDecryptedSessionKey);
+                    builder.setAllowSymmetricDecryption(true);
 
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute();
+                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
 
                     outStream.close();
 
                     resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
 
-                /* Output */
-
+                    /* Output */
                     finalizeDecryptOutputStream(data, resultData, outStream);
-
                     Log.logDebugBundle(resultData, "resultData");
 
                     sendMessageToHandler(MessageStatus.OKAY, resultData);
-                } catch (Exception e) {
+
+                } catch (IOException | PgpGeneralException e) {
+                    // TODO get rid of this!
                     sendErrorToHandler(e);
                 }
 
@@ -478,11 +468,11 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                Passphrase passphrase = data.getParcelable(EDIT_KEYRING_PASSPHRASE);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                 // Operation
                 EditKeyOperation op = new EditKeyOperation(this, providerHelper, this, mActionCanceled);
-                EditKeyResult result = op.execute(saveParcel, passphrase);
+                OperationResult result = op.execute(saveParcel, cryptoInput);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);
@@ -492,11 +482,12 @@ public class KeychainIntentService extends IntentService implements Progressable
             case ACTION_PROMOTE_KEYRING: {
 
                 // Input
-                long keyRingId = data.getInt(EXPORT_KEY_RING_MASTER_KEY_ID);
+                long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
+                byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
 
                 // Operation
                 PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
-                PromoteKeyResult result = op.execute(keyRingId);
+                PromoteKeyResult result = op.execute(keyRingId, cardAid);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);
@@ -553,11 +544,12 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 // Input
                 SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
                 // Operation
                 SignEncryptOperation op = new SignEncryptOperation(
                         this, new ProviderHelper(this), this, mActionCanceled);
-                SignEncryptResult result = op.execute(inputParcel);
+                SignEncryptResult result = op.execute(inputParcel, cryptoInput);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);

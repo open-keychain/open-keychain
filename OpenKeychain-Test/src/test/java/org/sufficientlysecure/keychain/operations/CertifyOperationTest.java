@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
@@ -152,8 +153,8 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifyId() throws Exception {
-        CertifyOperation op = operationWithFakePassphraseCache(
-                mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
+        CertifyOperation op = new CertifyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(Robolectric.application)
@@ -164,8 +165,8 @@ public class CertifyOperationTest {
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
-        CertifyResult result = op.certify(actions, null);
+                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -180,8 +181,8 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifyAttribute() throws Exception {
-        CertifyOperation op = operationWithFakePassphraseCache(
-                mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
+        CertifyOperation op = new CertifyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
 
         {
             CanonicalizedPublicKeyRing ring = new ProviderHelper(Robolectric.application)
@@ -193,7 +194,7 @@ public class CertifyOperationTest {
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(), null,
                 mStaticRing2.getPublicKey().getUnorderedUserAttributes()));
-        CertifyResult result = op.certify(actions, null);
+        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -209,14 +210,14 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifySelf() throws Exception {
-        CertifyOperation op = operationWithFakePassphraseCache(
-                mStaticRing1.getMasterKeyId(), mStaticRing1.getMasterKeyId(), mKeyPhrase1);
+        CertifyOperation op = new CertifyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
-        CertifyResult result = op.certify(actions, null);
+        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertFalse("certification with itself must fail!", result.success());
         Assert.assertTrue("error msg must be about self certification",
@@ -226,7 +227,8 @@ public class CertifyOperationTest {
     @Test
     public void testCertifyNonexistent() throws Exception {
 
-        CertifyOperation op = operationWithFakePassphraseCache(null, null, mKeyPhrase1);
+        CertifyOperation op = new CertifyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
 
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
@@ -234,7 +236,7 @@ public class CertifyOperationTest {
             uids.add("nonexistent");
             actions.add(new CertifyAction(1234L, uids, null));
 
-            CertifyResult result = op.certify(actions, null);
+            CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
             Assert.assertTrue("must contain error msg about not found",
@@ -246,38 +248,13 @@ public class CertifyOperationTest {
             actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
-            CertifyResult result = op.certify(actions, null);
+            CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
             Assert.assertTrue("must contain error msg about not found",
                     result.getLog().containsType(LogType.MSG_CRT_ERROR_MASTER_NOT_FOUND));
         }
 
-    }
-
-    private CertifyOperation operationWithFakePassphraseCache(
-            final Long checkMasterKeyId, final Long checkSubKeyId, final Passphrase passphrase) {
-
-        return new CertifyOperation(Robolectric.application,
-                new ProviderHelper(Robolectric.application),
-                null, null) {
-            @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
-                    throws NoSecretKeyException {
-                if (checkMasterKeyId != null) {
-                    Assert.assertEquals("requested passphrase should be for expected master key id",
-                            (long) checkMasterKeyId, masterKeyId);
-                }
-                if (checkSubKeyId != null) {
-                    Assert.assertEquals("requested passphrase should be for expected sub key id",
-                            (long) checkSubKeyId, subKeyId);
-                }
-                if (passphrase == null) {
-                    return null;
-                }
-                return passphrase;
-            }
-        };
     }
 
 }

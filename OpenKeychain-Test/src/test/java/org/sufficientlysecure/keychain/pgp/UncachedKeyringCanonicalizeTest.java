@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -549,7 +550,10 @@ public class UncachedKeyringCanonicalizeTest {
             CanonicalizedSecretKey masterSecretKey = canonicalized.getSecretKey();
             masterSecretKey.unlock(new Passphrase());
             PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
+            CryptoInputParcel cryptoInput = new CryptoInputParcel();
             PGPSignature cert = PgpKeyOperation.generateSubkeyBindingSignature(
+                    PgpKeyOperation.getSignatureGenerator(masterSecretKey.getSecretKey(), cryptoInput),
+                    cryptoInput.getSignatureTime(),
                     masterPublicKey, masterSecretKey.getPrivateKey(), masterSecretKey.getPrivateKey(),
                     masterPublicKey, masterSecretKey.getKeyUsage(), 0);
             PGPPublicKey subPubKey = PGPPublicKey.addSubkeyBindingCertification(masterPublicKey, cert);

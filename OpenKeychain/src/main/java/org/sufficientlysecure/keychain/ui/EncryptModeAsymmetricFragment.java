@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class EncryptAsymmetricFragment extends Fragment implements EncryptActivityInterface.UpdateListener {
+public class EncryptModeAsymmetricFragment extends Fragment {
+
+    public interface IAsymmetric {
+
+        public void onSignatureKeyIdChanged(long signatureKeyId);
+
+        public void onEncryptionKeyIdsChanged(long[] encryptionKeyIds);
+
+        public void onEncryptionUserIdsChanged(String[] encryptionUserIds);
+    }
+
     ProviderHelper mProviderHelper;
 
     // view
@@ -52,35 +62,41 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
     private EncryptKeyCompletionView mEncryptKeyView;
 
     // model
-    private EncryptActivityInterface mEncryptInterface;
+    private IAsymmetric mEncryptInterface;
 
-    @Override
-    public void onNotifyUpdate() {
-        if (mSign != null) {
-            mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
-        }
+//    @Override
+//    public void updateUi() {
+//        if (mSign != null) {
+//            mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
+//        }
+//    }
+
+    public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
+    public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static EncryptModeAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
+        EncryptModeAsymmetricFragment frag = new EncryptModeAsymmetricFragment();
+
+        Bundle args = new Bundle();
+        args.putLong(ARG_SINGATURE_KEY_ID, signatureKey);
+        args.putLongArray(ARG_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+        frag.setArguments(args);
+
+        return frag;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mEncryptInterface = (EncryptActivityInterface) activity;
+            mEncryptInterface = (IAsymmetric) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity + " must implement EncryptActivityInterface");
+            throw new ClassCastException(activity + " must implement IAsymmetric");
         }
-    }
-
-    private void setSignatureKeyId(long signatureKeyId) {
-        mEncryptInterface.setSignatureKey(signatureKeyId);
-    }
-
-    private void setEncryptionKeyIds(long[] encryptionKeyIds) {
-        mEncryptInterface.setEncryptionKeys(encryptionKeyIds);
-    }
-
-    private void setEncryptionUserIds(String[] encryptionUserIds) {
-        mEncryptInterface.setEncryptionUsers(encryptionUserIds);
     }
 
     /**
@@ -94,7 +110,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
         mSign.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
             @Override
             public void onKeyChanged(long masterKeyId) {
-                setSignatureKeyId(masterKeyId);
+                mEncryptInterface.onSignatureKeyIdChanged(masterKeyId);
             }
         });
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
@@ -109,7 +125,9 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
         mProviderHelper = new ProviderHelper(getActivity());
 
         // preselect keys given
-        preselectKeys();
+        long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
+        long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
+        preselectKeys(signatureKeyId, encryptionKeyIds);
 
         mEncryptKeyView.setTokenListener(new TokenCompleteTextView.TokenListener() {
             @Override
@@ -131,24 +149,20 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
     /**
      * If an Intent gives a signatureMasterKeyId and/or encryptionMasterKeyIds, preselect those!
      */
-    private void preselectKeys() {
-        // TODO all of this works under the assumption that the first suitable subkey is always used!
-        // not sure if we need to distinguish between different subkeys here?
-        long signatureKey = mEncryptInterface.getSignatureKey();
-        if (signatureKey != Constants.key.none) {
+    private void preselectKeys(long signatureKeyId, long[] encryptionKeyIds) {
+        if (signatureKeyId != Constants.key.none) {
             try {
                 CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingUri(signatureKey));
+                        KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
-                    setSignatureKeyId(keyring.getMasterKeyId());
-                    mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
+                    mEncryptInterface.onSignatureKeyIdChanged(keyring.getMasterKeyId());
+                    mSign.setSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
             }
         }
 
-        long[] encryptionKeyIds = mEncryptInterface.getEncryptionKeys();
         if (encryptionKeyIds != null) {
             for (long preselectedId : encryptionKeyIds) {
                 try {
@@ -181,7 +195,7 @@ public class EncryptAsymmetricFragment extends Fragment implements EncryptActivi
         for (int i = 0; i < keyIds.size(); i++) {
             keyIdsArr[i] = iterator.next();
         }
-        setEncryptionKeyIds(keyIdsArr);
-        setEncryptionUserIds(userIds.toArray(new String[userIds.size()]));
+        mEncryptInterface.onEncryptionKeyIdsChanged(keyIdsArr);
+        mEncryptInterface.onEncryptionUserIdsChanged(userIds.toArray(new String[userIds.size()]));
     }
 }

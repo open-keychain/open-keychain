@@ -1,3 +1,4 @@
+[//] : # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 

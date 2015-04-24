@@ -33,7 +33,6 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
-import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -44,11 +43,15 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -72,7 +75,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p/>
  * For a high-level operation based on URIs, see SignEncryptOperation.
  *
- * @see org.sufficientlysecure.keychain.pgp.PgpSignEncryptInput
+ * @see PgpSignEncryptInputParcel
  * @see org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult
  * @see org.sufficientlysecure.keychain.operations.SignEncryptOperation
  */
@@ -99,8 +102,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
     /**
      * Signs and/or encrypts data based on parameters of class
      */
-    public PgpSignEncryptResult execute(PgpSignEncryptInput input,
-                                        InputData inputData, OutputStream outputStream) {
+    public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input, CryptoInputParcel cryptoInput,
+                                     InputData inputData, OutputStream outputStream) {
 
         int indent = 0;
         OperationLog log = new OperationLog();
@@ -128,7 +131,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
         ArmoredOutputStream armorOut = null;
         OutputStream out;
         if (input.isEnableAsciiArmorOutput()) {
-            armorOut = new ArmoredOutputStream(outputStream);
+            armorOut = new ArmoredOutputStream(new BufferedOutputStream(outputStream, 1 << 16));
             if (input.getVersionHeader() != null) {
                 armorOut.setHeader("Version", input.getVersionHeader());
             }
@@ -145,62 +148,62 @@ public class PgpSignEncryptOperation extends BaseOperation {
         CanonicalizedSecretKey signingKey = null;
         if (enableSignature) {
 
+            updateProgress(R.string.progress_extracting_signature_key, 0, 100);
+
             try {
                 // fetch the indicated master key id (the one whose name we sign in)
                 CanonicalizedSecretKeyRing signingKeyRing =
                         mProviderHelper.getCanonicalizedSecretKeyRing(input.getSignatureMasterKeyId());
 
-                long signKeyId;
-                // use specified signing subkey, or find the one to use
-                if (input.getSignatureSubKeyId() == null) {
-                    signKeyId = signingKeyRing.getSecretSignId();
-                } else {
-                    signKeyId = input.getSignatureSubKeyId();
+                // fetch the specific subkey to sign with, or just use the master key if none specified
+                signingKey = signingKeyRing.getSecretKey(input.getSignatureSubKeyId());
+
+                // Make sure we are allowed to sign here!
+                if (!signingKey.canSign()) {
+                    log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
+                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                // fetch the specific subkey to sign with, or just use the master key if none specified
-                signingKey = signingKeyRing.getSecretKey(signKeyId);
+                switch (signingKey.getSecretKeyType()) {
+                    case DIVERT_TO_CARD:
+                    case PASSPHRASE_EMPTY: {
+                        if (!signingKey.unlock(new Passphrase())) {
+                            throw new AssertionError(
+                                    "PASSPHRASE_EMPTY/DIVERT_TO_CARD keyphrase not unlocked with empty passphrase."
+                                            + " This is a programming error!");
+                        }
+                        break;
+                    }
 
-            } catch (ProviderHelper.NotFoundException | PgpGeneralException e) {
+                    case PIN:
+                    case PATTERN:
+                    case PASSPHRASE: {
+                        if (cryptoInput.getPassphrase() == null) {
+                            log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
+                            return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
+                                    signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
+                                    cryptoInput.getSignatureTime()));
+                        }
+                        if (!signingKey.unlock(cryptoInput.getPassphrase())) {
+                            log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
+                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                        }
+                        break;
+                    }
+
+                    case GNU_DUMMY: {
+                        log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
+                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                    }
+                    default: {
+                        throw new AssertionError("Unhandled SecretKeyType! (should not happen)");
+                    }
+
+                }
+
+            } catch (ProviderHelper.NotFoundException e) {
                 log.add(LogType.MSG_PSE_ERROR_SIGN_KEY, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            }
-
-            // Make sure we are allowed to sign here!
-            if (!signingKey.canSign()) {
-                log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
-                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-            }
-
-            // if no passphrase was explicitly set try to get it from the cache service
-            if (input.getSignaturePassphrase() == null) {
-                try {
-                    // returns "" if key has no passphrase
-                    input.setSignaturePassphrase(getCachedPassphrase(signingKey.getKeyId()));
-                    // TODO
-//                    log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                    // TODO
-//                    log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                }
-
-                // if passphrase was not cached, return here indicating that a passphrase is missing!
-                if (input.getSignaturePassphrase() == null) {
-                    log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
-                    PgpSignEncryptResult result = new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_PASSPHRASE, log);
-                    result.setKeyIdPassphraseNeeded(signingKey.getKeyId());
-                    return result;
-                }
-            }
-
-            updateProgress(R.string.progress_extracting_signature_key, 0, 100);
-
-            try {
-                if (!signingKey.unlock(input.getSignaturePassphrase())) {
-                    log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
-                    return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                }
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_UNLOCK, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -281,8 +284,9 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
             try {
                 boolean cleartext = input.isCleartextSignature() && input.isEnableAsciiArmorOutput() && !enableEncryption;
-                signatureGenerator = signingKey.getSignatureGenerator(
-                        input.getSignatureHashAlgorithm(), cleartext, input.getNfcSignedHash(), input.getNfcCreationTimestamp());
+                signatureGenerator = signingKey.getDataSignatureGenerator(
+                        input.getSignatureHashAlgorithm(), cleartext,
+                        cryptoInput.getCryptoData(), cryptoInput.getSignatureTime());
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_NFC, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -405,7 +409,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 detachedByteOut = new ByteArrayOutputStream();
                 OutputStream detachedOut = detachedByteOut;
                 if (input.isEnableAsciiArmorOutput()) {
-                    detachedArmorOut = new ArmoredOutputStream(detachedOut);
+                    detachedArmorOut = new ArmoredOutputStream(new BufferedOutputStream(detachedOut, 1 << 16));
                     if (input.getVersionHeader() != null) {
                         detachedArmorOut.setHeader("Version", input.getVersionHeader());
                     }
@@ -485,19 +489,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
                     // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
                     log.add(LogType.MSG_PSE_PENDING_NFC, indent);
-                    PgpSignEncryptResult result =
-                            new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_PENDING_NFC, log);
-
-                    // SignatureSubKeyId can be null.
-                    if (input.getSignatureSubKeyId() == null) {
-                        return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
-                    }
-
-                    // Note that the checked key here is the master key, not the signing key
-                    // (although these are always the same on Yubikeys)
-                    result.setNfcData(input.getSignatureSubKeyId(), e.hashToSign, e.hashAlgo, e.creationTimestamp, input.getSignaturePassphrase());
-                    Log.d(Constants.TAG, "e.hashToSign" + Hex.toHexString(e.hashToSign));
-                    return result;
+                    return new PgpSignEncryptResult(log, RequiredInputParcel.createNfcSignOperation(
+                            e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()));
                 }
             }
 

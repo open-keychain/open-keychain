@@ -1,51 +1,52 @@
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 ## 3.2beta2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * マテリアルデザイン
+  * QRスキャナの統合 (新しいパーミッションを必要とします)
+  * 鍵生成ウィザードの改善
+  * 同期後に連絡先を見失う問題の修正
+  * Android 4を必要とします
+  * 鍵画面の再デザイン
+  * 暗号の設定をシンプル化、より良いセキュアな暗号の選択方法
+  * API: 分離署名、署名する鍵の選択がフリーとなる、...
+  * 修正: いくつかの正しい鍵が破棄もしくは期限切れとして表示される
+  * 副鍵が期限切れもしくは破棄されている場合に署名を受け入れない
+  * 拡張ビューでのKeybase.ioのサポート
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * 鍵のファイルへのエクスポートの修正 (現実的になりました)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * 鍵のファイルへのエクスポートの修正 (部分的に修正)
+  * Android 2.3でのクラッシュ修正
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Android 5でのクラッシュ修正
+  * 新しい検証画面
+  * セキュアな鍵リストの直接交換(SafeSlinger ライブラリ)
+  * 新しいQRコードのプログラムフロー
+  * 復号化画面の再デザイン
+  * 新しいアイコン利用とカラー
+  * Symantec Encryption Desktopから秘密鍵をインポート時の問題修正
+  * Yubikeyでの副鍵IDを正くチェックするようになりました
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * 巨大な鍵のインポートのより良い取り扱い
+  * 副鍵選択の改善
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
+  * Yubikeyでの署名生成と復号化のフルサポート
   * Propose installable compatible apps in apps list
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
@@ -53,67 +54,67 @@
   * User interface to generate custom keys
   * Fixing user id revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * OpenKeychain内で鍵をストリップするのをサポートしました
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * 2.9.1での鍵破壊問題修正
+  * API経由でYubikeyの復号処理が動くようになった
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * 暗号化スクリーンを2つに分割
+  * 鍵のフラグ管理を修正 (現在Mailvelope 0.7 鍵をサポート)
+  * パスフレーズの取り回しを改善
+  * SafeSlingerでの鍵の共有
+  * Yubikey: 設定で他のPINを受け付け、現在OpenPGP API経由での署名しか動きません、OpenKeychainの内部ではないため
+  * ストリップした鍵の利用法を修正
+  * 互換性のためデフォルトをSHA256に
+  * インテント API を変更しました、以下参照 https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * OpenPGP API は現在破棄/期限切れの鍵を扱えるようになり、またすべてのユーザIDを返すようになりました
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * v2.8 から発生したクラッシュ問題をFix
+  * 実験的にECCをサポート
+  * 実験的にYubikeyをサポート(インポート済みの鍵での署名のみ)
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * そして主要な新しい機能を主眼としたこのリリースでたくさんのバグが修正されました
+  * 鍵編集: 新しいすごいデザイン、鍵の破棄
+  * 鍵インポート: 新しいすごいデザイン、hkps経由での鍵サーバとの安全な接続、そしてDNS SRVレコードによる鍵サーバの解決
+  * 新しい初回表示
+  * 新しい鍵生成画面: Androidのあなたの個人アカウントをベースとした名前とメールの自動補完
+  * ファイル暗号化: 新しいすごいデザイン、複数ファイルの暗号化をサポートする
+  * 鍵のステータス表示の新しいアイコン(Brennan Novak提供)
+  * 重要なバグ修正: 巨大な鍵コレクションをファイルからインポートするのが可能になりました
+  * キャッシュしたパスフレーズの通知表示
+  * 鍵のアドレスをAndroidの連絡先と連携するようにした
 
-<p>This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar</p>
+Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfiharの働きなくしてはこのリリースはありませんでした
 
 ## 2.7
 
   * Purple! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * 新しい鍵のビューのデザイン (Dominik, Vincent)
+  * 新しいフラットな Android ボタン (Dominik, Vincent)
+  * API のフィックス (Dominik)
+  * Keybase.io からのインポート (Tim Bray)
 
 
 ## 2.6.1
 
-  * Some fixes for regression bugs
+  * いくつかのリグレッションバグ修正
 
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
+  * 鍵証明 (ありがとうVincent Breitmoser)
   * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
   * New design for signature verification
   * Custom key length (thanks to Greg Witczak)
@@ -129,9 +130,9 @@
 
 
 ## 2.4
-<p>Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
+Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
 Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
-Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.</p>
+Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
   * New unified key list
   * Colorized key fingerprint

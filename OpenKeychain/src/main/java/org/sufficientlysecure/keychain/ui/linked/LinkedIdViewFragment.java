@@ -1,7 +1,7 @@
 package org.sufficientlysecure.keychain.ui.linked;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -86,6 +87,7 @@ public class LinkedIdViewFragment extends Fragment implements
     private ViewHolder mViewHolder;
     private int mLidRank;
     private OnIdentityLoadedListener mIdLoadedListener;
+    private long mCertifyKeyId;
 
     public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
             boolean isSecret, byte[] fingerprint) throws IOException {
@@ -183,7 +185,7 @@ public class LinkedIdViewFragment extends Fragment implements
     }
 
     public interface OnIdentityLoadedListener {
-        public void onIdentityLoaded();
+        void onIdentityLoaded();
     }
 
     public void setOnIdentityLoadedListener(OnIdentityLoadedListener listener) {
@@ -500,8 +502,8 @@ public class LinkedIdViewFragment extends Fragment implements
         }
 
         // get the user's passphrase for this key (if required)
-        long certifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
-        if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
+        mCertifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
+        if (mCertifyKeyId == key.none || mCertifyKeyId == key.symmetric) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 SubtleAttentionSeeker.tint(mViewHolder.vKeySpinnerContainer, 600).start();
             } else {
@@ -513,7 +515,7 @@ public class LinkedIdViewFragment extends Fragment implements
         Passphrase passphrase;
         try {
             passphrase = PassphraseCacheService.getCachedPassphrase(
-                    getActivity(), certifyKeyId, certifyKeyId);
+                    getActivity(), mCertifyKeyId, mCertifyKeyId);
         } catch (PassphraseCacheService.KeyNotFoundException e) {
             Log.e(Constants.TAG, "Key not found!", e);
             getActivity().finish();
@@ -521,11 +523,11 @@ public class LinkedIdViewFragment extends Fragment implements
         }
         if (passphrase == null) {
             Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, certifyKeyId);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mCertifyKeyId);
             startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
             // bail out; need to wait until the user has entered the passphrase before trying again
         } else {
-            certifyResource(certifyKeyId, "");
+            certifyResource(new CryptoInputParcel());
         }
     }
 
@@ -534,13 +536,9 @@ public class LinkedIdViewFragment extends Fragment implements
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    String passphrase = data.getStringExtra(
-                            PassphraseDialogActivity.MESSAGE_DATA_PASSPHRASE);
-                    long certifyKeyId = data.getLongExtra(PassphraseDialogActivity.EXTRA_KEY_ID, 0L);
-                    if (certifyKeyId == 0L) {
-                        throw new AssertionError("key id must not be 0");
-                    }
-                    certifyResource(certifyKeyId, passphrase);
+                    CryptoInputParcel cryptoInput = data.getParcelableExtra(
+                            PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                    certifyResource(cryptoInput);
                 }
                 return;
             }
@@ -551,7 +549,7 @@ public class LinkedIdViewFragment extends Fragment implements
         }
     }
 
-    private void certifyResource(long certifyKeyId, String passphrase) {
+    private void certifyResource(CryptoInputParcel cryptoInput) {
 
         if (mIsSecret) {
             return;
@@ -564,13 +562,15 @@ public class LinkedIdViewFragment extends Fragment implements
 
             long masterKeyId = KeyFormattingUtils.convertFingerprintToKeyId(mFingerprint);
             CertifyAction action = new CertifyAction(masterKeyId, null,
-                    Arrays.asList(mLinkedId.toUserAttribute()));
+                    Collections.singletonList(mLinkedId.toUserAttribute()));
 
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(certifyKeyId);
-            parcel.mCertifyActions.addAll(Arrays.asList(action));
-
+            CertifyActionsParcel parcel = new CertifyActionsParcel(mCertifyKeyId);
+            parcel.mCertifyActions.addAll(Collections.singletonList(action));
             data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
+
+            data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
+
             /* if (mUploadKeyCheckbox.isChecked()) {
                 String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
                 data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);

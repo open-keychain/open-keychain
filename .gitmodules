@@ -1,14 +1,6 @@
-[submodule "extern/StickyListHeaders"]
-	path = extern/StickyListHeaders
-	url = https://github.com/open-keychain/StickyListHeaders.git
-	ignore = dirty
 [submodule "extern/spongycastle"]
 	path = extern/spongycastle
 	url = https://github.com/open-keychain/spongycastle.git
-	ignore = dirty
-[submodule "extern/html-textview"]
-	path = extern/html-textview
-	url = https://github.com/open-keychain/html-textview.git
 	ignore = dirty
 [submodule "extern/openpgp-api-lib"]
 	path = extern/openpgp-api-lib
@@ -26,10 +18,6 @@
 	path = extern/minidns
 	url = https://github.com/open-keychain/minidns.git
 	ignore = dirty
-[submodule "extern/TokenAutoComplete"]
-	path = extern/TokenAutoComplete
-	url = https://github.com/open-keychain/TokenAutoComplete
-        ignore = dirty
 [submodule "extern/safeslinger-exchange"]
 	path = extern/safeslinger-exchange
 	url = https://github.com/open-keychain/exchange-android

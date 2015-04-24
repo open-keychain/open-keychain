@@ -1165,7 +1165,7 @@ public class UncachedKeyRing {
                     }
                 }
 
-                // If anything changed, save the updated (sub)key
+                // If anything change, save the updated (sub)key
                 if (modified != resultKey) {
                     result = replacePublicKey(result, modified);
                 }
