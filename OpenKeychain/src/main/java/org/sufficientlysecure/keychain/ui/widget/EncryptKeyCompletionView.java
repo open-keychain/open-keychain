@@ -108,9 +108,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
-
         if (getContext() instanceof FragmentActivity) {
+            mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
             mLoaderManager.initLoader(hashCode(), null, this);
         } else {
             Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
