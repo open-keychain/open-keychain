@@ -240,7 +240,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                             }
                             case KeychainIntentService.ACTION_DECRYPT_VERIFY: {
                                 // display signature result in activity
-                                onResult(pgpResult);
+                                loadVerifyResult(pgpResult);
 
                                 if (mDeleteAfter.isChecked()) {
                                     // Create and show dialog to delete original file
@@ -308,4 +308,8 @@ public class DecryptFilesFragment extends DecryptFragment {
         }
     }
 
+    @Override
+    protected void onVerifyLoaded(boolean verified) {
+
+    }
 }
