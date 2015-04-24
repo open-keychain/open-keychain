@@ -1370,5 +1370,6 @@
     <string name="linked_text_verifying">Verifying…</string>
     <string name="linked_text_error">Error</string>
     <string name="linked_text_confirming">Confirming…</string>
+    <string name="linked_ids_more_unknown">%d more unknown identity types</string>
 
 </resources>

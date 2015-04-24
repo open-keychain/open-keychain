@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.LoaderManager;
@@ -45,12 +43,11 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.ViewHolder.VerifyState;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -60,13 +57,10 @@ import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class LinkedIdViewFragment extends Fragment implements
+public class LinkedIdViewFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnBackStackChangedListener {
-
-    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
 
     private static final String ARG_DATA_URI = "data_uri";
     private static final String ARG_LID_RANK = "rank";
@@ -512,44 +506,20 @@ public class LinkedIdViewFragment extends Fragment implements
             return;
         }
 
-        Passphrase passphrase;
-        try {
-            passphrase = PassphraseCacheService.getCachedPassphrase(
-                    getActivity(), mCertifyKeyId, mCertifyKeyId);
-        } catch (PassphraseCacheService.KeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key not found!", e);
-            getActivity().finish();
-            return;
-        }
-        if (passphrase == null) {
-            Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mCertifyKeyId);
-            startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-            // bail out; need to wait until the user has entered the passphrase before trying again
-        } else {
-            certifyResource(new CryptoInputParcel());
-        }
+        cryptoOperation();
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PASSPHRASE: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    CryptoInputParcel cryptoInput = data.getParcelableExtra(
-                            PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                    certifyResource(cryptoInput);
-                }
-                return;
-            }
+    protected void onCryptoOperationCancelled() {
+        super.onCryptoOperationCancelled();
 
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-        }
+        // go back to 'verified ok'
+        setShowVerifying(false);
+
     }
 
-    private void certifyResource(CryptoInputParcel cryptoInput) {
+    @Override
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
 
         if (mIsSecret) {
             return;
@@ -588,9 +558,13 @@ public class LinkedIdViewFragment extends Fragment implements
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
-                Bundle data = message.getData();
+                // handle pending messages
+                if (handlePendingMessage(message)) {
+                    return;
+                }
 
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                    Bundle data = message.getData();
                     CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();
                     // no need to do anything else, we will get a loader refresh!

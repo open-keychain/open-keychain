@@ -312,10 +312,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             .replace(R.id.view_key_fragment, frag)
                             .commit();
                     manager.popBackStack();
-                } else {
+                } /* else {
                     // not sure yet if we actually want this!
-                    // manager.popBackStack();
-                }
+                    manager.popBackStack();
+                } */
 
             }
         });

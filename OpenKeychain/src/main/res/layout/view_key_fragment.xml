@@ -1,7 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,6 +49,8 @@
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible"
             card_view:cardBackgroundColor="@android:color/white"
             card_view:cardElevation="2dp"
             card_view:cardUseCompatPadding="true"
@@ -84,7 +87,7 @@
                     android:drawablePadding="3dp"
                     android:clickable="true"
                     android:textColor="@color/tertiary_text_light"
-                    android:text="%d more unknown identity types"
+                    android:text="@string/linked_ids_more_unknown"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     android:background="?android:selectableItemBackground" />

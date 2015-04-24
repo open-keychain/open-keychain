@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.ui.linked;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -8,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,14 +26,11 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment.ServiceType;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
-public abstract class LinkedIdCreateFinalFragment extends Fragment {
-
-    protected static final int REQUEST_CODE_PASSPHRASE = 0x00007008;
+public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragment {
 
     protected LinkedIdWizard mLinkedIdWizard;
 
@@ -63,7 +58,7 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startCertify();
+                cryptoOperation();
             }
         });
 
@@ -174,28 +169,27 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
 
     }
 
-    private void startCertify() {
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
 
         if (mVerifiedResource == null) {
             Notify.create(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR).show();
             return;
         }
 
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mLinkedIdWizard.mMasterKeyId);
-        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-
-    }
-
-    private void certifyLinkedIdentity (CryptoInputParcel cryptoInput) {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_saving),
                 ProgressDialog.STYLE_HORIZONTAL,
                 true, ServiceType.KEYCHAIN_INTENT) {
+
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
+
+                // handle pending messages
+                if (handlePendingMessage(message)) {
+                    return;
+                }
 
                 if (message.arg1 == MessageStatus.OKAY.ordinal()) {
 
@@ -250,22 +244,6 @@ public abstract class LinkedIdCreateFinalFragment extends Fragment {
         // start service with intent
         getActivity().startService(intent);
 
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_PASSPHRASE:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                    certifyLinkedIdentity(cryptoInput);
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
 }
