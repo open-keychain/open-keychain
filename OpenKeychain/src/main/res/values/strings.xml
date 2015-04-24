@@ -79,7 +79,8 @@
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
-    <string name="btn_add_share_decrypted_text">"Share decrypted text"</string>
+    <string name="btn_share_decrypted_text">"Share decrypted text"</string>
+    <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
     <string name="btn_decrypt_clipboard">"Decrypt text from clipboard"</string>
     <string name="btn_decrypt_and_verify">"and verify signatures"</string>
     <string name="btn_decrypt_files">"Decrypt files"</string>
@@ -284,16 +285,16 @@
     <!-- results shown after decryption/verification -->
     <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
-    <string name="decrypt_result_signature_uncertified">"Signed by (not certified!)"</string>
-    <string name="decrypt_result_signature_certified">"Signed by"</string>
-    <string name="decrypt_result_signature_expired_key">"Key is expired!"</string>
-    <string name="decrypt_result_signature_revoked_key">"Key has been revoked!"</string>
-    <string name="decrypt_result_signature_missing_key">"Unknown public key"</string>
+    <string name="decrypt_result_signature_uncertified">"Signed by <b>unconfirmed</b> key"</string>
+    <string name="decrypt_result_signature_certified">"Signed by confirmed key"</string>
+    <string name="decrypt_result_signature_expired_key">"Signed by <b>expired</b> key!"</string>
+    <string name="decrypt_result_signature_revoked_key">"Signed by <b>revoked</b> key!"</string>
+    <string name="decrypt_result_signature_missing_key">"Signed by <b>unknown public key</b>"</string>
     <string name="decrypt_result_encrypted">"Encrypted"</string>
     <string name="decrypt_result_not_encrypted">"Not Encrypted"</string>
     <string name="decrypt_result_action_show">"Show"</string>
     <string name="decrypt_result_action_Lookup">"Lookup"</string>
-    <string name="decrypt_invalid_text">"Either the signature is invalid or the key has been revoked/is expired. You cannot be sure who wrote the text. Do you still want to display it?"</string>
+    <string name="decrypt_invalid_text">"Either the signature is invalid or the key has been revoked. You cannot be sure who wrote the text. Do you still want to display it?"</string>
     <string name="decrypt_invalid_button">"I understand the risks, display it!"</string>
 
     <!-- Add keys -->

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/result_main_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/holo_gray_bright">
+    android:background="@color/holo_gray_bright"
+    tools:showIn="@layout/decrypt_text_fragment">
 
     <LinearLayout
         android:orientation="vertical"
@@ -13,7 +15,8 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="4dp"
-        android:paddingBottom="4dp">
+        android:paddingBottom="4dp"
+        android:animateLayoutChanges="true">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -32,10 +35,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Not Encrypted (set in-code)"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                tools:text="Encryption status text"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -55,25 +59,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Signed by (set in-code)"
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                tools:text="Signature status text"
+                />
         </LinearLayout>
-
-        <View
-            android:id="@+id/result_signature_divider1"
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_marginLeft="32dp"
-            android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/result_signature_layout"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
             android:clickable="true"
-            android:layout_marginLeft="32dp"
+            android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
@@ -83,6 +81,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:paddingRight="4dp"
+                android:paddingLeft="4dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
@@ -91,15 +90,16 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Alice (set in-code)" />
+                    tools:text="Alice" />
 
                 <TextView
                     android:id="@+id/result_signature_email"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="alice@example.com (set in-code)"
-                    android:gravity="center_vertical" />
+                    android:gravity="center_vertical"
+                    tools:text="alice@example.com"
+                    />
 
             </LinearLayout>
 
@@ -114,6 +114,7 @@
             <TextView
                 android:id="@+id/result_signature_action"
                 android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -121,16 +122,9 @@
                 android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
                 android:drawablePadding="8dp"
                 android:gravity="center_vertical"
-                android:background="?android:selectableItemBackground" />
+                />
 
         </LinearLayout>
-
-        <View
-            android:id="@+id/result_signature_divider2"
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:layout_marginLeft="32dp"
-            android:background="?android:attr/listDivider" />
 
     </LinearLayout>
 

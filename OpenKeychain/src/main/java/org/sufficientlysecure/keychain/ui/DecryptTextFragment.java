@@ -23,6 +23,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,7 +42,6 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.UnsupportedEncodingException;
@@ -54,6 +56,7 @@ public class DecryptTextFragment extends DecryptFragment {
 
     // model
     private String mCiphertext;
+    private boolean mShowMenuOptions = false;
 
     /**
      * Creates new instance of this fragment
@@ -78,22 +81,6 @@ public class DecryptTextFragment extends DecryptFragment {
         mValidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_valid);
         mInvalidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_invalid);
         mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
-
-        View vShareButton = view.findViewById(R.id.action_decrypt_share_plaintext);
-        vShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(sendWithChooserExcludingEncrypt(mText.getText().toString()));
-            }
-        });
-
-        View vCopyButton = view.findViewById(R.id.action_decrypt_copy_plaintext);
-        vCopyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                copyToClipboard(mText.getText().toString());
-            }
-        });
 
         Button vInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
         vInvalidButton.setOnClickListener(new View.OnClickListener() {
@@ -139,11 +126,40 @@ public class DecryptTextFragment extends DecryptFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
         if (ciphertext != null) {
             mCiphertext = ciphertext;
             cryptoOperation(new CryptoInputParcel());
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (mShowMenuOptions) {
+            inflater.inflate(R.menu.decrypt_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.decrypt_share: {
+                startActivity(sendWithChooserExcludingEncrypt(mText.getText().toString()));
+                break;
+            }
+            case R.id.decrypt_copy: {
+                copyToClipboard(mText.getText().toString());
+                break;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -206,15 +222,8 @@ public class DecryptTextFragment extends DecryptFragment {
                         pgpResult.createNotify(getActivity()).show();
 
                         // display signature result in activity
-                        boolean valid = onResult(pgpResult);
+                        loadVerifyResult(pgpResult);
 
-                        if (valid) {
-                            mInvalidLayout.setVisibility(View.GONE);
-                            mValidLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            mInvalidLayout.setVisibility(View.VISIBLE);
-                            mValidLayout.setVisibility(View.GONE);
-                        }
                     } else {
                         pgpResult.createNotify(getActivity()).show();
                         // TODO: show also invalid layout with different text?
@@ -234,4 +243,19 @@ public class DecryptTextFragment extends DecryptFragment {
         getActivity().startService(intent);
     }
 
+    @Override
+    protected void onVerifyLoaded(boolean verified) {
+
+        mShowMenuOptions = verified;
+        getActivity().supportInvalidateOptionsMenu();
+
+        if (verified) {
+            mInvalidLayout.setVisibility(View.GONE);
+            mValidLayout.setVisibility(View.VISIBLE);
+        } else {
+            mInvalidLayout.setVisibility(View.VISIBLE);
+            mValidLayout.setVisibility(View.GONE);
+        }
+
+    }
 }
