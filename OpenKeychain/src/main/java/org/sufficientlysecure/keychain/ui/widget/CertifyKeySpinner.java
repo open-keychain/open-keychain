@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
 public class CertifyKeySpinner extends KeySpinner {
     private long mHiddenMasterKeyId = Constants.key.none;
+    private boolean mIsSingle;
 
     public CertifyKeySpinner(Context context) {
         super(context);
@@ -99,6 +100,7 @@ public class CertifyKeySpinner extends KeySpinner {
             // - there are actually keys (not just "none" entry)
             // Then:
             // - select key that is capable of certifying, but only if there is only one key capable of it
+            mIsSingle = false;
             if (mSelectedKeyId == Constants.key.none && mAdapter.getCount() > 1) {
                 // preselect if key can certify
                 int selection = -1;
@@ -106,9 +108,11 @@ public class CertifyKeySpinner extends KeySpinner {
                     if (!data.isNull(mIndexHasCertify)) {
                         if (selection == -1) {
                             selection = data.getPosition() + 1;
+                            mIsSingle = true;
                         } else {
                             // if selection is already set, we have more than one certify key!
                             // get back to "none"!
+                            mIsSingle = false;
                             selection = 0;
                         }
                     }
@@ -118,6 +122,9 @@ public class CertifyKeySpinner extends KeySpinner {
         }
     }
 
+    public boolean isSingleEntry() {
+        return mIsSingle && getSelectedItemPosition() != 0;
+    }
 
     @Override
     boolean setStatus(Context context, Cursor cursor, ImageView statusView) {

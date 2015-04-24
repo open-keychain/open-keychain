@@ -298,7 +298,9 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     vProgress.setDisplayedChild(1);
                     if (!isSecret) {
                         showButton(2);
-                        vKeySpinnerContainer.setVisibility(View.VISIBLE);
+                        if (!vKeySpinner.isSingleEntry()) {
+                            vKeySpinnerContainer.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         showButton(1);
                         vKeySpinnerContainer.setVisibility(View.GONE);
