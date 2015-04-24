@@ -639,6 +639,7 @@
     <string name="create_key_add_email">"Add email address"</string>
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
+    <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>
