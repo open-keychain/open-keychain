@@ -5,13 +5,13 @@
     <item
         android:id="@+id/decrypt_copy"
         android:title="@string/btn_copy_decrypted_text"
-        android:icon="@drawable/ic_action_encrypt_copy_24dp"
+        android:icon="@drawable/ic_content_copy_black_24dp"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/decrypt_share"
         android:title="@string/btn_share_decrypted_text"
-        android:icon="@drawable/ic_action_encrypt_share_24dp"
+        android:icon="@drawable/ic_share_black_24dp"
         app:showAsAction="ifRoom" />
 
 </menu>

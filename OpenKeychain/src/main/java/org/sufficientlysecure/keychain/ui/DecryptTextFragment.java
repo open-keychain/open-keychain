@@ -97,9 +97,9 @@ public class DecryptTextFragment extends DecryptFragment {
     /**
      * Create Intent Chooser but exclude decrypt activites
      */
-    private Intent sendWithChooserExcludingEncrypt(String text) {
+    private Intent sendWithChooserExcludingDecrypt(String text) {
         Intent prototype = createSendIntent(text);
-        String title = getString(R.string.title_share_file);
+        String title = getString(R.string.title_share_message);
 
         // we don't want to decrypt the decrypted, no inception ;)
         String[] blacklist = new String[]{
@@ -147,7 +147,7 @@ public class DecryptTextFragment extends DecryptFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.decrypt_share: {
-                startActivity(sendWithChooserExcludingEncrypt(mText.getText().toString()));
+                startActivity(sendWithChooserExcludingDecrypt(mText.getText().toString()));
                 break;
             }
             case R.id.decrypt_copy: {
