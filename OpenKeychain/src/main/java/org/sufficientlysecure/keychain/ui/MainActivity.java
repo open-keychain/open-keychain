@@ -49,7 +49,8 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
     private KeyListFragment mKeyListFragment ;
     private AppsListFragment mAppsListFragment;
     private EncryptDecryptOverviewFragment mEncryptDecryptOverviewFragment;
-    private Fragment lastUsedFragment;
+    private Fragment mLastUsedFragment;
+    private Toolbar mToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,14 +64,14 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
         transaction.replace(R.id.main_fragment_container, mainFragment);
         transaction.commit();
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
-        toolbar.setTitle(R.string.app_name);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        mToolbar.setTitle(R.string.app_name);
+        setSupportActionBar(mToolbar);
 
         result = new Drawer()
                 .withActivity(this)
                 .withHeader(R.layout.main_drawer_header)
-                .withToolbar(toolbar)
+                .withToolbar(mToolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key).withIdentifier(1).withCheckable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock).withIdentifier(2).withCheckable(false),
@@ -144,7 +145,7 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
-        this.lastUsedFragment = fragment;
+        this.mLastUsedFragment = fragment;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.main_fragment_container, fragment);
         if (addToBackStack) {
@@ -154,6 +155,7 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
     }
 
     private boolean onKeysSelected() {
+        mToolbar.setTitle(R.string.app_name);
         clearFragments();
 
         if (mKeyListFragment == null) {
@@ -165,6 +167,7 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
     }
 
     private boolean onEnDecryptSelected() {
+        mToolbar.setTitle(R.string.nav_encrypt_decrypt);
         clearFragments();
         if (mEncryptDecryptOverviewFragment == null) {
             mEncryptDecryptOverviewFragment = new EncryptDecryptOverviewFragment();
@@ -175,6 +178,7 @@ public class MainActivity extends ActionBarActivity implements FabContainer {
     }
 
     private boolean onAppsSelected() {
+        mToolbar.setTitle(R.string.nav_apps);
         clearFragments();
         if (mAppsListFragment == null) {
             mAppsListFragment = new AppsListFragment();
