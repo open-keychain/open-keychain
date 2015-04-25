@@ -23,6 +23,11 @@ dependencies {
     compile "com.splitwise:tokenautocomplete:1.3.3@aar"
     compile 'se.emilsjolander:stickylistheaders:2.6.0'
     compile 'org.sufficientlysecure:html-textview:1.1'
+    compile 'com.mikepenz.materialdrawer:library:2.7.9@aar'
+    compile 'com.mikepenz.iconics:library:0.9.1@aar'
+    compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
+    compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
+    compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib')
@@ -56,6 +61,11 @@ dependencyVerification {
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
             'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
             'org.sufficientlysecure:html-textview:ca24b1522be88378634093815ce9ff1b4920c72e7513a045a7846e14069ef988',
+            'com.mikepenz.materialdrawer:library:3ef80c6e1ca1b29cfcbb27fa7927c02b2246e068c17fe52283703c4897449923',
+            'com.mikepenz.iconics:library:4698a36ee4c2af765d0a85779c61474d755b90d66a59020105b6760a8a909e9e',
+            'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
+            'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
+            'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
 //            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
 //            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
 //            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
