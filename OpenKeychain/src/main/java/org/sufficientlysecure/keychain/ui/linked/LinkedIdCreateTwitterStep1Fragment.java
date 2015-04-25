@@ -66,11 +66,17 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
                 final String handle = mEditHandle.getText().toString();
 
+                if ("".equals(handle)) {
+                    mEditHandle.setError("Please input a Twitter handle!");
+                    return;
+                }
+
                 new AsyncTask<Void,Void,Boolean>() {
 
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        return true; // return checkHandle(handle);
+                        return true;
+                        // return checkHandle(handle);
                     }
 
                     @Override
@@ -79,13 +85,15 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
                         if (result == null) {
                             Notify.create(getActivity(),
-                                    "Connection error while checking username!", Notify.Style.ERROR);
+                                    "Connection error while checking username!",
+                                    Notify.Style.ERROR).show(LinkedIdCreateTwitterStep1Fragment.this);
                             return;
                         }
 
                         if (!result) {
                             Notify.create(getActivity(),
-                                    "This handle does not exist on Twitter!", Notify.Style.ERROR);
+                                    "This handle does not exist on Twitter!",
+                                    Notify.Style.ERROR).show(LinkedIdCreateTwitterStep1Fragment.this);
                             return;
                         }
 
@@ -107,7 +115,6 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
         });
 
         mEditHandle = (EditText) view.findViewById(R.id.linked_create_twitter_handle);
-        mEditHandle.setText("");
 
         return view;
     }
@@ -117,9 +124,9 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
             HttpURLConnection nection =
                     (HttpURLConnection) new URL("https://twitter.com/" + handle).openConnection();
             nection.setRequestMethod("HEAD");
+            nection.setRequestProperty("User-Agent", "OpenKeychain");
             return nection.getResponseCode() == 200;
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }

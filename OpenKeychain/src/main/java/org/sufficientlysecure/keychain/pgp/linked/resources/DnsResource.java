@@ -27,7 +27,7 @@ import de.measite.minidns.record.TXT;
 public class DnsResource extends LinkedCookieResource {
 
     final static Pattern magicPattern =
-            Pattern.compile("pgpid\\+cookie=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");
+            Pattern.compile("openpgpid\\+cookie=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");
 
     String mFqdn;
     CLASS mClass;
@@ -44,7 +44,7 @@ public class DnsResource extends LinkedCookieResource {
 
     public static String generateText (Context context, byte[] fingerprint) {
 
-        return String.format("pgpid+cookie=%s",
+        return String.format("openpgpid+cookie=%s",
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
 
     }

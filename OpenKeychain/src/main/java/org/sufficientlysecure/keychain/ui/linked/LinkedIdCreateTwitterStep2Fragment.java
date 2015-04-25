@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -78,6 +79,10 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
                 proofShare();
             }
         });
+
+        ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(
+                getString(R.string.linked_create_twitter_2_3, mResourceHandle)
+        );
 
         return view;
     }

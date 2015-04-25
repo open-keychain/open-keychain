@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
@@ -27,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="@string/linked_create_twitter_2_2" />
 
             <LinearLayout
@@ -66,11 +67,12 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/linked_tweet_published"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/linked_create_twitter_2_3" />
+                tools:text="@string/linked_create_twitter_2_3" />
 
             <include layout="@layout/linked_create_verify" />
 

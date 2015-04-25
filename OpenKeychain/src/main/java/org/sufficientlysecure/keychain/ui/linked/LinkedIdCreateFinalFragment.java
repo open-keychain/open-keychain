@@ -162,7 +162,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
                 } else {
                     setVerifyProgress(false, false);
                     // on error, show error message
-                    result.createNotify(getActivity()).show();
+                    result.createNotify(getActivity()).show(LinkedIdCreateFinalFragment.this);
                 }
             }
         }.execute();
@@ -172,7 +172,8 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
 
         if (mVerifiedResource == null) {
-            Notify.create(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR).show();
+            Notify.create(getActivity(), R.string.linked_need_verify, Notify.Style.ERROR)
+                    .show(LinkedIdCreateFinalFragment.this);
             return;
         }
 
@@ -206,7 +207,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
 
                     // if bad -> display here!
                     if (!result.success()) {
-                        result.createNotify(getActivity()).show();
+                        result.createNotify(getActivity()).show(LinkedIdCreateFinalFragment.this);
                         return;
                     }
 

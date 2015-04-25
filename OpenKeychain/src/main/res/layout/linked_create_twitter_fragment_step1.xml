@@ -47,6 +47,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:layout_gravity="center_horizontal"
+                android:inputType="text"
                 android:hint="@string/linked_create_twitter_handle"
                 custom:prefix="\@"
                 />

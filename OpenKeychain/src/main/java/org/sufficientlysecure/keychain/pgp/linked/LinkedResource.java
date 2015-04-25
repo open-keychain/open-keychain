@@ -26,7 +26,7 @@ public abstract class LinkedResource {
     protected final HashMap<String,String> mParams;
 
     public static Pattern magicPattern =
-            Pattern.compile("\\[Verifying my PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
+            Pattern.compile("\\[Verifying my (?:Open)?PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
 
     protected LinkedResource(Set<String> flags, HashMap<String, String> params, URI uri) {
         mFlags = flags;
@@ -44,7 +44,7 @@ public abstract class LinkedResource {
 
     protected static LinkedCookieResource fromUri (URI uri) {
 
-        if (!"pgpid+cookie".equals(uri.getScheme())) {
+        if (!"openpgpid+cookie".equals(uri.getScheme())) {
             Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
             return null;
         }

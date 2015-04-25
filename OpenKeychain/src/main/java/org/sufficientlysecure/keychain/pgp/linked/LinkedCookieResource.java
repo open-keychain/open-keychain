@@ -35,7 +35,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
     public URI toUri () {
 
         StringBuilder b = new StringBuilder();
-        b.append("pgpid+cookie:");
+        b.append("openpgpid+cookie:");
 
         // add flags
         if (mFlags != null) {
@@ -73,12 +73,12 @@ public abstract class LinkedCookieResource extends LinkedResource {
     }
 
     public static String generate (Context context, byte[] fingerprint) {
-        return String.format("[Verifying my PGP key: openpgp4fpr:%s]",
+        return String.format("[Verifying my OpenPGP key: openpgp4fpr:%s]",
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
     }
 
     public static String generatePreview () {
-        return "[Verifying my PGP key: openpgp4fpr:0x…]";
+        return "[Verifying my OpenPGP key: openpgp4fpr:0x…]";
     }
 
     public LinkedVerifyResult verify(byte[] fingerprint) {

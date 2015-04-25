@@ -17,11 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -29,9 +32,10 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class LinkedIdWizard extends ActionBarActivity {
+public class LinkedIdWizard extends BaseActivity {
 
     public static final int FRAG_ACTION_START = 0;
     public static final int FRAG_ACTION_TO_RIGHT = 1;
@@ -44,7 +48,7 @@ public class LinkedIdWizard extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.create_key_activity);
+        setTitle(getString(R.string.title_linked_id_create));
 
         try {
             Uri uri = getIntent().getData();
@@ -69,6 +73,11 @@ public class LinkedIdWizard extends ActionBarActivity {
         loadFragment(null, frag, FRAG_ACTION_START);
     }
 
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.create_key_activity);
+    }
+
     public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
@@ -76,6 +85,8 @@ public class LinkedIdWizard extends ActionBarActivity {
         if (savedInstanceState != null) {
             return;
         }
+
+        hideKeyboard();
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
@@ -101,6 +112,18 @@ public class LinkedIdWizard extends ActionBarActivity {
         }
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus
+        View v = getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
 }

@@ -105,14 +105,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/btn_decrypt_clipboard" />
 
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/tertiary_text_light"
-                android:text="@string/btn_decrypt_and_verify"
-                android:gravity="center_vertical" />
-
         </LinearLayout>
 
         <ImageView
