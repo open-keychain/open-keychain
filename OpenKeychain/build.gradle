@@ -6,10 +6,10 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:22.0.0'
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.android.support:recyclerview-v7:22.0.0'
-    compile 'com.android.support:cardview-v7:22.0.0'
+    compile 'com.android.support:support-v4:22.1.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:recyclerview-v7:22.1.0'
+    compile 'com.android.support:cardview-v7:22.1.0'
 
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
@@ -45,10 +45,10 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:355a11466727e8ba00e239416aec55ac3cd3fb4ffc9d20c4a33373085c050bd1',
-            'com.android.support:appcompat-v7:40114cb756fecffa4a51c5645593cf64509c576594f77e41e801368051115c7b',
-            'com.android.support:recyclerview-v7:859ed80e3761f8fc3126901260b208505120b5678bcf36ad2cfe9c453958b9c7',
-            'com.android.support:cardview-v7:4c03f2acce9925aa4f8845cb8cb37b3772c712b2438ff15f76c9e3d3bc63ead7',
+            'com.android.support:support-v4:74cb322740317b11a785eee1a94969426fade946123c4ae3f471276adaaaf54b',
+            'com.android.support:appcompat-v7:6cc7fc2df4be0676f78ecfc5d3cda388e59890d11308811944f54efd84b047b7',
+            'com.android.support:recyclerview-v7:522d323079a29bcd76173bd9bc7535223b4af3e5eefef9d9287df1f9e54d0c10',
+            'com.android.support:cardview-v7:8dc99af71fec000baa4470c3907755264f15f816920861bc015b2babdbb49807',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
             'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
             'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
@@ -74,7 +74,7 @@ dependencyVerification {
 //            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
 //            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
 //            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
-            'com.android.support:support-annotations:ab6b131ab0e1edd165d21fb4c3edadeacbee9539aa166f7f7cbae05b60dc207a',
+            'com.android.support:support-annotations:9c59286413a2bb93e199c73261e58d5af32da7ae0a12cbd075f581a5de1fb446',
     ]
 }
 

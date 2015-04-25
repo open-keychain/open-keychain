@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator;
+package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.R;
  * </p>
  */
 public class PasswordStrengthView extends View {
-
 
     protected int mMinWidth;
     protected int mMinHeight;

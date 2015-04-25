@@ -24,7 +24,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v7.internal.widget.TintSpinner;
+import android.support.v7.widget.AppCompatSpinner;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -46,10 +46,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Use TintSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
+ * Use AppCompatSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
  * Related: http://stackoverflow.com/a/27713090
  */
-public abstract class KeySpinner extends TintSpinner implements LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class KeySpinner extends AppCompatSpinner implements LoaderManager.LoaderCallbacks<Cursor> {
     public interface OnKeyChangedListener {
         public void onKeyChanged(long masterKeyId);
     }

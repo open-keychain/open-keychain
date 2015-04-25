@@ -8,7 +8,7 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 
-        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
         <!-- remove actionbar, we use toolbar! -->
         <item name="windowActionBar">false</item>
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
