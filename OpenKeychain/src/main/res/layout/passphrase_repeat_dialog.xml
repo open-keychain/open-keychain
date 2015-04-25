@@ -33,7 +33,7 @@
             android:ems="10"
             android:layout_gravity="center_horizontal" />
 
-        <org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthBarView
+        <org.sufficientlysecure.keychain.ui.widget.PasswordStrengthBarView
             android:id="@+id/passphrase_repeat_passphrase_strength"
             android:layout_width="48dp"
             android:layout_height="8dp"

@@ -57,6 +57,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
     public static final int REQUEST_CODE_PASSPHRASE = 1;
 
     protected Passphrase mPin;
+    protected boolean mPw1ValidForMultipleSignatures;
+    protected boolean mPw1ValidatedForSignature;
+    protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
 
@@ -197,9 +200,14 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + "06" // Lc (number of bytes)
                         + "D27600012401" // Data (6 bytes)
                         + "00"; // Le
-        if ( ! nfcCommunicate(opening).equals(accepted)) { // activate connection
+        if ( ! nfcCommunicate(opening).endsWith(accepted)) { // activate connection
             throw new IOException("Initialization failed!");
         }
+
+        byte[] pwStatusBytes = nfcGetPwStatusBytes();
+        mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
+        mPw1ValidatedForSignature = false;
+        mPw1ValidatedForDecrypt = false;
 
         onNfcPerform();
 
@@ -278,6 +286,15 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return fptlv.mV;
     }
 
+    /** Return the PW Status Bytes from the card. This is a simple DO; no TLV decoding needed.
+     *
+     * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
+     */
+    public byte[] nfcGetPwStatusBytes() throws IOException {
+        String data = "00CA00C400";
+        return mIsoDep.transceive(Hex.decode(data));
+    }
+
     /** Return the fingerprint from application specific data stored on tag, or
      * null if it doesn't exist.
      *
@@ -316,7 +333,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return a big integer representing the MPI for the given hash
      */
     public byte[] nfcCalculateSignature(byte[] hash, int hashAlgo) throws IOException {
-        nfcVerifyPIN(0x81); // (Verify PW1 with mode 81 for signing)
+        if (!mPw1ValidatedForSignature) {
+            nfcVerifyPIN(0x81); // (Verify PW1 with mode 81 for signing)
+        }
 
         // dsi, including Lc
         String dsi;
@@ -391,6 +410,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         Log.d(Constants.TAG, "final response:" + status);
 
+        if (!mPw1ValidForMultipleSignatures) {
+            mPw1ValidatedForSignature = false;
+        }
+
         if ( ! "9000".equals(status)) {
             throw new IOException("Bad NFC response code: " + status);
         }
@@ -410,7 +433,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return the decoded session key
      */
     public byte[] nfcDecryptSessionKey(byte[] encryptedSessionKey) throws IOException {
-        nfcVerifyPIN(0x82); // (Verify PW1 with mode 82 for decryption)
+        if (!mPw1ValidatedForDecrypt) {
+            nfcVerifyPIN(0x82); // (Verify PW1 with mode 82 for decryption)
+        }
 
         String firstApdu = "102a8086fe";
         String secondApdu = "002a808603";
@@ -458,6 +483,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 handlePinError();
                 throw new IOException("Bad PIN!");
             }
+
+            if (mode == 0x81) {
+                mPw1ValidatedForSignature = true;
+            } else if (mode == 0x82) {
+                mPw1ValidatedForDecrypt = true;
+            }
         }
     }
 
@@ -476,6 +507,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public void enableNfcForegroundDispatch() {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        if (mNfcAdapter == null) {
+            return;
+        }
         Intent nfcI = new Intent(this, getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -497,6 +531,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * Disable foreground dispatch in onPause!
      */
     public void disableNfcForegroundDispatch() {
+        if (mNfcAdapter == null) {
+            return;
+        }
         mNfcAdapter.disableForegroundDispatch(this);
         Log.d(Constants.TAG, "NfcForegroundDispatch has been disabled!");
     }

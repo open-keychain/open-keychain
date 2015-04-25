@@ -193,6 +193,11 @@ public class Preferences {
         public final boolean searchKeybase;
         public final String keyserver;
 
+        /**
+         * @param searchKeyserver should passed keyserver be searched
+         * @param searchKeybase   should keybase.io be searched
+         * @param keyserver       the keyserver url authority to search on
+         */
         public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase, String keyserver) {
             this.searchKeyserver = searchKeyserver;
             this.searchKeybase = searchKeybase;

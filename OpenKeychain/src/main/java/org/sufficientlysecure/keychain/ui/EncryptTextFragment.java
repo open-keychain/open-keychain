@@ -288,9 +288,9 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     }
 
     protected boolean inputIsValid() {
-        if (mMessage == null) {
-            Notify.create(getActivity(), R.string.error_message, Notify.Style.ERROR)
-                    .show();
+        if (mMessage == null || mMessage.isEmpty()) {
+            Notify.create(getActivity(), R.string.error_empty_text, Notify.Style.ERROR)
+                    .show(this);
             return false;
         }
 
@@ -299,12 +299,12 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
             if (mSymmetricPassphrase == null) {
                 Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
             if (mSymmetricPassphrase.isEmpty()) {
                 Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
 
@@ -316,7 +316,7 @@ public class EncryptTextFragment extends CryptoOperationFragment {
 
             if (!gotEncryptionKeys && mSigningKeyId == 0) {
                 Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
         }

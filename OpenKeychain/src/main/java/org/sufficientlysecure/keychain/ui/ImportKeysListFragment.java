@@ -58,6 +58,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private static final String ARG_BYTES = "bytes";
     public static final String ARG_SERVER_QUERY = "query";
     public static final String ARG_NON_INTERACTIVE = "non_interactive";
+    public static final String ARG_KEYSERVER_URL = "keyserver_url";
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
@@ -78,7 +79,8 @@ public class ImportKeysListFragment extends ListFragment implements
         return mAdapter.getData();
     }
 
-    /** Returns an Iterator (with size) of the selected data items.
+    /**
+     * Returns an Iterator (with size) of the selected data items.
      * This iterator is sort of a tradeoff, it's slightly more complex than an
      * ArrayList would have been, but we save some memory by just returning
      * relevant elements on demand.
@@ -121,12 +123,36 @@ public class ImportKeysListFragment extends ListFragment implements
 
     }
 
-    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery) {
-        return newInstance(bytes, dataUri, serverQuery, false);
+    /**
+     * Creates an interactive ImportKeyListFragment which reads keyrings from bytes, or file specified
+     * by dataUri, or searches a keyserver for serverQuery, if parameter is not null, in that order
+     *
+     * @param bytes       byte data containing list of keyrings to be imported
+     * @param dataUri     file from which keyrings are to be imported
+     * @param serverQuery query to search for on keyserver
+     * @param keyserver   if not null, will perform search on specified keyserver. Else, uses
+     *                    keyserver specified in user preferences
+     * @return fragment with arguments set based on passed parameters
+     */
+    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
+                                                     String keyserver) {
+        return newInstance(bytes, dataUri, serverQuery, false, keyserver);
     }
 
-    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri,
-            String serverQuery, boolean nonInteractive) {
+    /**
+     * Visually consists of a list of keyrings with checkboxes to specify which are to be imported
+     * Can immediately load keyrings specified by any of its parameters
+     *
+     * @param bytes          byte data containing list of keyrings to be imported
+     * @param dataUri        file from which keyrings are to be imported
+     * @param serverQuery    query to search for on keyserver
+     * @param nonInteractive if true, users will not be able to check/uncheck items in the list
+     * @param keyserver      if set, will perform search on specified keyserver. If null, falls back
+     *                       to keyserver specified in user preferences
+     * @return fragment with arguments set based on passed parameters
+     */
+    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery,
+                                                     boolean nonInteractive, String keyserver) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
 
         Bundle args = new Bundle();
@@ -134,6 +160,7 @@ public class ImportKeysListFragment extends ListFragment implements
         args.putParcelable(ARG_DATA_URI, dataUri);
         args.putString(ARG_SERVER_QUERY, serverQuery);
         args.putBoolean(ARG_NON_INTERACTIVE, nonInteractive);
+        args.putString(ARG_KEYSERVER_URL, keyserver);
 
         frag.setArguments(args);
 
@@ -180,16 +207,23 @@ public class ImportKeysListFragment extends ListFragment implements
         setListAdapter(mAdapter);
 
         Bundle args = getArguments();
-        Uri dataUri = args.containsKey(ARG_DATA_URI) ? args.<Uri>getParcelable(ARG_DATA_URI) : null;
-        byte[] bytes = args.containsKey(ARG_BYTES) ? args.getByteArray(ARG_BYTES) : null;
-        String query = args.containsKey(ARG_SERVER_QUERY) ? args.getString(ARG_SERVER_QUERY) : null;
-        mNonInteractive = args.containsKey(ARG_NON_INTERACTIVE) ? args.getBoolean(ARG_NON_INTERACTIVE) : false;
+        Uri dataUri = args.getParcelable(ARG_DATA_URI);
+        byte[] bytes = args.getByteArray(ARG_BYTES);
+        String query = args.getString(ARG_SERVER_QUERY);
+        String keyserver = args.getString(ARG_KEYSERVER_URL);
+        mNonInteractive = args.getBoolean(ARG_NON_INTERACTIVE, false);
 
         if (dataUri != null || bytes != null) {
             mLoaderState = new BytesLoaderState(bytes, dataUri);
         } else if (query != null) {
-            Preferences prefs = Preferences.getPreferences(getActivity());
-            mLoaderState = new CloudLoaderState(query, prefs.getCloudSearchPrefs());
+            Preferences.CloudSearchPrefs cloudSearchPrefs;
+            if (keyserver == null) {
+                cloudSearchPrefs = Preferences.getPreferences(getActivity()).getCloudSearchPrefs();
+            } else {
+                cloudSearchPrefs = new Preferences.CloudSearchPrefs(true, true, keyserver);
+            }
+
+            mLoaderState = new CloudLoaderState(query, cloudSearchPrefs);
         }
 
         getListView().setOnTouchListener(new OnTouchListener() {

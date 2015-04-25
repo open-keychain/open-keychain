@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <EditText
             android:id="@+id/encrypt_text_text"
             android:layout_width="match_parent"
-            android:layout_height="0dip"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:gravity="top"
             android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-            android:hint="@string/encrypt_content_edit_text_hint"
-            android:layout_weight="1" />
+            android:hint="@string/encrypt_content_edit_text_hint" />
 
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+</RelativeLayout>

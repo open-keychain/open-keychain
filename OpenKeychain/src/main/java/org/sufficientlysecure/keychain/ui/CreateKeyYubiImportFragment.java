@@ -123,7 +123,8 @@ public class CreateKeyYubiImportFragment extends Fragment implements NfcListener
             });
         }
 
-        mListFragment = ImportKeysListFragment.newInstance(null, null, "0x" + mNfcFingerprint, true);
+        mListFragment = ImportKeysListFragment.newInstance(null, null,
+                "0x" + mNfcFingerprint, true, null);
 
         view.findViewById(R.id.button_search).setOnClickListener(new OnClickListener() {
             @Override

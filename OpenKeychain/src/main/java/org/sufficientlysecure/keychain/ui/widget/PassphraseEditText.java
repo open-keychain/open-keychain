@@ -19,15 +19,13 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.widget.EditText;
 
-import org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator.PasswordStrengthBarView;
-
-public class PassphraseEditText extends EditText {
+public class PassphraseEditText extends AppCompatEditText {
 
     PasswordStrengthBarView mPasswordStrengthBarView;
     int mPasswordBarWidth;

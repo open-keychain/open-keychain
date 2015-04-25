@@ -202,7 +202,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         } catch (IOException e) {
             Notify.create(getActivity(),
                     getActivity().getString(R.string.error_file_added_already, FileHelper.getFilename(getActivity(), inputUri)),
-                    Notify.Style.ERROR).show();
+                    Notify.Style.ERROR).show(this);
             return;
         }
         mSelectedFiles.requestFocus();
@@ -230,7 +230,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     private void encryptClicked(boolean share) {
         if (mFilesModels.isEmpty()) {
             Notify.create(getActivity(), R.string.error_no_file_selected,
-                    Notify.Style.ERROR).show();
+                    Notify.Style.ERROR).show(this);
             return;
         }
         if (share) {
@@ -247,7 +247,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         } else {
             if (mFilesModels.size() > 1) {
                 Notify.create(getActivity(), R.string.error_multi_not_supported,
-                        Notify.Style.ERROR).show();
+                        Notify.Style.ERROR).show(this);
                 return;
             }
             showOutputFileDialog();
@@ -330,7 +330,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
         if (mFilesModels.isEmpty()) {
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
-                    .show();
+                    .show(this);
             return false;
         } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
             Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
@@ -347,12 +347,12 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
             if (mPassphrase == null) {
                 Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
             if (mPassphrase.isEmpty()) {
                 Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
 
@@ -365,7 +365,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             // Files must be encrypted, only text can be signed-only right now
             if (!gotEncryptionKeys) {
                 Notify.create(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR)
-                        .show();
+                        .show(this);
                 return false;
             }
         }

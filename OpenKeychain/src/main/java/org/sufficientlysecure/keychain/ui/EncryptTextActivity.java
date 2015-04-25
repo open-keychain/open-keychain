@@ -98,22 +98,19 @@ public class EncryptTextActivity extends BaseActivity implements
                     // handle like normal text encryption, override action and extras to later
                     // executeServiceMethod ACTION_ENCRYPT_TEXT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
-                    action = ACTION_ENCRYPT_TEXT;
                 }
 
             }
         }
 
         String textData = extras.getString(EXTRA_TEXT);
-        if (ACTION_ENCRYPT_TEXT.equals(action) && textData == null) {
-            Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
-            return;
+        if (textData == null) {
+            textData = "";
         }
 
         // preselect keys given by intent
         long mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         long[] mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
-
 
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

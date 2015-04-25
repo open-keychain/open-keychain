@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/decrypt_result_include" />
+    <!--<include layout="@layout/decrypt_result_include" />-->
 
     <LinearLayout
         android:visibility="gone"

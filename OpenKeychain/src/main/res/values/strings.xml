@@ -88,6 +88,7 @@
     <string name="btn_encrypt_text">"Encrypt text"</string>
     <string name="btn_add_email">"Add additional email address"</string>
     <string name="btn_unlock">"Unlock"</string>
+    <string name="btn_add_keyserver">"Add"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -154,6 +155,8 @@
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
+    <string name="label_verify_keyserver">"Verify Keyserver"</string>
+    <string name="label_enter_keyserver_url">"Enter Keyserver URL"</string>
 
     <string name="pref_keyserver">"Search Keyserver"</string>
     <string name="pref_keyserver_summary">"Search HKP keyserver"</string>
@@ -356,6 +359,8 @@
     <string name="progress_con_saving">"consolidate: saving to cache…"</string>
     <string name="progress_con_reimport">"consolidate: reimporting…"</string>
 
+    <string name="progress_verifying_keyserver_url">"verifying keyserver…"</string>
+
     <!-- action strings -->
     <string name="hint_cloud_search_hint">"Search via Name, Email…"</string>
 
@@ -406,6 +411,9 @@
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short (&lt; 16 characters)"</string>
     <string name="import_qr_code_button">"Scan QR Code"</string>
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
+
+    <!-- Import from URL -->
+    <string name="import_url_warn_no_search_parameter">"No search parameter found. You may still attempt manually searching the keyserver."</string>
 
     <!-- Generic result toast -->
     <string name="view_log">"Details"</string>
@@ -644,6 +652,13 @@
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
 
     <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
+
+    <!-- Add keyserver -->
+    <string name="add_keyserver_dialog_title">"Add Keyserver"</string>
+    <string name="add_keyserver_verified">"Keyserver verified!"</string>
+    <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
+    <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
+    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your internet connection."</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>
@@ -1248,6 +1263,7 @@
     <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
     <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
+    <string name="error_empty_text">"Type some text to encrypt!"</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
     <string name="btn_start_exchange">"Start exchange"</string>

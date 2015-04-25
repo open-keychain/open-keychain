@@ -628,6 +628,23 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
             </intent-filter>
 
+            <!-- VIEW from keyserver urls opened in a browser -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="https"/>
+                <data android:scheme="http"/>
+                <!-- if we don't specify a host, pathPattern will be ignored-->
+                <data android:host="*"/>
+                <!-- convention for keyserver paths specified by internet draft
+                 draft-shaw-openpgp-hkp-00.txt
+                 (http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-3) -->
+                <data android:pathPattern="/pks/lookup.*"/>
+            </intent-filter>
+
             <!-- Keychain's own Actions -->
             <!-- IMPORT_KEY with files TODO: does this work? -->
             <intent-filter android:label="@string/intent_import_key">
