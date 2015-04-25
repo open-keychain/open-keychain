@@ -125,11 +125,7 @@ public class CreateKeyEmailFragment extends Fragment {
         // initial values
         if (mAdditionalEmailModels == null) {
             mAdditionalEmailModels = new ArrayList<>();
-            if (mCreateKeyActivity.mAdditionalEmails != null) {
-                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
-            }
         }
-
         if (mEmailAdapter == null) {
             mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
                 @Override
@@ -137,6 +133,9 @@ public class CreateKeyEmailFragment extends Fragment {
                     addEmail();
                 }
             });
+        }
+        if (mAdditionalEmailModels.isEmpty() && mCreateKeyActivity.mAdditionalEmails != null) {
+            mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
         }
 
         mEmailsRecyclerView.setAdapter(mEmailAdapter);

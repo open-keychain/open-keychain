@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -36,9 +35,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class CreateKeyPassphraseFragment extends Fragment {
 
@@ -111,8 +107,8 @@ public class CreateKeyPassphraseFragment extends Fragment {
         // initial values
         // TODO: using String here is unsafe...
         if (mCreateKeyActivity.mPassphrase != null) {
-            mPassphraseEdit.setText(Arrays.toString(mCreateKeyActivity.mPassphrase.getCharArray()));
-            mPassphraseEditAgain.setText(Arrays.toString(mCreateKeyActivity.mPassphrase.getCharArray()));
+            mPassphraseEdit.setText(new String(mCreateKeyActivity.mPassphrase.getCharArray()));
+            mPassphraseEditAgain.setText(new String(mCreateKeyActivity.mPassphrase.getCharArray()));
         }
 
         mPassphraseEdit.requestFocus();
