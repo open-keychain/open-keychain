@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
@@ -37,7 +38,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/linked_create_https_1_3" />
 
-            <org.sufficientlysecure.keychain.ui.widget.HttpsPrefixedText
+            <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
                 android:id="@+id/linked_create_https_uri"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,6 +47,7 @@
                 android:ems="10"
                 android:inputType="textUri"
                 android:layout_gravity="center_horizontal"
+                custom:prefix="https://"
                 />
 
             <TextView

@@ -1,20 +1,27 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.*;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-/** */
-public class HttpsPrefixedText extends EditText {
+import org.sufficientlysecure.keychain.R;
 
-    private String mPrefix; // can be hardcoded for demo purposes
+public class PrefixedEditText extends EditText {
+
+    private String mPrefix;
     private Rect mPrefixRect = new Rect();
 
-	public HttpsPrefixedText(Context context, AttributeSet attrs) {
+	public PrefixedEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
-        mPrefix = "https://";
+        TypedArray style = context.getTheme().obtainStyledAttributes(
+                attrs, R.styleable.PrefixedEditText, 0, 0);
+        mPrefix = style.getString(R.styleable.PrefixedEditText_prefix);
+        if (mPrefix == null) {
+            mPrefix = "";
+        }
 	}
 
     @Override

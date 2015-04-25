@@ -29,4 +29,8 @@
         <attr name="color_strong" format="color" />
     </declare-styleable>
 
+    <declare-styleable name="PrefixedEditText">
+        <attr name="prefix" format="string" />
+    </declare-styleable>
+
 </resources>
