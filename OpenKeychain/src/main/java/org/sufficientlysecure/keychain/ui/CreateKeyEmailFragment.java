@@ -49,9 +49,6 @@ import java.util.regex.Pattern;
 public class CreateKeyEmailFragment extends Fragment {
     private CreateKeyActivity mCreateKeyActivity;
     private EmailEditText mEmailEdit;
-    private RecyclerView mEmailsRecyclerView;
-    private View mBackButton;
-    private View mNextButton;
     private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
     private EmailAdapter mEmailAdapter;
 
@@ -92,9 +89,9 @@ public class CreateKeyEmailFragment extends Fragment {
         View view = inflater.inflate(R.layout.create_key_email_fragment, container, false);
 
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        mBackButton = view.findViewById(R.id.create_key_back_button);
-        mNextButton = view.findViewById(R.id.create_key_next_button);
-        mEmailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
+        View mBackButton = view.findViewById(R.id.create_key_back_button);
+        View mNextButton = view.findViewById(R.id.create_key_next_button);
+        RecyclerView mEmailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
 
         // initial values
         mEmailEdit.setText(mCreateKeyActivity.mEmail);
@@ -222,7 +219,6 @@ public class CreateKeyEmailFragment extends Fragment {
         Messenger messenger =  new Messenger(returnHandler);
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
-        addEmailDialog.setTargetFragment(this, -1);
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
     }
 
