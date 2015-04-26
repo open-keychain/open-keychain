@@ -423,8 +423,8 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
             case LOADER_ID_LINKED_IDS: {
-                mLinkedIdsCard.setVisibility(data.getCount() > 0 ? View.VISIBLE : View.GONE);
                 mLinkedIdsAdapter.swapCursor(data);
+                mLinkedIdsCard.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.VISIBLE : View.GONE);
                 break;
             }
 
