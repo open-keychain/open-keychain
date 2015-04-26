@@ -135,9 +135,6 @@ public class CreateKeyEmailFragment extends Fragment {
                 mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
             }
         }
-        if (mAdditionalEmailModels.isEmpty() && mCreateKeyActivity.mAdditionalEmails != null) {
-            mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
-        }
 
         mEmailsRecyclerView.setAdapter(mEmailAdapter);
 
