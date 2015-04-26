@@ -9,8 +9,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/decrypt_result_include" />
-
         <View
             android:id="@+id/status_divider"
             android:layout_height="1dip"

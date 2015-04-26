@@ -17,9 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -27,14 +26,13 @@ import android.util.AttributeSet;
 import android.util.Patterns;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
 import java.util.regex.Matcher;
 
-public class EmailEditText extends AutoCompleteTextView {
+public class EmailEditText extends AppCompatAutoCompleteTextView {
 
     public EmailEditText(Context context) {
         super(context);
@@ -48,12 +46,6 @@ public class EmailEditText extends AutoCompleteTextView {
 
     public EmailEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public EmailEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 

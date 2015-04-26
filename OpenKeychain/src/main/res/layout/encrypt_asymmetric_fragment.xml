@@ -11,6 +11,8 @@
         android:id="@+id/recipient_list"
         android:layout_width="match_parent"
         android:minHeight="56dip"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:layout_height="wrap_content" />
 
     <LinearLayout
@@ -21,7 +23,7 @@
         style="@android:style/Widget.EditText">
 
         <TextView
-            android:paddingLeft="12dp"
+            android:paddingLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"

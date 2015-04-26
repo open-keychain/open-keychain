@@ -17,17 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import org.sufficientlysecure.keychain.util.ContactHelper;
 
-public class NameEditText extends AutoCompleteTextView {
+public class NameEditText extends AppCompatAutoCompleteTextView {
     public NameEditText(Context context) {
         super(context);
         init();
@@ -40,12 +38,6 @@ public class NameEditText extends AutoCompleteTextView {
 
     public NameEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public NameEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 

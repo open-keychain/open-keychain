@@ -22,13 +22,10 @@
  * SOFTWARE.
  */
 
-package org.sufficientlysecure.keychain.ui.widget.passwordstrengthindicator;
+package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 
 /**

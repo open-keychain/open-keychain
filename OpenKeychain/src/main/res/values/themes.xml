@@ -8,26 +8,12 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 
-        <item name="android:windowNoTitle">true</item>
-        <!-- remove actionbar, we use toolbar! -->
+        <!-- remove actionbar and title, we use toolbar! -->
+        <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
-
-        <!-- Navigation Drawer library -->
-        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
-        <!-- dark action bar... -->
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <!-- ...but light popup menu (white background) -->
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
-        <item name="drawerColor">#fafafa</item>
-        <item name="singleAccount">false</item>
-        <item name="sectionStyle">@style/MaterialSectionTheme.Light</item>
-        <item name="subheaderStyle">@style/MaterialSubheaderTheme.Light</item>
-        <item name="multipaneSupport">false</item>
-        <item name="rippleBackport">false</item>
-        <item name="uniqueToolbarColor">false</item>
     </style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->
