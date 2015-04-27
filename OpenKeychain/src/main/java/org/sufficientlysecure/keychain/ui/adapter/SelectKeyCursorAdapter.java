@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +35,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 
 /**
@@ -138,14 +134,14 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
 
         boolean duplicate = cursor.getLong(mIndexDuplicateUserId) > 0;
         if (duplicate) {
-            Date creationDate = new Date(cursor.getLong(mIndexCreation) * 1000);
-            Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            creationCal.setTime(creationDate);
-            // convert from UTC to time zone of device
-            creationCal.setTimeZone(TimeZone.getDefault());
+            String dateTime = DateUtils.formatDateTime(context,
+                    cursor.getLong(mIndexCreation) * 1000,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_SHOW_YEAR
+                            | DateUtils.FORMAT_ABBREV_MONTH);
 
-            h.creation.setText(context.getString(R.string.label_creation) + ": "
-                    + DateFormat.getDateFormat(context).format(creationCal.getTime()));
+            h.creation.setText(context.getString(R.string.label_creation, dateTime));
             h.creation.setVisibility(View.VISIBLE);
         } else {
             h.creation.setVisibility(View.GONE);
