@@ -110,7 +110,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
 
         if (getContext() instanceof FragmentActivity) {
             mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
-            mLoaderManager.initLoader(hashCode(), null, this);
+            mLoaderManager.initLoader(0, null, this);
         } else {
             Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
         }
@@ -155,6 +155,14 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     }
 
     @Override
+    public void showDropDown() {
+        if (mAdapter.getCursor().isClosed()) {
+            return;
+        }
+        super.showDropDown();
+    }
+
+    @Override
     public void onFocusChanged(boolean hasFocus, int direction, Rect previous) {
         super.onFocusChanged(hasFocus, direction, previous);
         if (hasFocus) {
@@ -171,7 +179,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
         }
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, text.subSequence(start, end).toString());
-        mLoaderManager.restartLoader(hashCode(), args, this);
+        mLoaderManager.restartLoader(0, args, this);
     }
 
 }
