@@ -287,6 +287,7 @@
     <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
     <string name="decrypt_result_signature_uncertified">"Signed by <b>unconfirmed</b> key"</string>
+    <string name="decrypt_result_signature_secret">"Signed by your key"</string>
     <string name="decrypt_result_signature_certified">"Signed by confirmed key"</string>
     <string name="decrypt_result_signature_expired_key">"Signed by <b>expired</b> key!"</string>
     <string name="decrypt_result_signature_revoked_key">"Signed by <b>revoked</b> key!"</string>
