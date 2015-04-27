@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.support.v4.widget.CursorAdapter;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,7 @@ public class KeyAdapter extends CursorAdapter {
         public Long mMasterKeyId;
         public TextView mMainUserId;
         public TextView mMainUserIdRest;
+        public TextView mCreationDate;
         public ImageView mStatus;
         public View mSlinger;
         public ImageButton mSlingerButton;
@@ -98,6 +100,7 @@ public class KeyAdapter extends CursorAdapter {
             mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
             mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
             mSlingerButton = (ImageButton) view.findViewById(R.id.key_list_item_slinger_button);
+            mCreationDate = (TextView) view.findViewById(R.id.key_list_item_creation);
         }
 
         public void setData(Context context, Cursor cursor, Highlighter highlighter) {
@@ -125,7 +128,7 @@ public class KeyAdapter extends CursorAdapter {
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                // boolean hasDuplicate = cursor.getInt(INDEX_HAS_DUPLICATE_USER_ID) == 1;
+                boolean hasDuplicate = cursor.getInt(INDEX_HAS_DUPLICATE_USER_ID) != 0;
 
                 mMasterKeyId = masterKeyId;
 
@@ -165,6 +168,22 @@ public class KeyAdapter extends CursorAdapter {
                     mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
                 }
+
+                if (hasDuplicate) {
+                    String dateTime = DateUtils.formatDateTime(context,
+                            cursor.getLong(INDEX_CREATION) * 1000,
+                            DateUtils.FORMAT_SHOW_DATE
+                                    | DateUtils.FORMAT_SHOW_TIME
+                                    | DateUtils.FORMAT_SHOW_YEAR
+                                    | DateUtils.FORMAT_ABBREV_MONTH);
+
+                    mCreationDate.setText(context.getString(R.string.label_creation,
+                            dateTime));
+                    mCreationDate.setVisibility(View.VISIBLE);
+                } else {
+                    mCreationDate.setVisibility(View.GONE);
+                }
+
             }
 
         }
