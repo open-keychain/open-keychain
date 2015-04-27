@@ -138,7 +138,7 @@
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
-    <string name="label_creation">"Creation"</string>
+    <string name="label_creation">"Key created %s"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_key_size">"Key Size"</string>
