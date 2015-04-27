@@ -29,6 +29,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Hashtable;
@@ -40,36 +41,45 @@ public class QrCodeUtils {
 
     /**
      * Generate Bitmap with QR Code based on input.
-     *
-     * @param input
-     * @param size
      * @return QR Code as Bitmap
      */
     public static Bitmap getQRCodeBitmap(final String input, final int size) {
+
         try {
-            final Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
-            hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-            final BitMatrix result = new QRCodeWriter().encode(input, BarcodeFormat.QR_CODE, size,
-                    size, hints);
 
-            final int width = result.getWidth();
-            final int height = result.getHeight();
-            final int[] pixels = new int[width * height];
+            // the qrCodeCache is handled in KeychainApplication so we can
+            // properly react to onTrimMemory calls
+            Bitmap bitmap = KeychainApplication.qrCodeCache.get(input);
+            if (bitmap == null) {
 
-            for (int y = 0; y < height; y++) {
-                final int offset = y * width;
-                for (int x = 0; x < width; x++) {
-                    pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
+                Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
+                hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+                BitMatrix result = new QRCodeWriter().encode(input, BarcodeFormat.QR_CODE, size,
+                        size, hints);
+
+                int width = result.getWidth();
+                int height = result.getHeight();
+                int[] pixels = new int[width * height];
+
+                for (int y = 0; y < height; y++) {
+                    final int offset = y * width;
+                    for (int x = 0; x < width; x++) {
+                        pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.TRANSPARENT;
+                    }
                 }
+
+                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+
+                KeychainApplication.qrCodeCache.put(input, bitmap);
             }
 
-            final Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-            bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
             return bitmap;
-        } catch (final WriterException e) {
+        } catch (WriterException e) {
             Log.e(Constants.TAG, "QrCodeUtils", e);
             return null;
         }
+
     }
 
 }
