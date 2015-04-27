@@ -94,9 +94,15 @@ public class SubtleAttentionSeeker {
     }
 
     @TargetApi(VERSION_CODES.LOLLIPOP)
-    public static ObjectAnimator tint(View view, int duration) {
+    public static ObjectAnimator tintBackground(View view, int duration) {
         return ObjectAnimator.ofArgb(view, "backgroundColor",
                 0x00FF0000, 0x33FF0000, 0x00FF0000).setDuration(duration);
+    }
+
+    @TargetApi(VERSION_CODES.LOLLIPOP)
+    public static ObjectAnimator tintText(View view, int duration) {
+        return ObjectAnimator.ofArgb(view, "backgroundColor",
+                0x00FF7F00, 0x33FF7F00, 0x00FF7F00).setDuration(duration);
     }
 
 }

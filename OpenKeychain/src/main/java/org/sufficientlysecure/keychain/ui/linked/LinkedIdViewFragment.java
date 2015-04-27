@@ -3,7 +3,6 @@ package org.sufficientlysecure.keychain.ui.linked;
 import java.io.IOException;
 import java.util.Collections;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -477,10 +477,11 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                 }
                 if (result.success()) {
                     mViewHolder.vText.setText(getString(mLinkedResource.getVerifiedText(mIsSecret)));
+                    // hack to preserve bold text
+                    ((TextView) mViewHolder.vText.getCurrentView()).setText(
+                            mLinkedResource.getVerifiedText(mIsSecret));
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_OK, mIsSecret);
-                    ObjectAnimator anim = SubtleAttentionSeeker.tada(mViewHolder.vButtonConfirm, 0.6f, 1000);
-                    anim.setStartDelay(800);
-                    anim.start();
+                    mViewHolder.mLinkedIdHolder.seekAttention();
                 } else {
                     mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_ERROR, mIsSecret);
                     result.createNotify(getActivity()).show();
@@ -501,7 +502,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         mCertifyKeyId = mViewHolder.vKeySpinner.getSelectedItemId();
         if (mCertifyKeyId == key.none || mCertifyKeyId == key.symmetric) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                SubtleAttentionSeeker.tint(mViewHolder.vKeySpinnerContainer, 600).start();
+                SubtleAttentionSeeker.tintBackground(mViewHolder.vKeySpinnerContainer, 600).start();
             } else {
                 Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
             }

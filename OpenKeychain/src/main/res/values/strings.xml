@@ -1326,7 +1326,7 @@
     <string name="linked_create_twitter_handle">Twitter Handle</string>
     <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
     <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
-    <string name="linked_create_twitter_2_3">"Once your Tweet is published as <b>@%s</b>, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
     <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
     <string name="linked_create_github_1_1">"By creating a Linked Identity of this type, you can link your key to a Github account you control."</string>
@@ -1350,10 +1350,10 @@
 
     <string name="linked_create_verify">"Verify"</string>
     <string name="linked_text_clipboard">Text has been copied to clipboard</string>
-    <string name="linked_verified_https">"The link between this Website and key was securely verified. If you believe the Website is genuine, confirm this verification with your key."</string>
-    <string name="linked_verified_github">"The link between this Github account and key was securely verified. If you believe the account is genuine, confirm this verification with your key."</string>
-    <string name="linked_verified_dns">"The link between this Domain Name and key was securely verified. If you believe the Domain is genuine, confirm this verification with your key."</string>
-    <string name="linked_verified_twitter">"The link between this Twitter account and key was securely verified. If you believe the account is genuine, confirm this verification with your key."</string>
+    <string name="linked_verified_https">"The link between this Website and key was securely verified. <b>If you believe the Website is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_github">"The link between this Github account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_dns">"The link between this Domain Name and key was securely verified. <b>If you believe the Domain is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_twitter">"The link between this Twitter account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
     <string name="linked_verified_secret_https">"The link between your Website and key was securely verified. Everything looks in order."</string>
     <string name="linked_verified_secret_github">"The link between your Github account and key was securely verified. Everything looks in order."</string>
     <string name="linked_verified_secret_dns">"The link between your Domain Name and key was securely verified. Everything looks in order."</string>

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.linked;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,7 +82,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
         });
 
         ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(
-                getString(R.string.linked_create_twitter_2_3, mResourceHandle)
+                Html.fromHtml(getString(R.string.linked_create_twitter_2_3, mResourceHandle))
         );
 
         return view;

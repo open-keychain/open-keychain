@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
@@ -39,6 +40,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FilterCursorWrapper;
 
 import java.io.IOException;
@@ -219,6 +221,13 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             vIcon.setImageResource(id.getDisplayIcon());
 
         }
+
+        public void seekAttention() {
+            ObjectAnimator anim = SubtleAttentionSeeker.tintText(vComment, 1000);
+            anim.setStartDelay(200);
+            anim.start();
+        }
+
     }
 
 }
