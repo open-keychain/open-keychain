@@ -137,7 +137,7 @@
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
-    <string name="label_creation">"Creation"</string>
+    <string name="label_creation">"Key created %s"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_key_size">"Key Size"</string>
@@ -287,6 +287,7 @@
     <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
     <string name="decrypt_result_signature_uncertified">"Signed by <b>unconfirmed</b> key"</string>
+    <string name="decrypt_result_signature_secret">"Signed by your key"</string>
     <string name="decrypt_result_signature_certified">"Signed by confirmed key"</string>
     <string name="decrypt_result_signature_expired_key">"Signed by <b>expired</b> key!"</string>
     <string name="decrypt_result_signature_revoked_key">"Signed by <b>revoked</b> key!"</string>

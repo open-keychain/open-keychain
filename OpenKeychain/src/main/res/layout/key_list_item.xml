@@ -26,7 +26,7 @@
             android:id="@+id/key_list_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_main_user_id"
+            tools:text="@string/label_main_user_id"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -35,8 +35,20 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:ellipsize="end"
-            android:text="user@example.com"
+            tools:text="user@example.com"
             android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/key_list_item_creation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="Created on 10/10/2010 10:00"
+            />
+
     </LinearLayout>
 
     <LinearLayout

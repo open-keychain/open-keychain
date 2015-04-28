@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements FabContainer {
         transaction.replace(R.id.main_fragment_container, mainFragment);
         transaction.commit();
 
-        mToolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 

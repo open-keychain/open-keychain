@@ -8,17 +8,12 @@
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
 
+        <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
-        <!-- remove actionbar, we use toolbar! -->
         <item name="windowActionBar">false</item>
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
-
-        <!-- dark action bar... -->
-        <item name="theme">@style/ThemeOverlay.AppCompat.Dark</item>
-        <!-- ...but light popup menu (white background) -->
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->

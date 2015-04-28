@@ -24,6 +24,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -40,6 +41,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.security.Security;
+import java.util.HashMap;
+
 
 public class KeychainApplication extends Application {
 
@@ -98,6 +101,17 @@ public class KeychainApplication extends Application {
         TemporaryStorageProvider.cleanUp(this);
 
         checkConsolidateRecovery();
+    }
+
+    public static HashMap<String,Bitmap> qrCodeCache = new HashMap<>();
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+
+        if (level >= TRIM_MEMORY_UI_HIDDEN) {
+            qrCodeCache.clear();
+        }
     }
 
     /**

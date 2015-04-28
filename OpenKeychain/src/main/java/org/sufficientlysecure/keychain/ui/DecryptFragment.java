@@ -231,6 +231,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             KeychainContract.KeyRings.IS_REVOKED,
             KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
+            KeychainContract.KeyRings.HAS_ANY_SECRET,
     };
 
     @SuppressWarnings("unused")
@@ -239,6 +240,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
     static final int INDEX_IS_REVOKED = 3;
     static final int INDEX_IS_EXPIRED = 4;
     static final int INDEX_VERIFIED = 5;
+    static final int INDEX_HAS_ANY_SECRET = 6;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -283,6 +285,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         boolean isRevoked = data.getInt(INDEX_IS_REVOKED) != 0;
         boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
         boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
+        boolean isYours = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
 
         if (isRevoked) {
             mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
@@ -296,6 +299,16 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         } else if (isExpired) {
             mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
             KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.EXPIRED);
+
+            setSignatureLayoutVisibility(View.VISIBLE);
+            setShowAction(signatureKeyId);
+
+            onVerifyLoaded(true);
+
+        } else if (isYours) {
+
+            mSignatureText.setText(R.string.decrypt_result_signature_secret);
+            KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.VERIFIED);
 
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
