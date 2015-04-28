@@ -30,19 +30,20 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 
 ### Build with Gradle
 
-1. Get all external submodules with ``git submodule update --init --recursive``
-2. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-3. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.1)".  
+1. Clone the project from GitHub
+2. Get all external submodules with ``git submodule update --init --recursive``
+3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
+4. Open the Android SDK Manager (shell command: ``android``).  
+Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.2)".  
 Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK Platform (API-Level 21)
-4. Export ANDROID_HOME pointing to your Android SDK
-5. Execute ``./gradlew build``
-6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+Select everything for the newest SDK Platform, API 22, and also API 21
+5. Export ANDROID_HOME pointing to your Android SDK
+6. Execute ``./gradlew build``
+7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-3. Execute ``./gradlew test``
+2. Execute ``./gradlew test``
 
 ### Build API Demo with Gradle
 
@@ -55,7 +56,8 @@ Select everything for the newest SDK Platform (API-Level 21)
 We are using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because we are using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
 1. Clone the project from Github
-2. From Android Studio: File -> Import Project ->  Select the cloned top folder
+2. Get all external submodules with ``git submodule update --init --recursive``
+3. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
 ## Libraries
 
