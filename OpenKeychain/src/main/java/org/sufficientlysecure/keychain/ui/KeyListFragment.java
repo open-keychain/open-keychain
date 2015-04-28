@@ -241,7 +241,7 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_select_all: {
                         // select all
-                        for (int i = 0; i < mStickyList.getCount(); i++) {
+                        for (int i = 0; i < mAdapter.getCount(); i++) {
                             mStickyList.setItemChecked(i, true);
                         }
                         break;
