@@ -101,7 +101,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
         /*if (completionText.startsWith("0x")) {
 
         }*/
-        return null;
+        return "";
     }
 
     @Override
