@@ -54,6 +54,10 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -210,16 +214,31 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 }
 
                 // let user choose application
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-                sendIntent.setType("text/plain");
-                String title;
-                if (fingerprintOnly) {
-                    title = getResources().getString(R.string.title_share_fingerprint_with);
-                } else {
-                    title = getResources().getString(R.string.title_share_key);
+                File contentFile;
+                Uri contentUri = null;
+                try {
+                    contentFile = File.createTempFile("sharedkey",".pgp.asc", getActivity().getExternalCacheDir());
+                    // TODO: Delete this file at some later time
+                    FileWriter contentFileWriter = new FileWriter(contentFile);
+                    BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
+                    contentWriter.write(content);
+                    contentWriter.close();
+                    contentUri = Uri.fromFile(contentFile);
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    sendIntent.setType("text/plain");
+                    String title;
+                    if (fingerprintOnly) {
+                        title = getResources().getString(R.string.title_share_fingerprint_with);
+                    } else {
+                        title = getResources().getString(R.string.title_share_key);
+                    }
+                    startActivity(Intent.createChooser(sendIntent, title));
+                } catch (FileNotFoundException e | IOException e) {
+                    Log.e(Constants.TAG, "cannot create temp armored key file!", e);
+                    Notify.create(getActivity(), "cannot create temp armored key file!", Notify.Style.ERROR).show();
                 }
-                startActivity(Intent.createChooser(sendIntent, title));
             }
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
