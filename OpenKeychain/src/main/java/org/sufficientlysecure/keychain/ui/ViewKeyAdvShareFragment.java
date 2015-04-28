@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -214,16 +215,24 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 }
 
                 // let user choose application
-                File contentFile;
-                Uri contentUri = null;
                 try {
-                    contentFile = File.createTempFile("sharedkey",".pgp.asc", getActivity().getExternalCacheDir());
-                    // TODO: Delete this file at some later time
+                    final File contentFile = File.createTempFile("sharedkey",".pgp.asc", getActivity().getExternalCacheDir());
                     FileWriter contentFileWriter = new FileWriter(contentFile);
                     BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
                     contentWriter.write(content);
                     contentWriter.close();
-                    contentUri = Uri.fromFile(contentFile);
+                    Uri contentUri = Uri.fromFile(contentFile);
+
+                    FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath()) {
+                        @Override
+                        public void onEvent(int event, String path) {
+                            if (event == FileObserver.CLOSE_NOWRITE) {
+                                // Hopefully it will only be opened and then closed by the share process once
+                                contentFile.delete();
+                            }
+                        }
+                    };
+                    tempFileObserver.startWatching();
 
                     Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
@@ -235,7 +244,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                         title = getResources().getString(R.string.title_share_key);
                     }
                     startActivity(Intent.createChooser(sendIntent, title));
-                } catch (FileNotFoundException e | IOException e) {
+                } catch (IOException e) {
                     Log.e(Constants.TAG, "cannot create temp armored key file!", e);
                     Notify.create(getActivity(), "cannot create temp armored key file!", Notify.Style.ERROR).show();
                 }
