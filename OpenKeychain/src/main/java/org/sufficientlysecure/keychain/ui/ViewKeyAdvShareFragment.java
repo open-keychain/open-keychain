@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -54,6 +55,10 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -210,16 +215,39 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 }
 
                 // let user choose application
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-                sendIntent.setType("text/plain");
-                String title;
-                if (fingerprintOnly) {
-                    title = getResources().getString(R.string.title_share_fingerprint_with);
-                } else {
-                    title = getResources().getString(R.string.title_share_key);
+                try {
+                    final File contentFile = File.createTempFile("sharedkey",".pgp.asc", getActivity().getExternalCacheDir());
+                    FileWriter contentFileWriter = new FileWriter(contentFile);
+                    BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
+                    contentWriter.write(content);
+                    contentWriter.close();
+                    Uri contentUri = Uri.fromFile(contentFile);
+
+                    FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath()) {
+                        @Override
+                        public void onEvent(int event, String path) {
+                            if (event == FileObserver.CLOSE_NOWRITE) {
+                                // Hopefully it will only be opened and then closed by the share process once
+                                contentFile.delete();
+                            }
+                        }
+                    };
+                    tempFileObserver.startWatching();
+
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                    sendIntent.setType("text/plain");
+                    String title;
+                    if (fingerprintOnly) {
+                        title = getResources().getString(R.string.title_share_fingerprint_with);
+                    } else {
+                        title = getResources().getString(R.string.title_share_key);
+                    }
+                    startActivity(Intent.createChooser(sendIntent, title));
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "cannot create temp armored key file!", e);
+                    Notify.create(getActivity(), "cannot create temp armored key file!", Notify.Style.ERROR).show();
                 }
-                startActivity(Intent.createChooser(sendIntent, title));
             }
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
