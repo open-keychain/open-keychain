@@ -479,7 +479,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_orange_light;
+                    color = R.color.android_red_light;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
