@@ -21,7 +21,6 @@
         android:layout_marginTop="16dp"
         android:hint="@string/label_email"
         android:imeOptions="actionNext"
-        android:inputType="textEmailAddress"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

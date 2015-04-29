@@ -32,7 +32,6 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
-                android:inputType="textEmailAddress"
                 android:hint="@string/label_email"
                 android:ems="10" />
 

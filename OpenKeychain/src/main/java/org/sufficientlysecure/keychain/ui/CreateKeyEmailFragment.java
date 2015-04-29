@@ -89,9 +89,9 @@ public class CreateKeyEmailFragment extends Fragment {
         View view = inflater.inflate(R.layout.create_key_email_fragment, container, false);
 
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        View mBackButton = view.findViewById(R.id.create_key_back_button);
-        View mNextButton = view.findViewById(R.id.create_key_next_button);
-        RecyclerView mEmailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
+        View backButton = view.findViewById(R.id.create_key_back_button);
+        View nextButton = view.findViewById(R.id.create_key_next_button);
+        RecyclerView emailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
 
         // initial values
         mEmailEdit.setText(mCreateKeyActivity.mEmail);
@@ -100,21 +100,21 @@ public class CreateKeyEmailFragment extends Fragment {
         if (mCreateKeyActivity.mEmail == null) {
             mEmailEdit.requestFocus();
         }
-        mBackButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
             }
         });
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 nextClicked();
             }
         });
-        mEmailsRecyclerView.setHasFixedSize(true);
-        mEmailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mEmailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        emailsRecyclerView.setHasFixedSize(true);
+        emailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        emailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // initial values
         if (mAdditionalEmailModels == null) {
@@ -133,7 +133,7 @@ public class CreateKeyEmailFragment extends Fragment {
             }
         }
 
-        mEmailsRecyclerView.setAdapter(mEmailAdapter);
+        emailsRecyclerView.setAdapter(mEmailAdapter);
 
         return view;
     }
@@ -216,7 +216,7 @@ public class CreateKeyEmailFragment extends Fragment {
             }
         };
         // Create a new Messenger for the communication back
-        Messenger messenger =  new Messenger(returnHandler);
+        Messenger messenger = new Messenger(returnHandler);
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
