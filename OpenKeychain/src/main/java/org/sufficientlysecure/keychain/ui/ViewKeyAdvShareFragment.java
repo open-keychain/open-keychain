@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -54,6 +55,9 @@ import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -175,11 +179,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                        boolean toClipboard) {
         try {
             String content;
+            byte[] fingerprintData = (byte[]) providerHelper.getGenericData(
+                    KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if (fingerprintOnly) {
-                byte[] data = (byte[]) providerHelper.getGenericData(
-                        KeyRings.buildUnifiedKeyRingUri(dataUri),
-                        Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data);
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintData);
                 if (!toClipboard) {
                     content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
                 } else {
@@ -213,13 +217,62 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, content);
                 sendIntent.setType("text/plain");
+
                 String title;
                 if (fingerprintOnly) {
                     title = getResources().getString(R.string.title_share_fingerprint_with);
                 } else {
                     title = getResources().getString(R.string.title_share_key);
                 }
-                startActivity(Intent.createChooser(sendIntent, title));
+                Intent shareChooser = Intent.createChooser(sendIntent, title);
+
+                // Bluetooth Share will convert text/plain sent via EXTRA_TEXT to HTML
+                // Add replacement extra to send a text/plain file instead.
+                try {
+                    final File contentFile = new File(getActivity().getExternalCacheDir(),
+                            "key-" + KeyFormattingUtils.getShortKeyIdAsHexFromFingerprint(fingerprintData, false) +
+                            ".pgp.asc");
+                    FileWriter contentFileWriter = new FileWriter(contentFile, false);
+                    BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
+                    contentWriter.write(content);
+                    contentWriter.close();
+                    Uri contentUri = Uri.fromFile(contentFile);
+
+                    final Runnable deleteContentFile = new Runnable() {
+                        public void run() {
+                            contentFile.delete();
+                        }
+                    };
+
+                    // delete the file after Bluetooth Share closes the file
+                    FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath(),
+                            FileObserver.CLOSE_NOWRITE) {
+                        @Override
+                        public void onEvent(int event, String path) {
+                            // Hopefully it will only be opened and then closed by the share process once
+                            getContainer().post(deleteContentFile);
+                        }
+                    };
+                    tempFileObserver.startWatching();
+
+                    // If it's not complete in 1m, the file was not used; delete it
+                    getContainer().postDelayed(deleteContentFile, 1 * 60 * 1000);
+
+                    // create replacement extras inside try{}:
+                    // if file creation fails, just don't add the replacements
+                    Bundle replacements = new Bundle();
+                    shareChooser.putExtra(Intent.EXTRA_REPLACEMENT_EXTRAS, replacements);
+
+                    Bundle bluetoothExtra = new Bundle(sendIntent.getExtras());
+                    replacements.putBundle("com.android.bluetooth", bluetoothExtra);
+
+                    bluetoothExtra.putParcelable(Intent.EXTRA_STREAM, contentUri);
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
+                    Notify.create(getActivity(), R.string.error_bluetooth_file, Notify.Style.ERROR).show();
+                }
+
+                startActivity(shareChooser);
             }
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);
