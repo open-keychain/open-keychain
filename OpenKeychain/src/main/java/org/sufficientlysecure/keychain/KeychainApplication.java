@@ -40,6 +40,8 @@ import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.security.Security;
 import java.util.HashMap;
 
@@ -87,6 +89,17 @@ public class KeychainApplication extends Application {
                 // that the directory doesn't exist at this point
             }
         }
+
+        // Clean up leftover Bluetooth Share files
+        for (File toDelete : this.getExternalCacheDir().listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String filename) {
+                if (filename.matches("^key-[0-9a-fA-F]{8}\\.pgp\\.asc$")) {
+                    return true;
+                }
+                return false;
+            }
+        })) { toDelete.delete(); }
 
         brandGlowEffect(getApplicationContext(),
                 getApplicationContext().getResources().getColor(R.color.primary));
