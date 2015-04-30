@@ -228,48 +228,50 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
                 // Bluetooth Share will convert text/plain sent via EXTRA_TEXT to HTML
                 // Add replacement extra to send a text/plain file instead.
-                try {
-                    final File contentFile = new File(getActivity().getExternalCacheDir(),
-                            "key-" + KeyFormattingUtils.getShortKeyIdAsHexFromFingerprint(fingerprintData, false) +
-                            ".pgp.asc");
-                    FileWriter contentFileWriter = new FileWriter(contentFile, false);
-                    BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
-                    contentWriter.write(content);
-                    contentWriter.close();
-                    Uri contentUri = Uri.fromFile(contentFile);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    try {
+                        final File contentFile = new File(getActivity().getExternalCacheDir(),
+                                "key-" + KeyFormattingUtils.getShortKeyIdAsHexFromFingerprint(fingerprintData, false) +
+                                        ".pgp.asc");
+                        FileWriter contentFileWriter = new FileWriter(contentFile, false);
+                        BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
+                        contentWriter.write(content);
+                        contentWriter.close();
+                        Uri contentUri = Uri.fromFile(contentFile);
 
-                    final Runnable deleteContentFile = new Runnable() {
-                        public void run() {
-                            contentFile.delete();
-                        }
-                    };
+                        final Runnable deleteContentFile = new Runnable() {
+                            public void run() {
+                                contentFile.delete();
+                            }
+                        };
 
-                    // delete the file after Bluetooth Share closes the file
-                    FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath(),
-                            FileObserver.CLOSE_NOWRITE) {
-                        @Override
-                        public void onEvent(int event, String path) {
-                            // Hopefully it will only be opened and then closed by the share process once
-                            getContainer().post(deleteContentFile);
-                        }
-                    };
-                    tempFileObserver.startWatching();
+                        // delete the file after Bluetooth Share closes the file
+                        FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath(),
+                                FileObserver.CLOSE_NOWRITE) {
+                            @Override
+                            public void onEvent(int event, String path) {
+                                // Hopefully it will only be opened and then closed by the share process once
+                                getContainer().post(deleteContentFile);
+                            }
+                        };
+                        tempFileObserver.startWatching();
 
-                    // If it's not complete in 1m, the file was not used; delete it
-                    getContainer().postDelayed(deleteContentFile, 1 * 60 * 1000);
+                        // If it's not complete in 1m, the file was not used; delete it
+                        getContainer().postDelayed(deleteContentFile, 1 * 60 * 1000);
 
-                    // create replacement extras inside try{}:
-                    // if file creation fails, just don't add the replacements
-                    Bundle replacements = new Bundle();
-                    shareChooser.putExtra(Intent.EXTRA_REPLACEMENT_EXTRAS, replacements);
+                        // create replacement extras inside try{}:
+                        // if file creation fails, just don't add the replacements
+                        Bundle replacements = new Bundle();
+                        shareChooser.putExtra(Intent.EXTRA_REPLACEMENT_EXTRAS, replacements);
 
-                    Bundle bluetoothExtra = new Bundle(sendIntent.getExtras());
-                    replacements.putBundle("com.android.bluetooth", bluetoothExtra);
+                        Bundle bluetoothExtra = new Bundle(sendIntent.getExtras());
+                        replacements.putBundle("com.android.bluetooth", bluetoothExtra);
 
-                    bluetoothExtra.putParcelable(Intent.EXTRA_STREAM, contentUri);
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
-                    Notify.create(getActivity(), R.string.error_bluetooth_file, Notify.Style.ERROR).show();
+                        bluetoothExtra.putParcelable(Intent.EXTRA_STREAM, contentUri);
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
+                        Notify.create(getActivity(), R.string.error_bluetooth_file, Notify.Style.ERROR).show();
+                    }
                 }
 
                 startActivity(shareChooser);
