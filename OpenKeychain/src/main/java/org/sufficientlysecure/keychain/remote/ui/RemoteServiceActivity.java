@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
+// TODO: make extensible BaseRemoteServiceActivity and extend these cases from it
 public class RemoteServiceActivity extends BaseActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
