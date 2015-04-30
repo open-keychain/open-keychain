@@ -173,11 +173,10 @@ public class KeyAdapter extends CursorAdapter {
                     String dateTime = DateUtils.formatDateTime(context,
                             cursor.getLong(INDEX_CREATION) * 1000,
                             DateUtils.FORMAT_SHOW_DATE
-                                    | DateUtils.FORMAT_SHOW_TIME
                                     | DateUtils.FORMAT_SHOW_YEAR
                                     | DateUtils.FORMAT_ABBREV_MONTH);
 
-                    mCreationDate.setText(context.getString(R.string.label_creation,
+                    mCreationDate.setText(context.getString(R.string.label_key_created,
                             dateTime));
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
@@ -279,20 +278,6 @@ public class KeyAdapter extends CursorAdapter {
             } else {
                 return mUserId.email;
             }
-        }
-
-        public boolean hasDuplicate() {
-            return mHasDuplicate;
-        }
-
-        public String getCreationDate(Context context) {
-            Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            creationCal.setTime(mCreation);
-            // convert from UTC to time zone of device
-            creationCal.setTimeZone(TimeZone.getDefault());
-
-            return context.getString(R.string.label_creation) + ": "
-                    + DateFormat.getDateFormat(context).format(creationCal.getTime());
         }
 
     }
