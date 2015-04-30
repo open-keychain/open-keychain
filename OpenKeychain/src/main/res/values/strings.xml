@@ -521,6 +521,7 @@
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
     <string name="api_select_sign_key_text">"Please select one of your existing keys or create a new one."</string>
+    <string name="api_select_keys_text">"None of the allowed keys is able to decrypt the content. Please select the allowed keys."</string>
 
     <!-- Share -->
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>

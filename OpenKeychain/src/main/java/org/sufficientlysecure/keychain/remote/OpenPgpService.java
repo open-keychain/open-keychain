@@ -34,6 +34,7 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -47,6 +48,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
+import org.sufficientlysecure.keychain.remote.ui.SelectAllowedKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -199,6 +201,18 @@ public class OpenPgpService extends RemoteService {
         intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE);
         intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
         intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
+
+        return PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    private PendingIntent getSelectAllowedKeysIntent(Intent data) {
+        // If signature is unknown we return an _additional_ PendingIntent
+        // to retrieve the missing key
+        Intent intent = new Intent(getBaseContext(), SelectAllowedKeysActivity.class);
+        intent.putExtra(SelectAllowedKeysActivity.EXTRA_SERVICE_INTENT, data);
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(getCurrentCallingPackage()));
 
         return PendingIntent.getActivity(getBaseContext(), 0,
                 intent,
@@ -476,13 +490,12 @@ public class OpenPgpService extends RemoteService {
             }
 
             String currentPkg = getCurrentCallingPackage();
-            Set<Long> allowedKeyIds;
+            Set<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
+                    KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
-                allowedKeyIds = mProviderHelper.getAllKeyIdsForApp(
-                        ApiAccounts.buildBaseUri(currentPkg));
-            } else {
-                allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
-                        KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+                allowedKeyIds.addAll(mProviderHelper.getAllKeyIdsForApp(
+                        ApiAccounts.buildBaseUri(currentPkg)));
             }
 
             long inputLength = is.available();
@@ -575,6 +588,15 @@ public class OpenPgpService extends RemoteService {
                 return result;
             } else {
                 LogEntryParcel errorMsg = pgpResult.getLog().getLast();
+
+                if (errorMsg.mType == OperationResult.LogType.MSG_DC_ERROR_NO_KEY) {
+                    // allow user to select allowed keys
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT, getSelectAllowedKeysIntent(data));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
+                }
+
                 throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
 
