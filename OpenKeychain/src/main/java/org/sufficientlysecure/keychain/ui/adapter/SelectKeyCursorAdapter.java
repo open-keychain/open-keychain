@@ -137,7 +137,6 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
             String dateTime = DateUtils.formatDateTime(context,
                     cursor.getLong(mIndexCreation) * 1000,
                     DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_SHOW_TIME
                             | DateUtils.FORMAT_SHOW_YEAR
                             | DateUtils.FORMAT_ABBREV_MONTH);
 
