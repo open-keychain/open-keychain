@@ -41,7 +41,7 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
-    <string name="section_yubikey">"Yubikey"</string>
+    <string name="section_yubikey">"YubiKey"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
@@ -1280,11 +1280,12 @@
     <string name="yubikey_serno">"Serial No: %s"</string>
     <string name="yubikey_key_holder">"Key holder: "</string>
     <string name="yubikey_key_holder_unset">"Key holder: &lt;unset&gt;"</string>
-    <string name="yubikey_status_bound">"Yubikey matches and is bound to key"</string>
-    <string name="yubikey_status_unbound">"Yubikey matches, can be bound to key"</string>
-    <string name="yubikey_status_partly">"Yubikey matches, partly bound to key"</string>
+    <string name="yubikey_status_bound">"YubiKey matches and is bound to key"</string>
+    <string name="yubikey_status_unbound">"YubiKey matches, can be bound to key"</string>
+    <string name="yubikey_status_partly">"YubiKey matches, partly bound to key"</string>
+    <string name="yubikey_create">"Hold YubiKey against the back of your device."</string>
     <string name="btn_import">"Import"</string>
-    <string name="snack_yubi_other">Different key stored on Yubikey!</string>
+    <string name="snack_yubi_other">Different key stored on YubiKey!</string>
     <string name="error_nfc">"NFC Error: %s"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
 
