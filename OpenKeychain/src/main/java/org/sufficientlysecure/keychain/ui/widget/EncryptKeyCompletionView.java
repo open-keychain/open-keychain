@@ -156,7 +156,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
 
     @Override
     public void showDropDown() {
-        if (mAdapter == null || mAdapter.getCursor().isClosed()) {
+        if (mAdapter == null || mAdapter.getCursor() == null || mAdapter.getCursor().isClosed()) {
             return;
         }
         super.showDropDown();
