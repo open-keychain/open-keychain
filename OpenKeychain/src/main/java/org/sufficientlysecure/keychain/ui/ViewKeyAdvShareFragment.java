@@ -26,7 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.FileObserver;
+import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -44,13 +44,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
@@ -58,9 +58,9 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
@@ -234,33 +234,16 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                     try {
                         String primaryUserId = UncachedKeyRing.decodeFromData(content.getBytes()).
                                 getPublicKey().getPrimaryUserIdWithFallback();
-                        final File contentFile = new File(getActivity().getExternalCacheDir(),
+
+                        TemporaryStorageProvider shareFileProv = new TemporaryStorageProvider();
+                        Uri contentUri = TemporaryStorageProvider.createFile(getActivity(),
                                 primaryUserId + Constants.FILE_EXTENSION_PGP_ALTERNATE + Constants.FILE_EXTENSION_ASC);
-                        FileWriter contentFileWriter = new FileWriter(contentFile, false);
-                        BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
+
+                        BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(
+                                new ParcelFileDescriptor.AutoCloseOutputStream(
+                                        shareFileProv.openFile(contentUri, "w"))));
                         contentWriter.write(content);
                         contentWriter.close();
-                        Uri contentUri = Uri.fromFile(contentFile);
-
-                        final Runnable deleteContentFile = new Runnable() {
-                            public void run() {
-                                contentFile.delete();
-                            }
-                        };
-
-                        // delete the file after Bluetooth Share closes the file
-                        FileObserver tempFileObserver = new FileObserver(contentFile.getAbsolutePath(),
-                                FileObserver.CLOSE_NOWRITE) {
-                            @Override
-                            public void onEvent(int event, String path) {
-                                // Hopefully it will only be opened and then closed by the share process once
-                                getContainer().post(deleteContentFile);
-                            }
-                        };
-                        tempFileObserver.startWatching();
-
-                        // If it's not complete in 1m, the file was not used; delete it
-                        getContainer().postDelayed(deleteContentFile, 1 * 60 * 1000);
 
                         // create replacement extras inside try{}:
                         // if file creation fails, just don't add the replacements
@@ -271,7 +254,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                         replacements.putBundle("com.android.bluetooth", bluetoothExtra);
 
                         bluetoothExtra.putParcelable(Intent.EXTRA_STREAM, contentUri);
-                    } catch (IOException e) {
+                    } catch (FileNotFoundException e) {
                         Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
                         Notify.create(getActivity(), R.string.error_bluetooth_file, Notify.Style.ERROR).show();
                     }
