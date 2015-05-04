@@ -26,7 +26,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +50,10 @@ public class CreateKeyEmailFragment extends Fragment {
     private EmailEditText mEmailEdit;
     private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
     private EmailAdapter mEmailAdapter;
+
+    // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
+    // EMAIL_ADDRESS fails for mails with umlauts for example
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(".[\\S]+@.[\\S]+\\.[a-z]+");
 
     /**
      * Creates new instance of this fragment
@@ -146,7 +149,7 @@ public class CreateKeyEmailFragment extends Fragment {
      * @return
      */
     private boolean checkEmail(String email, boolean additionalEmail) {
-        //check for email format or if the user did any input
+        // check for email format or if the user did any input
         if (!isEmailFormatValid(email)) {
             Notify.create(getActivity(),
                     getString(R.string.create_key_email_invalid_email),
@@ -154,7 +157,7 @@ public class CreateKeyEmailFragment extends Fragment {
             return false;
         }
 
-        //check for duplicated emails
+        // check for duplicated emails
         if (!additionalEmail && isEmailDuplicatedInsideAdapter(email) || additionalEmail &&
                 mEmailEdit.getText().length() > 0 && email.equals(mEmailEdit.getText().toString())) {
             Notify.create(getActivity(),
@@ -174,10 +177,8 @@ public class CreateKeyEmailFragment extends Fragment {
      * @return
      */
     private boolean isEmailFormatValid(String email) {
-        Pattern emailPattern = Patterns.EMAIL_ADDRESS;
-
-        //check for email format or if the user did any input
-        return !(email.length() == 0 || !emailPattern.matcher(email).matches());
+        // check for email format or if the user did any input
+        return !(email.length() == 0 || !EMAIL_PATTERN.matcher(email).matches());
     }
 
     /**
