@@ -43,6 +43,8 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -230,9 +232,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 // Add replacement extra to send a text/plain file instead.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     try {
+                        String primaryUserId = UncachedKeyRing.decodeFromData(content.getBytes()).
+                                getPublicKey().getPrimaryUserIdWithFallback();
                         final File contentFile = new File(getActivity().getExternalCacheDir(),
-                                "key-" + KeyFormattingUtils.getShortKeyIdAsHexFromFingerprint(fingerprintData, false) +
-                                        ".pgp.asc");
+                                primaryUserId + ".pgp.asc");
                         FileWriter contentFileWriter = new FileWriter(contentFile, false);
                         BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
                         contentWriter.write(content);
