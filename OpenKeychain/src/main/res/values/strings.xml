@@ -1289,5 +1289,6 @@
     <string name="snack_yubi_other">Different key stored on YubiKey!</string>
     <string name="error_nfc">"NFC Error: %s"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
+    <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
 
 </resources>
