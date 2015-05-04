@@ -99,7 +99,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
         if (mFirstTime) {
             setTitle(R.string.app_name);
-            setActionBarIcon(R.drawable.ic_launcher);
+            mToolbar.setNavigationIcon(null);
             mToolbar.setNavigationOnClickListener(null);
         } else {
             setTitle(R.string.title_manage_my_keys);
