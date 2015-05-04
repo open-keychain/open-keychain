@@ -133,6 +133,10 @@ public class CreateKeyEmailFragment extends Fragment {
                     addEmail();
                 }
             });
+
+            if (mCreateKeyActivity.mAdditionalEmails != null) {
+                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
+            }
         }
         if (mAdditionalEmailModels.isEmpty() && mCreateKeyActivity.mAdditionalEmails != null) {
             mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
@@ -156,7 +160,7 @@ public class CreateKeyEmailFragment extends Fragment {
                             email.equals(mEmailEdit.getText().toString())) {
                         Notify.create(getActivity(),
                                 getString(R.string.create_key_email_already_exists_text),
-                                Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+                                Notify.LENGTH_LONG, Notify.Style.ERROR).show(CreateKeyEmailFragment.this);
                         return;
                     }
                     //check for duplicated emails inside the adapter
@@ -164,7 +168,7 @@ public class CreateKeyEmailFragment extends Fragment {
                         if (email.equals(model.email)) {
                             Notify.create(getActivity(),
                                     getString(R.string.create_key_email_already_exists_text),
-                                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
+                                    Notify.LENGTH_LONG, Notify.Style.ERROR).show(CreateKeyEmailFragment.this);
                             return;
                         }
                     }
