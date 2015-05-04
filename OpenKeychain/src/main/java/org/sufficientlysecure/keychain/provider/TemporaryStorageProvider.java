@@ -48,6 +48,8 @@ public class TemporaryStorageProvider extends ContentProvider {
     private static final Uri BASE_URI = Uri.parse("content://org.sufficientlysecure.keychain.tempstorage/");
     private static final int DB_VERSION = 2;
 
+    private static File cacheDir;
+
     public static Uri createFile(Context context, String targetName) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NAME, targetName);
@@ -90,7 +92,7 @@ public class TemporaryStorageProvider extends ContentProvider {
         }
     }
 
-    private TemporaryStorageDatabase db;
+    private static TemporaryStorageDatabase db;
 
     private File getFile(Uri uri) throws FileNotFoundException {
         try {
@@ -101,13 +103,14 @@ public class TemporaryStorageProvider extends ContentProvider {
     }
 
     private File getFile(String id) {
-        return new File(getContext().getCacheDir(), "temp/" + id);
+        return new File(cacheDir, "temp/" + id);
     }
 
     @Override
     public boolean onCreate() {
         db = new TemporaryStorageDatabase(getContext());
-        return new File(getContext().getCacheDir(), "temp").mkdirs();
+        cacheDir = getContext().getCacheDir();
+        return new File(cacheDir, "temp").mkdirs();
     }
 
     @Override
