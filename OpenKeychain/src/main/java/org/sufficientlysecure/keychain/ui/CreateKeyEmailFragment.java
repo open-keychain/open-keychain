@@ -133,10 +133,6 @@ public class CreateKeyEmailFragment extends Fragment {
                     addEmail();
                 }
             });
-
-            if (mCreateKeyActivity.mAdditionalEmails != null) {
-                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
-            }
         }
         if (mAdditionalEmailModels.isEmpty() && mCreateKeyActivity.mAdditionalEmails != null) {
             mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
