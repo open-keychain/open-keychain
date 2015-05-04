@@ -309,7 +309,7 @@ public class DecryptFilesFragment extends DecryptFragment {
     }
 
     @Override
-    protected void onVerifyLoaded(boolean verified) {
+    protected void onVerifyLoaded(boolean hideErrorOverlay) {
 
     }
 }

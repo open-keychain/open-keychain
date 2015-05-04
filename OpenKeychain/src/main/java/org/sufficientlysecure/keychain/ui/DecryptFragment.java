@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-
 public abstract class DecryptFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -91,7 +90,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         mSignatureName = (TextView) getActivity().findViewById(R.id.result_signature_name);
         mSignatureEmail = (TextView) getActivity().findViewById(R.id.result_signature_email);
         mSignatureAction = (TextView) getActivity().findViewById(R.id.result_signature_action);
-
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
@@ -113,12 +111,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
                     final ImportKeyResult result =
                             returnData.getParcelable(OperationResult.EXTRA_RESULT);
 
-                    // if (!result.success()) {
-                        result.createNotify(getActivity()).show();
-                    // }
+                    result.createNotify(getActivity()).show();
 
                     getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, DecryptFragment.this);
-
                 }
             }
         };
@@ -153,7 +148,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
         getActivity().startService(intent);
-
     }
 
     private void showKey(long keyId) {
@@ -205,7 +199,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         }
 
         getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, this);
-
     }
 
     private void setSignatureLayoutVisibility(int visibility) {
@@ -228,8 +221,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.IS_EXPIRED,
             KeychainContract.KeyRings.VERIFIED,
             KeychainContract.KeyRings.HAS_ANY_SECRET,
     };
@@ -237,10 +228,8 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
     @SuppressWarnings("unused")
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_USER_ID = 2;
-    static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_IS_EXPIRED = 4;
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
+    static final int INDEX_VERIFIED = 3;
+    static final int INDEX_HAS_ANY_SECRET = 4;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -282,8 +271,10 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
                     getActivity(), mSignatureResult.getKeyId()));
         }
 
-        boolean isRevoked = data.getInt(INDEX_IS_REVOKED) != 0;
-        boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+        // NOTE: Don't use revoked and expired fields from database, they don't show
+        // revoked/expired subkeys
+        boolean isRevoked = mSignatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED;
+        boolean isExpired = mSignatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED;
         boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
         boolean isYours = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
 
@@ -344,7 +335,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         }
 
         setSignatureLayoutVisibility(View.GONE);
-
     }
 
     private void showUnknownKeyStatus() {
@@ -407,6 +397,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
 
     }
 
-    protected abstract void onVerifyLoaded(boolean verified);
+    protected abstract void onVerifyLoaded(boolean hideErrorOverlay);
 
 }
