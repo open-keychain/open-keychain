@@ -28,7 +28,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 
 
-public class CreateKeyYubiWaitFragment extends Fragment {
+public class CreateKeyYubiKeyWaitFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
