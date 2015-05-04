@@ -235,7 +235,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                         String primaryUserId = UncachedKeyRing.decodeFromData(content.getBytes()).
                                 getPublicKey().getPrimaryUserIdWithFallback();
                         final File contentFile = new File(getActivity().getExternalCacheDir(),
-                                primaryUserId + ".pgp.asc");
+                                primaryUserId + Constants.FILE_EXTENSION_PGP_ALTERNATE + Constants.FILE_EXTENSION_ASC);
                         FileWriter contentFileWriter = new FileWriter(contentFile, false);
                         BufferedWriter contentWriter = new BufferedWriter(contentFileWriter);
                         contentWriter.write(content);
