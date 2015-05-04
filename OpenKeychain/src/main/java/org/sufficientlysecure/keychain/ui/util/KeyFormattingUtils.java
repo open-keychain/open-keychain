@@ -227,14 +227,6 @@ public class KeyFormattingUtils {
         return buf.getLong();
     }
 
-    public static int getShortKeyIdFromFingerprint(byte[] fingerprint) {
-        ByteBuffer buf = ByteBuffer.wrap(fingerprint);
-        // skip first 16 bytes of the fingerprint
-        buf.position(16);
-        // the last four bytes are the short key id (big endian, which is default order in ByteBuffer)
-        return buf.getInt();
-    }
-
     /**
      * Convert key id from long to 64 bit hex string
      * <p/>
@@ -246,24 +238,16 @@ public class KeyFormattingUtils {
      * @return
      */
     public static String convertKeyIdToHex(long keyId) {
-        return convertKeyIdToHex(keyId, true);
-    }
-
-    public static String convertKeyIdToHex(long keyId, boolean header) {
         long upper = keyId >> 32;
         if (upper == 0) {
             // this is a short key id
-            return convertKeyIdToHexShort(keyId, header);
+            return convertKeyIdToHexShort(keyId);
         }
-        return header?"0x":"" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
+        return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
     }
 
     public static String convertKeyIdToHexShort(long keyId) {
-        return convertKeyIdToHexShort(keyId, true);
-    }
-
-    public static String convertKeyIdToHexShort(long keyId, boolean header) {
-        return header?"0x":"" + convertKeyIdToHex32bit(keyId);
+        return "0x" + convertKeyIdToHex32bit(keyId);
     }
 
     private static String convertKeyIdToHex32bit(long keyId) {
@@ -272,14 +256,6 @@ public class KeyFormattingUtils {
             hexString = "0" + hexString;
         }
         return hexString;
-    }
-
-    public static String getKeyIdAsHexFromFingerprint(byte[] fingerprint, boolean header) {
-        return convertKeyIdToHex(getKeyIdFromFingerprint(fingerprint), header);
-    }
-
-    public static String getShortKeyIdAsHexFromFingerprint(byte[] fingerprint, boolean header) {
-        return convertKeyIdToHex(getShortKeyIdFromFingerprint(fingerprint), header);
     }
 
     /**
