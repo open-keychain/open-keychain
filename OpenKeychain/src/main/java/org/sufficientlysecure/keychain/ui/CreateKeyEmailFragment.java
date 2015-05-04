@@ -53,7 +53,7 @@ public class CreateKeyEmailFragment extends Fragment {
 
     // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
     // EMAIL_ADDRESS fails for mails with umlauts for example
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(".[\\S]+@.[\\S]+\\.[a-z]+");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     /**
      * Creates new instance of this fragment
