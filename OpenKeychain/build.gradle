@@ -17,6 +17,12 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
 
+    // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
+    // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:support-annotations:22.1.1'
+    }
+
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
