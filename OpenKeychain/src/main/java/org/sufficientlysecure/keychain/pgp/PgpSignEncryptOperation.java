@@ -178,13 +178,20 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     case PIN:
                     case PATTERN:
                     case PASSPHRASE: {
-                        if (cryptoInput.getPassphrase() == null) {
+                        Passphrase localPassphrase = cryptoInput.getPassphrase();
+                        if (localPassphrase == null) {
+                            try {
+                                localPassphrase = getCachedPassphrase(signingKeyRing.getMasterKeyId(), signingKey.getKeyId());
+                            } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
+                            }
+                        }
+                        if (localPassphrase == null) {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
                             return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                                     signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
                                     cryptoInput.getSignatureTime()));
                         }
-                        if (!signingKey.unlock(cryptoInput.getPassphrase())) {
+                        if (!signingKey.unlock(localPassphrase)) {
                             log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
                             return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                         }
