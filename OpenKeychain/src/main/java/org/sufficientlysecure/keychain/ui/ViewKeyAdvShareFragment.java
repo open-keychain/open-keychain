@@ -237,7 +237,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
                         TemporaryStorageProvider shareFileProv = new TemporaryStorageProvider();
                         Uri contentUri = TemporaryStorageProvider.createFile(getActivity(),
-                                primaryUserId + Constants.FILE_EXTENSION_PGP_ALTERNATE + Constants.FILE_EXTENSION_ASC);
+                                primaryUserId + Constants.FILE_EXTENSION_ASC);
 
                         BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(
                                 new ParcelFileDescriptor.AutoCloseOutputStream(
