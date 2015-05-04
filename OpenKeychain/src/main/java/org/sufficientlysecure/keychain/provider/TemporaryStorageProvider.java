@@ -31,10 +31,12 @@ import android.provider.OpenableColumns;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.UUID;
 
 public class TemporaryStorageProvider extends ContentProvider {
 
@@ -44,7 +46,7 @@ public class TemporaryStorageProvider extends ContentProvider {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_TIME = "time";
     private static final Uri BASE_URI = Uri.parse("content://org.sufficientlysecure.keychain.tempstorage/");
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public static Uri createFile(Context context, String targetName) {
         ContentValues contentValues = new ContentValues();
@@ -66,7 +68,7 @@ public class TemporaryStorageProvider extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_FILES + " (" +
-                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_ID + " TEXT PRIMARY KEY, " +
                     COLUMN_NAME + " TEXT, " +
                     COLUMN_TIME + " INTEGER" +
                     ");");
@@ -74,7 +76,17 @@ public class TemporaryStorageProvider extends ContentProvider {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            Log.d(Constants.TAG, "Upgrading files db from " + oldVersion + " to " + newVersion);
 
+            switch (oldVersion) {
+                case 1:
+                    db.execSQL("DROP TABLE IF EXISTS files");
+                    db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_FILES + " (" +
+                            COLUMN_ID + " TEXT PRIMARY KEY, " +
+                            COLUMN_NAME + " TEXT, " +
+                            COLUMN_TIME + " INTEGER" +
+                            ");");
+            }
         }
     }
 
@@ -82,13 +94,13 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     private File getFile(Uri uri) throws FileNotFoundException {
         try {
-            return getFile(Integer.parseInt(uri.getLastPathSegment()));
+            return getFile(uri.getLastPathSegment());
         } catch (NumberFormatException e) {
             throw new FileNotFoundException();
         }
     }
 
-    private File getFile(int id) {
+    private File getFile(String id) {
         return new File(getContext().getCacheDir(), "temp/" + id);
     }
 
@@ -133,13 +145,15 @@ public class TemporaryStorageProvider extends ContentProvider {
         if (!values.containsKey(COLUMN_TIME)) {
             values.put(COLUMN_TIME, System.currentTimeMillis());
         }
+        String uuid = UUID.randomUUID().toString();
+        values.put(COLUMN_ID, uuid);
         int insert = (int) db.getWritableDatabase().insert(TABLE_FILES, null, values);
         try {
-            getFile(insert).createNewFile();
+            getFile(uuid).createNewFile();
         } catch (IOException e) {
             return null;
         }
-        return Uri.withAppendedPath(BASE_URI, Long.toString(insert));
+        return Uri.withAppendedPath(BASE_URI, uuid);
     }
 
     @Override
@@ -152,7 +166,7 @@ public class TemporaryStorageProvider extends ContentProvider {
                 selectionArgs, null, null, null);
         if (files != null) {
             while (files.moveToNext()) {
-                getFile(files.getInt(0)).delete();
+                getFile(files.getString(0)).delete();
             }
             files.close();
             return db.getWritableDatabase().delete(TABLE_FILES, selection, selectionArgs);
