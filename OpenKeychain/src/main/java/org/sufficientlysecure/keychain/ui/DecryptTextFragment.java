@@ -50,8 +50,8 @@ public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
     // view
-    private LinearLayout mValidLayout;
-    private LinearLayout mInvalidLayout;
+    private LinearLayout mContentLayout;
+    private LinearLayout mErrorOverlayLayout;
     private TextView mText;
 
     // model
@@ -78,16 +78,16 @@ public class DecryptTextFragment extends DecryptFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
-        mValidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_valid);
-        mInvalidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_invalid);
+        mContentLayout = (LinearLayout) view.findViewById(R.id.decrypt_content);
+        mErrorOverlayLayout = (LinearLayout) view.findViewById(R.id.decrypt_error_overlay);
         mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
 
-        Button vInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
-        vInvalidButton.setOnClickListener(new View.OnClickListener() {
+        Button vErrorOverlayButton = (Button) view.findViewById(R.id.decrypt_error_overlay_button);
+        vErrorOverlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mInvalidLayout.setVisibility(View.GONE);
-                mValidLayout.setVisibility(View.VISIBLE);
+                mErrorOverlayLayout.setVisibility(View.GONE);
+                mContentLayout.setVisibility(View.VISIBLE);
             }
         });
 
@@ -244,17 +244,17 @@ public class DecryptTextFragment extends DecryptFragment {
     }
 
     @Override
-    protected void onVerifyLoaded(boolean verified) {
+    protected void onVerifyLoaded(boolean hideErrorOverlay) {
 
-        mShowMenuOptions = verified;
+        mShowMenuOptions = hideErrorOverlay;
         getActivity().supportInvalidateOptionsMenu();
 
-        if (verified) {
-            mInvalidLayout.setVisibility(View.GONE);
-            mValidLayout.setVisibility(View.VISIBLE);
+        if (hideErrorOverlay) {
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
         } else {
-            mInvalidLayout.setVisibility(View.VISIBLE);
-            mValidLayout.setVisibility(View.GONE);
+            mErrorOverlayLayout.setVisibility(View.VISIBLE);
+            mContentLayout.setVisibility(View.GONE);
         }
 
     }
