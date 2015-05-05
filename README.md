@@ -45,12 +45,6 @@ Select everything for the newest SDK Platform, API 22, and also API 21
 1. Use OpenJDK instead of Oracle JDK
 2. Execute ``./gradlew test``
 
-### Build API Demo with Gradle
-
-1. Follow 1-4 from above
-2. The example code is available at https://github.com/open-keychain/api-example
-3. Execute ``./gradlew build``
-
 ### Development with Android Studio
 
 We are using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because we are using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
