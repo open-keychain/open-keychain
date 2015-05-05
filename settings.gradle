@@ -1,6 +1,6 @@
 include ':OpenKeychain'
-include ':extern:openpgp-api-lib'
-include ':extern:openkeychain-api-lib'
+include ':extern:openpgp-api-lib:openpgp-api'
+include ':extern:openkeychain-api-lib:openkeychain-intents'
 include ':extern:spongycastle:core'
 include ':extern:spongycastle:pg'
 include ':extern:spongycastle:pkix'
