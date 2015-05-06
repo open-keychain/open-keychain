@@ -41,7 +41,7 @@
                         android:layout_height="?android:attr/listPreferredItemHeight"
                         android:orientation="horizontal"
 
-                        android:id="@+id/decrypt_file_browse"
+                        android:id="@+id/decrypt_files_browse"
                         android:clickable="true"
                         android:background="?android:selectableItemBackground">
 
@@ -54,7 +54,7 @@
                             android:gravity="center_vertical" />
 
                         <TextView
-                            android:id="@+id/decrypt_file_filename"
+                            android:id="@+id/decrypt_files_filename"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
                             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -73,7 +73,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <CheckBox
-                        android:id="@+id/decrypt_file_delete_after_decryption"
+                        android:id="@+id/decrypt_files_delete_after_decryption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_delete_after_decryption" />
@@ -83,7 +83,7 @@
                         android:layout_height="match_parent">
 
                         <TextView
-                            android:id="@+id/decrypt_file_action_decrypt"
+                            android:id="@+id/decrypt_files_action_decrypt"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
                             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -104,7 +104,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="1dip"
                             android:background="?android:attr/listDivider"
-                            android:layout_above="@+id/decrypt_file_action_decrypt" />
+                            android:layout_above="@+id/decrypt_files_action_decrypt" />
 
                     </RelativeLayout>
                 </LinearLayout>
