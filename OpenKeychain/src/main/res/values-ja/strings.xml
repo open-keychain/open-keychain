@@ -547,6 +547,7 @@
     <item>期限の変更</item>
     <item>副鍵の破棄</item>
     <item>副鍵のストリップ</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">新しい副鍵</string>
   <string name="edit_key_select_flag">最低1つフラグを選択してください!</string>

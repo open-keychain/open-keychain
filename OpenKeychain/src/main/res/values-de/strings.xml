@@ -555,6 +555,7 @@
     <item>Ablaufdatum ändern</item>
     <item>Unterschlüssel widerrufen</item>
     <item>Unterschlüssel kürzen</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">neuer Unterschlüssel</string>
   <string name="edit_key_select_flag">Mindestens ein Attribut wählen!</string>

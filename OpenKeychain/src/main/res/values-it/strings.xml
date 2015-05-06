@@ -409,6 +409,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
     <item>Cambia Scadenza</item>
     <item>Revoca Sottochiave</item>
     <item>Pulisci Sottochiave</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nuova sottochiave</string>
   <string name="edit_key_select_flag">Per favore seleziona almeno una spunta!</string>

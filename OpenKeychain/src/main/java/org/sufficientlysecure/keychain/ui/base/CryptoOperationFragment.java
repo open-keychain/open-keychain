@@ -43,6 +43,7 @@ public abstract class CryptoOperationFragment extends Fragment {
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
         switch (requiredInput.mType) {
+            case NFC_KEYTOCARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(getActivity(), NfcOperationActivity.class);

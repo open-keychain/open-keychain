@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.NfcKeyToCardOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -48,6 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.NfcKeyToCardResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
@@ -110,6 +112,8 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
+
+    public static final String ACTION_NFC_KEYTOCARD = Constants.INTENT_PREFIX + "NFC_KEYTOCARD";
 
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
 
@@ -175,6 +179,9 @@ public class KeychainIntentService extends IntentService implements Progressable
     public static final String EXPORT_SECRET = "export_secret";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
+
+    // NFC export key to card
+    public static final String NFC_KEYTOCARD_SUBKEY_ID = "nfc_keytocard_subkey_id";
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
@@ -531,6 +538,19 @@ public class KeychainIntentService extends IntentService implements Progressable
 
                 break;
 
+            }
+            case ACTION_NFC_KEYTOCARD: {
+                // Input
+                long subKeyId = data.getLong(NFC_KEYTOCARD_SUBKEY_ID);
+
+                // Operation
+                NfcKeyToCardOperation exportOp = new NfcKeyToCardOperation(this, providerHelper, this);
+                NfcKeyToCardResult result = exportOp.execute(subKeyId);
+
+                // Result
+                sendMessageToHandler(MessageStatus.OKAY, result);
+
+                break;
             }
             case ACTION_SIGN_ENCRYPT: {
 

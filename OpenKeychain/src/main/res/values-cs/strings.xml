@@ -424,6 +424,7 @@
     <item>Změnit expiraci</item>
     <item>Zneplatnit podklíč</item>
     <item>Strip podklíč</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nový podklíč</string>
   <string name="edit_key_select_flag">Prosím vyberte alespoň jeden příznak!</string>

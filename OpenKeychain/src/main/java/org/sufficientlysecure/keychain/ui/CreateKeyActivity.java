@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,6 +43,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
     public static final String EXTRA_FIRST_TIME = "first_time";
     public static final String EXTRA_ADDITIONAL_EMAILS = "additional_emails";
     public static final String EXTRA_PASSPHRASE = "passphrase";
+    public static final String EXTRA_USE_SMART_CARD_SETTINGS = "use_smart_card_settings";
 
     public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
     public static final String EXTRA_NFC_AID = "nfc_aid";
@@ -53,6 +56,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
     ArrayList<String> mAdditionalEmails;
     Passphrase mPassphrase;
     boolean mFirstTime;
+    boolean mUseSmartCardSettings;
 
     Fragment mCurrentFragment;
 
@@ -68,6 +72,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
             mAdditionalEmails = savedInstanceState.getStringArrayList(EXTRA_ADDITIONAL_EMAILS);
             mPassphrase = savedInstanceState.getParcelable(EXTRA_PASSPHRASE);
             mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
+            mUseSmartCardSettings = savedInstanceState.getBoolean(EXTRA_USE_SMART_CARD_SETTINGS);
 
             mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
@@ -77,6 +82,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
             mName = intent.getStringExtra(EXTRA_NAME);
             mEmail = intent.getStringExtra(EXTRA_EMAIL);
             mFirstTime = intent.getBooleanExtra(EXTRA_FIRST_TIME, false);
+            mUseSmartCardSettings = intent.getBooleanExtra(EXTRA_USE_SMART_CARD_SETTINGS, false);
 
             if (intent.hasExtra(EXTRA_NFC_FINGERPRINTS)) {
                 byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
@@ -116,23 +122,45 @@ public class CreateKeyActivity extends BaseNfcActivity {
         byte[] nfcAid = nfcGetAid();
         String userId = nfcGetUserId();
 
-        try {
-            long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
-            ring.getMasterKeyId();
+        // If all fingerprint bytes are 0, the card contains no keys.
+        boolean cardContainsKeys = false;
+        for (byte b : scannedFingerprints) {
+            if (b != 0) {
+                cardContainsKeys = true;
+                break;
+            }
+        }
 
-            Intent intent = new Intent(this, ViewKeyActivity.class);
-            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, userId);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, scannedFingerprints);
-            startActivity(intent);
-            finish();
+        if (cardContainsKeys) {
+            try {
+                long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
+                CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
+                ring.getMasterKeyId();
 
-        } catch (PgpKeyNotFoundException e) {
-            Fragment frag = CreateKeyYubiKeyImportFragment.createInstance(
-                    scannedFingerprints, nfcAid, userId);
-            loadFragment(frag, FragAction.TO_RIGHT);
+                Intent intent = new Intent(this, ViewKeyActivity.class);
+                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, userId);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, scannedFingerprints);
+                startActivity(intent);
+                finish();
+
+            } catch (PgpKeyNotFoundException e) {
+                Fragment frag = CreateKeyYubiKeyImportFragment.createInstance(
+                        scannedFingerprints, nfcAid, userId);
+                loadFragment(frag, FragAction.TO_RIGHT);
+            }
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Blank Smart Card / Yubikey Detected")
+                    .setMessage("Would you like to generate a smart card compatible key?")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int button) {
+                            CreateKeyActivity.this.mUseSmartCardSettings = true;
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
         }
 
     }
@@ -146,6 +174,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         outState.putStringArrayList(EXTRA_ADDITIONAL_EMAILS, mAdditionalEmails);
         outState.putParcelable(EXTRA_PASSPHRASE, mPassphrase);
         outState.putBoolean(EXTRA_FIRST_TIME, mFirstTime);
+        outState.putBoolean(EXTRA_USE_SMART_CARD_SETTINGS, mUseSmartCardSettings);
     }
 
     @Override
