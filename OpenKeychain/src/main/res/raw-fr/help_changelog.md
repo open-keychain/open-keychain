@@ -1,6 +1,6 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
-## 3.2beta2
+## 3.2
 
   * Conception matérielle
   * Intégration du lecteur QR (nouvelles permissions exigées)
