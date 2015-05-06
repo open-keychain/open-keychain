@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
@@ -84,7 +83,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
 
-                Fragment frag2 = CreateKeyYubiImportFragment.createInstance(
+                Fragment frag2 = CreateKeyYubiKeyImportFragment.createInstance(
                         nfcFingerprints, nfcAid, nfcUserId);
                 loadFragment(frag2, FragAction.START);
 
@@ -131,7 +130,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
             finish();
 
         } catch (PgpKeyNotFoundException e) {
-            Fragment frag = CreateKeyYubiImportFragment.createInstance(
+            Fragment frag = CreateKeyYubiKeyImportFragment.createInstance(
                     scannedFingerprints, nfcAid, userId);
             loadFragment(frag, FragAction.TO_RIGHT);
         }
