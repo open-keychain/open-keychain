@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,16 +23,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.regex.Matcher;
@@ -138,8 +138,6 @@ public class DecryptTextActivity extends BaseActivity {
 
     /**
      * Handles all actions with this intent
-     *
-     * @param intent
      */
     private void handleActions(Bundle savedInstanceState, Intent intent) {
         String action = intent.getAction();
@@ -162,10 +160,14 @@ public class DecryptTextActivity extends BaseActivity {
                 if (sharedText != null) {
                     loadFragment(savedInstanceState, sharedText);
                 } else {
-                    Notify.create(this, R.string.error_invalid_data, Notify.Style.ERROR).show();
+                    Log.e(Constants.TAG, "EXTRA_TEXT does not contain PGP content!");
+                    Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
+                    finish();
                 }
             } else {
                 Log.e(Constants.TAG, "ACTION_SEND received non-plaintext, this should not happen in this activity!");
+                Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
+                finish();
             }
         } else if (ACTION_DECRYPT_TEXT.equals(action)) {
             Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT");
@@ -176,7 +178,9 @@ public class DecryptTextActivity extends BaseActivity {
             if (extraText != null) {
                 loadFragment(savedInstanceState, extraText);
             } else {
-                Notify.create(this, R.string.error_invalid_data, Notify.Style.ERROR).show();
+                Log.e(Constants.TAG, "EXTRA_TEXT does not contain PGP content!");
+                Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
+                finish();
             }
         } else if (ACTION_DECRYPT_FROM_CLIPBOARD.equals(action)) {
             Log.d(Constants.TAG, "ACTION_DECRYPT_FROM_CLIPBOARD");
@@ -191,6 +195,7 @@ public class DecryptTextActivity extends BaseActivity {
             }
         } else if (ACTION_DECRYPT_TEXT.equals(action)) {
             Log.e(Constants.TAG, "Include the extra 'text' in your Intent!");
+            Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
             finish();
         }
     }

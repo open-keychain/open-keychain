@@ -30,6 +30,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -61,16 +62,17 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
     public static final int LOADER_ID_UNIFIED = 0;
 
     protected LinearLayout mResultLayout;
-
     protected ImageView mEncryptionIcon;
     protected TextView mEncryptionText;
     protected ImageView mSignatureIcon;
     protected TextView mSignatureText;
-
     protected View mSignatureLayout;
     protected TextView mSignatureName;
     protected TextView mSignatureEmail;
     protected TextView mSignatureAction;
+
+    private LinearLayout mContentLayout;
+    private LinearLayout mErrorOverlayLayout;
 
     private OpenPgpSignatureResult mSignatureResult;
 
@@ -81,7 +83,6 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         // NOTE: These views are inside the activity!
         mResultLayout = (LinearLayout) getActivity().findViewById(R.id.result_main_layout);
         mResultLayout.setVisibility(View.GONE);
-
         mEncryptionIcon = (ImageView) getActivity().findViewById(R.id.result_encryption_icon);
         mEncryptionText = (TextView) getActivity().findViewById(R.id.result_encryption_text);
         mSignatureIcon = (ImageView) getActivity().findViewById(R.id.result_signature_icon);
@@ -90,6 +91,18 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         mSignatureName = (TextView) getActivity().findViewById(R.id.result_signature_name);
         mSignatureEmail = (TextView) getActivity().findViewById(R.id.result_signature_email);
         mSignatureAction = (TextView) getActivity().findViewById(R.id.result_signature_action);
+
+        // Overlay
+        mContentLayout = (LinearLayout) view.findViewById(R.id.decrypt_content);
+        mErrorOverlayLayout = (LinearLayout) view.findViewById(R.id.decrypt_error_overlay);
+        Button vErrorOverlayButton = (Button) view.findViewById(R.id.decrypt_error_overlay_button);
+        vErrorOverlayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mErrorOverlayLayout.setVisibility(View.GONE);
+                mContentLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
@@ -184,6 +197,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
 
             getLoaderManager().destroyLoader(LOADER_ID_UNIFIED);
+
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
 
             onVerifyLoaded(true);
 
@@ -285,6 +301,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
+            mErrorOverlayLayout.setVisibility(View.VISIBLE);
+            mContentLayout.setVisibility(View.GONE);
+
             onVerifyLoaded(false);
 
         } else if (isExpired) {
@@ -293,6 +312,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
 
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
+
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
 
             onVerifyLoaded(true);
 
@@ -304,6 +326,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
+
             onVerifyLoaded(true);
 
         } else if (isVerified) {
@@ -313,6 +338,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
+
             onVerifyLoaded(true);
 
         } else {
@@ -321,6 +349,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
 
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
+
+            mErrorOverlayLayout.setVisibility(View.GONE);
+            mContentLayout.setVisibility(View.VISIBLE);
 
             onVerifyLoaded(true);
         }
@@ -378,6 +409,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
                     }
                 });
 
+                mErrorOverlayLayout.setVisibility(View.GONE);
+                mContentLayout.setVisibility(View.VISIBLE);
+
                 onVerifyLoaded(true);
 
                 break;
@@ -388,6 +422,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
                 KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.INVALID);
 
                 setSignatureLayoutVisibility(View.GONE);
+
+                mErrorOverlayLayout.setVisibility(View.VISIBLE);
+                mContentLayout.setVisibility(View.GONE);
 
                 onVerifyLoaded(false);
                 break;
