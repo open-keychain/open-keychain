@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -232,7 +233,6 @@ public class DecryptFilesFragment extends DecryptFragment {
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
                     if (pgpResult.success()) {
-
                         switch (mCurrentCryptoOperation) {
                             case KeychainIntentService.ACTION_DECRYPT_METADATA: {
                                 askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
@@ -264,9 +264,8 @@ public class DecryptFilesFragment extends DecryptFragment {
                                 break;
                             }
                         }
-                    } else {
-                        pgpResult.createNotify(getActivity()).show();
                     }
+                    pgpResult.createNotify(getActivity()).show(DecryptFilesFragment.this);
                 }
 
             }
