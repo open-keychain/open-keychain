@@ -163,12 +163,22 @@ public class CreateKeyFinalFragment extends Fragment {
 
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();
-            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER, 0L));
-            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 4096, null, KeyFlags.SIGN_DATA, 0L));
-            mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+            if (mCreateKeyActivity.mUseSmartCardSettings) {
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        2048, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        2048, null, KeyFlags.AUTHENTICATION, 0L));
+                mEditText.setText(R.string.create_key_custom);
+            } else {
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        4096, null, KeyFlags.CERTIFY_OTHER, 0L));
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        4096, null, KeyFlags.SIGN_DATA, 0L));
+                mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
+                        4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+            }
             String userId = KeyRing.createUserId(
                     new KeyRing.UserId(mCreateKeyActivity.mName, mCreateKeyActivity.mEmail, null)
             );

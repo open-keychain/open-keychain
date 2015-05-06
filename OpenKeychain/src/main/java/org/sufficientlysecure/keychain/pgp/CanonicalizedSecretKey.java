@@ -33,6 +33,7 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
@@ -45,6 +46,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.nio.ByteBuffer;
+import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -279,6 +282,27 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             return new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
         }
+    }
+
+    // For use only in card export; returns the secret key in Chinese Remainder Theorem format.
+    public RSAPrivateCrtKey getCrtSecretKey() throws PgpGeneralException {
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
+            throw new PgpGeneralException("Cannot get secret key attributes while key is locked.");
+        }
+
+        if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
+            throw new PgpGeneralException("Cannot get secret key attributes of divert-to-card key.");
+        }
+
+        JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
+        PrivateKey retVal;
+        try {
+            retVal = keyConverter.getPrivateKey(mPrivateKey);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error converting private key!", e);
+        }
+
+        return (RSAPrivateCrtKey)retVal;
     }
 
     public byte[] getIv() {

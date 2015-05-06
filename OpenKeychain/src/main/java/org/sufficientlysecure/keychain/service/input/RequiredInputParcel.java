@@ -13,7 +13,7 @@ import org.sufficientlysecure.keychain.Constants.key;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_KEYTOCARD
     }
 
     public Date mSignatureTime;
@@ -85,6 +85,11 @@ public class RequiredInputParcel implements Parcelable {
     public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash, long subKeyId) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
                 new byte[][] { inputHash }, null, null, null, subKeyId);
+    }
+
+    public static RequiredInputParcel createNfcKeyToCardOperation(long masterKeyId, long subKeyId) {
+        return new RequiredInputParcel(RequiredInputType.NFC_KEYTOCARD, null, null, null,
+                masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(

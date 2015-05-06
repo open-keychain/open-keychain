@@ -456,6 +456,7 @@
     <item>Изменить срок годности</item>
     <item>Отозвать доп. ключ</item>
     <item>Отделить доп. ключ</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">новый доп. ключ</string>
   <string name="edit_key_select_flag">Пожалуйста, выберите хотя бы один флаг!</string>

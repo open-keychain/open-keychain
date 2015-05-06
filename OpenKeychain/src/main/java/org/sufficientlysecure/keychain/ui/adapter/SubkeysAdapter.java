@@ -116,6 +116,21 @@ public class SubkeysAdapter extends CursorAdapter {
         }
     }
 
+    public int getAlgorithm(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_ALGORITHM);
+    }
+
+    public int getKeySize(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_KEY_SIZE);
+    }
+
+    public SecretKeyType getSecretKeyType(int position) {
+        mCursor.moveToPosition(position);
+        return SecretKeyType.fromNum(mCursor.getInt(INDEX_HAS_SECRET));
+    }
+
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         hasAnySecret = false;

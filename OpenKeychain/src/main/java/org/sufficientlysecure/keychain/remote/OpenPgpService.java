@@ -167,6 +167,7 @@ public class OpenPgpService extends RemoteService {
                                                                Intent data, RequiredInputParcel requiredInput) {
 
         switch (requiredInput.mType) {
+            case NFC_KEYTOCARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 // build PendingIntent for YubiKey NFC operations

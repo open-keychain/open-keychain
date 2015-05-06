@@ -36,12 +36,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -64,6 +66,8 @@ import org.sufficientlysecure.keychain.ui.dialog.*;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.nio.ByteBuffer;
 
 
 public class EditKeyFragment extends CryptoOperationFragment implements
@@ -415,7 +419,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                             mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
                         }
                         break;
-                    case EditSubkeyDialogFragment.MESSAGE_STRIP:
+                    case EditSubkeyDialogFragment.MESSAGE_STRIP: {
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
                             mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
@@ -424,6 +428,69 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         // toggle
                         change.mDummyStrip = !change.mDummyStrip;
                         break;
+                    }
+                    case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
+                        // Three checks to verify that this is a smart card compatible key:
+
+                        // 1. Key algorithm must be RSA
+                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
+                        if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
+                            algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
+                            algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_algo,
+                                    Notify.Style.ERROR).show();
+                            return;
+                        }
+
+                        // 2. Key size must be 2048
+                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_size,
+                                    Notify.Style.ERROR).show();
+                            return;
+                        }
+
+                        // 3. Secret key parts must be available
+                        CanonicalizedSecretKey.SecretKeyType type =
+                                mSubkeysAdapter.getSecretKeyType(position);
+                        if (type == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD ||
+                                type == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
+                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_stripped,
+                                    Notify.Style.ERROR).show();
+                            return;
+                        }
+
+                        SubkeyChange change;
+                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null) {
+                            mSaveKeyringParcel.mChangeSubKeys.add(
+                                    new SubkeyChange(keyId, false, new byte[0])
+                            );
+                        }
+                        final Bundle data = new Bundle();
+                        data.putLong(KeychainIntentService.NFC_KEYTOCARD_SUBKEY_ID, keyId);
+                        Intent intent = new Intent(EditKeyFragment.this.getActivity(),
+                                KeychainIntentService.class);
+                        intent.setAction(KeychainIntentService.ACTION_NFC_KEYTOCARD);
+                        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+                        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                                getActivity(),
+                                getString(R.string.progress_exporting),
+                                ProgressDialog.STYLE_HORIZONTAL,
+                                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                            public void handleMessage(Message message) {
+                                super.handleMessage(message);
+                                EditKeyFragment.this.handlePendingMessage(message);
+                            }
+                        };
+                        // Create a new Messenger for the communication back
+                        Messenger messenger = new Messenger(serviceHandler);
+                        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                        serviceHandler.showProgressDialog(getActivity());
+
+                        getActivity().startService(intent);
+                        break;
+                    }
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
             }
@@ -592,6 +659,18 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         // Send all information needed to service to import key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
+
+        for (SubkeyChange change : mSaveKeyringParcel.mChangeSubKeys) {
+            if(change.mDummyDivert != null) {
+                // Convert long key ID to byte buffer
+                byte[] subKeyId = new byte[8];
+                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
+                buf.putLong(change.mKeyId).rewind();
+
+                byte[] cardSerial = cryptoInput.getCryptoData().get(buf);
+                change.mDummyDivert = cardSerial;
+            }
+        }
 
         // fill values for this action
         Bundle data = new Bundle();

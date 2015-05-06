@@ -542,6 +542,7 @@
     <item>Измени истицање</item>
     <item>Опозови поткључ</item>
     <item>Оголи поткључ</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
   <string name="edit_key_select_flag">Изаберите бар једну заставицу!</string>

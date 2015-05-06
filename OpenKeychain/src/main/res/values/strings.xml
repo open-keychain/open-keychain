@@ -621,11 +621,15 @@
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
         <item>"Strip Subkey"</item>
+        <item>"Move Subkey to Yubikey / Smart Card"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
+    <string name="edit_key_error_bad_nfc_algo">"Algorithm not supported by smart card!"</string>
+    <string name="edit_key_error_bad_nfc_size">"Key size not supported by smart card!"</string>
+    <string name="edit_key_error_bad_nfc_stripped">"Cannot move stripped / diverted key to smart card!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the cloud"</string>
