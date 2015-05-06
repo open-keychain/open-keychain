@@ -21,7 +21,7 @@
    width="1024"
    version="1.1"
    sodipodi:docname="function.svg"
-   inkscape:export-filename="/home/schuerm/Projekte/OpenKeychain/Resources/graphics/function.png">
+   inkscape:export-filename="/home/schuerm/Projekte/OpenKeychain/Graphics/drawables/function.png">
   <defs
      id="defs4">
     <linearGradient
@@ -3363,7 +3363,7 @@
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-sa/3.0/" />
-        <dc:title />
+        <dc:title></dc:title>
         <dc:date />
         <dc:creator>
           <cc:Agent>
