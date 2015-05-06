@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
@@ -345,60 +346,66 @@ public class ImportKeysActivity extends BaseNfcActivity {
         mListFragment.loadNew(loaderState);
     }
 
+    private void handleMessage(Message message) {
+        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
+            // get returned data bundle
+            Bundle returnData = message.getData();
+            if (returnData == null) {
+                return;
+            }
+            final ImportKeyResult result =
+                    returnData.getParcelable(OperationResult.EXTRA_RESULT);
+            if (result == null) {
+                Log.e(Constants.TAG, "result == null");
+                return;
+            }
+
+            if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
+                    || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
+                Intent intent = new Intent();
+                intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
+                ImportKeysActivity.this.setResult(RESULT_OK, intent);
+                ImportKeysActivity.this.finish();
+                return;
+            }
+            if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
+                ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
+                ImportKeysActivity.this.finish();
+                return;
+            }
+
+            result.createNotify(ImportKeysActivity.this)
+                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+        }
+    }
+
     /**
      * Import keys with mImportData
      */
     public void importKeys() {
-        // Message is received after importing is done in CloudImportService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final ImportKeyResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        Log.e(Constants.TAG, "result == null");
-                        return;
-                    }
-
-                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
-                            || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
-                        Intent intent = new Intent();
-                        intent.putExtra(ImportKeyResult.EXTRA_RESULT, result);
-                        ImportKeysActivity.this.setResult(RESULT_OK, intent);
-                        ImportKeysActivity.this.finish();
-                        return;
-                    }
-                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_TO_SERVICE.equals(getIntent().getAction())) {
-                        ImportKeysActivity.this.setResult(RESULT_OK, mPendingIntentData);
-                        ImportKeysActivity.this.finish();
-                        return;
-                    }
-
-                    result.createNotify(ImportKeysActivity.this)
-                            .show((ViewGroup) findViewById(R.id.import_snackbar));
-                }
-            }
-        };
-
         ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
+            ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                    this,
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL,
+                    true,
+                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard KeychainIntentServiceHandler first
+                    super.handleMessage(message);
+
+                    ImportKeysActivity.this.handleMessage(message);
+                }
+            };
+
+            // TODO: Currently not using CloudImport here due to https://github.com/open-keychain/open-keychain/issues/1221
             // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(this, CloudImportService.class);
+            Intent intent = new Intent(this, KeychainIntentService.class);
+
+            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
@@ -416,14 +423,14 @@ public class ImportKeysActivity extends BaseNfcActivity {
                         new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
-                intent.putExtra(CloudImportService.EXTRA_DATA, data);
+                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                 // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
+                Messenger messenger = new Messenger(serviceHandler);
+                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
-                saveHandler.showProgressDialog(this);
+                serviceHandler.showProgressDialog(this);
 
                 // start service with intent
                 startService(intent);
@@ -434,6 +441,20 @@ public class ImportKeysActivity extends BaseNfcActivity {
             }
         } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
+
+            ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
+                    this,
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL,
+                    true,
+                    ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard KeychainIntentServiceHandler first
+                    super.handleMessage(message);
+
+                    ImportKeysActivity.this.handleMessage(message);
+                }
+            };
 
             // Send all information needed to service to query keys in other thread
             Intent intent = new Intent(this, CloudImportService.class);
@@ -459,11 +480,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
             intent.putExtra(CloudImportService.EXTRA_DATA, data);
 
             // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
+            Messenger messenger = new Messenger(serviceHandler);
             intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
-            saveHandler.showProgressDialog(this);
+            serviceHandler.showProgressDialog(this);
 
             // start service with intent
             startService(intent);
