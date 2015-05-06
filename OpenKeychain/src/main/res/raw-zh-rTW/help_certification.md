@@ -1,23 +1,23 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
+金鑰認證
+這個身分識別尚未經過認證，你不能確認這個身分識別是否屬於真的某個人。
+最簡單確認金鑰的方式就是透過掃描QR code或是經由NFC交換。
 To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
 
-## Key Status
+## 金鑰狀態
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+已認證： 你已經認證了這個金鑰，例如透過掃描QR Code。  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+未確認：這個身分識別尚未經過認證，你不能確認這個身分識別是否屬於真的某個人。  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+已過期：這個金鑰因超過有效期限而失效。只有金鑰擁有者可以改變有效期限。  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+已撤銷：這個金鑰已經被擁有者撤銷而失效。
 
 ## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
+在OpenKeychain中，透過根據標準OpenPGP所建立的證書可以簡單的認證一個金鑰。
 This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
 "The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
 

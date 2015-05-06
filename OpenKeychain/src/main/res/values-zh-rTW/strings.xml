@@ -436,6 +436,8 @@
   <string name="key_view_action_edit">編輯金鑰</string>
   <string name="key_view_action_encrypt">加密文字</string>
   <string name="key_view_action_encrypt_files">檔案</string>
+  <string name="key_view_action_share_with">分享...</string>
+  <string name="key_view_action_share_nfc">以NFC分享</string>
   <string name="key_view_action_upload">上傳到金鑰伺服器</string>
   <string name="key_view_tab_main">摘要</string>
   <string name="key_view_tab_share">分享</string>
@@ -458,24 +460,37 @@
     <item>撤銷身分識別</item>
   </string-array>
   <string name="edit_key_edit_user_id_revoked">這個身分識別已被撤銷。此動作無法還原。</string>
+  <string name="edit_key_edit_subkey_title">選擇操作動作！</string>
   <string-array name="edit_key_edit_subkey">
     <item>變更到期日</item>
     <item>撤銷子金鑰</item>
     <item>Strip Subkey</item>
   </string-array>
+  <string name="edit_key_new_subkey">新增子金鑰</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
   <!--Create key-->
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">口令不相符</string>
   <string name="create_key_final_robot_text">建立金鑰可能需要一點時間，來杯咖啡吧…</string>
+  <string name="create_key_name_text">選擇一個名字有關這個金鑰。 這可以是全名John Doe或是暱稱Johnny。</string>
+  <string name="create_key_passphrase_text">選擇一個安全性較佳的口令，當手機遺失或遭竊時可以保護你的金鑰。</string>
+  <string name="create_key_hint_full_name">全名或暱稱</string>
+  <string name="create_key_add_email">新增電子郵件</string>
   <!--View key-->
+  <string name="view_key_my_key">我的金鑰：</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">金鑰</string>
+  <string name="nav_encrypt_decrypt">加密/解密</string>
   <string name="nav_apps">應用程式</string>
   <string name="my_keys">我的金鑰</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">預設</string>
+  <string name="cert_none">無</string>
+  <string name="cert_verify_ok">OK</string>
+  <string name="cert_verify_failed">失敗！</string>
+  <string name="cert_verify_error">錯誤！</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -540,6 +555,7 @@
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
   <string name="info_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
+  <string name="btn_start_exchange">開始交換</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
