@@ -31,7 +31,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -87,12 +86,12 @@ public class DecryptFilesFragment extends DecryptFragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.decrypt_file_fragment, container, false);
+        View view = inflater.inflate(R.layout.decrypt_files_fragment, container, false);
 
-        mFilename = (TextView) view.findViewById(R.id.decrypt_file_filename);
-        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
-        mDecryptButton = view.findViewById(R.id.decrypt_file_action_decrypt);
-        view.findViewById(R.id.decrypt_file_browse).setOnClickListener(new View.OnClickListener() {
+        mFilename = (TextView) view.findViewById(R.id.decrypt_files_filename);
+        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_files_delete_after_decryption);
+        mDecryptButton = view.findViewById(R.id.decrypt_files_action_decrypt);
+        view.findViewById(R.id.decrypt_files_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
