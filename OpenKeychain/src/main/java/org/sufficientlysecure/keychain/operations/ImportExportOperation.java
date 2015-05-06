@@ -275,7 +275,7 @@ public class ImportExportOperation extends BaseOperation {
 
                 // If we have an expected fingerprint, make sure it matches
                 if (entry.mExpectedFingerprint != null) {
-                    if(!KeyFormattingUtils.convertFingerprintToHex(key.getFingerprint()).equals(entry.mExpectedFingerprint)) {
+                    if (!key.containsSubkey(entry.mExpectedFingerprint)) {
                         log.add(LogType.MSG_IMPORT_FINGERPRINT_ERROR, 2);
                         badKeys += 1;
                         continue;
@@ -314,10 +314,7 @@ public class ImportExportOperation extends BaseOperation {
 
                 log.add(result, 2);
 
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Encountered bad key on import!", e);
-                ++badKeys;
-            } catch (PgpGeneralException e) {
+            } catch (IOException | PgpGeneralException e) {
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
                 ++badKeys;
             }
@@ -460,6 +457,7 @@ public class ImportExportOperation extends BaseOperation {
 
         int okSecret = 0, okPublic = 0, progress = 0;
 
+        Cursor cursor = null;
         try {
 
             String selection = null, ids[] = null;
@@ -480,7 +478,7 @@ public class ImportExportOperation extends BaseOperation {
                         + " IN (" + placeholders + ")";
             }
 
-            Cursor cursor = mProviderHelper.getContentResolver().query(
+            cursor = mProviderHelper.getContentResolver().query(
                     KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                             KeyRings.MASTER_KEY_ID, KeyRings.PUBKEY_DATA,
                             KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET
@@ -568,6 +566,9 @@ public class ImportExportOperation extends BaseOperation {
                 outStream.close();
             } catch (Exception e) {
                 Log.e(Constants.TAG, "error closing stream", e);
+            }
+            if (cursor != null) {
+                cursor.close();
             }
         }
 
