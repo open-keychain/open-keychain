@@ -2,9 +2,9 @@
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) is an OpenPGP implementation for Android.
+<a href="http://www.openkeychain.org">OpenKeychain</a>是一個Android的OpenPGP應用。
 
-License: GPLv3+
+授權: GPLv3+
 
 ## Developers
   * Dominik Schürmann (Maintainer)

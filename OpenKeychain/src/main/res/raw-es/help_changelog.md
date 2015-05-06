@@ -2,7 +2,7 @@
 
 ## 3.2beta2
 
-  * Diseño estilo Material
+  * Material design (estilo)
   * Integración de QR Scanner (se requieren nuevos permisos)
   * Asistente de creación de clave mejorado
   * Repara contactos perdidos después de la sincronización
