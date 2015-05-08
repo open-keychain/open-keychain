@@ -446,6 +446,13 @@ public class ContactHelper {
 
         writeKeysToMainProfileContact(context, resolver);
 
+        writeKeysToNormalContacts(context, resolver);
+    }
+
+    private static void writeKeysToNormalContacts(Context context, ContentResolver resolver) {
+        // delete raw contacts flagged for deletion by user so they can be reinserted
+        deleteFlaggedNormalRawContacts(resolver);
+
         Set<Long> deletedKeys = getRawContactMasterKeyIds(resolver);
 
         // Load all public Keys from OK
@@ -519,6 +526,9 @@ public class ContactHelper {
      * @param context
      */
     public static void writeKeysToMainProfileContact(Context context, ContentResolver resolver) {
+        // deletes contacts hidden by the user so they can be reinserted if necessary
+        deleteFlaggedMainProfileRawContacts(resolver);
+
         Set<Long> keysToDelete = getMainProfileMasterKeyIds(resolver);
 
         // get all keys which have associated secret keys
@@ -585,7 +595,7 @@ public class ContactHelper {
      *
      * @param resolver
      * @param masterKeyId
-     * @return
+     * @return number of rows deleted
      */
     private static int deleteMainProfileRawContactByMasterKeyId(ContentResolver resolver,
                                                                 long masterKeyId) {
@@ -599,6 +609,28 @@ public class ContactHelper {
                         ContactsContract.RawContacts.SOURCE_ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
+                });
+    }
+
+    /**
+     * deletes all raw contact entries in the "me" contact flagged for deletion ('hidden'),
+     * presumably by the user
+     *
+     * @param resolver
+     * @return number of raw contacts deleted
+     */
+    private static int deleteFlaggedMainProfileRawContacts(ContentResolver resolver) {
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
+        Uri deleteUri = ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI.buildUpon().
+                appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
+
+        return resolver.delete(deleteUri,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.DELETED + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE,
+                        "1"
                 });
     }
 
@@ -674,6 +706,21 @@ public class ContactHelper {
                         ContactsContract.RawContacts.SOURCE_ID + "=?",
                 new String[]{
                         Constants.ACCOUNT_TYPE, Long.toString(masterKeyId)
+                });
+    }
+
+    private static int deleteFlaggedNormalRawContacts(ContentResolver resolver) {
+        // CALLER_IS_SYNCADAPTER allows us to actually wipe the RawContact from the device, otherwise
+        // would be just flagged for deletion
+        Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
+                appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
+
+        return resolver.delete(deleteUri,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + "=? AND " +
+                        ContactsContract.RawContacts.DELETED + "=?",
+                new String[]{
+                        Constants.ACCOUNT_TYPE,
+                        "1"
                 });
     }
 
