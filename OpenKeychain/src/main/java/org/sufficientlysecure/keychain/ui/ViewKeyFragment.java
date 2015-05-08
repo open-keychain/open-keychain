@@ -133,6 +133,8 @@ public class ViewKeyFragment extends LoaderFragment implements
      * @param contactId
      */
     private void loadLinkedSystemContact(final long contactId) {
+        // contact doesn't exist, stop
+        if(contactId == -1) return;
 
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();

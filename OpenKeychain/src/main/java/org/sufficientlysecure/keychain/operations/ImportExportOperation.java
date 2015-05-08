@@ -376,6 +376,8 @@ public class ImportExportOperation extends BaseOperation {
             log.add(LogType.MSG_IMPORT_ERROR, 1);
         }
 
+        ContactSyncAdapterService.requestSync();
+
         return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
                 importedMasterKeyIdsArray);
     }
