@@ -32,6 +32,11 @@ import java.util.regex.Pattern;
 
 public class TwitterResource extends LinkedTokenResource {
 
+    public static final String[] CERT_PINS = new String[] {
+        // antec Class 3 Secure Server CA - G4
+        "513fb9743870b73440418d30930699ff"
+    };
+
     final String mHandle;
     final String mTweetId;
 
@@ -68,12 +73,12 @@ public class TwitterResource extends LinkedTokenResource {
 
     @SuppressWarnings("deprecation")
     @Override
-    protected String fetchResource(OperationLog log, int indent) throws IOException, HttpStatusException,
-            JSONException {
+    protected String fetchResource(Context context, OperationLog log, int indent)
+            throws IOException, HttpStatusException, JSONException {
 
         String authToken;
         try {
-            authToken = getAuthToken();
+            authToken = getAuthToken(context);
         } catch (IOException | HttpStatusException | JSONException e) {
             log.add(LogType.MSG_LV_ERROR_TWITTER_AUTH, indent);
             return null;
@@ -90,7 +95,7 @@ public class TwitterResource extends LinkedTokenResource {
         httpGet.setHeader("Content-Type", "application/json");
 
         try {
-            String response = getResponseBody(httpGet);
+            String response = getResponseBody(context, httpGet, CERT_PINS);
             JSONObject obj = new JSONObject(response);
             JSONObject user = obj.getJSONObject("user");
             if (!mHandle.equalsIgnoreCase(user.getString("screen_name"))) {
@@ -142,11 +147,11 @@ public class TwitterResource extends LinkedTokenResource {
 
     @SuppressWarnings("deprecation")
     public static TwitterResource searchInTwitterStream(
-            String screenName, String needle, OperationLog log) {
+            Context context, String screenName, String needle, OperationLog log) {
 
         String authToken;
         try {
-            authToken = getAuthToken();
+            authToken = getAuthToken(context);
         } catch (IOException | HttpStatusException | JSONException e) {
             log.add(LogType.MSG_LV_ERROR_TWITTER_AUTH, 1);
             return null;
@@ -166,7 +171,7 @@ public class TwitterResource extends LinkedTokenResource {
         httpGet.setHeader("Content-Type", "application/json");
 
         try {
-            String response = getResponseBody(httpGet);
+            String response = getResponseBody(context, httpGet, CERT_PINS);
             JSONArray array = new JSONArray(response);
 
             for (int i = 0; i < array.length(); i++) {
@@ -203,7 +208,8 @@ public class TwitterResource extends LinkedTokenResource {
     private static String cachedAuthToken;
 
     @SuppressWarnings("deprecation")
-    private static String getAuthToken() throws IOException, HttpStatusException, JSONException {
+    private static String getAuthToken(Context context)
+            throws IOException, HttpStatusException, JSONException {
         if (cachedAuthToken != null) {
             return cachedAuthToken;
         }
@@ -215,7 +221,7 @@ public class TwitterResource extends LinkedTokenResource {
         httpPost.setHeader("Authorization", "Basic " + base64Encoded);
         httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
         httpPost.setEntity(new StringEntity("grant_type=client_credentials"));
-        JSONObject rawAuthorization = new JSONObject(getResponseBody(httpPost));
+        JSONObject rawAuthorization = new JSONObject(getResponseBody(context, httpPost, CERT_PINS));
 
         // Applications should verify that the value associated with the
         // token_type key of the returned object is bearer

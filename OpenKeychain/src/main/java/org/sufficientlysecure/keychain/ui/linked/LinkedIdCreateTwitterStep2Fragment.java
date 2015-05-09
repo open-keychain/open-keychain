@@ -91,7 +91,8 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     @Override
     LinkedTokenResource getResource(OperationLog log) {
-        return TwitterResource.searchInTwitterStream(mResourceHandle, mResourceString, log);
+        return TwitterResource.searchInTwitterStream(getActivity(),
+                mResourceHandle, mResourceString, log);
     }
 
     @Override

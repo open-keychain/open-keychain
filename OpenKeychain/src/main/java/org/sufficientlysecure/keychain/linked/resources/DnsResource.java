@@ -92,7 +92,7 @@ public class DnsResource extends LinkedTokenResource {
     }
 
     @Override
-    protected String fetchResource (OperationLog log, int indent) {
+    protected String fetchResource (Context context, OperationLog log, int indent) {
 
         Client c = new Client();
         DNSMessage msg = c.query(new Question(mFqdn, mType, mClass));

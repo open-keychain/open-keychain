@@ -28,6 +28,7 @@ dependencies {
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
+    compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib')

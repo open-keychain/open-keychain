@@ -49,14 +49,14 @@ public class GithubResource extends LinkedTokenResource {
 
     @SuppressWarnings("deprecation") // HttpGet is deprecated
     @Override
-    protected String fetchResource (OperationLog log, int indent)
+    protected String fetchResource (Context context, OperationLog log, int indent)
             throws HttpStatusException, IOException, JSONException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         indent += 1;
 
         HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + mGistId);
-        String response = getResponseBody(httpGet);
+        String response = getResponseBody(context, httpGet);
 
         JSONObject obj = new JSONObject(response);
 
@@ -80,8 +80,8 @@ public class GithubResource extends LinkedTokenResource {
     }
 
     @SuppressWarnings("deprecation")
-    public static GithubResource searchInGithubStream(String screenName, String needle,
-            OperationLog log) {
+    public static GithubResource searchInGithubStream(
+            Context context, String screenName, String needle, OperationLog log) {
 
         // narrow the needle down to important part
         Matcher matcher = magicPattern.matcher(needle);
@@ -98,7 +98,7 @@ public class GithubResource extends LinkedTokenResource {
                 httpGet.setHeader("Content-Type", "application/json");
                 httpGet.setHeader("User-Agent", "OpenKeychain");
 
-                String response = getResponseBody(httpGet);
+                String response = getResponseBody(context, httpGet);
                 array = new JSONArray(response);
             }
 
@@ -118,7 +118,7 @@ public class GithubResource extends LinkedTokenResource {
                     HttpGet httpGet = new HttpGet("https://api.github.com/gists/" + id);
                     httpGet.setHeader("User-Agent", "OpenKeychain");
 
-                    JSONObject gistObj = new JSONObject(getResponseBody(httpGet));
+                    JSONObject gistObj = new JSONObject(getResponseBody(context, httpGet));
                     JSONObject gistFiles = gistObj.getJSONObject("files");
                     Iterator<String> gistIt = gistFiles.keys();
                     if (!gistIt.hasNext()) {

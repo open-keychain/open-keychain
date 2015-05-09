@@ -34,11 +34,12 @@ public class GenericHttpsResource extends LinkedTokenResource {
 
     @SuppressWarnings("deprecation") // HttpGet is deprecated
     @Override
-    protected String fetchResource (OperationLog log, int indent) throws HttpStatusException, IOException {
+    protected String fetchResource (Context context, OperationLog log, int indent)
+            throws HttpStatusException, IOException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
         HttpGet httpGet = new HttpGet(mSubUri);
-        return getResponseBody(httpGet);
+        return getResponseBody(context, httpGet);
 
     }
 

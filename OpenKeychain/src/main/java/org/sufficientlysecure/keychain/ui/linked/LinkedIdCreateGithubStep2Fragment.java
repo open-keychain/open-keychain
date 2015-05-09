@@ -88,7 +88,7 @@ public class LinkedIdCreateGithubStep2Fragment extends LinkedIdCreateFinalFragme
 
     @Override
     LinkedTokenResource getResource(OperationLog log) {
-        return GithubResource.searchInGithubStream(mResourceHandle, mResourceString, log);
+        return GithubResource.searchInGithubStream(getActivity(), mResourceHandle, mResourceString, log);
     }
 
     @Override

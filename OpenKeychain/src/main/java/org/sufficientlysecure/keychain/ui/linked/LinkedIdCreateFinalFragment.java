@@ -138,7 +138,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
                     return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
                 }
 
-                LinkedVerifyResult result = resource.verify(mLinkedIdWizard.mFingerprint);
+                LinkedVerifyResult result = resource.verify(getActivity(), mLinkedIdWizard.mFingerprint);
 
                 // ux flow: this operation should take at last a second
                 timer = System.currentTimeMillis() -timer;

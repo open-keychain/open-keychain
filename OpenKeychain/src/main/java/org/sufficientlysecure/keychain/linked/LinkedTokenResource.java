@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.linked;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
@@ -16,6 +17,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.thoughtcrime.ssl.pinning.util.PinningHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.content.Context;
 
 
 public abstract class LinkedTokenResource extends LinkedResource {
@@ -166,7 +170,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
     }
 
-    public LinkedVerifyResult verify(byte[] fingerprint) {
+    public LinkedVerifyResult verify(Context context, byte[] fingerprint) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_LV, 0);
@@ -174,7 +178,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
         // Try to fetch resource. Logs for itself
         String res = null;
         try {
-            res = fetchResource(log, 1);
+            res = fetchResource(context, log, 1);
         } catch (HttpStatusException e) {
             // log verbose output to logcat
             Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
@@ -200,8 +204,8 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
     }
 
-    protected abstract String fetchResource (OperationLog log, int indent) throws HttpStatusException, IOException,
-            JSONException;
+    protected abstract String fetchResource (Context context, OperationLog log, int indent)
+            throws HttpStatusException, IOException, JSONException;
 
     protected Matcher matchResource (OperationLog log, int indent, String res) {
         return magicPattern.matcher(res);
@@ -231,12 +235,26 @@ public abstract class LinkedTokenResource extends LinkedResource {
     }
 
     @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
-    public static String getResponseBody(HttpRequestBase request) throws IOException, HttpStatusException {
+    public static String getResponseBody(Context context, HttpRequestBase request)
+            throws IOException, HttpStatusException {
+        return getResponseBody(context, request, null);
+    }
+
+    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
+    public static String getResponseBody(Context context, HttpRequestBase request, String[] pins)
+        throws IOException, HttpStatusException {
         StringBuilder sb = new StringBuilder();
 
         request.setHeader("User-Agent", "Open Keychain");
 
-        DefaultHttpClient httpClient = new DefaultHttpClient(new BasicHttpParams());
+
+        HttpClient httpClient;
+        if (pins == null) {
+            httpClient = new DefaultHttpClient(new BasicHttpParams());
+        } else {
+            httpClient = PinningHelper.getPinnedHttpClient(context, pins);
+        }
+
         HttpResponse response = httpClient.execute(request);
         int statusCode = response.getStatusLine().getStatusCode();
         String reason = response.getStatusLine().getReasonPhrase();
