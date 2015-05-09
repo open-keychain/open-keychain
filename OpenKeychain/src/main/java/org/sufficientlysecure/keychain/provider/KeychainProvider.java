@@ -518,7 +518,7 @@ public class KeychainProvider extends ContentProvider {
 
                 if (match == KEY_RING_LINKED_IDS) {
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = "
-                            + WrappedUserAttribute.UAT_LINKED_ID);
+                            + WrappedUserAttribute.UAT_URI_ATTRIBUTE);
                 } else {
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
                 }

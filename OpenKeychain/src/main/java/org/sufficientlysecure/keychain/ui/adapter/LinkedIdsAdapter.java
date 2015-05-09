@@ -34,7 +34,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedIdentity;
-import org.sufficientlysecure.keychain.linked.RawLinkedIdentity;
+import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
@@ -49,7 +49,7 @@ import java.util.WeakHashMap;
 public class LinkedIdsAdapter extends UserAttributesAdapter {
     private final boolean mIsSecret;
     protected LayoutInflater mInflater;
-    WeakHashMap<Integer,RawLinkedIdentity> mLinkedIdentityCache = new WeakHashMap<>();
+    WeakHashMap<Integer,UriAttribute> mLinkedIdentityCache = new WeakHashMap<>();
 
     private Cursor mUnfilteredCursor;
 
@@ -85,7 +85,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
         FilterCursorWrapper filteredCursor = new FilterCursorWrapper(cursor) {
             @Override
             public boolean isVisible(Cursor cursor) {
-                RawLinkedIdentity id = getItemAtPosition(cursor);
+                UriAttribute id = getItemAtPosition(cursor);
                 return id instanceof LinkedIdentity;
             }
         };
@@ -132,16 +132,16 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             }
         }
 
-        RawLinkedIdentity id = getItemAtPosition(cursor);
+        UriAttribute id = getItemAtPosition(cursor);
         holder.setData(mContext, id);
 
     }
 
-    public RawLinkedIdentity getItemAtPosition(Cursor cursor) {
+    public UriAttribute getItemAtPosition(Cursor cursor) {
         int rank = cursor.getInt(INDEX_RANK);
         Log.d(Constants.TAG, "requested rank: " + rank);
 
-        RawLinkedIdentity ret = mLinkedIdentityCache.get(rank);
+        UriAttribute ret = mLinkedIdentityCache.get(rank);
         if (ret != null) {
             Log.d(Constants.TAG, "cached!");
             return ret;
@@ -160,7 +160,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
     }
 
     @Override
-    public RawLinkedIdentity getItem(int position) {
+    public UriAttribute getItem(int position) {
         Cursor cursor = getCursor();
         cursor.moveToPosition(position);
         return getItemAtPosition(cursor);
@@ -206,7 +206,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             vComment = (TextView) view.findViewById(R.id.linked_id_comment);
         }
 
-        public void setData(Context context, RawLinkedIdentity id) {
+        public void setData(Context context, UriAttribute id) {
 
             vTitle.setText(id.getDisplayTitle(context));
 

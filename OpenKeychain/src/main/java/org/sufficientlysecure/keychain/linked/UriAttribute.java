@@ -13,11 +13,11 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 
 /** The RawLinkedIdentity contains raw parsed data from a Linked Identity subpacket. */
-public class RawLinkedIdentity {
+public class UriAttribute {
 
     public final URI mUri;
 
-    protected RawLinkedIdentity(URI uri) {
+    protected UriAttribute(URI uri) {
         mUri = uri;
     }
 
@@ -25,7 +25,7 @@ public class RawLinkedIdentity {
         return Strings.toUTF8ByteArray(mUri.toASCIIString());
     }
 
-    public static RawLinkedIdentity fromAttributeData(byte[] data) throws IOException {
+    public static UriAttribute fromAttributeData(byte[] data) throws IOException {
         WrappedUserAttribute att = WrappedUserAttribute.fromData(data);
 
         byte[][] subpackets = att.getSubpackets();
@@ -36,7 +36,7 @@ public class RawLinkedIdentity {
         throw new IOException("no subpacket data");
     }
 
-    static RawLinkedIdentity fromSubpacketData(byte[] data) {
+    static UriAttribute fromSubpacketData(byte[] data) {
 
         try {
             String uriStr = Strings.fromUTF8ByteArray(data);
@@ -44,7 +44,7 @@ public class RawLinkedIdentity {
 
             LinkedResource res = LinkedTokenResource.fromUri(uri);
             if (res == null) {
-                return new RawLinkedIdentity(uri);
+                return new UriAttribute(uri);
             }
 
             return new LinkedIdentity(uri, res);
@@ -55,13 +55,13 @@ public class RawLinkedIdentity {
         }
     }
 
-    public static RawLinkedIdentity fromResource (LinkedTokenResource res) {
-        return new RawLinkedIdentity(res.toUri());
+    public static UriAttribute fromResource (LinkedTokenResource res) {
+        return new UriAttribute(res.toUri());
     }
 
 
     public WrappedUserAttribute toUserAttribute () {
-        return WrappedUserAttribute.fromSubpacket(WrappedUserAttribute.UAT_LINKED_ID, getEncoded());
+        return WrappedUserAttribute.fromSubpacket(WrappedUserAttribute.UAT_URI_ATTRIBUTE, getEncoded());
     }
 
     public @DrawableRes int getDisplayIcon() {

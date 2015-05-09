@@ -44,7 +44,7 @@ public class DnsResource extends LinkedTokenResource {
 
     public static String generateText(byte[] fingerprint) {
 
-        return String.format("openpgpid+token=%s",
+        return String.format("openpgp4fpr=%s",
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
 
     }
@@ -52,7 +52,7 @@ public class DnsResource extends LinkedTokenResource {
     public static DnsResource createNew (String domain) {
         HashSet<String> flags = new HashSet<>();
         HashMap<String,String> params = new HashMap<>();
-        URI uri = URI.create("dns:" + domain);
+        URI uri = URI.create("dns:" + domain + "?TYPE=TXT");
         return create(flags, params, uri);
     }
 

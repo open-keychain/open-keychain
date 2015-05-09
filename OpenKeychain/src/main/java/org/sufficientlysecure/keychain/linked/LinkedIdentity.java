@@ -5,7 +5,7 @@ import java.net.URI;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 
-public class LinkedIdentity extends RawLinkedIdentity {
+public class LinkedIdentity extends UriAttribute {
 
     public final LinkedResource mResource;
 

@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
-import org.sufficientlysecure.keychain.linked.RawLinkedIdentity;
+import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -68,7 +68,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private static final String ARG_FINGERPRINT = "fingerprint";
     private static final int LOADER_ID_LINKED_ID = 1;
 
-    private RawLinkedIdentity mLinkedId;
+    private UriAttribute mLinkedId;
     private LinkedTokenResource mLinkedResource;
     private boolean mIsSecret;
 
@@ -147,7 +147,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     int certStatus = cursor.getInt(UserIdsAdapter.INDEX_VERIFIED);
 
                     byte[] data = cursor.getBlob(UserIdsAdapter.INDEX_ATTRIBUTE_DATA);
-                    RawLinkedIdentity linkedId = LinkedIdentity.fromAttributeData(data);
+                    UriAttribute linkedId = LinkedIdentity.fromAttributeData(data);
 
                     loadIdentity(linkedId, certStatus);
 
@@ -186,7 +186,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         mIdLoadedListener = listener;
     }
 
-    private void loadIdentity(RawLinkedIdentity linkedId, int certStatus) {
+    private void loadIdentity(UriAttribute linkedId, int certStatus) {
         mLinkedId = linkedId;
 
         if (mLinkedId instanceof LinkedIdentity) {
