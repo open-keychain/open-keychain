@@ -10,7 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
@@ -19,17 +19,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GenericHttpsResource extends LinkedCookieResource {
+public class GenericHttpsResource extends LinkedTokenResource {
 
     GenericHttpsResource(Set<String> flags, HashMap<String,String> params, URI uri) {
         super(flags, params, uri);
     }
 
     public static String generateText (Context context, byte[] fingerprint) {
-        String cookie = LinkedCookieResource.generate(fingerprint);
+        String token = LinkedTokenResource.generate(fingerprint);
 
         return String.format(context.getResources().getString(R.string.linked_id_generic_text),
-                cookie, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));
+                token, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));
     }
 
     @SuppressWarnings("deprecation") // HttpGet is deprecated

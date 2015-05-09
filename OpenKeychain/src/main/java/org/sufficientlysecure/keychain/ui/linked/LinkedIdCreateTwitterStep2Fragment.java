@@ -29,7 +29,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
 
 public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragment {
@@ -90,7 +90,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     }
 
     @Override
-    LinkedCookieResource getResource(OperationLog log) {
+    LinkedTokenResource getResource(OperationLog log) {
         return TwitterResource.searchInTwitterStream(mResourceHandle, mResourceString, log);
     }
 

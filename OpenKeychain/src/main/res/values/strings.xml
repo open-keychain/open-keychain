@@ -1177,11 +1177,11 @@
         <item quantity="other">"Failed to delete %d keys"</item>
     </plurals>
 
-    <!-- Linked identity verification -->
+    <!-- Linked Identity verification -->
     <string name="msg_lv">"Verifying linked identity…"</string>
-    <string name="msg_lv_match">"Searching for cookie"</string>
-    <string name="msg_lv_match_error">"No cookie found in resource!"</string>
-    <string name="msg_lv_fp_ok">"Fingerprint ok."</string>
+    <string name="msg_lv_match">"Searching for token"</string>
+    <string name="msg_lv_match_error">"No token found in resource!"</string>
+    <string name="msg_lv_fp_ok">"Fingerprint OK."</string>
     <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
 
     <string name="msg_lv_error_twitter_auth">"Error obtaining Twitter auth token!"</string>
@@ -1366,8 +1366,8 @@
 
     <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
     <string name="linked_select_2">"Please select a type:"</string>
-    <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nCookie for proof:\n%1$s"</string>
-    <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this Github account.\n\nCookie for proof:\n%1$s"</string>
+    <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this Github account.\n\nToken for proof:\n%1$s"</string>
     <string name="linked_verifying">"Verifying…"</string>
     <string name="linked_verify_success">"Verified!"</string>
     <string name="linked_verify_error">"Verification error!"</string>

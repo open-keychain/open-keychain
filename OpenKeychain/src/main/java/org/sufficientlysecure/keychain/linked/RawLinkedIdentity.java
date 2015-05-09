@@ -42,7 +42,7 @@ public class RawLinkedIdentity {
             String uriStr = Strings.fromUTF8ByteArray(data);
             URI uri = URI.create(uriStr);
 
-            LinkedResource res = LinkedCookieResource.fromUri(uri);
+            LinkedResource res = LinkedTokenResource.fromUri(uri);
             if (res == null) {
                 return new RawLinkedIdentity(uri);
             }
@@ -55,7 +55,7 @@ public class RawLinkedIdentity {
         }
     }
 
-    public static RawLinkedIdentity fromResource (LinkedCookieResource res) {
+    public static RawLinkedIdentity fromResource (LinkedTokenResource res) {
         return new RawLinkedIdentity(res.toUri());
     }
 

@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 
 
@@ -87,7 +87,7 @@ public class LinkedIdCreateGithubStep2Fragment extends LinkedIdCreateFinalFragme
     }
 
     @Override
-    LinkedCookieResource getResource(OperationLog log) {
+    LinkedTokenResource getResource(OperationLog log) {
         return GithubResource.searchInGithubStream(mResourceHandle, mResourceString, log);
     }
 

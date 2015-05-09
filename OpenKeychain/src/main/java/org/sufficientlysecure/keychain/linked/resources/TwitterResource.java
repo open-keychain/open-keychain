@@ -19,7 +19,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TwitterResource extends LinkedCookieResource {
+public class TwitterResource extends LinkedTokenResource {
 
     final String mHandle;
     final String mTweetId;

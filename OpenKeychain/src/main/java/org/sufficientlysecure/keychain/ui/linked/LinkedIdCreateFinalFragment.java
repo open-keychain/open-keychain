@@ -20,7 +20,7 @@ import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -39,7 +39,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
     private ViewAnimator mVerifyAnimator;
 
     // This is a resource, set AFTER it has been verified
-    LinkedCookieResource mVerifiedResource = null;
+    LinkedTokenResource mVerifiedResource = null;
     private ViewAnimator mVerifyButtonAnimator;
 
     @Override
@@ -94,7 +94,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
         return view;
     }
 
-    abstract LinkedCookieResource getResource(OperationLog log);
+    abstract LinkedTokenResource getResource(OperationLog log);
 
     private void setVerifyProgress(boolean on, Boolean success) {
         if (success == null) {
@@ -133,7 +133,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
                 long timer = System.currentTimeMillis();
 
                 OperationLog log = new OperationLog();
-                LinkedCookieResource resource = getResource(log);
+                LinkedTokenResource resource = getResource(log);
                 if (resource == null) {
                     return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
                 }

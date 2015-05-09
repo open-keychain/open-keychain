@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.net.URI;
@@ -24,10 +24,10 @@ import de.measite.minidns.Record.CLASS;
 import de.measite.minidns.Record.TYPE;
 import de.measite.minidns.record.TXT;
 
-public class DnsResource extends LinkedCookieResource {
+public class DnsResource extends LinkedTokenResource {
 
     final static Pattern magicPattern =
-            Pattern.compile("openpgpid\\+cookie=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");
+            Pattern.compile("openpgpid\\+token=([a-zA-Z0-9]+)(?:#|;)([a-zA-Z0-9]+)");
 
     String mFqdn;
     CLASS mClass;
@@ -44,7 +44,7 @@ public class DnsResource extends LinkedCookieResource {
 
     public static String generateText(byte[] fingerprint) {
 
-        return String.format("openpgpid+cookie=%s",
+        return String.format("openpgpid+token=%s",
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
 
     }

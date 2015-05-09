@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public abstract class LinkedCookieResource extends LinkedResource {
+public abstract class LinkedTokenResource extends LinkedResource {
 
     protected final URI mSubUri;
     protected final Set<String> mFlags;
@@ -40,7 +40,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
     public static Pattern magicPattern =
             Pattern.compile("\\[Verifying my (?:Open)?PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
 
-    protected LinkedCookieResource(Set<String> flags, HashMap<String, String> params, URI uri) {
+    protected LinkedTokenResource(Set<String> flags, HashMap<String, String> params, URI uri) {
         mFlags = flags;
         mParams = params;
         mSubUri = uri;
@@ -64,9 +64,9 @@ public abstract class LinkedCookieResource extends LinkedResource {
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
     }
 
-    protected static LinkedCookieResource fromUri (URI uri) {
+    protected static LinkedTokenResource fromUri (URI uri) {
 
-        if (!"openpgpid+cookie".equals(uri.getScheme())) {
+        if (!"openpgpid+token".equals(uri.getScheme())) {
             Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
             return null;
         }
@@ -103,11 +103,11 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
     }
 
-    protected static LinkedCookieResource findResourceType (Set<String> flags,
+    protected static LinkedTokenResource findResourceType (Set<String> flags,
             HashMap<String,String> params,
             URI  subUri) {
 
-        LinkedCookieResource res;
+        LinkedTokenResource res;
 
         res = GenericHttpsResource.create(flags, params, subUri);
         if (res != null) {
@@ -133,7 +133,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
     public URI toUri () {
 
         StringBuilder b = new StringBuilder();
-        b.append("openpgpid+cookie:");
+        b.append("openpgpid+token:");
 
         // add flags
         if (mFlags != null) {

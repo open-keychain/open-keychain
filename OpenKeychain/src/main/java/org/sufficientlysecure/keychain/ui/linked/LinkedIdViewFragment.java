@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
-import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.LinkedIdentity;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
 import org.sufficientlysecure.keychain.linked.RawLinkedIdentity;
@@ -69,7 +69,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private static final int LOADER_ID_LINKED_ID = 1;
 
     private RawLinkedIdentity mLinkedId;
-    private LinkedCookieResource mLinkedResource;
+    private LinkedTokenResource mLinkedResource;
     private boolean mIsSecret;
 
     private Context mContext;
@@ -191,7 +191,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
         if (mLinkedId instanceof LinkedIdentity) {
             LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
-            mLinkedResource = (LinkedCookieResource) res;
+            mLinkedResource = (LinkedTokenResource) res;
         }
 
         if (!mIsSecret) {
