@@ -1,6 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.linked;
-
-import android.content.Context;
+package org.sufficientlysecure.keychain.linked;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -9,6 +7,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.json.JSONException;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.linked.resources.DnsResource;
+import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.linked.resources.GithubResource;
+import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -22,14 +24,110 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public abstract class LinkedCookieResource extends LinkedResource {
 
+    protected final URI mSubUri;
+    protected final Set<String> mFlags;
+    protected final HashMap<String,String> mParams;
+
+    public static Pattern magicPattern =
+            Pattern.compile("\\[Verifying my (?:Open)?PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
+
     protected LinkedCookieResource(Set<String> flags, HashMap<String, String> params, URI uri) {
-        super(flags, params, uri);
+        mFlags = flags;
+        mParams = params;
+        mSubUri = uri;
+    }
+
+    @SuppressWarnings("unused")
+    public URI getSubUri () {
+        return mSubUri;
+    }
+
+    public Set<String> getFlags () {
+        return new HashSet<>(mFlags);
+    }
+
+    public HashMap<String,String> getParams () {
+        return new HashMap<>(mParams);
+    }
+
+    public static String generate (byte[] fingerprint) {
+        return String.format("[Verifying my OpenPGP key: openpgp4fpr:%s]",
+                KeyFormattingUtils.convertFingerprintToHex(fingerprint));
+    }
+
+    protected static LinkedCookieResource fromUri (URI uri) {
+
+        if (!"openpgpid+cookie".equals(uri.getScheme())) {
+            Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
+            return null;
+        }
+
+        if (!uri.isOpaque()) {
+            Log.e(Constants.TAG, "non-opaque uri in (suspected) linked id packet");
+            return null;
+        }
+
+        String specific = uri.getSchemeSpecificPart();
+        if (!specific.contains("@")) {
+            Log.e(Constants.TAG, "unknown uri scheme in linked id packet");
+            return null;
+        }
+
+        String[] pieces = specific.split("@", 2);
+        URI subUri = URI.create(pieces[1]);
+
+        Set<String> flags = new HashSet<>();
+        HashMap<String,String> params = new HashMap<>();
+        if (!pieces[0].isEmpty()) {
+            String[] rawParams = pieces[0].split(";");
+            for (String param : rawParams) {
+                String[] p = param.split("=", 2);
+                if (p.length == 1) {
+                    flags.add(param);
+                } else {
+                    params.put(p[0], p[1]);
+                }
+            }
+        }
+
+        return findResourceType(flags, params, subUri);
+
+    }
+
+    protected static LinkedCookieResource findResourceType (Set<String> flags,
+            HashMap<String,String> params,
+            URI  subUri) {
+
+        LinkedCookieResource res;
+
+        res = GenericHttpsResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
+        res = DnsResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
+        res = TwitterResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
+        res = GithubResource.create(flags, params, subUri);
+        if (res != null) {
+            return res;
+        }
+
+        return null;
+
     }
 
     public URI toUri () {
@@ -66,19 +164,6 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
         return URI.create(b.toString());
 
-    }
-
-    public URI getSubUri () {
-        return mSubUri;
-    }
-
-    public static String generate (Context context, byte[] fingerprint) {
-        return String.format("[Verifying my OpenPGP key: openpgp4fpr:%s]",
-                KeyFormattingUtils.convertFingerprintToHex(fingerprint));
-    }
-
-    public static String generatePreview () {
-        return "[Verifying my OpenPGP key: openpgp4fpr:0x…]";
     }
 
     public LinkedVerifyResult verify(byte[] fingerprint) {
@@ -145,6 +230,7 @@ public abstract class LinkedCookieResource extends LinkedResource {
 
     }
 
+    @SuppressWarnings("deprecation") // HttpRequestBase is deprecated
     public static String getResponseBody(HttpRequestBase request) throws IOException, HttpStatusException {
         StringBuilder sb = new StringBuilder();
 

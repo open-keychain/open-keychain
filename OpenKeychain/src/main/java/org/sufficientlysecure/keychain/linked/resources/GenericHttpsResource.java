@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.linked.resources;
+package org.sufficientlysecure.keychain.linked.resources;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public class GenericHttpsResource extends LinkedCookieResource {
 
     GenericHttpsResource(Set<String> flags, HashMap<String,String> params, URI uri) {
@@ -27,22 +26,19 @@ public class GenericHttpsResource extends LinkedCookieResource {
     }
 
     public static String generateText (Context context, byte[] fingerprint) {
-        String cookie = LinkedCookieResource.generate(context, fingerprint);
+        String cookie = LinkedCookieResource.generate(fingerprint);
 
         return String.format(context.getResources().getString(R.string.linked_id_generic_text),
                 cookie, "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint).substring(24));
     }
 
+    @SuppressWarnings("deprecation") // HttpGet is deprecated
     @Override
     protected String fetchResource (OperationLog log, int indent) throws HttpStatusException, IOException {
 
         log.add(LogType.MSG_LV_FETCH, indent, mSubUri.toString());
-        indent += 1;
-
         HttpGet httpGet = new HttpGet(mSubUri);
         return getResponseBody(httpGet);
-
-        // log.add(LogType.MSG_LV_FETCH_REDIR, indent, url.toString());
 
     }
 

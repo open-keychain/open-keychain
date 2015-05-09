@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.linked.resources;
+package org.sufficientlysecure.keychain.linked.resources;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
@@ -42,11 +42,12 @@ public class GithubResource extends LinkedCookieResource {
     }
 
     public static String generate(Context context, byte[] fingerprint) {
-        String cookie = LinkedCookieResource.generate(context, fingerprint);
+        String cookie = LinkedCookieResource.generate(fingerprint);
 
         return String.format(context.getResources().getString(R.string.linked_id_github_text), cookie);
     }
 
+    @SuppressWarnings("deprecation") // HttpGet is deprecated
     @Override
     protected String fetchResource (OperationLog log, int indent)
             throws HttpStatusException, IOException, JSONException {
@@ -78,6 +79,7 @@ public class GithubResource extends LinkedCookieResource {
 
     }
 
+    @SuppressWarnings("deprecation")
     public static GithubResource searchInGithubStream(String screenName, String needle,
             OperationLog log) {
 

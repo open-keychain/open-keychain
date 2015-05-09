@@ -25,13 +25,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
-import org.sufficientlysecure.keychain.pgp.linked.resources.TwitterResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
 
 public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragment {
 
@@ -57,7 +56,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
         super.onCreate(savedInstanceState);
 
         mResourceString =
-                TwitterResource.generate(getActivity(), mLinkedIdWizard.mFingerprint);
+                TwitterResource.generate(mLinkedIdWizard.mFingerprint);
 
         mResourceHandle = getArguments().getString(ARG_HANDLE);
 
@@ -67,23 +66,25 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofSend();
-            }
-        });
+        if (view != null) {
+            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofSend();
+                }
+            });
 
-        view.findViewById(R.id.button_share).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofShare();
-            }
-        });
+            view.findViewById(R.id.button_share).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofShare();
+                }
+            });
 
-        ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(
-                Html.fromHtml(getString(R.string.linked_create_twitter_2_3, mResourceHandle))
-        );
+            ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(
+                    Html.fromHtml(getString(R.string.linked_create_twitter_2_3, mResourceHandle))
+            );
+        }
 
         return view;
     }

@@ -19,26 +19,21 @@ package org.sufficientlysecure.keychain.ui.linked;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
-import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.resources.DnsResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.FileHelper;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
@@ -84,22 +79,26 @@ public class LinkedIdCreateDnsStep2Fragment extends LinkedIdCreateFinalFragment 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofSend();
-            }
-        });
+        if (view != null) {
 
-        view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofToClipboard();
-            }
-        });
+            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofSend();
+                }
+            });
 
-        mTextView = (TextView) view.findViewById(R.id.linked_create_dns_text);
-        mTextView.setText(mResourceString);
+            view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofToClipboard();
+                }
+            });
+
+            mTextView = (TextView) view.findViewById(R.id.linked_create_dns_text);
+            mTextView.setText(mResourceString);
+
+        }
 
         return view;
     }

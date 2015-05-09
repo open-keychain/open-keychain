@@ -1,8 +1,8 @@
-package org.sufficientlysecure.keychain.pgp.linked;
+package org.sufficientlysecure.keychain.linked;
 
-import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -12,17 +12,17 @@ import java.net.URI;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 
+/** The RawLinkedIdentity contains raw parsed data from a Linked Identity subpacket. */
+public class RawLinkedIdentity {
 
-public class LinkedIdentity extends RawLinkedIdentity {
+    public final URI mUri;
 
-    public final LinkedResource mResource;
+    protected RawLinkedIdentity(URI uri) {
+        mUri = uri;
+    }
 
-    protected LinkedIdentity(URI uri, LinkedResource resource) {
-        super(uri);
-        if (resource == null) {
-            throw new AssertionError("resource must not be null in a LinkedIdentity!");
-        }
-        mResource = resource;
+    public byte[] getEncoded() {
+        return Strings.toUTF8ByteArray(mUri.toASCIIString());
     }
 
     public static RawLinkedIdentity fromAttributeData(byte[] data) throws IOException {
@@ -36,26 +36,13 @@ public class LinkedIdentity extends RawLinkedIdentity {
         throw new IOException("no subpacket data");
     }
 
-    /** This method parses a linked id from a UserAttributeSubpacket, or returns null if the
-     * subpacket can not be parsed as a valid linked id.
-     */
-    static RawLinkedIdentity fromAttributeSubpacket(UserAttributeSubpacket subpacket) {
-        if (subpacket.getType() != 101) {
-            return null;
-        }
-
-        byte[] data = subpacket.getData();
-
-        return fromSubpacketData(data);
-    }
-
     static RawLinkedIdentity fromSubpacketData(byte[] data) {
 
         try {
             String uriStr = Strings.fromUTF8ByteArray(data);
             URI uri = URI.create(uriStr);
 
-            LinkedResource res = LinkedResource.fromUri(uri);
+            LinkedResource res = LinkedCookieResource.fromUri(uri);
             if (res == null) {
                 return new RawLinkedIdentity(uri);
             }
@@ -73,16 +60,20 @@ public class LinkedIdentity extends RawLinkedIdentity {
     }
 
 
+    public WrappedUserAttribute toUserAttribute () {
+        return WrappedUserAttribute.fromSubpacket(WrappedUserAttribute.UAT_LINKED_ID, getEncoded());
+    }
+
     public @DrawableRes int getDisplayIcon() {
-        return mResource.getDisplayIcon();
+        return R.drawable.ic_warning_grey_24dp;
     }
 
     public String getDisplayTitle(Context context) {
-        return mResource.getDisplayTitle(context);
+        return "unknown";
     }
 
     public String getDisplayComment(Context context) {
-        return mResource.getDisplayComment(context);
+        return null;
     }
 
 }

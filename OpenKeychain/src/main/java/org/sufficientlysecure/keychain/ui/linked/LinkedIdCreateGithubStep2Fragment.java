@@ -27,8 +27,8 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
-import org.sufficientlysecure.keychain.pgp.linked.resources.GithubResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 
 
 public class LinkedIdCreateGithubStep2Fragment extends LinkedIdCreateFinalFragment {
@@ -65,19 +65,23 @@ public class LinkedIdCreateGithubStep2Fragment extends LinkedIdCreateFinalFragme
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofSend();
-            }
-        });
+        if (view != null) {
 
-        view.findViewById(R.id.button_share).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofShare();
-            }
-        });
+            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofSend();
+                }
+            });
+
+            view.findViewById(R.id.button_share).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofShare();
+                }
+            });
+
+        }
 
         return view;
     }

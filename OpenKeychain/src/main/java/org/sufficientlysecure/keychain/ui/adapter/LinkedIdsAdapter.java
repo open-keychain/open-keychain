@@ -33,8 +33,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
+import org.sufficientlysecure.keychain.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.linked.RawLinkedIdentity;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;

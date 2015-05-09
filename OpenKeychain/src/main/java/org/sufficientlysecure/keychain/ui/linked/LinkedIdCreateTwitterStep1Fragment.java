@@ -29,10 +29,6 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
 
     LinkedIdWizard mLinkedIdWizard;
@@ -119,6 +115,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
         return view;
     }
 
+    /* not used at this point, too many problems
     private static Boolean checkHandle(String handle) {
         try {
             HttpURLConnection nection =
@@ -130,5 +127,6 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
             return null;
         }
     }
+    */
 
 }

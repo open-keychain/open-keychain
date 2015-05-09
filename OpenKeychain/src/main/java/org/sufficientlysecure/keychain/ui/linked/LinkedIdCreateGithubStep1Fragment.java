@@ -17,11 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -109,11 +104,11 @@ public class LinkedIdCreateGithubStep1Fragment extends Fragment {
         });
 
         mEditHandle = (EditText) view.findViewById(R.id.linked_create_github_handle);
-        mEditHandle.setText("Valodim");
 
         return view;
     }
 
+    /* not used at this point, too much hassle
     private static Boolean checkHandle(String handle) {
         try {
             HttpURLConnection nection =
@@ -125,5 +120,6 @@ public class LinkedIdCreateGithubStep1Fragment extends Fragment {
             return null;
         }
     }
+    */
 
 }

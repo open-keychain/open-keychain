@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.linked.resources;
+package org.sufficientlysecure.keychain.linked.resources;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
@@ -6,7 +6,7 @@ import android.support.annotation.StringRes;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.net.URI;
@@ -42,7 +42,7 @@ public class DnsResource extends LinkedCookieResource {
         mType = type;
     }
 
-    public static String generateText (Context context, byte[] fingerprint) {
+    public static String generateText(byte[] fingerprint) {
 
         return String.format("openpgpid+cookie=%s",
                 KeyFormattingUtils.convertFingerprintToHex(fingerprint));
@@ -50,8 +50,8 @@ public class DnsResource extends LinkedCookieResource {
     }
 
     public static DnsResource createNew (String domain) {
-        HashSet<String> flags = new HashSet<String>();
-        HashMap<String,String> params = new HashMap<String,String>();
+        HashSet<String> flags = new HashSet<>();
+        HashMap<String,String> params = new HashMap<>();
         URI uri = URI.create("dns:" + domain);
         return create(flags, params, uri);
     }
@@ -74,9 +74,11 @@ public class DnsResource extends LinkedCookieResource {
         // In either case, part before a ? is the fqdn
         String fqdn = pieces[0];
         // There may be a query part
+        /*
         if (pieces.length > 1) {
-            // TODO parse CLASS and TYPE query paramters
+            // parse CLASS and TYPE query paramters
         }
+        */
 
         CLASS clazz = CLASS.IN;
         TYPE type = TYPE.TXT;
@@ -84,6 +86,7 @@ public class DnsResource extends LinkedCookieResource {
         return new DnsResource(flags, params, uri, fqdn, clazz, type);
     }
 
+    @SuppressWarnings("unused")
     public String getFqdn() {
         return mFqdn;
     }

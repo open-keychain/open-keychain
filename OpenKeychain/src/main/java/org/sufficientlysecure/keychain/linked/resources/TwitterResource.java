@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.pgp.linked.resources;
+package org.sufficientlysecure.keychain.linked.resources;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +19,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.LinkedCookieResource;
+import org.sufficientlysecure.keychain.linked.LinkedCookieResource;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -66,6 +66,7 @@ public class TwitterResource extends LinkedCookieResource {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected String fetchResource(OperationLog log, int indent) throws IOException, HttpStatusException,
             JSONException {
@@ -139,6 +140,7 @@ public class TwitterResource extends LinkedCookieResource {
         return intent;
     }
 
+    @SuppressWarnings("deprecation")
     public static TwitterResource searchInTwitterStream(
             String screenName, String needle, OperationLog log) {
 
@@ -200,6 +202,7 @@ public class TwitterResource extends LinkedCookieResource {
 
     private static String cachedAuthToken;
 
+    @SuppressWarnings("deprecation")
     private static String getAuthToken() throws IOException, HttpStatusException, JSONException {
         if (cachedAuthToken != null) {
             return cachedAuthToken;

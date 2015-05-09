@@ -29,8 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.resources.DnsResource;
+import org.sufficientlysecure.keychain.linked.resources.DnsResource;
 
 public class LinkedIdCreateDnsStep1Fragment extends Fragment {
 
@@ -73,7 +72,7 @@ public class LinkedIdCreateDnsStep1Fragment extends Fragment {
                     return;
                 }
 
-                String proofText = DnsResource.generateText(getActivity(),
+                String proofText = DnsResource.generateText(
                         mLinkedIdWizard.mFingerprint);
 
                 LinkedIdCreateDnsStep2Fragment frag =
@@ -119,8 +118,6 @@ public class LinkedIdCreateDnsStep1Fragment extends Fragment {
                 }
             }
         });
-
-        mEditDns.setText("test.mugenguild.com");
 
         return view;
     }

@@ -29,8 +29,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.linked.RawLinkedIdentity;
-import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
 
 public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
 

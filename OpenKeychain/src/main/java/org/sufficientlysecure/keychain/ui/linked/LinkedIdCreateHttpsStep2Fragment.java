@@ -31,7 +31,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -95,22 +95,25 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofSend();
-            }
-        });
+        if (view != null) {
 
-        view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proofSave();
-            }
-        });
+            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofSend();
+                }
+            });
 
-        mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
-        mEditUri.setText(mResourceUri.toString());
+            view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    proofSave();
+                }
+            });
+
+            mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
+            mEditUri.setText(mResourceUri.toString());
+        }
 
         return view;
     }
