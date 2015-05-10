@@ -24,3 +24,4 @@
 -dontoptimize
 -dontshrink
 -dontwarn **
+-dontnote **
