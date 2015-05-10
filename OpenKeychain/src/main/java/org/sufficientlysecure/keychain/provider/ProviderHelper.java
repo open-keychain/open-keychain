@@ -1553,27 +1553,6 @@ public class ProviderHelper {
         mContentResolver.insert(uri, values);
     }
 
-    public Set<String> getAllFingerprints(Uri uri) {
-        Set<String> fingerprints = new HashSet<>();
-        String[] projection = new String[]{KeyRings.FINGERPRINT};
-        Cursor cursor = mContentResolver.query(uri, projection, null, null, null);
-        try {
-            if (cursor != null) {
-                int fingerprintColumn = cursor.getColumnIndex(KeyRings.FINGERPRINT);
-                while (cursor.moveToNext()) {
-                    fingerprints.add(
-                            KeyFormattingUtils.convertFingerprintToHex(cursor.getBlob(fingerprintColumn))
-                    );
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-        return fingerprints;
-    }
-
     public byte[] getApiAppCertificate(String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
 
