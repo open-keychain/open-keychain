@@ -99,7 +99,7 @@ public class ProgressDialogFragment extends DialogFragment {
         if (mIsCancelled || dialog == null) {
             return;
         }
-        
+
         dialog.setMessage(message);
         dialog.setProgress(progress);
         dialog.setMax(max);
