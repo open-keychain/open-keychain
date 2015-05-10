@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 public class CreateKeyEmailFragment extends Fragment {
     private CreateKeyActivity mCreateKeyActivity;
     private EmailEditText mEmailEdit;
-    private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
+    private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels = new ArrayList<>();
     private EmailAdapter mEmailAdapter;
 
     // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
@@ -119,10 +119,6 @@ public class CreateKeyEmailFragment extends Fragment {
         emailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         emailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        // initial values
-        if (mAdditionalEmailModels == null) {
-            mAdditionalEmailModels = new ArrayList<>();
-        }
         if (mEmailAdapter == null) {
             mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
                 @Override
