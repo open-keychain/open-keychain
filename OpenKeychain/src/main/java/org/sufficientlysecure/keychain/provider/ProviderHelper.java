@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -1415,7 +1414,7 @@ public class ProviderHelper {
     private ContentValues contentValueForApiApps(AppSettings appSettings) {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
-        values.put(ApiApps.PACKAGE_SIGNATURE, appSettings.getPackageSignature());
+        values.put(ApiApps.PACKAGE_CERTIFICATE, appSettings.getPackageSignature());
         return values;
     }
 
@@ -1462,7 +1461,7 @@ public class ProviderHelper {
                 settings.setPackageName(cursor.getString(
                         cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
                 settings.setPackageSignature(cursor.getBlob(
-                        cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_SIGNATURE)));
+                        cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_CERTIFICATE)));
             }
         } finally {
             if (cursor != null) {
@@ -1575,10 +1574,10 @@ public class ProviderHelper {
         return fingerprints;
     }
 
-    public byte[] getApiAppSignature(String packageName) {
+    public byte[] getApiAppCertificate(String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
 
-        String[] projection = new String[]{ApiApps.PACKAGE_SIGNATURE};
+        String[] projection = new String[]{ApiApps.PACKAGE_CERTIFICATE};
 
         Cursor cursor = mContentResolver.query(queryUri, projection, null, null, null);
         try {

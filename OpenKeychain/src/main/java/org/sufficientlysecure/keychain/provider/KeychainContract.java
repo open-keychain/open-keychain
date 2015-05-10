@@ -73,7 +73,7 @@ public class KeychainContract {
 
     interface ApiAppsColumns {
         String PACKAGE_NAME = "package_name";
-        String PACKAGE_SIGNATURE = "package_signature";
+        String PACKAGE_CERTIFICATE = "package_signature";
     }
 
     interface ApiAppsAccountsColumns {

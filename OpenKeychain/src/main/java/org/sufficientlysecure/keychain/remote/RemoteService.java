@@ -37,6 +37,8 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,10 +47,10 @@ import java.util.Arrays;
  */
 public abstract class RemoteService extends Service {
 
-    public static class WrongPackageSignatureException extends Exception {
+    public static class WrongPackageCertificateException extends Exception {
         private static final long serialVersionUID = -8294642703122196028L;
 
-        public WrongPackageSignatureException(String message) {
+        public WrongPackageCertificateException(String message) {
             super(message);
         }
     }
@@ -74,9 +76,9 @@ public abstract class RemoteService extends Service {
                 String packageName = getCurrentCallingPackage();
                 Log.d(Constants.TAG, "isAllowed packageName: " + packageName);
 
-                byte[] packageSignature;
+                byte[] packageCertificate;
                 try {
-                    packageSignature = getPackageSignature(packageName);
+                    packageCertificate = getPackageCertificate(packageName);
                 } catch (NameNotFoundException e) {
                     Log.e(Constants.TAG, "Should not happen, returning!", e);
                     // return error
@@ -91,7 +93,7 @@ public abstract class RemoteService extends Service {
                 Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
                 intent.setAction(RemoteServiceActivity.ACTION_REGISTER);
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
-                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
+                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
                 intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
                 PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
@@ -105,7 +107,7 @@ public abstract class RemoteService extends Service {
 
                 return result;
             }
-        } catch (WrongPackageSignatureException e) {
+        } catch (WrongPackageCertificateException e) {
             Log.e(Constants.TAG, "wrong signature!", e);
 
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
@@ -127,14 +129,24 @@ public abstract class RemoteService extends Service {
         }
     }
 
-    private byte[] getPackageSignature(String packageName) throws NameNotFoundException {
+    private byte[] getPackageCertificate(String packageName) throws NameNotFoundException {
         PackageInfo pkgInfo = getPackageManager().getPackageInfo(packageName,
                 PackageManager.GET_SIGNATURES);
-        Signature[] signatures = pkgInfo.signatures;
-        // TODO: Only first signature?!
-        byte[] packageSignature = signatures[0].toByteArray();
+        // NOTE: Silly Android API naming: Signatures are actually certificates
+        Signature[] certificates = pkgInfo.signatures;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        for (Signature cert : certificates) {
+            try {
+                outputStream.write(cert.toByteArray());
+            } catch (IOException e) {
+                throw new RuntimeException("Should not happen! Writing ByteArrayOutputStream to concat certificates failed");
+            }
+        }
 
-        return packageSignature;
+        // Even if an apk has several certificates, these certificates should never change
+        // Google Play does not allow the introduction of new certificates into an existing apk
+        // Also see this attack: http://stackoverflow.com/a/10567852
+        return outputStream.toByteArray();
     }
 
     /**
@@ -144,9 +156,12 @@ public abstract class RemoteService extends Service {
      * @return package name
      */
     protected String getCurrentCallingPackage() {
-        // TODO:
-        // callingPackages contains more than one entry when sharedUserId has been used...
         String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
+
+        // NOTE: No support for sharedUserIds
+        // callingPackages contains more than one entry when sharedUserId has been used
+        // No plans to support sharedUserIds due to many bugs connected to them:
+        // http://java-hamster.blogspot.de/2010/05/androids-shareduserid.html
         String currentPkg = callingPackages[0];
         Log.d(Constants.TAG, "currentPkg: " + currentPkg);
 
@@ -155,12 +170,12 @@ public abstract class RemoteService extends Service {
 
     /**
      * DEPRECATED API
-     *
+     * <p/>
      * Retrieves AccountSettings from database for the application calling this remote service
      */
     protected AccountSettings getAccSettings(String accountName) {
         String currentPkg = getCurrentCallingPackage();
-        Log.d(Constants.TAG, "getAccSettings accountName: "+ accountName);
+        Log.d(Constants.TAG, "getAccSettings accountName: " + accountName);
 
         Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
@@ -198,14 +213,14 @@ public abstract class RemoteService extends Service {
      *
      * @param allowOnlySelf allow only Keychain app itself
      * @return true if process is allowed to use this service
-     * @throws WrongPackageSignatureException
+     * @throws WrongPackageCertificateException
      */
-    private boolean isCallerAllowed(boolean allowOnlySelf) throws WrongPackageSignatureException {
+    private boolean isCallerAllowed(boolean allowOnlySelf) throws WrongPackageCertificateException {
         return isUidAllowed(Binder.getCallingUid(), allowOnlySelf);
     }
 
     private boolean isUidAllowed(int uid, boolean allowOnlySelf)
-            throws WrongPackageSignatureException {
+            throws WrongPackageCertificateException {
         if (android.os.Process.myUid() == uid) {
             return true;
         }
@@ -229,11 +244,9 @@ public abstract class RemoteService extends Service {
     /**
      * Checks if packageName is a registered app for the API. Does not return true for own package!
      *
-     * @param packageName
-     * @return
-     * @throws WrongPackageSignatureException
+     * @throws WrongPackageCertificateException
      */
-    private boolean isPackageAllowed(String packageName) throws WrongPackageSignatureException {
+    private boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
         ArrayList<String> allowedPkgs = mProviderHelper.getRegisteredApiApps();
@@ -244,22 +257,22 @@ public abstract class RemoteService extends Service {
             Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
 
             // check package signature
-            byte[] currentSig;
+            byte[] currentCert;
             try {
-                currentSig = getPackageSignature(packageName);
+                currentCert = getPackageCertificate(packageName);
             } catch (NameNotFoundException e) {
-                throw new WrongPackageSignatureException(e.getMessage());
+                throw new WrongPackageCertificateException(e.getMessage());
             }
 
-            byte[] storedSig = mProviderHelper.getApiAppSignature(packageName);
-            if (Arrays.equals(currentSig, storedSig)) {
+            byte[] storedCert = mProviderHelper.getApiAppCertificate(packageName);
+            if (Arrays.equals(currentCert, storedCert)) {
                 Log.d(Constants.TAG,
-                        "Package signature is correct! (equals signature from database)");
+                        "Package certificate is correct! (equals certificate from database)");
                 return true;
             } else {
-                throw new WrongPackageSignatureException(
-                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not " +
-                                "equals signature from database)");
+                throw new WrongPackageCertificateException(
+                        "PACKAGE NOT ALLOWED! Certificate wrong! (Certificate not " +
+                                "equals certificate from database)");
             }
         }
 
