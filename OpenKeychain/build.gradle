@@ -39,6 +39,7 @@ dependencies {
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
+    compile 'com.nispok:snackbar:2.10.8'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
@@ -50,7 +51,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
-    compile project(':extern:snackbar:lib')
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -76,6 +76,7 @@ dependencyVerification {
             'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
+            'com.nispok:snackbar:80bebc8e5d8b3d728cd5f2336e2d0c1cc2a6b7dc4b55d36acd6b75a78265590a',
 //            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
 //            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
 //            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
