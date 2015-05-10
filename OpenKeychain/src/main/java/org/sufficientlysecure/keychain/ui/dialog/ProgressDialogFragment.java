@@ -94,12 +94,12 @@ public class ProgressDialogFragment extends DialogFragment {
 
     /** Updates progress of dialog */
     public void setProgress(String message, int progress, int max) {
-        if (mIsCancelled) {
-            return;
-        }
-
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
+        if (mIsCancelled || dialog == null) {
+            return;
+        }
+        
         dialog.setMessage(message);
         dialog.setProgress(progress);
         dialog.setMax(max);
