@@ -216,7 +216,16 @@ public class KeyFormattingUtils {
      * @return
      */
     public static String convertFingerprintToHex(byte[] fingerprint) {
-        return Hex.toHexString(fingerprint, 0, 20).toLowerCase(Locale.ENGLISH);
+        // NOTE: Even though v3 keys are not imported we need to support both fingerprints for
+        // display/comparison before import
+        // Also better cut of unneeded parts, e.g., for fingerprints returned from YubiKeys
+        if (fingerprint.length < 20) {
+            // v3 key fingerprint with 128 bit (MD5)
+            return Hex.toHexString(fingerprint, 0, 16).toLowerCase(Locale.ENGLISH);
+        } else {
+            // v4 key fingerprint with 160 bit (SHA1)
+            return Hex.toHexString(fingerprint, 0, 20).toLowerCase(Locale.ENGLISH);
+        }
     }
 
     public static long getKeyIdFromFingerprint(byte[] fingerprint) {
