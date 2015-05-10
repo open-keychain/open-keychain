@@ -417,6 +417,20 @@ public class OpenPgpService extends RemoteService {
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
+            // OLD: Even if the message is not signed: Do self-encrypt to account key id
+            if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
+                String accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
+                // if no account name is given use name "default"
+                if (TextUtils.isEmpty(accName)) {
+                    accName = "default";
+                }
+                final AccountSettings accSettings = getAccSettings(accName);
+                if (accSettings == null || (accSettings.getKeyId() == Constants.key.none)) {
+                    return getCreateAccountIntent(data, accName);
+                }
+                pseInput.setAdditionalEncryptId(accSettings.getKeyId());
+            }
+
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
                 inputParcel = new CryptoInputParcel();
