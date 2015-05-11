@@ -136,7 +136,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
             where += " AND " + KeyRings.USER_ID + " LIKE ?";
 
             return new CursorLoader(getContext(), baseUri, KeyAdapter.PROJECTION, where,
-                    new String[] { "%" + query  + "%" }, null);
+                    new String[]{"%" + query + "%"}, null);
         }
 
         mAdapter.setSearchQuery(null);
@@ -156,7 +156,7 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
 
     @Override
     public void showDropDown() {
-        if (mAdapter.getCursor().isClosed()) {
+        if (mAdapter == null || mAdapter.getCursor() == null || mAdapter.getCursor().isClosed()) {
             return;
         }
         super.showDropDown();

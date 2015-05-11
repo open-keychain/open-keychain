@@ -32,10 +32,10 @@ import java.util.regex.Pattern;
 
 public class TwitterResource extends LinkedTokenResource {
 
-    public static final String[] CERT_PINS = new String[] {
-        // antec Class 3 Secure Server CA - G4
+    public static final String[] CERT_PINS = null; /*(new String[] {
+        // Symantec Class 3 Secure Server CA - G4
         "513fb9743870b73440418d30930699ff"
-    };
+    };*/
 
     final String mHandle;
     final String mTweetId;

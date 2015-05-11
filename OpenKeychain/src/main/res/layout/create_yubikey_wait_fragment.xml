@@ -22,8 +22,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginLeft="8dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Hold Yubikey against device dawg"
-                />
+                android:text="@string/yubikey_create" />
 
             <ImageView
                 android:layout_width="match_parent"

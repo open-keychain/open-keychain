@@ -6,10 +6,22 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:22.1.0'
-    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:recyclerview-v7:22.1.0'
     compile 'com.android.support:cardview-v7:22.1.0'
+
+    // UI testing libs
+    androidTestCompile 'com.android.support.test:runner:0.2'
+    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
+
+    // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
+    // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:support-annotations:22.1.1'
+    }
 
     // JCenter etc.
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
@@ -23,16 +35,17 @@ dependencies {
     compile "com.splitwise:tokenautocomplete:1.3.3@aar"
     compile 'se.emilsjolander:stickylistheaders:2.6.0'
     compile 'org.sufficientlysecure:html-textview:1.1'
-    compile 'com.mikepenz.materialdrawer:library:2.7.9@aar'
+    compile 'com.mikepenz.materialdrawer:library:2.8.2@aar'
     compile 'com.mikepenz.iconics:library:0.9.1@aar'
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
+    compile 'com.nispok:snackbar:2.10.8'
 
     // libs as submodules
-    compile project(':extern:openpgp-api-lib')
-    compile project(':extern:openkeychain-api-lib')
+    compile project(':extern:openpgp-api-lib:openpgp-api')
+    compile project(':extern:openkeychain-api-lib:openkeychain-intents')
     compile project(':extern:spongycastle:core')
     compile project(':extern:spongycastle:pg')
     compile project(':extern:spongycastle:pkix')
@@ -40,15 +53,14 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
-    compile project(':extern:snackbar:lib')
 }
 
 // Output of ./gradlew -q calculateChecksums
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:74cb322740317b11a785eee1a94969426fade946123c4ae3f471276adaaaf54b',
-            'com.android.support:appcompat-v7:6cc7fc2df4be0676f78ecfc5d3cda388e59890d11308811944f54efd84b047b7',
+            'com.android.support:support-v4:1e2e4d35ac7fd30db5ce3bc177b92e4d5af86acef2ef93e9221599d733346f56',
+            'com.android.support:appcompat-v7:9a2355537c2f01cf0b95523605c18606b8d824017e6e94a05c77b0cfc8f21c96',
             'com.android.support:recyclerview-v7:522d323079a29bcd76173bd9bc7535223b4af3e5eefef9d9287df1f9e54d0c10',
             'com.android.support:cardview-v7:8dc99af71fec000baa4470c3907755264f15f816920861bc015b2babdbb49807',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
@@ -61,11 +73,12 @@ dependencyVerification {
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
             'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
             'org.sufficientlysecure:html-textview:ca24b1522be88378634093815ce9ff1b4920c72e7513a045a7846e14069ef988',
-            'com.mikepenz.materialdrawer:library:3ef80c6e1ca1b29cfcbb27fa7927c02b2246e068c17fe52283703c4897449923',
+            'com.mikepenz.materialdrawer:library:970317ed1a3cb96317f7b8d62ff592b3103eb46dfd68d9b244e7143623dc6d7a',
             'com.mikepenz.iconics:library:4698a36ee4c2af765d0a85779c61474d755b90d66a59020105b6760a8a909e9e',
             'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
+            'com.nispok:snackbar:80bebc8e5d8b3d728cd5f2336e2d0c1cc2a6b7dc4b55d36acd6b75a78265590a',
 //            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
 //            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
 //            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
@@ -76,7 +89,7 @@ dependencyVerification {
 //            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
 //            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
 //            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
-            'com.android.support:support-annotations:9c59286413a2bb93e199c73261e58d5af32da7ae0a12cbd075f581a5de1fb446',
+            'com.android.support:support-annotations:7bc07519aa613b186001160403bcfd68260fa82c61cc7e83adeedc9b862b94ae',
     ]
 }
 
@@ -87,11 +100,20 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
 
     /*
@@ -136,6 +158,10 @@ android {
     // Disable preDexing, causes com.android.dx.cf.iface.ParseException: bad class file magic (cafebabe) or version (0034.0000) on some systems
     dexOptions {
         preDexLibraries = false
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
     }
 }
 

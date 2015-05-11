@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="31203"
-    android:versionName="3.2beta3">
+    android:versionCode="32100"
+    android:versionName="3.2.1">
 
     <!--
         General remarks
@@ -15,7 +15,7 @@
         Association of file types to Keychain
         =====================================
         General remarks about file ending conventions:
-        - *.gpg for binary files
+        - *.gpg,*.pgp for binary files
         - *.asc for ascii armored files The actual content can be anything.
         
         The file ending only shows if it is binary or ascii encoded.
@@ -73,8 +73,8 @@
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/KeychainTheme"
-        android:label="@string/app_name">
+        android:label="@string/app_name"
+        android:theme="@style/KeychainTheme">
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -88,11 +88,11 @@
         </activity>
         <activity
             android:name=".ui.CreateKeyActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:allowTaskReparenting="true"
             android:label="@string/title_manage_my_keys"
             android:launchMode="singleTop"
-            android:allowTaskReparenting="true"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -136,8 +136,8 @@
             android:name=".ui.SafeSlingerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -146,14 +146,13 @@
             android:name=".ui.EncryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
 
-            <!-- Keychain's own Actions -->
-            <!-- ENCRYPT with data Uri -->
+            <!-- ENCRYPT_DATA with data Uri -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_DATA" />
 
@@ -179,14 +178,13 @@
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
 
-            <!-- Keychain's own Actions -->
-            <!-- ENCRYPT with text as extra -->
+            <!-- ENCRYPT_TEXT with text as extra -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_TEXT" />
 
@@ -206,14 +204,13 @@
             android:name=".ui.DecryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
 
-            <!-- Keychain's own Actions -->
-            <!-- DECRYPT with text as extra -->
+            <!-- DECRYPT_TEXT with text as extra -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_TEXT" />
 
@@ -233,13 +230,13 @@
             android:name=".ui.DecryptFilesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:windowSoftInputMode="stateHidden"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
 
-            <!-- VIEW with mimeType application/octet-stream, application/pgp and text/pgp  -->
+            <!-- VIEW with mimeTypes  -->
             <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -259,9 +256,14 @@
                 <!-- non-standard MIME types found in the wild -->
                 <data android:mimeType="application/pgp" />
                 <data android:mimeType="text/pgp" />
+
+                <!--
+                  This links to attached asc files in AOSP mail. It is deactivated because of
+                  https://github.com/open-keychain/open-keychain/issues/290
+                -->
+                <!--<data android:mimeType="text/plain" />-->
             </intent-filter>
-            <!-- Keychain's own Actions -->
-            <!-- DECRYPT with data Uri -->
+            <!-- DECRYPT_DATA with data Uri -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_DATA" />
 
@@ -294,7 +296,7 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
 
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <!-- ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -356,7 +358,7 @@
 
                 <data android:mimeType="*/*" />
 
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <!-- ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -520,7 +522,7 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
 
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <!-- ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -582,7 +584,7 @@
 
                 <data android:mimeType="*/*" />
 
-                <!-- GnuPG ASCII data, mostly keys, but sometimes signatures and encrypted data -->
+                <!-- ASCII data, mostly keys, but sometimes signatures and encrypted data -->
                 <data android:pathPattern=".*\\.asc" />
                 <data android:pathPattern=".*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\.asc" />
@@ -635,17 +637,16 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="https"/>
-                <data android:scheme="http"/>
+                <data android:scheme="https" />
+                <data android:scheme="http" />
                 <!-- if we don't specify a host, pathPattern will be ignored-->
-                <data android:host="*"/>
+                <data android:host="*" />
                 <!-- convention for keyserver paths specified by internet draft
                  draft-shaw-openpgp-hkp-00.txt
                  (http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-3) -->
-                <data android:pathPattern="/pks/lookup.*"/>
+                <data android:pathPattern="/pks/lookup.*" />
             </intent-filter>
 
-            <!-- Keychain's own Actions -->
             <!-- IMPORT_KEY with files TODO: does this work? -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
@@ -693,9 +694,9 @@
          -->
         <activity
             android:name=".ui.NfcOperationActivity"
+            android:allowTaskReparenting="true"
             android:launchMode="singleTop"
-            android:taskAffinity=":Nfc"
-            android:allowTaskReparenting="true" />
+            android:taskAffinity=":Nfc" />
 
         <!--<activity-->
         <!--android:name=".ui.NfcIntentActivity"-->
@@ -741,6 +742,11 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".remote.ui.SelectSignKeyIdActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".remote.ui.SelectAllowedKeysActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop" />
@@ -804,8 +810,8 @@
         <provider
             android:name=".provider.TemporaryStorageProvider"
             android:authorities="org.sufficientlysecure.keychain.tempstorage"
-            android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE"
-            android:exported="true" />
+            android:exported="true"
+            android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
 
     </application>
 

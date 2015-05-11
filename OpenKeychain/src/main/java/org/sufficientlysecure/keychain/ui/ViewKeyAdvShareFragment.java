@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -42,19 +43,24 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
@@ -175,11 +181,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                        boolean toClipboard) {
         try {
             String content;
+            byte[] fingerprintData = (byte[]) providerHelper.getGenericData(
+                    KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
             if (fingerprintOnly) {
-                byte[] data = (byte[]) providerHelper.getGenericData(
-                        KeyRings.buildUnifiedKeyRingUri(dataUri),
-                        Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(data);
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintData);
                 if (!toClipboard) {
                     content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
                 } else {
@@ -213,13 +219,48 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, content);
                 sendIntent.setType("text/plain");
+
                 String title;
                 if (fingerprintOnly) {
                     title = getResources().getString(R.string.title_share_fingerprint_with);
                 } else {
                     title = getResources().getString(R.string.title_share_key);
                 }
-                startActivity(Intent.createChooser(sendIntent, title));
+                Intent shareChooser = Intent.createChooser(sendIntent, title);
+
+                // Bluetooth Share will convert text/plain sent via EXTRA_TEXT to HTML
+                // Add replacement extra to send a text/plain file instead.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    try {
+                        String primaryUserId = UncachedKeyRing.decodeFromData(content.getBytes()).
+                                getPublicKey().getPrimaryUserIdWithFallback();
+
+                        TemporaryStorageProvider shareFileProv = new TemporaryStorageProvider();
+                        Uri contentUri = TemporaryStorageProvider.createFile(getActivity(),
+                                primaryUserId + Constants.FILE_EXTENSION_ASC);
+
+                        BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(
+                                new ParcelFileDescriptor.AutoCloseOutputStream(
+                                        shareFileProv.openFile(contentUri, "w"))));
+                        contentWriter.write(content);
+                        contentWriter.close();
+
+                        // create replacement extras inside try{}:
+                        // if file creation fails, just don't add the replacements
+                        Bundle replacements = new Bundle();
+                        shareChooser.putExtra(Intent.EXTRA_REPLACEMENT_EXTRAS, replacements);
+
+                        Bundle bluetoothExtra = new Bundle(sendIntent.getExtras());
+                        replacements.putBundle("com.android.bluetooth", bluetoothExtra);
+
+                        bluetoothExtra.putParcelable(Intent.EXTRA_STREAM, contentUri);
+                    } catch (FileNotFoundException e) {
+                        Log.e(Constants.TAG, "error creating temporary Bluetooth key share file!", e);
+                        Notify.create(getActivity(), R.string.error_bluetooth_file, Notify.Style.ERROR).show();
+                    }
+                }
+
+                startActivity(shareChooser);
             }
         } catch (PgpGeneralException | IOException e) {
             Log.e(Constants.TAG, "error processing key!", e);

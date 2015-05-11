@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,18 +43,17 @@ import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CreateKeyEmailFragment extends Fragment {
+    private CreateKeyActivity mCreateKeyActivity;
+    private EmailEditText mEmailEdit;
+    private ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels = new ArrayList<>();
+    private EmailAdapter mEmailAdapter;
 
-    CreateKeyActivity mCreateKeyActivity;
-    EmailEditText mEmailEdit;
-    RecyclerView mEmailsRecyclerView;
-    View mBackButton;
-    View mNextButton;
-
-    ArrayList<EmailAdapter.ViewModel> mAdditionalEmailModels;
-
-    EmailAdapter mEmailAdapter;
+    // NOTE: Do not use more complicated pattern like defined in android.util.Patterns.EMAIL_ADDRESS
+    // EMAIL_ADDRESS fails for mails with umlauts for example
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\S]+@[\\S]+\\.[a-z]+$");
 
     /**
      * Creates new instance of this fragment
@@ -73,14 +71,13 @@ public class CreateKeyEmailFragment extends Fragment {
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.
      *
-     * @param context
      * @param editText
      * @return true if EditText is not empty
      */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
+    private boolean isMainEmailValid(EditText editText) {
         boolean output = true;
-        if (editText.getText().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
+        if (!checkEmail(editText.getText().toString(), false)) {
+            editText.setError(getString(R.string.create_key_empty));
             editText.requestFocus();
             output = false;
         } else {
@@ -95,9 +92,9 @@ public class CreateKeyEmailFragment extends Fragment {
         View view = inflater.inflate(R.layout.create_key_email_fragment, container, false);
 
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
-        mBackButton = view.findViewById(R.id.create_key_back_button);
-        mNextButton = view.findViewById(R.id.create_key_next_button);
-        mEmailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
+        View backButton = view.findViewById(R.id.create_key_back_button);
+        View nextButton = view.findViewById(R.id.create_key_next_button);
+        RecyclerView emailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
 
         // initial values
         mEmailEdit.setText(mCreateKeyActivity.mEmail);
@@ -106,29 +103,21 @@ public class CreateKeyEmailFragment extends Fragment {
         if (mCreateKeyActivity.mEmail == null) {
             mEmailEdit.requestFocus();
         }
-        mBackButton.setOnClickListener(new View.OnClickListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
             }
         });
-        mNextButton.setOnClickListener(new View.OnClickListener() {
+        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 nextClicked();
             }
         });
-        mEmailsRecyclerView.setHasFixedSize(true);
-        mEmailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mEmailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        // initial values
-        if (mAdditionalEmailModels == null) {
-            mAdditionalEmailModels = new ArrayList<>();
-            if (mCreateKeyActivity.mAdditionalEmails != null) {
-                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
-            }
-        }
+        emailsRecyclerView.setHasFixedSize(true);
+        emailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        emailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         if (mEmailAdapter == null) {
             mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
@@ -137,13 +126,77 @@ public class CreateKeyEmailFragment extends Fragment {
                     addEmail();
                 }
             });
+
+            if (mCreateKeyActivity.mAdditionalEmails != null) {
+                mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
+            }
         }
 
-        mEmailsRecyclerView.setAdapter(mEmailAdapter);
+        emailsRecyclerView.setAdapter(mEmailAdapter);
 
         return view;
     }
 
+    /**
+     * Checks if a given email is valid
+     *
+     * @param email
+     * @param additionalEmail
+     * @return
+     */
+    private boolean checkEmail(String email, boolean additionalEmail) {
+        // check for email format or if the user did any input
+        if (!isEmailFormatValid(email)) {
+            Notify.create(getActivity(),
+                    getString(R.string.create_key_email_invalid_email),
+                    Notify.LENGTH_LONG, Notify.Style.ERROR).show(CreateKeyEmailFragment.this);
+            return false;
+        }
+
+        // check for duplicated emails
+        if (!additionalEmail && isEmailDuplicatedInsideAdapter(email) || additionalEmail &&
+                mEmailEdit.getText().length() > 0 && email.equals(mEmailEdit.getText().toString())) {
+            Notify.create(getActivity(),
+                    getString(R.string.create_key_email_already_exists_text),
+                    Notify.LENGTH_LONG, Notify.Style.ERROR).show(CreateKeyEmailFragment.this);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks the email format
+     * Uses the default Android Email Pattern
+     *
+     * @param email
+     * @return
+     */
+    private boolean isEmailFormatValid(String email) {
+        // check for email format or if the user did any input
+        return !(email.length() == 0 || !EMAIL_PATTERN.matcher(email).matches());
+    }
+
+    /**
+     * Checks for duplicated emails inside the additional email adapter.
+     *
+     * @param email
+     * @return
+     */
+    private boolean isEmailDuplicatedInsideAdapter(String email) {
+        //check for duplicated emails inside the adapter
+        for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
+            if (email.equals(model.email)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Displays a dialog fragment for the user to input a valid email.
+     */
     private void addEmail() {
         Handler returnHandler = new Handler() {
             @Override
@@ -153,34 +206,17 @@ public class CreateKeyEmailFragment extends Fragment {
 
                     String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
 
-                    if (email.length() > 0 && mEmailEdit.getText().length() > 0 &&
-                            email.equals(mEmailEdit.getText().toString())) {
-                        Notify.create(getActivity(),
-                                getString(R.string.create_key_email_already_exists_text),
-                                Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-                        return;
+                    if (checkEmail(email, true)) {
+                        // add new user id
+                        mEmailAdapter.add(email);
                     }
-                    //check for duplicated emails inside the adapter
-                    for (EmailAdapter.ViewModel model : mAdditionalEmailModels) {
-                        if (email.equals(model.email)) {
-                            Notify.create(getActivity(),
-                                    getString(R.string.create_key_email_already_exists_text),
-                                    Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-                            return;
-                        }
-                    }
-
-                    // add new user id
-                    mEmailAdapter.add(email);
                 }
             }
         };
-
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
-
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
     }
 
@@ -191,7 +227,7 @@ public class CreateKeyEmailFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mEmailEdit)) {
+        if (isMainEmailValid(mEmailEdit)) {
             // save state
             mCreateKeyActivity.mEmail = mEmailEdit.getText().toString();
             mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();

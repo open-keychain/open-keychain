@@ -18,15 +18,12 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.support.v4.widget.CursorAdapter;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,9 +173,8 @@ public class KeyAdapter extends CursorAdapter {
                                     | DateUtils.FORMAT_SHOW_TIME
                                     | DateUtils.FORMAT_SHOW_YEAR
                                     | DateUtils.FORMAT_ABBREV_MONTH);
-
-                    mCreationDate.setText(context.getString(R.string.label_creation,
-                            dateTime));
+                    mCreationDate.setText(context.getString(R.string.label_key_created,
+                                dateTime));
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
                     mCreationDate.setVisibility(View.GONE);
@@ -279,20 +275,6 @@ public class KeyAdapter extends CursorAdapter {
             } else {
                 return mUserId.email;
             }
-        }
-
-        public boolean hasDuplicate() {
-            return mHasDuplicate;
-        }
-
-        public String getCreationDate(Context context) {
-            Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            creationCal.setTime(mCreation);
-            // convert from UTC to time zone of device
-            creationCal.setTimeZone(TimeZone.getDefault());
-
-            return context.getString(R.string.label_creation) + ": "
-                    + DateFormat.getDateFormat(context).format(creationCal.getTime());
         }
 
     }

@@ -130,11 +130,13 @@
   <plurals name="n_keys">
     <item quantity="one">1 ключ</item>
     <item quantity="few">%d ключей</item>
+    <item quantity="many">%d ключей</item>
     <item quantity="other">%d ключей</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d сервер ключей</item>
     <item quantity="few">%d серверов ключей</item>
+    <item quantity="many">%d серверов ключей</item>
     <item quantity="other">%d серверов ключей</item>
   </plurals>
   <string name="secret_key">Секретный ключ:</string>
@@ -264,6 +266,7 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>
+    <item quantity="many">экспорт ключей...</item>
     <item quantity="other">экспорт ключей...</item>
   </plurals>
   <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
@@ -336,6 +339,7 @@
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Ключ успешно импортирован</item>
     <item quantity="few">Успешно добавлено %1$d ключей</item>
+    <item quantity="many">Успешно добавлено %1$d ключей</item>
     <item quantity="other">Успешно добавлено %1$d ключей</item>
   </plurals>
   <string name="import_error_nothing">Нет данных для импорта.</string>
@@ -388,6 +392,7 @@
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 ключ выбран.</item>
     <item quantity="few">%d ключей выбрано.</item>
+    <item quantity="many">%d ключей выбрано.</item>
     <item quantity="other">%d ключей выбрано.</item>
   </plurals>
   <string name="key_list_empty_text1">Ключи не найдены!</string>
@@ -785,6 +790,7 @@
   <plurals name="error_import_non_pgp_part">
     <item quantity="one">часть загруженного файла содержит данные OpenPGP, но это не ключ</item>
     <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
+    <item quantity="many">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
     <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
   </plurals>
   <!--Messages for Export Log operation-->

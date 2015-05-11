@@ -112,9 +112,11 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
                 mEmail.post(new Runnable() {
                     @Override
                     public void run() {
-                        InputMethodManager imm = (InputMethodManager) getActivity()
-                                .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(mEmail, InputMethodManager.SHOW_IMPLICIT);
+                        if(getActivity() != null) {
+                            InputMethodManager imm = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(mEmail, InputMethodManager.SHOW_IMPLICIT);
+                        }
                     }
                 });
             }

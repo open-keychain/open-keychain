@@ -202,6 +202,8 @@ public class ViewKeyFragment extends LoaderFragment implements
      * In the case of a secret key, "me" (own profile) contact details are loaded.
      */
     private void loadLinkedSystemContact(final long contactId) {
+        // contact doesn't exist, stop
+        if(contactId == -1) return;
 
         final Context context = mSystemContactName.getContext();
         final ContentResolver resolver = context.getContentResolver();

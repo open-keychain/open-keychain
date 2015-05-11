@@ -9,9 +9,9 @@ Specification will follow.
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to http://www.openkeychain.org .
 
-### Travis CI Build Status
+### Travis CI Build Status of development branch
 
-[![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
+[![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=development)](https://travis-ci.org/open-keychain/open-keychain)
 
 ## How to help the project?
 
@@ -21,12 +21,16 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 
 ### Contribute Code
 
+1. Lookout for interesting issues on Github. We have tagged issues were we explicitly like to see contributions: https://github.com/open-keychain/open-keychain/labels/help-wanted
+2. Read this README, especially the notes about coding style
+3. Fork OpenKeychain and contribute code (the best part :sunglasses: )
+4. Open a pull request on Github. We will help with occuring problems and merge your changes back into the main project.
+5. PROFIT
+
+### For bigger changes
+
 1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
-2. Lookout for interesting issues on Github. We have tagged issues were we explicitly like to see contributions: https://github.com/open-keychain/open-keychain/labels/help-wanted
-3. Tell us about your plans on the mailinglist
-4. Read this README, especially the notes about coding style
-5. Fork OpenKeychain and contribute code (the best part ;) )
-6. Open a pull request on Github. I will help with occuring problems and merge your changes back into the main project.
+2. Propose bigger changes and discuss the consequences
 
 I am happy about every code contribution and appreciate your effort to help us developing OpenKeychain!
 
@@ -36,32 +40,28 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 
 ### Build with Gradle
 
-1. Get all external submodules with ``git submodule update --init --recursive``
-2. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-3. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.1)".  
+1. Clone the project from GitHub
+2. Get all external submodules with ``git submodule update --init --recursive``
+3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
+4. Open the Android SDK Manager (shell command: ``android``).  
+Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.2)".  
 Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK Platform (API-Level 21)
-4. Export ANDROID_HOME pointing to your Android SDK
-5. Execute ``./gradlew build``
-6. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
+Select everything for the newest SDK Platform, API 22, and also API 21
+5. Export ANDROID_HOME pointing to your Android SDK
+6. Execute ``./gradlew build``
+7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-3. Execute ``./gradlew test``
-
-### Build API Demo with Gradle
-
-1. Follow 1-4 from above
-2. The example code is available at https://github.com/open-keychain/api-example
-3. Execute ``./gradlew build``
+2. Execute ``./gradlew test``
 
 ### Development with Android Studio
 
 We are using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because we are using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
 1. Clone the project from Github
-2. From Android Studio: File -> Import Project ->  Select the cloned top folder
+2. Get all external submodules with ``git submodule update --init --recursive``
+3. From Android Studio: File -> Import Project ->  Select the cloned top folder
 
 ## Libraries
 

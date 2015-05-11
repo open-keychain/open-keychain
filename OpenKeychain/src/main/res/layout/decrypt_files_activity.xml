@@ -5,7 +5,7 @@
 
     <include
         android:id="@+id/toolbar_include"
-        layout="@layout/toolbar_standalone_white" />
+        layout="@layout/toolbar_result_decrypt" />
 
     <!--
         fitsSystemWindows and layout_marginTop from

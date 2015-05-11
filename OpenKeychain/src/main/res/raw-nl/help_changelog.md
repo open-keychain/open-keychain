@@ -1,6 +1,6 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-## 3.2beta2
+## 3.2
 
   * Material design
   * Integratie van QR-scanner (nieuwe machtigingen vereist)

@@ -2,12 +2,12 @@
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](http://www.openkeychain.org) это OpenPGP имплементация для ОС Android.
 
-License: GPLv3+
+Лицензия: GPLv3+
 
-## Developers
-  * Dominik Schürmann (Maintainer)
+## Разработчики
+  * Dominik Schürmann (Ведущий разработчик)
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -28,7 +28,7 @@ License: GPLv3+
   * Tim Bray
   * Vincent Breitmoser
 
-## Libraries
+## Используемые библиотеки
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 License)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT License)
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)

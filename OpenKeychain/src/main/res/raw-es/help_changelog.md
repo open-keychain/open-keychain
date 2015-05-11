@@ -1,8 +1,8 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
-## 3.2beta2
+## 3.2
 
-  * Diseño estilo Material
+  * Material design (estilo)
   * Integración de QR Scanner (se requieren nuevos permisos)
   * Asistente de creación de clave mejorado
   * Repara contactos perdidos después de la sincronización

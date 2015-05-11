@@ -26,7 +26,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.AppCompatSpinner;
-import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,10 +41,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * Use AppCompatSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
@@ -164,14 +160,14 @@ public abstract class KeySpinner extends AppCompatSpinner implements LoaderManag
 
                     boolean duplicate = cursor.getLong(mIndexDuplicate) > 0;
                     if (duplicate) {
-                        Date creationDate = new Date(cursor.getLong(mIndexCreationDate) * 1000);
-                        Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                        creationCal.setTime(creationDate);
-                        // convert from UTC to time zone of device
-                        creationCal.setTimeZone(TimeZone.getDefault());
+                        String dateTime = DateUtils.formatDateTime(context,
+                                cursor.getLong(mIndexCreationDate) * 1000,
+                                DateUtils.FORMAT_SHOW_DATE
+                                        | DateUtils.FORMAT_SHOW_TIME
+                                        | DateUtils.FORMAT_SHOW_YEAR
+                                        | DateUtils.FORMAT_ABBREV_MONTH);
 
-                        vDuplicate.setText(context.getString(R.string.label_creation) + ": "
-                                + DateFormat.getDateFormat(context).format(creationCal.getTime()));
+                        vDuplicate.setText(context.getString(R.string.label_key_created, dateTime));
                         vDuplicate.setVisibility(View.VISIBLE);
                     } else {
                         vDuplicate.setVisibility(View.GONE);

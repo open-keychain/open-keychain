@@ -50,8 +50,6 @@ public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
     // view
-    private LinearLayout mValidLayout;
-    private LinearLayout mInvalidLayout;
     private TextView mText;
 
     // model
@@ -78,18 +76,7 @@ public class DecryptTextFragment extends DecryptFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
-        mValidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_valid);
-        mInvalidLayout = (LinearLayout) view.findViewById(R.id.decrypt_text_invalid);
         mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
-
-        Button vInvalidButton = (Button) view.findViewById(R.id.decrypt_text_invalid_button);
-        vInvalidButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mInvalidLayout.setVisibility(View.GONE);
-                mValidLayout.setVisibility(View.VISIBLE);
-            }
-        });
 
         return view;
     }
@@ -203,7 +190,6 @@ public class DecryptTextFragment extends DecryptFragment {
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
                     if (pgpResult.success()) {
-
                         byte[] decryptedMessage = returnData
                                 .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
                         String displayMessage;
@@ -219,15 +205,12 @@ public class DecryptTextFragment extends DecryptFragment {
                         }
                         mText.setText(displayMessage);
 
-                        pgpResult.createNotify(getActivity()).show();
-
                         // display signature result in activity
                         loadVerifyResult(pgpResult);
-
                     } else {
-                        pgpResult.createNotify(getActivity()).show();
                         // TODO: show also invalid layout with different text?
                     }
+                    pgpResult.createNotify(getActivity()).show(DecryptTextFragment.this);
                 }
             }
         };
@@ -244,18 +227,8 @@ public class DecryptTextFragment extends DecryptFragment {
     }
 
     @Override
-    protected void onVerifyLoaded(boolean verified) {
-
-        mShowMenuOptions = verified;
+    protected void onVerifyLoaded(boolean hideErrorOverlay) {
+        mShowMenuOptions = hideErrorOverlay;
         getActivity().supportInvalidateOptionsMenu();
-
-        if (verified) {
-            mInvalidLayout.setVisibility(View.GONE);
-            mValidLayout.setVisibility(View.VISIBLE);
-        } else {
-            mInvalidLayout.setVisibility(View.VISIBLE);
-            mValidLayout.setVisibility(View.GONE);
-        }
-
     }
 }

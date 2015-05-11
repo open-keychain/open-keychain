@@ -1,6 +1,6 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-## 3.2beta2
+## 3.2
 
   * マテリアルデザイン
   * QRスキャナの統合 (新しいパーミッションを必要とします)
@@ -47,13 +47,13 @@
 ## 3.0
 
   * Yubikeyでの署名生成と復号化のフルサポート
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
+  * インストールできるAPIの互換性のあるアプリをアプリ内リストで提示します
+  * 復号化画面を新しいデザインに
+  * 鍵のインポートで沢山の修正、また鍵のストリップでも修正
+  * 鍵の認証フラグの表示と設定
+  * カスタムした鍵の生成のユーザーインタフェース
+  * ユーザーID破棄証明の修正
+  * 新しいクラウド検索 (古典的な keyserverと keybase.io から検索します)
   * OpenKeychain内で鍵をストリップするのをサポートしました
 
 
@@ -115,155 +115,155 @@ Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Catha
 ## 2.6
 
   * 鍵証明 (ありがとうVincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
-  * Fix share-functionality from other apps
+  * GnuPGの部分秘密鍵のサポート (ありがとうVincent Breitmoser)
+  * 新しいデザインでの署名の検証
+  * カスタムの鍵長 (ありがとうGreg Witczak)
+  * 他のアプリからの共有ファンクションの修正
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * 対称暗号化PGPメッセージ/ファイルの復号化を修正
+  * 鍵編集画面のリファクタ (ありがとうAsh Hughes)
+  * 暗号化/復号化画面を新しいモダンなデザインに
+  * OpenPGP API バージョン 3 (複数APIアカウント, 内部修正,鍵検索)
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+このリリースにおいて適用したリッチでバグのない機能を作ってくれたGoogle Summer of Code 2014の参加者たちに感謝を!
+また、以下の人達(アルファベット順)の作ってくれたいくつもの小さなパッチや相当数のパッチにも:
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
-  * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * 新しい統合キーリスト
+  * 鍵指紋のカラー化
+  * 鍵サーバのポート設定のサポート
+  * 弱い鍵の生成が可能だったのを無効化
+  * さらなるAPIでの内部動作
+  * ユーザーIDの証明
+  * 鍵サーバへの要求をマシンリーダブル出力を基盤にした
+  * タブレットでのナビゲーションドロワーのロック
+  * 鍵の生成でのメールについての提案
+  * 公開鍵リスト内での検索
+  * そしてさらなる改善と修正...
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * 古いバージョンからのアップデートでクラッシュすることに対するホットフィックス
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
-  * Fix crash and empty lists when coming back from signing screen
-  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-  * Fix upload of key from signing screen
+  * 秘密鍵のエクスポート時における必要でない公開鍵のエクスポートの削除 (ありがとうAsh Hughes)
+  * 鍵の期限日時設定の修正 (ありがとうAsh Hughes)
+  * 鍵編集時のさらなる内部修正 (ありがとうAsh Hughes)
+  * インポート画面から直接鍵サーバへ要求するようにした
+  * Android 2.2から3.0でのレイアウトとダイアログスタイルの修正
+  * 空ユーザIDの鍵でのクラッシュ修正
+  * 署名画面から戻ってきたときにリストが空だとクラッシュするのを修正
+  * Bouncy Castle (cryptography library) を1.47 から 1.50アップデートおよびソースからのビルド
+  * 署名画面からの鍵のアップロード修正
 
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
-  * New public key view
-  * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * ナビゲーションドロワー付きの新しいデザイン
+  * 新しい公開鍵リストデザイン
+  * 新しい公開鍵ビュー
+  * 鍵のインポート時のバグ修正
+  * 鍵のクロス証明 (ありがとうAsh Hughes)
+  * 適切な UTF-8 パスワード処理 (ありがとうAsh Hughes)
+  * 新しい言語での最初のバージョン  (ありがとうTransifexの貢献者達)
+  * QRコードによる鍵共有の修正と改善
+  * APIでのパッケージ署名検証
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  * APIアップデート、K-9 Mail統合準備
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
-  * PRNG bug fix by Google
+  * たくさんのバグ修正
+  * 開発者向け新API
+  * Googleによる擬似乱数生成器バグの修正
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
-  * New AIDL API
+  * 再デザイン完了
+  * QRコード、NFCビームでの公開鍵共有
+  * 鍵への署名
+  * 鍵サーバへアップロード
+  * インポート問題修正
+  * 新しいAIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
-  * App2sd
-  * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * 鍵サーバの基本サポート
+  * App2SD
+  * パスフレーズのキャッシュ時間についての選択肢追加: 1,2,4,8時間
+  * 翻訳: ノルウェー語 (ありがとう、Sander Danielsen)、中国語 (ありがとう、Zhang Fredrick) 追加
+  * バグ修正
+  * 最適化
 
 
 ## 1.0.7
 
-  * Fixed problem with signature verification of texts with trailing newline
-  * More options for passphrase cache time to live (20, 40, 60 mins)
+  * 改行を含まないテキストの署名検証問題の修正
+  * パスフレーズのキャッシュ生存時間 (20,40,60分) のオプション追加
 
 
 ## 1.0.6
 
-  * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
-  * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Froyo でのアカウント追加時クラッシュの修正
+  * セキュアファイル削除
+  * 鍵ファイルインポート後の削除オプション
+  * ストリーム暗号化/復号化 (ギャラリーなど)
+  * 新しいオプション (言語、強制V3署名)
+  * インタフェース変更
+  * バグ修正
 
 
 ## 1.0.5
 
-  * German and Italian translation
-  * Much smaller package, due to reduced BC sources
-  * New preferences GUI
-  * Layout adjustment for localization
-  * Signature bugfix
+  * ドイツ語およびイタリア語翻訳追加
+  * BCソースが重複してしまっていたことによる、より小さいパッケージ化
+  * 新しい設定GUI
+  * ローカライズでのレイアウトを適合化
+  * 署名バグ修正
 
 
 ## 1.0.4
 
-  * Fixed another crash caused by some SDK bug with query builder
+  * クエリービルダーによるSDKのいくつかのバグによるクラッシュの修正
 
 
 ## 1.0.3
 
-  * Fixed crashes during encryption/signing and possibly key export
+  * 鍵エクスポートできる時と暗号化/署名中のクラッシュ修正
 
 
 ## 1.0.2
 
-  * Filterable key lists
-  * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-  * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
+  * 鍵リストのフィルタ可能化
+  * 暗号化鍵の事前選択のよりスマートな実装
+  * VIEWおよびSENDについて新しいインテントのハンドリング、ファイルマネージャ外のファイルを暗号化/復号化するのを受け付けるようになる。
+  * K-9 Mailにおける修正と追加機能 (鍵事前選択)、新しいベータビルド提供
 
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * 1.0.0で壊れたGmailアカウントリストアップを再度修正
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  * K-9 Mail 統合、K-9 MailでのAPG サポートのベータビルド
+  * (ASTROを含む)ファイルマネージャのさらなるサポート
+  * スロベニア語翻訳追加
+  * より早くてメモリ使用量の少ない新しいデータベース
+  * 他のアプリでのインテントおよびコンテンツプロバイダの定義
+  * バグ修正

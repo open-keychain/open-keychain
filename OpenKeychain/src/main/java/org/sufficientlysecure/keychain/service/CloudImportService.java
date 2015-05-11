@@ -50,18 +50,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CloudImportService extends Service implements Progressable {
 
-    //required as extras from intent
+    // required as extras from intent
     public static final String EXTRA_MESSENGER = "messenger";
     public static final String EXTRA_DATA = "data";
 
-    //required by data bundle
+    // required by data bundle
     public static final String IMPORT_KEY_LIST = "import_key_list";
     public static final String IMPORT_KEY_SERVER = "import_key_server";
 
     // indicates a request to cancel the import
     public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
 
-    //tells the spawned threads whether the user has requested a cancel
+    // tells the spawned threads whether the user has requested a cancel
     private static AtomicBoolean mActionCancelled = new AtomicBoolean(false);
 
     @Override
@@ -86,7 +86,7 @@ public class CloudImportService extends Service implements Progressable {
 
         public KeyImportAccumulator(int totalKeys) {
             mTotalKeys = totalKeys;
-            //ignore updates from ImportExportOperation for now
+            // ignore updates from ImportExportOperation for now
             mImportProgressable = new Progressable() {
                 @Override
                 public void setProgress(String message, int current, int total) {
@@ -131,20 +131,17 @@ public class CloudImportService extends Service implements Progressable {
             mSecret += result.mSecret;
 
             long[] masterKeyIds = result.getImportedMasterKeyIds();
-            for (int i = 0; i < masterKeyIds.length; i++) {
-                mImportedMasterKeyIds.add(masterKeyIds[i]);
+            for (long masterKeyId : masterKeyIds) {
+                mImportedMasterKeyIds.add(masterKeyId);
             }
 
             // if any key import has been cancelled, set result type to cancelled
             // resultType is added to in getConsolidatedKayImport to account for remaining factors
             mResultType |= result.getResult() & ImportKeyResult.RESULT_CANCELLED;
-
         }
 
         /**
          * returns accumulated result of all imports so far
-         *
-         * @return
          */
         public ImportKeyResult getConsolidatedImportKeyResult() {
 
@@ -205,7 +202,7 @@ public class CloudImportService extends Service implements Progressable {
         Bundle data = extras.getBundle(EXTRA_DATA);
 
         final String keyServer = data.getString(IMPORT_KEY_SERVER);
-        //keyList being null (in case key list to be reaad from cache) is checked by importKeys
+        // keyList being null (in case key list to be reaad from cache) is checked by importKeys
         final ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
         // Adding keys to the ThreadPoolExecutor takes time, we don't want to block the main thread
@@ -225,7 +222,7 @@ public class CloudImportService extends Service implements Progressable {
                 new ParcelableFileCache<>(this, "key_import.pcl");
         int totKeys = 0;
         Iterator<ParcelableKeyRing> keyListIterator = null;
-        //either keyList or cache must be null, no guarantees otherwise
+        // either keyList or cache must be null, no guarantees otherwise
         if (keyList == null) {//export from cache, copied from ImportExportOperation.importKeyRings
 
             try {
