@@ -457,7 +457,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
                 long timer = System.currentTimeMillis();
-                LinkedVerifyResult result = mLinkedResource.verify(mFingerprint);
+                LinkedVerifyResult result = mLinkedResource.verify(getActivity(), mFingerprint);
 
                 // ux flow: this operation should take at last a second
                 timer = System.currentTimeMillis() -timer;

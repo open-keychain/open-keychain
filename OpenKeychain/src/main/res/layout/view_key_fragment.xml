@@ -91,6 +91,7 @@
                     android:paddingRight="8dp"
                     android:background="?android:selectableItemBackground"
                     android:visibility="gone"
+                    tools:visibility="visible"
                     />
 
             </LinearLayout>

@@ -70,7 +70,8 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
     protected static LinkedTokenResource fromUri (URI uri) {
 
-        if (!"openpgpid+token".equals(uri.getScheme())) {
+        if (!"openpgpid+token".equals(uri.getScheme())
+                && !"openpgpid+cookie".equals(uri.getScheme())) {
             Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
             return null;
         }
