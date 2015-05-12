@@ -47,7 +47,7 @@ public class UriAttribute {
                 return new UriAttribute(uri);
             }
 
-            return new LinkedIdentity(uri, res);
+            return new LinkedAttribute(uri, res);
 
         } catch (IllegalArgumentException e) {
             Log.e(Constants.TAG, "error parsing uri in (suspected) linked id packet");
@@ -69,7 +69,7 @@ public class UriAttribute {
     }
 
     public String getDisplayTitle(Context context) {
-        return "unknown";
+        return "Unknown Identity";
     }
 
     public String getDisplayComment(Context context) {

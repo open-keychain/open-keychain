@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
-import org.sufficientlysecure.keychain.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -147,7 +147,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     int certStatus = cursor.getInt(UserIdsAdapter.INDEX_VERIFIED);
 
                     byte[] data = cursor.getBlob(UserIdsAdapter.INDEX_ATTRIBUTE_DATA);
-                    UriAttribute linkedId = LinkedIdentity.fromAttributeData(data);
+                    UriAttribute linkedId = LinkedAttribute.fromAttributeData(data);
 
                     loadIdentity(linkedId, certStatus);
 
@@ -189,8 +189,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private void loadIdentity(UriAttribute linkedId, int certStatus) {
         mLinkedId = linkedId;
 
-        if (mLinkedId instanceof LinkedIdentity) {
-            LinkedResource res = ((LinkedIdentity) mLinkedId).mResource;
+        if (mLinkedId instanceof LinkedAttribute) {
+            LinkedResource res = ((LinkedAttribute) mLinkedId).mResource;
             mLinkedResource = (LinkedTokenResource) res;
         }
 

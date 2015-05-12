@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -86,7 +86,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
             @Override
             public boolean isVisible(Cursor cursor) {
                 UriAttribute id = getItemAtPosition(cursor);
-                return id instanceof LinkedIdentity;
+                return id instanceof LinkedAttribute;
             }
         };
 
@@ -150,7 +150,7 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
         try {
             byte[] data = cursor.getBlob(INDEX_ATTRIBUTE_DATA);
-            ret = LinkedIdentity.fromAttributeData(data);
+            ret = LinkedAttribute.fromAttributeData(data);
             mLinkedIdentityCache.put(rank, ret);
             return ret;
         } catch (IOException e) {

@@ -21,7 +21,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
-import org.sufficientlysecure.keychain.linked.LinkedIdentity;
+import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
@@ -221,7 +221,7 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
                 new SaveKeyringParcel(mLinkedIdWizard.mMasterKeyId, mLinkedIdWizard.mFingerprint);
 
         WrappedUserAttribute ua =
-                LinkedIdentity.fromResource(mVerifiedResource).toUserAttribute();
+                LinkedAttribute.fromResource(mVerifiedResource).toUserAttribute();
 
         skp.mAddUserAttribute.add(ua);
 

@@ -5,11 +5,11 @@ import java.net.URI;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
 
-public class LinkedIdentity extends UriAttribute {
+public class LinkedAttribute extends UriAttribute {
 
     public final LinkedResource mResource;
 
-    protected LinkedIdentity(URI uri, LinkedResource resource) {
+    protected LinkedAttribute(URI uri, LinkedResource resource) {
         super(uri);
         if (resource == null) {
             throw new AssertionError("resource must not be null in a LinkedIdentity!");
