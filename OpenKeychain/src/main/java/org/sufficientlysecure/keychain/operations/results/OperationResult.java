@@ -736,6 +736,11 @@ public abstract class OperationResult implements Parcelable {
         MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
         MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
         MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success),
+
+        // NFC keytocard
+        MSG_K2C_ERROR_BAD_ALGO(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_algo),
+        MSG_K2C_ERROR_BAD_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_size),
+        MSG_K2C_ERROR_BAD_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_stripped),
         ;
 
         public final int mMsgId;
