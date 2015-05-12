@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
+import android.os.Parcel;
+
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class NfcKeyToCardResult extends InputPendingResult {
@@ -27,4 +29,23 @@ public class NfcKeyToCardResult extends InputPendingResult {
     public NfcKeyToCardResult(OperationLog log, RequiredInputParcel requiredInput) {
         super(log, requiredInput);
     }
+
+    public NfcKeyToCardResult(Parcel source) {
+        super(source);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+    }
+
+    public static Creator<NfcKeyToCardResult> CREATOR = new Creator<NfcKeyToCardResult>() {
+        public NfcKeyToCardResult createFromParcel(final Parcel source) {
+            return new NfcKeyToCardResult(source);
+        }
+
+        public NfcKeyToCardResult[] newArray(final int size) {
+            return new NfcKeyToCardResult[size];
+        }
+    };
 }

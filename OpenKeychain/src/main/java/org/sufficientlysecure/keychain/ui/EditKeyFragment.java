@@ -36,14 +36,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -430,35 +428,6 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         break;
                     }
                     case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
-                        // Three checks to verify that this is a smart card compatible key:
-
-                        // 1. Key algorithm must be RSA
-                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
-                        if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
-                            algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
-                            algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_algo,
-                                    Notify.Style.ERROR).show();
-                            return;
-                        }
-
-                        // 2. Key size must be 2048
-                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_size,
-                                    Notify.Style.ERROR).show();
-                            return;
-                        }
-
-                        // 3. Secret key parts must be available
-                        CanonicalizedSecretKey.SecretKeyType type =
-                                mSubkeysAdapter.getSecretKeyType(position);
-                        if (type == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD ||
-                                type == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_nfc_stripped,
-                                    Notify.Style.ERROR).show();
-                            return;
-                        }
-
                         SubkeyChange change;
                         change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
@@ -480,7 +449,15 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                                 ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
                             public void handleMessage(Message message) {
                                 super.handleMessage(message);
-                                EditKeyFragment.this.handlePendingMessage(message);
+                                if (EditKeyFragment.this.handlePendingMessage(message)) {
+                                    return;
+                                }
+                                Bundle data = message.getData();
+                                OperationResult result = data.getParcelable(OperationResult.EXTRA_RESULT);
+                                if (result.getResult() == OperationResult.RESULT_ERROR) {
+                                    result.createNotify(getActivity()).show();
+                                }
+
                             }
                         };
                         // Create a new Messenger for the communication back
