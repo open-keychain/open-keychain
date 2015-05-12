@@ -42,7 +42,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
     protected final HashMap<String,String> mParams;
 
     public static Pattern magicPattern =
-            Pattern.compile("\\[Verifying my (?:Open)?PGP key: openpgp4fpr:([a-zA-Z0-9]+)]");
+            Pattern.compile("\\[Verifying my (?:Open|)?PGP key(?::|) openpgp4fpr:([a-zA-Z0-9]+)]");
 
     protected LinkedTokenResource(Set<String> flags, HashMap<String, String> params, URI uri) {
         mFlags = flags;
@@ -109,8 +109,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
     }
 
     protected static LinkedTokenResource findResourceType (Set<String> flags,
-            HashMap<String,String> params,
-            URI  subUri) {
+            HashMap<String,String> params, URI  subUri) {
 
         LinkedTokenResource res;
 
