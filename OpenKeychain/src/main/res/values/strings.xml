@@ -929,6 +929,8 @@
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to card in same operation that creates an on-card signature."</string>
+    <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
+    <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for smart card key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>

@@ -410,6 +410,10 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
+        // Ensure we don't have multiple keys for the same slot.
+        boolean hasSign = false;
+        boolean hasEncrypt = false;
+        boolean hasAuth = false;
         for(SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
             if (change.mMoveKeyToCard) {
                 // If this is a keytocard operation, see if it was completed: look for a hash
@@ -422,6 +426,38 @@ public class PgpKeyOperation {
                 if (serialNumber != null) {
                     change.mMoveKeyToCard = false;
                     change.mDummyDivert = serialNumber;
+                }
+            }
+
+            if (change.mMoveKeyToCard) {
+                // Pending keytocard operation. Need to make sure that we don't have multiple
+                // subkeys pending for the same slot.
+                CanonicalizedSecretKey wsK = wsKR.getSecretKey(change.mKeyId);
+
+                if ((wsK.canSign() || wsK.canCertify())) {
+                    if (hasSign) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    } else {
+                        hasSign = true;
+                    }
+                } else if ((wsK.canEncrypt())) {
+                    if (hasEncrypt) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    } else {
+                        hasEncrypt = true;
+                    }
+                } else if ((wsK.canAuthenticate())) {
+                    if (hasAuth) {
+                        log.add(LogType.MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT, indent + 1);
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    } else {
+                        hasAuth = true;
+                    }
+                } else {
+                    log.add(LogType.MSG_MF_ERROR_INVALID_FLAGS_FOR_KEYTOCARD, indent + 1);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
             }
         }
