@@ -95,7 +95,8 @@ public class SaveKeyringParcel implements Parcelable {
         }
 
         for (SubkeyChange change : mChangeSubKeys) {
-            if (change.mRecertify || change.mFlags != null || change.mExpiry != null) {
+            if (change.mRecertify || change.mFlags != null || change.mExpiry != null ||
+                    (change.mDummyDivert != null && change.mDummyDivert.length == 0)) {
                 return false;
             }
         }

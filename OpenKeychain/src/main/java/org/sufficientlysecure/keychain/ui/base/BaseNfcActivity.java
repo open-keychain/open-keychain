@@ -60,11 +60,9 @@ import org.sufficientlysecure.keychain.util.Preferences;
 public abstract class BaseNfcActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PIN = 1;
-    public static final int REQUEST_CODE_PASSPHRASE = 2;
 
     protected Passphrase mPin;
     protected Passphrase mAdminPin;
-    protected Passphrase mPassphrase; // For key export
     protected boolean mPw1ValidForMultipleSignatures;
     protected boolean mPw1ValidatedForSignature;
     protected boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
@@ -136,15 +134,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
         enableNfcForegroundDispatch();
     }
 
-    protected void obtainKeyExportPassphrase(RequiredInputParcel requiredInput) {
-
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                RequiredInputParcel.createRequiredPassphrase(requiredInput));
-        startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
-
-    }
-
     protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
         Preferences prefs = Preferences.getPreferences(this);
@@ -175,17 +164,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                 mPin = input.getPassphrase();
-                break;
-            }
-
-            case REQUEST_CODE_PASSPHRASE: {
-                if (resultCode != Activity.RESULT_OK) {
-                    setResult(resultCode);
-                    finish();
-                    return;
-                }
-                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mPassphrase = input.getPassphrase();
                 break;
             }
 
@@ -627,7 +605,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    public void nfcPutKey(int slot, CanonicalizedSecretKey secretKey)
+    public void nfcPutKey(int slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
             throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
@@ -635,7 +613,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         RSAPrivateCrtKey crtSecretKey = null;
         try {
-            secretKey.unlock(mPassphrase);
+            secretKey.unlock(passphrase);
             crtSecretKey = secretKey.getCrtSecretKey();
         } catch (PgpGeneralException e) {
             throw new IOException(e.getMessage());

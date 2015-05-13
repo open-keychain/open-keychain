@@ -179,13 +179,23 @@ public class SubkeysAdapter extends CursorAdapter {
                 ? mSaveKeyringParcel.getSubkeyChange(keyId)
                 : null;
 
-        if (change != null && change.mDummyStrip) {
-            algorithmStr.append(", ");
-            final SpannableString boldStripped = new SpannableString(
-                    context.getString(R.string.key_stripped)
-            );
-            boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            algorithmStr.append(boldStripped);
+        if (change != null && (change.mDummyStrip || change.mDummyDivert != null)) {
+            if (change.mDummyStrip) {
+                algorithmStr.append(", ");
+                final SpannableString boldStripped = new SpannableString(
+                        context.getString(R.string.key_stripped)
+                );
+                boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                algorithmStr.append(boldStripped);
+            }
+            if (change.mDummyDivert != null) {
+                algorithmStr.append(", ");
+                final SpannableString boldDivert = new SpannableString(
+                        context.getString(R.string.key_divert)
+                );
+                boldDivert.setSpan(new StyleSpan(Typeface.BOLD), 0, boldDivert.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                algorithmStr.append(boldDivert);
+            }
         } else {
             switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
                 case GNU_DUMMY:

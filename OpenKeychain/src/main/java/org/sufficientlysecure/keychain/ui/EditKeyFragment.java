@@ -35,6 +35,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -418,6 +420,13 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
+                        CanonicalizedSecretKey.SecretKeyType secretKeyType =
+                                mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
+                            // Key is already stripped; this is a no-op.
+                            break;
+                        }
+
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
                             mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
@@ -425,47 +434,39 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         }
                         // toggle
                         change.mDummyStrip = !change.mDummyStrip;
+                        if (change.mDummyStrip && change.mDummyDivert != null) {
+                            // User had chosen to divert key, but now wants to strip it instead.
+                            change.mDummyDivert = null;
+                        }
                         break;
                     }
                     case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
+                        CanonicalizedSecretKey.SecretKeyType secretKeyType =
+                                mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD ||
+                            secretKeyType == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
+                            Toast.makeText(EditKeyFragment.this.getActivity(),
+                                    R.string.edit_key_error_bad_nfc_stripped, Toast.LENGTH_SHORT)
+                                    .show();
+                            break;
+                        }
+
                         SubkeyChange change;
                         change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
                             mSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, new byte[0])
+                                    new SubkeyChange(keyId, false, null)
                             );
+                            change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         }
-                        final Bundle data = new Bundle();
-                        data.putLong(KeychainIntentService.NFC_KEYTOCARD_SUBKEY_ID, keyId);
-                        Intent intent = new Intent(EditKeyFragment.this.getActivity(),
-                                KeychainIntentService.class);
-                        intent.setAction(KeychainIntentService.ACTION_NFC_KEYTOCARD);
-                        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-                        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                                getActivity(),
-                                getString(R.string.progress_exporting),
-                                ProgressDialog.STYLE_HORIZONTAL,
-                                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
-                            public void handleMessage(Message message) {
-                                super.handleMessage(message);
-                                if (EditKeyFragment.this.handlePendingMessage(message)) {
-                                    return;
-                                }
-                                Bundle data = message.getData();
-                                OperationResult result = data.getParcelable(OperationResult.EXTRA_RESULT);
-                                if (result.getResult() == OperationResult.RESULT_ERROR) {
-                                    result.createNotify(getActivity()).show();
-                                }
-
-                            }
-                        };
-                        // Create a new Messenger for the communication back
-                        Messenger messenger = new Messenger(serviceHandler);
-                        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-                        serviceHandler.showProgressDialog(getActivity());
-
-                        getActivity().startService(intent);
+                        // toggle
+                        if (change.mDummyDivert == null) {
+                            change.mDummyDivert = new byte[0];
+                            // If user had chosen to strip key, we cancel that action now.
+                            change.mDummyStrip = false;
+                        } else {
+                            change.mDummyDivert = null;
+                        }
                         break;
                     }
                 }
@@ -636,18 +637,6 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         // Send all information needed to service to import key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
-
-        for (SubkeyChange change : mSaveKeyringParcel.mChangeSubKeys) {
-            if(change.mDummyDivert != null) {
-                // Convert long key ID to byte buffer
-                byte[] subKeyId = new byte[8];
-                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
-                buf.putLong(change.mKeyId).rewind();
-
-                byte[] cardSerial = cryptoInput.getCryptoData().get(buf);
-                change.mDummyDivert = cardSerial;
-            }
-        }
 
         // fill values for this action
         Bundle data = new Bundle();

@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -45,8 +46,10 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -59,6 +62,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcKeyToCardOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -68,6 +72,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -356,10 +361,16 @@ public class PgpKeyOperation {
      *
      */
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
-            CryptoInputParcel cryptoInput,
-            SaveKeyringParcel saveParcel) {
+                                                CryptoInputParcel cryptoInput,
+                                                SaveKeyringParcel saveParcel) {
+        return modifySecretKeyRing(wsKR, cryptoInput, saveParcel, new OperationLog());
+    }
 
-        OperationLog log = new OperationLog();
+    public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
+            CryptoInputParcel cryptoInput,
+            SaveKeyringParcel saveParcel,
+            OperationLog log) {
+
         int indent = 0;
 
         /*
@@ -400,6 +411,21 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
+        for(SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
+            if (change.mDummyDivert != null && change.mDummyDivert.length == 0) {
+                // If this is a keytocard operation, see if it was completed: look for a hash
+                // matching the given subkey ID in cryptoData.
+                byte[] subKeyId = new byte[8];
+                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
+                buf.putLong(change.mKeyId).rewind();
+
+                byte[] serialNumber = cryptoInput.getCryptoData().get(buf);
+                if (serialNumber != null) {
+                    change.mDummyDivert = serialNumber;
+                }
+            }
+        }
+
         if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
             return internalRestricted(sKR, saveParcel, log);
@@ -434,6 +460,8 @@ public class PgpKeyOperation {
 
         NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
                 cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
+                masterSecretKey.getKeyID());
+        NfcKeyToCardOperationsBuilder nfcKeyToCardOps = new NfcKeyToCardOperationsBuilder(
                 masterSecretKey.getKeyID());
 
         progress(R.string.progress_modify, 0);
@@ -743,21 +771,36 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
-                if (change.mDummyStrip || change.mDummyDivert != null) {
+                if (change.mDummyStrip) {
                     // IT'S DANGEROUS~
                     // no really, it is. this operation irrevocably removes the private key data from the key
-                    if (change.mDummyStrip) {
-                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
-                    } else {
-                        // the serial number must be 16 bytes in length
-                        if (change.mDummyDivert.length != 16) {
-                            log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
-                                    indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
-                            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
-                        }
-                    }
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+                } else if (change.mDummyDivert != null) {
+                    if (change.mDummyDivert.length == 0) {
+                        // If serial number is 0 length, we're moving the key to a card.
+                        if (checkSmartCardCompatibility(sKey, log, indent + 1)) {
+                            log.add(LogType.MSG_MF_KEYTOCARD_START, indent + 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                            nfcKeyToCardOps.addSubkey(change.mKeyId);
+                        } else {
+                            return new PgpEditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                        }
+                    } else if (change.mDummyDivert.length == 16) {
+                        // If serial number is 16 bytes long, we're associating the key with a card.
+                        log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
+                                KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
+                                Hex.toHexString(change.mDummyDivert, 8, 6));
+                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                        sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+                    } else {
+                        log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
+                                indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                        return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                    }
                 }
+
+
 
                 // This doesn't concern us any further
                 if (!change.mRecertify && (change.mExpiry == null && change.mFlags == null)) {
@@ -980,9 +1023,19 @@ public class PgpKeyOperation {
 
         progress(R.string.progress_done, 100);
 
+        if (!nfcSignOps.isEmpty() && !nfcKeyToCardOps.isEmpty()) {
+            log.add(LogType.MSG_MF_ERROR_CONFLICTING_NFC_COMMANDS, indent+1);
+            return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+        }
+
         if (!nfcSignOps.isEmpty()) {
             log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
             return new PgpEditKeyResult(log, nfcSignOps.build());
+        }
+
+        if (!nfcKeyToCardOps.isEmpty()) {
+            log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
+            return new PgpEditKeyResult(log, nfcKeyToCardOps.build());
         }
 
         log.add(LogType.MSG_MF_SUCCESS, indent);
@@ -1042,6 +1095,9 @@ public class PgpKeyOperation {
                                 indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
+                    log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
+                            KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
+                            Hex.toHexString(change.mDummyDivert, 8, 6));
                     sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
                 }
                 sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
@@ -1481,4 +1537,29 @@ public class PgpKeyOperation {
                 && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD;
     }
 
+    private static boolean checkSmartCardCompatibility(PGPSecretKey key, OperationLog log, int indent) {
+        PGPPublicKey publicKey = key.getPublicKey();
+        int algorithm = publicKey.getAlgorithm();
+        if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
+                algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
+                algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
+            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_ALGO, indent + 1);
+            return true;
+        }
+
+        // Key size must be 2048
+        int keySize = publicKey.getBitStrength();
+        if (keySize != 2048) {
+            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_SIZE, indent + 1);
+            return false;
+        }
+
+        // Secret key parts must be available
+        if (isDivertToCard(key) || isDummy(key)) {
+            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_STRIPPED, indent + 1);
+            return false;
+        }
+
+        return true;
+    }
 }
