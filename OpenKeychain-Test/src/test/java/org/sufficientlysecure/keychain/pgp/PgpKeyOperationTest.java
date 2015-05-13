@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockPar
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.support.KeyringBuilder;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -95,7 +96,7 @@ public class PgpKeyOperationTest {
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.RSA, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -808,6 +809,68 @@ public class PgpKeyOperationTest {
             };
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, serial));
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
+            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
+            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
+            Assert.assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
+                    S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
+            Assert.assertArrayEquals("new packet should have correct serial number as iv",
+                    serial, ((SecretKeyPacket) p).getIV());
+
+        }
+
+    }
+
+    @Test
+    public void testKeyToCard() throws Exception {
+
+        UncachedKeyRing modified;
+
+        { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-1024 key
+            long keyId = KeyringTestingHelper.getSubkeyId(ring, 0);
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+
+            assertModifyFailure("keytocard operation should fail on invalid key size", ring,
+                    parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_SIZE);
+        }
+
+        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
+            long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+
+            assertModifyFailure("keytocard operation should fail on invalid key algorithm", ring,
+                    parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
+        }
+
+        { // keytocard should return a pending NFC_KEYTOCARD result when presented with the RSA-2048
+          // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
+            long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
+
+            CanonicalizedSecretKeyRing secretRing =
+                    new CanonicalizedSecretKeyRing(ring.getEncoded(), false, 0);
+            PgpKeyOperation op = new PgpKeyOperation(null);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
+            Assert.assertTrue("keytocard operation should be pending", result.isPending());
+            Assert.assertEquals("required input should be RequiredInputType.NFC_KEYTOCARD",
+                    result.getRequiredInputParcel().mType, RequiredInputType.NFC_KEYTOCARD);
+
+            // Create a cryptoInputParcel that matches what the NFCOperationActivity would return.
+            byte[] keyIdBytes = new byte[8];
+            ByteBuffer buf = ByteBuffer.wrap(keyIdBytes);
+            buf.putLong(keyId).rewind();
+            byte[] serial = new byte[] {
+                    0x6a, 0x6f, 0x6c, 0x6f, 0x73, 0x77, 0x61, 0x67,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            };
+            CryptoInputParcel inputParcel = new CryptoInputParcel();
+            inputParcel.addCryptoData(keyIdBytes, serial);
+
+            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, inputParcel);
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
