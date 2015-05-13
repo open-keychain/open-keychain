@@ -23,6 +23,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
@@ -59,9 +60,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
-        if (mRequiredInput.mType == RequiredInputParcel.RequiredInputType.NFC_KEYTOCARD) {
-            obtainKeyExportPassphrase(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
-        } else {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_KEYTOCARD) {
             obtainYubiKeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
         }
     }
@@ -99,38 +98,51 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     secretKeyRing = providerHelper.getCanonicalizedSecretKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getSubKeyId())
+                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
                     );
                 } catch (ProviderHelper.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to card operation.");
                 }
-                CanonicalizedSecretKey key = secretKeyRing.getSecretKey(mRequiredInput.getSubKeyId());
 
-                long keyGenerationTimestampMillis = key.getCreationTime().getTime();
-                long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
-                byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
-                byte[] cardSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
+                // Note: we're abusing mInputHashes to hold the subkey IDs we need to export.
+                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
+                    byte[] subkeyBytes = mRequiredInput.mInputHashes[i];
+                    ByteBuffer buf = ByteBuffer.wrap(subkeyBytes);
+                    long subkeyId = buf.getLong();
 
-                if (key.canSign() || key.canCertify()) {
-                    nfcPutKey(0xB6, key);
-                    nfcPutData(0xCE, timestampBytes);
-                    nfcPutData(0xC7, key.getFingerprint());
-                } else if (key.canEncrypt()) {
-                    nfcPutKey(0xB8, key);
-                    nfcPutData(0xCF, timestampBytes);
-                    nfcPutData(0xC8, key.getFingerprint());
-                } else if (key.canAuthenticate()) {
-                    nfcPutKey(0xA4, key);
-                    nfcPutData(0xD0, timestampBytes);
-                    nfcPutData(0xC9, key.getFingerprint());
-                } else {
-                    throw new IOException("Inappropriate key flags for smart card key.");
+                    CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
+
+                    long keyGenerationTimestampMillis = key.getCreationTime().getTime();
+                    long keyGenerationTimestamp = keyGenerationTimestampMillis / 1000;
+                    byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
+                    byte[] cardSerialNumber = Arrays.copyOf(nfcGetAid(), 16);
+
+                    Passphrase passphrase;
+                    try {
+                        passphrase = PassphraseCacheService.getCachedPassphrase(this,
+                                mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+                    } catch (PassphraseCacheService.KeyNotFoundException e) {
+                        throw new IOException("Unable to get cached passphrase!");
+                    }
+
+                    if (key.canSign() || key.canCertify()) {
+                        nfcPutKey(0xB6, key, passphrase);
+                        nfcPutData(0xCE, timestampBytes);
+                        nfcPutData(0xC7, key.getFingerprint());
+                    } else if (key.canEncrypt()) {
+                        nfcPutKey(0xB8, key, passphrase);
+                        nfcPutData(0xCF, timestampBytes);
+                        nfcPutData(0xC8, key.getFingerprint());
+                    } else if (key.canAuthenticate()) {
+                        nfcPutKey(0xA4, key, passphrase);
+                        nfcPutData(0xD0, timestampBytes);
+                        nfcPutData(0xC9, key.getFingerprint());
+                    } else {
+                        throw new IOException("Inappropriate key flags for smart card key.");
+                    }
+
+                    inputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
                 }
-
-                byte[] subKeyId = new byte[8];
-                ByteBuffer buf = ByteBuffer.wrap(subKeyId);
-                buf.putLong(mRequiredInput.getSubKeyId());
-                inputParcel.addCryptoData(subKeyId, cardSerialNumber);
             }
         }
 

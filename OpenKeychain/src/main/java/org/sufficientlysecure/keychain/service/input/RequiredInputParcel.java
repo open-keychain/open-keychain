@@ -1,13 +1,12 @@
 package org.sufficientlysecure.keychain.service.input;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import org.sufficientlysecure.keychain.Constants.key;
 
 
 public class RequiredInputParcel implements Parcelable {
@@ -85,11 +84,6 @@ public class RequiredInputParcel implements Parcelable {
     public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash, long subKeyId) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
                 new byte[][] { inputHash }, null, null, null, subKeyId);
-    }
-
-    public static RequiredInputParcel createNfcKeyToCardOperation(long masterKeyId, long subKeyId) {
-        return new RequiredInputParcel(RequiredInputType.NFC_KEYTOCARD, null, null, null,
-                masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
@@ -212,6 +206,48 @@ public class RequiredInputParcel implements Parcelable {
 
         public boolean isEmpty() {
             return mInputHashes.isEmpty();
+        }
+
+    }
+
+    public static class NfcKeyToCardOperationsBuilder {
+        ArrayList<byte[]> mSubkeysToExport = new ArrayList<>();
+        Long mMasterKeyId;
+
+        public NfcKeyToCardOperationsBuilder(Long masterKeyId) {
+            mMasterKeyId = masterKeyId;
+        }
+
+        public RequiredInputParcel build() {
+            byte[][] inputHashes = new byte[mSubkeysToExport.size()][];
+            mSubkeysToExport.toArray(inputHashes);
+            ByteBuffer buf = ByteBuffer.wrap(mSubkeysToExport.get(0));
+
+            // We need to pass in a subkey here...
+            return new RequiredInputParcel(RequiredInputType.NFC_KEYTOCARD,
+                    inputHashes, null, null, mMasterKeyId, buf.getLong());
+        }
+
+        public void addSubkey(long subkeyId) {
+            byte[] subKeyId = new byte[8];
+            ByteBuffer buf = ByteBuffer.wrap(subKeyId);
+            buf.putLong(subkeyId).rewind();
+            mSubkeysToExport.add(subKeyId);
+        }
+
+        public void addAll(RequiredInputParcel input) {
+            if (!mMasterKeyId.equals(input.mMasterKeyId)) {
+                throw new AssertionError("Master keys must match, this is a programming error!");
+            }
+            if (input.mType != RequiredInputType.NFC_KEYTOCARD) {
+                throw new AssertionError("Operation types must match, this is a programming error!");
+            }
+
+            Collections.addAll(mSubkeysToExport, input.mInputHashes);
+        }
+
+        public boolean isEmpty() {
+            return mSubkeysToExport.isEmpty();
         }
 
     }
