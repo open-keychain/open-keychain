@@ -164,18 +164,6 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
-        public SubkeyChange(long keyId, boolean dummyStrip, byte[] dummyDivert) {
-            this(keyId, null, null);
-
-            // these flags are mutually exclusive!
-            if (dummyStrip && dummyDivert != null) {
-                throw new AssertionError(
-                        "cannot set strip and divert flags at the same time - this is a bug!");
-            }
-            mDummyStrip = dummyStrip;
-            mDummyDivert = dummyDivert;
-        }
-
         public SubkeyChange(long keyId, boolean dummyStrip, boolean moveKeyToCard) {
             this(keyId, null, null);
 

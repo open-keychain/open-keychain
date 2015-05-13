@@ -736,7 +736,7 @@ public class PgpKeyOperationTest {
     public void testSubkeyStrip() throws Exception {
 
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -762,7 +762,7 @@ public class PgpKeyOperationTest {
     public void testMasterStrip() throws Exception {
 
         long keyId = ring.getMasterKeyId();
-        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+        parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
         applyModificationWithChecks(parcel, ring, onlyA, onlyB);
 
         Assert.assertEquals("one extra packet in original", 1, onlyA.size());
@@ -789,9 +789,9 @@ public class PgpKeyOperationTest {
         long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
         UncachedKeyRing modified;
 
-        { // we should be able to change the stripped/divert status of subkeys without passphrase
+        { // we should be able to change the stripped status of subkeys without passphrase
             parcel.reset();
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
             modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
             Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
@@ -800,26 +800,6 @@ public class PgpKeyOperationTest {
             Assert.assertEquals("new packet should have GNU_DUMMY protection mode stripped",
                     S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY, ((SecretKeyPacket) p).getS2K().getProtectionMode());
         }
-
-        { // and again, changing to divert-to-card
-            parcel.reset();
-            byte[] serial = new byte[] {
-                    0x6a, 0x6f, 0x6c, 0x6f, 0x73, 0x77, 0x61, 0x67,
-                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-            };
-            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, serial));
-            modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB, new CryptoInputParcel());
-            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
-            Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
-                    S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
-            Assert.assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
-                    S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
-            Assert.assertArrayEquals("new packet should have correct serial number as iv",
-                    serial, ((SecretKeyPacket) p).getIV());
-
-        }
-
     }
 
     @Test
