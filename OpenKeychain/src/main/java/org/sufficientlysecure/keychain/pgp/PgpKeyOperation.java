@@ -412,7 +412,7 @@ public class PgpKeyOperation {
         }
 
         for(SaveKeyringParcel.SubkeyChange change : saveParcel.mChangeSubKeys) {
-            if (change.mDummyDivert != null && change.mDummyDivert.length == 0) {
+            if (change.mMoveKeyToCard) {
                 // If this is a keytocard operation, see if it was completed: look for a hash
                 // matching the given subkey ID in cryptoData.
                 byte[] subKeyId = new byte[8];
@@ -421,6 +421,7 @@ public class PgpKeyOperation {
 
                 byte[] serialNumber = cryptoInput.getCryptoData().get(buf);
                 if (serialNumber != null) {
+                    change.mMoveKeyToCard = false;
                     change.mDummyDivert = serialNumber;
                 }
             }
@@ -776,28 +777,27 @@ public class PgpKeyOperation {
                     // no really, it is. this operation irrevocably removes the private key data from the key
                     sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey());
                     sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
-                } else if (change.mDummyDivert != null) {
-                    if (change.mDummyDivert.length == 0) {
-                        // If serial number is 0 length, we're moving the key to a card.
-                        if (checkSmartCardCompatibility(sKey, log, indent + 1)) {
-                            log.add(LogType.MSG_MF_KEYTOCARD_START, indent + 1,
-                                    KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
-                            nfcKeyToCardOps.addSubkey(change.mKeyId);
-                        } else {
-                            return new PgpEditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-                        }
-                    } else if (change.mDummyDivert.length == 16) {
-                        // If serial number is 16 bytes long, we're associating the key with a card.
-                        log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
-                                Hex.toHexString(change.mDummyDivert, 8, 6));
-                        sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
-                        sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
+                } else if (change.mMoveKeyToCard) {
+                    if (checkSmartCardCompatibility(sKey, log, indent + 1)) {
+                        log.add(LogType.MSG_MF_KEYTOCARD_START, indent + 1,
+                                KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
+                        nfcKeyToCardOps.addSubkey(change.mKeyId);
                     } else {
+                        // Appropriate log message already set by checkSmartCardCompatibility
+                        return new PgpEditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+                    }
+                } else if (change.mDummyDivert != null) {
+                    // NOTE: Does this code get executed? Or always handled in internalRestricted?
+                    if (change.mDummyDivert.length != 16) {
                         log.add(LogType.MSG_MF_ERROR_DIVERT_SERIAL,
                                 indent + 1, KeyFormattingUtils.convertKeyIdToHex(change.mKeyId));
                         return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                     }
+                    log.add(LogType.MSG_MF_KEYTOCARD_FINISH, indent + 1,
+                            KeyFormattingUtils.convertKeyIdToHex(change.mKeyId),
+                            Hex.toHexString(change.mDummyDivert, 8, 6));
+                    sKey = PGPSecretKey.constructGnuDummyKey(sKey.getPublicKey(), change.mDummyDivert);
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR, sKey);
                 }
 
 

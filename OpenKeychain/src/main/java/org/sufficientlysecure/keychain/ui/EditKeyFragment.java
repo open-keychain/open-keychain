@@ -429,14 +429,14 @@ public class EditKeyFragment extends CryptoOperationFragment implements
 
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
                             break;
                         }
                         // toggle
                         change.mDummyStrip = !change.mDummyStrip;
-                        if (change.mDummyStrip && change.mDummyDivert != null) {
+                        if (change.mDummyStrip && change.mMoveKeyToCard) {
                             // User had chosen to divert key, but now wants to strip it instead.
-                            change.mDummyDivert = null;
+                            change.mMoveKeyToCard = false;
                         }
                         break;
                     }
@@ -455,17 +455,15 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
                             mSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, null)
+                                    new SubkeyChange(keyId, false, true)
                             );
-                            change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                            break;
                         }
                         // toggle
-                        if (change.mDummyDivert == null) {
-                            change.mDummyDivert = new byte[0];
-                            // If user had chosen to strip key, we cancel that action now.
+                        change.mMoveKeyToCard = !change.mMoveKeyToCard;
+                        if (change.mMoveKeyToCard && change.mDummyStrip) {
+                            // User had chosen to strip key, but now wants to divert it.
                             change.mDummyStrip = false;
-                        } else {
-                            change.mDummyDivert = null;
                         }
                         break;
                     }
