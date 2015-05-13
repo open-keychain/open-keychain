@@ -495,6 +495,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
         MSG_MF_ERROR_CONFLICTING_NFC_COMMANDS(LogLevel.ERROR, R.string.msg_mf_error_conflicting_nfc_commands),
+        MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT(LogLevel.ERROR, R.string.msg_mf_error_duplicate_keytocard_for_slot),
+        MSG_MF_ERROR_INVALID_FLAGS_FOR_KEYTOCARD(LogLevel.ERROR, R.string.msg_mf_error_invalid_flags_for_keytocard),
         MSG_MF_ERROR_BAD_NFC_ALGO(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_algo),
         MSG_MF_ERROR_BAD_NFC_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_size),
         MSG_MF_ERROR_BAD_NFC_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_stripped),
