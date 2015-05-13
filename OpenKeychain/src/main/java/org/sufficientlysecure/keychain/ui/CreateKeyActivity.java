@@ -152,8 +152,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
             }
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Blank Smart Card / Yubikey Detected")
-                    .setMessage("Would you like to generate a smart card compatible key?")
+            builder.setTitle(R.string.first_time_blank_smartcard_title)
+                    .setMessage(R.string.first_time_blank_smartcard_message)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int button) {
