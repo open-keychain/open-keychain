@@ -104,7 +104,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     throw new IOException("Couldn't find subkey for key to card operation.");
                 }
 
-                // Note: we're abusing mInputHashes to hold the subkey IDs we need to export.
                 for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
                     byte[] subkeyBytes = mRequiredInput.mInputHashes[i];
                     ByteBuffer buf = ByteBuffer.wrap(subkeyBytes);
