@@ -495,6 +495,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
         MSG_MF_ERROR_CONFLICTING_NFC_COMMANDS(LogLevel.ERROR, R.string.msg_mf_error_conflicting_nfc_commands),
+        MSG_MF_ERROR_BAD_NFC_ALGO(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_algo),
+        MSG_MF_ERROR_BAD_NFC_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_size),
+        MSG_MF_ERROR_BAD_NFC_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_stripped),
         MSG_MF_MASTER (LogLevel.DEBUG, R.string.msg_mf_master),
         MSG_MF_NOTATION_PIN (LogLevel.DEBUG, R.string.msg_mf_notation_pin),
         MSG_MF_NOTATION_EMPTY (LogLevel.DEBUG, R.string.msg_mf_notation_empty),
@@ -739,11 +742,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
         MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
         MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success),
-
-        // NFC keytocard
-        MSG_K2C_ERROR_BAD_ALGO(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_algo),
-        MSG_K2C_ERROR_BAD_SIZE(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_size),
-        MSG_K2C_ERROR_BAD_STRIPPED(LogLevel.ERROR, R.string.edit_key_error_bad_nfc_stripped),
         ;
 
         public final int mMsgId;

@@ -329,7 +329,7 @@ public class PgpKeyOperation {
 
             subProgressPush(50, 100);
             CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), new Passphrase(""));
-            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log);
+            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log, indent);
 
         } catch (PGPException e) {
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -363,15 +363,14 @@ public class PgpKeyOperation {
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
                                                 CryptoInputParcel cryptoInput,
                                                 SaveKeyringParcel saveParcel) {
-        return modifySecretKeyRing(wsKR, cryptoInput, saveParcel, new OperationLog());
+        return modifySecretKeyRing(wsKR, cryptoInput, saveParcel, new OperationLog(), 0);
     }
 
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
             CryptoInputParcel cryptoInput,
             SaveKeyringParcel saveParcel,
-            OperationLog log) {
-
-        int indent = 0;
+            OperationLog log,
+            int indent) {
 
         /*
          * 1. Unlock private key
@@ -429,7 +428,7 @@ public class PgpKeyOperation {
 
         if (isDummy(masterSecretKey) || saveParcel.isRestrictedOnly()) {
             log.add(LogType.MSG_MF_RESTRICTED_MODE, indent);
-            return internalRestricted(sKR, saveParcel, log);
+            return internalRestricted(sKR, saveParcel, log, indent + 1);
         }
 
         // Do we require a passphrase? If so, pass it along
@@ -447,7 +446,7 @@ public class PgpKeyOperation {
         Date expiryTime = wsKR.getPublicKey().getExpiryTime();
         long masterKeyExpiry = expiryTime != null ? expiryTime.getTime() / 1000 : 0L;
 
-        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log);
+        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log, indent);
 
     }
 
@@ -455,9 +454,8 @@ public class PgpKeyOperation {
                                      int masterKeyFlags, long masterKeyExpiry,
                                      CryptoInputParcel cryptoInput,
                                      SaveKeyringParcel saveParcel,
-                                     OperationLog log) {
-
-        int indent = 1;
+                                     OperationLog log,
+                                     int indent) {
 
         NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
                 cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
@@ -1048,9 +1046,7 @@ public class PgpKeyOperation {
      * otherwise.
      */
     private PgpEditKeyResult internalRestricted(PGPSecretKeyRing sKR, SaveKeyringParcel saveParcel,
-                                                OperationLog log) {
-
-        int indent = 1;
+                                                OperationLog log, int indent) {
 
         progress(R.string.progress_modify, 0);
 
@@ -1543,20 +1539,20 @@ public class PgpKeyOperation {
         if (algorithm != PublicKeyAlgorithmTags.RSA_ENCRYPT &&
                 algorithm != PublicKeyAlgorithmTags.RSA_SIGN &&
                 algorithm != PublicKeyAlgorithmTags.RSA_GENERAL) {
-            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_ALGO, indent + 1);
-            return true;
+            log.add(LogType.MSG_MF_ERROR_BAD_NFC_ALGO, indent + 1);
+            return false;
         }
 
         // Key size must be 2048
         int keySize = publicKey.getBitStrength();
         if (keySize != 2048) {
-            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_SIZE, indent + 1);
+            log.add(LogType.MSG_MF_ERROR_BAD_NFC_SIZE, indent + 1);
             return false;
         }
 
         // Secret key parts must be available
         if (isDivertToCard(key) || isDummy(key)) {
-            log.add(OperationResult.LogType.MSG_K2C_ERROR_BAD_STRIPPED, indent + 1);
+            log.add(LogType.MSG_MF_ERROR_BAD_NFC_STRIPPED, indent + 1);
             return false;
         }
 

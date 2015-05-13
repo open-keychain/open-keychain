@@ -35,7 +35,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -43,7 +42,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -420,9 +419,8 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
-                        CanonicalizedSecretKey.SecretKeyType secretKeyType =
-                                mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
+                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == SecretKeyType.GNU_DUMMY) {
                             // Key is already stripped; this is a no-op.
                             break;
                         }
@@ -441,15 +439,27 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                         break;
                     }
                     case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
-                        CanonicalizedSecretKey.SecretKeyType secretKeyType =
-                                mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD ||
-                            secretKeyType == CanonicalizedSecretKey.SecretKeyType.GNU_DUMMY) {
-                            Toast.makeText(EditKeyFragment.this.getActivity(),
-                                    R.string.edit_key_error_bad_nfc_stripped, Toast.LENGTH_SHORT)
-                                    .show();
+                        Activity activity = EditKeyFragment.this.getActivity();
+                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                            secretKeyType == SecretKeyType.GNU_DUMMY) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_stripped, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
                             break;
                         }
+                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
+                        // these are the PGP constants for RSA_GENERAL, RSA_ENCRYPT and RSA_SIGN
+                        if (algorithm != 1 && algorithm != 2 && algorithm != 3) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_algo, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+                            break;
+                        }
+                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_size, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+                            break;
+                        }
+
 
                         SubkeyChange change;
                         change = mSaveKeyringParcel.getSubkeyChange(keyId);
