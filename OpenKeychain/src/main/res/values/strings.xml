@@ -1222,6 +1222,8 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
+    <string name="first_time_blank_smartcard_title">"Blank Smart Card / Yubikey Detected"</string>
+    <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>
