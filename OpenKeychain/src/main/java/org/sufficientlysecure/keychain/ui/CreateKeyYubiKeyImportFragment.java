@@ -193,13 +193,19 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
                     ImportKeyResult result =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (!result.success()) {
+                    long[] masterKeyIds = result.getImportedMasterKeyIds();
+
+                    // TODO handle masterKeyIds.length != 1...? sorta outlandish scenario
+
+                    if (!result.success() || masterKeyIds.length == 0) {
                         result.createNotify(getActivity()).show();
                         return;
                     }
 
                     Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
-                    intent.setData(KeyRings.buildGenericKeyRingUri(mNfcMasterKeyId));
+                    // use the imported masterKeyId, not the one from the yubikey, because
+                    // that one might* just have been a subkey of the imported key
+                    intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
                     intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
                     intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
                     intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
