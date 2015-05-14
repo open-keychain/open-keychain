@@ -535,49 +535,54 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         final String nfcUserId = nfcGetUserId();
         final byte[] nfcAid = nfcGetAid();
 
-        String fp = KeyFormattingUtils.convertFingerprintToHex(nfcFingerprints);
-        final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+        long yubiKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
 
-        if (!mFingerprint.equals(fp)) {
-            try {
-                CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(masterKeyId);
-                ring.getMasterKeyId();
+        try {
 
-                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
-                        Style.WARN, new ActionListener() {
-                            @Override
-                            public void onAction() {
-                                Intent intent = new Intent(
-                                        ViewKeyActivity.this, ViewKeyActivity.class);
-                                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }, R.string.snack_yubikey_view).show();
-                return;
+            // if the yubikey matches a subkey in any key
+            CachedPublicKeyRing ring = mProviderHelper.getCachedPublicKeyRing(
+                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(yubiKeyId));
+            byte[] candidateFp = ring.getFingerprint();
 
-            } catch (PgpKeyNotFoundException e) {
-                Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
-                        Style.WARN, new ActionListener() {
-                            @Override
-                            public void onAction() {
-                                Intent intent = new Intent(
-                                        ViewKeyActivity.this, CreateKeyActivity.class);
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-                                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }, R.string.snack_yubikey_import).show();
+            // if the master key of that key matches this one, just show the yubikey dialog
+            if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprint)) {
+                showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
                 return;
             }
-        }
 
-        showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+            // otherwise, offer to go to that key
+            final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(candidateFp);
+            Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
+                    Style.WARN, new ActionListener() {
+                        @Override
+                        public void onAction() {
+                            Intent intent = new Intent(
+                                    ViewKeyActivity.this, ViewKeyActivity.class);
+                            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }, R.string.snack_yubikey_view).show();
+
+            // and if it's not found, offer import
+        } catch (PgpKeyNotFoundException e) {
+            Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
+                    Style.WARN, new ActionListener() {
+                        @Override
+                        public void onAction() {
+                            Intent intent = new Intent(
+                                    ViewKeyActivity.this, CreateKeyActivity.class);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }, R.string.snack_yubikey_import).show();
+        }
 
     }
 
@@ -794,6 +799,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         // old cursor once we return.)
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
+
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
                     KeyRing.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
