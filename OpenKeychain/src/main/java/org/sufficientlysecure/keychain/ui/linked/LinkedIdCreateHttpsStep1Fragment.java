@@ -115,7 +115,7 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
             }
         });
 
-        mEditUri.setText("mugenguild.com/pgpkey.txt");
+        // mEditUri.setText("mugenguild.com/pgpkey.txt");
 
         return view;
     }
