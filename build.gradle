@@ -15,11 +15,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-
-        maven {
-            // for zxing-android-embedded lib
-            url "https://dl.bintray.com/journeyapps/maven"
-        }
     }
 }
 
