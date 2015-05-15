@@ -555,6 +555,7 @@
     <item>Vervaldatum veranderen</item>
     <item>Subsleutel intrekken</item>
     <item>Subsleutel strippen</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nieuwe subsleutel</string>
   <string name="edit_key_select_flag">Gelieve minstens een vlag te selecteren!</string>

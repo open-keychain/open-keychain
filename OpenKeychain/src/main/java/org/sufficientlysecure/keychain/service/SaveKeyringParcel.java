@@ -95,7 +95,8 @@ public class SaveKeyringParcel implements Parcelable {
         }
 
         for (SubkeyChange change : mChangeSubKeys) {
-            if (change.mRecertify || change.mFlags != null || change.mExpiry != null) {
+            if (change.mRecertify || change.mFlags != null || change.mExpiry != null
+                    || change.mMoveKeyToCard) {
                 return false;
             }
         }
@@ -142,6 +143,8 @@ public class SaveKeyringParcel implements Parcelable {
         public boolean mRecertify;
         // if this flag is true, the subkey should be changed to a stripped key
         public boolean mDummyStrip;
+        // if this flag is true, the subkey should be moved to a card
+        public boolean mMoveKeyToCard;
         // if this is non-null, the subkey will be changed to a divert-to-card
         // key for the given serial number
         public byte[] mDummyDivert;
@@ -161,16 +164,16 @@ public class SaveKeyringParcel implements Parcelable {
             mExpiry = expiry;
         }
 
-        public SubkeyChange(long keyId, boolean dummyStrip, byte[] dummyDivert) {
+        public SubkeyChange(long keyId, boolean dummyStrip, boolean moveKeyToCard) {
             this(keyId, null, null);
 
             // these flags are mutually exclusive!
-            if (dummyStrip && dummyDivert != null) {
+            if (dummyStrip && moveKeyToCard) {
                 throw new AssertionError(
-                        "cannot set strip and divert flags at the same time - this is a bug!");
+                        "cannot set strip and keytocard flags at the same time - this is a bug!");
             }
             mDummyStrip = dummyStrip;
-            mDummyDivert = dummyDivert;
+            mMoveKeyToCard = moveKeyToCard;
         }
 
         @Override
@@ -179,6 +182,7 @@ public class SaveKeyringParcel implements Parcelable {
             out += "mFlags: " + mFlags + ", ";
             out += "mExpiry: " + mExpiry + ", ";
             out += "mDummyStrip: " + mDummyStrip + ", ";
+            out += "mMoveKeyToCard: " + mMoveKeyToCard + ", ";
             out += "mDummyDivert: [" + (mDummyDivert == null ? 0 : mDummyDivert.length) + " bytes]";
 
             return out;

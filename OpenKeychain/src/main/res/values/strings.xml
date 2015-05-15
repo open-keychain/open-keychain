@@ -621,11 +621,15 @@
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
         <item>"Strip Subkey"</item>
+        <item>"Move Subkey to Yubikey / Smart Card"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
     <string name="edit_key_error_add_identity">"Add at least one identity!"</string>
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
+    <string name="edit_key_error_bad_nfc_algo">"Algorithm not supported by smart card!"</string>
+    <string name="edit_key_error_bad_nfc_size">"Key size not supported by smart card!"</string>
+    <string name="edit_key_error_bad_nfc_stripped">"Cannot move stripped / diverted key to smart card!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the cloud"</string>
@@ -924,6 +928,9 @@
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
+    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to card in same operation that creates an on-card signature."</string>
+    <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
+    <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for smart card key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
@@ -942,6 +949,8 @@
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
     <string name="msg_mf_subkey_revoke">"Revoking subkey %s"</string>
     <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
+    <string name="msg_mf_keytocard_start">"Moving subkey %s to smart card"</string>
+    <string name="msg_mf_keytocard_finish">"Moved %1$s to card %2$s"</string>
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user ID %s"</string>
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
@@ -1213,6 +1222,8 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
+    <string name="first_time_blank_smartcard_title">"Blank Smart Card / Yubikey Detected"</string>
+    <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>

@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -64,6 +65,8 @@ import org.sufficientlysecure.keychain.ui.dialog.*;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.nio.ByteBuffer;
 
 
 public class EditKeyFragment extends CryptoOperationFragment implements
@@ -415,15 +418,65 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                             mSaveKeyringParcel.mRevokeSubKeys.add(keyId);
                         }
                         break;
-                    case EditSubkeyDialogFragment.MESSAGE_STRIP:
+                    case EditSubkeyDialogFragment.MESSAGE_STRIP: {
+                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == SecretKeyType.GNU_DUMMY) {
+                            // Key is already stripped; this is a no-op.
+                            break;
+                        }
+
                         SubkeyChange change = mSaveKeyringParcel.getSubkeyChange(keyId);
                         if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, null));
+                            mSaveKeyringParcel.mChangeSubKeys.add(new SubkeyChange(keyId, true, false));
                             break;
                         }
                         // toggle
                         change.mDummyStrip = !change.mDummyStrip;
+                        if (change.mDummyStrip && change.mMoveKeyToCard) {
+                            // User had chosen to divert key, but now wants to strip it instead.
+                            change.mMoveKeyToCard = false;
+                        }
                         break;
+                    }
+                    case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
+                        Activity activity = EditKeyFragment.this.getActivity();
+                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                            secretKeyType == SecretKeyType.GNU_DUMMY) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_stripped, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+                            break;
+                        }
+                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
+                        // these are the PGP constants for RSA_GENERAL, RSA_ENCRYPT and RSA_SIGN
+                        if (algorithm != 1 && algorithm != 2 && algorithm != 3) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_algo, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+                            break;
+                        }
+                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
+                            Notify.create(activity, R.string.edit_key_error_bad_nfc_size, Notify.Style.ERROR)
+                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+                            break;
+                        }
+
+
+                        SubkeyChange change;
+                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
+                        if (change == null) {
+                            mSaveKeyringParcel.mChangeSubKeys.add(
+                                    new SubkeyChange(keyId, false, true)
+                            );
+                            break;
+                        }
+                        // toggle
+                        change.mMoveKeyToCard = !change.mMoveKeyToCard;
+                        if (change.mMoveKeyToCard && change.mDummyStrip) {
+                            // User had chosen to strip key, but now wants to divert it.
+                            change.mDummyStrip = false;
+                        }
+                        break;
+                    }
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
             }

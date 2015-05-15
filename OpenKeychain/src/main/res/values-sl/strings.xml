@@ -587,6 +587,7 @@
     <item>Spremeni datum poteka</item>
     <item>Prekliči podključ</item>
     <item>Razstavi podključ</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nov podključ</string>
   <string name="edit_key_select_flag">Izberite vsaj eno oznako!</string>

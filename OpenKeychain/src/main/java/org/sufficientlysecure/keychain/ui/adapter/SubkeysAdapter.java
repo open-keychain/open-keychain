@@ -116,6 +116,21 @@ public class SubkeysAdapter extends CursorAdapter {
         }
     }
 
+    public int getAlgorithm(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_ALGORITHM);
+    }
+
+    public int getKeySize(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(INDEX_KEY_SIZE);
+    }
+
+    public SecretKeyType getSecretKeyType(int position) {
+        mCursor.moveToPosition(position);
+        return SecretKeyType.fromNum(mCursor.getInt(INDEX_HAS_SECRET));
+    }
+
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         hasAnySecret = false;
@@ -164,13 +179,23 @@ public class SubkeysAdapter extends CursorAdapter {
                 ? mSaveKeyringParcel.getSubkeyChange(keyId)
                 : null;
 
-        if (change != null && change.mDummyStrip) {
-            algorithmStr.append(", ");
-            final SpannableString boldStripped = new SpannableString(
-                    context.getString(R.string.key_stripped)
-            );
-            boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            algorithmStr.append(boldStripped);
+        if (change != null && (change.mDummyStrip || change.mMoveKeyToCard)) {
+            if (change.mDummyStrip) {
+                algorithmStr.append(", ");
+                final SpannableString boldStripped = new SpannableString(
+                        context.getString(R.string.key_stripped)
+                );
+                boldStripped.setSpan(new StyleSpan(Typeface.BOLD), 0, boldStripped.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                algorithmStr.append(boldStripped);
+            }
+            if (change.mMoveKeyToCard) {
+                algorithmStr.append(", ");
+                final SpannableString boldDivert = new SpannableString(
+                        context.getString(R.string.key_divert)
+                );
+                boldDivert.setSpan(new StyleSpan(Typeface.BOLD), 0, boldDivert.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                algorithmStr.append(boldDivert);
+            }
         } else {
             switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
                 case GNU_DUMMY:

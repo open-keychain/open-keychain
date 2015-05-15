@@ -465,6 +465,7 @@
     <item>變更到期日</item>
     <item>撤銷子金鑰</item>
     <item>Strip Subkey</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">新增子金鑰</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>

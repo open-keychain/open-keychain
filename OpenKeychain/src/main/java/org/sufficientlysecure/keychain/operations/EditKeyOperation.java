@@ -83,7 +83,7 @@ public class EditKeyOperation extends BaseOperation {
                     CanonicalizedSecretKeyRing secRing =
                             mProviderHelper.getCanonicalizedSecretKeyRing(saveParcel.mMasterKeyId);
 
-                    modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel);
+                    modifyResult = keyOperations.modifySecretKeyRing(secRing, cryptoInput, saveParcel, log, 2);
                     if (modifyResult.isPending()) {
                         return modifyResult;
                     }

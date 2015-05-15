@@ -555,6 +555,7 @@
     <item>Changer l\'expiration</item>
     <item>Révoquer la sous-clef</item>
     <item>Dépouiller la sous-clef</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nouvelle sous-clef</string>
   <string name="edit_key_select_flag">Veuillez sélectionner au moins un drapeau !</string>

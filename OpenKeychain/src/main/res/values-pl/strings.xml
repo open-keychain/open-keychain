@@ -472,6 +472,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
     <item>Zmień wygaśnięcie</item>
     <item>Unieważnij Pod-klucz</item>
     <item>Usuń Pod-klucz</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nowy pod-klucz</string>
   <string name="edit_key_select_flag">Prosimy o wybranie przynajmniej jeden flagi!</string>

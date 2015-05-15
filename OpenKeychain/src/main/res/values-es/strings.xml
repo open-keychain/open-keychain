@@ -555,6 +555,7 @@
     <item>Cambiar expiración</item>
     <item>Revocar subclave</item>
     <item>Desnudar subclave</item>
+    <item>"Move Subkey to Yubikey / Smart Card"</item>
   </string-array>
   <string name="edit_key_new_subkey">nueva subclave</string>
   <string name="edit_key_select_flag">¡Por favor, seleccione al menos un indicador!</string>
