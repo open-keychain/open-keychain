@@ -596,7 +596,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         manager.beginTransaction()
                 .addToBackStack("yubikey")
                 .replace(R.id.view_key_fragment, frag)
-                .commit();
+                // if this is called while the activity wasn't resumed, just forget it happened
+                .commitAllowingStateLoss();
     }
 
     private void encrypt(Uri dataUri, boolean text) {
