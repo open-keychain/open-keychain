@@ -588,7 +588,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     public void showYubiKeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
         ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
-                nfcFingerprints, nfcUserId, nfcAid);
+                mMasterKeyId, nfcFingerprints, nfcUserId, nfcAid);
 
         FragmentManager manager = getSupportFragmentManager();
 
