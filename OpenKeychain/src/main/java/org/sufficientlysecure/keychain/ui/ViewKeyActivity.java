@@ -275,9 +275,19 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             result.createNotify(this).show();
         }
 
-        startFragment(savedInstanceState, mDataUri);
+        // Fragments are stored, no need to recreate those
+        if (savedInstanceState != null) {
+            return;
+        }
 
-        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_NFC_AID)) {
+        FragmentManager manager = getSupportFragmentManager();
+        // Create an instance of the fragment
+        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri);
+        manager.beginTransaction()
+                .replace(R.id.view_key_fragment, frag)
+                .commit();
+
+        if (getIntent().hasExtra(EXTRA_NFC_AID)) {
             Intent intent = getIntent();
             byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
             String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
@@ -290,35 +300,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     @Override
     protected void initLayout() {
         setContentView(R.layout.view_key_activity);
-    }
-
-    private void startFragment(Bundle savedInstanceState, final Uri dataUri) {
-        // If we're being restored from a previous state, then we don't
-        // need to do anything and should return or else we could end
-        // up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-
-                FragmentManager manager = getSupportFragmentManager();
-                if (manager.getBackStackEntryCount() == 0) {
-                    // Create an instance of the fragment
-                    final ViewKeyFragment frag = ViewKeyFragment.newInstance(dataUri);
-                    manager.beginTransaction()
-                            .replace(R.id.view_key_fragment, frag)
-                            .commit();
-                    manager.popBackStack();
-                } /* else {
-                    // not sure yet if we actually want this!
-                    manager.popBackStack();
-                } */
-
-            }
-        });
     }
 
     @Override
@@ -453,12 +434,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
         startActivityForResult(intent, 0);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        //Note:-Done due to the same weird crashes as for commitAllowingStateLoss()
-        //super.onSaveInstanceState(outState);
     }
 
     private void showQrCodeDialog() {
