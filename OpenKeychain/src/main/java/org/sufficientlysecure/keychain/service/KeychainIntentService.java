@@ -65,7 +65,6 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -185,6 +184,7 @@ public class KeychainIntentService extends IntentService implements Progressable
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
     public static final String PROMOTE_CARD_AID = "promote_card_aid";
+    public static final String PROMOTE_SUBKEY_IDS = "promote_fingerprints";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -476,10 +476,12 @@ public class KeychainIntentService extends IntentService implements Progressable
                 // Input
                 long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
                 byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
+                long[] subKeyIds = data.getLongArray(PROMOTE_SUBKEY_IDS);
 
                 // Operation
-                PromoteKeyOperation op = new PromoteKeyOperation(this, providerHelper, this, mActionCanceled);
-                PromoteKeyResult result = op.execute(keyRingId, cardAid);
+                PromoteKeyOperation op = new PromoteKeyOperation(
+                        this, providerHelper, this, mActionCanceled);
+                PromoteKeyResult result = op.execute(keyRingId, cardAid, subKeyIds);
 
                 // Result
                 sendMessageToHandler(MessageStatus.OKAY, result);

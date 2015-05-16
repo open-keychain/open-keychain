@@ -996,8 +996,11 @@
 
     <!-- Promote key -->
     <string name="msg_pr">"Promoting public key to secret key"</string>
+    <string name="msg_pr_all">"Promoting all subkeysp"</string>
     <string name="msg_pr_error_key_not_found">"Key not found!"</string>
     <string name="msg_pr_fetching">"Fetching key to modify (%s)"</string>
+    <string name="msg_pr_subkey_match">"Promoting subkey: %s"</string>
+    <string name="msg_pr_subkey_nomatch">"Subkey not on Yubikey: %s"</string>
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->

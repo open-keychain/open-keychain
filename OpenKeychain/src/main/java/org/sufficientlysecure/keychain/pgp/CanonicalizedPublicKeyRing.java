@@ -103,9 +103,22 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     }
 
     /** Create a dummy secret ring from this key */
-    public UncachedKeyRing createDivertSecretRing (byte[] cardAid) {
+    public UncachedKeyRing createDivertSecretRing (byte[] cardAid, long[] subKeyIds) {
         PGPSecretKeyRing secRing = PGPSecretKeyRing.constructDummyFromPublic(getRing(), cardAid);
-        return new UncachedKeyRing(secRing);
+
+        if (subKeyIds == null) {
+            return new UncachedKeyRing(secRing);
+        }
+
+        // if only specific subkeys should be promoted, construct a
+        // stripped dummy, then move divert-to-card keys over
+        PGPSecretKeyRing newRing = PGPSecretKeyRing.constructDummyFromPublic(getRing());
+        for (long subKeyId : subKeyIds) {
+            newRing = PGPSecretKeyRing.insertSecretKey(newRing, secRing.getSecretKey(subKeyId));
+        }
+
+        return new UncachedKeyRing(newRing);
+
     }
 
 }

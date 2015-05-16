@@ -45,6 +45,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+
 
 public class ViewKeyYubiKeyFragment extends Fragment
         implements LoaderCallbacks<Cursor> {
@@ -154,6 +156,11 @@ public class ViewKeyYubiKeyFragment extends Fragment
         Bundle data = new Bundle();
         data.putLong(KeychainIntentService.PROMOTE_MASTER_KEY_ID, mMasterKeyId);
         data.putByteArray(KeychainIntentService.PROMOTE_CARD_AID, mCardAid);
+        long[] subKeyIds = new long[mFingerprints.length];
+        for (int i = 0; i < subKeyIds.length; i++) {
+            subKeyIds[i] = KeyFormattingUtils.getKeyIdFromFingerprint(mFingerprints[i]);
+        }
+        data.putLongArray(KeychainIntentService.PROMOTE_SUBKEY_IDS, subKeyIds);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
@@ -219,7 +226,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
 
     }
 
-    public Integer naiveIndexOf(byte[][] haystack, byte[] needle) {
+    static private Integer naiveIndexOf(byte[][] haystack, byte[] needle) {
         for (int i = 0; i < haystack.length; i++) {
             if (Arrays.equals(needle, haystack[i])) {
                 return i;
