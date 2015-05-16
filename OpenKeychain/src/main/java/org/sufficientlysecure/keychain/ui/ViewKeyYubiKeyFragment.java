@@ -45,14 +45,15 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 public class ViewKeyYubiKeyFragment extends Fragment
         implements LoaderCallbacks<Cursor> {
 
+    public static final String ARG_MASTER_KEY_ID = "master_key_id";
     public static final String ARG_FINGERPRINT = "fingerprint";
     public static final String ARG_USER_ID = "user_id";
     public static final String ARG_CARD_AID = "aid";
+
     private byte[][] mFingerprints;
     private String mUserId;
     private byte[] mCardAid;
@@ -60,10 +61,12 @@ public class ViewKeyYubiKeyFragment extends Fragment
     private Button vButton;
     private TextView vStatus;
 
-    public static ViewKeyYubiKeyFragment newInstance(byte[] fingerprints, String userId, byte[] aid) {
+    public static ViewKeyYubiKeyFragment newInstance(long masterKeyId,
+            byte[] fingerprints, String userId, byte[] aid) {
         ViewKeyYubiKeyFragment frag = new ViewKeyYubiKeyFragment();
 
         Bundle args = new Bundle();
+        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
         args.putByteArray(ARG_FINGERPRINT, fingerprints);
         args.putString(ARG_USER_ID, userId);
         args.putByteArray(ARG_CARD_AID, aid);
@@ -86,7 +89,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
         mUserId = args.getString(ARG_USER_ID);
         mCardAid = args.getByteArray(ARG_CARD_AID);
 
-        mMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mFingerprints[0]);
+        mMasterKeyId = args.getLong(ARG_MASTER_KEY_ID);
 
         getLoaderManager().initLoader(0, null, this);
 
@@ -169,8 +172,8 @@ public class ViewKeyYubiKeyFragment extends Fragment
             Keys.HAS_SECRET,
             Keys.FINGERPRINT
     };
-    private static final int INDEX_KEY_ID = 1;
-    private static final int INDEX_RANK = 2;
+    // private static final int INDEX_KEY_ID = 1;
+    // private static final int INDEX_RANK = 2;
     private static final int INDEX_HAS_SECRET = 3;
     private static final int INDEX_FINGERPRINT = 4;
 
