@@ -44,12 +44,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class MainActivity extends AppCompatActivity implements FabContainer {
 
-    public Drawer.Result result;
-
-    private KeyListFragment mKeyListFragment ;
-    private AppsListFragment mAppsListFragment;
-    private EncryptDecryptOverviewFragment mEncryptDecryptOverviewFragment;
-    private Fragment mLastUsedFragment;
+    public Drawer.Result mDrawerResult;
     private Toolbar mToolbar;
 
     @Override
@@ -57,25 +52,21 @@ public class MainActivity extends AppCompatActivity implements FabContainer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        //initialize FragmentLayout with KeyListFragment at first
-        Fragment mainFragment = new KeyListFragment();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction.replace(R.id.main_fragment_container, mainFragment);
-        transaction.commit();
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 
-        result = new Drawer()
+        mDrawerResult = new Drawer()
                 .withActivity(this)
                 .withHeader(R.layout.main_drawer_header)
                 .withToolbar(mToolbar)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key).withIdentifier(1).withCheckable(false),
-                        new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock).withIdentifier(2).withCheckable(false),
-                        new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps).withIdentifier(3).withCheckable(false)
+                        new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key)
+                                .withIdentifier(1).withCheckable(false),
+                        new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
+                                .withIdentifier(2).withCheckable(false),
+                        new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
+                                .withIdentifier(3).withCheckable(false)
                 )
                 .addStickyDrawerItems(
                         // display and stick on bottom of drawer
@@ -130,76 +121,58 @@ public class MainActivity extends AppCompatActivity implements FabContainer {
             OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
             result.createNotify(this).show();
         }
-    }
 
-    private void clearFragments() {
-        mKeyListFragment = null;
-        mAppsListFragment = null;
-        mEncryptDecryptOverviewFragment = null;
+        if (savedInstanceState == null) {
+            // initialize FragmentLayout with KeyListFragment at first
+            onKeysSelected();
+        }
 
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-    }
-
-    private void setFragment(Fragment fragment) {
-        setFragment(fragment, true);
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
-        this.mLastUsedFragment = fragment;
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.main_fragment_container, fragment);
         if (addToBackStack) {
             ft.addToBackStack(null);
         }
         ft.commit();
+
     }
 
-    private boolean onKeysSelected() {
+    private void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
-        clearFragments();
-
-        if (mKeyListFragment == null) {
-            mKeyListFragment = new KeyListFragment();
-        }
-
-        setFragment(mKeyListFragment, false);
-        return true;
+        Fragment frag = new KeyListFragment();
+        setFragment(frag, false);
     }
 
-    private boolean onEnDecryptSelected() {
+    private void onEnDecryptSelected() {
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
-        clearFragments();
-        if (mEncryptDecryptOverviewFragment == null) {
-            mEncryptDecryptOverviewFragment = new EncryptDecryptOverviewFragment();
-        }
-
-        setFragment(mEncryptDecryptOverviewFragment);
-        return true;
+        Fragment frag = new EncryptDecryptOverviewFragment();
+        setFragment(frag, true);
     }
 
-    private boolean onAppsSelected() {
+    private void onAppsSelected() {
         mToolbar.setTitle(R.string.nav_apps);
-        clearFragments();
-        if (mAppsListFragment == null) {
-            mAppsListFragment = new AppsListFragment();
-        }
-
-        setFragment(mAppsListFragment);
-        return true;
+        Fragment frag = new AppsListFragment();
+        setFragment(frag, true);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        //add the values which need to be saved from the drawer to the bundle
-        outState = result.saveInstanceState(outState);
+        // add the values which need to be saved from the drawer to the bundle
+        outState = mDrawerResult.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onBackPressed(){
-        //handle the back press :D close the drawer first and if the drawer is closed close the activity
-        if (result != null && result.isDrawerOpen()) {
-            result.closeDrawer();
+    public void onBackPressed() {
+        // close the drawer first and if the drawer is closed do regular backstack handling
+        if (mDrawerResult != null && mDrawerResult.isDrawerOpen()) {
+            mDrawerResult.closeDrawer();
         } else {
             super.onBackPressed();
         }
