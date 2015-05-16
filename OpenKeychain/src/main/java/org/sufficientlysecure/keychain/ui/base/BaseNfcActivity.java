@@ -234,11 +234,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
         final String nfcUserId = nfcGetUserId();
         final byte[] nfcAid = nfcGetAid();
 
-        final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
 
         try {
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
-            ring.getMasterKeyId();
+            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
+                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+            long masterKeyId = ring.getMasterKeyId();
 
             Intent intent = new Intent(
                     BaseNfcActivity.this, ViewKeyActivity.class);
