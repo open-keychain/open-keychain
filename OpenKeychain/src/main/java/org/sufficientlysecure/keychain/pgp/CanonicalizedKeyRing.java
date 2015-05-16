@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
@@ -127,7 +128,11 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
     }
 
     public CanonicalizedPublicKey getPublicKey(long id) {
-        return new CanonicalizedPublicKey(this, getRing().getPublicKey(id));
+        PGPPublicKey pubKey = getRing().getPublicKey(id);
+        if (pubKey == null) {
+            return null;
+        }
+        return new CanonicalizedPublicKey(this, pubKey);
     }
 
     public byte[] getEncoded() throws IOException {

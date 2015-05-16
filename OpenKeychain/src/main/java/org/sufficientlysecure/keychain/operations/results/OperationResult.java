@@ -566,8 +566,11 @@ public abstract class OperationResult implements Parcelable {
 
         // promote key
         MSG_PR (LogLevel.START, R.string.msg_pr),
+        MSG_PR_ALL (LogLevel.DEBUG, R.string.msg_pr_all),
         MSG_PR_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_pr_error_key_not_found),
         MSG_PR_FETCHING (LogLevel.DEBUG, R.string.msg_pr_fetching),
+        MSG_PR_SUBKEY_MATCH (LogLevel.DEBUG, R.string.msg_pr_subkey_match),
+        MSG_PR_SUBKEY_NOMATCH (LogLevel.WARN, R.string.msg_pr_subkey_nomatch),
         MSG_PR_SUCCESS (LogLevel.OK, R.string.msg_pr_success),
 
         // messages used in UI code

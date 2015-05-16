@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -104,7 +105,7 @@ public class PromoteKeyOperationTest {
         PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
                 new ProviderHelper(Robolectric.application), null, null);
 
-        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), null);
+        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), null, null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -130,7 +131,7 @@ public class PromoteKeyOperationTest {
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
-        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), aid);
+        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), aid, null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
@@ -147,4 +148,40 @@ public class PromoteKeyOperationTest {
 
         }
     }
+
+    @Test
+    public void testPromoteDivertSpecific() throws Exception {
+        PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null, null);
+
+        byte[] aid = Hex.decode("D2760001240102000000012345670000");
+
+        // only promote the first, rest stays dummy
+        long keyId = KeyringTestingHelper.getSubkeyId(mStaticRing, 1);
+
+        PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), aid, new long[] {
+            keyId
+        });
+
+        Assert.assertTrue("promotion must succeed", result.success());
+
+        {
+            CanonicalizedSecretKeyRing ring = new ProviderHelper(Robolectric.application)
+                    .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
+
+            for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
+                if (key.getKeyId() == keyId) {
+                    Assert.assertEquals("subkey must be divert-to-card",
+                            SecretKeyType.DIVERT_TO_CARD, key.getSecretKeyType());
+                    Assert.assertArrayEquals("subkey must have correct iv",
+                            aid, key.getIv());
+                } else {
+                    Assert.assertEquals("some subkeys must be gnu dummy",
+                            SecretKeyType.GNU_DUMMY, key.getSecretKeyType());
+                }
+            }
+
+        }
+    }
+
 }
