@@ -25,6 +25,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** An operation which promotes a public key ring to a secret one.
@@ -50,7 +52,7 @@ public class PromoteKeyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public PromoteKeyResult execute(long masterKeyId, byte[] cardAid) {
+    public PromoteKeyResult execute(long masterKeyId, byte[] cardAid, long[] subKeyIds) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_PR, 0);
@@ -65,8 +67,24 @@ public class PromoteKeyOperation extends BaseOperation {
                 CanonicalizedPublicKeyRing pubRing =
                         mProviderHelper.getCanonicalizedPublicKeyRing(masterKeyId);
 
+                if (subKeyIds == null) {
+                    log.add(LogType.MSG_PR_ALL, 1);
+                } else {
+                    // sort for binary search
+                    for (CanonicalizedPublicKey key : pubRing.publicKeyIterator()) {
+                        long subKeyId = key.getKeyId();
+                        if (naiveIndexOf(subKeyIds, subKeyId) != null) {
+                            log.add(LogType.MSG_PR_SUBKEY_MATCH, 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+                        } else {
+                            log.add(LogType.MSG_PR_SUBKEY_NOMATCH, 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+                        }
+                    }
+                }
+
                 // create divert-to-card secret key from public key
-                promotedRing = pubRing.createDivertSecretRing(cardAid);
+                promotedRing = pubRing.createDivertSecretRing(cardAid, subKeyIds);
 
             } catch (NotFoundException e) {
                 log.add(LogType.MSG_PR_ERROR_KEY_NOT_FOUND, 2);
@@ -104,6 +122,15 @@ public class PromoteKeyOperation extends BaseOperation {
         log.add(LogType.MSG_PR_SUCCESS, 0);
         return new PromoteKeyResult(PromoteKeyResult.RESULT_OK, log, promotedRing.getMasterKeyId());
 
+    }
+
+    static private Integer naiveIndexOf(long[] haystack, long needle) {
+        for (int i = 0; i < haystack.length; i++) {
+            if (needle == haystack[i]) {
+                return i;
+            }
+        }
+        return null;
     }
 
 }
