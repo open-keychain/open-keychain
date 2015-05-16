@@ -131,6 +131,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     private boolean mIsRevoked = false;
     private boolean mIsExpired = false;
 
+    private boolean mShowYubikeyAfterCreation = false;
+
     private MenuItem mRefreshItem;
     private boolean mIsRefreshing;
     private Animation mRotate, mRotateSpin;
@@ -286,13 +288,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 .replace(R.id.view_key_fragment, frag)
                 .commit();
 
-        if (getIntent().hasExtra(EXTRA_NFC_AID)) {
-            Intent intent = getIntent();
-            byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
-            String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
-            byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
-            showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
-        }
+        // need to postpone loading of the yubikey fragment until after mMasterKeyId
+        // is available, but we mark here that this should be done
+        mShowYubikeyAfterCreation = true;
 
     }
 
@@ -586,18 +584,26 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     }
 
-    public void showYubiKeyFragment(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
-        ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
-                mMasterKeyId, nfcFingerprints, nfcUserId, nfcAid);
+    public void showYubiKeyFragment(
+            final byte[] nfcFingerprints, final String nfcUserId, final byte[] nfcAid) {
 
-        FragmentManager manager = getSupportFragmentManager();
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
+                        mMasterKeyId, nfcFingerprints, nfcUserId, nfcAid);
 
-        manager.popBackStack("yubikey", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        manager.beginTransaction()
-                .addToBackStack("yubikey")
-                .replace(R.id.view_key_fragment, frag)
-                // if this is called while the activity wasn't resumed, just forget it happened
-                .commitAllowingStateLoss();
+                FragmentManager manager = getSupportFragmentManager();
+
+                manager.popBackStack("yubikey", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                manager.beginTransaction()
+                        .addToBackStack("yubikey")
+                        .replace(R.id.view_key_fragment, frag)
+                                // if this is called while the activity wasn't resumed, just forget it happened
+                        .commitAllowingStateLoss();
+            }
+        });
+
     }
 
     private void encrypt(Uri dataUri, boolean text) {
@@ -812,6 +818,16 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     mFingerprint = KeyFormattingUtils.convertFingerprintToHex(data.getBlob(INDEX_FINGERPRINT));
+
+                    // if it wasn't shown yet, display yubikey fragment
+                    if (mShowYubikeyAfterCreation && getIntent().hasExtra(EXTRA_NFC_AID)) {
+                        mShowYubikeyAfterCreation = false;
+                        Intent intent = getIntent();
+                        byte[] nfcFingerprints = intent.getByteArrayExtra(EXTRA_NFC_FINGERPRINTS);
+                        String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
+                        byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
+                        showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+                    }
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
