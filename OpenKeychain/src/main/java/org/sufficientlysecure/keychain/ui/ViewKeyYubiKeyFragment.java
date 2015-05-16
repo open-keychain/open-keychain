@@ -83,7 +83,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
 
         Bundle args = getArguments();
         ByteBuffer buf = ByteBuffer.wrap(args.getByteArray(ARG_FINGERPRINT));
-        mFingerprints = new byte[buf.remaining()/40][];
+        mFingerprints = new byte[buf.remaining()/20][];
         for (int i = 0; i < mFingerprints.length; i++) {
             mFingerprints[i] = new byte[20];
             buf.get(mFingerprints[i]);
