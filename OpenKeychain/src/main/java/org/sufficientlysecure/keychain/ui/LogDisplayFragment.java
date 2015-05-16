@@ -49,7 +49,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.Iterator;
 
 public class LogDisplayFragment extends ListFragment implements OnItemClickListener {
 
@@ -58,6 +57,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     OperationResult mResult;
 
     public static final String EXTRA_RESULT = "log";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +75,12 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             return;
         }
 
-        mResult = intent.getParcelableExtra(EXTRA_RESULT);
+        if (savedInstanceState != null) {
+            mResult = savedInstanceState.getParcelable(EXTRA_RESULT);
+        } else {
+            mResult = intent.getParcelableExtra(EXTRA_RESULT);
+        }
+
         if (mResult == null) {
             getActivity().finish();
             return;
@@ -89,6 +94,14 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
         getListView().setFastScrollEnabled(true);
         getListView().setDividerHeight(0);
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // need to parcel this again, logs are only single-instance parcelable
+        outState.putParcelable(EXTRA_RESULT, mResult);
     }
 
     @Override
@@ -110,7 +123,6 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     }
 
     private void exportLog() {
-
         showExportLogDialog(new File(Constants.Path.APP_DIR, "export.log"));
     }
 
@@ -142,7 +154,9 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             }
         }
 
-        if (!error) currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS, 1);
+        if (!error) {
+            currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS, 1);
+        }
 
         int opResultCode = error ? OperationResult.RESULT_ERROR : OperationResult.RESULT_OK;
         OperationResult opResult = new LogExportResult(opResultCode, currLog);
@@ -158,8 +172,8 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
      */
     private String getPrintableOperationLog(OperationResult.OperationLog opLog, String basePadding) {
         String log = "";
-        for (Iterator<LogEntryParcel> logIterator = opLog.iterator(); logIterator.hasNext(); ) {
-            log += getPrintableLogEntry(logIterator.next(), basePadding) + "\n";
+        for (LogEntryParcel anOpLog : opLog) {
+            log += getPrintableLogEntry(anOpLog, basePadding) + "\n";
         }
         log = log.substring(0, log.length() - 1);//gets rid of extra new line
         return log;
