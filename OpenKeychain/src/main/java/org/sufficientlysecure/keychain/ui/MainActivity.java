@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,10 +38,11 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
+import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class MainActivity extends AppCompatActivity implements FabContainer {
+public class MainActivity extends BaseNfcActivity implements FabContainer {
 
     public Drawer.Result mDrawerResult;
     private Toolbar mToolbar;
@@ -195,5 +195,6 @@ public class MainActivity extends AppCompatActivity implements FabContainer {
             ((FabContainer) fragment).fabRestorePosition();
         }
     }
+
 
 }

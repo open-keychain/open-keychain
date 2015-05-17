@@ -494,4 +494,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
         }
     }
 
+    @Override
+    protected void onNfcPerform() throws IOException {
+        // this displays the key or moves to the yubikey import dialogue.
+        super.onNfcPerform();
+        // either way, finish afterwards
+        finish();
+    }
 }
