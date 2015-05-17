@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
@@ -141,24 +142,35 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         Log.d(Constants.TAG, "scanned: " + uri);
 
         // example: openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282
-        if (uri != null && uri.getScheme() != null && uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
-            String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
-
-            if (ACTION_SCAN_WITH_RESULT.equals(action)) {
-                Intent result = new Intent();
-                result.putExtra(EXTRA_FINGERPRINT, fingerprint);
-                setResult(RESULT_OK, result);
-                finish();
-            } else {
-                importKeys(fingerprint);
-            }
-        } else {
+        if (uri == null || uri.getScheme() == null ||
+                !uri.getScheme().toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             SingletonResult result = new SingletonResult(
-                    SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_WRONG_QR_CODE);
+                    SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE);
             Intent intent = new Intent();
             intent.putExtra(SingletonResult.EXTRA_RESULT, result);
             returnResult(intent);
+            return;
         }
+
+        String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
+        if (fingerprint.matches("[a-fA-F0-9]{40}")) {
+            SingletonResult result = new SingletonResult(
+                    SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE_FP);
+            Intent intent = new Intent();
+            intent.putExtra(SingletonResult.EXTRA_RESULT, result);
+            returnResult(intent);
+            return;
+        }
+
+        if (ACTION_SCAN_WITH_RESULT.equals(action)) {
+            Intent result = new Intent();
+            result.putExtra(EXTRA_FINGERPRINT, fingerprint);
+            setResult(RESULT_OK, result);
+            finish();
+        } else {
+            importKeys(fingerprint);
+        }
+
     }
 
     public void returnResult(Intent data) {
