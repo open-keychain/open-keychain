@@ -241,22 +241,18 @@ public abstract class BaseNfcActivity extends BaseActivity {
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
             long masterKeyId = ring.getMasterKeyId();
 
-            Intent intent = new Intent(
-                    BaseNfcActivity.this, ViewKeyActivity.class);
+            Intent intent = new Intent(this, ViewKeyActivity.class);
             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
             intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
             intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
             intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
             startActivity(intent);
-            finish();
         } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(
-                    BaseNfcActivity.this, CreateKeyActivity.class);
+            Intent intent = new Intent(this, CreateKeyActivity.class);
             intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, nfcAid);
             intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
             intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
             startActivity(intent);
-            finish();
         }
 
     }
