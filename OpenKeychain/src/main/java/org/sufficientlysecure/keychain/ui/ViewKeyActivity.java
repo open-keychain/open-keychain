@@ -731,9 +731,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         AsyncTask<Void, Void, Bitmap> loadTask =
                 new AsyncTask<Void, Void, Bitmap>() {
                     protected Bitmap doInBackground(Void... unused) {
-                        String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+                        Uri uri = new Uri.Builder()
+                                .scheme(Constants.FINGERPRINT_SCHEME)
+                                .opaquePart(fingerprint)
+                                .build();
                         // render with minimal size
-                        return QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+                        return QrCodeUtils.getQRCodeBitmap(uri, 0);
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
