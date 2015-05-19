@@ -85,11 +85,12 @@ public class QrCodeViewActivity extends BaseActivity {
                 ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             }
 
-            String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-            String qrCodeContent = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
-
+            Uri uri = new Uri.Builder()
+                    .scheme(Constants.FINGERPRINT_SCHEME)
+                    .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
+                    .build();
             // create a minimal size qr code, we can keep this in ram no problem
-            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(qrCodeContent, 0);
+            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
 
             mQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
                     new OnGlobalLayoutListener() {
