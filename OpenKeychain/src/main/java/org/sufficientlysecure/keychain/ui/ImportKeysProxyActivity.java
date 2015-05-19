@@ -153,7 +153,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         }
 
         String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
-        if (fingerprint.matches("[a-fA-F0-9]{40}")) {
+        if (!fingerprint.matches("[a-fA-F0-9]{40}")) {
             SingletonResult result = new SingletonResult(
                     SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE_FP);
             Intent intent = new Intent();
