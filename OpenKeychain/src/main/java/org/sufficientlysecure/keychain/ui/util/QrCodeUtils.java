@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -33,17 +34,24 @@ import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Hashtable;
+import java.util.Locale;
 
 /**
  * Copied from Bitcoin Wallet
  */
 public class QrCodeUtils {
 
+    public static Bitmap getQRCodeBitmap(final Uri uri, final int size) {
+        // for URIs we want alphanumeric encoding to save space, thus make everything upper case!
+        // zxing will then select Mode.ALPHANUMERIC internally
+        return getQRCodeBitmap(uri.toString().toUpperCase(Locale.ENGLISH), size);
+    }
+
     /**
      * Generate Bitmap with QR Code based on input.
      * @return QR Code as Bitmap
      */
-    public static Bitmap getQRCodeBitmap(final String input, final int size) {
+    private static Bitmap getQRCodeBitmap(final String input, final int size) {
 
         try {
 
