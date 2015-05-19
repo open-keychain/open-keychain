@@ -16,7 +16,7 @@
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
-    <string name="title_key_server_preference">"Keyservers"</string>
+    <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
@@ -135,7 +135,7 @@
     <string name="label_passphrase_cache_subs">"Cache passwords by subkey"</string>
     <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
-    <string name="label_keyservers">"Keyservers"</string>
+    <string name="label_keyservers">"Select OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_key_created">"Key created %s"</string>
     <string name="label_creation">"Creation"</string>
@@ -155,13 +155,13 @@
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
-    <string name="label_verify_keyserver">"Verify Keyserver"</string>
-    <string name="label_enter_keyserver_url">"Enter Keyserver URL"</string>
+    <string name="label_verify_keyserver">"Verify keyserver"</string>
+    <string name="label_enter_keyserver_url">"Enter keyserver URL"</string>
 
-    <string name="pref_keyserver">"Search Keyserver"</string>
-    <string name="pref_keyserver_summary">"Search HKP keyserver"</string>
-    <string name="pref_keybase">"Search Keybase.io"</string>
-    <string name="pref_keybase_summary">"Search Keybase.io index"</string>
+    <string name="pref_keyserver">"OpenPGP keyservers"</string>
+    <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
+    <string name="pref_keybase">"keybase.io"</string>
+    <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
@@ -331,7 +331,7 @@
     <string name="progress_modify_subkeyrevoke">"revoking subkeys…"</string>
     <string name="progress_modify_subkeystrip">"stripping subkeys…"</string>
     <string name="progress_modify_subkeyadd">"adding subkeys…"</string>
-    <string name="progress_modify_passphrase">"changing passwords…"</string>
+    <string name="progress_modify_passphrase">"changing password…"</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">"exporting key…"</item>
@@ -414,7 +414,7 @@
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
 
     <!-- Import from URL -->
-    <string name="import_url_warn_no_search_parameter">"No search parameter found. You may still attempt manually searching the keyserver."</string>
+    <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
 
     <!-- Generic result toast -->
     <string name="view_log">"Details"</string>
@@ -622,7 +622,7 @@
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
         <item>"Strip Subkey"</item>
-        <item>"Move Subkey to Yubikey / Smart Card"</item>
+        <item>"Move Subkey to YubiKey / Smart Card"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_flag">"Please select at least one flag!"</string>
@@ -630,7 +630,7 @@
     <string name="edit_key_error_add_subkey">"Add at least one subkey!"</string>
     <string name="edit_key_error_bad_nfc_algo">"Algorithm not supported by smart card!"</string>
     <string name="edit_key_error_bad_nfc_size">"Key size not supported by smart card!"</string>
-    <string name="edit_key_error_bad_nfc_stripped">"Cannot move stripped / diverted key to smart card!"</string>
+    <string name="edit_key_error_bad_nfc_stripped">"Cannot move key to smart card (either stripped or 'divert-to-card')!"</string>
 
     <!-- Create key -->
     <string name="create_key_upload">"Synchronize with the cloud"</string>
@@ -661,7 +661,7 @@
     <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
 
     <!-- Add keyserver -->
-    <string name="add_keyserver_dialog_title">"Add Keyserver"</string>
+    <string name="add_keyserver_dialog_title">"Add keyserver"</string>
     <string name="add_keyserver_verified">"Keyserver verified!"</string>
     <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
     <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
@@ -805,7 +805,7 @@
     <string name="msg_is_subkey_empty">"Marked secret subkey %s as available, with empty password"</string>
     <string name="msg_is_subkey_pin">"Marked secret subkey %s as available, with PIN"</string>
     <string name="msg_is_subkey_stripped">"Marked secret subkey %s as stripped"</string>
-    <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert to smartcard/NFC'"</string>
+    <string name="msg_is_subkey_divert">"Marked secret subkey %s as 'divert-to-card'"</string>
     <string name="msg_is_success_identical">"Keyring contains no new data, nothing to do"</string>
     <string name="msg_is_success">"Successfully imported secret keyring"</string>
 
@@ -912,8 +912,8 @@
 
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
-    <string name="msg_mf_divert">"Will divert to card/nfc for crypto operations"</string>
-    <string name="msg_mf_error_divert_serial">"The serial number of a divert-to-card key must be 16 bytes! This is a programming error, please file a bug report!"</string>
+    <string name="msg_mf_divert">"Will divert to smart card for crypto operations"</string>
+    <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
     <string name="msg_mf_error_keyid">"No key ID. This is an internal error, please file a bug report!"</string>
@@ -929,7 +929,7 @@
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
-    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to card in same operation that creates an on-card signature."</string>
+    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to smart card in same operation that creates an on-card signature."</string>
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for smart card key."</string>
     <string name="msg_mf_master">"Modifying master certifications"</string>
@@ -943,7 +943,7 @@
     <string name="msg_mf_primary_new">"Generating new certificate for new primary user ID"</string>
     <string name="msg_mf_restricted_mode">"Changing to restricted operation mode"</string>
     <string name="msg_mf_subkey_change">"Modifying subkey %s"</string>
-    <string name="msg_mf_require_divert">"Diverting to card/nfc for crypto operations"</string>
+    <string name="msg_mf_require_divert">"Diverting to smart card for crypto operations"</string>
     <string name="msg_mf_require_passphrase">"Password required for operations"</string>
     <string name="msg_mf_subkey_new">"Adding new subkey of type %s"</string>
     <string name="msg_mf_subkey_new_id">"New subkey ID: %s"</string>
@@ -951,7 +951,7 @@
     <string name="msg_mf_subkey_revoke">"Revoking subkey %s"</string>
     <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
     <string name="msg_mf_keytocard_start">"Moving subkey %s to smart card"</string>
-    <string name="msg_mf_keytocard_finish">"Moved %1$s to card %2$s"</string>
+    <string name="msg_mf_keytocard_finish">"Moved %1$s to smart card %2$s"</string>
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user ID %s"</string>
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
@@ -1006,11 +1006,11 @@
 
     <!-- Promote key -->
     <string name="msg_pr">"Promoting public key to secret key"</string>
-    <string name="msg_pr_all">"Promoting all subkeysp"</string>
+    <string name="msg_pr_all">"Promoting all subkeys"</string>
     <string name="msg_pr_error_key_not_found">"Key not found!"</string>
     <string name="msg_pr_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_pr_subkey_match">"Promoting subkey: %s"</string>
-    <string name="msg_pr_subkey_nomatch">"Subkey not on Yubikey: %s"</string>
+    <string name="msg_pr_subkey_nomatch">"Subkey not on YubiKey: %s"</string>
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->
@@ -1126,7 +1126,7 @@
     <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
     <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
-    <string name="msg_crt_nfc_return">"Returning for NFC input"</string>
+    <string name="msg_crt_nfc_return">"Returning to NFC screen"</string>
     <string name="msg_crt_save">"Saving certified key %s"</string>
     <string name="msg_crt_saving">"Saving keyrings"</string>
     <string name="msg_crt_unlock">"Unlocking master key"</string>
@@ -1226,7 +1226,7 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-    <string name="first_time_blank_smartcard_title">"Blank Smart Card / Yubikey Detected"</string>
+    <string name="first_time_blank_smartcard_title">"Blank smart card / YubiKey detected"</string>
     <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
 
     <!-- unsorted -->
@@ -1245,7 +1245,7 @@
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
-    <string name="key_divert">"divert to smartcard/NFC"</string>
+    <string name="key_divert">"divert to smart card"</string>
     <string name="key_no_passphrase">"no password"</string>
     <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>

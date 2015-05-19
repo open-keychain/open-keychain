@@ -58,7 +58,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class AddKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_TITLE = "title";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_VERIFICATION_FAILED = 2;
@@ -85,10 +84,9 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
      * @param messenger to communicate back after setting the passphrase
      * @return
      */
-    public static AddKeyserverDialogFragment newInstance(Messenger messenger, int title) {
+    public static AddKeyserverDialogFragment newInstance(Messenger messenger) {
         AddKeyserverDialogFragment frag = new AddKeyserverDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_TITLE, title);
         args.putParcelable(ARG_MESSENGER, messenger);
 
         frag.setArguments(args);
@@ -103,12 +101,11 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        int title = getArguments().getInt(ARG_TITLE);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-        alert.setTitle(title);
+        alert.setTitle(R.string.add_keyserver_dialog_title);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.add_keyserver_dialog, null);

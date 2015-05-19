@@ -177,7 +177,7 @@ public class SettingsKeyServerActivity extends BaseActivity implements OnClickLi
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
         AddKeyserverDialogFragment dialogFragment = AddKeyserverDialogFragment
-                .newInstance(messenger, R.string.add_keyserver_dialog_title);
+                .newInstance(messenger);
         dialogFragment.show(getSupportFragmentManager(), "addKeyserverDialog");
     }
 
