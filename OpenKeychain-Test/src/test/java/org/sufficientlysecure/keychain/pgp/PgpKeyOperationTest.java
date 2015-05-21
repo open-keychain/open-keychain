@@ -99,6 +99,14 @@ public class PgpKeyOperationTest {
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
+
+        {
+            int type = 42;
+            byte[] data = new byte[] { 0, 1, 2, 3, 4 };
+            WrappedUserAttribute uat = WrappedUserAttribute.fromSubpacket(type, data);
+            parcel.mAddUserAttribute.add(uat);
+        }
+
         parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
         PgpKeyOperation op = new PgpKeyOperation(null);
 
@@ -230,6 +238,17 @@ public class PgpKeyOperationTest {
 
         Assert.assertEquals("number of user ids must be two",
                 2, ring.getPublicKey().getUnorderedUserIds().size());
+
+        ArrayList<WrappedUserAttribute> attributes =
+            ring.getPublicKey().getUnorderedUserAttributes();
+        Assert.assertEquals("number of user attributes must be one",
+                1, attributes.size());
+        Assert.assertEquals("user attribute must be correct type",
+                42, attributes.get(0).getType());
+        Assert.assertEquals("user attribute must have one subpacket",
+                1, attributes.get(0).getSubpackets().length);
+        Assert.assertArrayEquals("user attribute must have correct data",
+                new byte[] { 0, 1, 2, 3, 4 }, attributes.get(0).getSubpackets()[0]);
 
         List<UncachedPublicKey> subkeys = KeyringTestingHelper.itToList(ring.getPublicKeys());
         Assert.assertEquals("number of subkeys must be three", 3, subkeys.size());
