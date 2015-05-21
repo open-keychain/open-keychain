@@ -219,7 +219,7 @@ public class KeyFormattingUtils {
         // NOTE: Even though v3 keys are not imported we need to support both fingerprints for
         // display/comparison before import
         if (fingerprint.length != 16 && fingerprint.length != 20) {
-            throw new RuntimeException("No valid v3 or v4 fingerprint!");
+            throw new AssertionError("No valid v3 or v4 fingerprint!");
         }
 
         return Hex.toHexString(fingerprint).toLowerCase(Locale.ENGLISH);
