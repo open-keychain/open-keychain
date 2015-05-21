@@ -164,7 +164,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         if (!mNfcUserId.isEmpty()) {
             vUserId.setText(getString(R.string.yubikey_key_holder, mNfcUserId));
         } else {
-            vUserId.setText(getString(R.string.yubikey_key_holder_unset));
+            vUserId.setText(getString(R.string.yubikey_key_holder_not_set));
         }
     }
 
