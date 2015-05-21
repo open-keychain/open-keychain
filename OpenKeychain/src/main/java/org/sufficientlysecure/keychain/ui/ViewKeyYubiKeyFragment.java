@@ -110,7 +110,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
         if (!mUserId.isEmpty()) {
             vUserId.setText(getString(R.string.yubikey_key_holder, mUserId));
         } else {
-            vUserId.setText(getString(R.string.yubikey_key_holder_unset));
+            vUserId.setText(getString(R.string.yubikey_key_holder_not_set));
         }
 
         vButton = (Button) view.findViewById(R.id.button_bind);

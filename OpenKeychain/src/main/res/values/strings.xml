@@ -1295,7 +1295,7 @@
     <string name="button_bind_key">"Bind Key"</string>
     <string name="yubikey_serno">"Serial No: %s"</string>
     <string name="yubikey_key_holder">"Key holder: "</string>
-    <string name="yubikey_key_holder_unset">"Key holder: &lt;unset&gt;"</string>
+    <string name="yubikey_key_holder_not_set">"Key holder: &lt;not set&gt;"</string>
     <string name="yubikey_status_bound">"YubiKey matches and is bound to key"</string>
     <string name="yubikey_status_unbound">"YubiKey matches, can be bound to key"</string>
     <string name="yubikey_status_partly">"YubiKey matches, partly bound to key"</string>
