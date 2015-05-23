@@ -44,6 +44,12 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class MainActivity extends BaseNfcActivity implements FabContainer {
 
+    private static final int ID_KEYS = 1;
+    private static final int ID_ENCRYPT_DECRYPT = 2;
+    private static final int ID_APPS = 3;
+    private static final int ID_SETTINGS = 4;
+    private static final int ID_HELP = 5;
+
     public Drawer.Result mDrawerResult;
     private Toolbar mToolbar;
 
@@ -62,16 +68,16 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
                 .withToolbar(mToolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key)
-                                .withIdentifier(1).withCheckable(false),
+                                .withIdentifier(ID_KEYS).withCheckable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
-                                .withIdentifier(2).withCheckable(false),
+                                .withIdentifier(ID_ENCRYPT_DECRYPT).withCheckable(false),
                         new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
-                                .withIdentifier(3).withCheckable(false)
+                                .withIdentifier(ID_APPS).withCheckable(false)
                 )
                 .addStickyDrawerItems(
                         // display and stick on bottom of drawer
-                        new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(4).withCheckable(false),
-                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(5).withCheckable(false)
+                        new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withCheckable(false),
+                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withCheckable(false)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -79,19 +85,19 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
                         if (drawerItem != null) {
                             Intent intent = null;
                             switch(drawerItem.getIdentifier()) {
-                                case 1:
+                                case ID_KEYS:
                                     onKeysSelected();
                                     break;
-                                case 2:
+                                case ID_ENCRYPT_DECRYPT:
                                     onEnDecryptSelected();
                                     break;
-                                case 3:
+                                case ID_APPS:
                                     onAppsSelected();
                                     break;
-                                case 4:
+                                case ID_SETTINGS:
                                     intent = new Intent(MainActivity.this, SettingsActivity.class);
                                     break;
-                                case 5:
+                                case ID_HELP:
                                     intent = new Intent(MainActivity.this, HelpActivity.class);
                                     break;
                             }
@@ -145,18 +151,21 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
 
     private void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
+        mDrawerResult.setSelectionByIdentifier(ID_KEYS, false);
         Fragment frag = new KeyListFragment();
         setFragment(frag, false);
     }
 
     private void onEnDecryptSelected() {
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
+        mDrawerResult.setSelectionByIdentifier(ID_ENCRYPT_DECRYPT, false);
         Fragment frag = new EncryptDecryptOverviewFragment();
         setFragment(frag, true);
     }
 
     private void onAppsSelected() {
         mToolbar.setTitle(R.string.nav_apps);
+        mDrawerResult.setSelectionByIdentifier(ID_APPS, false);
         Fragment frag = new AppsListFragment();
         setFragment(frag, true);
     }
