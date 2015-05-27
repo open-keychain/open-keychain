@@ -77,8 +77,6 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
     private long[] mPubMasterKeyIds;
 
-    private long mSignMasterKeyId = Constants.key.none;
-
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets._ID,
             UserPackets.MASTER_KEY_ID,
@@ -149,19 +147,13 @@ public class CertifyKeyFragment extends CryptoOperationFragment
         vActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
 
-        mCertifyKeySpinner.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
-            @Override
-            public void onKeyChanged(long masterKeyId) {
-                mSignMasterKeyId = masterKeyId;
-            }
-        });
-
         View vCertifyButton = view.findViewById(R.id.certify_key_certify_button);
         vCertifyButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (mSignMasterKeyId == Constants.key.none) {
+                long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
+                if (selectedKeyId == Constants.key.none) {
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
                 } else {
@@ -307,8 +299,10 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
         Bundle data = new Bundle();
         {
+            long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
+
             // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(mSignMasterKeyId);
+            CertifyActionsParcel parcel = new CertifyActionsParcel(selectedKeyId);
             parcel.mCertifyActions.addAll(certifyActions);
 
             data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);

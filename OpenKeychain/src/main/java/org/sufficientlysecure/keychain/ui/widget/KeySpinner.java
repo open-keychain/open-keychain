@@ -20,12 +20,14 @@ package org.sufficientlysecure.keychain.ui.widget;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.AppCompatSpinner;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -42,17 +44,18 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 /**
  * Use AppCompatSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
  * Related: http://stackoverflow.com/a/27713090
  */
-public abstract class KeySpinner extends AppCompatSpinner implements LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class KeySpinner extends AppCompatSpinner implements
+        LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String ARG_SUPER_STATE = "super_state";
+    public static final String ARG_SELECTED_KEY_ID = "select_key_id";
+
     public interface OnKeyChangedListener {
-        public void onKeyChanged(long masterKeyId);
+        void onKeyChanged(long masterKeyId);
     }
 
     protected long mSelectedKeyId = Constants.key.none;
@@ -82,15 +85,17 @@ public abstract class KeySpinner extends AppCompatSpinner implements LoaderManag
         super.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mSelectedKeyId = id;
                 if (mListener != null) {
-                    mListener.onKeyChanged(id);
+                    mListener.onKeyChanged(mSelectedKeyId);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                mSelectedKeyId = Constants.key.none;
                 if (mListener != null) {
-                    mListener.onKeyChanged(Constants.key.none);
+                    mListener.onKeyChanged(mSelectedKeyId);
                 }
             }
         });
@@ -138,7 +143,7 @@ public abstract class KeySpinner extends AppCompatSpinner implements LoaderManag
     }
 
     public void setSelectedKeyId(long selectedKeyId) {
-        this.mSelectedKeyId = selectedKeyId;
+        mSelectedKeyId = selectedKeyId;
     }
 
     protected class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {

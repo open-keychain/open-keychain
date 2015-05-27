@@ -72,30 +72,18 @@ import java.util.Set;
 
 public class EncryptFilesFragment extends CryptoOperationFragment {
 
-    public interface IMode {
-        public void onModeChanged(boolean symmetric);
-    }
-
     public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    private IMode mModeInterface;
-
-    private boolean mSymmetricMode = false;
     private boolean mUseArmor = false;
     private boolean mUseCompression = true;
     private boolean mDeleteAfterEncrypt = false;
     private boolean mShareAfterEncrypt = false;
     private boolean mEncryptFilenames = true;
     private boolean mHiddenRecipients = false;
-
-    private long mEncryptionKeyIds[] = null;
-    private String mEncryptionUserIds[] = null;
-    private long mSigningKeyId = Constants.key.none;
-    private Passphrase mPassphrase = new Passphrase();
 
     private ArrayList<Uri> mOutputUris = new ArrayList<>();
 
@@ -118,29 +106,11 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         return frag;
     }
 
-    public void setEncryptionKeyIds(long[] encryptionKeyIds) {
-        mEncryptionKeyIds = encryptionKeyIds;
-    }
-
-    public void setEncryptionUserIds(String[] encryptionUserIds) {
-        mEncryptionUserIds = encryptionUserIds;
-    }
-
-    public void setSigningKeyId(long signingKeyId) {
-        mSigningKeyId = signingKeyId;
-    }
-
-    public void setPassphrase(Passphrase passphrase) {
-        mPassphrase = passphrase;
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mModeInterface = (IMode) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity + " must be IMode");
+        if ( ! (activity instanceof EncryptActivity) ) {
+            throw new AssertionError(activity + " must inherit from EncryptionActivity");
         }
     }
 
@@ -293,8 +263,8 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 break;
             }
             case R.id.check_use_symmetric: {
-                mSymmetricMode = item.isChecked();
-                mModeInterface.onModeChanged(mSymmetricMode);
+                EncryptActivity encryptActivity = (EncryptActivity) getActivity();
+                encryptActivity.toggleModeFragment();
                 break;
             }
             case R.id.check_use_armor: {
@@ -320,53 +290,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 //            }
             default: {
                 return super.onOptionsItemSelected(item);
-            }
-        }
-        return true;
-    }
-
-    protected boolean inputIsValid() {
-        // file checks
-
-        if (mFilesModels.isEmpty()) {
-            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
-                    .show(this);
-            return false;
-        } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
-            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
-            // This should be impossible...
-            return false;
-        } else if (mFilesModels.size() != mOutputUris.size()) {
-            Log.e(Constants.TAG, "Aborting: mInputUris.size() != mOutputUris.size()");
-            // This as well
-            return false;
-        }
-
-        if (mSymmetricMode) {
-            // symmetric encryption checks
-
-            if (mPassphrase == null) {
-                Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
-                        .show(this);
-                return false;
-            }
-            if (mPassphrase.isEmpty()) {
-                Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
-                        .show(this);
-                return false;
-            }
-
-        } else {
-            // asymmetric encryption checks
-
-            boolean gotEncryptionKeys = (mEncryptionKeyIds != null
-                    && mEncryptionKeyIds.length > 0);
-
-            // Files must be encrypted, only text can be signed-only right now
-            if (!gotEncryptionKeys) {
-                Notify.create(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR)
-                        .show(this);
-                return false;
             }
         }
         return true;
@@ -403,6 +326,21 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     }
 
     protected SignEncryptParcel createEncryptBundle() {
+
+        if (mFilesModels.isEmpty()) {
+            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
+                    .show(this);
+            return null;
+        } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
+            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
+            // This should be impossible...
+            return null;
+        } else if (mFilesModels.size() != mOutputUris.size()) {
+            Log.e(Constants.TAG, "Aborting: mInputUris.size() != mOutputUris.size()");
+            // This as well
+            return null;
+        }
+
         // fill values for this action
         SignEncryptParcel data = new SignEncryptParcel();
 
@@ -419,17 +357,39 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
-        if (mSymmetricMode) {
-            Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            Passphrase passphrase = mPassphrase;
+        EncryptActivity encryptActivity = (EncryptActivity) getActivity();
+        EncryptModeFragment modeFragment = encryptActivity.getModeFragment();
+
+        if (modeFragment.isAsymmetric()) {
+            long[] encryptionKeyIds = modeFragment.getAsymmetricEncryptionKeyIds();
+            long signingKeyId = modeFragment.getAsymmetricSigningKeyId();
+
+            boolean gotEncryptionKeys = (encryptionKeyIds != null
+                    && encryptionKeyIds.length > 0);
+
+            if (!gotEncryptionKeys && signingKeyId == 0) {
+                Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
+                        .show(this);
+                return null;
+            }
+
+            data.setEncryptionMasterKeyIds(encryptionKeyIds);
+            data.setSignatureMasterKeyId(signingKeyId);
+        } else {
+            Passphrase passphrase = modeFragment.getSymmetricPassphrase();
+            if (passphrase == null) {
+                Notify.create(getActivity(), R.string.passphrases_do_not_match, Notify.Style.ERROR)
+                        .show(this);
+                return null;
+            }
             if (passphrase.isEmpty()) {
-                passphrase = null;
+                Notify.create(getActivity(), R.string.passphrase_must_not_be_empty, Notify.Style.ERROR)
+                        .show(this);
+                return null;
             }
             data.setSymmetricPassphrase(passphrase);
-        } else {
-            data.setEncryptionMasterKeyIds(mEncryptionKeyIds);
-            data.setSignatureMasterKeyId(mSigningKeyId);
         }
+
         return data;
     }
 
@@ -461,16 +421,27 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         }
         sendIntent.setType(Constants.ENCRYPTED_FILES_MIME);
 
-        if (!mSymmetricMode && mEncryptionUserIds != null) {
-            Set<String> users = new HashSet<>();
-            for (String user : mEncryptionUserIds) {
-                KeyRing.UserId userId = KeyRing.splitUserId(user);
-                if (userId.email != null) {
-                    users.add(userId.email);
-                }
-            }
-            sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
+        EncryptActivity modeInterface = (EncryptActivity) getActivity();
+        EncryptModeFragment modeFragment = modeInterface.getModeFragment();
+        if (!modeFragment.isAsymmetric()) {
+            return sendIntent;
         }
+
+        String[] encryptionUserIds = modeFragment.getAsymmetricEncryptionUserIds();
+        if (encryptionUserIds == null) {
+            return sendIntent;
+        }
+
+        Set<String> users = new HashSet<>();
+        for (String user : encryptionUserIds) {
+            KeyRing.UserId userId = KeyRing.splitUserId(user);
+            if (userId.email != null) {
+                users.add(userId.email);
+            }
+        }
+        // pass trough email addresses as extra for email applications
+        sendIntent.putExtra(Intent.EXTRA_EMAIL, users.toArray(new String[users.size()]));
+
         return sendIntent;
     }
 
@@ -482,18 +453,16 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
 
-        if (!inputIsValid()) {
+        final SignEncryptParcel input = createEncryptBundle();
+        // this is null if invalid, just return in that case
+        if (input == null) {
             // Notify was created by inputIsValid.
-            Log.d(Constants.TAG, "Input not valid!");
             return;
         }
-        Log.d(Constants.TAG, "Input valid!");
 
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
-
-        final SignEncryptParcel input = createEncryptBundle();
 
         Bundle data = new Bundle();
         data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
@@ -727,7 +696,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 for (Uri inputUri : inputUris) {
                     ViewModel newModel = new ViewModel(mActivity, inputUri);
                     if (mDataset.contains(newModel)) {
-                        Log.e(Constants.TAG, "Skipped duplicate " + inputUri.toString());
+                        Log.e(Constants.TAG, "Skipped duplicate " + inputUri);
                     } else {
                         mDataset.add(newModel);
                     }
