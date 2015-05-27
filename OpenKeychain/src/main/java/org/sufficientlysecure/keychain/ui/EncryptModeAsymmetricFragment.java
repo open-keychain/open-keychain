@@ -17,18 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tokenautocomplete.TokenCompleteTextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -39,37 +34,18 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class EncryptModeAsymmetricFragment extends Fragment {
-
-    public interface IAsymmetric {
-
-        public void onSignatureKeyIdChanged(long signatureKeyId);
-
-        public void onEncryptionKeyIdsChanged(long[] encryptionKeyIds);
-
-        public void onEncryptionUserIdsChanged(String[] encryptionUserIds);
-    }
+public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
     ProviderHelper mProviderHelper;
 
-    // view
-    private KeySpinner mSign;
+    private KeySpinner mSignKeySpinner;
     private EncryptKeyCompletionView mEncryptKeyView;
-
-    // model
-    private IAsymmetric mEncryptInterface;
-
-//    @Override
-//    public void updateUi() {
-//        if (mSign != null) {
-//            mSign.setSelectedKeyId(mEncryptInterface.getSignatureKey());
-//        }
-//    }
 
     public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
@@ -89,16 +65,6 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         return frag;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mEncryptInterface = (IAsymmetric) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity + " must implement IAsymmetric");
-        }
-    }
-
     /**
      * Inflate the layout for this fragment
      */
@@ -106,13 +72,7 @@ public class EncryptModeAsymmetricFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
-        mSign = (KeySpinner) view.findViewById(R.id.sign);
-        mSign.setOnKeyChangedListener(new KeySpinner.OnKeyChangedListener() {
-            @Override
-            public void onKeyChanged(long masterKeyId) {
-                mEncryptInterface.onSignatureKeyIdChanged(masterKeyId);
-            }
-        });
+        mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
 
@@ -128,22 +88,6 @@ public class EncryptModeAsymmetricFragment extends Fragment {
         long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
         long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
         preselectKeys(signatureKeyId, encryptionKeyIds);
-
-        mEncryptKeyView.setTokenListener(new TokenCompleteTextView.TokenListener() {
-            @Override
-            public void onTokenAdded(Object token) {
-                if (token instanceof KeyItem) {
-                    updateEncryptionKeys();
-                }
-            }
-
-            @Override
-            public void onTokenRemoved(Object token) {
-                if (token instanceof KeyItem) {
-                    updateEncryptionKeys();
-                }
-            }
-        });
     }
 
     /**
@@ -155,8 +99,7 @@ public class EncryptModeAsymmetricFragment extends Fragment {
                 CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
-                    mEncryptInterface.onSignatureKeyIdChanged(keyring.getMasterKeyId());
-                    mSign.setSelectedKeyId(signatureKeyId);
+                    mSignKeySpinner.setSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);
@@ -175,27 +118,55 @@ public class EncryptModeAsymmetricFragment extends Fragment {
             }
             // This is to work-around a rendering bug in TokenCompleteTextView
             mEncryptKeyView.requestFocus();
-            updateEncryptionKeys();
         }
 
     }
 
-    private void updateEncryptionKeys() {
-        List<Object> objects = mEncryptKeyView.getObjects();
+    @Override
+    public boolean isAsymmetric() {
+        return true;
+    }
+
+    @Override
+    public long getAsymmetricSigningKeyId() {
+        return mSignKeySpinner.getSelectedItemId();
+    }
+
+    @Override
+    public long[] getAsymmetricEncryptionKeyIds() {
         List<Long> keyIds = new ArrayList<>();
-        List<String> userIds = new ArrayList<>();
-        for (Object object : objects) {
+        for (Object object : mEncryptKeyView.getObjects()) {
             if (object instanceof KeyItem) {
                 keyIds.add(((KeyItem) object).mKeyId);
-                userIds.add(((KeyItem) object).mUserIdFull);
             }
         }
+
         long[] keyIdsArr = new long[keyIds.size()];
         Iterator<Long> iterator = keyIds.iterator();
         for (int i = 0; i < keyIds.size(); i++) {
             keyIdsArr[i] = iterator.next();
         }
-        mEncryptInterface.onEncryptionKeyIdsChanged(keyIdsArr);
-        mEncryptInterface.onEncryptionUserIdsChanged(userIds.toArray(new String[userIds.size()]));
+
+        return keyIdsArr;
     }
+
+    @Override
+    public String[] getAsymmetricEncryptionUserIds() {
+
+        List<String> userIds = new ArrayList<>();
+        for (Object object : mEncryptKeyView.getObjects()) {
+            if (object instanceof KeyItem) {
+                userIds.add(((KeyItem) object).mUserIdFull);
+            }
+        }
+
+        return userIds.toArray(new String[userIds.size()]);
+
+    }
+
+    @Override
+    public Passphrase getSymmetricPassphrase() {
+        throw new UnsupportedOperationException("should never happen, this is a programming error!");
+    }
+
 }

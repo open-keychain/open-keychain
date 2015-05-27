@@ -20,33 +20,20 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class EncryptTextActivity extends BaseActivity implements
-        EncryptModeAsymmetricFragment.IAsymmetric, EncryptModeSymmetricFragment.ISymmetric,
-        EncryptTextFragment.IMode {
+public class EncryptTextActivity extends EncryptActivity {
 
     /* Intents */
     public static final String ACTION_ENCRYPT_TEXT = OpenKeychainIntents.ENCRYPT_TEXT;
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = OpenKeychainIntents.ENCRYPT_EXTRA_TEXT;
-
-    // preselect ids, for internal use
-    public static final String EXTRA_SIGNATURE_KEY_ID = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_ID";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = Constants.EXTRA_PREFIX + "EXTRA_SIGNATURE_KEY_IDS";
-
-    Fragment mModeFragment;
-    EncryptTextFragment mEncryptFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,23 +76,14 @@ public class EncryptTextActivity extends BaseActivity implements
             textData = "";
         }
 
-        // preselect keys given by intent
-        long mSigningKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
-        long[] mEncryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
-
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            mModeFragment = EncryptModeAsymmetricFragment.newInstance(mSigningKeyId, mEncryptionKeyIds);
-            transaction.replace(R.id.encrypt_mode_container, mModeFragment, "mode");
-
-            mEncryptFragment = EncryptTextFragment.newInstance(textData);
-            transaction.replace(R.id.encrypt_text_container, mEncryptFragment, "text");
-
+            EncryptTextFragment encryptFragment = EncryptTextFragment.newInstance(textData);
+            transaction.replace(R.id.encrypt_text_container, encryptFragment);
             transaction.commit();
-
-            getSupportFragmentManager().executePendingTransactions();
         }
+
     }
 
     @Override
@@ -113,44 +91,4 @@ public class EncryptTextActivity extends BaseActivity implements
         setContentView(R.layout.encrypt_text_activity);
     }
 
-    @Override
-    public void onModeChanged(boolean symmetric) {
-        // switch fragments
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.encrypt_mode_container,
-                        symmetric
-                                ? EncryptModeSymmetricFragment.newInstance()
-                                : EncryptModeAsymmetricFragment.newInstance(0, null)
-                )
-                .commitAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
-    }
-
-    @Override
-    public void onSignatureKeyIdChanged(long signatureKeyId) {
-        if (mEncryptFragment != null) {
-            mEncryptFragment.setSigningKeyId(signatureKeyId);
-        }
-    }
-
-    @Override
-    public void onEncryptionKeyIdsChanged(long[] encryptionKeyIds) {
-        if (mEncryptFragment != null) {
-            mEncryptFragment.setEncryptionKeyIds(encryptionKeyIds);
-        }
-    }
-
-    @Override
-    public void onEncryptionUserIdsChanged(String[] encryptionUserIds) {
-        if (mEncryptFragment != null) {
-            mEncryptFragment.setEncryptionUserIds(encryptionUserIds);
-        }
-    }
-
-    @Override
-    public void onPassphraseChanged(Passphrase passphrase) {
-        if (mEncryptFragment != null) {
-            mEncryptFragment.setSymmetricPassphrase(passphrase);
-        }
-    }
 }

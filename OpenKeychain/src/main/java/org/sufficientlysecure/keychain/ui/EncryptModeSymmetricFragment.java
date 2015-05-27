@@ -17,11 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +26,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class EncryptModeSymmetricFragment extends Fragment {
-
-    public interface ISymmetric {
-
-        public void onPassphraseChanged(Passphrase passphrase);
-    }
-
-    private ISymmetric mEncryptInterface;
+public class EncryptModeSymmetricFragment extends EncryptModeFragment {
 
     private EditText mPassphrase;
     private EditText mPassphraseAgain;
@@ -55,52 +44,53 @@ public class EncryptModeSymmetricFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mEncryptInterface = (ISymmetric) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement ISymmetric");
-        }
-    }
-
-    /**
-     * Inflate the layout for this fragment
-     */
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_symmetric_fragment, container, false);
 
         mPassphrase = (EditText) view.findViewById(R.id.passphrase);
         mPassphraseAgain = (EditText) view.findViewById(R.id.passphraseAgain);
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // update passphrase in EncryptActivity
-                Passphrase p1 = new Passphrase(mPassphrase.getText());
-                Passphrase p2 = new Passphrase(mPassphraseAgain.getText());
-                boolean passesEquals = (p1.equals(p2));
-                p1.removeFromMemory();
-                p2.removeFromMemory();
-                if (passesEquals) {
-                    mEncryptInterface.onPassphraseChanged(new Passphrase(mPassphrase.getText()));
-                } else {
-                    mEncryptInterface.onPassphraseChanged(null);
-                }
-            }
-        };
-        mPassphrase.addTextChangedListener(textWatcher);
-        mPassphraseAgain.addTextChangedListener(textWatcher);
 
         return view;
+    }
+
+    @Override
+    public boolean isAsymmetric() {
+        return false;
+    }
+
+    @Override
+    public long getAsymmetricSigningKeyId() {
+        throw new UnsupportedOperationException("should never happen, this is a programming error!");
+    }
+
+    @Override
+    public long[] getAsymmetricEncryptionKeyIds() {
+        throw new UnsupportedOperationException("should never happen, this is a programming error!");
+    }
+
+    @Override
+    public String[] getAsymmetricEncryptionUserIds() {
+        throw new UnsupportedOperationException("should never happen, this is a programming error!");
+    }
+
+    @Override
+    public Passphrase getSymmetricPassphrase() {
+        Passphrase p1 = null, p2 = null;
+        try {
+            p1 = new Passphrase(mPassphrase.getText());
+            p2 = new Passphrase(mPassphraseAgain.getText());
+            if (!p1.equals(p2)) {
+                return null;
+            }
+            return new Passphrase(mPassphrase.getText());
+        } finally {
+            if (p1 != null) {
+                p1.removeFromMemory();
+            }
+            if (p2 != null) {
+                p2.removeFromMemory();
+            }
+        }
     }
 
 }
