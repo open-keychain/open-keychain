@@ -56,9 +56,10 @@ import java.util.Set;
 public class EncryptTextFragment extends CryptoOperationFragment {
 
     public static final String ARG_TEXT = "text";
+    public static final String ARG_USE_COMPRESSION = "use_compression";
 
-    private boolean mShareAfterEncrypt = false;
-    private boolean mUseCompression = true;
+    private boolean mShareAfterEncrypt;
+    private boolean mUseCompression;
     private boolean mHiddenRecipients = false;
 
     private String mMessage = "";
@@ -118,9 +119,20 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_USE_COMPRESSION, mUseCompression);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMessage = getArguments().getString(ARG_TEXT);
+        if (savedInstanceState == null) {
+            mMessage = getArguments().getString(ARG_TEXT);
+        }
+
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
 
         setHasOptionsMenu(true);
     }
