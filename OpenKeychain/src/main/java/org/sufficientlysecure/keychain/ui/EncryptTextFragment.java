@@ -137,11 +137,6 @@ public class EncryptTextFragment extends CryptoOperationFragment {
             item.setChecked(!item.isChecked());
         }
         switch (item.getItemId()) {
-            case R.id.check_use_symmetric: {
-                EncryptActivity modeInterface = (EncryptActivity) getActivity();
-                modeInterface.toggleModeFragment();
-                break;
-            }
             case R.id.check_enable_compression: {
                 mUseCompression = item.isChecked();
                 break;
