@@ -15,11 +15,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/check_use_symmetric"
-        android:title="@string/label_symmetric"
-        android:checkable="true" />
-
-    <item
         android:id="@+id/check_delete_after_encrypt"
         android:title="@string/label_delete_after_encryption"
         android:checkable="true" />

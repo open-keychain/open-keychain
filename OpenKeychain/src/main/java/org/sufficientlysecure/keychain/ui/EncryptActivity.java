@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -56,9 +58,33 @@ public class EncryptActivity extends BaseActivity {
         }
     }
 
-    public void toggleModeFragment() {
-        boolean symmetric = getModeFragment() instanceof EncryptModeAsymmetricFragment;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.check_use_symmetric: {
+                item.setChecked(!item.isChecked());
+                setModeFragment(item.isChecked());
+                return true;
+            }
+            default: {
+                return super.onOptionsItemSelected(item);
+            }
+        }
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.encrypt_activity, menu);
+
+        Fragment frag =
+                getSupportFragmentManager().findFragmentById(R.id.encrypt_mode_container);
+        boolean isSymmetric = frag instanceof EncryptModeSymmetricFragment;
+        menu.findItem(R.id.check_use_symmetric).setChecked(isSymmetric);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void setModeFragment(boolean symmetric) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.encrypt_mode_container,
                 symmetric

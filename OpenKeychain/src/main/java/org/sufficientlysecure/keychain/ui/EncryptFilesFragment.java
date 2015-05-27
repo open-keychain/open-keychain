@@ -250,9 +250,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.isCheckable()) {
-            item.setChecked(!item.isChecked());
-        }
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
                 encryptClicked(false);
@@ -262,24 +259,24 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 encryptClicked(true);
                 break;
             }
-            case R.id.check_use_symmetric: {
-                EncryptActivity encryptActivity = (EncryptActivity) getActivity();
-                encryptActivity.toggleModeFragment();
-                break;
-            }
             case R.id.check_use_armor: {
+                // we can NOT do this for every item, others might care!
+                item.setChecked(!item.isChecked());
                 mUseArmor = item.isChecked();
                 break;
             }
             case R.id.check_delete_after_encrypt: {
+                item.setChecked(!item.isChecked());
                 mDeleteAfterEncrypt = item.isChecked();
                 break;
             }
             case R.id.check_enable_compression: {
+                item.setChecked(!item.isChecked());
                 mUseCompression = item.isChecked();
                 break;
             }
             case R.id.check_encrypt_filenames: {
+                item.setChecked(!item.isChecked());
                 mEncryptFilenames = item.isChecked();
                 break;
             }
