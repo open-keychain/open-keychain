@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -52,13 +53,13 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_SUPER_STATE = "super_state";
-    public static final String ARG_SELECTED_KEY_ID = "select_key_id";
+    public static final String ARG_KEY_ID = "key_id";
 
     public interface OnKeyChangedListener {
         void onKeyChanged(long masterKeyId);
     }
 
-    protected long mSelectedKeyId = Constants.key.none;
+    protected long mPreSelectedKeyId = Constants.key.none;
     protected SelectKeyAdapter mAdapter = new SelectKeyAdapter();
     protected OnKeyChangedListener mListener;
 
@@ -85,17 +86,15 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         super.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mSelectedKeyId = id;
                 if (mListener != null) {
-                    mListener.onKeyChanged(mSelectedKeyId);
+                    mListener.onKeyChanged(id);
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mSelectedKeyId = Constants.key.none;
                 if (mListener != null) {
-                    mListener.onKeyChanged(mSelectedKeyId);
+                    mListener.onKeyChanged(Constants.key.none);
                 }
             }
         });
@@ -139,11 +138,11 @@ public abstract class KeySpinner extends AppCompatSpinner implements
     }
 
     public long getSelectedKeyId() {
-        return mSelectedKeyId;
+        return getSelectedItemId();
     }
 
-    public void setSelectedKeyId(long selectedKeyId) {
-        mSelectedKeyId = selectedKeyId;
+    public void setPreSelectedKeyId(long selectedKeyId) {
+        mPreSelectedKeyId = selectedKeyId;
     }
 
     protected class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {
@@ -232,10 +231,10 @@ public abstract class KeySpinner extends AppCompatSpinner implements
             mIndexMasterKeyId = newCursor.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID);
             mIndexCreationDate = newCursor.getColumnIndex(KeychainContract.KeyRings.CREATION);
 
-            // pre-select key if mSelectedKeyId is given
-            if (mSelectedKeyId != Constants.key.none && newCursor.moveToFirst()) {
+            // pre-select key if mPreSelectedKeyId is given
+            if (mPreSelectedKeyId != Constants.key.none && newCursor.moveToFirst()) {
                 do {
-                    if (newCursor.getLong(mIndexMasterKeyId) == mSelectedKeyId) {
+                    if (newCursor.getLong(mIndexMasterKeyId) == mPreSelectedKeyId) {
                         setSelection(newCursor.getPosition() + 1);
                     }
                 } while (newCursor.moveToNext());
@@ -260,6 +259,7 @@ public abstract class KeySpinner extends AppCompatSpinner implements
             return inner.getItemId(position - 1);
         }
 
+        @SuppressLint("ViewHolder") // inflate call is for the preview only
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             try {
@@ -304,4 +304,26 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         return true;
     }
 
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        Bundle bundle = (Bundle) state;
+
+        mPreSelectedKeyId = bundle.getLong(ARG_KEY_ID);
+
+        // restore super state
+        super.onRestoreInstanceState(bundle.getParcelable(ARG_SUPER_STATE));
+
+    }
+
+    @NonNull
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+
+        // save super state
+        bundle.putParcelable(ARG_SUPER_STATE, super.onSaveInstanceState());
+
+        bundle.putLong(ARG_KEY_ID, getSelectedKeyId());
+        return bundle;
+    }
 }

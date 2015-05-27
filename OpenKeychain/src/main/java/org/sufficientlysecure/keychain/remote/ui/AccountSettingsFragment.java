@@ -58,7 +58,7 @@ public class AccountSettingsFragment extends Fragment {
         this.mAccSettings = accountSettings;
 
         mAccNameView.setText(accountSettings.getAccountName());
-        mSelectKeySpinner.setSelectedKeyId(accountSettings.getKeyId());
+        mSelectKeySpinner.setPreSelectedKeyId(accountSettings.getKeyId());
     }
 
     /**
@@ -107,7 +107,7 @@ public class AccountSettingsFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
                         EditKeyResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-                        mSelectKeySpinner.setSelectedKeyId(result.mMasterKeyId);
+                        mSelectKeySpinner.setPreSelectedKeyId(result.mMasterKeyId);
                     } else {
                         Log.e(Constants.TAG, "missing result!");
                     }

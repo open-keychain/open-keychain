@@ -84,10 +84,15 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         super.onActivityCreated(savedInstanceState);
         mProviderHelper = new ProviderHelper(getActivity());
 
-        // preselect keys given
-        long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
-        long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
-        preselectKeys(signatureKeyId, encryptionKeyIds);
+        // preselect keys given, from state or arguments
+        long signatureKeyId, encryptionKeyIds[];
+
+        if (savedInstanceState == null) {
+            signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
+            encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
+            preselectKeys(signatureKeyId, encryptionKeyIds);
+        }
+
     }
 
     /**
@@ -99,7 +104,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
                 if (keyring.hasAnySecret()) {
-                    mSignKeySpinner.setSelectedKeyId(signatureKeyId);
+                    mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "key not found!", e);

@@ -60,7 +60,6 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
-import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -113,7 +112,7 @@ public class CertifyKeyFragment extends CryptoOperationFragment
             try {
                 CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
                 if (key.canCertify()) {
-                    mCertifyKeySpinner.setSelectedKeyId(certifyKeyId);
+                    mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
                 Log.e(Constants.TAG, "certify certify check failed", e);
