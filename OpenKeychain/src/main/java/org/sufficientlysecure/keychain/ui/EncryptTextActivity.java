@@ -59,22 +59,7 @@ public class EncryptTextActivity extends BaseActivity implements
             }
         }, false);
 
-        // Handle intent actions
-        handleActions(getIntent(), savedInstanceState);
-    }
-
-    @Override
-    protected void initLayout() {
-        setContentView(R.layout.encrypt_text_activity);
-    }
-
-
-    /**
-     * Handles all actions with this intent
-     *
-     * @param intent
-     */
-    private void handleActions(Intent intent, Bundle savedInstanceState) {
+        Intent intent = getIntent();
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
         String type = intent.getType();
@@ -82,10 +67,6 @@ public class EncryptTextActivity extends BaseActivity implements
         if (extras == null) {
             extras = new Bundle();
         }
-
-        /*
-         * Android's Action
-         */
 
         // When sending to OpenKeychain Encrypt via share menu
         if (Intent.ACTION_SEND.equals(action) && type != null) {
@@ -128,6 +109,11 @@ public class EncryptTextActivity extends BaseActivity implements
     }
 
     @Override
+    protected void initLayout() {
+        setContentView(R.layout.encrypt_text_activity);
+    }
+
+    @Override
     public void onModeChanged(boolean symmetric) {
         // switch fragments
         getSupportFragmentManager().beginTransaction()
@@ -142,21 +128,29 @@ public class EncryptTextActivity extends BaseActivity implements
 
     @Override
     public void onSignatureKeyIdChanged(long signatureKeyId) {
-        mEncryptFragment.setSigningKeyId(signatureKeyId);
+        if (mEncryptFragment != null) {
+            mEncryptFragment.setSigningKeyId(signatureKeyId);
+        }
     }
 
     @Override
     public void onEncryptionKeyIdsChanged(long[] encryptionKeyIds) {
-        mEncryptFragment.setEncryptionKeyIds(encryptionKeyIds);
+        if (mEncryptFragment != null) {
+            mEncryptFragment.setEncryptionKeyIds(encryptionKeyIds);
+        }
     }
 
     @Override
     public void onEncryptionUserIdsChanged(String[] encryptionUserIds) {
-        mEncryptFragment.setEncryptionUserIds(encryptionUserIds);
+        if (mEncryptFragment != null) {
+            mEncryptFragment.setEncryptionUserIds(encryptionUserIds);
+        }
     }
 
     @Override
     public void onPassphraseChanged(Passphrase passphrase) {
-        mEncryptFragment.setSymmetricPassphrase(passphrase);
+        if (mEncryptFragment != null) {
+            mEncryptFragment.setSymmetricPassphrase(passphrase);
+        }
     }
 }
