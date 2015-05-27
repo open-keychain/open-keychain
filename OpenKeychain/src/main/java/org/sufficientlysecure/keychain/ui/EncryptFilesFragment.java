@@ -72,18 +72,22 @@ import java.util.Set;
 
 public class EncryptFilesFragment extends CryptoOperationFragment {
 
+    public static final String ARG_DELETE_AFTER_ENCRYPT = "delete_after_encrypt";
+    public static final String ARG_ENCRYPT_FILENAMES = "encrypt_filenames";
+    public static final String ARG_USE_COMPRESSION = "use_compression";
     public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    private boolean mUseArmor = false;
-    private boolean mUseCompression = true;
-    private boolean mDeleteAfterEncrypt = false;
-    private boolean mShareAfterEncrypt = false;
-    private boolean mEncryptFilenames = true;
+    private boolean mUseArmor;
+    private boolean mUseCompression;
+    private boolean mDeleteAfterEncrypt;
+    private boolean mEncryptFilenames;
     private boolean mHiddenRecipients = false;
+
+    private boolean mShareAfterEncrypt;
 
     private ArrayList<Uri> mOutputUris = new ArrayList<>();
 
@@ -136,19 +140,39 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             }
         });
 
-        ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_URIS);
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+
+        ArrayList<Uri> inputUris = args.getParcelableArrayList(ARG_URIS);
         if (inputUris != null) {
             mFilesAdapter.addAll(inputUris);
         }
-        mUseArmor = getArguments().getBoolean(ARG_USE_ASCII_ARMOR);
         mSelectedFiles.setAdapter(mFilesAdapter);
 
         return view;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(ARG_DELETE_AFTER_ENCRYPT, mDeleteAfterEncrypt);
+        outState.putBoolean(ARG_USE_ASCII_ARMOR, mUseArmor);
+        outState.putBoolean(ARG_USE_COMPRESSION, mUseCompression);
+        outState.putBoolean(ARG_ENCRYPT_FILENAMES, mEncryptFilenames);
+
+        outState.putParcelableArrayList(ARG_URIS, mFilesAdapter.getAsArrayList());
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mDeleteAfterEncrypt = args.getBoolean(ARG_DELETE_AFTER_ENCRYPT, false);
+        mUseArmor = args.getBoolean(ARG_USE_ASCII_ARMOR, false);
+        mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
+        mEncryptFilenames = args.getBoolean(ARG_ENCRYPT_FILENAMES, true);
+
         setHasOptionsMenu(true);
     }
 
@@ -246,6 +270,11 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.encrypt_file_fragment, menu);
+
+        menu.findItem(R.id.check_delete_after_encrypt).setChecked(mDeleteAfterEncrypt);
+        menu.findItem(R.id.check_use_armor).setChecked(mUseArmor);
+        menu.findItem(R.id.check_enable_compression).setChecked(mUseCompression);
+        menu.findItem(R.id.check_encrypt_filenames).setChecked(mEncryptFilenames);
     }
 
     @Override
