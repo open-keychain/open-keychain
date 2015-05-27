@@ -22,13 +22,11 @@
     <item
         android:id="@+id/check_enable_compression"
         android:title="@string/label_enable_compression"
-        android:checked="true"
         android:checkable="true" />
 
     <item
         android:id="@+id/check_encrypt_filenames"
         android:title="@string/label_encrypt_filenames"
-        android:checked="true"
         android:checkable="true" />
 
     <item

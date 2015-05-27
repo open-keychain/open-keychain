@@ -129,6 +129,8 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.encrypt_text_fragment, menu);
+
+        menu.findItem(R.id.check_enable_compression).setChecked(mUseCompression);
     }
 
     @Override
