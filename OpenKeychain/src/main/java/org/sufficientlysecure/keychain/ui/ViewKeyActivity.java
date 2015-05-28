@@ -404,6 +404,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     private void startCertifyIntent(Intent intent) {
         // Message is received after signing is done in KeychainIntentService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -653,6 +654,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         // Message is received after importing is done in KeychainIntentService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

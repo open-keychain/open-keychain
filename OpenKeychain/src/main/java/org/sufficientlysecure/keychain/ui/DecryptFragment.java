@@ -132,6 +132,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
 
         // Message is received after importing is done in KeychainIntentService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(getActivity()) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

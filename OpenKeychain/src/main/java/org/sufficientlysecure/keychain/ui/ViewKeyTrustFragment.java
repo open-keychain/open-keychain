@@ -51,7 +51,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -365,8 +364,9 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         ServiceProgressHandler handler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_verifying_signature),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

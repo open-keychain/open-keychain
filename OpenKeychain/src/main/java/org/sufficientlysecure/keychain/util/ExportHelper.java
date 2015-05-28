@@ -29,7 +29,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 import java.io.File;
 
@@ -100,8 +99,9 @@ public class ExportHelper {
         // Message is received after exporting is done in KeychainIntentService
         ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity,
                 mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

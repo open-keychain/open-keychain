@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
@@ -178,8 +177,8 @@ public class DecryptTextFragment extends DecryptFragment {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

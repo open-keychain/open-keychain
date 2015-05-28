@@ -353,8 +353,9 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
                     getActivity(),
                     getString(R.string.progress_certifying),
                     ProgressDialog.STYLE_SPINNER,
-                    true,
-                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                    true
+            ) {
+                @Override
                 public void handleMessage(Message message) {
                     // handle messages by KeychainIntentCryptoServiceHandler first
                     super.handleMessage(message);

@@ -129,6 +129,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
     public void promoteToSecretKey() {
 
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

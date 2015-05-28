@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -201,8 +200,9 @@ public class CreateKeyFinalFragment extends Fragment {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -274,8 +274,9 @@ public class CreateKeyFinalFragment extends Fragment {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_uploading),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

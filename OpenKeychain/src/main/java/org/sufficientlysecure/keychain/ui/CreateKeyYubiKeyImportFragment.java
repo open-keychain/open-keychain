@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -180,9 +179,9 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT
+                ProgressDialog.STYLE_HORIZONTAL
         ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

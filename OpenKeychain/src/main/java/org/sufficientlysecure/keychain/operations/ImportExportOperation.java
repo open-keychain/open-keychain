@@ -156,6 +156,15 @@ public class ImportExportOperation extends BaseOperation {
 
     }
 
+    /**
+     * Since the introduction of multithreaded import, we expect calling functions to handle the key sync i,e
+     * ContactSyncAdapterService.requestSync()
+     *
+     * @param entries keys to import
+     * @param num number of keys to import
+     * @param keyServerUri contains uri of keyserver to import from, if it is an import from cloud
+     * @return
+     */
     public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num, String keyServerUri) {
         updateProgress(R.string.progress_importing, 0, 100);
 
@@ -331,7 +340,7 @@ public class ImportExportOperation extends BaseOperation {
         // Special: make sure new data is synced into contacts
         // disabling sync right now since it reduces speed while multi-threading
         // so, we expect calling functions to take care of it. KeychainIntentService handles this
-        //ContactSyncAdapterService.requestSync();
+        // ContactSyncAdapterService.requestSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
@@ -374,8 +383,6 @@ public class ImportExportOperation extends BaseOperation {
         } else {
             log.add(LogType.MSG_IMPORT_ERROR, 1);
         }
-
-        ContactSyncAdapterService.requestSync();
 
         return new ImportKeyResult(resultType, log, newKeys, updatedKeys, badKeys, secret,
                 importedMasterKeyIdsArray);

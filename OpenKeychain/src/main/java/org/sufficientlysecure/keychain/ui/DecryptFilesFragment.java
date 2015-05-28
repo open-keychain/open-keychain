@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -217,8 +216,8 @@ public class DecryptFilesFragment extends DecryptFragment {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
