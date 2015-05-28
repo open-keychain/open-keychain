@@ -22,8 +22,8 @@ public class RequiredInputParcel implements Parcelable {
     public final byte[][] mInputHashes;
     public final int[] mSignAlgos;
 
-    private Long mMasterKeyId;
-    private Long mSubKeyId;
+    private long mMasterKeyId;
+    private long mSubKeyId;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputHashes,
             int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
@@ -61,8 +61,8 @@ public class RequiredInputParcel implements Parcelable {
         }
 
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
-        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
-        mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
+        mMasterKeyId = source.readLong();
+        mSubKeyId = source.readLong();
 
     }
 
@@ -75,15 +75,17 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public static RequiredInputParcel createNfcSignOperation(
+            long masterKeyId, long subKeyId,
             byte[] inputHash, int signAlgo, Date signatureTime) {
         return new RequiredInputParcel(RequiredInputType.NFC_SIGN,
                 new byte[][] { inputHash }, new int[] { signAlgo },
-                signatureTime, null, null);
+                signatureTime, masterKeyId, subKeyId);
     }
 
-    public static RequiredInputParcel createNfcDecryptOperation(byte[] inputHash, long subKeyId) {
+    public static RequiredInputParcel createNfcDecryptOperation(
+            long masterKeyId, long subKeyId, byte[] inputHash) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
-                new byte[][] { inputHash }, null, null, null, subKeyId);
+                new byte[][] { inputHash }, null, null, masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
@@ -135,18 +137,8 @@ public class RequiredInputParcel implements Parcelable {
         } else {
             dest.writeInt(0);
         }
-        if (mMasterKeyId != null) {
-            dest.writeInt(1);
-            dest.writeLong(mMasterKeyId);
-        } else {
-            dest.writeInt(0);
-        }
-        if (mSubKeyId != null) {
-            dest.writeInt(1);
-            dest.writeLong(mSubKeyId);
-        } else {
-            dest.writeInt(0);
-        }
+        dest.writeLong(mMasterKeyId);
+        dest.writeLong(mSubKeyId);
 
     }
 
@@ -164,10 +156,10 @@ public class RequiredInputParcel implements Parcelable {
         Date mSignatureTime;
         ArrayList<Integer> mSignAlgos = new ArrayList<>();
         ArrayList<byte[]> mInputHashes = new ArrayList<>();
-        Long mMasterKeyId;
-        Long mSubKeyId;
+        long mMasterKeyId;
+        long mSubKeyId;
 
-        public NfcSignOperationsBuilder(Date signatureTime, Long masterKeyId, Long subKeyId) {
+        public NfcSignOperationsBuilder(Date signatureTime, long masterKeyId, long subKeyId) {
             mSignatureTime = signatureTime;
             mMasterKeyId = masterKeyId;
             mSubKeyId = subKeyId;

@@ -648,15 +648,15 @@ public class ProviderHelper {
                 UserPacketItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
 
-                if (item.selfCert == null) {
-                    throw new AssertionError("User ids MUST be self-certified at this point!!");
-                }
-
                 if (item.selfRevocation != null) {
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
                             Certs.VERIFIED_SELF));
                     // don't bother with trusted certs if the uid is revoked, anyways
                     continue;
+                }
+
+                if (item.selfCert == null) {
+                    throw new AssertionError("User ids MUST be self-certified at this point!!");
                 }
 
                 operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
@@ -782,7 +782,7 @@ public class ProviderHelper {
 
                 // first, mark all keys as not available
                 ContentValues values = new ContentValues();
-                values.put(Keys.HAS_SECRET, SecretKeyType.UNAVAILABLE.getNum());
+                values.put(Keys.HAS_SECRET, SecretKeyType.GNU_DUMMY.getNum());
                 mContentResolver.update(uri, values, null, null);
 
                 // then, mark exactly the keys we have available
@@ -831,7 +831,7 @@ public class ProviderHelper {
                 mIndent -= 1;
 
                 // this implicitly leaves all keys which were not in the secret key ring
-                // with has_secret = 0
+                // with has_secret = 1
             }
 
             log(LogType.MSG_IS_SUCCESS);

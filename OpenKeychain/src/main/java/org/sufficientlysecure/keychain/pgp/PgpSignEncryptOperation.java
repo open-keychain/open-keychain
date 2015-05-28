@@ -497,6 +497,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     // this secret key diverts to a OpenPGP card, throw exception with hash that will be signed
                     log.add(LogType.MSG_PSE_PENDING_NFC, indent);
                     return new PgpSignEncryptResult(log, RequiredInputParcel.createNfcSignOperation(
+                            signingKey.getRing().getMasterKeyId(), signingKey.getKeyId(),
                             e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()));
                 }
             }

@@ -44,6 +44,8 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService.KeyNotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -136,16 +138,29 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
+        // shortcut if we only use the default yubikey pin
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.useDefaultYubiKeyPin()) {
             mPin = new Passphrase("123456");
             return;
         }
 
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
-                RequiredInputParcel.createRequiredPassphrase(requiredInput));
-        startActivityForResult(intent, REQUEST_CODE_PIN);
+        try {
+            Passphrase phrase = PassphraseCacheService.getCachedPassphrase(this,
+                    requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
+            if (phrase != null) {
+                mPin = phrase;
+                return;
+            }
+
+            Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+                    RequiredInputParcel.createRequiredPassphrase(requiredInput));
+            startActivityForResult(intent, REQUEST_CODE_PIN);
+        } catch (KeyNotFoundException e) {
+            throw new AssertionError(
+                    "tried to find passphrase for non-existing key. this is a programming error!");
+        }
 
     }
 

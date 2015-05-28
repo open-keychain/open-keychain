@@ -60,6 +60,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int LOADER_ID_UNIFIED = 0;
+    public static final String ARG_DECRYPT_VERIFY_RESULT = "decrypt_verify_result";
 
     protected LinearLayout mResultLayout;
     protected ImageView mEncryptionIcon;
@@ -75,6 +76,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
     private LinearLayout mErrorOverlayLayout;
 
     private OpenPgpSignatureResult mSignatureResult;
+    private DecryptVerifyResult mDecryptVerifyResult;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -103,6 +105,27 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
                 mContentLayout.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(ARG_DECRYPT_VERIFY_RESULT, mDecryptVerifyResult);
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            return;
+        }
+
+        DecryptVerifyResult result = savedInstanceState.getParcelable(ARG_DECRYPT_VERIFY_RESULT);
+        if (result != null) {
+            loadVerifyResult(result);
+        }
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
@@ -183,7 +206,9 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
      */
     protected void loadVerifyResult(DecryptVerifyResult decryptVerifyResult) {
 
+        mDecryptVerifyResult = decryptVerifyResult;
         mSignatureResult = decryptVerifyResult.getSignatureResult();
+
         mResultLayout.setVisibility(View.VISIBLE);
 
         // unsigned data

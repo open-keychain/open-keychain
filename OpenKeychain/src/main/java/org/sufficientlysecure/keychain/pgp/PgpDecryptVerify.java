@@ -602,7 +602,8 @@ public class PgpDecryptVerify extends BaseOperation {
             } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
                 log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
                 return new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
-                        e.encryptedSessionKey, secretEncryptionKey.getKeyId()
+                        secretEncryptionKey.getRing().getMasterKeyId(),
+                        secretEncryptionKey.getKeyId(), e.encryptedSessionKey
                 ));
             }
             encryptedData = encryptedDataAsymmetric;

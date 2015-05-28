@@ -72,9 +72,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     private PGPPrivateKey mPrivateKey = null;
 
     private int mPrivateKeyState = PRIVATE_KEY_STATE_LOCKED;
-    private static int PRIVATE_KEY_STATE_LOCKED = 0;
-    private static int PRIVATE_KEY_STATE_UNLOCKED = 1;
-    private static int PRIVATE_KEY_STATE_DIVERT_TO_CARD = 2;
+    final private static int PRIVATE_KEY_STATE_LOCKED = 0;
+    final private static int PRIVATE_KEY_STATE_UNLOCKED = 1;
+    final private static int PRIVATE_KEY_STATE_DIVERT_TO_CARD = 2;
 
     CanonicalizedSecretKey(CanonicalizedSecretKeyRing ring, PGPSecretKey key) {
         super(ring, key.getPublicKey());
@@ -126,9 +126,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public SecretKeyType getSecretKeyType() {
-        if (mSecretKey.getS2K() != null && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K) {
+        S2K s2k = mSecretKey.getS2K();
+        if (s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K) {
             // divert to card is special
-            if (mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
+            if (s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
                 return SecretKeyType.DIVERT_TO_CARD;
             }
             // no matter the exact protection mode, it's some kind of dummy key
@@ -159,9 +160,10 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
      */
     public boolean unlock(Passphrase passphrase) throws PgpGeneralException {
         // handle keys on OpenPGP cards like they were unlocked
-        if (mSecretKey.getS2K() != null
-                && mSecretKey.getS2K().getType() == S2K.GNU_DUMMY_S2K
-                && mSecretKey.getS2K().getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
+        S2K s2k = mSecretKey.getS2K();
+        if (s2k != null
+                && s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD) {
             mPrivateKeyState = PRIVATE_KEY_STATE_DIVERT_TO_CARD;
             return true;
         }

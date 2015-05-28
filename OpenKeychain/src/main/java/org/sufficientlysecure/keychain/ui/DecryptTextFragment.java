@@ -28,8 +28,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -48,17 +46,15 @@ import java.io.UnsupportedEncodingException;
 
 public class DecryptTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
+    public static final String ARG_SHOW_MENU = "show_menu";
 
     // view
     private TextView mText;
 
     // model
     private String mCiphertext;
-    private boolean mShowMenuOptions = false;
+    private boolean mShowMenuOptions;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static DecryptTextFragment newInstance(String ciphertext) {
         DecryptTextFragment frag = new DecryptTextFragment();
 
@@ -115,11 +111,24 @@ public class DecryptTextFragment extends DecryptFragment {
 
         setHasOptionsMenu(true);
 
-        String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
-        if (ciphertext != null) {
-            mCiphertext = ciphertext;
+        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+        mCiphertext = args.getString(ARG_CIPHERTEXT);
+        mShowMenuOptions = args.getBoolean(ARG_SHOW_MENU, false);
+
+        if (savedInstanceState == null) {
             cryptoOperation(new CryptoInputParcel());
         }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(ARG_CIPHERTEXT, mCiphertext);
+        outState.putBoolean(ARG_SHOW_MENU, mShowMenuOptions);
+        // no need to save the decrypted text, it's in the textview
+
     }
 
     @Override

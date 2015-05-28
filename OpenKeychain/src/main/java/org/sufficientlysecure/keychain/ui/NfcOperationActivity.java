@@ -60,8 +60,9 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mRequiredInput = data.getParcelable(EXTRA_REQUIRED_INPUT);
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
+        // obtain passphrase for this subkey
         if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_KEYTOCARD) {
-            obtainYubiKeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
+            obtainYubiKeyPin(mRequiredInput);
         }
     }
 
@@ -173,7 +174,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
 
-        obtainYubiKeyPin(RequiredInputParcel.createRequiredPassphrase(mRequiredInput));
+        obtainYubiKeyPin(mRequiredInput);
     }
 
 }
