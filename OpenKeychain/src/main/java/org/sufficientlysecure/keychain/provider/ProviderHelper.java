@@ -831,7 +831,7 @@ public class ProviderHelper {
                 mIndent -= 1;
 
                 // this implicitly leaves all keys which were not in the secret key ring
-                // with has_secret = 0
+                // with has_secret = 1
             }
 
             log(LogType.MSG_IS_SUCCESS);

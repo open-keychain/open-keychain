@@ -1478,13 +1478,13 @@ public class PgpKeyOperation {
 
     private static boolean isDummy(PGPSecretKey secretKey) {
         S2K s2k = secretKey.getS2K();
-        return s2k.getType() == S2K.GNU_DUMMY_S2K
-                && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY;
+        return s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K
+                && s2k.getProtectionMode() != S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD;
     }
 
     private static boolean isDivertToCard(PGPSecretKey secretKey) {
         S2K s2k = secretKey.getS2K();
-        return s2k.getType() == S2K.GNU_DUMMY_S2K
+        return s2k != null && s2k.getType() == S2K.GNU_DUMMY_S2K
                 && s2k.getProtectionMode() == S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD;
     }
 
