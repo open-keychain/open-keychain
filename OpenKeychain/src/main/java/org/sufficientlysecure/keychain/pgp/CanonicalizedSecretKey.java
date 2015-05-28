@@ -69,9 +69,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     private PGPPrivateKey mPrivateKey = null;
 
     private int mPrivateKeyState = PRIVATE_KEY_STATE_LOCKED;
-    private static int PRIVATE_KEY_STATE_LOCKED = 0;
-    private static int PRIVATE_KEY_STATE_UNLOCKED = 1;
-    private static int PRIVATE_KEY_STATE_DIVERT_TO_CARD = 2;
+    final private static int PRIVATE_KEY_STATE_LOCKED = 0;
+    final private static int PRIVATE_KEY_STATE_UNLOCKED = 1;
+    final private static int PRIVATE_KEY_STATE_DIVERT_TO_CARD = 2;
 
     CanonicalizedSecretKey(CanonicalizedSecretKeyRing ring, PGPSecretKey key) {
         super(ring, key.getPublicKey());
