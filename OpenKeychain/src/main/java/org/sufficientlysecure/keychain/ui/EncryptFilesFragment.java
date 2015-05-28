@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -500,8 +499,9 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
                 getActivity(),
                 getString(R.string.progress_encrypting),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                true
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

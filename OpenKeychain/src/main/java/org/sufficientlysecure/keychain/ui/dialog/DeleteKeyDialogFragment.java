@@ -139,8 +139,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         getActivity(),
                         getString(R.string.progress_deleting),
                         ProgressDialog.STYLE_HORIZONTAL,
-                        true,
-                        ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                        true
+                ) {
                     @Override
                     public void handleMessage(Message message) {
                         super.handleMessage(message);

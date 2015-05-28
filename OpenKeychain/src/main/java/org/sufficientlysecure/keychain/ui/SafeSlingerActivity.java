@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -129,8 +128,9 @@ public class SafeSlingerActivity extends BaseActivity {
                     activity,
                     getString(R.string.progress_importing),
                     ProgressDialog.STYLE_HORIZONTAL,
-                    true,
-                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                    true
+            ) {
+                @Override
                 public void handleMessage(Message message) {
                     // handle messages by standard KeychainIntentServiceHandler first
                     super.handleMessage(message);

@@ -64,12 +64,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.CloudImportService;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -578,8 +576,9 @@ public class KeyListFragment extends LoaderFragment
                 getActivity(),
                 getString(R.string.progress_updating),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.CLOUD_IMPORT) {
+                true
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -603,7 +602,8 @@ public class KeyListFragment extends LoaderFragment
         };
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(getActivity(), CloudImportService.class);
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -613,16 +613,16 @@ public class KeyListFragment extends LoaderFragment
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(CloudImportService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
-        data.putParcelableArrayList(CloudImportService.IMPORT_KEY_LIST, keyList);
+        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyList);
 
-        intent.putExtra(CloudImportService.EXTRA_DATA, data);
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(CloudImportService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         serviceHandler.showProgressDialog(getActivity());
@@ -636,8 +636,9 @@ public class KeyListFragment extends LoaderFragment
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

@@ -66,8 +66,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.nio.ByteBuffer;
-
 
 public class EditKeyFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -603,8 +601,8 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                 getActivity(),
                 getString(R.string.progress_saving),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                true
+        ) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);

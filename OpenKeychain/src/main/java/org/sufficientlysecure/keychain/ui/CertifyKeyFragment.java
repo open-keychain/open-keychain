@@ -57,7 +57,6 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -326,8 +325,9 @@ public class CertifyKeyFragment extends CryptoOperationFragment
                     getActivity(),
                     getString(R.string.progress_certifying),
                     ProgressDialog.STYLE_SPINNER,
-                    true,
-                    ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                    true
+            ) {
+                @Override
                 public void handleMessage(Message message) {
                     // handle messages by KeychainIntentCryptoServiceHandler first
                     super.handleMessage(message);

@@ -27,7 +27,6 @@ import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 /**
  * We can not directly create a dialog on the application context.
@@ -53,8 +52,9 @@ public class ConsolidateDialogActivity extends FragmentActivity {
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
