@@ -618,7 +618,8 @@ public class PgpKeyOperation {
                         PGPSignature cert = generateUserAttributeSignature(
                                 getSignatureGenerator(masterSecretKey, cryptoInput),
                                 cryptoInput.getSignatureTime(),
-                                masterPrivateKey, masterPublicKey, vector);
+                                masterPrivateKey, masterPublicKey, vector,
+                                masterKeyFlags, masterKeyExpiry);
                         modifiedPublicKey = PGPPublicKey.addCertification(modifiedPublicKey, vector, cert);
                     } catch (NfcInteractionNeeded e) {
                         nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
@@ -1409,11 +1410,9 @@ public class PgpKeyOperation {
 
     }
 
-    private PGPSignature generateUserIdSignature(
-            PGPSignatureGenerator sGen, Date creationTime,
-            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId, boolean primary,
-            int flags, long expiry)
-            throws IOException, PGPException, SignatureException {
+    private static PGPSignatureSubpacketGenerator generateHashedSelfSigSubpackets(
+            Date creationTime, PGPPublicKey pKey, boolean primary, int flags, long expiry
+    ) {
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         {
@@ -1447,6 +1446,17 @@ public class PgpKeyOperation {
             }
         }
 
+        return hashedPacketsGen;
+    }
+
+    private static PGPSignature generateUserIdSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
+            PGPPrivateKey masterPrivateKey, PGPPublicKey pKey, String userId, boolean primary,
+            int flags, long expiry)
+            throws IOException, PGPException, SignatureException {
+
+        PGPSignatureSubpacketGenerator hashedPacketsGen =
+                generateHashedSelfSigSubpackets(creationTime, pKey, primary, flags, expiry);
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
         sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
         return sGen.generateCertification(userId, pKey);
@@ -1455,15 +1465,12 @@ public class PgpKeyOperation {
     private static PGPSignature generateUserAttributeSignature(
             PGPSignatureGenerator sGen, Date creationTime,
             PGPPrivateKey masterPrivateKey, PGPPublicKey pKey,
-            PGPUserAttributeSubpacketVector vector)
+            PGPUserAttributeSubpacketVector vector,
+            int flags, long expiry)
                 throws IOException, PGPException, SignatureException {
 
-        PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
-        {
-            /* critical subpackets: we consider those important for a modern pgp implementation */
-            hashedPacketsGen.setSignatureCreationTime(true, creationTime);
-        }
-
+        PGPSignatureSubpacketGenerator hashedPacketsGen =
+                generateHashedSelfSigSubpackets(creationTime, pKey, false, flags, expiry);
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
         sGen.init(PGPSignature.POSITIVE_CERTIFICATION, masterPrivateKey);
         return sGen.generateCertification(vector, pKey);
