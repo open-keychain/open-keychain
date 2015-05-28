@@ -648,15 +648,15 @@ public class ProviderHelper {
                 UserPacketItem item = uids.get(userIdRank);
                 operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
 
-                if (item.selfCert == null) {
-                    throw new AssertionError("User ids MUST be self-certified at this point!!");
-                }
-
                 if (item.selfRevocation != null) {
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
                             Certs.VERIFIED_SELF));
                     // don't bother with trusted certs if the uid is revoked, anyways
                     continue;
+                }
+
+                if (item.selfCert == null) {
+                    throw new AssertionError("User ids MUST be self-certified at this point!!");
                 }
 
                 operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
