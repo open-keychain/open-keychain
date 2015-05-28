@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -214,7 +215,7 @@ public class PgpEncryptDecryptTest {
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
         byte[] ciphertext;
 
-        { // encrypt data with a given passphrase
+        { // encrypt data with key
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
@@ -224,7 +225,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
-            b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
+            b.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(), data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -334,7 +335,7 @@ public class PgpEncryptDecryptTest {
                     out.toByteArray().length, metadata.getOriginalSize());
         }
 
-        { // decryption with passphrase cached should succeed for the first key
+        { // decryption should succeed if key is allowed
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
@@ -350,10 +351,30 @@ public class PgpEncryptDecryptTest {
             b.setAllowedKeyIds(allowed);
 
             DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
-            Assert.assertTrue("decryption with cached passphrase must succeed for the first key", result.success());
+            Assert.assertTrue("decryption with cached passphrase must succeed for allowed key", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
+            Assert.assertTrue("other key was skipped", result.getLog().containsType(LogType.MSG_DC_ASKIP_NOT_ALLOWED));
             Assert.assertNull("signature should be empty", result.getSignatureResult());
+        }
+
+        { // decryption should fail if no key is allowed
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            // provide passphrase for the second, and check that the first is never asked for!
+            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+                    mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+            // no keys allowed!
+            b.setAllowedKeyIds(new HashSet<Long>());
+
+            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
+            Assert.assertFalse("decryption must fail if no key allowed", result.success());
+            Assert.assertEquals("decryption must fail with key disllowed status",
+                    DecryptVerifyResult.RESULT_KEY_DISALLOWED, result.getResult());
+
         }
 
         { // decryption with passphrase cached should succeed for the other key if first is gone

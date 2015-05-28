@@ -928,7 +928,7 @@
   <string name="msg_dc_error_extract_key">Erreur inconnue de déverrouillage de la clef !</string>
   <string name="msg_dc_error_integrity_check">Erreur de vérification de l\'intégrité !</string>
   <string name="msg_dc_error_integrity_missing">Vérification de l\'intégrité absente ! Ceci peut arriver car l\'application n\'est pas à jour, ou à cause d\'une attaque par mise à niveau inférieur.</string>
-  <string name="msg_dc_error_invalid_siglist">Aucune donnée de signature valide trouvée !</string>
+  <string name="msg_dc_error_invalid_data">Aucune donnée de signature valide trouvée !</string>
   <string name="msg_dc_error_io">Une exception E/S a été rencontrée durant l\'opération !</string>
   <string name="msg_dc_error_no_data">Aucune donnée chiffrée n\'a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clef secrète connue n\'a été trouvée dans le flux !</string>

@@ -913,7 +913,7 @@
   <string name="msg_dc_error_extract_key">鍵のロック解除で不明なエラー!</string>
   <string name="msg_dc_error_integrity_check">完全性チェックエラー!</string>
   <string name="msg_dc_error_integrity_missing">完全聖チェックの欠落!これは暗号化アプリケーションが期限切れになった場合、もしくは暗号強度低下攻撃がある場合に発生します。</string>
-  <string name="msg_dc_error_invalid_siglist">正常な署名データが見付からなかった!</string>
+  <string name="msg_dc_error_invalid_data">正常な署名データが見付からなかった!</string>
   <string name="msg_dc_error_io">操作中にIO例外に当たりました!</string>
   <string name="msg_dc_error_no_data">ストリーム中に暗号化されたデータが見付からなかった!</string>
   <string name="msg_dc_error_no_key">ストリーム中に既知の秘密鍵で暗号化されたデータが見付からなかった!</string>

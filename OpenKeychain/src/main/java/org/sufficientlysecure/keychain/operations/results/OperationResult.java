@@ -590,7 +590,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_ERROR_EXTRACT_KEY (LogLevel.ERROR, R.string.msg_dc_error_extract_key),
         MSG_DC_ERROR_INTEGRITY_CHECK (LogLevel.ERROR, R.string.msg_dc_error_integrity_check),
         MSG_DC_ERROR_INTEGRITY_MISSING (LogLevel.ERROR, R.string.msg_dc_error_integrity_missing),
-        MSG_DC_ERROR_INVALID_SIGLIST(LogLevel.ERROR, R.string.msg_dc_error_invalid_siglist),
+        MSG_DC_ERROR_INVALID_DATA (LogLevel.ERROR, R.string.msg_dc_error_invalid_data),
         MSG_DC_ERROR_IO (LogLevel.ERROR, R.string.msg_dc_error_io),
         MSG_DC_ERROR_NO_DATA (LogLevel.ERROR, R.string.msg_dc_error_no_data),
         MSG_DC_ERROR_NO_KEY (LogLevel.ERROR, R.string.msg_dc_error_no_key),
