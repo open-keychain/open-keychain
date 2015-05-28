@@ -151,7 +151,7 @@ public class PgpKeyOperation {
     }
 
     /** Creates new secret key. */
-    private PGPKeyPair createKey(SubkeyAdd add, OperationLog log, int indent) {
+    private PGPKeyPair createKey(SubkeyAdd add, Date creationTime, OperationLog log, int indent) {
 
         try {
             // Some safety checks
@@ -249,7 +249,7 @@ public class PgpKeyOperation {
             }
 
             // build new key pair
-            return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
+            return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), creationTime);
 
         } catch(NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
@@ -295,8 +295,10 @@ public class PgpKeyOperation {
                 return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
             }
 
+            Date creationTime = new Date();
+
             subProgressPush(10, 30);
-            PGPKeyPair keyPair = createKey(add, log, indent);
+            PGPKeyPair keyPair = createKey(add, creationTime, log, indent);
             subProgressPop();
 
             // return null if this failed (an error will already have been logged by createKey)
@@ -323,8 +325,8 @@ public class PgpKeyOperation {
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
 
             subProgressPush(50, 100);
-            CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date(), new Passphrase(""));
-            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log);
+            CryptoInputParcel cryptoInput = new CryptoInputParcel(creationTime, new Passphrase(""));
+            return internal(sKR, masterSecretKey, add.mFlags, add.mExpiry, cryptoInput, saveParcel, log, indent);
 
         } catch (PGPException e) {
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
@@ -900,7 +902,7 @@ public class PgpKeyOperation {
                     (i-1) * (100 / saveParcel.mAddSubKeys.size()),
                     i * (100 / saveParcel.mAddSubKeys.size())
                 );
-                PGPKeyPair keyPair = createKey(add, log, indent);
+                PGPKeyPair keyPair = createKey(add, cryptoInput.getSignatureTime(), log, indent);
                 subProgressPop();
                 if (keyPair == null) {
                     log.add(LogType.MSG_MF_ERROR_PGP, indent +1);
