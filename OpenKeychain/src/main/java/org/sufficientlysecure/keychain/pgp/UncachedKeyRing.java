@@ -820,6 +820,15 @@ public class UncachedKeyRing {
                 continue;
             }
 
+            Date keyCreationTime = key.getCreationTime(), keyCreationTimeLenient;
+            {
+                Calendar keyCreationCal = Calendar.getInstance();
+                keyCreationCal.setTime(keyCreationTime);
+                // allow for diverging clocks up to one day when checking creation time
+                keyCreationCal.add(Calendar.MINUTE, -5);
+                keyCreationTimeLenient = keyCreationCal.getTime();
+            }
+
             // A subkey needs exactly one subkey binding certificate, and optionally one revocation
             // certificate.
             PGPPublicKey modified = key;
@@ -849,6 +858,18 @@ public class UncachedKeyRing {
                     log.add(LogType.MSG_KC_SUB_BAD_TIME, indent);
                     badCerts += 1;
                     continue;
+                }
+
+                if (cert.getCreationTime().before(keyCreationTime)) {
+                    // Signature is earlier than key creation time
+                    log.add(LogType.MSG_KC_SUB_BAD_TIME_EARLY, indent);
+                    // due to an earlier accident, we generated keys which had creation timestamps
+                    // a few seconds after their signature timestamp. for compatibility, we only
+                    // error out with some margin of error
+                    if (cert.getCreationTime().before(keyCreationTimeLenient)) {
+                        badCerts += 1;
+                        continue;
+                    }
                 }
 
                 if (cert.isLocal()) {
