@@ -53,7 +53,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -272,6 +272,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("DROP TABLE IF EXISTS user_ids");
                 db.execSQL(CREATE_USER_PACKETS);
                 db.execSQL(CREATE_CERTS);
+            case 10:
+                // do nothing here, just consolidate
 
         }
 
