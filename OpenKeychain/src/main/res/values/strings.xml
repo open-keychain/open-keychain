@@ -926,12 +926,6 @@
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
-<<<<<<< HEAD
-=======
-    <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to smart card in same operation that creates an on-card signature."</string>
-    <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
-    <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for smart card key."</string>
->>>>>>> 0f52097... Improve strings
     <string name="msg_mf_master">"Modifying master certifications"</string>
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
@@ -950,11 +944,6 @@
     <string name="msg_mf_error_past_expiry">"Expiry date cannot be in the past!"</string>
     <string name="msg_mf_subkey_revoke">"Revoking subkey %s"</string>
     <string name="msg_mf_subkey_strip">"Stripping subkey %s"</string>
-<<<<<<< HEAD
-=======
-    <string name="msg_mf_keytocard_start">"Moving subkey %s to smart card"</string>
-    <string name="msg_mf_keytocard_finish">"Moved %1$s to smart card %2$s"</string>
->>>>>>> 0f52097... Improve strings
     <string name="msg_mf_success">"Keyring successfully modified"</string>
     <string name="msg_mf_uid_add">"Adding user ID %s"</string>
     <string name="msg_mf_uid_primary">"Changing primary user ID to %s"</string>
@@ -1229,11 +1218,6 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-<<<<<<< HEAD
-=======
-    <string name="first_time_blank_smartcard_title">"Blank smart card / YubiKey detected"</string>
-    <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
->>>>>>> 0f52097... Improve strings
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>

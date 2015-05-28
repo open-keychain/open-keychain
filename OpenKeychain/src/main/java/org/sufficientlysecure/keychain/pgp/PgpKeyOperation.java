@@ -422,7 +422,7 @@ public class PgpKeyOperation {
         Date expiryTime = wsKR.getPublicKey().getExpiryTime();
         long masterKeyExpiry = expiryTime != null ? expiryTime.getTime() / 1000 : 0L;
 
-        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log);
+        return internal(sKR, masterSecretKey, masterKeyFlags, masterKeyExpiry, cryptoInput, saveParcel, log, indent);
 
     }
 
@@ -430,9 +430,7 @@ public class PgpKeyOperation {
                                      int masterKeyFlags, long masterKeyExpiry,
                                      CryptoInputParcel cryptoInput,
                                      SaveKeyringParcel saveParcel,
-                                     OperationLog log) {
-
-        int indent = 1;
+                                     OperationLog log, int indent) {
 
         NfcSignOperationsBuilder nfcSignOps = new NfcSignOperationsBuilder(
                 cryptoInput.getSignatureTime(), masterSecretKey.getKeyID(),
