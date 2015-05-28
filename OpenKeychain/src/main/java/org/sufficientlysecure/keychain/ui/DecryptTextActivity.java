@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -45,8 +46,6 @@ public class DecryptTextActivity extends BaseActivity {
 
     // intern
     public static final String ACTION_DECRYPT_FROM_CLIPBOARD = Constants.INTENT_PREFIX + "DECRYPT_TEXT_FROM_CLIPBOARD";
-
-    DecryptTextFragment mFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,6 +147,10 @@ public class DecryptTextActivity extends BaseActivity {
             extras = new Bundle();
         }
 
+        if (savedInstanceState != null) {
+            return;
+        }
+
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             Log.d(Constants.TAG, "ACTION_SEND");
             Log.logDebugBundle(extras, "SEND extras");
@@ -158,7 +161,7 @@ public class DecryptTextActivity extends BaseActivity {
                 sharedText = getPgpContent(sharedText);
 
                 if (sharedText != null) {
-                    loadFragment(savedInstanceState, sharedText);
+                    loadFragment(sharedText);
                 } else {
                     Log.e(Constants.TAG, "EXTRA_TEXT does not contain PGP content!");
                     Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
@@ -176,7 +179,7 @@ public class DecryptTextActivity extends BaseActivity {
             extraText = getPgpContent(extraText);
 
             if (extraText != null) {
-                loadFragment(savedInstanceState, extraText);
+                loadFragment(extraText);
             } else {
                 Log.e(Constants.TAG, "EXTRA_TEXT does not contain PGP content!");
                 Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
@@ -189,7 +192,7 @@ public class DecryptTextActivity extends BaseActivity {
             String text = getPgpContent(clipboardText);
 
             if (text != null) {
-                loadFragment(savedInstanceState, text);
+                loadFragment(text);
             } else {
                 returnInvalidResult();
             }
@@ -209,21 +212,14 @@ public class DecryptTextActivity extends BaseActivity {
         finish();
     }
 
-    private void loadFragment(Bundle savedInstanceState, String ciphertext) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
-
+    private void loadFragment(String ciphertext) {
         // Create an instance of the fragment
-        mFragment = DecryptTextFragment.newInstance(ciphertext);
+        Fragment frag = DecryptTextFragment.newInstance(ciphertext);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.decrypt_text_fragment_container, mFragment)
+                .replace(R.id.decrypt_text_fragment_container, frag)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
