@@ -34,7 +34,6 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -602,9 +601,8 @@ public class OpenPgpService extends RemoteService {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
-                LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-
-                if (errorMsg.mType == OperationResult.LogType.MSG_DC_ERROR_NO_KEY) {
+                //
+                if (pgpResult.isKeysDisallowed()) {
                     // allow user to select allowed keys
                     Intent result = new Intent();
                     result.putExtra(OpenPgpApi.RESULT_INTENT, getSelectAllowedKeysIntent(data));
@@ -612,14 +610,17 @@ public class OpenPgpService extends RemoteService {
                     return result;
                 }
 
-                throw new Exception(getString(errorMsg.mType.getMsgId()));
+                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, errorMsg));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                return result;
             }
 
-        } catch (Exception e) {
-            Log.d(Constants.TAG, "decryptAndVerifyImpl", e);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "decryptAndVerifyImpl", e);
             Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_ERROR,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         } finally {

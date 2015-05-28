@@ -384,7 +384,7 @@ public class PgpDecryptVerify extends BaseOperation {
         }
 
         if (enc == null) {
-            log.add(LogType.MSG_DC_ERROR_INVALID_SIGLIST, indent);
+            log.add(LogType.MSG_DC_ERROR_INVALID_DATA, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
@@ -419,6 +419,7 @@ public class PgpDecryptVerify extends BaseOperation {
         }
 
         Passphrase passphrase = null;
+        boolean skippedDisallowedKey = false;
 
         // go through all objects and find one we can decrypt
         while (it.hasNext()) {
@@ -451,13 +452,6 @@ public class PgpDecryptVerify extends BaseOperation {
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;
                 }
-                // get subkey which has been used for this encryption packet
-                secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
-                if (secretEncryptionKey == null) {
-                    // should actually never happen, so no need to be more specific.
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
-                }
 
                 // allow only specific keys for decryption?
                 if (mAllowedKeyIds != null) {
@@ -469,9 +463,18 @@ public class PgpDecryptVerify extends BaseOperation {
                     if (!mAllowedKeyIds.contains(masterKeyId)) {
                         // this key is in our db, but NOT allowed!
                         // continue with the next packet in the while loop
+                        skippedDisallowedKey = true;
                         log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
                         continue;
                     }
+                }
+
+                // get subkey which has been used for this encryption packet
+                secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
+                if (secretEncryptionKey == null) {
+                    // should actually never happen, so no need to be more specific.
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                    continue;
                 }
 
                 /* secret key exists in database and is allowed! */
@@ -604,10 +607,18 @@ public class PgpDecryptVerify extends BaseOperation {
             }
             encryptedData = encryptedDataAsymmetric;
         } else {
-            // If we didn't find any useful data, error out
+            // there wasn't even any useful data
+            if (!anyPacketFound) {
+                log.add(LogType.MSG_DC_ERROR_NO_DATA, indent + 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_NO_DATA, log);
+            }
+            // there was data but key wasn't allowed
+            if (skippedDisallowedKey) {
+                log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_KEY_DISALLOWED, log);
+            }
             // no packet has been found where we have the corresponding secret key in our db
-            log.add(
-                    anyPacketFound ? LogType.MSG_DC_ERROR_NO_KEY : LogType.MSG_DC_ERROR_NO_DATA, indent + 1);
+            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
@@ -910,7 +921,7 @@ public class PgpDecryptVerify extends BaseOperation {
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            log.add(LogType.MSG_DC_ERROR_INVALID_SIGLIST, 0);
+            log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
@@ -993,7 +1004,7 @@ public class PgpDecryptVerify extends BaseOperation {
         } else if (o instanceof PGPSignatureList) {
             sigList = (PGPSignatureList) o;
         } else {
-            log.add(LogType.MSG_DC_ERROR_INVALID_SIGLIST, 0);
+            log.add(LogType.MSG_DC_ERROR_INVALID_DATA, 0);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 

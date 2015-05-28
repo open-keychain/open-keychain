@@ -27,11 +27,18 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class DecryptVerifyResult extends InputPendingResult {
 
+    public static final int RESULT_NO_DATA = RESULT_ERROR + 16;
+    public static final int RESULT_KEY_DISALLOWED = RESULT_ERROR + 32;
+
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpMetadata mDecryptMetadata;
     // This holds the charset which was specified in the ascii armor, if specified
     // https://tools.ietf.org/html/rfc4880#page56
     String mCharset;
+
+    public boolean isKeysDisallowed () {
+        return (mResult & RESULT_KEY_DISALLOWED) == RESULT_KEY_DISALLOWED;
+    }
 
     public OpenPgpSignatureResult getSignatureResult() {
         return mSignatureResult;
@@ -55,10 +62,6 @@ public class DecryptVerifyResult extends InputPendingResult {
 
     public void setCharset(String charset) {
         mCharset = charset;
-    }
-
-    public boolean isPending() {
-        return (mResult & RESULT_PENDING) == RESULT_PENDING;
     }
 
     public DecryptVerifyResult(int result, OperationLog log) {

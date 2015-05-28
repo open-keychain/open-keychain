@@ -929,7 +929,7 @@
   <string name="msg_dc_error_extract_key">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_dc_error_integrity_check">Fout bij integriteitscontrole!</string>
   <string name="msg_dc_error_integrity_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
-  <string name="msg_dc_error_invalid_siglist">Geen geldige ondertekeningsgegevens gevonden!</string>
+  <string name="msg_dc_error_invalid_data">Geen geldige ondertekeningsgegevens gevonden!</string>
   <string name="msg_dc_error_io">I/O-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>

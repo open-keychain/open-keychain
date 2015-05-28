@@ -929,7 +929,7 @@
   <string name="msg_dc_error_extract_key">¡Error desconocido al desbloquear clave!</string>
   <string name="msg_dc_error_integrity_check">¡Error de comprobación de integridad!</string>
   <string name="msg_dc_error_integrity_missing">¡Verificación de integridad ausente! Esto puede ocurrir porque la aplicación de cifrado no está actualizada, o debido a un ataque desactualización.</string>
-  <string name="msg_dc_error_invalid_siglist">¡No se encontraron datos de firma válidos!</string>
+  <string name="msg_dc_error_invalid_data">¡No se encontraron datos de firma válidos!</string>
   <string name="msg_dc_error_io">¡Se encontró Excepción de E/S durante la operación!</string>
   <string name="msg_dc_error_no_data">¡No se encontraron datos cifrados en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_key">¡No se encontraron datos cifrados con clave secreta (privada) conocida en el flujo de datos (`stream`)!</string>

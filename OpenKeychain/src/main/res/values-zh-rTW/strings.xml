@@ -511,7 +511,7 @@
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">找不到金鑰！</string>
   <!--Messages for DecryptVerify operation-->
-  <string name="msg_dc_error_invalid_siglist">找不到有效的簽名資訊！</string>
+  <string name="msg_dc_error_invalid_data">找不到有效的簽名資訊！</string>
   <string name="msg_dc">開始解密…</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
