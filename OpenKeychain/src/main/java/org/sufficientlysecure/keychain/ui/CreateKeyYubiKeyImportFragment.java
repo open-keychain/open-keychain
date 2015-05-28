@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -57,7 +58,6 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
     CreateKeyActivity mCreateKeyActivity;
 
     private byte[] mNfcFingerprints;
-    private long mNfcMasterKeyId;
     private byte[] mNfcAid;
     private String mNfcUserId;
     private String mNfcFingerprint;
@@ -88,8 +88,9 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         mNfcAid = args.getByteArray(ARG_AID);
         mNfcUserId = args.getString(ARG_USER_ID);
 
-        mNfcMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
+        byte[] fp = new byte[20];
+        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
+        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
 
     }
 
@@ -226,9 +227,8 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
 
         intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
 
-        String hexFp = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        keyList.add(new ParcelableKeyRing(hexFp, null, null));
+        keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));
         data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyList);
 
         {
@@ -258,8 +258,9 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         mNfcAid = mCreateKeyActivity.nfcGetAid();
         mNfcUserId = mCreateKeyActivity.nfcGetUserId();
 
-        mNfcMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
+        byte[] fp = new byte[20];
+        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
+        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
 
         setData();
         refreshSearch();
