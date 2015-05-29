@@ -79,13 +79,32 @@ public class CertifyOperation extends BaseOperation {
             log.add(LogType.MSG_CRT_UNLOCK, 1);
             certificationKey = secretKeyRing.getSecretKey();
 
-            if (!cryptoInput.hasPassphrase()) {
-                return new CertifyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                        certificationKey.getKeyId(), certificationKey.getKeyId(), null));
-            }
+            Passphrase passphrase;
 
-            // certification is always with the master key id, so use that one
-            Passphrase passphrase = cryptoInput.getPassphrase();
+            switch (certificationKey.getSecretKeyType()) {
+                case PIN:
+                case PATTERN:
+                case PASSPHRASE:
+                    if (!cryptoInput.hasPassphrase()) {
+                        return new CertifyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
+                                certificationKey.getKeyId(), certificationKey.getKeyId(), null));
+                    }
+                    // certification is always with the master key id, so use that one
+                    passphrase = cryptoInput.getPassphrase();
+                    break;
+
+                case PASSPHRASE_EMPTY:
+                    passphrase = new Passphrase("");
+                    break;
+
+                case DIVERT_TO_CARD:
+                    passphrase = null;
+                    break;
+
+                default:
+                    log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
+                    return new CertifyResult(CertifyResult.RESULT_ERROR, log);
+            }
 
             if (!certificationKey.unlock(passphrase)) {
                 log.add(LogType.MSG_CRT_ERROR_UNLOCK, 2);
