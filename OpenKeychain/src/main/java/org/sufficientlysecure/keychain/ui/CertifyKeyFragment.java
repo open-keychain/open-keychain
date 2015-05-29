@@ -69,12 +69,17 @@ import java.util.ArrayList;
 public class CertifyKeyFragment extends CryptoOperationFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String ARG_CHECK_STATES = "check_states";
+    public static final String ARG_CACHED_ACTIONS = "cached_actions";
+
     private CheckBox mUploadKeyCheckbox;
     ListView mUserIds;
 
     private CertifyKeySpinner mCertifyKeySpinner;
 
     private long[] mPubMasterKeyIds;
+
+    private CertifyActionsParcel mCachedActionsParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets._ID,
@@ -104,22 +109,36 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
         mPassthroughMessenger = getActivity().getIntent().getParcelableExtra(
                 KeychainIntentService.EXTRA_MESSENGER);
-        mPassthroughMessenger = null; // TODO remove, development hack
+        mPassthroughMessenger = null; // TODO doesn't work with CryptoOperationFragment, disabled for now
 
-        // preselect certify key id if given
-        long certifyKeyId = getActivity().getIntent().getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
-        if (certifyKeyId != Constants.key.none) {
-            try {
-                CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
-                if (key.canCertify()) {
-                    mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
+        ArrayList<Boolean> checkedStates;
+        if (savedInstanceState != null) {
+            mCachedActionsParcel = savedInstanceState.getParcelable(ARG_CACHED_ACTIONS);
+            checkedStates = (ArrayList<Boolean>) savedInstanceState.getSerializable(ARG_CHECK_STATES);
+
+            // key spinner and the checkbox keep their own state
+
+        } else {
+            mCachedActionsParcel = null;
+            checkedStates = null;
+
+            // preselect certify key id if given
+            long certifyKeyId = getActivity().getIntent()
+                    .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
+            if (certifyKeyId != Constants.key.none) {
+                try {
+                    CachedPublicKeyRing key = (new ProviderHelper(getActivity())).getCachedPublicKeyRing(certifyKeyId);
+                    if (key.canCertify()) {
+                        mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
+                    }
+                } catch (PgpKeyNotFoundException e) {
+                    Log.e(Constants.TAG, "certify certify check failed", e);
                 }
-            } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "certify certify check failed", e);
             }
+
         }
 
-        mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0);
+        mUserIdsAdapter = new MultiUserIdsAdapter(getActivity(), null, 0, checkedStates);
         mUserIds.setAdapter(mUserIdsAdapter);
         mUserIds.setDividerHeight(0);
 
@@ -130,6 +149,16 @@ public class CertifyKeyFragment extends CryptoOperationFragment
             // display result from import
             result.createNotify(getActivity()).show();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        ArrayList<Boolean> states = mUserIdsAdapter.getCheckStates();
+        // no proper parceling method available :(
+        outState.putSerializable(ARG_CHECK_STATES, states);
+        outState.putParcelable(ARG_CACHED_ACTIONS, mCachedActionsParcel);
     }
 
     @Override
@@ -288,24 +317,28 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        // Bail out if there is not at least one user id selected
-        ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
-        if (certifyActions.isEmpty()) {
-            Notify.create(getActivity(), "No identities selected!",
-                    Notify.Style.ERROR).show();
-            return;
-        }
-
         Bundle data = new Bundle();
         {
-            long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
 
-            // fill values for this action
-            CertifyActionsParcel parcel = new CertifyActionsParcel(selectedKeyId);
-            parcel.mCertifyActions.addAll(certifyActions);
+            if (mCachedActionsParcel == null) {
+                // Bail out if there is not at least one user id selected
+                ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
+                if (certifyActions.isEmpty()) {
+                    Notify.create(getActivity(), "No identities selected!",
+                            Notify.Style.ERROR).show();
+                    return;
+                }
+
+                long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
+
+                // fill values for this action
+                mCachedActionsParcel = new CertifyActionsParcel(selectedKeyId);
+                mCachedActionsParcel.mCertifyActions.addAll(certifyActions);
+            }
 
             data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, parcel);
+            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, mCachedActionsParcel);
+
             if (mUploadKeyCheckbox.isChecked()) {
                 String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
                 data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
@@ -368,4 +401,11 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
     }
 
+    @Override
+    protected void onCryptoOperationCancelled() {
+        super.onCryptoOperationCancelled();
+
+        // forget this ever happened
+        mCachedActionsParcel = null;
+    }
 }

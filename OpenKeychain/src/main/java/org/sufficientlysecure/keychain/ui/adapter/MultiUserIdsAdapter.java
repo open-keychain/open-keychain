@@ -40,20 +40,19 @@ public class MultiUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private final ArrayList<Boolean> mCheckStates;
 
-    public MultiUserIdsAdapter(Context context, Cursor c, int flags) {
+    public MultiUserIdsAdapter(Context context, Cursor c, int flags, ArrayList<Boolean> preselectStates) {
         super(context, c, flags);
         mInflater = LayoutInflater.from(context);
-        mCheckStates = new ArrayList<>();
+        mCheckStates = preselectStates == null ? new ArrayList<Boolean>() : preselectStates;
     }
 
     @Override
     public Cursor swapCursor(Cursor newCursor) {
-        mCheckStates.clear();
         if (newCursor != null) {
             int count = newCursor.getCount();
             mCheckStates.ensureCapacity(count);
-            // initialize to true (use case knowledge: we usually want to sign all uids)
-            for (int i = 0; i < count; i++) {
+            // initialize new fields to true (use case knowledge: we usually want to sign all uids)
+            for (int i = mCheckStates.size(); i < count; i++) {
                 mCheckStates.add(true);
             }
         }
@@ -149,6 +148,10 @@ public class MultiUserIdsAdapter extends CursorAdapter {
             }
         });
 
+    }
+
+    public ArrayList<Boolean> getCheckStates() {
+        return mCheckStates;
     }
 
     public ArrayList<CertifyAction> getSelectedCertifyActions() {
