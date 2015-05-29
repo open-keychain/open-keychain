@@ -112,17 +112,25 @@ public class DecryptFilesFragment extends DecryptFragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(ARG_URI, mInputUri);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setInputUri(getArguments().<Uri>getParcelable(ARG_URI));
+        Bundle state = savedInstanceState != null ? savedInstanceState : getArguments();
+        setInputUri(state.<Uri>getParcelable(ARG_URI));
 
-        if (getArguments().getBoolean(ARG_OPEN_DIRECTLY, false)) {
+        // should only come from args
+        if (state.getBoolean(ARG_OPEN_DIRECTLY, false)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
             } else {
-                FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*",
-                        REQUEST_CODE_INPUT);
+                FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*", REQUEST_CODE_INPUT);
             }
         }
     }
