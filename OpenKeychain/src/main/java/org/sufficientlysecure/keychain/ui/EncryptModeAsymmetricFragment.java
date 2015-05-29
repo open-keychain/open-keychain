@@ -85,11 +85,9 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mProviderHelper = new ProviderHelper(getActivity());
 
         // preselect keys given, from state or arguments
-        long signatureKeyId, encryptionKeyIds[];
-
         if (savedInstanceState == null) {
-            signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
-            encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
+            Long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
+            long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
             preselectKeys(signatureKeyId, encryptionKeyIds);
         }
 
@@ -98,8 +96,8 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     /**
      * If an Intent gives a signatureMasterKeyId and/or encryptionMasterKeyIds, preselect those!
      */
-    private void preselectKeys(long signatureKeyId, long[] encryptionKeyIds) {
-        if (signatureKeyId != Constants.key.none) {
+    private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
+        if (signatureKeyId != null) {
             try {
                 CachedPublicKeyRing keyring = mProviderHelper.getCachedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingUri(signatureKeyId));

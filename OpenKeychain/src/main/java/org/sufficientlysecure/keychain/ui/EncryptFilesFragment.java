@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -70,7 +70,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class EncryptFilesFragment extends CryptoOperationFragment {
+public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEncryptParcel> {
 
     public static final String ARG_DELETE_AFTER_ENCRYPT = "delete_after_encrypt";
     public static final String ARG_ENCRYPT_FILENAMES = "encrypt_filenames";
@@ -89,7 +89,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
 
     private boolean mShareAfterEncrypt;
 
-    private ArrayList<Uri> mOutputUris = new ArrayList<>();
+    private ArrayList<Uri> mOutputUris;
 
     private RecyclerView mSelectedFiles;
 
@@ -221,33 +221,6 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         }
     }
 
-    private void encryptClicked(boolean share) {
-        if (mFilesModels.isEmpty()) {
-            Notify.create(getActivity(), R.string.error_no_file_selected,
-                    Notify.Style.ERROR).show(this);
-            return;
-        }
-        if (share) {
-            mOutputUris.clear();
-            int filenameCounter = 1;
-            for (FilesAdapter.ViewModel model : mFilesModels) {
-                String targetName =
-                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
-                                + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
-                filenameCounter++;
-            }
-            startEncrypt(true);
-        } else {
-            if (mFilesModels.size() > 1) {
-                Notify.create(getActivity(), R.string.error_multi_not_supported,
-                        Notify.Style.ERROR).show(this);
-                return;
-            }
-            showOutputFileDialog();
-        }
-    }
-
     public void addFile(Intent data) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             addInputUri(data.getData());
@@ -281,11 +254,11 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
-                encryptClicked(false);
+                cryptoOperation(false);
                 break;
             }
             case R.id.encrypt_share: {
-                encryptClicked(true);
+                cryptoOperation(true);
                 break;
             }
             case R.id.check_use_armor: {
@@ -351,27 +324,49 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         }
     }
 
-    protected SignEncryptParcel createEncryptBundle() {
+    // prepares mOutputUris, either directly and returns false, or indirectly
+    // which returns true and will call cryptoOperation after mOutputUris has
+    // been set at a later point.
+    private boolean prepareOutputStreams(boolean share) {
 
         if (mFilesModels.isEmpty()) {
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
                     .show(this);
-            return null;
+            return true;
         } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
             Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
             // This should be impossible...
-            return null;
-        } else if (mFilesModels.size() != mOutputUris.size()) {
-            Log.e(Constants.TAG, "Aborting: mInputUris.size() != mOutputUris.size()");
-            // This as well
-            return null;
+            return true;
         }
+
+        if (share) {
+            mOutputUris = new ArrayList<>();
+            int filenameCounter = 1;
+            for (FilesAdapter.ViewModel model : mFilesModels) {
+                String targetName =
+                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
+                                + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+                filenameCounter++;
+            }
+            return false;
+        } else {
+            if (mFilesModels.size() > 1) {
+                Notify.create(getActivity(), R.string.error_multi_not_supported,
+                        Notify.Style.ERROR).show(this);
+                return true;
+            }
+            showOutputFileDialog();
+            return true;
+        }
+    }
+
+    protected SignEncryptParcel createIncompleteEncryptBundle() {
 
         // fill values for this action
         SignEncryptParcel data = new SignEncryptParcel();
 
         data.addInputUris(mFilesAdapter.getAsArrayList());
-        data.addOutputUris(mOutputUris);
 
         if (mUseCompression) {
             data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.get(0));
@@ -471,19 +466,42 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         return sendIntent;
     }
 
-    public void startEncrypt(boolean share) {
+    public void cryptoOperation(boolean share) {
         mShareAfterEncrypt = share;
         cryptoOperation();
     }
 
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+    protected void cryptoOperation(CryptoInputParcel cryptoInput, SignEncryptParcel actionsParcel) {
 
-        final SignEncryptParcel input = createEncryptBundle();
-        // this is null if invalid, just return in that case
-        if (input == null) {
-            // Notify was created by inputIsValid.
-            return;
+        // we have three cases here: nothing cached, cached except output, fully cached
+        if (actionsParcel == null) {
+
+            // clear output uris for now, they will be created by prepareOutputStreams later
+            mOutputUris = null;
+
+            actionsParcel = createIncompleteEncryptBundle();
+            // this is null if invalid, just return in that case
+            if (actionsParcel == null) {
+                // Notify was created by createEncryptBundle.
+                return;
+            }
+
+            cacheActionsParcel(actionsParcel);
+        }
+
+        // if it's incomplete, prepare output streams
+        if (actionsParcel.isIncomplete()) {
+            // if this is still null, prepare output streams again
+            if (mOutputUris == null) {
+                // this may interrupt the flow, and call us again from onActivityResult
+                if (prepareOutputStreams(mShareAfterEncrypt)) {
+                    return;
+                }
+            }
+
+            actionsParcel.addOutputUris(mOutputUris);
+            cacheActionsParcel(actionsParcel);
         }
 
         // Send all information needed to service to edit key in other thread
@@ -491,7 +509,7 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
         Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, actionsParcel);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -545,9 +563,9 @@ public class EncryptFilesFragment extends CryptoOperationFragment {
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mOutputUris.clear();
+                    mOutputUris = new ArrayList<>(1);
                     mOutputUris.add(data.getData());
-                    startEncrypt(false);
+                    cryptoOperation(false);
                 }
                 return;
             }

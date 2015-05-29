@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -53,7 +53,7 @@ import org.sufficientlysecure.keychain.util.ShareHelper;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptTextFragment extends CryptoOperationFragment {
+public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncryptParcel> {
 
     public static final String ARG_TEXT = "text";
     public static final String ARG_USE_COMPRESSION = "use_compression";
@@ -308,21 +308,26 @@ public class EncryptTextFragment extends CryptoOperationFragment {
     }
 
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+    protected void cryptoOperation(CryptoInputParcel cryptoInput, SignEncryptParcel actionsParcel) {
 
-        final SignEncryptParcel input = createEncryptBundle();
-        // this is null if invalid, just return in that case
-        if (input == null) {
-            // Notify was created by inputIsValid.
-            return;
+        if (actionsParcel == null) {
+
+            actionsParcel = createEncryptBundle();
+            // this is null if invalid, just return in that case
+            if (actionsParcel == null) {
+                // Notify was created by inputIsValid.
+                return;
+            }
+
+            cacheActionsParcel(actionsParcel);
         }
 
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
         intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
 
-        final Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, input);
+        Bundle data = new Bundle();
+        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, actionsParcel);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

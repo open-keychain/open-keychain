@@ -57,6 +57,10 @@ public class SignEncryptParcel extends PgpSignEncryptInputParcel {
 
     }
 
+    public boolean isIncomplete() {
+        return mInputUris.size() > mOutputUris.size();
+    }
+
     public byte[] getBytes() {
         return mBytes;
     }
