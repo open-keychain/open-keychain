@@ -56,7 +56,7 @@ import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
@@ -65,12 +65,10 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
-
-public class CertifyKeyFragment extends CryptoOperationFragment
+public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyActionsParcel>
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_CHECK_STATES = "check_states";
-    public static final String ARG_CACHED_ACTIONS = "cached_actions";
 
     private CheckBox mUploadKeyCheckbox;
     ListView mUserIds;
@@ -78,8 +76,6 @@ public class CertifyKeyFragment extends CryptoOperationFragment
     private CertifyKeySpinner mCertifyKeySpinner;
 
     private long[] mPubMasterKeyIds;
-
-    private CertifyActionsParcel mCachedActionsParcel;
 
     public static final String[] USER_IDS_PROJECTION = new String[]{
             UserPackets._ID,
@@ -113,13 +109,9 @@ public class CertifyKeyFragment extends CryptoOperationFragment
 
         ArrayList<Boolean> checkedStates;
         if (savedInstanceState != null) {
-            mCachedActionsParcel = savedInstanceState.getParcelable(ARG_CACHED_ACTIONS);
             checkedStates = (ArrayList<Boolean>) savedInstanceState.getSerializable(ARG_CHECK_STATES);
-
             // key spinner and the checkbox keep their own state
-
         } else {
-            mCachedActionsParcel = null;
             checkedStates = null;
 
             // preselect certify key id if given
@@ -158,7 +150,6 @@ public class CertifyKeyFragment extends CryptoOperationFragment
         ArrayList<Boolean> states = mUserIdsAdapter.getCheckStates();
         // no proper parceling method available :(
         outState.putSerializable(ARG_CHECK_STATES, states);
-        outState.putParcelable(ARG_CACHED_ACTIONS, mCachedActionsParcel);
     }
 
     @Override
@@ -185,7 +176,7 @@ public class CertifyKeyFragment extends CryptoOperationFragment
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
                 } else {
-                    cryptoOperation(new CryptoInputParcel());
+                    cryptoOperation();
                 }
             }
         });
@@ -316,11 +307,11 @@ public class CertifyKeyFragment extends CryptoOperationFragment
     }
 
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+    protected void cryptoOperation(CryptoInputParcel cryptoInput, CertifyActionsParcel actionsParcel) {
         Bundle data = new Bundle();
         {
 
-            if (mCachedActionsParcel == null) {
+            if (actionsParcel == null) {
                 // Bail out if there is not at least one user id selected
                 ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
                 if (certifyActions.isEmpty()) {
@@ -332,12 +323,15 @@ public class CertifyKeyFragment extends CryptoOperationFragment
                 long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
 
                 // fill values for this action
-                mCachedActionsParcel = new CertifyActionsParcel(selectedKeyId);
-                mCachedActionsParcel.mCertifyActions.addAll(certifyActions);
+                actionsParcel = new CertifyActionsParcel(selectedKeyId);
+                actionsParcel.mCertifyActions.addAll(certifyActions);
+
+                // cached for next cryptoOperation loop
+                cacheActionsParcel(actionsParcel);
             }
 
             data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, mCachedActionsParcel);
+            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, actionsParcel);
 
             if (mUploadKeyCheckbox.isChecked()) {
                 String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
@@ -404,8 +398,5 @@ public class CertifyKeyFragment extends CryptoOperationFragment
     @Override
     protected void onCryptoOperationCancelled() {
         super.onCryptoOperationCancelled();
-
-        // forget this ever happened
-        mCachedActionsParcel = null;
     }
 }
