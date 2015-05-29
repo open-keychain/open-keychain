@@ -22,6 +22,7 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,7 +92,7 @@ public abstract class KeyRing {
         return userIdString;
     }
 
-    public static class UserId {
+    public static class UserId implements Serializable {
         public final String name;
         public final String email;
         public final String comment;

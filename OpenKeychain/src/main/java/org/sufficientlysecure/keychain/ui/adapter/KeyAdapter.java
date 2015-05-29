@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -240,7 +241,8 @@ public class KeyAdapter extends CursorAdapter {
         return super.getItemId(position);
     }
 
-    public static class KeyItem {
+    // must be serializable for TokenCompleTextView state
+    public static class KeyItem implements Serializable {
 
         public final String mUserIdFull;
         public final KeyRing.UserId mUserId;
