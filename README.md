@@ -3,9 +3,13 @@
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to http://www.openkeychain.org .
 
-### Travis CI Build Status of development branch
+### Branches
+* The development of OpenKeychain happens in the "master" branch.
+* For every release a new branch, e.g., "3.2-fixes" is created to backport fixes from "master"
 
-[![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=development)](https://travis-ci.org/open-keychain/open-keychain)
+### Travis CI Build Status of master branch
+
+[![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
 
 ## How to help the project?
 
