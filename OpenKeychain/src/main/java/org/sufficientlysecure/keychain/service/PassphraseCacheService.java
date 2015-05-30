@@ -411,9 +411,9 @@ public class PassphraseCacheService extends Service {
 
                     long referenceKeyId;
                     if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                        referenceKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
-                    } else {
                         referenceKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
+                    } else {
+                        referenceKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
                     }
                     // Stop specific ttl alarm and
                     am.cancel(buildIntent(this, referenceKeyId));
