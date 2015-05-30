@@ -28,6 +28,7 @@ import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
 import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyValidationException;
 import org.spongycastle.openpgp.PGPLiteralData;
 import org.spongycastle.openpgp.PGPOnePassSignature;
 import org.spongycastle.openpgp.PGPOnePassSignatureList;
@@ -596,7 +597,12 @@ public class PgpDecryptVerify extends BaseOperation {
             try {
                 PublicKeyDataDecryptorFactory decryptorFactory
                         = secretEncryptionKey.getDecryptorFactory(cryptoInput);
-                clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+                try {
+                    clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+                } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
+                    log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
+                    return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+                }
 
                 symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
             } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
