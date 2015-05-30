@@ -48,7 +48,6 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.Security;
 import java.util.HashSet;
@@ -157,11 +156,13 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = new PgpDecryptVerify.Builder(Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel(mPassphrase));
+            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowSymmetricDecryption(true);
+            DecryptVerifyResult result = op.execute(
+                    input, new CryptoInputParcel(mPassphrase), data, out);
+
             Assert.assertTrue("decryption must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -178,14 +179,15 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = new PgpDecryptVerify.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
+            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowSymmetricDecryption(true);
+            DecryptVerifyResult result = op.execute(input,
+                    new CryptoInputParcel(new Passphrase(new String(mPassphrase.getCharArray()) + "x")),
                     data, out);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel(
-                    new Passphrase(new String(mPassphrase.getCharArray()) + "x")));
-            Assert.assertFalse("decryption must succeed", result.success());
+
+            Assert.assertFalse("decryption must fail", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
             Assert.assertNull("signature should be an error", result.getSignatureResult());
         }
@@ -196,13 +198,32 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = new PgpDecryptVerify.Builder(
-                    Robolectric.application,
-                    new ProviderHelper(Robolectric.application),
-                    null, // new DummyPassphraseCache(mPassphrase, 0L),
-                    data, out);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
-            Assert.assertFalse("decryption must succeed", result.success());
+            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowSymmetricDecryption(true);
+            DecryptVerifyResult result = op.execute(input,
+                    new CryptoInputParcel(), data, out);
+
+            Assert.assertFalse("decryption must fail", result.success());
+            Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
+            Assert.assertNull("signature should be an error", result.getSignatureResult());
+        }
+
+        { // decryption if symmetric decryption isn't allowed should fail
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
+                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowSymmetricDecryption(false);
+            DecryptVerifyResult result = op.execute(input,
+                    new CryptoInputParcel(), data, out);
+
+            Assert.assertFalse("decryption must fail", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
             Assert.assertNull("signature should be an error", result.getSignatureResult());
         }
@@ -223,11 +244,11 @@ public class PgpEncryptDecryptTest {
                     new ProviderHelper(Robolectric.application), null);
 
             InputData data = new InputData(in, in.available());
-            PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
-            b.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(), data, out);
+            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -239,8 +260,10 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out, null, null, null);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel(mKeyPhrase1));
+            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+
             Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with provided passphrase should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -252,18 +275,17 @@ public class PgpEncryptDecryptTest {
 
         }
 
-        // TODO how to test passphrase cache?
-
         { // decryption with passphrase cached should succeed
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -276,9 +298,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     null, mStaticRing1.getMasterKeyId(), null);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
+
             Assert.assertFalse("decryption with no passphrase must return pending", result.success());
             Assert.assertTrue("decryption with no passphrase should return pending", result.isPending());
             Assert.assertEquals("decryption with no passphrase should return pending passphrase",
@@ -321,10 +345,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed for the first key", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -346,11 +371,12 @@ public class PgpEncryptDecryptTest {
             allowed.add(mStaticRing2.getMasterKeyId());
 
             // provide passphrase for the second, and check that the first is never asked for!
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
-            b.setAllowedKeyIds(allowed);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowedKeyIds(allowed);
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed for allowed key", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -365,12 +391,12 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             // provide passphrase for the second, and check that the first is never asked for!
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
-            // no keys allowed!
-            b.setAllowedKeyIds(new HashSet<Long>());
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            input.setAllowedKeyIds(new HashSet<Long>());
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertFalse("decryption must fail if no key allowed", result.success());
             Assert.assertEquals("decryption must fail with key disllowed status",
                     DecryptVerifyResult.RESULT_KEY_DISALLOWED, result.getResult());
@@ -388,10 +414,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -436,10 +463,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed for the first key", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -462,10 +490,11 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out,
+            PgpDecryptVerify op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel());
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
@@ -477,7 +506,7 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testForeignEncoding () throws Exception {
+    public void testForeignEncoding() throws Exception {
         String plaintext = "ウィキペディア";
         byte[] plaindata = plaintext.getBytes("iso-2022-jp");
 
@@ -497,7 +526,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
-            b.setEncryptionMasterKeyIds(new long[]{ mStaticRing1.getMasterKeyId() });
+            b.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
             // this only works with ascii armored output!
             b.setEnableAsciiArmorOutput(true);
@@ -514,8 +543,10 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify.Builder b = builderWithFakePassphraseCache(data, out, null, null, null);
-            DecryptVerifyResult result = b.build().execute(new CryptoInputParcel(mKeyPhrase1));
+            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+
             Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext should equal plaintext bytes",
                     out.toByteArray(), plaindata);
@@ -528,35 +559,27 @@ public class PgpEncryptDecryptTest {
 
     }
 
-    private PgpDecryptVerify.Builder builderWithFakePassphraseCache (
-            InputData data, OutputStream out,
+    private PgpDecryptVerify operationWithFakePassphraseCache(
             final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
-        return new PgpDecryptVerify.Builder(Robolectric.application,
-                new ProviderHelper(Robolectric.application),
-                null,
-                data, out) {
-            public PgpDecryptVerify build() {
-                return new PgpDecryptVerify(this) {
-                    @Override
-                    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
-                            throws NoSecretKeyException {
-                        if (checkMasterKeyId != null) {
-                            Assert.assertEquals("requested passphrase should be for expected master key id",
-                                    (long) checkMasterKeyId, masterKeyId);
-                        }
-                        if (checkSubKeyId != null) {
-                            Assert.assertEquals("requested passphrase should be for expected sub key id",
-                                    (long) checkSubKeyId, subKeyId);
-                        }
-                        if (passphrase == null) {
-                            return null;
-                        }
-                        return passphrase;
-                    }
-                };
+        return new PgpDecryptVerify(Robolectric.application,
+                new ProviderHelper(Robolectric.application), null) {
+            @Override
+            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
+                    throws NoSecretKeyException {
+                if (checkMasterKeyId != null) {
+                    Assert.assertEquals("requested passphrase should be for expected master key id",
+                            (long) checkMasterKeyId, masterKeyId);
+                }
+                if (checkSubKeyId != null) {
+                    Assert.assertEquals("requested passphrase should be for expected sub key id",
+                            (long) checkSubKeyId, subKeyId);
+                }
+                if (passphrase == null) {
+                    return null;
+                }
+                return passphrase;
             }
         };
     }
-
 }
