@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ViewAnimator;
 
+import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -33,6 +35,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -72,9 +75,39 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
+
         mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
         mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
+
+        final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
+        mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
+            @Override
+            public void onKeyChanged(long masterKeyId) {
+                int child = masterKeyId != Constants.key.none ? 1 : 0;
+                if (vSignatureIcon.getDisplayedChild() != child) {
+                    vSignatureIcon.setDisplayedChild(child);
+                }
+            }
+        });
+
+        final ViewAnimator vEncryptionIcon = (ViewAnimator) view.findViewById(R.id.result_encryption_icon);
+        mEncryptKeyView.setTokenListener(new TokenListener() {
+            @Override
+            public void onTokenAdded(Object o) {
+                if (vEncryptionIcon.getDisplayedChild() != 1) {
+                    vEncryptionIcon.setDisplayedChild(1);
+                }
+            }
+
+            @Override
+            public void onTokenRemoved(Object o) {
+                int child = mEncryptKeyView.getObjects().isEmpty() ? 0 : 1;
+                if (vEncryptionIcon.getDisplayedChild() != child) {
+                    vEncryptionIcon.setDisplayedChild(child);
+                }
+            }
+        });
 
         return view;
     }
