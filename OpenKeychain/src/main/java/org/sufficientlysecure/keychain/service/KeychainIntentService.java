@@ -250,11 +250,14 @@ public class KeychainIntentService extends IntentService implements Progressable
                 CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                 PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
+                // this action is here for compatibility only
+                input.setDecryptMetadataOnly(true);
+
+                /* Operation */
                 PgpDecryptVerify op = new PgpDecryptVerify(this, new ProviderHelper(this), this);
                 DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
+                /* Result */
                 sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                 break;
@@ -354,6 +357,10 @@ public class KeychainIntentService extends IntentService implements Progressable
                 /* Input */
                 CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                 PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
+
+                // for compatibility
+                // TODO merge with ACTION_DECRYPT_METADATA
+                input.setDecryptMetadataOnly(false);
 
                 /* Operation */
                 PgpDecryptVerify op = new PgpDecryptVerify(this, new ProviderHelper(this), this);

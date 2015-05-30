@@ -206,8 +206,7 @@ public class DecryptFilesFragment extends DecryptFragment {
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri)
-                .setAllowSymmetricDecryption(true)
-                .setDecryptMetadataOnly(true);
+                .setAllowSymmetricDecryption(true);
 
         data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);

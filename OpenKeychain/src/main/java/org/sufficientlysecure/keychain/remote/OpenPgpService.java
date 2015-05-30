@@ -528,6 +528,7 @@ public class OpenPgpService extends RemoteService {
             PgpDecryptVerify op = new PgpDecryptVerify(this, mProviderHelper, null);
 
             long inputLength = inputStream.available();
+            InputData inputData = new InputData(inputStream, inputLength);
 
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
@@ -537,7 +538,7 @@ public class OpenPgpService extends RemoteService {
                 .setDecryptMetadataOnly(decryptMetadataOnly)
                 .setDetachedSignature(detachedSignature);
 
-            DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputStream, outputStream);
+            DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputData, outputStream);
 
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client
