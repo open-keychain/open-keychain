@@ -36,8 +36,8 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
@@ -202,16 +202,14 @@ public class DecryptFilesFragment extends DecryptFragment {
         intent.setAction(mCurrentCryptoOperation);
 
         // data
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
 
-        data.putInt(KeychainIntentService.SOURCE, IOType.URI.ordinal());
-        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_INPUT_URI, mInputUri);
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri)
+                .setAllowSymmetricDecryption(true)
+                .setDecryptMetadataOnly(true);
 
-        data.putInt(KeychainIntentService.TARGET, IOType.URI.ordinal());
-        data.putParcelable(KeychainIntentService.ENCRYPT_DECRYPT_OUTPUT_URI, mOutputUri);
-
+        data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

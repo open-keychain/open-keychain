@@ -1514,8 +1514,8 @@ public class ProviderHelper {
         return keyIds;
     }
 
-    public Set<Long> getAllowedKeyIdsForApp(Uri uri) {
-        Set<Long> keyIds = new HashSet<>();
+    public HashSet<Long> getAllowedKeyIdsForApp(Uri uri) {
+        HashSet<Long> keyIds = new HashSet<>();
 
         Cursor cursor = mContentResolver.query(uri, null, null, null, null);
         try {

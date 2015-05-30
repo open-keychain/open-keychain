@@ -120,6 +120,9 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {
             Long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
+            if (signatureKeyId == Constants.key.none) {
+                signatureKeyId = null;
+            }
             long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
             preselectKeys(signatureKeyId, encryptionKeyIds);
         }

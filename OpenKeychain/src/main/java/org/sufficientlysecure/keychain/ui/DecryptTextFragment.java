@@ -34,8 +34,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentService.IOType;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
@@ -168,10 +168,8 @@ public class DecryptTextFragment extends DecryptFragment {
 
         intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
-        // data
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
-        data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
+        data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -199,8 +197,7 @@ public class DecryptTextFragment extends DecryptFragment {
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
                     if (pgpResult.success()) {
-                        byte[] decryptedMessage = returnData
-                                .getByteArray(KeychainIntentService.RESULT_DECRYPTED_BYTES);
+                        byte[] decryptedMessage = pgpResult.getOutputBytes();
                         String displayMessage;
                         if (pgpResult.getCharset() != null) {
                             try {

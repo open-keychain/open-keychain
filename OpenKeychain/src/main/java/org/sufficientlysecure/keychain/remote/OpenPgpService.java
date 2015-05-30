@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEnt
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -63,7 +64,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.HashSet;
 
 public class OpenPgpService extends RemoteService {
 
@@ -488,23 +489,23 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor input,
+    private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor inputDescriptor,
                                         ParcelFileDescriptor output, boolean decryptMetadataOnly) {
-        InputStream is = null;
-        OutputStream os = null;
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
         try {
             // Get Input- and OutputStream from ParcelFileDescriptor
-            is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            inputStream = new ParcelFileDescriptor.AutoCloseInputStream(inputDescriptor);
 
             // output is optional, e.g., for verifying detached signatures
             if (decryptMetadataOnly || output == null) {
-                os = null;
+                outputStream = null;
             } else {
-                os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+                outputStream = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             }
 
             String currentPkg = getCurrentCallingPackage();
-            Set<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
+            HashSet<Long> allowedKeyIds = mProviderHelper.getAllowedKeyIdsForApp(
                     KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
 
             if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 7) {
@@ -512,33 +513,31 @@ public class OpenPgpService extends RemoteService {
                         ApiAccounts.buildBaseUri(currentPkg)));
             }
 
-            long inputLength = is.available();
-            InputData inputData = new InputData(is, inputLength);
-
-            PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                    this, new ProviderHelper(getContext()), null, inputData, os
-            );
-
-            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
-            if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel();
+            CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            if (cryptoInput == null) {
+                cryptoInput = new CryptoInputParcel();
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
+                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
                         new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
             }
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
 
+            PgpDecryptVerify op = new PgpDecryptVerify(this, mProviderHelper, null);
+
+            long inputLength = inputStream.available();
+
             // allow only private keys associated with accounts of this app
             // no support for symmetric encryption
-            builder.setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(allowedKeyIds)
-                    .setDecryptMetadataOnly(decryptMetadataOnly)
-                    .setDetachedSignature(detachedSignature);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel()
+                .setAllowSymmetricDecryption(false)
+                .setAllowedKeyIds(allowedKeyIds)
+                .setDecryptMetadataOnly(decryptMetadataOnly)
+                .setDetachedSignature(detachedSignature);
 
-            DecryptVerifyResult pgpResult = builder.build().execute(inputParcel);
+            DecryptVerifyResult pgpResult = op.execute(input, cryptoInput, inputStream, outputStream);
 
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client
@@ -624,16 +623,16 @@ public class OpenPgpService extends RemoteService {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         } finally {
-            if (is != null) {
+            if (inputStream != null) {
                 try {
-                    is.close();
+                    inputStream.close();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IOException when closing InputStream", e);
                 }
             }
-            if (os != null) {
+            if (outputStream != null) {
                 try {
-                    os.close();
+                    outputStream.close();
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "IOException when closing OutputStream", e);
                 }

@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -66,6 +67,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,147 +75,90 @@ import java.net.URLConnection;
 import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * This class uses a Builder pattern!
  */
 public class PgpDecryptVerify extends BaseOperation {
 
-    private InputData mData;
-    private OutputStream mOutStream;
-
-    private boolean mAllowSymmetricDecryption;
-    private Set<Long> mAllowedKeyIds;
-    private boolean mDecryptMetadataOnly;
-    private byte[] mDetachedSignature;
-    private String mRequiredSignerFingerprint;
-    private boolean mSignedLiteralData;
-
-    protected PgpDecryptVerify(Builder builder) {
-        super(builder.mContext, builder.mProviderHelper, builder.mProgressable);
-
-        // private Constructor can only be called from Builder
-        this.mData = builder.mData;
-        this.mOutStream = builder.mOutStream;
-
-        this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
-        this.mAllowedKeyIds = builder.mAllowedKeyIds;
-        this.mDecryptMetadataOnly = builder.mDecryptMetadataOnly;
-        this.mDetachedSignature = builder.mDetachedSignature;
-        this.mSignedLiteralData = builder.mSignedLiteralData;
-        this.mRequiredSignerFingerprint = builder.mRequiredSignerFingerprint;
-    }
-
-    public static class Builder {
-        // mandatory parameter
-        private Context mContext;
-        private ProviderHelper mProviderHelper;
-        private InputData mData;
-
-        // optional
-        private OutputStream mOutStream = null;
-        private Progressable mProgressable = null;
-        private boolean mAllowSymmetricDecryption = true;
-        private Set<Long> mAllowedKeyIds = null;
-        private boolean mDecryptMetadataOnly = false;
-        private byte[] mDetachedSignature = null;
-        private String mRequiredSignerFingerprint = null;
-        private boolean mSignedLiteralData = false;
-
-        public Builder(Context context, ProviderHelper providerHelper,
-                       Progressable progressable,
-                       InputData data, OutputStream outStream) {
-            mContext = context;
-            mProviderHelper = providerHelper;
-            mProgressable = progressable;
-            mData = data;
-            mOutStream = outStream;
-        }
-
-        /**
-         * This is used when verifying signed literals to check that they are signed with
-         *  the required key
-         */
-        public Builder setRequiredSignerFingerprint(String fingerprint) {
-            mRequiredSignerFingerprint = fingerprint;
-            return this;
-        }
-
-        /**
-         * This is to force a mode where the message is just the signature key id and
-         *  then a literal data packet; used in Keybase.io proofs
-         */
-        public Builder setSignedLiteralData(boolean signedLiteralData) {
-            mSignedLiteralData = signedLiteralData;
-            return this;
-        }
-
-        public Builder setAllowSymmetricDecryption(boolean allowSymmetricDecryption) {
-            mAllowSymmetricDecryption = allowSymmetricDecryption;
-            return this;
-        }
-
-        /**
-         * Allow these key ids alone for decryption.
-         * This means only ciphertexts encrypted for one of these private key can be decrypted.
-         */
-        public Builder setAllowedKeyIds(Set<Long> allowedKeyIds) {
-            mAllowedKeyIds = allowedKeyIds;
-            return this;
-        }
-
-        /**
-         * If enabled, the actual decryption/verification of the content will not be executed.
-         * The metadata only will be decrypted and returned.
-         */
-        public Builder setDecryptMetadataOnly(boolean decryptMetadataOnly) {
-            mDecryptMetadataOnly = decryptMetadataOnly;
-            return this;
-        }
-
-        /**
-         * If detachedSignature != null, it will be used exclusively to verify the signature
-         */
-        public Builder setDetachedSignature(byte[] detachedSignature) {
-            mDetachedSignature = detachedSignature;
-            return this;
-        }
-
-        public PgpDecryptVerify build() {
-            return new PgpDecryptVerify(this);
-        }
+    public PgpDecryptVerify(Context context, ProviderHelper providerHelper, Progressable progressable) {
+        super(context, providerHelper, progressable);
     }
 
     /**
      * Decrypts and/or verifies data based on parameters of class
      */
-    public DecryptVerifyResult execute(CryptoInputParcel cryptoInput) {
+    public DecryptVerifyResult execute(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput) {
+        InputData inputData;
+        OutputStream outputStream;
+
+        if (input.getInputBytes() != null) {
+            byte[] inputBytes = input.getInputBytes();
+            inputData = new InputData(new ByteArrayInputStream(inputBytes), inputBytes.length);
+        } else {
+            try {
+                InputStream inputStream = mContext.getContentResolver().openInputStream(input.getInputUri());
+                long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
+                inputData = new InputData(inputStream, inputSize);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        if (input.getOutputUri() == null) {
+            outputStream = new ByteArrayOutputStream();
+        } else {
+            try {
+                outputStream = mContext.getContentResolver().openOutputStream(input.getOutputUri());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        DecryptVerifyResult result = executeInternal(input, cryptoInput, inputData, outputStream);
+        if (outputStream instanceof ByteArrayOutputStream) {
+            byte[] outputData = ((ByteArrayOutputStream) outputStream).toByteArray();
+            result.setOutputBytes(outputData);
+        }
+
+        return result;
+
+    }
+
+    public DecryptVerifyResult execute(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
+            InputData inputData, OutputStream outputStream) {
+        return executeInternal(input, cryptoInput, inputData, outputStream);
+    }
+
+    private DecryptVerifyResult executeInternal(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
+            InputData inputData, OutputStream outputStream) {
         try {
-            if (mDetachedSignature != null) {
+            if (input.getDetachedSignature() != null) {
                 Log.d(Constants.TAG, "Detached signature present, verifying with this signature only");
 
-                return verifyDetachedSignature(mData.getInputStream(), 0);
+                return verifyDetachedSignature(input, inputData, outputStream, 0);
             } else {
                 // automatically works with PGP ascii armor and PGP binary
-                InputStream in = PGPUtil.getDecoderStream(mData.getInputStream());
+                InputStream in = PGPUtil.getDecoderStream(inputData.getInputStream());
 
                 if (in instanceof ArmoredInputStream) {
                     ArmoredInputStream aIn = (ArmoredInputStream) in;
                     // it is ascii armored
                     Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
 
-                    if (mSignedLiteralData) {
-                        return verifySignedLiteralData(aIn, 0);
+                    if (input.isSignedLiteralData()) {
+                        return verifySignedLiteralData(input, aIn, outputStream, 0);
                     } else if (aIn.isClearText()) {
                         // a cleartext signature, verify it with the other method
                         return verifyCleartextSignature(aIn, 0);
                     } else {
                         // else: ascii armored encryption! go on...
-                        return decryptVerify(cryptoInput, in, 0);
+                        return decryptVerify(input, cryptoInput, in, outputStream, 0);
                     }
                 } else {
-                    return decryptVerify(cryptoInput, in, 0);
+                    return decryptVerify(input, cryptoInput, in, outputStream, 0);
                 }
             }
         } catch (PGPException e) {
@@ -232,7 +177,8 @@ public class PgpDecryptVerify extends BaseOperation {
     /**
      * Verify Keybase.io style signed literal data
      */
-    private DecryptVerifyResult verifySignedLiteralData(InputStream in, int indent)
+    private DecryptVerifyResult verifySignedLiteralData(
+            PgpDecryptVerifyInputParcel input, InputStream in, OutputStream out, int indent)
             throws IOException, PGPException {
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_VL, indent);
@@ -283,9 +229,9 @@ public class PgpDecryptVerify extends BaseOperation {
         }
 
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signingRing.getFingerprint());
-        if (!(mRequiredSignerFingerprint.equals(fingerprint))) {
+        if (!(input.getRequiredSignerFingerprint().equals(fingerprint))) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + mRequiredSignerFingerprint +
+            Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + input.getRequiredSignerFingerprint() +
                     " got " + fingerprint + "!");
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -317,7 +263,7 @@ public class PgpDecryptVerify extends BaseOperation {
         int length;
         byte[] buffer = new byte[1 << 16];
         while ((length = dataIn.read(buffer)) > 0) {
-            mOutStream.write(buffer, 0, length);
+            out.write(buffer, 0, length);
             signature.update(buffer, 0, length);
         }
 
@@ -363,8 +309,9 @@ public class PgpDecryptVerify extends BaseOperation {
     /**
      * Decrypt and/or verifies binary or ascii armored pgp
      */
-    private DecryptVerifyResult decryptVerify(CryptoInputParcel cryptoInput,
-            InputStream in, int indent) throws IOException, PGPException {
+    private DecryptVerifyResult decryptVerify(
+            PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
+            InputStream in, OutputStream out, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
@@ -455,13 +402,13 @@ public class PgpDecryptVerify extends BaseOperation {
                 }
 
                 // allow only specific keys for decryption?
-                if (mAllowedKeyIds != null) {
+                if (input.getAllowedKeyIds() != null) {
                     long masterKeyId = secretKeyRing.getMasterKeyId();
                     Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
-                    Log.d(Constants.TAG, "mAllowedKeyIds: " + mAllowedKeyIds);
+                    Log.d(Constants.TAG, "mAllowedKeyIds: " + input.getAllowedKeyIds());
                     Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
 
-                    if (!mAllowedKeyIds.contains(masterKeyId)) {
+                    if (!input.getAllowedKeyIds().contains(masterKeyId)) {
                         // this key is in our db, but NOT allowed!
                         // continue with the next packet in the while loop
                         skippedDisallowedKey = true;
@@ -515,7 +462,7 @@ public class PgpDecryptVerify extends BaseOperation {
 
                 log.add(LogType.MSG_DC_SYM, indent);
 
-                if (!mAllowSymmetricDecryption) {
+                if (!input.isAllowSymmetricDecryption()) {
                     log.add(LogType.MSG_DC_SYM_SKIP, indent + 1);
                     continue;
                 }
@@ -764,7 +711,7 @@ public class PgpDecryptVerify extends BaseOperation {
             }
 
             // return here if we want to decrypt the metadata only
-            if (mDecryptMetadataOnly) {
+            if (input.isDecryptMetadataOnly()) {
                 log.add(LogType.MSG_DC_OK_META_ONLY, indent);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
@@ -787,13 +734,13 @@ public class PgpDecryptVerify extends BaseOperation {
             InputStream dataIn = literalData.getInputStream();
 
             long alreadyWritten = 0;
-            long wholeSize = mData.getSize() - mData.getStreamPosition();
+            long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
             int length;
             byte[] buffer = new byte[1 << 16];
             while ((length = dataIn.read(buffer)) > 0) {
-                Log.d(Constants.TAG, "read bytes: " + length);
-                if (mOutStream != null) {
-                    mOutStream.write(buffer, 0, length);
+                // Log.d(Constants.TAG, "read bytes: " + length);
+                if (out != null) {
+                    out.write(buffer, 0, length);
                 }
 
                 // update signature buffer if signature is also present
@@ -919,8 +866,8 @@ public class PgpDecryptVerify extends BaseOperation {
         out.close();
 
         byte[] clearText = out.toByteArray();
-        if (mOutStream != null) {
-            mOutStream.write(clearText);
+        if (out != null) {
+            out.write(clearText);
         }
 
         updateProgress(R.string.progress_processing_signature, 60, 100);
@@ -987,7 +934,8 @@ public class PgpDecryptVerify extends BaseOperation {
         return result;
     }
 
-    private DecryptVerifyResult verifyDetachedSignature(InputStream in, int indent)
+    private DecryptVerifyResult verifyDetachedSignature(
+            PgpDecryptVerifyInputParcel input, InputData inputData, OutputStream out, int indent)
             throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
@@ -997,7 +945,7 @@ public class PgpDecryptVerify extends BaseOperation {
         signatureResultBuilder.setSignatureOnly(true);
 
         updateProgress(R.string.progress_processing_signature, 0, 100);
-        InputStream detachedSigIn = new ByteArrayInputStream(mDetachedSignature);
+        InputStream detachedSigIn = new ByteArrayInputStream(input.getDetachedSignature());
         detachedSigIn = PGPUtil.getDecoderStream(detachedSigIn);
 
         JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory(detachedSigIn);
@@ -1022,12 +970,13 @@ public class PgpDecryptVerify extends BaseOperation {
 
             ProgressScaler progressScaler = new ProgressScaler(mProgressable, 60, 90, 100);
             long alreadyWritten = 0;
-            long wholeSize = mData.getSize() - mData.getStreamPosition();
+            long wholeSize = inputData.getSize() - inputData.getStreamPosition();
             int length;
             byte[] buffer = new byte[1 << 16];
+            InputStream in = inputData.getInputStream();
             while ((length = in.read(buffer)) > 0) {
-                if (mOutStream != null) {
-                    mOutStream.write(buffer, 0, length);
+                if (out != null) {
+                    out.write(buffer, 0, length);
                 }
 
                 // update signature buffer if signature is also present

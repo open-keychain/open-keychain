@@ -163,9 +163,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 Bundle args = new Bundle();
                 args.putLong(EXTRA_SUBKEY_ID, keyId);
                 args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
-
                 frag.setArguments(args);
-
                 frag.show(context.getSupportFragmentManager(), "passphraseDialog");
             }
         });

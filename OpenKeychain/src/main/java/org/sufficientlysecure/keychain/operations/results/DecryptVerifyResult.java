@@ -36,6 +36,23 @@ public class DecryptVerifyResult extends InputPendingResult {
     // https://tools.ietf.org/html/rfc4880#page56
     String mCharset;
 
+    byte[] mOutputBytes;
+
+    public DecryptVerifyResult(int result, OperationLog log) {
+        super(result, log);
+    }
+
+    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+    }
+
+    public DecryptVerifyResult(Parcel source) {
+        super(source);
+        mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
+        mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
+    }
+
+
     public boolean isKeysDisallowed () {
         return (mResult & RESULT_KEY_DISALLOWED) == RESULT_KEY_DISALLOWED;
     }
@@ -64,18 +81,12 @@ public class DecryptVerifyResult extends InputPendingResult {
         mCharset = charset;
     }
 
-    public DecryptVerifyResult(int result, OperationLog log) {
-        super(result, log);
+    public void setOutputBytes(byte[] outputBytes) {
+        mOutputBytes = outputBytes;
     }
 
-    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
-    }
-
-    public DecryptVerifyResult(Parcel source) {
-        super(source);
-        mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
-        mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
+    public byte[] getOutputBytes() {
+        return mOutputBytes;
     }
 
     public int describeContents() {

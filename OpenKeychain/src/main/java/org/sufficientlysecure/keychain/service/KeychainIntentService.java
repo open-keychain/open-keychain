@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -61,17 +62,11 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,34 +117,13 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     /* keys for data bundle */
 
-    // encrypt, decrypt, import export
-    public static final String TARGET = "target";
-    public static final String SOURCE = "source";
-
-    // possible targets:
-    public static enum IOType {
-        UNKNOWN,
-        BYTES,
-        URI;
-
-        private static final IOType[] values = values();
-
-        public static IOType fromInt(int n) {
-            if (n < 0 || n >= values.length) {
-                return UNKNOWN;
-            } else {
-                return values[n];
-            }
-        }
-    }
-
     // encrypt
     public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
     public static final String ENCRYPT_DECRYPT_OUTPUT_URI = "output_uri";
     public static final String SIGN_ENCRYPT_PARCEL = "sign_encrypt_parcel";
 
     // decrypt/verify
-    public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
+    public static final String DECRYPT_VERIFY_PARCEL = "decrypt_verify_parcel";
 
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
@@ -188,14 +162,6 @@ public class KeychainIntentService extends IntentService implements Progressable
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
-
-
-    /*
-     * possible data keys as result send over messenger
-     */
-
-    // decrypt/verify
-    public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
 
     Messenger mMessenger;
 
@@ -280,26 +246,16 @@ public class KeychainIntentService extends IntentService implements Progressable
             }
             case ACTION_DECRYPT_METADATA: {
 
-                try {
-                    /* Input */
-                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                /* Input */
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
-                    InputData inputData = createDecryptInputData(data);
+                // verifyText and decrypt returning additional resultData values for the
+                // verification of signatures
+                PgpDecryptVerify op = new PgpDecryptVerify(this, new ProviderHelper(this), this);
+                DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
-                    // verifyText and decrypt returning additional resultData values for the
-                    // verification of signatures
-                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                            this, new ProviderHelper(this), this, inputData, null
-                    );
-                    builder.setAllowSymmetricDecryption(true)
-                            .setDecryptMetadataOnly(true);
-
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
-
-                    sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
-                } catch (Exception e) {
-                    sendErrorToHandler(e);
-                }
+                sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                 break;
             }
@@ -356,22 +312,13 @@ public class KeychainIntentService extends IntentService implements Progressable
                         }
                     }
 
-                    // kind of awkward, but this whole class wants to pull bytes out of “data”
-                    data.putInt(KeychainIntentService.TARGET, IOType.BYTES.ordinal());
-                    data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, messageBytes);
+                    PgpDecryptVerify op = new PgpDecryptVerify(this, new ProviderHelper(this), this);
 
-                    InputData inputData = createDecryptInputData(data);
-                    OutputStream outStream = createCryptOutputStream(data);
+                    PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
+                            .setSignedLiteralData(true)
+                            .setRequiredSignerFingerprint(requiredFingerprint);
 
-                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                            this, new ProviderHelper(this), this,
-                            inputData, outStream
-                    );
-                    builder.setSignedLiteralData(true).setRequiredSignerFingerprint(requiredFingerprint);
-
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(
-                            new CryptoInputParcel());
-                    outStream.close();
+                    DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
 
                     if (!decryptVerifyResult.success()) {
                         OperationLog log = decryptVerifyResult.getLog();
@@ -383,7 +330,7 @@ public class KeychainIntentService extends IntentService implements Progressable
                         return;
                     }
 
-                    if (!prover.validate(outStream.toString())) {
+                    if (!prover.validate(new String(decryptVerifyResult.getOutputBytes()))) {
                         sendProofError(getString(R.string.keybase_message_payload_mismatch));
                         return;
                     }
@@ -404,40 +351,16 @@ public class KeychainIntentService extends IntentService implements Progressable
             }
             case ACTION_DECRYPT_VERIFY: {
 
-                try {
-                    /* Input */
-                    CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                /* Input */
+                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
-                    InputData inputData = createDecryptInputData(data);
-                    OutputStream outStream = createCryptOutputStream(data);
+                /* Operation */
+                PgpDecryptVerify op = new PgpDecryptVerify(this, new ProviderHelper(this), this);
+                DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
-                    /* Operation */
-                    Bundle resultData = new Bundle();
-
-                    // verifyText and decrypt returning additional resultData values for the
-                    // verification of signatures
-                    PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(
-                            this, new ProviderHelper(this), this,
-                            inputData, outStream
-                    );
-                    builder.setAllowSymmetricDecryption(true);
-
-                    DecryptVerifyResult decryptVerifyResult = builder.build().execute(cryptoInput);
-
-                    outStream.close();
-
-                    resultData.putParcelable(DecryptVerifyResult.EXTRA_RESULT, decryptVerifyResult);
-
-                    /* Output */
-                    finalizeDecryptOutputStream(data, resultData, outStream);
-                    Log.logDebugBundle(resultData, "resultData");
-
-                    sendMessageToHandler(MessageStatus.OKAY, resultData);
-
-                } catch (IOException | PgpGeneralException e) {
-                    // TODO get rid of this!
-                    sendErrorToHandler(e);
-                }
+                /* Output */
+                sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                 break;
             }
@@ -674,65 +597,6 @@ public class KeychainIntentService extends IntentService implements Progressable
     @Override
     public void setPreventCancel() {
         sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
-    }
-
-    private InputData createDecryptInputData(Bundle data) throws IOException, PgpGeneralException {
-        return createCryptInputData(data, DECRYPT_CIPHERTEXT_BYTES);
-    }
-
-    private InputData createCryptInputData(Bundle data, String bytesName) throws PgpGeneralException, IOException {
-        int source = data.get(SOURCE) != null ? data.getInt(SOURCE) : data.getInt(TARGET);
-        IOType type = IOType.fromInt(source);
-        switch (type) {
-            case BYTES: /* encrypting bytes directly */
-                byte[] bytes = data.getByteArray(bytesName);
-                return new InputData(new ByteArrayInputStream(bytes), bytes.length);
-
-            case URI: /* encrypting content uri */
-                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_INPUT_URI);
-
-                // InputStream
-                return new InputData(getContentResolver().openInputStream(providerUri), FileHelper.getFileSize(this, providerUri, 0));
-
-            default:
-                throw new PgpGeneralException("No target chosen!");
-        }
-    }
-
-    private OutputStream createCryptOutputStream(Bundle data) throws PgpGeneralException, FileNotFoundException {
-        int target = data.getInt(TARGET);
-        IOType type = IOType.fromInt(target);
-        switch (type) {
-            case BYTES:
-                return new ByteArrayOutputStream();
-
-            case URI:
-                Uri providerUri = data.getParcelable(ENCRYPT_DECRYPT_OUTPUT_URI);
-
-                return getContentResolver().openOutputStream(providerUri);
-
-            default:
-                throw new PgpGeneralException("No target chosen!");
-        }
-    }
-
-    private void finalizeDecryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream) {
-        finalizeCryptOutputStream(data, resultData, outStream, RESULT_DECRYPTED_BYTES);
-    }
-
-    private void finalizeCryptOutputStream(Bundle data, Bundle resultData, OutputStream outStream, String bytesName) {
-        int target = data.getInt(TARGET);
-        IOType type = IOType.fromInt(target);
-        switch (type) {
-            case BYTES:
-                byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                resultData.putByteArray(bytesName, output);
-                break;
-            case URI:
-                // nothing, output was written, just send okay and verification bundle
-
-                break;
-        }
     }
 
     @Override
