@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -244,25 +243,25 @@ public class ImportExportOperation extends BaseOperation {
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
                             byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
-                            key = UncachedKeyRing.decodeFromData(data);
+                            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
-                            // If there already is a key (of keybase origin), merge the two
-                            if (key != null) {
+                            // If there already is a key, merge the two
+                            if (key != null && keybaseKey != null) {
                                 log.add(LogType.MSG_IMPORT_MERGE, 3);
-                                UncachedKeyRing merged = UncachedKeyRing.decodeFromData(data);
-                                merged = key.merge(merged, log, 4);
+                                keybaseKey = key.merge(keybaseKey, log, 4);
                                 // If the merge didn't fail, use the new merged key
-                                if (merged != null) {
-                                    key = merged;
+                                if (keybaseKey != null) {
+                                    key = keybaseKey;
+                                } else {
+                                    log.add(LogType.MSG_IMPORT_MERGE_ERROR, 4);
                                 }
-                            } else {
-                                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
-                                key = UncachedKeyRing.decodeFromData(data);
+                            } else if (keybaseKey != null) {
+                                key = keybaseKey;
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3);
+                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
                         }
                     }
                 }

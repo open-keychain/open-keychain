@@ -1154,6 +1154,7 @@
     <string name="msg_import_fingerprint_error">"Fingerprint of fetched key didn't match expected!"</string>
     <string name="msg_import_fingerprint_ok">"Fingerprint check OK"</string>
     <string name="msg_import_merge">"Merging retrieved data"</string>
+    <string name="msg_import_merge_error">"Error merging retrieved data!"</string>
     <string name="msg_import_error">"Import operation failed!"</string>
     <string name="msg_import_error_io">"Import operation failed due to i/o error!"</string>
     <string name="msg_import_partial">"Import operation successful, with errors!"</string>
