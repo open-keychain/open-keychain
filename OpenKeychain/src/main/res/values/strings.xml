@@ -281,6 +281,7 @@
     <string name="error_nfc_needed">"NFC must be enabled!"</string>
     <string name="error_beam_needed">"Beam must be enabled!"</string>
     <string name="error_nothing_import">"No keys found!"</string>
+    <string name="error_nothing_import_selected">"No keys selected for import!"</string>
     <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
     <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
 

@@ -384,6 +384,13 @@ public class ImportKeysActivity extends BaseNfcActivity {
      */
     public void importKeys() {
         ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
+
+        if (mListFragment.getSelectedEntries().size() == 0) {
+            Notify.create(this, R.string.error_nothing_import_selected, Notify.Style.ERROR)
+                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+            return;
+        }
+
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
             Log.d(Constants.TAG, "importKeys started");
 
@@ -488,9 +495,6 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
             // start service with intent
             startService(intent);
-        } else {
-            Notify.create(this, R.string.error_nothing_import, Notify.Style.ERROR)
-                    .show((ViewGroup) findViewById(R.id.import_snackbar));
         }
     }
 
