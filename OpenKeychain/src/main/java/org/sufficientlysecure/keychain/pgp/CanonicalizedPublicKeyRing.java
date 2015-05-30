@@ -18,10 +18,10 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -97,12 +97,6 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     }
 
     /** Create a dummy secret ring from this key */
-    public UncachedKeyRing createDummySecretRing () {
-        PGPSecretKeyRing secRing = PGPSecretKeyRing.constructDummyFromPublic(getRing(), null);
-        return new UncachedKeyRing(secRing);
-    }
-
-    /** Create a dummy secret ring from this key */
     public UncachedKeyRing createDivertSecretRing (byte[] cardAid, long[] subKeyIds) {
         PGPSecretKeyRing secRing = PGPSecretKeyRing.constructDummyFromPublic(getRing(), cardAid);
 
@@ -114,7 +108,10 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
         // stripped dummy, then move divert-to-card keys over
         PGPSecretKeyRing newRing = PGPSecretKeyRing.constructDummyFromPublic(getRing());
         for (long subKeyId : subKeyIds) {
-            newRing = PGPSecretKeyRing.insertSecretKey(newRing, secRing.getSecretKey(subKeyId));
+            PGPSecretKey key = secRing.getSecretKey(subKeyId);
+            if (key != null) {
+                newRing = PGPSecretKeyRing.insertSecretKey(newRing, key);
+            }
         }
 
         return new UncachedKeyRing(newRing);
