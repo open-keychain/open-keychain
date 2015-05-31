@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -52,6 +53,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -102,6 +104,29 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     break;
                 }
                 case PASSPHRASE: {
+
+                    // handle empty passphrases by directly returning an empty crypto input parcel
+                    try {
+                        CanonicalizedSecretKeyRing pubRing =
+                                new ProviderHelper(this).getCanonicalizedSecretKeyRing(
+                                        requiredInput.getMasterKeyId());
+                        // use empty passphrase for empty passphrase
+                        if (pubRing.getSecretKey(requiredInput.getSubKeyId()).getSecretKeyType() ==
+                                SecretKeyType.PASSPHRASE_EMPTY) {
+                            // also return passphrase back to activity
+                            Intent returnIntent = new Intent();
+                            returnIntent.putExtra(RESULT_CRYPTO_INPUT, new CryptoInputParcel(new Passphrase("")));
+                            setResult(RESULT_OK, returnIntent);
+                            finish();
+                            return;
+                        }
+                    } catch (NotFoundException e) {
+                        Log.e(Constants.TAG, "Key not found?!", e);
+                        setResult(RESULT_CANCELED);
+                        finish();
+                        return;
+                    }
+
                     keyId = requiredInput.getSubKeyId();
                     break;
                 }
