@@ -1,7 +1,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 
 import org.sufficientlysecure.keychain.util.Passphrase;
 

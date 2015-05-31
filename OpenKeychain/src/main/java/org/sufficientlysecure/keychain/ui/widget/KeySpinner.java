@@ -24,9 +24,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.format.DateUtils;
@@ -116,10 +116,10 @@ public abstract class KeySpinner extends AppCompatSpinner implements
     }
 
     public void reload() {
-        if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+        if (getContext() instanceof Activity) {
+            ((Activity) getContext()).getLoaderManager().restartLoader(LOADER_ID, null, this);
         } else {
-            Log.e(Constants.TAG, "KeySpinner must be attached to FragmentActivity, this is " + getContext().getClass());
+            Log.e(Constants.TAG, "KeySpinner must be attached to Activity, this is " + getContext().getClass());
         }
     }
 

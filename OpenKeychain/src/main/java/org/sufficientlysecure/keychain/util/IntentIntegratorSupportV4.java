@@ -17,7 +17,7 @@
 package org.sufficientlysecure.keychain.util;
 
 import android.content.Intent;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 

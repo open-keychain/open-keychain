@@ -17,14 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
@@ -45,10 +45,10 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
         }
     }
 
-    public TabsAdapter(AppCompatActivity activity, ViewPager pager) {
-        super(activity.getSupportFragmentManager());
+    public TabsAdapter(Activity activity, ViewPager pager) {
+        super(activity.getFragmentManager());
         mContext = activity;
-        mActionBar = activity.getSupportActionBar();
+        mActionBar = activity.getActionBar();
         mViewPager = pager;
         mViewPager.setAdapter(this);
         mViewPager.setOnPageChangeListener(this);

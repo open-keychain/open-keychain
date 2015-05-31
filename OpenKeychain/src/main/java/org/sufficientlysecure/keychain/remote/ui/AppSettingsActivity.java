@@ -162,7 +162,7 @@ public class AppSettingsActivity extends BaseActivity {
         AdvancedAppSettingsDialogFragment dialogFragment =
                 AdvancedAppSettingsDialogFragment.newInstance(mAppSettings.getPackageName(), signature);
 
-        dialogFragment.show(getSupportFragmentManager(), "advancedDialog");
+        dialogFragment.show(getFragmentManager(), "advancedDialog");
     }
 
     private void startApp() {
@@ -221,7 +221,7 @@ public class AppSettingsActivity extends BaseActivity {
             mAccountsLabel.setVisibility(View.VISIBLE);
             mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
             // Create an instance of the fragments
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
                     .commitAllowingStateLoss();
         }
@@ -230,11 +230,11 @@ public class AppSettingsActivity extends BaseActivity {
         mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.api_allowed_keys_list_fragment, mAllowedKeysFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
     private void revokeAccess() {

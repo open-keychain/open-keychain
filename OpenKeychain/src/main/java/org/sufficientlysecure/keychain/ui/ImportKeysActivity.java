@@ -23,7 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -274,11 +274,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.import_keys_list_container, mListFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
     private void startFileFragment(Bundle savedInstanceState) {
@@ -294,11 +294,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.import_keys_top_container, mTopFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
     /**
@@ -325,11 +325,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.import_keys_top_container, mTopFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
     private boolean isFingerprintValid(String fingerprint) {

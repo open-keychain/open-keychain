@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -36,9 +36,9 @@ import java.io.File;
 public class ExportHelper {
     protected File mExportFile;
 
-    FragmentActivity mActivity;
+    Activity mActivity;
 
-    public ExportHelper(FragmentActivity activity) {
+    public ExportHelper(Activity activity) {
         super();
         this.mActivity = activity;
     }
@@ -69,7 +69,7 @@ public class ExportHelper {
                 mExportFile = file;
                 exportKeys(masterKeyIds, checked);
             }
-        }, mActivity.getSupportFragmentManager() ,title, message, exportFile, checkMsg);
+        }, mActivity.getFragmentManager() ,title, message, exportFile, checkMsg);
     }
 
     /**

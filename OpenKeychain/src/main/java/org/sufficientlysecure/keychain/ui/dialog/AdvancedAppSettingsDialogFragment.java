@@ -20,8 +20,8 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 
 import org.sufficientlysecure.keychain.R;
 
@@ -47,7 +47,7 @@ public class AdvancedAppSettingsDialogFragment extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final FragmentActivity activity = getActivity();
+        final Activity activity = getActivity();
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 

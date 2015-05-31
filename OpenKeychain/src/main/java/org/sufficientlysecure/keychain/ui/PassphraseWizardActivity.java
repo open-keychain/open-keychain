@@ -32,9 +32,9 @@ import android.nfc.tech.Ndef;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +52,8 @@ import java.util.Arrays;
 import java.util.List;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class PassphraseWizardActivity extends FragmentActivity {
-//public class PassphraseWizardActivity extends FragmentActivity implements LockPatternView.OnPatternListener {
+public class PassphraseWizardActivity extends Activity {
+//public class PassphraseWizardActivity extends Activity implements LockPatternView.OnPatternListener {
     //create or authenticate
     public String selectedAction;
     //for lockpattern
@@ -83,7 +83,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
         selectedAction = getIntent().getAction();
         if (savedInstanceState == null) {
             SelectMethods selectMethods = new SelectMethods();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.add(R.id.fragmentContainer, selectMethods).commit();
         }
         setContentView(R.layout.passphrase_wizard);
@@ -105,7 +105,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
 
     public void passphrase(View view) {
         Passphrase passphrase = new Passphrase();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, passphrase).addToBackStack(null).commit();
     }
 
@@ -116,7 +116,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
 //        LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
 //        LockPatternFragment lpf = LockPatternFragment.newInstance("asd");
 
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 //        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
     }
 
@@ -171,7 +171,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
                 getActionBar().setTitle(R.string.nfc_title);
             }
             NFCFragment nfc = new NFCFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.fragmentContainer, nfc).addToBackStack(null).commit();
 
             //if you want to create a new method or just authenticate
@@ -203,7 +203,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
                         Toast.makeText(this, R.string.nfc_write_succesful, Toast.LENGTH_SHORT).show();
                         //advance to lockpattern
 //                        LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
-//                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 //                        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                     }
                 } catch (IOException | FormatException e) {
@@ -222,7 +222,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
                             Toast.makeText(this, R.string.passphrases_match + "!", Toast.LENGTH_SHORT).show();
 
 //                            LockPatternFragmentOld lpf = LockPatternFragmentOld.newInstance(selectedAction);
-//                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+//                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 //                            transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                             readNFC = false;    //just once
                         } else {
@@ -415,7 +415,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
 
 
     //    /**
-//     * A simple {@link android.support.v4.app.Fragment} subclass.
+//     * A simple {@link android.app.Fragment} subclass.
 //     * Activities that contain this fragment must implement the
 //     * {@link com.haibison.android.lockpattern.Passphrase.OnFragmentInteractionListener} interface
 //     * to handle interaction events.
@@ -489,7 +489,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
 
 
     /**
-     * A simple {@link android.support.v4.app.Fragment} subclass.
+     * A simple {@link android.app.Fragment} subclass.
      * Activities that contain this fragment must implement the
      * interface
      * to handle interaction events.

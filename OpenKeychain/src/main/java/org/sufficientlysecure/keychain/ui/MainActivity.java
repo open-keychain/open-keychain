@@ -21,9 +21,9 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
@@ -137,7 +137,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
@@ -189,7 +189,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
 
     @Override
     public void fabMoveUp(int height) {
-        Object fragment = getSupportFragmentManager()
+        Object fragment = getFragmentManager()
                 .findFragmentById(R.id.main_fragment_container);
         if (fragment instanceof FabContainer) {
             ((FabContainer) fragment).fabMoveUp(height);
@@ -198,7 +198,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
 
     @Override
     public void fabRestorePosition() {
-        Object fragment = getSupportFragmentManager()
+        Object fragment = getFragmentManager()
                 .findFragmentById(R.id.main_fragment_container);
         if (fragment instanceof FabContainer) {
             ((FabContainer) fragment).fabRestorePosition();

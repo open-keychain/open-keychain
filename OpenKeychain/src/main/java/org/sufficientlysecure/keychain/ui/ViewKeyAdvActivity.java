@@ -22,9 +22,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Toast;
@@ -106,7 +106,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
         initTabs(mDataUri);
 

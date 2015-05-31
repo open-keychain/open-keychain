@@ -312,7 +312,7 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 }
 
             });
-            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+            deleteFileDialog.show(getActivity().getFragmentManager(), "deleteDialog");
         } else {
             if (mShareAfterEncrypt) {
                 // Share encrypted message/file

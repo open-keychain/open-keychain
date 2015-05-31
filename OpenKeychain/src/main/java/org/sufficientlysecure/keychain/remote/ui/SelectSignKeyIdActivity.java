@@ -116,11 +116,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         mListFragment = SelectSignKeyIdListFragment.newInstance(dataUri, data);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.api_select_sign_key_list_fragment, mListFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
     @Override

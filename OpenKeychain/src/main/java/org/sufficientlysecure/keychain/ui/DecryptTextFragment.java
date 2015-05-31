@@ -235,6 +235,6 @@ public class DecryptTextFragment extends DecryptFragment {
     @Override
     protected void onVerifyLoaded(boolean hideErrorOverlay) {
         mShowMenuOptions = hideErrorOverlay;
-        getActivity().supportInvalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
     }
 }

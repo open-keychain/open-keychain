@@ -23,11 +23,11 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.Activity;
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,11 +108,11 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        if (getContext() instanceof FragmentActivity) {
-            mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
+        if (getContext() instanceof Activity) {
+            mLoaderManager = ((Activity) getContext()).getLoaderManager();
             mLoaderManager.initLoader(0, null, this);
         } else {
-            Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
+            Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a Activity, this is " + getContext().getClass());
         }
     }
 
