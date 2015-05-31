@@ -19,13 +19,14 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.annotation.NonNull;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
@@ -44,7 +45,7 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_CANCELABLE = "cancelable";
     private static final String ARG_SERVICE_TYPE = "service_class";
 
-    public static enum ServiceType {
+    public enum ServiceType {
         KEYCHAIN_INTENT,
         CLOUD_IMPORT
     }
@@ -59,7 +60,6 @@ public class ProgressDialogFragment extends DialogFragment {
      * @param style the progress bar style, as defined in ProgressDialog (horizontal or spinner)
      * @param cancelable should we let the user cancel this operation
      * @param serviceType which Service this progress dialog is meant for
-     * @return
      */
     public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable,
                                                      ServiceType serviceType) {
@@ -75,24 +75,21 @@ public class ProgressDialogFragment extends DialogFragment {
         return frag;
     }
 
-    /** Updates progress of dialog */
     public void setProgress(int messageId, int progress, int max) {
         setProgress(getString(messageId), progress, max);
     }
 
-    /** Updates progress of dialog */
     public void setProgress(int progress, int max) {
-        if (mIsCancelled) {
+        ProgressDialog dialog = (ProgressDialog) getDialog();
+
+        if (mIsCancelled || dialog == null) {
             return;
         }
-
-        ProgressDialog dialog = (ProgressDialog) getDialog();
 
         dialog.setProgress(progress);
         dialog.setMax(max);
     }
 
-    /** Updates progress of dialog */
     public void setProgress(String message, int progress, int max) {
         ProgressDialog dialog = (ProgressDialog) getDialog();
 
@@ -105,9 +102,7 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setMax(max);
     }
 
-    /**
-     * Creates dialog
-     */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
@@ -165,7 +160,12 @@ public class ProgressDialogFragment extends DialogFragment {
         }
 
         mPreventCancel = preventCancel;
-        final Button negative = ((ProgressDialog) getDialog()).getButton(DialogInterface.BUTTON_NEGATIVE);
+        ProgressDialog dialog = (ProgressDialog) getDialog();
+        if (dialog == null) {
+            return;
+        }
+
+        final Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         negative.setEnabled(mIsCancelled && !preventCancel);
     }
 
@@ -188,11 +188,6 @@ public class ProgressDialogFragment extends DialogFragment {
                 negative.setClickable(false);
                 negative.setTextColor(Color.GRAY);
 
-                // Set the progress bar accordingly
-                ProgressDialog dialog = (ProgressDialog) getDialog();
-                dialog.setIndeterminate(true);
-                dialog.setMessage(getString(R.string.progress_cancelling));
-
                 // send a cancel message. note that this message will be handled by
                 // KeychainIntentService.onStartCommand, which runs in this thread,
                 // not the service one, and will not queue up a command.
@@ -212,6 +207,17 @@ public class ProgressDialogFragment extends DialogFragment {
 
                 serviceIntent.setAction(KeychainIntentService.ACTION_CANCEL);
                 getActivity().startService(serviceIntent);
+
+                // Set the progress bar accordingly
+                ProgressDialog dialog = (ProgressDialog) getDialog();
+                if (dialog == null) {
+                    return;
+                }
+
+                dialog.setIndeterminate(true);
+                dialog.setMessage(getString(R.string.progress_cancelling));
+
+
             }
         });
 
