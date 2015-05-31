@@ -88,6 +88,8 @@
     <string name="btn_add_email">"Add additional email address"</string>
     <string name="btn_unlock">"Unlock"</string>
     <string name="btn_add_keyserver">"Add"</string>
+    <string name="btn_save_default">"Save as default"</string>
+    <string name="btn_saved">"Saved!"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -1308,5 +1310,11 @@
     <string name="error_nfc">"NFC Error: %s"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+    <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>
+    <string name="snack_encrypt_filenames_off">"Filenames <b>are not</b> encrypted."</string>
+    <string name="snack_armor_on">"Output encoded as Text."</string>
+    <string name="snack_armor_off">"Output encoded as Binary."</string>
+    <string name="snack_compression_on">"Compression <b>enabled</b>."</string>
+    <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
 
 </resources>

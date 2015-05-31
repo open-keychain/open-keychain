@@ -41,6 +41,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nispok.snackbar.Snackbar;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -58,9 +59,12 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.File;
@@ -99,11 +103,10 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
     /**
      * Creates new instance of this fragment
      */
-    public static EncryptFilesFragment newInstance(ArrayList<Uri> uris, boolean useArmor) {
+    public static EncryptFilesFragment newInstance(ArrayList<Uri> uris) {
         EncryptFilesFragment frag = new EncryptFilesFragment();
 
         Bundle args = new Bundle();
-        args.putBoolean(ARG_USE_ASCII_ARMOR, useArmor);
         args.putParcelableArrayList(ARG_URIS, uris);
         frag.setArguments(args);
 
@@ -167,11 +170,28 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Preferences prefs = Preferences.getPreferences(getActivity());
+
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
         mDeleteAfterEncrypt = args.getBoolean(ARG_DELETE_AFTER_ENCRYPT, false);
-        mUseArmor = args.getBoolean(ARG_USE_ASCII_ARMOR, false);
-        mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
-        mEncryptFilenames = args.getBoolean(ARG_ENCRYPT_FILENAMES, true);
+
+        if (args.containsKey(ARG_USE_ASCII_ARMOR)) {
+            mUseArmor = args.getBoolean(ARG_USE_ASCII_ARMOR, false);
+        } else {
+            mUseArmor = prefs.getUseArmor();
+        }
+
+        if (args.containsKey(ARG_USE_COMPRESSION)) {
+            mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
+        } else {
+            mUseCompression = prefs.getUseCompression();
+        }
+
+        if (args.containsKey(ARG_ENCRYPT_FILENAMES)) {
+            mEncryptFilenames = args.getBoolean(ARG_ENCRYPT_FILENAMES, true);
+        } else {
+            mEncryptFilenames = prefs.getEncryptFilenames();
+        }
 
         setHasOptionsMenu(true);
     }
@@ -262,9 +282,7 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 break;
             }
             case R.id.check_use_armor: {
-                // we can NOT do this for every item, others might care!
-                item.setChecked(!item.isChecked());
-                mUseArmor = item.isChecked();
+                toggleUseArmor(item, !item.isChecked());
                 break;
             }
             case R.id.check_delete_after_encrypt: {
@@ -273,13 +291,11 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 break;
             }
             case R.id.check_enable_compression: {
-                item.setChecked(!item.isChecked());
-                mUseCompression = item.isChecked();
+                toggleEnableCompression(item, !item.isChecked());
                 break;
             }
             case R.id.check_encrypt_filenames: {
-                item.setChecked(!item.isChecked());
-                mEncryptFilenames = item.isChecked();
+                toggleEncryptFilenamesCheck(item, !item.isChecked());
                 break;
             }
 //            case R.id.check_hidden_recipients: {
@@ -292,6 +308,72 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
             }
         }
         return true;
+    }
+
+    public void toggleUseArmor(MenuItem item, final boolean useArmor) {
+
+        mUseArmor = useArmor;
+        item.setChecked(useArmor);
+
+        Notify.create(getActivity(), useArmor
+                        ? R.string.snack_armor_on
+                        : R.string.snack_armor_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Preferences.getPreferences(getActivity()).setUseArmor(useArmor);
+                        Notify.create(getActivity(), useArmor
+                                        ? R.string.snack_armor_on
+                                        : R.string.snack_armor_off,
+                                Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                                .show(EncryptFilesFragment.this, false);
+                    }
+                }, R.string.btn_save_default).show(this);
+
+    }
+
+    public void toggleEnableCompression(MenuItem item, final boolean compress) {
+
+        mUseCompression = compress;
+        item.setChecked(compress);
+
+        Notify.create(getActivity(), compress
+                        ? R.string.snack_compression_on
+                        : R.string.snack_compression_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Preferences.getPreferences(getActivity()).setUseCompression(compress);
+                        Notify.create(getActivity(), compress
+                                        ? R.string.snack_compression_on
+                                        : R.string.snack_compression_off,
+                                Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                                .show(EncryptFilesFragment.this, false);
+                    }
+                }, R.string.btn_save_default).show(this);
+
+    }
+
+    public void toggleEncryptFilenamesCheck(MenuItem item, final boolean encryptFilenames) {
+
+        mEncryptFilenames = encryptFilenames;
+        item.setChecked(encryptFilenames);
+
+        Notify.create(getActivity(), encryptFilenames
+                ? R.string.snack_encrypt_filenames_on
+                : R.string.snack_encrypt_filenames_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+            @Override
+            public void onAction() {
+                Preferences.getPreferences(getActivity()).setEncryptFilenames(encryptFilenames);
+                Notify.create(getActivity(), encryptFilenames
+                                ? R.string.snack_encrypt_filenames_on
+                                : R.string.snack_encrypt_filenames_off,
+                        Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                            .show(EncryptFilesFragment.this, false);
+            }
+        }, R.string.btn_save_default).show(this);
+
     }
 
     public void onEncryptSuccess(final SignEncryptResult result) {

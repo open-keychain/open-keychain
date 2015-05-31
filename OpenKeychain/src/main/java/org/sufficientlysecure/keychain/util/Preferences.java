@@ -182,6 +182,36 @@ public class Preferences {
         editor.commit();
     }
 
+    public void setUseCompression(boolean compress) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_COMPRESSION, compress);
+        editor.commit();
+    }
+
+    public boolean getUseCompression() {
+        return mSharedPreferences.getBoolean(Pref.USE_COMPRESSION, true);
+    }
+
+    public void setUseArmor(boolean useArmor) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.USE_ARMOR, useArmor);
+        editor.commit();
+    }
+
+    public boolean getUseArmor() {
+        return mSharedPreferences.getBoolean(Pref.USE_ARMOR, false);
+    }
+
+    public void setEncryptFilenames(boolean encryptFilenames) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.ENCRYPT_FILENAMES, encryptFilenames);
+        editor.commit();
+    }
+
+    public boolean getEncryptFilenames() {
+        return mSharedPreferences.getBoolean(Pref.ENCRYPT_FILENAMES, true);
+    }
+
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),

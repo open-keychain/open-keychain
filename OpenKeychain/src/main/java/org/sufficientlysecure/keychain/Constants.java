@@ -84,6 +84,9 @@ public final class Constants {
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String USE_DEFAULT_YUBIKEY_PIN = "useDefaultYubikeyPin";
         public static final String USE_NUMKEYPAD_FOR_YUBIKEY_PIN = "useNumKeypadForYubikeyPin";
+        public static final String ENCRYPT_FILENAMES = "encryptFilenames";
+        public static final String USE_COMPRESSION = "useCompression";
+        public static final String USE_ARMOR = "useArmor";
     }
 
     public static final class Defaults {

@@ -73,12 +73,10 @@ public class EncryptFilesActivity extends EncryptActivity {
             uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
         }
 
-        boolean useArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, false);
-
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            EncryptFilesFragment encryptFragment = EncryptFilesFragment.newInstance(uris, useArmor);
+            EncryptFilesFragment encryptFragment = EncryptFilesFragment.newInstance(uris);
             transaction.replace(R.id.encrypt_file_container, encryptFragment);
             transaction.commit();
         }

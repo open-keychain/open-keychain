@@ -47,7 +47,10 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.HashSet;
@@ -131,8 +134,16 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
             mMessage = getArguments().getString(ARG_TEXT);
         }
 
+        Preferences prefs = Preferences.getPreferences(getActivity());
+
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
+
         mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
+        if (args.containsKey(ARG_USE_COMPRESSION)) {
+            mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
+        } else {
+            mUseCompression = prefs.getUseCompression();
+        }
 
         setHasOptionsMenu(true);
     }
@@ -147,12 +158,9 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.isCheckable()) {
-            item.setChecked(!item.isChecked());
-        }
         switch (item.getItemId()) {
             case R.id.check_enable_compression: {
-                mUseCompression = item.isChecked();
+                toggleEnableCompression(item, !item.isChecked());
                 break;
             }
 //            case R.id.check_hidden_recipients: {
@@ -173,6 +181,28 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
             }
         }
         return true;
+    }
+
+    public void toggleEnableCompression(MenuItem item, final boolean compress) {
+
+        mUseCompression = compress;
+        item.setChecked(compress);
+
+        Notify.create(getActivity(), compress
+                        ? R.string.snack_compression_on
+                        : R.string.snack_compression_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Preferences.getPreferences(getActivity()).setUseCompression(compress);
+                        Notify.create(getActivity(), compress
+                                        ? R.string.snack_compression_on
+                                        : R.string.snack_compression_off,
+                                Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                                .show(EncryptTextFragment.this, false);
+                    }
+                }, R.string.btn_save_default).show(this);
+
     }
 
     protected void onEncryptSuccess(SignEncryptResult result) {
