@@ -1012,7 +1012,7 @@ public class PgpKeyOperationTest {
         parcel.reset();
 
         Random r = new Random();
-        int type = r.nextInt(110)+1;
+        int type = r.nextInt(110)+2; // any type except image attribute, to avoid interpretation of these
         byte[] data = new byte[r.nextInt(2000)];
         new Random().nextBytes(data);
 
