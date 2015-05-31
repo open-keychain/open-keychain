@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 
-public class DecryptFilesFragment extends DecryptFragment {
+public class DecryptFilesInputFragment extends DecryptFragment {
     public static final String ARG_URI = "uri";
     public static final String ARG_OPEN_DIRECTLY = "open_directly";
 
@@ -69,8 +69,8 @@ public class DecryptFilesFragment extends DecryptFragment {
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptFilesFragment newInstance(Uri uri, boolean openDirectly) {
-        DecryptFilesFragment frag = new DecryptFilesFragment();
+    public static DecryptFilesInputFragment newInstance(Uri uri, boolean openDirectly) {
+        DecryptFilesInputFragment frag = new DecryptFilesInputFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(ARG_URI, uri);
@@ -94,9 +94,9 @@ public class DecryptFilesFragment extends DecryptFragment {
         view.findViewById(R.id.decrypt_files_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
+                    FileHelper.openDocument(DecryptFilesInputFragment.this, "*/*", REQUEST_CODE_INPUT);
                 } else {
-                    FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*",
+                    FileHelper.openFile(DecryptFilesInputFragment.this, mInputUri, "*/*",
                             REQUEST_CODE_INPUT);
                 }
             }
@@ -128,9 +128,9 @@ public class DecryptFilesFragment extends DecryptFragment {
         // should only come from args
         if (state.getBoolean(ARG_OPEN_DIRECTLY, false)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                FileHelper.openDocument(DecryptFilesFragment.this, "*/*", REQUEST_CODE_INPUT);
+                FileHelper.openDocument(DecryptFilesInputFragment.this, "*/*", REQUEST_CODE_INPUT);
             } else {
-                FileHelper.openFile(DecryptFilesFragment.this, mInputUri, "*/*", REQUEST_CODE_INPUT);
+                FileHelper.openFile(DecryptFilesInputFragment.this, mInputUri, "*/*", REQUEST_CODE_INPUT);
             }
         }
     }
@@ -178,6 +178,10 @@ public class DecryptFilesFragment extends DecryptFragment {
         } else {
             FileHelper.saveDocument(this, "*/*", originalFilename, REQUEST_CODE_OUTPUT);
         }
+    }
+
+    private void displayMetadata(DecryptVerifyResult result) {
+
     }
 
     private void startDecrypt() {
@@ -233,18 +237,19 @@ public class DecryptFilesFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    DecryptVerifyResult pgpResult =
+                    DecryptVerifyResult result =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (pgpResult.success()) {
+                    if (result.success()) {
                         switch (mCurrentCryptoOperation) {
                             case KeychainIntentService.ACTION_DECRYPT_METADATA: {
-                                askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
+                                displayMetadata(result);
+                                // askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
                                 break;
                             }
                             case KeychainIntentService.ACTION_DECRYPT_VERIFY: {
                                 // display signature result in activity
-                                loadVerifyResult(pgpResult);
+                                loadVerifyResult(result);
 
                                 if (mDeleteAfter.isChecked()) {
                                     // Create and show dialog to delete original file
@@ -269,7 +274,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                             }
                         }
                     }
-                    pgpResult.createNotify(getActivity()).show(DecryptFilesFragment.this);
+                    result.createNotify(getActivity()).show(DecryptFilesInputFragment.this);
                 }
 
             }

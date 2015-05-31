@@ -24,6 +24,7 @@ import android.webkit.MimeTypeMap;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
+import org.spongycastle.bcpg.PublicKeyEncSessionPacket;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
@@ -40,11 +41,10 @@ import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
-import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
-import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -541,24 +541,33 @@ public class PgpDecryptVerify extends BaseOperation {
             currentProgress += 2;
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
-            try {
-                PublicKeyDataDecryptorFactory decryptorFactory
-                        = secretEncryptionKey.getDecryptorFactory(cryptoInput);
-                try {
-                    clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
-                } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
-                    log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
-                    return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-                }
+            CachingDataDecryptorFactory decryptorFactory
+                    = secretEncryptionKey.getCachingDecryptorFactory(cryptoInput);
 
-                symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
-            } catch (NfcSyncPublicKeyDataDecryptorFactoryBuilder.NfcInteractionNeeded e) {
+            // special case: if the decryptor does not have a session key cached for this encrypted
+            // data, and can't actually decrypt on its own, return a pending intent
+            if (!decryptorFactory.canDecrypt()
+                    && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
+
                 log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
                 return new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
                         secretEncryptionKey.getRing().getMasterKeyId(),
-                        secretEncryptionKey.getKeyId(), e.encryptedSessionKey
+                        secretEncryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
                 ));
+
             }
+
+            try {
+                clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
+                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+            }
+
+            symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
+
+            cryptoInput.addCryptoData(decryptorFactory.getCachedSessionKeys());
+
             encryptedData = encryptedDataAsymmetric;
         } else {
             // there wasn't even any useful data
@@ -821,6 +830,7 @@ public class PgpDecryptVerify extends BaseOperation {
         // Return a positive result, with metadata and verification info
         DecryptVerifyResult result =
                 new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        result.setCachedCryptoInputParcel(cryptoInput);
         result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
         result.setCharset(charset);

@@ -21,23 +21,18 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
-import org.spongycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
-import org.spongycastle.openpgp.operator.jcajce.NfcSyncPublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -51,7 +46,6 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -270,19 +264,20 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
-    public PublicKeyDataDecryptorFactory getDecryptorFactory(CryptoInputParcel cryptoInput) {
+    public CachingDataDecryptorFactory getCachingDecryptorFactory(CryptoInputParcel cryptoInput) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
         }
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
-            return new NfcSyncPublicKeyDataDecryptorFactoryBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                            cryptoInput.getCryptoData()
-                    );
+            return new CachingDataDecryptorFactory(
+                    Constants.BOUNCY_CASTLE_PROVIDER_NAME,
+                    cryptoInput.getCryptoData());
         } else {
-            return new JcePublicKeyDataDecryptorFactoryBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey);
+            return new CachingDataDecryptorFactory(
+                    new JcePublicKeyDataDecryptorFactoryBuilder()
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mPrivateKey),
+                    cryptoInput.getCryptoData());
         }
     }
 

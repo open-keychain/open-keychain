@@ -22,6 +22,7 @@ import android.os.Parcel;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -35,6 +36,8 @@ public class DecryptVerifyResult extends InputPendingResult {
     // This holds the charset which was specified in the ascii armor, if specified
     // https://tools.ietf.org/html/rfc4880#page56
     String mCharset;
+
+    CryptoInputParcel mCachedCryptoInputParcel;
 
     byte[] mOutputBytes;
 
@@ -50,6 +53,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         super(source);
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
         mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
+        mCachedCryptoInputParcel = source.readParcelable(CryptoInputParcel.class.getClassLoader());
     }
 
 
@@ -63,6 +67,14 @@ public class DecryptVerifyResult extends InputPendingResult {
 
     public void setSignatureResult(OpenPgpSignatureResult signatureResult) {
         mSignatureResult = signatureResult;
+    }
+
+    public CryptoInputParcel getCachedCryptoInputParcel() {
+        return mCachedCryptoInputParcel;
+    }
+
+    public void setCachedCryptoInputParcel(CryptoInputParcel cachedCryptoInputParcel) {
+        mCachedCryptoInputParcel = cachedCryptoInputParcel;
     }
 
     public OpenPgpMetadata getDecryptMetadata() {
@@ -97,6 +109,7 @@ public class DecryptVerifyResult extends InputPendingResult {
         super.writeToParcel(dest, flags);
         dest.writeParcelable(mSignatureResult, 0);
         dest.writeParcelable(mDecryptMetadata, 0);
+        dest.writeParcelable(mCachedCryptoInputParcel, 0);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {
