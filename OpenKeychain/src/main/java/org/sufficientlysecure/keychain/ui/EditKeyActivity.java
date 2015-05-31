@@ -69,11 +69,11 @@ public class EditKeyActivity extends BaseActivity {
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.edit_key_fragment_container, mEditKeyFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
 }

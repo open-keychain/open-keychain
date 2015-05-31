@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;

@@ -105,11 +105,11 @@ public class SelectAllowedKeysActivity extends BaseActivity {
         mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .replace(R.id.api_allowed_keys_list_fragment, mAllowedKeysFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
     }
 
 }

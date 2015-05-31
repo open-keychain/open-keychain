@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcel;
-import android.support.v4.app.ListFragment;
+import android.app.ListFragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -254,7 +254,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             public void onFileSelected(File file, boolean checked) {
                 writeToLogFile(mResult.getLog(), file);
             }
-        }, this.getActivity().getSupportFragmentManager(), title, message, exportFile, null);
+        }, this.getActivity().getFragmentManager(), title, message, exportFile, null);
     }
 
     private static class LogExportResult extends OperationResult {

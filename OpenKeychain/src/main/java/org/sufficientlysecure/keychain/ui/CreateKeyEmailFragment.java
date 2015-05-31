@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -217,7 +217,7 @@ public class CreateKeyEmailFragment extends Fragment {
         Messenger messenger = new Messenger(returnHandler);
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
-        addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
+        addEmailDialog.show(getActivity().getFragmentManager(), "addEmailDialog");
     }
 
     @Override

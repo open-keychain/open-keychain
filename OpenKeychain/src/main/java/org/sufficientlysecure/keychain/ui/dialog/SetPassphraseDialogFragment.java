@@ -20,14 +20,13 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,7 +64,6 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
      *
      * @param title     title of dialog
      * @param messenger to communicate back after setting the passphrase
-     * @return
      */
     public static SetPassphraseDialogFragment newInstance(Messenger messenger, int title) {
         SetPassphraseDialogFragment frag = new SetPassphraseDialogFragment();

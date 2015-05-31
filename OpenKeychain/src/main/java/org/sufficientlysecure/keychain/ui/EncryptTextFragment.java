@@ -185,7 +185,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
             result.createNotify(getActivity()).show();
             // Notify.create(EncryptTextActivity.this,
             // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
-            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
+            // .show(getFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
         }
     }
 

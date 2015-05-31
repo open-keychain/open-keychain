@@ -25,8 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.ContextThemeWrapper;
@@ -67,7 +66,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
  */
-public class PassphraseDialogActivity extends FragmentActivity {
+public class PassphraseDialogActivity extends Activity {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
@@ -180,7 +179,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
      * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
      * for a symmetric passphrase
      */
-    public static void show(final FragmentActivity context, final long keyId, final Intent serviceIntent) {
+    public static void show(final Activity context, final long keyId, final Intent serviceIntent) {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 // do NOT check if the key even needs a passphrase. that's not our job here.
@@ -189,7 +188,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 args.putLong(EXTRA_SUBKEY_ID, keyId);
                 args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
                 frag.setArguments(args);
-                frag.show(context.getSupportFragmentManager(), "passphraseDialog");
+                frag.show(context.getFragmentManager(), "passphraseDialog");
             }
         });
     }

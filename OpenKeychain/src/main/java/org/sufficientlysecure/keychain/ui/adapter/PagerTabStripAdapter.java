@@ -19,8 +19,8 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.app.Fragment;
+import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
     }
 
     public PagerTabStripAdapter(AppCompatActivity activity) {
-        super(activity.getSupportFragmentManager());
+        super(activity.getFragmentManager());
         mActivity = activity;
     }
 

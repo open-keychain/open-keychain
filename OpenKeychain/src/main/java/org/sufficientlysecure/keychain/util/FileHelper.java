@@ -33,8 +33,8 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
@@ -130,7 +130,7 @@ public class FileHelper {
                 intent.setData(Uri.fromFile(file));
                 fragment.onActivityResult(requestCode, Activity.RESULT_OK, intent);
             }
-        }, fragment.getActivity().getSupportFragmentManager(), title, message, defaultFile, checkMsg);
+        }, fragment.getActivity().getFragmentManager(), title, message, defaultFile, checkMsg);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)

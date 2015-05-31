@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
@@ -77,7 +77,7 @@ public class EncryptTextActivity extends EncryptActivity {
         }
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             EncryptTextFragment encryptFragment = EncryptTextFragment.newInstance(textData);
             transaction.replace(R.id.encrypt_text_container, encryptFragment);

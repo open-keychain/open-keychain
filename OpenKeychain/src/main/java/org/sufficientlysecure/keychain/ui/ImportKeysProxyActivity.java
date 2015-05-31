@@ -29,7 +29,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -56,7 +56,7 @@ import java.util.Locale;
 /**
  * Proxy activity (just a transparent content view) to scan QR Codes using the Barcode Scanner app
  */
-public class ImportKeysProxyActivity extends FragmentActivity {
+public class ImportKeysProxyActivity extends Activity {
 
     public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
     // implies activity returns scanned fingerprint as extra and does not import

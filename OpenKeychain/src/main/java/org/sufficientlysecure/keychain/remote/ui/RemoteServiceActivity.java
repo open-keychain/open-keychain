@@ -116,7 +116,7 @@ public class RemoteServiceActivity extends BaseActivity {
                 setContentView(R.layout.api_remote_register_app);
                 initToolbar();
 
-                mAppSettingsHeaderFragment = (AppSettingsHeaderFragment) getSupportFragmentManager().findFragmentById(
+                mAppSettingsHeaderFragment = (AppSettingsHeaderFragment) getFragmentManager().findFragmentById(
                         R.id.api_app_settings_fragment);
 
                 AppSettings settings = new AppSettings(packageName, packageSignature);
@@ -156,7 +156,7 @@ public class RemoteServiceActivity extends BaseActivity {
                 setContentView(R.layout.api_remote_create_account);
                 initToolbar();
 
-                mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
+                mAccSettingsFragment = (AccountSettingsFragment) getFragmentManager().findFragmentById(
                         R.id.api_account_settings_fragment);
 
                 TextView text = (TextView) findViewById(R.id.api_remote_create_account_text);
@@ -304,7 +304,7 @@ public class RemoteServiceActivity extends BaseActivity {
                     mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
 
                     // Add the fragment to the 'fragment_container' FrameLayout
-                    getSupportFragmentManager().beginTransaction()
+                    getFragmentManager().beginTransaction()
                             .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
                 }
                 break;

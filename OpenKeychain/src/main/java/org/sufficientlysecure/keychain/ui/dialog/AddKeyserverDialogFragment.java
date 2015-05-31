@@ -29,7 +29,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.test.suitebuilder.TestSuiteBuilder;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;

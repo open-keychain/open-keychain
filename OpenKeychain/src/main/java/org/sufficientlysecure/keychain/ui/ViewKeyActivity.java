@@ -35,10 +35,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.FragmentManager;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -266,7 +266,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
         mNfcHelper = new NfcHelper(this, mProviderHelper);
         mNfcHelper.initNfc(mDataUri);
@@ -281,7 +281,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             return;
         }
 
-        FragmentManager manager = getSupportFragmentManager();
+        FragmentManager manager = getFragmentManager();
         // Create an instance of the fragment
         final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri);
         manager.beginTransaction()
@@ -480,7 +480,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         Messenger messenger = new Messenger(returnHandler);
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                 new long[] {mMasterKeyId});
-        deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
+        deleteKeyDialog.show(getFragmentManager(), "deleteKeyDialog");
     }
 
     @Override
@@ -593,7 +593,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 ViewKeyYubiKeyFragment frag = ViewKeyYubiKeyFragment.newInstance(
                         mMasterKeyId, nfcFingerprints, nfcUserId, nfcAid);
 
-                FragmentManager manager = getSupportFragmentManager();
+                FragmentManager manager = getFragmentManager();
 
                 manager.popBackStack("yubikey", FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 manager.beginTransaction()

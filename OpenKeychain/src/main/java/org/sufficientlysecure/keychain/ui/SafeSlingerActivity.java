@@ -26,7 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -122,7 +122,7 @@ public class SafeSlingerActivity extends BaseActivity {
                 return;
             }
 
-            final FragmentActivity activity = SafeSlingerActivity.this;
+            final Activity activity = SafeSlingerActivity.this;
 
             // Message is received after importing is done in KeychainIntentService
             ServiceProgressHandler saveHandler = new ServiceProgressHandler(

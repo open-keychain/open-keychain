@@ -21,8 +21,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -74,7 +74,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
             mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
             mUseSmartCardSettings = savedInstanceState.getBoolean(EXTRA_USE_SMART_CARD_SETTINGS);
 
-            mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            mCurrentFragment = getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
 
             Intent intent = getIntent();
@@ -192,7 +192,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         mCurrentFragment = fragment;
 
         // Add the fragment to the 'fragment_container' FrameLayout
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         switch (action) {
             case START:
@@ -201,7 +201,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
                         .commit();
                 break;
             case TO_LEFT:
-                getSupportFragmentManager().popBackStackImmediate();
+                getFragmentManager().popBackStackImmediate();
                 break;
             case TO_RIGHT:
                 transaction.setCustomAnimations(R.anim.frag_slide_in_from_right, R.anim.frag_slide_out_to_left,
@@ -214,7 +214,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         }
 
         // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+        getFragmentManager().executePendingTransactions();
 
     }
 

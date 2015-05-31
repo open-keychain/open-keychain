@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
+import android.app.FragmentTransaction;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
@@ -76,7 +76,7 @@ public class EncryptFilesActivity extends EncryptActivity {
         boolean useArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, false);
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             EncryptFilesFragment encryptFragment = EncryptFilesFragment.newInstance(uris, useArmor);
             transaction.replace(R.id.encrypt_file_container, encryptFragment);

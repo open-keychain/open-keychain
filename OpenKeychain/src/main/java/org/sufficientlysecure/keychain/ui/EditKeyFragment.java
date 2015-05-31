@@ -26,9 +26,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -65,8 +65,6 @@ import org.sufficientlysecure.keychain.ui.dialog.*;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.nio.ByteBuffer;
 
 
 public class EditKeyFragment extends CryptoOperationFragment implements
@@ -349,7 +347,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
                 messenger, R.string.title_change_passphrase);
 
-        setPassphraseDialog.show(getActivity().getSupportFragmentManager(), "setPassphraseDialog");
+        setPassphraseDialog.show(getActivity().getFragmentManager(), "setPassphraseDialog");
     }
 
     private void editUserId(final int position) {
@@ -395,7 +393,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
             public void run() {
                 EditUserIdDialogFragment dialogFragment =
                         EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
+                dialogFragment.show(getActivity().getFragmentManager(), "editUserIdDialog");
             }
         });
     }
@@ -490,7 +488,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                 EditSubkeyDialogFragment dialogFragment =
                         EditSubkeyDialogFragment.newInstance(messenger);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyDialog");
+                dialogFragment.show(getActivity().getFragmentManager(), "editSubkeyDialog");
             }
         });
     }
@@ -522,7 +520,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                 EditSubkeyExpiryDialogFragment dialogFragment =
                         EditSubkeyExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
+                dialogFragment.show(getActivity().getFragmentManager(), "editSubkeyExpiryDialog");
             }
         });
     }
@@ -549,7 +547,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger,
                 predefinedName);
 
-        addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
+        addUserIdDialog.show(getActivity().getFragmentManager(), "addUserIdDialog");
     }
 
     private void addSubkey() {
@@ -571,7 +569,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                             }
                         }
                 );
-        addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
+        addSubkeyDialogFragment.show(getActivity().getFragmentManager(), "addSubkeyDialog");
     }
 
     private void returnKeyringParcel() {

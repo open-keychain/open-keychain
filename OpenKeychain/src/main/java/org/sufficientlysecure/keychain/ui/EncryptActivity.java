@@ -19,8 +19,8 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -46,7 +46,7 @@ public class EncryptActivity extends BaseActivity {
         }
 
         if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             // preselect keys given by intent
             long signingKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
@@ -77,7 +77,7 @@ public class EncryptActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.encrypt_activity, menu);
 
         Fragment frag =
-                getSupportFragmentManager().findFragmentById(R.id.encrypt_mode_container);
+                getFragmentManager().findFragmentById(R.id.encrypt_mode_container);
         boolean isSymmetric = frag instanceof EncryptModeSymmetricFragment;
         menu.findItem(R.id.check_use_symmetric).setChecked(isSymmetric);
 
@@ -85,7 +85,7 @@ public class EncryptActivity extends BaseActivity {
     }
 
     private void setModeFragment(boolean symmetric) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.encrypt_mode_container,
                 symmetric
                         ? EncryptModeSymmetricFragment.newInstance()
@@ -98,6 +98,6 @@ public class EncryptActivity extends BaseActivity {
 
     public EncryptModeFragment getModeFragment() {
         return (EncryptModeFragment)
-                getSupportFragmentManager().findFragmentById(R.id.encrypt_mode_container);
+                getFragmentManager().findFragmentById(R.id.encrypt_mode_container);
     }
 }

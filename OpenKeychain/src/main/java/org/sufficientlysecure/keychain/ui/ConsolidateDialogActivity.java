@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
  */
-public class ConsolidateDialogActivity extends FragmentActivity {
+public class ConsolidateDialogActivity extends Activity {
 
     public static final String EXTRA_CONSOLIDATE_RECOVERY = "consolidate_recovery";
 

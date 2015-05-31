@@ -25,8 +25,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -69,7 +69,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final FragmentActivity activity = getActivity();
+        final Activity activity = getActivity();
         final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
 
         final long[] masterKeyIds = getArguments().getLongArray(ARG_DELETE_MASTER_KEY_IDS);

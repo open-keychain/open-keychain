@@ -22,7 +22,6 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -97,7 +96,7 @@ public class ServiceProgressHandler extends Handler {
                 serviceType);
     }
 
-    public void showProgressDialog(FragmentActivity activity) {
+    public void showProgressDialog(Activity activity) {
         if (mProgressDialogFragment == null) {
             return;
         }

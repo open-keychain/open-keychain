@@ -23,8 +23,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -73,7 +73,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final FragmentActivity activity = getActivity();
+        final Activity activity = getActivity();
 
         final ArrayList<Uri> deleteUris = getArguments().getParcelableArrayList(ARG_DELETE_URIS);
 

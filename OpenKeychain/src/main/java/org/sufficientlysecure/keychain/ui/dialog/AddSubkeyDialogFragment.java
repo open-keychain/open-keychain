@@ -22,8 +22,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.DialogFragment;
+import android.app.Activity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -98,7 +98,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final FragmentActivity context = getActivity();
+        final Activity context = getActivity();
         final LayoutInflater mInflater;
 
         mWillBeMasterKey = getArguments().getBoolean(ARG_WILL_BE_MASTER_KEY);
@@ -415,7 +415,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         // hide keyboard after setting visibility to gone
         if (visibility == View.GONE) {
             InputMethodManager imm = (InputMethodManager)
-                    getActivity().getSystemService(FragmentActivity.INPUT_METHOD_SERVICE);
+                    getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(mCustomKeyEditText.getWindowToken(), 0);
         }
     }
