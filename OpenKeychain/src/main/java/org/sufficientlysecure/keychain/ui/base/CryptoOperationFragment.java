@@ -24,21 +24,13 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 /**
