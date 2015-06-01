@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
@@ -129,6 +129,7 @@ public class ViewKeyYubiKeyFragment extends Fragment
     public void promoteToSecretKey() {
 
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -147,25 +148,25 @@ public class ViewKeyYubiKeyFragment extends Fragment
         };
 
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
         // fill values for this action
 
-        intent.setAction(KeychainIntentService.ACTION_PROMOTE_KEYRING);
+        intent.setAction(KeychainService.ACTION_PROMOTE_KEYRING);
 
         Bundle data = new Bundle();
-        data.putLong(KeychainIntentService.PROMOTE_MASTER_KEY_ID, mMasterKeyId);
-        data.putByteArray(KeychainIntentService.PROMOTE_CARD_AID, mCardAid);
+        data.putLong(KeychainService.PROMOTE_MASTER_KEY_ID, mMasterKeyId);
+        data.putByteArray(KeychainService.PROMOTE_CARD_AID, mCardAid);
         long[] subKeyIds = new long[mFingerprints.length];
         for (int i = 0; i < subKeyIds.length; i++) {
             subKeyIds[i] = KeyFormattingUtils.getKeyIdFromFingerprint(mFingerprints[i]);
         }
-        data.putLongArray(KeychainIntentService.PROMOTE_SUBKEY_IDS, subKeyIds);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        data.putLongArray(KeychainService.PROMOTE_SUBKEY_IDS, subKeyIds);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // start service with intent
         getActivity().startService(intent);

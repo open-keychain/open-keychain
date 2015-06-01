@@ -40,7 +40,7 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
      * of common methods for progress, cancellation and passphrase cache handling.
      *
      * An "operation" in this sense is a high level operation which is called
-     * by the KeychainIntentService or OpenPgpService services. Concrete
+     * by the KeychainService or OpenPgpService services. Concrete
      * subclasses of this class should implement either a single or a group of
      * related operations. An operation must rely solely on its input
      * parameters for operation specifics. It should also write a log of its
@@ -49,7 +49,7 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
      *
      * An operation must *not* throw exceptions of any kind, errors should be
      * handled as part of the OperationResult! Consequently, all handling of
-     * errors in KeychainIntentService and OpenPgpService should consist of
+     * errors in KeychainService and OpenPgpService should consist of
      * informational rather than operational means.
      *
      * Note that subclasses of this class should be either Android- or

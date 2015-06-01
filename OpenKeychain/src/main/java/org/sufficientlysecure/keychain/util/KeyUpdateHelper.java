@@ -51,15 +51,15 @@ public class KeyUpdateHelper {
                 }
 
                 // Start the service and update the keys
-                Intent importIntent = new Intent(mContext, KeychainIntentService.class);
-                importIntent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+                Intent importIntent = new Intent(mContext, KeychainService.class);
+                importIntent.setAction(KeychainService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
 
                 Bundle importData = new Bundle();
-                importData.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST,
+                importData.putParcelableArrayList(KeychainService.DOWNLOAD_KEY_LIST,
                         new ArrayList<ImportKeysListEntry>(keys));
-                importIntent.putExtra(KeychainIntentService.EXTRA_SERVICE_INTENT, importData);
+                importIntent.putExtra(KeychainService.EXTRA_SERVICE_INTENT, importData);
 
-                importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, new Messenger(mHandler));
+                importIntent.putExtra(KeychainService.EXTRA_MESSENGER, new Messenger(mHandler));
 
                 mContext.startService(importIntent);
             }

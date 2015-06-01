@@ -35,10 +35,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -92,9 +91,9 @@ public class UploadKeyActivity extends BaseActivity {
 
     private void uploadKey() {
         // Send all information needed to service to upload key in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
+        Intent intent = new Intent(this, KeychainService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
+        intent.setAction(KeychainService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
         Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
@@ -104,16 +103,17 @@ public class UploadKeyActivity extends BaseActivity {
         Bundle data = new Bundle();
 
         String server = (String) mKeyServerSpinner.getSelectedItem();
-        data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
+        data.putString(KeychainService.UPLOAD_KEY_SERVER, server);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Message is received after uploading is done in KeychainIntentService
+        // Message is received after uploading is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_uploading),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -129,7 +129,7 @@ public class UploadKeyActivity extends BaseActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

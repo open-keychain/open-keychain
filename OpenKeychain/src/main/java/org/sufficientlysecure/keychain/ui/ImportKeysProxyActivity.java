@@ -43,9 +43,8 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -206,13 +205,14 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
 
-        // Message is received after importing is done in KeychainIntentService
+        // Message is received after importing is done in KeychainService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_importing),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                true
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -258,19 +258,19 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             Preferences prefs = Preferences.getPreferences(this);
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
-        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyRings);
+        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyRings);
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        Intent intent = new Intent(this, KeychainService.class);
+        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         serviceHandler.showProgressDialog(this);

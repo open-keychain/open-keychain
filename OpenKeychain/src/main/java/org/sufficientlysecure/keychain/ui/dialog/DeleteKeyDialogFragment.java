@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -130,17 +130,17 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int which) {
 
                 // Send all information needed to service to import key in other thread
-                Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+                Intent intent = new Intent(getActivity(), KeychainService.class);
 
-                intent.setAction(KeychainIntentService.ACTION_DELETE);
+                intent.setAction(KeychainService.ACTION_DELETE);
 
-                // Message is received after importing is done in KeychainIntentService
+                // Message is received after importing is done in KeychainService
                 ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                         getActivity(),
                         getString(R.string.progress_deleting),
                         ProgressDialog.STYLE_HORIZONTAL,
-                        true,
-                        ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                        true
+                ) {
                     @Override
                     public void handleMessage(Message message) {
                         super.handleMessage(message);
@@ -159,13 +159,13 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
                 // fill values for this action
                 Bundle data = new Bundle();
-                data.putLongArray(KeychainIntentService.DELETE_KEY_LIST, masterKeyIds);
-                data.putBoolean(KeychainIntentService.DELETE_IS_SECRET, hasSecret);
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+                data.putLongArray(KeychainService.DELETE_KEY_LIST, masterKeyIds);
+                data.putBoolean(KeychainService.DELETE_IS_SECRET, hasSecret);
+                intent.putExtra(KeychainService.EXTRA_DATA, data);
 
                 // Create a new Messenger for the communication back
                 Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
                 saveHandler.showProgressDialog(getActivity());
