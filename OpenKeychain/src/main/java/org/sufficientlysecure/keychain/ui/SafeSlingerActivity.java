@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -123,7 +123,7 @@ public class SafeSlingerActivity extends BaseActivity {
 
             final FragmentActivity activity = SafeSlingerActivity.this;
 
-            // Message is received after importing is done in KeychainIntentService
+            // Message is received after importing is done in KeychainService
             ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                     activity,
                     getString(R.string.progress_importing),
@@ -176,9 +176,9 @@ public class SafeSlingerActivity extends BaseActivity {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(activity, KeychainIntentService.class);
+            Intent intent = new Intent(activity, KeychainService.class);
 
-            intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+            intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
 
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -195,11 +195,11 @@ public class SafeSlingerActivity extends BaseActivity {
 
                 // fill values for this action
                 Bundle bundle = new Bundle();
-                intent.putExtra(KeychainIntentService.EXTRA_DATA, bundle);
+                intent.putExtra(KeychainService.EXTRA_DATA, bundle);
 
                 // Create a new Messenger for the communication back
                 Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+                intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
                 saveHandler.showProgressDialog(activity);

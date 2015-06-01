@@ -25,7 +25,7 @@ import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 
 /**
@@ -48,7 +48,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
     }
 
     private void consolidateRecovery(boolean recovery) {
-        // Message is received after importing is done in KeychainIntentService
+        // Message is received after importing is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 this,
                 getString(R.string.progress_importing),
@@ -68,7 +68,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
                         return;
                     }
                     final ConsolidateResult result =
-                            returnData.getParcelable(KeychainIntentService.RESULT_CONSOLIDATE);
+                            returnData.getParcelable(KeychainService.RESULT_CONSOLIDATE);
                     if (result == null) {
                         return;
                     }
@@ -81,17 +81,17 @@ public class ConsolidateDialogActivity extends FragmentActivity {
         };
 
         // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
+        Intent intent = new Intent(this, KeychainService.class);
+        intent.setAction(KeychainService.ACTION_CONSOLIDATE);
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putBoolean(KeychainIntentService.CONSOLIDATE_RECOVERY, recovery);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        data.putBoolean(KeychainService.CONSOLIDATE_RECOVERY, recovery);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

@@ -35,7 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -160,20 +160,20 @@ public class DecryptTextFragment extends DecryptFragment {
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
+        intent.setAction(KeychainService.ACTION_DECRYPT_VERIFY);
 
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
-        data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
+        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in KeychainIntentService
+        // Message is received after encrypting is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_decrypting),
@@ -222,7 +222,7 @@ public class DecryptTextFragment extends DecryptFragment {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(getActivity());

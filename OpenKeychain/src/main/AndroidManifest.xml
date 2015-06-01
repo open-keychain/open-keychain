@@ -719,7 +719,7 @@
             android:exported="false"
             android:process=":remote_api" />
         <service
-            android:name=".service.KeychainIntentService"
+            android:name=".service.KeychainService"
             android:exported="false" />
         <service
             android:name=".service.CloudImportService"

@@ -64,7 +64,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -602,8 +602,8 @@ public class KeyListFragment extends LoaderFragment
         };
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -613,16 +613,16 @@ public class KeyListFragment extends LoaderFragment
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
-        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyList);
+        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyList);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         serviceHandler.showProgressDialog(getActivity());
@@ -632,7 +632,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void consolidate() {
-        // Message is received after importing is done in KeychainIntentService
+        // Message is received after importing is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
@@ -661,18 +661,18 @@ public class KeyListFragment extends LoaderFragment
         };
 
         // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_CONSOLIDATE);
+        intent.setAction(KeychainService.ACTION_CONSOLIDATE);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(getActivity());

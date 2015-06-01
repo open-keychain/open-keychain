@@ -89,7 +89,7 @@ import de.measite.minidns.record.TXT;
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
  * data from the activities or other apps, executes them, and stops itself after doing them.
  */
-public class KeychainIntentService extends Service implements Progressable {
+public class KeychainService extends Service implements Progressable {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -177,7 +177,7 @@ public class KeychainIntentService extends Service implements Progressable {
 
     private KeyImportAccumulator mKeyImportAccumulator;
 
-    private KeychainIntentService mKeychainService;
+    private KeychainService mKeychainService;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -570,7 +570,7 @@ public class KeychainIntentService extends Service implements Progressable {
         } else {
             message = e.getMessage();
         }
-        Log.d(Constants.TAG, "KeychainIntentService Exception: ", e);
+        Log.d(Constants.TAG, "KeychainService Exception: ", e);
 
         Bundle data = new Bundle();
         data.putString(ServiceProgressHandler.DATA_ERROR, message);

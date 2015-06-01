@@ -34,7 +34,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 
 /**
  * meant to be used
@@ -178,11 +178,11 @@ public class ProgressDialogFragment extends DialogFragment {
                 negative.setTextColor(Color.GRAY);
 
                 // send a cancel message. note that this message will be handled by
-                // KeychainIntentService.onStartCommand, which runs in this thread,
+                // KeychainService.onStartCommand, which runs in this thread,
                 // not the service one, and will not queue up a command.
-                Intent serviceIntent = new Intent(getActivity(), KeychainIntentService.class);
+                Intent serviceIntent = new Intent(getActivity(), KeychainService.class);
 
-                serviceIntent.setAction(KeychainIntentService.ACTION_CANCEL);
+                serviceIntent.setAction(KeychainService.ACTION_CANCEL);
                 getActivity().startService(serviceIntent);
 
                 // Set the progress bar accordingly

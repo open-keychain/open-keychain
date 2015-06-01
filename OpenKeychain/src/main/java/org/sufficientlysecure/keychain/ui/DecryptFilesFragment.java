@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
@@ -180,12 +180,12 @@ public class DecryptFilesFragment extends DecryptFragment {
     }
 
     private void startDecrypt() {
-        mCurrentCryptoOperation = KeychainIntentService.ACTION_DECRYPT_VERIFY;
+        mCurrentCryptoOperation = KeychainService.ACTION_DECRYPT_VERIFY;
         cryptoOperation(new CryptoInputParcel());
     }
 
     private void startDecryptFilenames() {
-        mCurrentCryptoOperation = KeychainIntentService.ACTION_DECRYPT_METADATA;
+        mCurrentCryptoOperation = KeychainService.ACTION_DECRYPT_METADATA;
         cryptoOperation(new CryptoInputParcel());
     }
 
@@ -193,7 +193,7 @@ public class DecryptFilesFragment extends DecryptFragment {
     @SuppressLint("HandlerLeak")
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -207,12 +207,12 @@ public class DecryptFilesFragment extends DecryptFragment {
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri)
                 .setAllowSymmetricDecryption(true);
 
-        data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
+        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Message is received after decrypting is done in KeychainIntentService
+        // Message is received after decrypting is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_decrypting),
@@ -237,11 +237,11 @@ public class DecryptFilesFragment extends DecryptFragment {
 
                     if (pgpResult.success()) {
                         switch (mCurrentCryptoOperation) {
-                            case KeychainIntentService.ACTION_DECRYPT_METADATA: {
+                            case KeychainService.ACTION_DECRYPT_METADATA: {
                                 askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
                                 break;
                             }
-                            case KeychainIntentService.ACTION_DECRYPT_VERIFY: {
+                            case KeychainService.ACTION_DECRYPT_VERIFY: {
                                 // display signature result in activity
                                 loadVerifyResult(pgpResult);
 
@@ -276,7 +276,7 @@ public class DecryptFilesFragment extends DecryptFragment {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(getActivity());

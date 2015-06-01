@@ -109,7 +109,7 @@ public class ImportKeysListCloudLoader
                     ImportKeysListEntry uniqueEntry = searchResult.get(0);
                     /*
                      * set fingerprint explicitly after query
-                     * to enforce a check when the key is imported by KeychainIntentService
+                     * to enforce a check when the key is imported by KeychainService
                      */
                     uniqueEntry.setFingerprintHex(fingerprint);
                     uniqueEntry.setSelected(true);

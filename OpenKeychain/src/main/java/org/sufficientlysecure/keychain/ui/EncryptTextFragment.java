@@ -41,11 +41,10 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ShareHelper;
@@ -323,15 +322,15 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
         }
 
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_SIGN_ENCRYPT);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_SIGN_ENCRYPT);
 
         Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.SIGN_ENCRYPT_PARCEL, actionsParcel);
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        data.putParcelable(KeychainService.SIGN_ENCRYPT_PARCEL, actionsParcel);
+        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in KeychainIntentService
+        // Message is received after encrypting is done in KeychainService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_encrypting),
@@ -360,7 +359,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
         };
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         serviceHandler.showProgressDialog(getActivity());

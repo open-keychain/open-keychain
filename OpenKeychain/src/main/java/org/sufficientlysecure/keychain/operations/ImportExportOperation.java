@@ -339,7 +339,7 @@ public class ImportExportOperation extends BaseOperation {
 
         // Special: make sure new data is synced into contacts
         // disabling sync right now since it reduces speed while multi-threading
-        // so, we expect calling functions to take care of it. KeychainIntentService handles this
+        // so, we expect calling functions to take care of it. KeychainService handles this
         // ContactSyncAdapterService.requestSync();
 
         // convert to long array

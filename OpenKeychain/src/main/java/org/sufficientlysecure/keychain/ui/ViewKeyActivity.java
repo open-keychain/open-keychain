@@ -65,7 +65,7 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -402,7 +402,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void startCertifyIntent(Intent intent) {
-        // Message is received after signing is done in KeychainIntentService
+        // Message is received after signing is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
@@ -419,7 +419,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         };
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         startActivityForResult(intent, 0);
     }
@@ -652,7 +652,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
 
-        // Message is received after importing is done in KeychainIntentService
+        // Message is received after importing is done in KeychainService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
@@ -684,19 +684,19 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             Preferences prefs = Preferences.getPreferences(this);
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
-        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, entries);
+        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, entries);
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        Intent intent = new Intent(this, KeychainService.class);
+        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         serviceHandler.showProgressDialog(this);

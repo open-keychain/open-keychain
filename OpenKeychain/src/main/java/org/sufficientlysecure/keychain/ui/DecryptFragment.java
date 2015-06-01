@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -130,7 +130,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
 
     private void lookupUnknownKey(long unknownKeyId) {
 
-        // Message is received after importing is done in KeychainIntentService
+        // Message is received after importing is done in KeychainService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
@@ -163,7 +163,7 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
         {
@@ -172,17 +172,17 @@ public abstract class DecryptFragment extends CryptoOperationFragment implements
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 
-            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
+            data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, selectedEntries);
         }
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         getActivity().startService(intent);
     }

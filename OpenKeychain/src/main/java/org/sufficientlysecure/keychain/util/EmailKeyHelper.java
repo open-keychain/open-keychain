@@ -26,7 +26,7 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -79,12 +79,12 @@ public class EmailKeyHelper {
     }
 
     private static void importKeys(Context context, Messenger messenger, ArrayList<ParcelableKeyRing> keys) {
-        Intent importIntent = new Intent(context, KeychainIntentService.class);
-        importIntent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+        Intent importIntent = new Intent(context, KeychainService.class);
+        importIntent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
         Bundle importData = new Bundle();
-        importData.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keys);
-        importIntent.putExtra(KeychainIntentService.EXTRA_DATA, importData);
-        importIntent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        importData.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keys);
+        importIntent.putExtra(KeychainService.EXTRA_DATA, importData);
+        importIntent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         context.startService(importIntent);
     }

@@ -52,12 +52,11 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -104,7 +103,7 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
         }
 
         mPassthroughMessenger = getActivity().getIntent().getParcelableExtra(
-                KeychainIntentService.EXTRA_MESSENGER);
+                KeychainService.EXTRA_MESSENGER);
         mPassthroughMessenger = null; // TODO doesn't work with CryptoOperationFragment, disabled for now
 
         ArrayList<Boolean> checkedStates;
@@ -330,25 +329,25 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
                 cacheActionsParcel(actionsParcel);
             }
 
-            data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-            data.putParcelable(KeychainIntentService.CERTIFY_PARCEL, actionsParcel);
+            data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
+            data.putParcelable(KeychainService.CERTIFY_PARCEL, actionsParcel);
 
             if (mUploadKeyCheckbox.isChecked()) {
                 String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-                data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
+                data.putString(KeychainService.UPLOAD_KEY_SERVER, keyserver);
             }
         }
 
         // Send all information needed to service to sign key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_CERTIFY_KEYRING);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         if (mPassthroughMessenger != null) {
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, mPassthroughMessenger);
+            intent.putExtra(KeychainService.EXTRA_MESSENGER, mPassthroughMessenger);
         } else {
 
-            // Message is received after signing is done in KeychainIntentService
+            // Message is received after signing is done in KeychainService
             ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                     getActivity(),
                     getString(R.string.progress_certifying),
@@ -380,7 +379,7 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+            intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
             saveHandler.showProgressDialog(getActivity());

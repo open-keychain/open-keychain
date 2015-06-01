@@ -49,7 +49,7 @@ import com.textuality.keybase.lib.User;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
@@ -349,13 +349,13 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     }
 
     private void verify(final Proof proof, final String fingerprint) {
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
         Bundle data = new Bundle();
-        intent.setAction(KeychainIntentService.ACTION_VERIFY_KEYBASE_PROOF);
+        intent.setAction(KeychainService.ACTION_VERIFY_KEYBASE_PROOF);
 
-        data.putString(KeychainIntentService.KEYBASE_PROOF, proof.toString());
-        data.putString(KeychainIntentService.KEYBASE_REQUIRED_FINGERPRINT, fingerprint);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        data.putString(KeychainService.KEYBASE_PROOF, proof.toString());
+        data.putString(KeychainService.KEYBASE_REQUIRED_FINGERPRINT, fingerprint);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         mProofVerifyDetail.setVisibility(View.GONE);
 
@@ -451,7 +451,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(handler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         handler.showProgressDialog(getActivity());
