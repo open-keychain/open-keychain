@@ -174,7 +174,7 @@ The full coding style can be found at http://source.android.com/source/code-styl
 
 ## Licenses
 OpenKechain is licensed under GPLv3+.
-The full license text can be found in the [LICENSE file](https://github.com/open-keychain/open-keychain/blob/master/LICENSE).
+The full license text can be found in the [LICENSE file](https://github.com/open-keychain/open-keychain/blob/HEAD/LICENSE).
 Some parts and some libraries are Apache License v2, MIT X11 License (see below).
 
 > This program is free software: you can redistribute it and/or modify
@@ -193,7 +193,7 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 
 ### Libraries
 
-See https://github.com/open-keychain/open-keychain/blob/master/OpenKeychain/src/main/res/raw/help_about.md
+See [In-app about screen](https://github.com/open-keychain/open-keychain/blob/HEAD/OpenKeychain/src/main/res/raw/help_about.md)
 
 ### Images
 * icon.svg  
