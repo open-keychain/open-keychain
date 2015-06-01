@@ -196,351 +196,358 @@ public class KeychainService extends Service implements Progressable {
             return START_NOT_STICKY;
         }
 
-        Runnable actionRunnable = new Runnable(){@Override public void run() {
-        // We have not been cancelled! (yet)
-        mActionCanceled.set(false);
+        Runnable actionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // We have not been cancelled! (yet)
+                mActionCanceled.set(false);
 
-        Bundle extras = intent.getExtras();
-        if (extras == null) {
-            Log.e(Constants.TAG, "Extras bundle is null!");
-            return;
-        }
-
-        if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) || (intent
-                .getAction() == null))) {
-            Log.e(Constants.TAG,
-                    "Extra bundle must contain a messenger, a data bundle, and an action!");
-            return;
-        }
-
-        Uri dataUri = intent.getData();
-
-        mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
-        Bundle data = extras.getBundle(EXTRA_DATA);
-        if (data == null) {
-            Log.e(Constants.TAG, "data extra is null!");
-            return;
-        }
-
-        Log.logDebugBundle(data, "EXTRA_DATA");
-
-        ProviderHelper providerHelper = new ProviderHelper(mKeychainService);
-
-        String action = intent.getAction();
-
-        // executeServiceMethod action from extra bundle
-        switch (action) {
-            case ACTION_CERTIFY_KEYRING: {
-
-                // Input
-                CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
-                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
-
-                // Operation
-                CertifyOperation op = new CertifyOperation(mKeychainService, providerHelper, mKeychainService,
-                        mActionCanceled);
-                CertifyResult result = op.certify(parcel, cryptoInput, keyServerUri);
-
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-                break;
-            }
-            case ACTION_CONSOLIDATE: {
-
-                // Operation
-                ConsolidateResult result;
-                if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
-                    result = providerHelper.consolidateDatabaseStep2(mKeychainService);
-                } else {
-                    result = providerHelper.consolidateDatabaseStep1(mKeychainService);
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    Log.e(Constants.TAG, "Extras bundle is null!");
+                    return;
                 }
 
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
+                if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) || (intent
+                        .getAction() == null))) {
+                    Log.e(Constants.TAG,
+                            "Extra bundle must contain a messenger, a data bundle, and an action!");
+                    return;
+                }
 
-                break;
-            }
-            case ACTION_DECRYPT_METADATA: {
+                Uri dataUri = intent.getData();
+
+                mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
+                Bundle data = extras.getBundle(EXTRA_DATA);
+                if (data == null) {
+                    Log.e(Constants.TAG, "data extra is null!");
+                    return;
+                }
+
+                Log.logDebugBundle(data, "EXTRA_DATA");
+
+                ProviderHelper providerHelper = new ProviderHelper(mKeychainService);
+
+                String action = intent.getAction();
+
+                // executeServiceMethod action from extra bundle
+                switch (action) {
+                    case ACTION_CERTIFY_KEYRING: {
+
+                        // Input
+                        CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
+                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                        String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
+
+                        // Operation
+                        CertifyOperation op = new CertifyOperation(mKeychainService, providerHelper, mKeychainService,
+                                mActionCanceled);
+                        CertifyResult result = op.certify(parcel, cryptoInput, keyServerUri);
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
+                    }
+                    case ACTION_CONSOLIDATE: {
+
+                        // Operation
+                        ConsolidateResult result;
+                        if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
+                            result = providerHelper.consolidateDatabaseStep2(mKeychainService);
+                        } else {
+                            result = providerHelper.consolidateDatabaseStep1(mKeychainService);
+                        }
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
+                    }
+                    case ACTION_DECRYPT_METADATA: {
 
                 /* Input */
-                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
+                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                        PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
-                // this action is here for compatibility only
-                input.setDecryptMetadataOnly(true);
+                        // this action is here for compatibility only
+                        input.setDecryptMetadataOnly(true);
 
                 /* Operation */
-                PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
-                DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
+                        PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
+                        DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
                 /* Result */
-                sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
+                        sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
-                break;
-            }
-            case ACTION_VERIFY_KEYBASE_PROOF: {
-
-                try {
-                    Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
-                    setProgress(R.string.keybase_message_fetching_data, 0, 100);
-
-                    Prover prover = Prover.findProverFor(proof);
-
-                    if (prover == null) {
-                        sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof
-                                .getPrettyName());
-                        return;
+                        break;
                     }
+                    case ACTION_VERIFY_KEYBASE_PROOF: {
 
-                    if (!prover.fetchProofData()) {
-                        sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
-                        return;
-                    }
-                    String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
-                    if (!prover.checkFingerprint(requiredFingerprint)) {
-                        sendProofError(getString(R.string.keybase_key_mismatch));
-                        return;
-                    }
+                        try {
+                            Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
+                            setProgress(R.string.keybase_message_fetching_data, 0, 100);
 
-                    String domain = prover.dnsTxtCheckRequired();
-                    if (domain != null) {
-                        DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
-                        if (dnsQuery == null) {
-                            sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
-                            return;
-                        }
-                        Record[] records = dnsQuery.getAnswers();
-                        List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
-                        for (Record r : records) {
-                            Data d = r.getPayload();
-                            if (d instanceof TXT) {
-                                extents.add(((TXT) d).getExtents());
+                            Prover prover = Prover.findProverFor(proof);
+
+                            if (prover == null) {
+                                sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof
+                                        .getPrettyName());
+                                return;
                             }
+
+                            if (!prover.fetchProofData()) {
+                                sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
+                                return;
+                            }
+                            String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
+                            if (!prover.checkFingerprint(requiredFingerprint)) {
+                                sendProofError(getString(R.string.keybase_key_mismatch));
+                                return;
+                            }
+
+                            String domain = prover.dnsTxtCheckRequired();
+                            if (domain != null) {
+                                DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
+                                if (dnsQuery == null) {
+                                    sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
+                                    return;
+                                }
+                                Record[] records = dnsQuery.getAnswers();
+                                List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                                for (Record r : records) {
+                                    Data d = r.getPayload();
+                                    if (d instanceof TXT) {
+                                        extents.add(((TXT) d).getExtents());
+                                    }
+                                }
+                                if (!prover.checkDnsTxt(extents)) {
+                                    sendProofError(prover.getLog(), null);
+                                    return;
+                                }
+                            }
+
+                            byte[] messageBytes = prover.getPgpMessage().getBytes();
+                            if (prover.rawMessageCheckRequired()) {
+                                InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream
+                                        (messageBytes));
+                                if (!prover.checkRawMessageBytes(messageByteStream)) {
+                                    sendProofError(prover.getLog(), null);
+                                    return;
+                                }
+                            }
+
+                            PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper,
+                                    mKeychainService);
+
+                            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
+                                    .setSignedLiteralData(true)
+                                    .setRequiredSignerFingerprint(requiredFingerprint);
+
+                            DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
+
+                            if (!decryptVerifyResult.success()) {
+                                OperationLog log = decryptVerifyResult.getLog();
+                                OperationResult.LogEntryParcel lastEntry = null;
+                                for (OperationResult.LogEntryParcel entry : log) {
+                                    lastEntry = entry;
+                                }
+                                sendProofError(getString(lastEntry.mType.getMsgId()));
+                                return;
+                            }
+
+                            if (!prover.validate(new String(decryptVerifyResult.getOutputBytes()))) {
+                                sendProofError(getString(R.string.keybase_message_payload_mismatch));
+                                return;
+                            }
+
+                            Bundle resultData = new Bundle();
+                            resultData.putString(ServiceProgressHandler.DATA_MESSAGE, "OK");
+
+                            // these help the handler construct a useful human-readable message
+                            resultData.putString(ServiceProgressHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
+                            resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
+                            resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL, prover
+                                    .getPresenceLabel());
+                            sendMessageToHandler(MessageStatus.OKAY, resultData);
+                        } catch (Exception e) {
+                            sendErrorToHandler(e);
                         }
-                        if (!prover.checkDnsTxt(extents)) {
-                            sendProofError(prover.getLog(), null);
-                            return;
-                        }
+
+                        break;
                     }
-
-                    byte[] messageBytes = prover.getPgpMessage().getBytes();
-                    if (prover.rawMessageCheckRequired()) {
-                        InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream
-                                (messageBytes));
-                        if (!prover.checkRawMessageBytes(messageByteStream)) {
-                            sendProofError(prover.getLog(), null);
-                            return;
-                        }
-                    }
-
-                    PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
-
-                    PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
-                            .setSignedLiteralData(true)
-                            .setRequiredSignerFingerprint(requiredFingerprint);
-
-                    DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
-
-                    if (!decryptVerifyResult.success()) {
-                        OperationLog log = decryptVerifyResult.getLog();
-                        OperationResult.LogEntryParcel lastEntry = null;
-                        for (OperationResult.LogEntryParcel entry : log) {
-                            lastEntry = entry;
-                        }
-                        sendProofError(getString(lastEntry.mType.getMsgId()));
-                        return;
-                    }
-
-                    if (!prover.validate(new String(decryptVerifyResult.getOutputBytes()))) {
-                        sendProofError(getString(R.string.keybase_message_payload_mismatch));
-                        return;
-                    }
-
-                    Bundle resultData = new Bundle();
-                    resultData.putString(ServiceProgressHandler.DATA_MESSAGE, "OK");
-
-                    // these help the handler construct a useful human-readable message
-                    resultData.putString(ServiceProgressHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
-                    resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
-                    resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL, prover
-                            .getPresenceLabel());
-                    sendMessageToHandler(MessageStatus.OKAY, resultData);
-                } catch (Exception e) {
-                    sendErrorToHandler(e);
-                }
-
-                break;
-            }
-            case ACTION_DECRYPT_VERIFY: {
+                    case ACTION_DECRYPT_VERIFY: {
 
                 /* Input */
-                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
+                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                        PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
-                // for compatibility
-                // TODO merge with ACTION_DECRYPT_METADATA
-                input.setDecryptMetadataOnly(false);
+                        // for compatibility
+                        // TODO merge with ACTION_DECRYPT_METADATA
+                        input.setDecryptMetadataOnly(false);
 
                 /* Operation */
-                PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
-                DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
+                        PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
+                        DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
                 /* Output */
-                sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
+                        sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
-                break;
-            }
-            case ACTION_DELETE: {
-
-                // Input
-                long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
-                boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
-
-                // Operation
-                DeleteOperation op = new DeleteOperation(mKeychainService, providerHelper, mKeychainService);
-                DeleteResult result = op.execute(masterKeyIds, isSecret);
-
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-                break;
-            }
-            case ACTION_EDIT_KEYRING: {
-
-                // Input
-                SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-
-                // Operation
-                EditKeyOperation op = new EditKeyOperation(mKeychainService, providerHelper,
-                        mKeychainService, mActionCanceled);
-                OperationResult result = op.execute(saveParcel, cryptoInput);
-
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-                break;
-            }
-            case ACTION_PROMOTE_KEYRING: {
-
-                // Input
-                long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
-                byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
-                long[] subKeyIds = data.getLongArray(PROMOTE_SUBKEY_IDS);
-
-                // Operation
-                PromoteKeyOperation op = new PromoteKeyOperation(
-                        mKeychainService, providerHelper, mKeychainService,
-                        mActionCanceled);
-                PromoteKeyResult result = op.execute(keyRingId, cardAid, subKeyIds);
-
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-                break;
-            }
-            case ACTION_EXPORT_KEYRING: {
-
-                // Input
-                boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
-                String outputFile = data.getString(EXPORT_FILENAME);
-                Uri outputUri = data.getParcelable(EXPORT_URI);
-
-                boolean exportAll = data.getBoolean(EXPORT_ALL);
-                long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-
-                // Operation
-                ImportExportOperation importExportOperation = new ImportExportOperation(
-                        mKeychainService, providerHelper, mKeychainService);
-                ExportResult result;
-                if (outputFile != null) {
-                    result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
-                } else {
-                    result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
-                }
-
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-                break;
-            }
-            case ACTION_IMPORT_KEYRING: {
-
-                // Input
-                String keyServer = data.getString(IMPORT_KEY_SERVER);
-                ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
-
-                // either keyList or cache must be null, no guarantees otherwise
-                if (keyList == null) {// import from file, do serially
-                    serialKeyImport(null, keyServer, providerHelper);
-                } else {
-                    // if there is more than one key with the same fingerprint, we do a serial import to prevent
-                    // https://github.com/open-keychain/open-keychain/issues/1221
-                    HashSet<String> keyFingerprintSet = new HashSet<>();
-                    for (int i = 0; i < keyList.size(); i++) {
-                        keyFingerprintSet.add(keyList.get(i).mExpectedFingerprint);
+                        break;
                     }
-                    if (keyFingerprintSet.size() == keyList.size()) {
-                        // all keys have unique fingerprints
-                        multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer);
-                    } else {
-                        serialKeyImport(keyList, keyServer, providerHelper);
+                    case ACTION_DELETE: {
+
+                        // Input
+                        long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
+                        boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
+
+                        // Operation
+                        DeleteOperation op = new DeleteOperation(mKeychainService, providerHelper, mKeychainService);
+                        DeleteResult result = op.execute(masterKeyIds, isSecret);
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
                     }
-                }
+                    case ACTION_EDIT_KEYRING: {
 
-                break;
-            }
-            case ACTION_SIGN_ENCRYPT: {
+                        // Input
+                        SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
+                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
 
-                // Input
-                SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
-                CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+                        // Operation
+                        EditKeyOperation op = new EditKeyOperation(mKeychainService, providerHelper,
+                                mKeychainService, mActionCanceled);
+                        OperationResult result = op.execute(saveParcel, cryptoInput);
 
-                // Operation
-                SignEncryptOperation op = new SignEncryptOperation(
-                        mKeychainService, providerHelper, mKeychainService, mActionCanceled);
-                SignEncryptResult result = op.execute(inputParcel, cryptoInput);
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
 
-                // Result
-                sendMessageToHandler(MessageStatus.OKAY, result);
+                        break;
+                    }
+                    case ACTION_PROMOTE_KEYRING: {
 
-                break;
-            }
-            case ACTION_UPLOAD_KEYRING: {
-                try {
+                        // Input
+                        long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
+                        byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
+                        long[] subKeyIds = data.getLongArray(PROMOTE_SUBKEY_IDS);
+
+                        // Operation
+                        PromoteKeyOperation op = new PromoteKeyOperation(
+                                mKeychainService, providerHelper, mKeychainService,
+                                mActionCanceled);
+                        PromoteKeyResult result = op.execute(keyRingId, cardAid, subKeyIds);
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
+                    }
+                    case ACTION_EXPORT_KEYRING: {
+
+                        // Input
+                        boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
+                        String outputFile = data.getString(EXPORT_FILENAME);
+                        Uri outputUri = data.getParcelable(EXPORT_URI);
+
+                        boolean exportAll = data.getBoolean(EXPORT_ALL);
+                        long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
+
+                        // Operation
+                        ImportExportOperation importExportOperation = new ImportExportOperation(
+                                mKeychainService, providerHelper, mKeychainService);
+                        ExportResult result;
+                        if (outputFile != null) {
+                            result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
+                        } else {
+                            result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
+                        }
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
+                    }
+                    case ACTION_IMPORT_KEYRING: {
+
+                        // Input
+                        String keyServer = data.getString(IMPORT_KEY_SERVER);
+                        ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
+
+                        // either keyList or cache must be null, no guarantees otherwise
+                        if (keyList == null) {// import from file, do serially
+                            serialKeyImport(null, keyServer, providerHelper);
+                        } else {
+                            // if there is more than one key with the same fingerprint, we do a serial import to prevent
+                            // https://github.com/open-keychain/open-keychain/issues/1221
+                            HashSet<String> keyFingerprintSet = new HashSet<>();
+                            for (int i = 0; i < keyList.size(); i++) {
+                                keyFingerprintSet.add(keyList.get(i).mExpectedFingerprint);
+                            }
+                            if (keyFingerprintSet.size() == keyList.size()) {
+                                // all keys have unique fingerprints
+                                multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer);
+                            } else {
+                                serialKeyImport(keyList, keyServer, providerHelper);
+                            }
+                        }
+
+                        break;
+                    }
+                    case ACTION_SIGN_ENCRYPT: {
+
+                        // Input
+                        SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
+                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
+
+                        // Operation
+                        SignEncryptOperation op = new SignEncryptOperation(
+                                mKeychainService, providerHelper, mKeychainService, mActionCanceled);
+                        SignEncryptResult result = op.execute(inputParcel, cryptoInput);
+
+                        // Result
+                        sendMessageToHandler(MessageStatus.OKAY, result);
+
+                        break;
+                    }
+                    case ACTION_UPLOAD_KEYRING: {
+                        try {
 
                     /* Input */
-                    String keyServer = data.getString(UPLOAD_KEY_SERVER);
-                    // and dataUri!
+                            String keyServer = data.getString(UPLOAD_KEY_SERVER);
+                            // and dataUri!
 
                     /* Operation */
-                    HkpKeyserver server = new HkpKeyserver(keyServer);
+                            HkpKeyserver server = new HkpKeyserver(keyServer);
 
-                    CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                    ImportExportOperation importExportOperation = new ImportExportOperation(mKeychainService,
-                            providerHelper, mKeychainService);
+                            CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
+                            ImportExportOperation importExportOperation = new ImportExportOperation(mKeychainService,
+                                    providerHelper, mKeychainService);
 
-                    try {
-                        importExportOperation.uploadKeyRingToServer(server, keyring);
-                    } catch (Keyserver.AddKeyException e) {
-                        throw new PgpGeneralException("Unable to export key to selected server");
+                            try {
+                                importExportOperation.uploadKeyRingToServer(server, keyring);
+                            } catch (Keyserver.AddKeyException e) {
+                                throw new PgpGeneralException("Unable to export key to selected server");
+                            }
+
+                            sendMessageToHandler(MessageStatus.OKAY);
+                        } catch (Exception e) {
+                            sendErrorToHandler(e);
+                        }
+                        break;
                     }
-
-                    sendMessageToHandler(MessageStatus.OKAY);
-                } catch (Exception e) {
-                    sendErrorToHandler(e);
                 }
-                break;
+                if (!intent.getAction().equals(ACTION_IMPORT_KEYRING)) {
+                    // import keyring handles stopping service on its own
+                    stopSelf();
+                }
             }
-        }
-        if (!intent.getAction().equals(ACTION_IMPORT_KEYRING)) {
-            // import keyring handles stopping service on its own
-            stopSelf();
-        } }};
+        };
+
         Thread actionThread = new Thread(actionRunnable);
         actionThread.start();
+        
         return START_NOT_STICKY;
     }
 
