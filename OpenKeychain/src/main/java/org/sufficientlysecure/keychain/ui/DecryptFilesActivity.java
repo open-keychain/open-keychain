@@ -21,15 +21,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
+
 
 public class DecryptFilesActivity extends BaseActivity {
 
@@ -94,13 +94,24 @@ public class DecryptFilesActivity extends BaseActivity {
         }
 
         boolean showOpenDialog = ACTION_DECRYPT_DATA_OPEN.equals(action);
-        DecryptFilesFragment frag = DecryptFilesFragment.newInstance(uri, showOpenDialog);
+        DecryptFilesInputFragment frag = DecryptFilesInputFragment.newInstance(uri, showOpenDialog);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.decrypt_files_fragment_container, frag)
-                .commitAllowingStateLoss();
+                .commit();
+
+    }
+
+    public void displayListFragment(Uri inputUri, DecryptVerifyResult result) {
+
+        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(inputUri, result);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.decrypt_files_fragment_container, frag)
+                .addToBackStack("list")
+                .commit();
 
     }
 

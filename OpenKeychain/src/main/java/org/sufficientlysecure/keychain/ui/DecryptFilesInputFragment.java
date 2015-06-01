@@ -26,11 +26,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -40,35 +38,26 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.File;
-
-public class DecryptFilesInputFragment extends DecryptFragment {
+public class DecryptFilesInputFragment extends CryptoOperationFragment {
     public static final String ARG_URI = "uri";
     public static final String ARG_OPEN_DIRECTLY = "open_directly";
 
     private static final int REQUEST_CODE_INPUT = 0x00007003;
-    private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     // view
     private TextView mFilename;
-    private CheckBox mDeleteAfter;
     private View mDecryptButton;
 
     // model
     private Uri mInputUri = null;
     private Uri mOutputUri = null;
 
-    private String mCurrentCryptoOperation;
-
-    /**
-     * Creates new instance of this fragment
-     */
     public static DecryptFilesInputFragment newInstance(Uri uri, boolean openDirectly) {
         DecryptFilesInputFragment frag = new DecryptFilesInputFragment();
 
@@ -81,15 +70,14 @@ public class DecryptFilesInputFragment extends DecryptFragment {
         return frag;
     }
 
-    /**
-     * Inflate the layout for this fragment
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.decrypt_files_fragment, container, false);
+        View view = inflater.inflate(R.layout.decrypt_files_input_fragment, container, false);
+
+        // hide result view for this fragment
+        getActivity().findViewById(R.id.result_main_layout).setVisibility(View.GONE);
 
         mFilename = (TextView) view.findViewById(R.id.decrypt_files_filename);
-        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_files_delete_after_decryption);
         mDecryptButton = view.findViewById(R.id.decrypt_files_action_decrypt);
         view.findViewById(R.id.decrypt_files_browse).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -152,45 +140,6 @@ public class DecryptFilesInputFragment extends DecryptFragment {
             return;
         }
 
-        startDecryptFilenames();
-    }
-
-    private String removeEncryptedAppend(String name) {
-        if (name.endsWith(Constants.FILE_EXTENSION_ASC)
-                || name.endsWith(Constants.FILE_EXTENSION_PGP_MAIN)
-                || name.endsWith(Constants.FILE_EXTENSION_PGP_ALTERNATE)) {
-            return name.substring(0, name.length() - 4);
-        }
-        return name;
-    }
-
-    private void askForOutputFilename(String originalFilename) {
-        if (TextUtils.isEmpty(originalFilename)) {
-            originalFilename = removeEncryptedAppend(FileHelper.getFilename(getActivity(), mInputUri));
-        }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(mInputUri.getPath());
-            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            File targetFile = new File(parentDir, originalFilename);
-            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
-                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, "*/*", originalFilename, REQUEST_CODE_OUTPUT);
-        }
-    }
-
-    private void displayMetadata(DecryptVerifyResult result) {
-
-    }
-
-    private void startDecrypt() {
-        mCurrentCryptoOperation = KeychainIntentService.ACTION_DECRYPT_VERIFY;
-        cryptoOperation(new CryptoInputParcel());
-    }
-
-    private void startDecryptFilenames() {
-        mCurrentCryptoOperation = KeychainIntentService.ACTION_DECRYPT_METADATA;
         cryptoOperation(new CryptoInputParcel());
     }
 
@@ -203,7 +152,7 @@ public class DecryptFilesInputFragment extends DecryptFragment {
         // fill values for this action
         Bundle data = new Bundle();
         // use current operation, either decrypt metadata or decrypt payload
-        intent.setAction(mCurrentCryptoOperation);
+        intent.setAction(KeychainIntentService.ACTION_DECRYPT_METADATA);
 
         // data
 
@@ -240,41 +189,18 @@ public class DecryptFilesInputFragment extends DecryptFragment {
                     DecryptVerifyResult result =
                             returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
 
-                    if (result.success()) {
-                        switch (mCurrentCryptoOperation) {
-                            case KeychainIntentService.ACTION_DECRYPT_METADATA: {
-                                displayMetadata(result);
-                                // askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
-                                break;
-                            }
-                            case KeychainIntentService.ACTION_DECRYPT_VERIFY: {
-                                // display signature result in activity
-                                loadVerifyResult(result);
-
-                                if (mDeleteAfter.isChecked()) {
-                                    // Create and show dialog to delete original file
-                                    DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                                    deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-                                    setInputUri(null);
-                                }
-
-                                /*
-                                // A future open after decryption feature
-                                if () {
-                                    Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                                    viewFile.setInputData(mOutputUri);
-                                    startActivity(viewFile);
-                                }
-                                */
-                                break;
-                            }
-                            default: {
-                                Log.e(Constants.TAG, "Bug: not supported operation!");
-                                break;
-                            }
-                        }
+                    DecryptFilesActivity activity = ((DecryptFilesActivity) getActivity());
+                    if (activity == null) {
+                        // nothing we can do
+                        return;
                     }
-                    result.createNotify(getActivity()).show(DecryptFilesInputFragment.this);
+
+                    if (result.success()) {
+                        activity.displayListFragment(mInputUri, result);
+                        return;
+                    }
+                    result.createNotify(activity).show(DecryptFilesInputFragment.this);
+
                 }
 
             }
@@ -293,31 +219,13 @@ public class DecryptFilesInputFragment extends DecryptFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_INPUT: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    setInputUri(data.getData());
-                }
-                return;
-            }
+        if (requestCode != REQUEST_CODE_INPUT) {
+            return;
+        }
 
-            case REQUEST_CODE_OUTPUT: {
-                // This happens after output file was selected, so start our operation
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mOutputUri = data.getData();
-                    startDecrypt();
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            setInputUri(data.getData());
         }
     }
 
-    @Override
-    protected void onVerifyLoaded(boolean hideErrorOverlay) {
-
-    }
 }
