@@ -266,18 +266,18 @@ public class KeychainService extends Service implements Progressable {
                     }
                     case ACTION_DECRYPT_METADATA: {
 
-                /* Input */
+                        // Input
                         CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                         PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
                         // this action is here for compatibility only
                         input.setDecryptMetadataOnly(true);
 
-                /* Operation */
+                        // Operation
                         PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
                         DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
-                /* Result */
+                        // Result
                         sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                         break;
@@ -378,7 +378,7 @@ public class KeychainService extends Service implements Progressable {
                     }
                     case ACTION_DECRYPT_VERIFY: {
 
-                /* Input */
+                        // Input
                         CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
                         PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
 
@@ -386,11 +386,11 @@ public class KeychainService extends Service implements Progressable {
                         // TODO merge with ACTION_DECRYPT_METADATA
                         input.setDecryptMetadataOnly(false);
 
-                /* Operation */
+                        // Operation
                         PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
                         DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
 
-                /* Output */
+                        // Output
                         sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                         break;
@@ -514,11 +514,11 @@ public class KeychainService extends Service implements Progressable {
                     case ACTION_UPLOAD_KEYRING: {
                         try {
 
-                    /* Input */
+                            // Input
                             String keyServer = data.getString(UPLOAD_KEY_SERVER);
                             // and dataUri!
 
-                    /* Operation */
+                            // Operation
                             HkpKeyserver server = new HkpKeyserver(keyServer);
 
                             CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
