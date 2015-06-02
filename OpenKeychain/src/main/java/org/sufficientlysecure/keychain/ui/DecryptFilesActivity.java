@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,7 +29,6 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
@@ -104,9 +105,11 @@ public class DecryptFilesActivity extends BaseActivity {
 
     }
 
-    public void displayListFragment(Uri inputUri, DecryptVerifyResult result) {
+    public void displayListFragment(Uri inputUri) {
 
-        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(inputUri, result);
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(inputUri);
+        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(uris);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.decrypt_files_fragment_container, frag)

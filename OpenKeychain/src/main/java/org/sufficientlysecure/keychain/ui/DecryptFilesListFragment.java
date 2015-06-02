@@ -18,55 +18,54 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpMetadata;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-
-public class DecryptFilesListFragment extends DecryptFragment {
-    public static final String ARG_URI = "uri";
+public class DecryptFilesListFragment extends CryptoOperationFragment {
+    public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    private Uri mInputUri = null;
-    private DecryptVerifyResult mResult;
+    private ArrayList<Uri> mInputUris;
+    private ArrayList<Uri> mPendingInputUris;
+    private Uri mCurrentInputUri;
 
     private Uri mOutputUri = null;
     private RecyclerView mFilesList;
@@ -75,13 +74,11 @@ public class DecryptFilesListFragment extends DecryptFragment {
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptFilesListFragment newInstance(Uri uri, DecryptVerifyResult result) {
+    public static DecryptFilesListFragment newInstance(ArrayList<Uri> uris) {
         DecryptFilesListFragment frag = new DecryptFilesListFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_URI, uri);
-        args.putParcelable(ARG_DECRYPT_VERIFY_RESULT, result);
-
+        args.putParcelableArrayList(ARG_URIS, uris);
         frag.setArguments(args);
 
         return frag;
@@ -98,11 +95,11 @@ public class DecryptFilesListFragment extends DecryptFragment {
 
         mFilesList.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
-        // mFilesList.setHasFixedSize(true);
+        mFilesList.setHasFixedSize(true);
         mFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mFilesList.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter = new DecryptFilesAdapter(getActivity(), new ArrayList<ViewModel>());
+        mAdapter = new DecryptFilesAdapter(getActivity());
         mFilesList.setAdapter(mAdapter);
 
         return view;
@@ -112,20 +109,14 @@ public class DecryptFilesListFragment extends DecryptFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(ARG_URI, mInputUri);
+        outState.putParcelableArrayList(ARG_URIS, mInputUris);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle state = getArguments();
-        mInputUri = state.getParcelable(ARG_URI);
-
-        if (savedInstanceState == null) {
-            displayMetadata(state.<DecryptVerifyResult>getParcelable(ARG_DECRYPT_VERIFY_RESULT));
-        }
-
+        displayInputUris(getArguments().<Uri>getParcelableArrayList(ARG_URIS));
     }
 
     private String removeEncryptedAppend(String name) {
@@ -137,34 +128,37 @@ public class DecryptFilesListFragment extends DecryptFragment {
         return name;
     }
 
-    private void askForOutputFilename(String originalFilename) {
-        if (TextUtils.isEmpty(originalFilename)) {
-            originalFilename = removeEncryptedAppend(FileHelper.getFilename(getActivity(), mInputUri));
+    private void displayInputUris(ArrayList<Uri> uris) {
+        mInputUris = uris;
+        mPendingInputUris = uris;
+        for (Uri uri : uris) {
+            mAdapter.add(uri);
         }
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(mInputUri.getPath());
-            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            File targetFile = new File(parentDir, originalFilename);
-            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
-                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, "*/*", originalFilename, REQUEST_CODE_OUTPUT);
-        }
+        cryptoOperation();
     }
 
-    private void displayMetadata(DecryptVerifyResult result) {
-        loadVerifyResult(result);
+    private void displayProgress(Uri uri, int progress, int max, String msg) {
+        mAdapter.setProgress(uri, progress, max, msg);
+    }
 
-        OpenPgpMetadata metadata = result.getDecryptMetadata();
-        mAdapter.add(metadata);
-        mFilesList.requestFocus();
-
+    private void displayInputResult(Uri uri, DecryptVerifyResult result) {
+        mAdapter.addResult(uri, result);
     }
 
     @Override
     @SuppressLint("HandlerLeak")
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+
+        if (mCurrentInputUri == null) {
+
+            if (mPendingInputUris.isEmpty()) {
+                return;
+            }
+
+            mCurrentInputUri = mPendingInputUris.remove(0);
+
+        }
+
         // Send all information needed to service to decrypt in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
@@ -175,9 +169,9 @@ public class DecryptFilesListFragment extends DecryptFragment {
 
         // data
 
-        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
+        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + mOutputUri);
 
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri)
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, mOutputUri)
                 .setAllowSymmetricDecryption(true);
 
         data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
@@ -186,11 +180,7 @@ public class DecryptFilesListFragment extends DecryptFragment {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after decrypting is done in KeychainIntentService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+        Handler saveHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -201,27 +191,47 @@ public class DecryptFilesListFragment extends DecryptFragment {
                     return;
                 }
 
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
+                MessageStatus status = MessageStatus.fromInt(message.arg1);
+                Bundle data = message.getData();
 
-                    DecryptVerifyResult result =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    if (result.success()) {
-                        // display signature result in activity
-                        loadVerifyResult(result);
-
-                        /*
-                        // A future open after decryption feature
-                        if () {
-                            Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                            viewFile.setInputData(mOutputUri);
-                            startActivity(viewFile);
-                        }
-                        */
+                switch (status) {
+                    case UNKNOWN:
+                    case EXCEPTION: {
+                        Log.e(Constants.TAG, "error: " + status);
+                        break;
                     }
-                    result.createNotify(getActivity()).show(DecryptFilesListFragment.this);
+
+                    case UPDATE_PROGRESS: {
+                        int progress = data.getInt(ServiceProgressHandler.DATA_PROGRESS);
+                        int max = data.getInt(ServiceProgressHandler.DATA_PROGRESS_MAX);
+                        String msg;
+                        if (data.containsKey(ServiceProgressHandler.DATA_MESSAGE_ID)) {
+                            msg = getString(data.getInt(ServiceProgressHandler.DATA_MESSAGE_ID));
+                        } else if (data.containsKey(ServiceProgressHandler.DATA_MESSAGE)) {
+                            msg = data.getString(ServiceProgressHandler.DATA_MESSAGE);
+                        } else {
+                            msg = null;
+                        }
+                        displayProgress(mCurrentInputUri, progress, max, msg);
+                        break;
+                    }
+
+                    case OKAY: {
+                        // get returned data bundle
+                        Bundle returnData = message.getData();
+
+                        DecryptVerifyResult result =
+                                returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
+
+                        if (result.success()) {
+                            // display signature result in activity
+                            displayInputResult(mCurrentInputUri, result);
+                            mCurrentInputUri = null;
+                            return;
+                        }
+
+                        result.createNotify(getActivity()).show(DecryptFilesListFragment.this);
+                    }
                 }
 
             }
@@ -230,9 +240,6 @@ public class DecryptFilesListFragment extends DecryptFragment {
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
 
         // start service with intent
         getActivity().startService(intent);
@@ -256,23 +263,39 @@ public class DecryptFilesListFragment extends DecryptFragment {
         }
     }
 
-    @Override
-    protected void onVerifyLoaded(boolean hideErrorOverlay) {
-
-    }
-
-    public static class DecryptFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
         private Context mContext;
-        private List<ViewModel> mDataset;
+        private ArrayList<ViewModel> mDataset;
 
         public static class ViewModel {
-            OpenPgpMetadata mMetadata;
-            Bitmap thumbnail;
+            Context mContext;
+            Uri mUri;
+            DecryptVerifyResult mResult;
 
-            ViewModel(Context context, OpenPgpMetadata metadata) {
-                mMetadata = metadata;
-                int px = FormattingUtils.dpToPx(context, 48);
-                // this.thumbnail = FileHelper.getThumbnail(context, inputUri, new Point(px, px));
+            int mProgress, mMax;
+            String mProgressMsg;
+
+            ViewModel(Context context, Uri uri) {
+                mContext = context;
+                mUri = uri;
+                mProgress = 0;
+                mMax = 100;
+            }
+
+            void addResult(DecryptVerifyResult result) {
+                mResult = result;
+            }
+
+            boolean hasResult() {
+                return mResult != null;
+            }
+
+            void setProgress(int progress, int max, String msg) {
+                if (msg != null) {
+                    mProgressMsg = msg;
+                }
+                mProgress = progress;
+                mMax = max;
             }
 
             // Depends on inputUri only
@@ -281,83 +304,79 @@ public class DecryptFilesListFragment extends DecryptFragment {
                 if (this == o) return true;
                 if (o == null || getClass() != o.getClass()) return false;
                 ViewModel viewModel = (ViewModel) o;
-                return !(mMetadata != null ? !mMetadata.equals(viewModel.mMetadata)
-                        : viewModel.mMetadata != null);
+                return !(mResult != null ? !mResult.equals(viewModel.mResult)
+                        : viewModel.mResult != null);
             }
 
             // Depends on inputUri only
             @Override
             public int hashCode() {
-                return mMetadata != null ? mMetadata.hashCode() : 0;
+                return mResult != null ? mResult.hashCode() : 0;
             }
 
             @Override
             public String toString() {
-                return mMetadata.toString();
-            }
-        }
-
-        // Provide a reference to the views for each data item
-        // Complex data items may need more than one view per item, and
-        // you provide access to all the views for a data item in a view holder
-        class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView filename;
-            public TextView fileSize;
-            public View removeButton;
-            public ImageView thumbnail;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                filename = (TextView) itemView.findViewById(R.id.filename);
-                fileSize = (TextView) itemView.findViewById(R.id.filesize);
-                removeButton = itemView.findViewById(R.id.action_remove_file_from_list);
-                thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+                return mResult.toString();
             }
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public DecryptFilesAdapter(Context context, List<ViewModel> myDataset) {
+        public DecryptFilesAdapter(Context context) {
             mContext = context;
-            mDataset = myDataset;
+            mDataset = new ArrayList<>();
         }
 
         // Create new views (invoked by the layout manager)
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             //inflate your layout and pass it to view holder
             View v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.file_list_entry, parent, false);
+                    .inflate(R.layout.decrypt_list_entry, parent, false);
             return new ViewHolder(v);
         }
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-            ViewHolder thisHolder = (ViewHolder) holder;
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
 
-            thisHolder.filename.setText(model.mMetadata.getFilename());
-
-            long size = model.mMetadata.getOriginalSize();
-            if (size == -1) {
-                thisHolder.fileSize.setText("");
-            } else {
-                thisHolder.fileSize.setText(FileHelper.readableFileSize(size));
-            }
-            thisHolder.removeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    remove(model);
+            if (model.hasResult()) {
+                if (holder.vAnimator.getDisplayedChild() != 1) {
+                    holder.vAnimator.setDisplayedChild(1);
                 }
-            });
 
-            if (model.thumbnail != null) {
-                thisHolder.thumbnail.setImageBitmap(model.thumbnail);
+                OpenPgpSignatureResult signature = model.mResult.getSignatureResult();
+                if (signature != null) {
+                    KeyFormattingUtils.setStatusImage(mContext, holder.vStatusIcon, holder.vStatusText,
+                            State.VERIFIED);
+                    holder.vStatusText.setText("Yolo!");
+                    holder.vSignatureName.setText(signature.getPrimaryUserId());
+                } else {
+                    KeyFormattingUtils.setStatusImage(mContext,
+                            holder.vStatusIcon, holder.vStatusText, State.UNAVAILABLE);
+                }
+
+                OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
+                holder.vFilename.setText(metadata.getFilename());
+
+                long size = metadata.getOriginalSize();
+                if (size == -1) {
+                    holder.vFilesize.setText("");
+                } else {
+                    holder.vFilesize.setText(FileHelper.readableFileSize(size));
+                }
             } else {
-                thisHolder.thumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+                if (holder.vAnimator.getDisplayedChild() != 0) {
+                    holder.vAnimator.setDisplayedChild(0);
+                }
+
+                holder.vProgress.setProgress(model.mProgress);
+                holder.vProgress.setMax(model.mMax);
+                holder.vProgressMsg.setText(model.mProgressMsg);
             }
+
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -366,31 +385,66 @@ public class DecryptFilesListFragment extends DecryptFragment {
             return mDataset.size();
         }
 
-        public void add(OpenPgpMetadata metadata) {
-            ViewModel newModel = new ViewModel(mContext, metadata);
+        public void add(Uri uri) {
+            ViewModel newModel = new ViewModel(mContext, uri);
             mDataset.add(newModel);
             notifyItemInserted(mDataset.size());
         }
 
-        public void addAll(ArrayList<OpenPgpMetadata> metadatas) {
-            if (metadatas != null) {
-                int startIndex = mDataset.size();
-                for (OpenPgpMetadata metadata : metadatas) {
-                    ViewModel newModel = new ViewModel(mContext, metadata);
-                    if (mDataset.contains(newModel)) {
-                        Log.e(Constants.TAG, "Skipped duplicate " + metadata);
-                    } else {
-                        mDataset.add(newModel);
-                    }
-                }
-                notifyItemRangeInserted(startIndex, mDataset.size() - startIndex);
-            }
+        public void setProgress(Uri uri, int progress, int max, String msg) {
+            ViewModel newModel = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).setProgress(progress, max, msg);
+            notifyItemChanged(pos);
         }
 
-        public void remove(ViewModel model) {
-            int position = mDataset.indexOf(model);
-            mDataset.remove(position);
-            notifyItemRemoved(position);
+        public void addResult(Uri uri, DecryptVerifyResult result) {
+            ViewModel newModel = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).addResult(result);
+            notifyItemChanged(pos);
+        }
+
+    }
+
+
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ViewAnimator vAnimator;
+
+        public ProgressBar vProgress;
+        public TextView vProgressMsg;
+
+        public TextView vFilename;
+        public TextView vFilesize;
+        public View vRemoveButton;
+        public ImageView vThumbnail;
+
+        public ImageView vStatusIcon;
+        public TextView vStatusText;
+        public TextView vSignatureName;
+        public TextView vSignatureMail;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            vAnimator = (ViewAnimator) itemView.findViewById(R.id.view_animator);
+
+            vProgress = (ProgressBar) itemView.findViewById(R.id.progress);
+            vProgressMsg = (TextView) itemView.findViewById(R.id.progress_msg);
+
+            vFilename = (TextView) itemView.findViewById(R.id.filename);
+            vFilesize = (TextView) itemView.findViewById(R.id.filesize);
+            vRemoveButton = itemView.findViewById(R.id.action_remove_file_from_list);
+            vThumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+
+            vStatusIcon = (ImageView) itemView.findViewById(R.id.result_signature_icon);
+            vStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
+            vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
+            vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
+
         }
 
     }
