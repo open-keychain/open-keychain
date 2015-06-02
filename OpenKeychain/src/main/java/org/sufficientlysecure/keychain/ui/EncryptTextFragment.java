@@ -142,7 +142,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
         if (args.containsKey(ARG_USE_COMPRESSION)) {
             mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
         } else {
-            mUseCompression = prefs.getUseCompression();
+            mUseCompression = prefs.getTextUseCompression();
         }
 
         setHasOptionsMenu(true);
@@ -194,7 +194,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
                 Notify.LENGTH_LONG, Style.OK, new ActionListener() {
                     @Override
                     public void onAction() {
-                        Preferences.getPreferences(getActivity()).setUseCompression(compress);
+                        Preferences.getPreferences(getActivity()).setTextUseCompression(compress);
                         Notify.create(getActivity(), compress
                                         ? R.string.snack_compression_on
                                         : R.string.snack_compression_off,

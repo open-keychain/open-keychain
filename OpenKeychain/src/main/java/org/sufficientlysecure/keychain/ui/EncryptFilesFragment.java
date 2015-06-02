@@ -41,7 +41,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nispok.snackbar.Snackbar;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -184,7 +183,7 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
         if (args.containsKey(ARG_USE_COMPRESSION)) {
             mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
         } else {
-            mUseCompression = prefs.getUseCompression();
+            mUseCompression = prefs.getFilesUseCompression();
         }
 
         if (args.containsKey(ARG_ENCRYPT_FILENAMES)) {
@@ -343,7 +342,7 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 Notify.LENGTH_LONG, Style.OK, new ActionListener() {
                     @Override
                     public void onAction() {
-                        Preferences.getPreferences(getActivity()).setUseCompression(compress);
+                        Preferences.getPreferences(getActivity()).setFilesUseCompression(compress);
                         Notify.create(getActivity(), compress
                                         ? R.string.snack_compression_on
                                         : R.string.snack_compression_off,

@@ -182,15 +182,27 @@ public class Preferences {
         editor.commit();
     }
 
-    public void setUseCompression(boolean compress) {
+    public void setFilesUseCompression(boolean compress) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.USE_COMPRESSION, compress);
+        editor.putBoolean(Pref.FILE_USE_COMPRESSION, compress);
         editor.commit();
     }
 
-    public boolean getUseCompression() {
-        return mSharedPreferences.getBoolean(Pref.USE_COMPRESSION, true);
+    public boolean getFilesUseCompression() {
+        return mSharedPreferences.getBoolean(Pref.FILE_USE_COMPRESSION, true);
     }
+
+    public void setTextUseCompression(boolean compress) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.TEXT_USE_COMPRESSION, compress);
+        editor.commit();
+    }
+
+    public boolean getTextUseCompression() {
+        return mSharedPreferences.getBoolean(Pref.TEXT_USE_COMPRESSION, true);
+    }
+
+
 
     public void setUseArmor(boolean useArmor) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
