@@ -24,7 +24,6 @@ import android.webkit.MimeTypeMap;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
-import org.spongycastle.bcpg.PublicKeyEncSessionPacket;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
@@ -674,9 +673,6 @@ public class PgpDecryptVerify extends BaseOperation {
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
-            // reported size may be null if partial packets are involved (highly unlikely though)
-            Long originalSize = literalData.getDataLengthIfAvailable();
-
             String originalFilename = literalData.getFileName();
             String mimeType = null;
             if (literalData.getFormat() == PGPLiteralData.TEXT
@@ -699,12 +695,6 @@ public class PgpDecryptVerify extends BaseOperation {
                 }
             }
 
-            metadata = new OpenPgpMetadata(
-                    originalFilename,
-                    mimeType,
-                    literalData.getModificationTime().getTime(),
-                    originalSize == null ? 0 : originalSize);
-
             if (!"".equals(originalFilename)) {
                 log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
             }
@@ -712,15 +702,26 @@ public class PgpDecryptVerify extends BaseOperation {
                     mimeType);
             log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
                     new Date(literalData.getModificationTime().getTime()).toString());
-            if (originalSize != null) {
-                log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
-                        Long.toString(originalSize));
-            } else {
-                log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
-            }
 
             // return here if we want to decrypt the metadata only
             if (input.isDecryptMetadataOnly()) {
+
+                // this operation skips the entire stream to find the data length!
+                Long originalSize = literalData.findDataLength();
+
+                if (originalSize != null) {
+                    log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
+                            Long.toString(originalSize));
+                } else {
+                    log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
+                }
+
+                metadata = new OpenPgpMetadata(
+                        originalFilename,
+                        mimeType,
+                        literalData.getModificationTime().getTime(),
+                        originalSize == null ? 0 : originalSize);
+
                 log.add(LogType.MSG_DC_OK_META_ONLY, indent);
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
@@ -768,6 +769,21 @@ public class PgpDecryptVerify extends BaseOperation {
                 }
                 // TODO: slow annealing to fake a progress?
             }
+
+            // after going through the stream, size should be available
+            Long originalSize = literalData.getDataLengthIfAvailable();
+            if (originalSize != null) {
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
+                        Long.toString(originalSize));
+            } else {
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
+            }
+
+            metadata = new OpenPgpMetadata(
+                    originalFilename,
+                    mimeType,
+                    literalData.getModificationTime().getTime(),
+                    originalSize == null ? 0 : originalSize);
 
             if (signature != null) {
                 updateProgress(R.string.progress_verifying_signature, 90, 100);

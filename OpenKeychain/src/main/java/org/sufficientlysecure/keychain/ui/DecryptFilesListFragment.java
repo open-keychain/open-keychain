@@ -19,11 +19,14 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +37,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -46,6 +50,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
@@ -54,7 +60,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -64,10 +70,12 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     private ArrayList<Uri> mInputUris;
+    private ArrayList<Uri> mOutputUris;
     private ArrayList<Uri> mPendingInputUris;
-    private Uri mCurrentInputUri;
 
-    private Uri mOutputUri = null;
+    private Uri mCurrentInputUri, mCurrentOutputUri;
+    private boolean mDecryptingMetadata;
+
     private RecyclerView mFilesList;
     private DecryptFilesAdapter mAdapter;
 
@@ -130,10 +138,18 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
 
     private void displayInputUris(ArrayList<Uri> uris) {
         mInputUris = uris;
-        mPendingInputUris = uris;
+        mOutputUris = new ArrayList<>(uris.size());
         for (Uri uri : uris) {
             mAdapter.add(uri);
+            String targetName = (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
+                            + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+            mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+            filenameCounter++;
         }
+
+        mPendingInputUris = uris;
+        mDecryptingMetadata = true;
+
         cryptoOperation();
     }
 
@@ -141,8 +157,50 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         mAdapter.setProgress(uri, progress, max, msg);
     }
 
-    private void displayInputResult(Uri uri, DecryptVerifyResult result) {
-        mAdapter.addResult(uri, result);
+    private void displayInputResult(final Uri uri, DecryptVerifyResult result) {
+        Drawable icon = null;
+        OnClickListener onFileClick = null, onKeyClick = null;
+
+        if (result.success()) {
+
+            if (result.getDecryptMetadata() != null && result.getDecryptMetadata().getMimeType() != null) {
+                icon = loadIcon(result.getDecryptMetadata().getMimeType());
+            }
+
+            OpenPgpSignatureResult sigResult = result.getSignatureResult();
+            if (sigResult != null) {
+                final long keyId = sigResult.getKeyId();
+                if (sigResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
+                    onKeyClick = new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
+                            intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
+                            getActivity().startActivity(intent);
+                        }
+                    };
+                }
+            }
+
+            if (result.success()) {
+                onFileClick = new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (mCurrentInputUri != null) {
+                            return;
+                        }
+
+                        mCurrentInputUri = uri;
+                        mDecryptingMetadata = false;
+                        cryptoOperation();
+                    }
+                };
+            }
+
+        }
+
+        mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+
     }
 
     @Override
@@ -169,10 +227,11 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
 
         // data
 
-        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + mOutputUri);
+        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + mCurrentOutputUri);
 
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, mOutputUri)
-                .setAllowSymmetricDecryption(true);
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, mCurrentOutputUri)
+                .setAllowSymmetricDecryption(true)
+                .setDecryptMetadataOnly(true);
 
         data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
@@ -251,7 +310,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mOutputUri = data.getData();
+                    // mCurrentOutputUri = data.getData();
                     // startDecrypt();
                 }
                 return;
@@ -271,6 +330,10 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
             Context mContext;
             Uri mUri;
             DecryptVerifyResult mResult;
+            Drawable mIcon;
+
+            OnClickListener mOnFileClickListener;
+            OnClickListener mOnKeyClickListener;
 
             int mProgress, mMax;
             String mProgressMsg;
@@ -284,6 +347,15 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
 
             void addResult(DecryptVerifyResult result) {
                 mResult = result;
+            }
+
+            void addIcon(Drawable icon) {
+                mIcon = icon;
+            }
+
+            void setOnClickListeners(OnClickListener onFileClick, OnClickListener onKeyClick) {
+                mOnFileClickListener = onFileClick;
+                mOnKeyClickListener = onKeyClick;
             }
 
             boolean hasResult() {
@@ -347,26 +419,28 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
                     holder.vAnimator.setDisplayedChild(1);
                 }
 
-                OpenPgpSignatureResult signature = model.mResult.getSignatureResult();
-                if (signature != null) {
-                    KeyFormattingUtils.setStatusImage(mContext, holder.vStatusIcon, holder.vStatusText,
-                            State.VERIFIED);
-                    holder.vStatusText.setText("Yolo!");
-                    holder.vSignatureName.setText(signature.getPrimaryUserId());
-                } else {
-                    KeyFormattingUtils.setStatusImage(mContext,
-                            holder.vStatusIcon, holder.vStatusText, State.UNAVAILABLE);
-                }
+                KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
 
                 OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
                 holder.vFilename.setText(metadata.getFilename());
 
                 long size = metadata.getOriginalSize();
-                if (size == -1) {
+                if (size == -1 || size == 0) {
                     holder.vFilesize.setText("");
                 } else {
                     holder.vFilesize.setText(FileHelper.readableFileSize(size));
                 }
+
+                // TODO thumbnail from OpenPgpMetadata
+                if (model.mIcon != null) {
+                    holder.vThumbnail.setImageDrawable(model.mIcon);
+                } else {
+                    holder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+                }
+
+                holder.vFile.setOnClickListener(model.mOnFileClickListener);
+                holder.vSignatureLayout.setOnClickListener(model.mOnKeyClickListener);
+
             } else {
                 if (holder.vAnimator.getDisplayedChild() != 0) {
                     holder.vAnimator.setDisplayedChild(0);
@@ -398,10 +472,19 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
             notifyItemChanged(pos);
         }
 
-        public void addResult(Uri uri, DecryptVerifyResult result) {
-            ViewModel newModel = new ViewModel(mContext, uri);
-            int pos = mDataset.indexOf(newModel);
-            mDataset.get(pos).addResult(result);
+        public void addResult(Uri uri, DecryptVerifyResult result, Drawable icon,
+                OnClickListener onFileClick, OnClickListener onKeyClick) {
+
+            ViewModel model = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(model);
+            model = mDataset.get(pos);
+
+            model.addResult(result);
+            if (icon != null) {
+                model.addIcon(icon);
+            }
+            model.setOnClickListeners(onFileClick, onKeyClick);
+
             notifyItemChanged(pos);
         }
 
@@ -411,21 +494,26 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements StatusHolder {
         public ViewAnimator vAnimator;
 
         public ProgressBar vProgress;
         public TextView vProgressMsg;
 
+        public View vFile;
         public TextView vFilename;
         public TextView vFilesize;
-        public View vRemoveButton;
         public ImageView vThumbnail;
 
-        public ImageView vStatusIcon;
-        public TextView vStatusText;
+        public ImageView vEncStatusIcon;
+        public TextView vEncStatusText;
+
+        public ImageView vSigStatusIcon;
+        public TextView vSigStatusText;
+        public View vSignatureLayout;
         public TextView vSignatureName;
         public TextView vSignatureMail;
+        public TextView vSignatureAction;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -435,17 +523,79 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
             vProgress = (ProgressBar) itemView.findViewById(R.id.progress);
             vProgressMsg = (TextView) itemView.findViewById(R.id.progress_msg);
 
+            vFile = itemView.findViewById(R.id.file);
             vFilename = (TextView) itemView.findViewById(R.id.filename);
             vFilesize = (TextView) itemView.findViewById(R.id.filesize);
-            vRemoveButton = itemView.findViewById(R.id.action_remove_file_from_list);
             vThumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
 
-            vStatusIcon = (ImageView) itemView.findViewById(R.id.result_signature_icon);
-            vStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
+            vEncStatusIcon = (ImageView) itemView.findViewById(R.id.result_encryption_icon);
+            vEncStatusText = (TextView) itemView.findViewById(R.id.result_encryption_text);
+
+            vSigStatusIcon = (ImageView) itemView.findViewById(R.id.result_signature_icon);
+            vSigStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
+            vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
             vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
+            vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
 
         }
+
+        @Override
+        public ImageView getEncryptionStatusIcon() {
+            return vEncStatusIcon;
+        }
+
+        @Override
+        public TextView getEncryptionStatusText() {
+            return vEncStatusText;
+        }
+
+        @Override
+        public ImageView getSignatureStatusIcon() {
+            return vSigStatusIcon;
+        }
+
+        @Override
+        public TextView getSignatureStatusText() {
+            return vSigStatusText;
+        }
+
+        @Override
+        public View getSignatureLayout() {
+            return vSignatureLayout;
+        }
+
+        @Override
+        public TextView getSignatureAction() {
+            return vSignatureAction;
+        }
+
+        @Override
+        public TextView getSignatureUserName() {
+            return vSignatureName;
+        }
+
+        @Override
+        public TextView getSignatureUserEmail() {
+            return vSignatureMail;
+        }
+
+        @Override
+        public boolean hasEncrypt() {
+            return true;
+        }
+    }
+
+    private Drawable loadIcon(String mimeType) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setType(mimeType);
+
+        final List<ResolveInfo> matches = getActivity()
+                .getPackageManager().queryIntentActivities(intent, 0);
+        for (ResolveInfo match : matches) {
+            return match.loadIcon(getActivity().getPackageManager());
+        }
+        return null;
 
     }
 
