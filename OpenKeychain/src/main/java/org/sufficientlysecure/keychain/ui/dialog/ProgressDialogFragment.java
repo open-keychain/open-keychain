@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
@@ -27,6 +26,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
@@ -52,6 +52,7 @@ public class ProgressDialogFragment extends DialogFragment {
      * @param message the message to be displayed initially above the progress bar
      * @param style the progress bar style, as defined in ProgressDialog (horizontal or spinner)
      * @param cancelable should we let the user cancel this operation
+     * @return
      */
     public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
