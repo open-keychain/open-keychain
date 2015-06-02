@@ -140,12 +140,17 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             }
         });
 
-        mKeyNfcButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mNfcHelper.invokeNfcBeam();
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mKeyNfcButton.setVisibility(View.VISIBLE);
+            mKeyNfcButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mNfcHelper.invokeNfcBeam();
+                }
+            });
+        } else {
+            mKeyNfcButton.setVisibility(View.GONE);
+        }
 
         mKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
             @Override
