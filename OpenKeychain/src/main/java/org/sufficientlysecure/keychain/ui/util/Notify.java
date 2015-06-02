@@ -62,9 +62,10 @@ public class Notify {
 
     public static final int LENGTH_INDEFINITE = 0;
     public static final int LENGTH_LONG = 3500;
+    public static final int LENGTH_SHORT = 1500;
 
     public static Showable create(final Activity activity, String text, int duration, Style style,
-                                  final ActionListener actionListener, int actionResId) {
+                                  final ActionListener actionListener, Integer actionResId) {
         final Snackbar snackbar = Snackbar.with(activity)
                 .type(SnackbarType.MULTI_LINE)
                 .text(text);
@@ -77,14 +78,16 @@ public class Notify {
 
         style.applyToBar(snackbar);
 
+        if (actionResId != null) {
+            snackbar.actionLabel(actionResId);
+        }
         if (actionListener != null) {
-            snackbar.actionLabel(actionResId)
-                    .actionListener(new ActionClickListener() {
-                        @Override
-                        public void onActionClicked(Snackbar snackbar) {
-                            actionListener.onAction();
-                        }
-                    });
+            snackbar.actionListener(new ActionClickListener() {
+                @Override
+                public void onActionClicked(Snackbar snackbar) {
+                    actionListener.onAction();
+                }
+            });
         }
 
         if (activity instanceof FabContainer) {
@@ -105,6 +108,13 @@ public class Notify {
             @Override
             public void show() {
                 SnackbarManager.show(snackbar, activity);
+            }
+
+            @Override
+            public void show(Fragment fragment, boolean animate) {
+                snackbar.animation(animate);
+                snackbar.dismissOnActionClicked(animate);
+                show(fragment);
             }
 
             @Override
@@ -134,7 +144,7 @@ public class Notify {
     }
 
     public static Showable create(Activity activity, String text, int duration, Style style) {
-        return create(activity, text, duration, style, null, -1);
+        return create(activity, text, duration, style, null, null);
     }
 
     public static Showable create(Activity activity, String text, Style style) {
@@ -159,24 +169,26 @@ public class Notify {
         /**
          * Shows the notification on the bottom of the Activity.
          */
-        public void show();
+        void show();
+
+        void show(Fragment fragment, boolean animate);
 
         /**
          * Shows the notification on the bottom of the Fragment.
          */
-        public void show(Fragment fragment);
+        void show(Fragment fragment);
 
         /**
          * Shows the notification on the given ViewGroup.
          * The viewGroup should be either a RelativeLayout or FrameLayout.
          */
-        public void show(ViewGroup viewGroup);
+        void show(ViewGroup viewGroup);
 
     }
 
     public interface ActionListener {
 
-        public void onAction();
+        void onAction();
 
     }
 
