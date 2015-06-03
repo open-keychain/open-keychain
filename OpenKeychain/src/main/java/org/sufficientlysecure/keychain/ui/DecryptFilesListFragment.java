@@ -18,7 +18,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -28,6 +30,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -57,10 +60,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -77,13 +82,11 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     private ArrayList<Uri> mInputUris;
-    private ArrayList<Uri> mOutputUris;
+    private HashMap<Uri, Uri> mOutputUris;
     private ArrayList<Uri> mPendingInputUris;
 
-    private Uri mCurrentInputUri, mCurrentOutputUri;
-    private boolean mDecryptingMetadata;
+    private Uri mCurrentInputUri;
 
-    private RecyclerView mFilesList;
     private DecryptFilesAdapter mAdapter;
 
     /**
@@ -106,16 +109,16 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_files_list_fragment, container, false);
 
-        mFilesList = (RecyclerView) view.findViewById(R.id.decrypted_files_list);
+        RecyclerView vFilesList = (RecyclerView) view.findViewById(R.id.decrypted_files_list);
 
-        mFilesList.addItemDecoration(new SpacesItemDecoration(
+        vFilesList.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
-        mFilesList.setHasFixedSize(true);
-        mFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mFilesList.setItemAnimator(new DefaultItemAnimator());
+        vFilesList.setHasFixedSize(true);
+        vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
+        vFilesList.setItemAnimator(new DefaultItemAnimator());
 
         mAdapter = new DecryptFilesAdapter(getActivity(), this);
-        mFilesList.setAdapter(mAdapter);
+        vFilesList.setAdapter(mAdapter);
 
         return view;
     }
@@ -143,21 +146,48 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
         return name;
     }
 
+    private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            File file = new File(inputUri.getPath());
+            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
+            File targetFile = new File(parentDir, originalFilename);
+            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
+                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
+        } else {
+            FileHelper.saveDocument(this, mimeType, originalFilename, REQUEST_CODE_OUTPUT);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_OUTPUT: {
+                // This happens after output file was selected, so start our operation
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    Uri saveUri = data.getData();
+                    Uri outputUri = mOutputUris.get(mCurrentInputUri);
+                    // TODO save from outputUri to saveUri
+
+                    mCurrentInputUri = null;
+                }
+                return;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+
     private void displayInputUris(ArrayList<Uri> uris) {
         mInputUris = uris;
-        // mOutputUris = new ArrayList<>(uris.size());
+        mOutputUris = new HashMap<>(uris.size());
         for (Uri uri : uris) {
             mAdapter.add(uri);
-        /*
-            String targetName = (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
-                            + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-            mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
-            filenameCounter++;
-        */
+            mOutputUris.put(uri, TemporaryStorageProvider.createFile(getActivity()));
         }
 
         mPendingInputUris = uris;
-        mDecryptingMetadata = true;
 
         cryptoOperation();
     }
@@ -183,25 +213,32 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
                     onKeyClick = new OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
+                            Activity activity = getActivity();
+                            if (activity == null) {
+                                return;
+                            }
+                            Intent intent = new Intent(activity, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
-                            getActivity().startActivity(intent);
+                            activity.startActivity(intent);
                         }
                     };
                 }
             }
 
-            if (result.success()) {
+            if (result.success() && result.getDecryptMetadata() != null) {
+                final OpenPgpMetadata metadata = result.getDecryptMetadata();
                 onFileClick = new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (mCurrentInputUri != null) {
+                        Activity activity = getActivity();
+                        if (activity == null || mCurrentInputUri != null) {
                             return;
                         }
 
-                        mCurrentInputUri = uri;
-                        mDecryptingMetadata = false;
-                        cryptoOperation();
+                        Uri outputUri = mOutputUris.get(uri);
+                        Intent intent = new Intent();
+                        intent.setDataAndType(outputUri, metadata.getMimeType());
+                        activity.startActivity(intent);
                     }
                 };
             }
@@ -236,10 +273,10 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         // data
 
-        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + mCurrentOutputUri);
+        Uri currentOutputUri = mOutputUris.get(mCurrentInputUri);
+        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + currentOutputUri);
 
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, mCurrentOutputUri)
-                // .setDecryptMetadataOnly(true)
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, currentOutputUri)
                 .setAllowSymmetricDecryption(true);
 
         data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
@@ -319,24 +356,6 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_OUTPUT: {
-                // This happens after output file was selected, so start our operation
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    // mCurrentOutputUri = data.getData();
-                    // startDecrypt();
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
-        }
-    }
-
-    @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (mAdapter.mMenuClickedModel == null || !mAdapter.mMenuClickedModel.hasResult()) {
             return false;
@@ -346,7 +365,8 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
             return false;
         }
 
-        DecryptVerifyResult result = mAdapter.mMenuClickedModel.mResult;
+        ViewModel model = mAdapter.mMenuClickedModel;
+        DecryptVerifyResult result = model.mResult;
         switch (menuItem.getItemId()) {
             case R.id.view_log:
                 Intent intent = new Intent(activity, LogDisplayActivity.class);
@@ -354,7 +374,12 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
                 activity.startActivity(intent);
                 return true;
             case R.id.decrypt_save:
-                Notify.create(activity, "decrypt/save not yet implemented", Style.ERROR).show(this);
+                OpenPgpMetadata metadata = result.getDecryptMetadata();
+                if (metadata == null) {
+                    return true;
+                }
+                mCurrentInputUri = model.mInputUri;
+                askForOutputFilename(model.mInputUri, metadata.getFilename(), metadata.getMimeType());
                 return true;
             case R.id.decrypt_delete:
                 Notify.create(activity, "decrypt/delete not yet implemented", Style.ERROR).show(this);
@@ -371,7 +396,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         public class ViewModel {
             Context mContext;
-            Uri mUri;
+            Uri mInputUri;
             DecryptVerifyResult mResult;
             Drawable mIcon;
 
@@ -383,7 +408,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
             ViewModel(Context context, Uri uri) {
                 mContext = context;
-                mUri = uri;
+                mInputUri = uri;
                 mProgress = 0;
                 mMax = 100;
             }
@@ -658,6 +683,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         final List<ResolveInfo> matches = getActivity()
                 .getPackageManager().queryIntentActivities(intent, 0);
+        //noinspection LoopStatementThatDoesntLoop
         for (ResolveInfo match : matches) {
             return match.loadIcon(getActivity().getPackageManager());
         }

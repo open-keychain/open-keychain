@@ -54,7 +54,8 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/result_encryption_icon"
@@ -81,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:paddingRight="4dp"
                 android:paddingLeft="4dp"
-                >
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/result_signature_icon"
@@ -156,7 +157,8 @@
                     android:drawableRight="@drawable/ic_vpn_key_grey_24dp"
                     android:drawablePadding="8dp"
                     android:gravity="center_vertical"
-                    android:text="Show"
+                    android:text=""
+                    tools:text="Show"
                     />
 
             </LinearLayout>

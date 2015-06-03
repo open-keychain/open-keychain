@@ -56,6 +56,11 @@ public class TemporaryStorageProvider extends ContentProvider {
         return context.getContentResolver().insert(BASE_URI, contentValues);
     }
 
+    public static Uri createFile(Context context) {
+        ContentValues contentValues = new ContentValues();
+        return context.getContentResolver().insert(BASE_URI, contentValues);
+    }
+
     public static int cleanUp(Context context) {
         return context.getContentResolver().delete(BASE_URI, COLUMN_TIME + "< ?",
                 new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)});
