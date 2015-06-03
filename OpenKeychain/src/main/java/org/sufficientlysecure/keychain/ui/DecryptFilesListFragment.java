@@ -138,13 +138,15 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
 
     private void displayInputUris(ArrayList<Uri> uris) {
         mInputUris = uris;
-        mOutputUris = new ArrayList<>(uris.size());
+        // mOutputUris = new ArrayList<>(uris.size());
         for (Uri uri : uris) {
             mAdapter.add(uri);
+        /*
             String targetName = (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
                             + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
             mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
             filenameCounter++;
+        */
         }
 
         mPendingInputUris = uris;
@@ -230,8 +232,8 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + mCurrentOutputUri);
 
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, mCurrentOutputUri)
-                .setAllowSymmetricDecryption(true)
-                .setDecryptMetadataOnly(true);
+                // .setDecryptMetadataOnly(true)
+                .setAllowSymmetricDecryption(true);
 
         data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
         data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
