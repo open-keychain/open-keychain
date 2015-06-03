@@ -223,6 +223,7 @@
                     android:layout_width="36dip"
                     android:layout_height="48dip"
                     android:clickable="true"
+                    android:background="?android:selectableItemBackground"
                     android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha" />
 
             </LinearLayout>

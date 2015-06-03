@@ -1308,5 +1308,6 @@
     <string name="error_nfc">"NFC Error: %s"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+    <string name="btn_delete_original">Delete original file</string>
 
 </resources>

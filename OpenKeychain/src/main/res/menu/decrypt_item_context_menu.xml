@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/view_log"
+        android:title="@string/view_log"
+        android:icon="@drawable/ic_view_list_grey_24dp"
+        />
+
+    <item
+        android:id="@+id/decrypt_save"
+        android:title="@string/btn_save"
+        android:icon="@drawable/ic_action_encrypt_file_24dp"
+        />
+
+    <item
+        android:id="@+id/decrypt_delete"
+        android:title="@string/btn_delete_original"
+        android:icon="@drawable/ic_delete_grey_24dp"
+        />
+
+</menu>

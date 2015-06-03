@@ -35,11 +35,17 @@ import android.os.Messenger;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnDismissListener;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -51,7 +57,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
@@ -61,10 +66,12 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesListFragment extends CryptoOperationFragment {
+public class DecryptFilesListFragment extends CryptoOperationFragment implements OnMenuItemClickListener {
     public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
@@ -107,7 +114,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         mFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         mFilesList.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter = new DecryptFilesAdapter(getActivity());
+        mAdapter = new DecryptFilesAdapter(getActivity(), this);
         mFilesList.setAdapter(mAdapter);
 
         return view;
@@ -307,6 +314,11 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_OUTPUT: {
@@ -324,11 +336,40 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         }
     }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        if (mAdapter.mMenuClickedModel == null || !mAdapter.mMenuClickedModel.hasResult()) {
+            return false;
+        }
+        Activity activity = getActivity();
+        if (activity == null) {
+            return false;
+        }
+
+        DecryptVerifyResult result = mAdapter.mMenuClickedModel.mResult;
+        switch (menuItem.getItemId()) {
+            case R.id.view_log:
+                Intent intent = new Intent(activity, LogDisplayActivity.class);
+                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+                activity.startActivity(intent);
+                return true;
+            case R.id.decrypt_save:
+                Notify.create(activity, "decrypt/save not yet implemented", Style.ERROR).show(this);
+                return true;
+            case R.id.decrypt_delete:
+                Notify.create(activity, "decrypt/delete not yet implemented", Style.ERROR).show(this);
+                return true;
+        }
+        return false;
+    }
+
     public static class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
         private Context mContext;
         private ArrayList<ViewModel> mDataset;
+        private OnMenuItemClickListener mMenuItemClickListener;
+        private ViewModel mMenuClickedModel;
 
-        public static class ViewModel {
+        public class ViewModel {
             Context mContext;
             Uri mUri;
             DecryptVerifyResult mResult;
@@ -395,8 +436,9 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public DecryptFilesAdapter(Context context) {
+        public DecryptFilesAdapter(Context context, OnMenuItemClickListener menuItemClickListener) {
             mContext = context;
+            mMenuItemClickListener = menuItemClickListener;
             mDataset = new ArrayList<>();
         }
 
@@ -442,6 +484,24 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
 
                 holder.vFile.setOnClickListener(model.mOnFileClickListener);
                 holder.vSignatureLayout.setOnClickListener(model.mOnKeyClickListener);
+
+                holder.vContextMenu.setTag(model);
+                holder.vContextMenu.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mMenuClickedModel = model;
+                        PopupMenu menu = new PopupMenu(mContext, view);
+                        menu.inflate(R.menu.decrypt_item_context_menu);
+                        menu.setOnMenuItemClickListener(mMenuItemClickListener);
+                        menu.setOnDismissListener(new OnDismissListener() {
+                            @Override
+                            public void onDismiss(PopupMenu popupMenu) {
+                                mMenuClickedModel = null;
+                            }
+                        });
+                        menu.show();
+                    }
+                });
 
             } else {
                 if (holder.vAnimator.getDisplayedChild() != 0) {
@@ -517,6 +577,8 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
         public TextView vSignatureMail;
         public TextView vSignatureAction;
 
+        public View vContextMenu;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -539,6 +601,8 @@ public class DecryptFilesListFragment extends CryptoOperationFragment {
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
             vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
             vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
+
+            vContextMenu = itemView.findViewById(R.id.context_menu);
 
         }
 
