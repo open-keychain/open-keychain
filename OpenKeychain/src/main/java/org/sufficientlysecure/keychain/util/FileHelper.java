@@ -37,11 +37,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 
 public class FileHelper {
@@ -237,4 +241,37 @@ public class FileHelper {
     public static interface FileDialogCallback {
         public void onFileSelected(File file, boolean checked);
     }
+
+    public static void copyUri(Context context, Uri from, Uri to) throws IOException {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            in = context.getContentResolver().openInputStream(from);
+            out = context.getContentResolver().openOutputStream(to);
+            copyStream(in, out);
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "io exception while copying uri streams", e);
+            throw e;
+        } finally {
+            if (in != null) try {
+                in.close();
+            } catch (IOException e) {
+                // nvm
+            }
+            if (out != null) try {
+                out.close();
+            } catch (IOException e) {
+                // nvm
+            }
+        }
+    }
+
+    public static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+          out.write(buffer, 0, read);
+        }
+    }
+
 }

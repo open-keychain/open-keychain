@@ -423,22 +423,6 @@ public class KeyFormattingUtils {
         setStatusImage(context, statusIcon, statusText, state, color, false);
     }
 
-    public interface StatusHolder {
-        ImageView getEncryptionStatusIcon();
-        TextView getEncryptionStatusText();
-
-        ImageView getSignatureStatusIcon();
-        TextView getSignatureStatusText();
-
-        View getSignatureLayout();
-        TextView getSignatureUserName();
-        TextView getSignatureUserEmail();
-        TextView getSignatureAction();
-
-        boolean hasEncrypt();
-
-    }
-
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
     public static void setStatus(Context context, StatusHolder holder, DecryptVerifyResult result) {
 

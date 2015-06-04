@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -70,9 +72,9 @@ import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.util.StatusHolder;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -162,11 +164,20 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_CODE_OUTPUT: {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    mCurrentInputUri = null;
+                    return;
+                }
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     Uri saveUri = data.getData();
-                    Uri outputUri = mOutputUris.get(mCurrentInputUri);
-                    // TODO save from outputUri to saveUri
+                    Uri decryptedDataUri = mOutputUris.get(mCurrentInputUri);
+                    try {
+                        FileHelper.copyUri(getActivity(), decryptedDataUri, saveUri);
+                    } catch (IOException e) {
+                        Notify.create(activity, "Error saving file!", Style.ERROR).show();
+                    }
 
                     mCurrentInputUri = null;
                 }
@@ -236,8 +247,16 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
                         }
 
                         Uri outputUri = mOutputUris.get(uri);
-                        Intent intent = new Intent();
-                        intent.setDataAndType(outputUri, metadata.getMimeType());
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType(metadata.getMimeType());
+                        intent.putExtra(Intent.EXTRA_STREAM, outputUri);
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        if (Build.VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                        } else {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                        }
+                        // activity.startActivity(Intent.createChooser(intent, null));
                         activity.startActivity(intent);
                     }
                 };
@@ -388,7 +407,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
         return false;
     }
 
-    public static class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
+    public static class DecryptFilesAdapter extends RecyclerView.Adapter<DecryptItemViewHolder> {
         private Context mContext;
         private ArrayList<ViewModel> mDataset;
         private OnMenuItemClickListener mMenuItemClickListener;
@@ -469,16 +488,16 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         // Create new views (invoked by the layout manager)
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public DecryptItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             //inflate your layout and pass it to view holder
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.decrypt_list_entry, parent, false);
-            return new ViewHolder(v);
+            return new DecryptItemViewHolder(v);
         }
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(ViewHolder holder, final int position) {
+        public void onBindViewHolder(DecryptItemViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
@@ -577,11 +596,21 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
     }
 
+    private Drawable loadIcon(String mimeType) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setType(mimeType);
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder implements StatusHolder {
+        final List<ResolveInfo> matches = getActivity()
+                .getPackageManager().queryIntentActivities(intent, 0);
+        //noinspection LoopStatementThatDoesntLoop
+        for (ResolveInfo match : matches) {
+            return match.loadIcon(getActivity().getPackageManager());
+        }
+        return null;
+
+    }
+
+    public static class DecryptItemViewHolder extends RecyclerView.ViewHolder implements StatusHolder {
         public ViewAnimator vAnimator;
 
         public ProgressBar vProgress;
@@ -604,7 +633,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         public View vContextMenu;
 
-        public ViewHolder(View itemView) {
+        public DecryptItemViewHolder(View itemView) {
             super(itemView);
 
             vAnimator = (ViewAnimator) itemView.findViewById(R.id.view_animator);
@@ -624,7 +653,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
             vSigStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
             vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
-            vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
+            vSignatureMail = (TextView) itemView.findViewById(R.id.result_signature_email);
             vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
 
             vContextMenu = itemView.findViewById(R.id.context_menu);
@@ -676,19 +705,4 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
             return true;
         }
     }
-
-    private Drawable loadIcon(String mimeType) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setType(mimeType);
-
-        final List<ResolveInfo> matches = getActivity()
-                .getPackageManager().queryIntentActivities(intent, 0);
-        //noinspection LoopStatementThatDoesntLoop
-        for (ResolveInfo match : matches) {
-            return match.loadIcon(getActivity().getPackageManager());
-        }
-        return null;
-
-    }
-
 }
