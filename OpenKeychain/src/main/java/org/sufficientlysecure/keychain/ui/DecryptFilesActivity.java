@@ -109,10 +109,9 @@ public class DecryptFilesActivity extends BaseActivity {
 
         ArrayList<Uri> uris = new ArrayList<>();
         uris.add(inputUri);
-        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(uris);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.decrypt_files_fragment_container, frag)
+                .replace(R.id.decrypt_files_fragment_container, null)
                 .addToBackStack("list")
                 .commit();
 

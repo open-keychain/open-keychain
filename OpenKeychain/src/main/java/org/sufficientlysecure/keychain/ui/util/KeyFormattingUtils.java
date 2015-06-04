@@ -24,11 +24,9 @@ import android.graphics.PorterDuff;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
@@ -37,7 +35,6 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
 import org.sufficientlysecure.keychain.util.Log;
@@ -424,141 +421,7 @@ public class KeyFormattingUtils {
     }
 
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
-    public static void setStatus(Context context, StatusHolder holder, DecryptVerifyResult result) {
-
-        OpenPgpSignatureResult signatureResult = result.getSignatureResult();
-
-        if (holder.hasEncrypt()) {
-            int encText, encIcon, encColor;
-            if (signatureResult != null && signatureResult.isSignatureOnly()) {
-                encIcon = R.drawable.status_lock_open_24dp;
-                encText = R.string.decrypt_result_not_encrypted;
-                encColor = R.color.android_red_light;
-            } else {
-                encIcon = R.drawable.status_lock_closed_24dp;
-                encText = R.string.decrypt_result_encrypted;
-                encColor = R.color.android_green_light;
-            }
-
-            int encColorRes = context.getResources().getColor(encColor);
-            holder.getEncryptionStatusIcon().setImageDrawable(context.getResources().getDrawable(encIcon));
-            holder.getEncryptionStatusIcon().setColorFilter(encColorRes, PorterDuff.Mode.SRC_IN);
-            holder.getEncryptionStatusText().setText(encText);
-            holder.getEncryptionStatusText().setTextColor(encColorRes);
-        }
-
-        int sigText, sigIcon, sigColor;
-        int sigActionText, sigActionIcon;
-
-        if (signatureResult == null) {
-
-            sigText = R.string.decrypt_result_no_signature;
-            sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
-            sigColor = R.color.bg_gray;
-
-            // won't be used, but makes compiler happy
-            sigActionText = 0;
-            sigActionIcon = 0;
-
-        } else switch (signatureResult.getStatus()) {
-
-            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
-                sigText = R.string.decrypt_result_signature_certified;
-                sigIcon = R.drawable.status_signature_verified_cutout_24dp;
-                sigColor = R.color.android_green_light;
-
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
-                break;
-            }
-
-            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
-                sigText = R.string.decrypt_result_signature_uncertified;
-                sigIcon = R.drawable.status_signature_unverified_cutout_24dp;
-                sigColor = R.color.android_orange_light;
-
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
-                break;
-            }
-
-            case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
-                sigText = R.string.decrypt_result_signature_revoked_key;
-                sigIcon = R.drawable.status_signature_revoked_cutout_24dp;
-                sigColor = R.color.android_red_light;
-
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
-                break;
-            }
-
-            case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
-                sigText = R.string.decrypt_result_signature_expired_key;
-                sigIcon = R.drawable.status_signature_expired_cutout_24dp;
-                sigColor = R.color.android_red_light;
-
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
-                break;
-            }
-
-            case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
-                sigText = R.string.decrypt_result_signature_missing_key;
-                sigIcon = R.drawable.status_signature_unknown_cutout_24dp;
-                sigColor = R.color.android_red_light;
-
-                sigActionText = R.string.decrypt_result_action_Lookup;
-                sigActionIcon = R.drawable.ic_file_download_grey_24dp;
-                break;
-            }
-
-            default:
-            case OpenPgpSignatureResult.SIGNATURE_ERROR: {
-                sigText = R.string.decrypt_result_invalid_signature;
-                sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
-                sigColor = R.color.android_red_light;
-
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
-                break;
-            }
-
-        }
-
-        int sigColorRes = context.getResources().getColor(sigColor);
-        holder.getSignatureStatusIcon().setImageDrawable(context.getResources().getDrawable(sigIcon));
-        holder.getSignatureStatusIcon().setColorFilter(sigColorRes, PorterDuff.Mode.SRC_IN);
-        holder.getSignatureStatusText().setText(sigText);
-        holder.getSignatureStatusText().setTextColor(sigColorRes);
-
-        if (signatureResult != null) {
-
-            holder.getSignatureLayout().setVisibility(View.VISIBLE);
-
-            holder.getSignatureAction().setText(sigActionText);
-            holder.getSignatureAction().setCompoundDrawablesWithIntrinsicBounds(
-                    0, 0, sigActionIcon, 0);
-
-            String userId = signatureResult.getPrimaryUserId();
-            KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
-            if (userIdSplit.name != null) {
-                holder.getSignatureUserName().setText(userIdSplit.name);
-            } else {
-                holder.getSignatureUserName().setText(R.string.user_id_no_name);
-            }
-            if (userIdSplit.email != null) {
-                holder.getSignatureUserEmail().setVisibility(View.VISIBLE);
-                holder.getSignatureUserEmail().setText(userIdSplit.email);
-            } else {
-                holder.getSignatureUserEmail().setVisibility(View.GONE);
-            }
-
-        } else {
-
-            holder.getSignatureLayout().setVisibility(View.GONE);
-
-        }
-
+    public static void setStatus(Context context, SomeInterface holder, DecryptVerifyResult result) {
 
     }
 
