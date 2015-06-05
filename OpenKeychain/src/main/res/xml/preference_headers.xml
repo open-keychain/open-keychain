@@ -5,4 +5,7 @@
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$AdvancedPrefsFragment"
         android:title="@string/section_passphrase_cache" />
+    <header
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
+        android:title="@string/section_proxy_settings" />
 </preference-headers>

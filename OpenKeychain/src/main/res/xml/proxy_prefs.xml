@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+            android:key="useTorProxy"
+            android:persistent="true"
+            android:title="@string/pref_proxy_tor"
+            android:summary="@string/pref_proxy_tor_summary" />
+    <CheckBoxPreference
+            android:key="useNormalProxy"
+            android:persistent="true"
+            android:title="@string/pref_proxy_normal" />
+    <EditTextPreference
+        android:key="proxyHost"
+        android:persistent="true"
+        android:defaultValue="127.0.0.1"
+        android:title="@string/pref_proxy_host"
+        android:cursorVisible="true"
+        android:textCursorDrawable="@null"
+        android:inputType="textEmailAddress"/>
+    <EditTextPreference
+            android:key="proxyPort"
+            android:defaultValue="8118"
+            android:persistent="true"
+            android:title="@string/pref_proxy_port"
+            android:textCursorDrawable="@null"
+            android:inputType="number" />
+</PreferenceScreen>
