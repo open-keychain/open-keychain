@@ -44,6 +44,10 @@ import java.util.StringTokenizer;
 
 import android.util.Log;
 
+/**
+ * This class has been taken from the NetCipher library
+ * https://github.com/guardianproject/NetCipher
+ */
 public class TorServiceUtils {
 
     private final static String TAG = "TorUtils";
