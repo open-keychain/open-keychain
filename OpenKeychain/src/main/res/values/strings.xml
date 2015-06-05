@@ -49,6 +49,7 @@
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_passphrase_cache">"Password Cache"</string>
+    <string name="section_proxy_settings">"Proxy Settings"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -165,6 +166,16 @@
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
+    <!-- Proxy Preferences -->
+    <string name="pref_proxy_non">"Don't use a proxy"</string>
+    <string name="pref_proxy_tor">"Enable Tor"</string>
+    <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
+    <string name="pref_proxy_normal">"Enable other proxy"</string>
+    <string name="pref_proxy_host">"Proxy Host"</string>
+    <string name="pref_proxy_host_err_invalid">"Proxy host cannot be empty"</string>
+    <string name="pref_proxy_port">"Proxy Port"</string>
+    <string name="pref_proxy_port_err_invalid">"Invalid port number entered"</string>
+
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
 
@@ -179,6 +190,15 @@
     </plurals>
 
     <string name="secret_key">"Secret Key:"</string>
+
+    <!-- OrbotHelper strings -->
+    <string name="install_orbot_">"Install Orbot?"</string>
+    <string name="market_orbot">"market://search?q=pname:org.torproject.android"</string>
+    <string name="you_must_have_orbot">"You must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?"</string>
+    <string name="orbot_yes">"Yes"</string>
+    <string name="orbot_no">"No"</string>
+    <string name="start_orbot_">"Start Orbot?"</string>
+    <string name="orbot_doesn_t_appear_to_be_running_would_you_like_to_start_it_up_and_connect_to_tor_">"Orbot doesn\'t appear to be running. Would you like to start it up and connect to Tor?"</string>
 
     <!-- choice -->
     <string name="choice_none">"None"</string>

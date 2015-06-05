@@ -224,6 +224,53 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.ENCRYPT_FILENAMES, true);
     }
 
+    public boolean getUseNormalProxy() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USE_NORMAL_PROXY, false);
+    }
+
+    public void setUseNormalProxy(boolean use) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.USE_NORMAL_PROXY, use);
+        editor.commit();
+    }
+
+    public boolean getUseTorProxy() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USE_TOR_PROXY, false);
+    }
+
+    public void setUseTorProxy(boolean use) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.USE_TOR_PROXY, use);
+        editor.commit();
+    }
+
+    public String getProxyHost() {
+        return mSharedPreferences.getString(Constants.Pref.PROXY_HOST, null);
+    }
+
+    public void setProxyHost(String host) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Constants.Pref.PROXY_HOST, host);
+        editor.commit();
+    }
+
+    /**
+     * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     * @return port number of proxy
+     */
+    public int getProxyPort() {
+        return Integer.parseInt(mSharedPreferences.getString(Pref.PROXY_PORT, "-1"));
+    }
+    /**
+     * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     * @param port proxy port
+     */
+    public void setProxyPort(String port) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Pref.PROXY_PORT, port);
+        editor.commit();
+    }
+
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
