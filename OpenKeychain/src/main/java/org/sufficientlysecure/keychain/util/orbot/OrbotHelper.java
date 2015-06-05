@@ -40,9 +40,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+
 import org.sufficientlysecure.keychain.R;
 
-
+/**
+ * This class has been taken from the NetCipher library
+ * https://github.com/guardianproject/NetCipher
+ */
 public class OrbotHelper {
 
     private final static int REQUEST_CODE_STATUS = 100;
