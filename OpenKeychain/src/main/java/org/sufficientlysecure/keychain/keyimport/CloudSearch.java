@@ -20,6 +20,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -30,7 +31,8 @@ public class CloudSearch {
 
     private final static long SECONDS = 1000;
 
-    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs)
+    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs,
+                                                        final Proxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -50,7 +52,7 @@ public class CloudSearch {
                 @Override
                 public void run() {
                     try {
-                        results.addAll(keyserver.search(query));
+                        results.addAll(keyserver.search(query, proxy));
                     } catch (Keyserver.CloudSearchFailureException e) {
                         problems.add(e);
                     }

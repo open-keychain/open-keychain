@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.service.KeychainService;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,15 +37,15 @@ import java.util.Set;
 
 public class EmailKeyHelper {
 
-    public static void importContacts(Context context, Messenger messenger) {
-        importAll(context, messenger, ContactHelper.getContactMails(context));
+    public static void importContacts(Context context, Messenger messenger, Proxy proxy) {
+        importAll(context, messenger, ContactHelper.getContactMails(context), proxy);
     }
 
-    public static void importAll(Context context, Messenger messenger, List<String> mails) {
+    public static void importAll(Context context, Messenger messenger, List<String> mails, Proxy proxy) {
         // Collect all candidates as ImportKeysListEntry (set for deduplication)
         Set<ImportKeysListEntry> entries = new HashSet<>();
         for (String mail : mails) {
-            entries.addAll(getEmailKeys(context, mail));
+            entries.addAll(getEmailKeys(context, mail, proxy));
         }
 
         // Put them in a list and import
@@ -55,7 +56,7 @@ public class EmailKeyHelper {
         importKeys(context, messenger, keys);
     }
 
-    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
+    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail, Proxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
 
         // Try _hkp._tcp SRV record first
@@ -63,7 +64,7 @@ public class EmailKeyHelper {
         if (mailparts.length == 2) {
             HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1]);
             if (hkp != null) {
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
         }
 
@@ -72,7 +73,7 @@ public class EmailKeyHelper {
             String server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
                 HkpKeyserver hkp = new HkpKeyserver(server);
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
         }
         return keys;
@@ -89,10 +90,10 @@ public class EmailKeyHelper {
         context.startService(importIntent);
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer, Proxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail)) {
+            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {
