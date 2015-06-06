@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +65,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private ImportKeysAdapter mAdapter;
 
     private LoaderState mLoaderState;
+    private Proxy mProxy;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
@@ -126,6 +128,7 @@ public class ImportKeysListFragment extends ListFragment implements
     /**
      * Creates an interactive ImportKeyListFragment which reads keyrings from bytes, or file specified
      * by dataUri, or searches a keyserver for serverQuery, if parameter is not null, in that order
+     * Will immediately load data if non-null bytes/dataUri/serverQuery
      *
      * @param bytes       byte data containing list of keyrings to be imported
      * @param dataUri     file from which keyrings are to be imported
@@ -141,7 +144,7 @@ public class ImportKeysListFragment extends ListFragment implements
 
     /**
      * Visually consists of a list of keyrings with checkboxes to specify which are to be imported
-     * Can immediately load keyrings specified by any of its parameters
+     * Will immediately load data if non-null bytes/dataUri/serverQuery is supplied
      *
      * @param bytes          byte data containing list of keyrings to be imported
      * @param dataUri        file from which keyrings are to be imported
@@ -183,6 +186,7 @@ public class ImportKeysListFragment extends ListFragment implements
     static public class CloudLoaderState extends LoaderState {
         Preferences.CloudSearchPrefs mCloudPrefs;
         String mServerQuery;
+        Proxy proxy;
 
         CloudLoaderState(String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
             mServerQuery = serverQuery;
@@ -258,7 +262,9 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(LoaderState loaderState) {
+    public void loadNew(LoaderState loaderState, Proxy proxy) {
+        mProxy = proxy;
+
         mLoaderState = loaderState;
 
         restartLoaders();
@@ -301,7 +307,7 @@ public class ImportKeysListFragment extends ListFragment implements
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
-                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs);
+                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs, mProxy);
             }
 
             default:

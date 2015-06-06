@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.res.AssetManager;
 
+import com.squareup.okhttp.CertificatePinner;
+import com.squareup.okhttp.OkHttpClient;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.ByteArrayInputStream;
@@ -83,6 +85,31 @@ public class TlsHelper {
             }
         }
         return url.openConnection();
+    }
+
+    public static void pinCertificateIfNecessary(OkHttpClient client, URL url) throws TlsHelperException {
+        if (url.getProtocol().equals("https")) {
+            for (String domain : sStaticCA.keySet()) {
+                if (url.getHost().endsWith(domain)) {
+                    pinCertificate(sStaticCA.get(domain), domain, client);
+                }
+            }
+        }
+    }
+
+    public static void pinCertificate(byte[] certificate, String hostName, OkHttpClient client)
+            throws TlsHelperException {
+        try {
+            // Load CA
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate ca = cf.generateCertificate(new ByteArrayInputStream(certificate));
+            String pin = CertificatePinner.pin(ca);
+            Log.e("PHILIP", "" + ca.getPublicKey() + ":" + pin);
+
+            client.setCertificatePinner(new CertificatePinner.Builder().add(hostName, pin).build());
+        } catch (CertificateException e) {
+            throw new TlsHelperException(e);
+        }
     }
 
     /**

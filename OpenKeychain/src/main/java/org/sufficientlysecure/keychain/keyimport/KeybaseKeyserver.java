@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,9 @@ public class KeybaseKeyserver extends Keyserver {
     private String mQuery;
 
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
+    public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
             QueryNeedsRepairException {
+        // TODO: implement proxy
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.startsWith("0x")) {
@@ -98,7 +100,8 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String id) throws QueryFailedException {
+    public String get(String id, Proxy proxy) throws QueryFailedException {
+        // TODO: implement proxy
         try {
             return User.keyForUsername(id);
         } catch (KeybaseException e) {
@@ -107,7 +110,7 @@ public class KeybaseKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey) throws AddKeyException {
+    public void add(String armoredKey, Proxy proxy) throws AddKeyException {
         throw new AddKeyException();
     }
 }

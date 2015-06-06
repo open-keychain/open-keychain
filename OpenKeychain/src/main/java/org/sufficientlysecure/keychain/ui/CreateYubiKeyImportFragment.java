@@ -171,8 +171,9 @@ public class CreateYubiKeyImportFragment
     }
 
     public void refreshSearch() {
+        // TODO: PHILIP implement proxy in YubiKey parts
         mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
-                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
+                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), null);
     }
 
     public void importKey() {

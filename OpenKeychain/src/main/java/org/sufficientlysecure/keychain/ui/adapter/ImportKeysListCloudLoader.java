@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 
 public class ImportKeysListCloudLoader
@@ -38,15 +39,18 @@ public class ImportKeysListCloudLoader
 
     Preferences.CloudSearchPrefs mCloudPrefs;
     String mServerQuery;
+    private Proxy mProxy;
 
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
-    public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
+    public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs,
+                                     Proxy proxy) {
         super(context);
         mContext = context;
         mServerQuery = serverQuery;
         mCloudPrefs = cloudPrefs;
+        mProxy = proxy;
     }
 
     @Override
@@ -97,7 +101,7 @@ public class ImportKeysListCloudLoader
     private void queryServer(boolean enforceFingerprint) {
         try {
             ArrayList<ImportKeysListEntry> searchResult
-                    = CloudSearch.search(mServerQuery, mCloudPrefs);
+                    = CloudSearch.search(mServerQuery, mCloudPrefs, mProxy);
 
             mEntryList.clear();
             // add result to data

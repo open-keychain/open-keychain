@@ -55,6 +55,7 @@ dependencies {
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
     compile 'com.nispok:snackbar:2.10.8'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')
@@ -67,7 +68,7 @@ dependencies {
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
     compile (project( ':extern:NetCipher:libnetcipher')) {
-        exclude group: 'com.madgag.spongycastle'
+        exclude group: 'com.madgag.spongycastle' // we're already adding it above, transitive dependency
     }
 }
 

@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 

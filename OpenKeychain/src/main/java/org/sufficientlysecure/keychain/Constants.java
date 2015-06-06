@@ -110,7 +110,6 @@ public final class Constants {
         public static final String PROXY_HOST = "127.0.0.1";
         public static final int PROXY_PORT = 8118;
         public static final Proxy.Type PROXY_TYPE = Proxy.Type.HTTP;
-        public static final Proxy PROXY = new Proxy(PROXY_TYPE, new InetSocketAddress(PROXY_HOST, PROXY_PORT));
     }
 
     public static final class Defaults {
