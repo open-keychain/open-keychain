@@ -197,15 +197,6 @@
 
     <string name="secret_key">"Secret Key:"</string>
 
-    <!-- OrbotHelper strings -->
-    <string name="install_orbot_">"Install Orbot?"</string>
-    <string name="market_orbot">"market://search?q=pname:org.torproject.android"</string>
-    <string name="you_must_have_orbot">"You must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?"</string>
-    <string name="orbot_yes">"Yes"</string>
-    <string name="orbot_no">"No"</string>
-    <string name="start_orbot_">"Start Orbot?"</string>
-    <string name="orbot_doesn_t_appear_to_be_running_would_you_like_to_start_it_up_and_connect_to_tor_">"Orbot doesn\'t appear to be running. Would you like to start it up and connect to Tor?"</string>
-
     <!-- choice -->
     <string name="choice_none">"None"</string>
     <string name="choice_15secs">"15 secs"</string>
