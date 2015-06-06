@@ -19,27 +19,45 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
+import de.greenrobot.event.EventBus;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.KeychainNewService;
+import org.sufficientlysecure.keychain.service.ProgressEvent;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 
 /**
  * All fragments executing crypto operations need to extend this class.
  */
-public abstract class CryptoOperationFragment extends Fragment {
+public abstract class CryptoOperationFragment <T extends Parcelable, S extends OperationResult>
+        extends Fragment {
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
@@ -99,35 +117,118 @@ public abstract class CryptoOperationFragment extends Fragment {
         }
     }
 
-    public boolean handlePendingMessage(Message message) {
+    protected void dismissProgress() {
 
-        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
-            Bundle data = message.getData();
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
 
-            OperationResult result = data.getParcelable(OperationResult.EXTRA_RESULT);
-            if (result == null || !(result instanceof InputPendingResult)) {
-                return false;
-            }
-
-            InputPendingResult pendingResult = (InputPendingResult) result;
-            if (pendingResult.isPending()) {
-                RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
-                initiateInputActivity(requiredInput);
-                return true;
-            }
+        if (progressDialogFragment == null) {
+            return;
         }
 
-        return false;
+        progressDialogFragment.dismissAllowingStateLoss();
+
+    }
+
+    public void showProgressFragment(String progressDialogMessage,
+            int progressDialogStyle,
+            boolean cancelable) {
+
+        if (getFragmentManager().findFragmentByTag("progressDialog") != null) {
+            return;
+        }
+
+        ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(
+                progressDialogMessage, progressDialogStyle, cancelable);
+
+        FragmentManager manager = getFragmentManager();
+        progressDialogFragment.show(manager, "progressDialog");
+
+    }
+
+    protected abstract T createOperationInput();
+
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+
+        T operationInput = createOperationInput();
+        if (operationInput == null) {
+            return;
+        }
+
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(getActivity(), KeychainNewService.class);
+
+        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
+        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
+
+        showProgressFragment(
+                getString(R.string.progress_start),
+                ProgressDialog.STYLE_HORIZONTAL,
+                false);
+
+        // start service with intent
+        getActivity().startService(intent);
+
     }
 
     protected void cryptoOperation() {
         cryptoOperation(new CryptoInputParcel());
     }
 
-    protected abstract void cryptoOperation(CryptoInputParcel cryptoInput);
+    protected void onCryptoOperationResult(S result) {
+        if (result.success()) {
+            onCryptoOperationSuccess(result);
+        } else {
+            onCryptoOperationError(result);
+        }
+    }
+
+    abstract protected void onCryptoOperationSuccess(S result);
+
+    protected void onCryptoOperationError(S result) {
+        result.createNotify(getActivity()).show(this);
+    }
 
     protected void onCryptoOperationCancelled() {
-        // Nothing to do here, in most cases
+        dismissProgress();
     }
+
+    @SuppressWarnings("unused") // it's an EventBus method
+    public void onEventMainThread(OperationResult result) {
+
+        if (result instanceof InputPendingResult) {
+            InputPendingResult pendingResult = (InputPendingResult) result;
+            if (pendingResult.isPending()) {
+                RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
+                initiateInputActivity(requiredInput);
+                return;
+            }
+        }
+
+        dismissProgress();
+
+        try {
+            // noinspection unchecked, because type erasure :(
+            onCryptoOperationResult((S) result);
+        } catch (ClassCastException e) {
+            throw new AssertionError("bad return class ("
+                    + result.getClass().getSimpleName() + "), this is a programming error!");
+        }
+
+    }
+
+    @SuppressWarnings("unused") // it's an EventBus method
+    public void onEventMainThread(ProgressEvent event) {
+
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            return;
+        }
+
+        progressDialogFragment.setProgress(event.mMessage, event.mProgress, event.mMax);
+    }
+
 
 }

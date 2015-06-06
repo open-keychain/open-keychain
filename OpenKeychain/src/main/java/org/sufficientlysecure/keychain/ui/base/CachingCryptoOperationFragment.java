@@ -1,24 +1,25 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.KeychainNewService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
-public abstract class CachingCryptoOperationFragment <T extends Parcelable> extends CryptoOperationFragment {
+public abstract class CachingCryptoOperationFragment <T extends Parcelable, S extends OperationResult>
+        extends CryptoOperationFragment<T, S> {
 
     public static final String ARG_CACHED_ACTIONS = "cached_actions";
 
     private T mCachedActionsParcel;
-
-    @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        cryptoOperation(cryptoInput, mCachedActionsParcel);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -37,21 +38,44 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable> exte
     }
 
     @Override
-    public boolean handlePendingMessage(Message message) {
-        // see if it's an InputPendingResult, and if so don't care
-        if (super.handlePendingMessage(message)) {
-            return true;
-        }
-
-        // if it's a non-input-pending OKAY message, always clear the cached actions parcel
-        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
-            mCachedActionsParcel = null;
-        }
-
-        return false;
+    protected void onCryptoOperationResult(S result) {
+        super.onCryptoOperationResult(result);
+        mCachedActionsParcel = null;
     }
 
-    protected abstract void cryptoOperation(CryptoInputParcel cryptoInput, T cachedActionsParcel);
+    protected abstract T createOperationInput();
+
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+
+        if (mCachedActionsParcel == null) {
+
+            mCachedActionsParcel = createOperationInput();
+            // this is null if invalid, just return in that case
+            if (mCachedActionsParcel == null) {
+                // Notify was created by createCryptoInput.
+                return;
+            }
+        }
+
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(getActivity(), KeychainNewService.class);
+
+        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, mCachedActionsParcel);
+        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
+
+        showProgressFragment(
+                getString(R.string.progress_start),
+                ProgressDialog.STYLE_HORIZONTAL,
+                false);
+
+        // start service with intent
+        getActivity().startService(intent);
+
+    }
+
+    protected T getCachedActionsParcel() {
+        return mCachedActionsParcel;
+    }
 
     protected void cacheActionsParcel(T cachedActionsParcel) {
         mCachedActionsParcel = cachedActionsParcel;

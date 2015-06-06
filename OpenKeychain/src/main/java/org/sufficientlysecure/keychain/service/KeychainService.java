@@ -30,6 +30,7 @@ import android.os.RemoteException;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
+import de.greenrobot.event.EventBus;
 import org.json.JSONObject;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
@@ -96,13 +97,8 @@ public class KeychainService extends Service implements Progressable {
     public static final String EXTRA_DATA = "data";
 
     /* possible actions */
-    public static final String ACTION_SIGN_ENCRYPT = Constants.INTENT_PREFIX + "SIGN_ENCRYPT";
-
-    public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
     public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
-
-    public static final String ACTION_DECRYPT_METADATA = Constants.INTENT_PREFIX + "DECRYPT_METADATA";
 
     public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
 
@@ -113,8 +109,6 @@ public class KeychainService extends Service implements Progressable {
 
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
 
-    public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
-
     public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
 
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
@@ -122,14 +116,6 @@ public class KeychainService extends Service implements Progressable {
     public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
 
     /* keys for data bundle */
-
-    // encrypt
-    public static final String ENCRYPT_DECRYPT_INPUT_URI = "input_uri";
-    public static final String ENCRYPT_DECRYPT_OUTPUT_URI = "output_uri";
-    public static final String SIGN_ENCRYPT_PARCEL = "sign_encrypt_parcel";
-
-    // decrypt/verify
-    public static final String DECRYPT_VERIFY_PARCEL = "decrypt_verify_parcel";
 
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
@@ -157,9 +143,6 @@ public class KeychainService extends Service implements Progressable {
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
-
-    // certify key
-    public static final String CERTIFY_PARCEL = "certify_parcel";
 
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
@@ -232,23 +215,6 @@ public class KeychainService extends Service implements Progressable {
 
                 // executeServiceMethod action from extra bundle
                 switch (action) {
-                    case ACTION_CERTIFY_KEYRING: {
-
-                        // Input
-                        CertifyActionsParcel parcel = data.getParcelable(CERTIFY_PARCEL);
-                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                        String keyServerUri = data.getString(UPLOAD_KEY_SERVER);
-
-                        // Operation
-                        CertifyOperation op = new CertifyOperation(mKeychainService, providerHelper, mKeychainService,
-                                mActionCanceled);
-                        CertifyResult result = op.certify(parcel, cryptoInput, keyServerUri);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
                     case ACTION_CONSOLIDATE: {
 
                         // Operation
@@ -261,24 +227,6 @@ public class KeychainService extends Service implements Progressable {
 
                         // Result
                         sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
-                    case ACTION_DECRYPT_METADATA: {
-
-                        // Input
-                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                        PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
-
-                        // this action is here for compatibility only
-                        input.setDecryptMetadataOnly(true);
-
-                        // Operation
-                        PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
-                        DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                         break;
                     }
@@ -373,25 +321,6 @@ public class KeychainService extends Service implements Progressable {
                         } catch (Exception e) {
                             sendErrorToHandler(e);
                         }
-
-                        break;
-                    }
-                    case ACTION_DECRYPT_VERIFY: {
-
-                        // Input
-                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-                        PgpDecryptVerifyInputParcel input = data.getParcelable(DECRYPT_VERIFY_PARCEL);
-
-                        // for compatibility
-                        // TODO merge with ACTION_DECRYPT_METADATA
-                        input.setDecryptMetadataOnly(false);
-
-                        // Operation
-                        PgpDecryptVerify op = new PgpDecryptVerify(mKeychainService, providerHelper, mKeychainService);
-                        DecryptVerifyResult decryptVerifyResult = op.execute(input, cryptoInput);
-
-                        // Output
-                        sendMessageToHandler(MessageStatus.OKAY, decryptVerifyResult);
 
                         break;
                     }
@@ -492,22 +421,6 @@ public class KeychainService extends Service implements Progressable {
                                 serialKeyImport(keyList, keyServer, providerHelper);
                             }
                         }
-
-                        break;
-                    }
-                    case ACTION_SIGN_ENCRYPT: {
-
-                        // Input
-                        SignEncryptParcel inputParcel = data.getParcelable(SIGN_ENCRYPT_PARCEL);
-                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-
-                        // Operation
-                        SignEncryptOperation op = new SignEncryptOperation(
-                                mKeychainService, providerHelper, mKeychainService, mActionCanceled);
-                        SignEncryptResult result = op.execute(inputParcel, cryptoInput);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
 
                         break;
                     }

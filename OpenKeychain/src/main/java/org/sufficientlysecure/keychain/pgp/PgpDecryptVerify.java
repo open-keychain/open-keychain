@@ -76,10 +76,7 @@ import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
 
-/**
- * This class uses a Builder pattern!
- */
-public class PgpDecryptVerify extends BaseOperation {
+public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
     public PgpDecryptVerify(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);

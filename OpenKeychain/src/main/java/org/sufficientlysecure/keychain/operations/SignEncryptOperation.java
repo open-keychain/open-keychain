@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * a pending result, it will terminate.
  *
  */
-public class SignEncryptOperation extends BaseOperation {
+public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
     public SignEncryptOperation(Context context, ProviderHelper providerHelper,
                                 Progressable progressable, AtomicBoolean cancelled) {

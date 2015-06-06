@@ -20,12 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.nio.ByteBuffer;
-import java.util.Date;
-import java.util.Map;
 
 import android.os.Parcel;
 import android.os.Parcelable;

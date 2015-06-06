@@ -18,11 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -33,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import de.greenrobot.event.EventBus;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -41,9 +39,6 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
@@ -55,7 +50,8 @@ import org.sufficientlysecure.keychain.util.ShareHelper;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncryptParcel> {
+public class EncryptTextFragment
+        extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
 
     public static final String ARG_TEXT = "text";
     public static final String ARG_USE_COMPRESSION = "use_compression";
@@ -145,6 +141,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
         }
 
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -168,11 +165,13 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
 //                break;
 //            }
             case R.id.encrypt_copy: {
-                cryptoOperation(false);
+                mShareAfterEncrypt = false;
+                cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
-                cryptoOperation(true);
+                mShareAfterEncrypt = true;
+                cryptoOperation();
                 break;
             }
             default: {
@@ -204,21 +203,7 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
 
     }
 
-    protected void onEncryptSuccess(SignEncryptResult result) {
-        if (mShareAfterEncrypt) {
-            // Share encrypted message/file
-            startActivity(sendWithChooserExcludingEncrypt(result.getResultBytes()));
-        } else {
-            // Copy to clipboard
-            copyToClipboard(result.getResultBytes());
-            result.createNotify(getActivity()).show();
-            // Notify.create(EncryptTextActivity.this,
-            // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
-            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
-        }
-    }
-
-    protected SignEncryptParcel createEncryptBundle() {
+    protected SignEncryptParcel createOperationInput() {
 
         if (mMessage == null || mMessage.isEmpty()) {
             Notify.create(getActivity(), R.string.error_empty_text, Notify.Style.ERROR)
@@ -331,71 +316,21 @@ public class EncryptTextFragment extends CachingCryptoOperationFragment<SignEncr
         return sendIntent;
     }
 
-    public void cryptoOperation(boolean share) {
-        mShareAfterEncrypt = share;
-        cryptoOperation();
-    }
-
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput, SignEncryptParcel actionsParcel) {
+    protected void onCryptoOperationSuccess(SignEncryptResult result) {
 
-        if (actionsParcel == null) {
-
-            actionsParcel = createEncryptBundle();
-            // this is null if invalid, just return in that case
-            if (actionsParcel == null) {
-                // Notify was created by inputIsValid.
-                return;
-            }
-
-            cacheActionsParcel(actionsParcel);
+        if (mShareAfterEncrypt) {
+            // Share encrypted message/file
+            startActivity(sendWithChooserExcludingEncrypt(result.getResultBytes()));
+        } else {
+            // Copy to clipboard
+            copyToClipboard(result.getResultBytes());
+            result.createNotify(getActivity()).show();
+            // Notify.create(EncryptTextActivity.this,
+            // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
+            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
         }
 
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_SIGN_ENCRYPT);
-
-        Bundle data = new Bundle();
-        data.putParcelable(KeychainService.SIGN_ENCRYPT_PARCEL, actionsParcel);
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after encrypting is done in KeychainService
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_encrypting),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    SignEncryptResult result =
-                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-
-                    if (result.success()) {
-                        onEncryptSuccess(result);
-                    } else {
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
     }
 
 }

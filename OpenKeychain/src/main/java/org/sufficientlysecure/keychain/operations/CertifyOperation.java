@@ -64,7 +64,7 @@ public class CertifyOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public CertifyResult certify(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput, String keyServerUri) {
+    public CertifyResult execute(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_CRT, 0);
@@ -186,8 +186,8 @@ public class CertifyOperation extends BaseOperation {
 
         HkpKeyserver keyServer = null;
         ImportExportOperation importExportOperation = null;
-        if (keyServerUri != null) {
-            keyServer = new HkpKeyserver(keyServerUri);
+        if (parcel.keyServerUri != null) {
+            keyServer = new HkpKeyserver(parcel.keyServerUri);
             importExportOperation = new ImportExportOperation(mContext, mProviderHelper, mProgressable);
         }
 

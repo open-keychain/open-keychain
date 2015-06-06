@@ -64,7 +64,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
-public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyActionsParcel>
+public class CertifyKeyFragment
+        extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_CHECK_STATES = "check_states";
@@ -89,7 +90,6 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
     private static final int INDEX_IS_REVOKED = 4;
 
     private MultiUserIdsAdapter mUserIdsAdapter;
-    private Messenger mPassthroughMessenger;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -101,10 +101,6 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
             getActivity().finish();
             return;
         }
-
-        mPassthroughMessenger = getActivity().getIntent().getParcelableExtra(
-                KeychainService.EXTRA_MESSENGER);
-        mPassthroughMessenger = null; // TODO doesn't work with CryptoOperationFragment, disabled for now
 
         ArrayList<Boolean> checkedStates;
         if (savedInstanceState != null) {
@@ -306,97 +302,39 @@ public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyAc
     }
 
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput, CertifyActionsParcel actionsParcel) {
-        Bundle data = new Bundle();
-        {
+    protected CertifyActionsParcel createOperationInput() {
 
-            if (actionsParcel == null) {
-                // Bail out if there is not at least one user id selected
-                ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
-                if (certifyActions.isEmpty()) {
-                    Notify.create(getActivity(), "No identities selected!",
-                            Notify.Style.ERROR).show();
-                    return;
-                }
-
-                long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
-
-                // fill values for this action
-                actionsParcel = new CertifyActionsParcel(selectedKeyId);
-                actionsParcel.mCertifyActions.addAll(certifyActions);
-
-                // cached for next cryptoOperation loop
-                cacheActionsParcel(actionsParcel);
-            }
-
-            data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-            data.putParcelable(KeychainService.CERTIFY_PARCEL, actionsParcel);
-
-            if (mUploadKeyCheckbox.isChecked()) {
-                String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-                data.putString(KeychainService.UPLOAD_KEY_SERVER, keyserver);
-            }
+        // Bail out if there is not at least one user id selected
+        ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
+        if (certifyActions.isEmpty()) {
+            Notify.create(getActivity(), "No identities selected!",
+                    Notify.Style.ERROR).show();
+            return null;
         }
 
-        // Send all information needed to service to sign key in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_CERTIFY_KEYRING);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
+        long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
 
-        if (mPassthroughMessenger != null) {
-            intent.putExtra(KeychainService.EXTRA_MESSENGER, mPassthroughMessenger);
-        } else {
+        // fill values for this action
+        CertifyActionsParcel actionsParcel = new CertifyActionsParcel(selectedKeyId);
+        actionsParcel.mCertifyActions.addAll(certifyActions);
 
-            // Message is received after signing is done in KeychainService
-            ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                    getActivity(),
-                    getString(R.string.progress_certifying),
-                    ProgressDialog.STYLE_SPINNER,
-                    true
-            ) {
-                @Override
-                public void handleMessage(Message message) {
-                    // handle messages by KeychainIntentCryptoServiceHandler first
-                    super.handleMessage(message);
+        // cached for next cryptoOperation loop
+        cacheActionsParcel(actionsParcel);
 
-                    // handle pending messages
-                    if (handlePendingMessage(message)) {
-                        return;
-                    }
+        return actionsParcel;
+    }
 
-                    if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                        Bundle data = message.getData();
-
-                        CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
-
-                        Intent intent = new Intent();
-                        intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-                        getActivity().setResult(Activity.RESULT_OK, intent);
-                        getActivity().finish();
-                    }
-                }
-            };
-
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-            // show progress dialog
-            saveHandler.showProgressDialog(getActivity());
-        }
-
-        // start service with intent
-        getActivity().startService(intent);
-
-        if (mPassthroughMessenger != null) {
-            getActivity().setResult(Activity.RESULT_OK);
-            getActivity().finish();
-        }
-
+    @Override
+    protected void onCryptoOperationSuccess(CertifyResult result) {
+        Intent intent = new Intent();
+        intent.putExtra(CertifyResult.EXTRA_RESULT, result);
+        getActivity().setResult(Activity.RESULT_OK, intent);
+        getActivity().finish();
     }
 
     @Override
     protected void onCryptoOperationCancelled() {
         super.onCryptoOperationCancelled();
     }
+
 }

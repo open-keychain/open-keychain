@@ -30,14 +30,9 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
-import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -47,18 +42,13 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.Security;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 
@@ -166,7 +156,7 @@ public class CertifyOperationTest {
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserIds()));
-        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
+        CertifyResult result = op.execute(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -194,7 +184,7 @@ public class CertifyOperationTest {
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(), null,
                 mStaticRing2.getPublicKey().getUnorderedUserAttributes()));
-        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
+        CertifyResult result = op.execute(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertTrue("certification must succeed", result.success());
 
@@ -217,7 +207,7 @@ public class CertifyOperationTest {
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                 mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
-        CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
+        CertifyResult result = op.execute(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
         Assert.assertFalse("certification with itself must fail!", result.success());
         Assert.assertTrue("error msg must be about self certification",
@@ -236,7 +226,7 @@ public class CertifyOperationTest {
             uids.add("nonexistent");
             actions.add(new CertifyAction(1234L, uids));
 
-            CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
+            CertifyResult result = op.execute(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
             Assert.assertTrue("must contain error msg about not found",
@@ -248,7 +238,7 @@ public class CertifyOperationTest {
             actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getPublicKey().getUnorderedUserIds()));
 
-            CertifyResult result = op.certify(actions, new CryptoInputParcel(mKeyPhrase1), null);
+            CertifyResult result = op.execute(actions, new CryptoInputParcel(mKeyPhrase1), null);
 
             Assert.assertFalse("certification of nonexistent key must fail", result.success());
             Assert.assertTrue("must contain error msg about not found",

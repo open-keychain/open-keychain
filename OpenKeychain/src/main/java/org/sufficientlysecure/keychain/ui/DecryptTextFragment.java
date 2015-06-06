@@ -17,11 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +32,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
@@ -115,7 +109,7 @@ public class DecryptTextFragment extends DecryptFragment {
         mShowMenuOptions = args.getBoolean(ARG_SHOW_MENU, false);
 
         if (savedInstanceState == null) {
-            cryptoOperation(new CryptoInputParcel());
+            cryptoOperation();
         }
 
     }
@@ -158,77 +152,8 @@ public class DecryptTextFragment extends DecryptFragment {
     }
 
     @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        intent.setAction(KeychainService.ACTION_DECRYPT_VERIFY);
-
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
-        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after encrypting is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                // handle pending messages
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    DecryptVerifyResult pgpResult =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    if (pgpResult.success()) {
-                        byte[] decryptedMessage = pgpResult.getOutputBytes();
-                        String displayMessage;
-                        if (pgpResult.getCharset() != null) {
-                            try {
-                                displayMessage = new String(decryptedMessage, pgpResult.getCharset());
-                            } catch (UnsupportedEncodingException e) {
-                                // if we can't decode properly, just fall back to utf-8
-                                displayMessage = new String(decryptedMessage);
-                            }
-                        } else {
-                            displayMessage = new String(decryptedMessage);
-                        }
-                        mText.setText(displayMessage);
-
-                        // display signature result in activity
-                        loadVerifyResult(pgpResult);
-                    } else {
-                        // TODO: show also invalid layout with different text?
-                    }
-                    pgpResult.createNotify(getActivity()).show(DecryptTextFragment.this);
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
+    protected PgpDecryptVerifyInputParcel createOperationInput() {
+        return new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
     }
 
     @Override
@@ -236,4 +161,27 @@ public class DecryptTextFragment extends DecryptFragment {
         mShowMenuOptions = hideErrorOverlay;
         getActivity().supportInvalidateOptionsMenu();
     }
+
+    @Override
+    protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
+
+        byte[] decryptedMessage = result.getOutputBytes();
+        String displayMessage;
+        if (result.getCharset() != null) {
+            try {
+                displayMessage = new String(decryptedMessage, result.getCharset());
+            } catch (UnsupportedEncodingException e) {
+                // if we can't decode properly, just fall back to utf-8
+                displayMessage = new String(decryptedMessage);
+            }
+        } else {
+            displayMessage = new String(decryptedMessage);
+        }
+        mText.setText(displayMessage);
+
+        // display signature result in activity
+        loadVerifyResult(result);
+
+    }
+
 }

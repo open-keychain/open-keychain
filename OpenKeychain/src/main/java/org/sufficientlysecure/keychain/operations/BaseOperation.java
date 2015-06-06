@@ -18,17 +18,20 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
+import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class BaseOperation implements PassphraseCacheInterface {
+public abstract class BaseOperation <T extends Parcelable> implements PassphraseCacheInterface {
 
     final public Context mContext;
     final public Progressable mProgressable;
@@ -71,6 +74,10 @@ public abstract class BaseOperation implements PassphraseCacheInterface {
         mProgressable = progressable;
         mProviderHelper = providerHelper;
         mCancelled = cancelled;
+    }
+
+    public OperationResult execute(T input, CryptoInputParcel cryptoInput) {
+        return null;
     }
 
     public void updateProgress(int message, int current, int total) {

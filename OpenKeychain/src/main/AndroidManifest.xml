@@ -719,6 +719,9 @@
             android:exported="false"
             android:process=":remote_api" />
         <service
+            android:name=".service.KeychainNewService"
+            android:exported="false" />
+        <service
             android:name=".service.KeychainService"
             android:exported="false" />
         <service
