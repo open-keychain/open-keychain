@@ -167,14 +167,20 @@
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
     <!-- Proxy Preferences -->
-    <string name="pref_proxy_non">"Don't use a proxy"</string>
-    <string name="pref_proxy_tor">"Enable Tor"</string>
+    <string name="pref_proxy_tor_label">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
     <string name="pref_proxy_normal">"Enable other proxy"</string>
-    <string name="pref_proxy_host">"Proxy Host"</string>
+    <string name="pref_proxy_host_label">"Proxy Host"</string>
     <string name="pref_proxy_host_err_invalid">"Proxy host cannot be empty"</string>
-    <string name="pref_proxy_port">"Proxy Port"</string>
+    <string name="pref_proxy_port_label">"Proxy Port"</string>
     <string name="pref_proxy_port_err_invalid">"Invalid port number entered"</string>
+    <string name="pref_proxy_type_label">"Proxy Type"</string>
+
+    <!-- proxy type choices -->
+    <string name="pref_proxy_type_choice_http">"HTTP"</string>
+    <string name="pref_proxy_type_choice_socks">"SOCKS"</string>
+    <string name="pref_proxy_type_value_http">"proxyHttp"</string>
+    <string name="pref_proxy_type_value_socks">"proxySocks"</string>
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>

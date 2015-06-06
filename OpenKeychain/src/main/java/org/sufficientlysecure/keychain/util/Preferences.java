@@ -21,9 +21,12 @@ package org.sufficientlysecure.keychain.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import android.content.res.Resources;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.R;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ListIterator;
@@ -35,6 +38,7 @@ import java.util.Vector;
 public class Preferences {
     private static Preferences sPreferences;
     private SharedPreferences mSharedPreferences;
+    private Resources mResources;
 
     public static synchronized Preferences getPreferences(Context context) {
         return getPreferences(context, false);
@@ -51,6 +55,7 @@ public class Preferences {
     }
 
     private Preferences(Context context) {
+        mResources = context.getResources();
         updateSharedPreferences(context);
     }
 
@@ -224,6 +229,8 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.ENCRYPT_FILENAMES, true);
     }
 
+    // proxy preference functions start here
+
     public boolean getUseNormalProxy() {
         return mSharedPreferences.getBoolean(Constants.Pref.USE_NORMAL_PROXY, false);
     }
@@ -256,13 +263,16 @@ public class Preferences {
 
     /**
      * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     *
      * @return port number of proxy
      */
     public int getProxyPort() {
         return Integer.parseInt(mSharedPreferences.getString(Pref.PROXY_PORT, "-1"));
     }
+
     /**
      * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     *
      * @param port proxy port
      */
     public void setProxyPort(String port) {
@@ -270,6 +280,22 @@ public class Preferences {
         editor.putString(Pref.PROXY_PORT, port);
         editor.commit();
     }
+
+    public Proxy.Type getProxyType() {
+        final String typeHttp = mResources.getString(R.string.pref_proxy_type_value_http);
+        final String typeSocks = mResources.getString(R.string.pref_proxy_type_value_socks);
+
+        String type = mSharedPreferences.getString(Pref.PROXY_TYPE, typeHttp);
+
+        if(type.equals(typeHttp)) return Proxy.Type.HTTP;
+        else if(type.equals(typeSocks)) return Proxy.Type.SOCKS;
+        else { // shouldn't happen
+            Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
+            return null;
+        }
+    }
+
+    // proxy preference functions ends here
 
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),

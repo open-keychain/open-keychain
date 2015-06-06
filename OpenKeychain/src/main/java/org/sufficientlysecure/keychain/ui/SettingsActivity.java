@@ -22,12 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
+import android.preference.*;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
@@ -279,6 +274,7 @@ public class SettingsActivity extends PreferenceActivity {
         private CheckBoxPreference mUseNormalProxy;
         private EditTextPreference mProxyHost;
         private EditTextPreference mProxyPort;
+        private ListPreference mProxyType;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -291,10 +287,12 @@ public class SettingsActivity extends PreferenceActivity {
             mUseNormalProxy = (CheckBoxPreference) findPreference(Constants.Pref.USE_NORMAL_PROXY);
             mProxyHost = (EditTextPreference) findPreference(Constants.Pref.PROXY_HOST);
             mProxyPort = (EditTextPreference) findPreference(Constants.Pref.PROXY_PORT);
+            mProxyType = (ListPreference) findPreference(Constants.Pref.PROXY_TYPE);
 
             initializeUseTorPref();
             initializeUseNormalProxyPref();
-            initialiseEditTextPreferences();
+            initializeEditTextPreferences();
+            initializeProxyTypePreference();
 
             if (mUseTor.isChecked()) disableNormalProxyPrefs();
             else if (mUseNormalProxy.isChecked()) disableUseTorPrefs();
@@ -341,7 +339,7 @@ public class SettingsActivity extends PreferenceActivity {
             });
         }
 
-        private void initialiseEditTextPreferences() {
+        private void initializeEditTextPreferences() {
             mProxyHost.setSummary(mProxyHost.getText());
             mProxyPort.setSummary(mProxyPort.getText());
 
@@ -390,17 +388,32 @@ public class SettingsActivity extends PreferenceActivity {
             });
         }
 
+        private void initializeProxyTypePreference() {
+            mProxyType.setSummary(mProxyType.getEntry());
+
+            mProxyType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    CharSequence entry = mProxyType.getEntries()[mProxyType.findIndexOfValue((String) newValue)];
+                    mProxyType.setSummary(entry);
+                    return true;
+                }
+            });
+        }
+
         private void disableNormalProxyPrefs() {
             mUseNormalProxy.setChecked(false);
             mUseNormalProxy.setEnabled(false);
             mProxyHost.setEnabled(false);
             mProxyPort.setEnabled(false);
+            mProxyType.setEnabled(false);
         }
 
         private void enableNormalProxyPrefs() {
             mUseNormalProxy.setEnabled(true);
             mProxyHost.setEnabled(true);
             mProxyPort.setEnabled(true);
+            mProxyType.setEnabled(true);
         }
 
         private void disableUseTorPrefs() {
