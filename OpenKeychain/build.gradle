@@ -66,6 +66,9 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
+    compile (project( ':extern:NetCipher:libnetcipher')) {
+        exclude group: 'com.madgag.spongycastle'
+    }
 }
 
 // Output of ./gradlew -q calculateChecksums
