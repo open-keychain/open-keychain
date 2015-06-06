@@ -61,22 +61,25 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+// this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesListFragment extends CryptoOperationFragment implements OnMenuItemClickListener {
+public class DecryptFilesListFragment
+        extends CryptoOperationFragment
+        implements OnMenuItemClickListener {
     public static final String ARG_URIS = "uris";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
@@ -264,12 +267,12 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
         }
 
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
         // use current operation, either decrypt metadata or decrypt payload
-        intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
+        intent.setAction(KeychainService.ACTION_DECRYPT_VERIFY);
 
         // data
 
@@ -279,10 +282,10 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
         PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, currentOutputUri)
                 .setAllowSymmetricDecryption(true);
 
-        data.putParcelable(KeychainIntentService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
+        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Message is received after decrypting is done in KeychainIntentService
         Handler saveHandler = new Handler() {
@@ -344,7 +347,7 @@ public class DecryptFilesListFragment extends CryptoOperationFragment implements
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // start service with intent
         getActivity().startService(intent);

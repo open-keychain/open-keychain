@@ -40,11 +40,10 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -176,13 +175,13 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
 
     public void importKey() {
 
-        // Message is received after decrypting is done in KeychainIntentService
+        // Message is received after decrypting is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT
+                ProgressDialog.STYLE_HORIZONTAL
         ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -220,29 +219,29 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         };
 
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        intent.setAction(KeychainIntentService.ACTION_IMPORT_KEYRING);
+        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));
-        data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, keyList);
+        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyList);
 
         {
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainIntentService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         saveHandler.showProgressDialog(getActivity());
 

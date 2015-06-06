@@ -27,9 +27,8 @@ import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 import java.io.File;
 
@@ -79,29 +78,30 @@ public class ExportHelper {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
-        final Intent intent = new Intent(mActivity, KeychainIntentService.class);
+        final Intent intent = new Intent(mActivity, KeychainService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_EXPORT_KEYRING);
+        intent.setAction(KeychainService.ACTION_EXPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFile.getAbsolutePath());
-        data.putBoolean(KeychainIntentService.EXPORT_SECRET, exportSecret);
+        data.putString(KeychainService.EXPORT_FILENAME, mExportFile.getAbsolutePath());
+        data.putBoolean(KeychainService.EXPORT_SECRET, exportSecret);
 
         if (masterKeyIds == null) {
-            data.putBoolean(KeychainIntentService.EXPORT_ALL, true);
+            data.putBoolean(KeychainService.EXPORT_ALL, true);
         } else {
-            data.putLongArray(KeychainIntentService.EXPORT_KEY_RING_MASTER_KEY_ID, masterKeyIds);
+            data.putLongArray(KeychainService.EXPORT_KEY_RING_MASTER_KEY_ID, masterKeyIds);
         }
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Message is received after exporting is done in KeychainIntentService
+        // Message is received after exporting is done in KeychainService
         ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity,
                 mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -118,7 +118,7 @@ public class ExportHelper {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(exportHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         exportHandler.showProgressDialog(mActivity);

@@ -50,7 +50,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
@@ -65,8 +65,6 @@ import org.sufficientlysecure.keychain.ui.dialog.*;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.nio.ByteBuffer;
 
 
 public class EditKeyFragment extends CryptoOperationFragment implements
@@ -603,8 +601,8 @@ public class EditKeyFragment extends CryptoOperationFragment implements
                 getActivity(),
                 getString(R.string.progress_saving),
                 ProgressDialog.STYLE_HORIZONTAL,
-                true,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                true
+        ) {
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -643,18 +641,18 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         };
 
         // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_EDIT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
-        data.putParcelable(KeychainIntentService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        data.putParcelable(KeychainService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(getActivity());

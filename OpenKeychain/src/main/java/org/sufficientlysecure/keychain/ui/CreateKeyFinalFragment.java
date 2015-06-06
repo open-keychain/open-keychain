@@ -38,13 +38,12 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -195,14 +194,15 @@ public class CreateKeyFinalFragment extends Fragment {
 
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
-        intent.setAction(KeychainIntentService.ACTION_EDIT_KEYRING);
+        Intent intent = new Intent(getActivity(), KeychainService.class);
+        intent.setAction(KeychainService.ACTION_EDIT_KEYRING);
 
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -237,13 +237,13 @@ public class CreateKeyFinalFragment extends Fragment {
         Bundle data = new Bundle();
 
         // get selected key entries
-        data.putParcelable(KeychainIntentService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
+        data.putParcelable(KeychainService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         saveHandler.showProgressDialog(getActivity());
 
@@ -253,9 +253,9 @@ public class CreateKeyFinalFragment extends Fragment {
     // TODO move into EditKeyOperation
     private void uploadKey(final EditKeyResult saveKeyResult) {
         // Send all information needed to service to upload key in other thread
-        final Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+        final Intent intent = new Intent(getActivity(), KeychainService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
+        intent.setAction(KeychainService.ACTION_UPLOAD_KEYRING);
 
         // set data uri as path to keyring
         Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
@@ -267,15 +267,16 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // upload to favorite keyserver
         String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-        data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, keyserver);
+        data.putString(KeychainService.UPLOAD_KEY_SERVER, keyserver);
 
-        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(
                 getActivity(),
                 getString(R.string.progress_uploading),
-                ProgressDialog.STYLE_HORIZONTAL,
-                ProgressDialogFragment.ServiceType.KEYCHAIN_INTENT) {
+                ProgressDialog.STYLE_HORIZONTAL
+        ) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
@@ -297,7 +298,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(getActivity());
