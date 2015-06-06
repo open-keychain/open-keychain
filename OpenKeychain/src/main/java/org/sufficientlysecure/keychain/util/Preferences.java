@@ -22,10 +22,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import android.content.res.Resources;
+import info.guardianproject.onionkit.ui.OrbotHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.R;
 
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,7 +210,6 @@ public class Preferences {
     }
 
 
-
     public void setUseArmor(boolean useArmor) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.USE_ARMOR, useArmor);
@@ -287,11 +288,45 @@ public class Preferences {
 
         String type = mSharedPreferences.getString(Pref.PROXY_TYPE, typeHttp);
 
-        if(type.equals(typeHttp)) return Proxy.Type.HTTP;
-        else if(type.equals(typeSocks)) return Proxy.Type.SOCKS;
+        if (type.equals(typeHttp)) return Proxy.Type.HTTP;
+        else if (type.equals(typeSocks)) return Proxy.Type.SOCKS;
         else { // shouldn't happen
             Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
             return null;
+        }
+    }
+
+    public ProxyPrefs getProxyPrefs() {
+        Proxy proxy = null;
+        boolean useTor = getUseTorProxy();
+        boolean useNormalProxy = getUseNormalProxy();
+
+        if (useTor) {
+            proxy = Constants.Orbot.PROXY;
+        }
+        else if (useNormalProxy) {
+            proxy = new Proxy(getProxyType(), new InetSocketAddress(getProxyHost(), getProxyPort()));
+        }
+
+        return new ProxyPrefs(getUseTorProxy(), getUseNormalProxy(), proxy);
+    }
+
+    public static class ProxyPrefs {
+        public final Proxy proxy;
+        public final boolean torEnabled;
+        public final boolean normalPorxyEnabled;
+
+        /**
+         * torEnabled and normalProxyEnabled are not expected to both be true
+         *
+         * @param torEnabled         if Tor is to be used
+         * @param normalPorxyEnabled if user-specified proxy is to be used
+         * @param proxy              proxy to use, leave null if none
+         */
+        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, Proxy proxy) {
+            this.torEnabled = torEnabled;
+            this.normalPorxyEnabled = normalPorxyEnabled;
+            this.proxy = proxy;
         }
     }
 
