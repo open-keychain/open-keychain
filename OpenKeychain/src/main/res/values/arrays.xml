@@ -29,6 +29,14 @@
         <item>28800</item>
         <item>-1</item>
     </string-array>
+    <string-array name="pref_proxy_type_entries" translatable="false">
+        <item>@string/pref_proxy_type_choice_http</item>
+        <item>@string/pref_proxy_type_choice_socks</item>
+    </string-array>
+    <string-array name="pref_proxy_type_values" translatable="false">
+        <item>@string/pref_proxy_type_value_http</item>
+        <item>@string/pref_proxy_type_value_socks</item>
+    </string-array>
     <string-array name="rsa_key_size_spinner_values" translatable="false">
         <item>@string/key_size_2048</item>
         <item>@string/key_size_4096</item>

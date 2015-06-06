@@ -217,6 +217,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private CheckBoxPreference mUseNormalProxy;
         private EditTextPreference mProxyHost;
         private EditTextPreference mProxyPort;
+        private ListPreference mProxyType;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -229,10 +230,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             mUseNormalProxy = (CheckBoxPreference) findPreference(Constants.Pref.USE_NORMAL_PROXY);
             mProxyHost = (EditTextPreference) findPreference(Constants.Pref.PROXY_HOST);
             mProxyPort = (EditTextPreference) findPreference(Constants.Pref.PROXY_PORT);
+            mProxyType = (ListPreference) findPreference(Constants.Pref.PROXY_TYPE);
 
             initializeUseTorPref();
             initializeUseNormalProxyPref();
-            initialiseEditTextPreferences();
+            initializeEditTextPreferences();
+            initializeProxyTypePreference();
 
             if (mUseTor.isChecked()) disableNormalProxyPrefs();
             else if (mUseNormalProxy.isChecked()) disableUseTorPrefs();
@@ -279,7 +282,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
         }
 
-        private void initialiseEditTextPreferences() {
+        private void initializeEditTextPreferences() {
             mProxyHost.setSummary(mProxyHost.getText());
             mProxyPort.setSummary(mProxyPort.getText());
 
@@ -328,17 +331,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
         }
 
+        private void initializeProxyTypePreference() {
+            mProxyType.setSummary(mProxyType.getEntry());
+
+            mProxyType.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    CharSequence entry = mProxyType.getEntries()[mProxyType.findIndexOfValue((String) newValue)];
+                    mProxyType.setSummary(entry);
+                    return true;
+                }
+            });
+        }
+
         private void disableNormalProxyPrefs() {
             mUseNormalProxy.setChecked(false);
             mUseNormalProxy.setEnabled(false);
             mProxyHost.setEnabled(false);
             mProxyPort.setEnabled(false);
+            mProxyType.setEnabled(false);
         }
 
         private void enableNormalProxyPrefs() {
             mUseNormalProxy.setEnabled(true);
             mProxyHost.setEnabled(true);
             mProxyPort.setEnabled(true);
+            mProxyType.setEnabled(true);
         }
 
         private void disableUseTorPrefs() {
