@@ -341,6 +341,7 @@
         <item quantity="other">"exporting keys…"</item>
     </plurals>
 
+    <string name="progress_start">"preparing operation…"</string>
     <string name="progress_extracting_signature_key">"extracting signature key…"</string>
     <string name="progress_extracting_key">"extracting key…"</string>
     <string name="progress_preparing_streams">"preparing streams…"</string>

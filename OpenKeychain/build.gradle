@@ -24,6 +24,7 @@ dependencies {
     }
 
     // JCenter etc.
+    compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.eftimoff:android-patternview:1.0.1@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
     compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'

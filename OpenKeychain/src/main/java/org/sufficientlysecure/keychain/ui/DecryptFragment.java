@@ -43,12 +43,14 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -56,8 +58,9 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public abstract class DecryptFragment extends CryptoOperationFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class DecryptFragment
+        extends CachingCryptoOperationFragment<PgpDecryptVerifyInputParcel, DecryptVerifyResult>
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int LOADER_ID_UNIFIED = 0;
     public static final String ARG_DECRYPT_VERIFY_RESULT = "decrypt_verify_result";
