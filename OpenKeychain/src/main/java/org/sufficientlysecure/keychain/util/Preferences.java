@@ -302,7 +302,8 @@ public class Preferences {
         boolean useNormalProxy = getUseNormalProxy();
 
         if (useTor) {
-            proxy = Constants.Orbot.PROXY;
+            proxy = new Proxy(Constants.Orbot.PROXY_TYPE,
+                    new InetSocketAddress(Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT));
         }
         else if (useNormalProxy) {
             proxy = new Proxy(getProxyType(), new InetSocketAddress(getProxyHost(), getProxyPort()));

@@ -1250,7 +1250,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itSecrets, numSecrets, null);
+                            .importKeyRings(itSecrets, numSecrets, null, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1278,7 +1278,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportExportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itPublics, numPublics, null);
+                            .importKeyRings(itPublics, numPublics, null, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);

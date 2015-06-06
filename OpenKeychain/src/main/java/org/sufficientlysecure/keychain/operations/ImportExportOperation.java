@@ -59,6 +59,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -98,11 +99,11 @@ public class ImportExportOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {
-        uploadKeyRingToServer(server, keyring.getUncachedKeyRing());
+    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) throws AddKeyException {
+        uploadKeyRingToServer(server, keyring.getUncachedKeyRing(), proxy);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring) throws AddKeyException {
+    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) throws AddKeyException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         try {
@@ -111,7 +112,7 @@ public class ImportExportOperation extends BaseOperation {
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey);
+            server.add(armoredKey, proxy);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();
@@ -127,23 +128,24 @@ public class ImportExportOperation extends BaseOperation {
         }
     }
 
-    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries, String keyServerUri) {
+    public ImportKeyResult importKeyRings(List<ParcelableKeyRing> entries, String keyServerUri, Proxy proxy) {
 
         Iterator<ParcelableKeyRing> it = entries.iterator();
         int numEntries = entries.size();
 
-        return importKeyRings(it, numEntries, keyServerUri);
+        return importKeyRings(it, numEntries, keyServerUri, proxy);
 
     }
 
-    public ImportKeyResult importKeyRings(ParcelableFileCache<ParcelableKeyRing> cache, String keyServerUri) {
+    public ImportKeyResult importKeyRings(ParcelableFileCache<ParcelableKeyRing> cache, String keyServerUri,
+                                          Proxy proxy) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return importKeyRings(it, numEntries, keyServerUri);
+            return importKeyRings(it, numEntries, keyServerUri, proxy);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -165,7 +167,8 @@ public class ImportExportOperation extends BaseOperation {
      * @param keyServerUri contains uri of keyserver to import from, if it is an import from cloud
      * @return
      */
-    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num, String keyServerUri) {
+    public ImportKeyResult importKeyRings(Iterator<ParcelableKeyRing> entries, int num, String keyServerUri,
+                                          Proxy proxy) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         OperationLog log = new OperationLog();
@@ -225,10 +228,10 @@ public class ImportExportOperation extends BaseOperation {
                             // Download by fingerprint, or keyId - whichever is available
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" + entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex).getBytes();
+                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
@@ -251,7 +254,7 @@ public class ImportExportOperation extends BaseOperation {
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
                             // If there already is a key, merge the two

@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import info.guardianproject.onionkit.ui.OrbotHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -43,6 +44,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,9 +84,13 @@ public class ImportKeysActivity extends BaseNfcActivity {
     private Fragment mTopFragment;
     private View mImportButton;
 
+    private Preferences.ProxyPrefs mProxyPrefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
 
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
@@ -218,7 +224,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
                             Notify.Style.WARN).show(mTopFragment);
                     // we just set the keyserver
                     startCloudFragment(savedInstanceState, null, false, keyserver);
-                    // it's not necessary to set the keyserver for ImportKeysListFragment since
+                    // we don't set the keyserver for ImportKeysListFragment since
                     // it'll be taken care of by ImportKeysCloudFragment when the user clicks
                     // the search button
                     startListFragment(savedInstanceState, null, null, null, null);
@@ -341,7 +347,29 @@ public class ImportKeysActivity extends BaseNfcActivity {
     }
 
     public void loadCallback(ImportKeysListFragment.LoaderState loaderState) {
-        mListFragment.loadNew(loaderState);
+        if (loaderState instanceof ImportKeysListFragment.CloudLoaderState) {
+            // do the tor check
+            OrbotHelper helper = new OrbotHelper(this);
+            // TODO: Add callbacks by modifying OrbotHelper so we know if the user wants to not use Tor
+
+            if(mProxyPrefs.torEnabled && !helper.isOrbotInstalled()) {
+                helper.promptToInstall(this);
+                return;
+            }
+            if(mProxyPrefs.torEnabled && !helper.isOrbotRunning()) {
+                helper.requestOrbotStart(this);
+                return;
+            }
+        }
+
+        mListFragment.loadNew(loaderState, mProxyPrefs.proxy);
+    }
+
+    /**
+     * disables use of Tor as proxy for this session
+     */
+    private void disableTorForSession() {
+        mProxyPrefs = new Preferences.ProxyPrefs(false, false, null);
     }
 
     private void handleMessage(Message message) {
