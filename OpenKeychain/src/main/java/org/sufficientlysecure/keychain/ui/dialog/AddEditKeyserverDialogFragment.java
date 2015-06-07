@@ -48,10 +48,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.IOException;
+import java.net.*;
+import javax.net.ssl.HttpsURLConnection;
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
@@ -207,7 +222,8 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     // behaviour same for edit and add
                     String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
-                        verifyConnection(keyserverUrl);
+                        // TODO: PHILIP Implement proxy
+                        verifyConnection(keyserverUrl, null);
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
@@ -249,7 +265,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         sendMessageToHandler(MESSAGE_VERIFICATION_FAILED, data);
     }
 
-    public void verifyConnection(String keyserver) {
+    public void verifyConnection(String keyserver, final Proxy proxy) {
 
         new AsyncTask<String, Void, FailureReason>() {
             ProgressDialog mProgressDialog;
@@ -283,10 +299,11 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     }
                     URI newKeyserver = new URI(scheme, schemeSpecificPart, fragment);
 
-                    Log.d(Constants.TAG, "Converted URL" + newKeyserver);
+                    Log.d("Converted URL", newKeyserver.toString());
 
-                    // just see if we can get a connection, then immediately close
-                    TlsHelper.openConnection(newKeyserver.toURL()).getInputStream().close();
+                    OkHttpClient client = HkpKeyserver.getClient(newKeyserver.toURL(), proxy);
+                    TlsHelper.pinCertificateIfNecessary(client, newKeyserver.toURL());
+                    client.newCall(new Request.Builder().url(newKeyserver.toURL()).build()).execute();
                 } catch (TlsHelper.TlsHelperException e) {
                     reason = FailureReason.CONNECTION_FAILED;
                 } catch (MalformedURLException | URISyntaxException e) {
