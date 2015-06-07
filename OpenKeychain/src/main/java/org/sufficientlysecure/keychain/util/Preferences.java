@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import info.guardianproject.onionkit.ui.OrbotHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
@@ -42,6 +43,9 @@ public class Preferences {
     private SharedPreferences mSharedPreferences;
     private Resources mResources;
 
+    private static String PREF_FILE_NAME = "APG.main";
+    private static int PREF_FILE_MODE = Context.MODE_MULTI_PROCESS;
+
     public static synchronized Preferences getPreferences(Context context) {
         return getPreferences(context, false);
     }
@@ -61,9 +65,14 @@ public class Preferences {
         updateSharedPreferences(context);
     }
 
+    public void setPreferenceManagerFileAndMode(PreferenceManager manager) {
+        manager.setSharedPreferencesName(PREF_FILE_NAME);
+        manager.setSharedPreferencesMode(PREF_FILE_MODE);
+    }
+
     public void updateSharedPreferences(Context context) {
         // multi-process safe preferences
-        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
+        mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, PREF_FILE_MODE);
     }
 
     public String getLanguage() {
