@@ -22,8 +22,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -349,7 +356,7 @@ public class SettingsActivity extends PreferenceActivity {
             mProxyHost.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (newValue.equals("")) {
+                    if (TextUtils.isEmpty((String) newValue)) {
                         Notify.create(
                                 ProxyPrefsFragment.this.getActivity(),
                                 R.string.pref_proxy_host_err_invalid,

@@ -44,9 +44,11 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.ArrayList;
 
 public class ImportKeysActivity extends BaseNfcActivity {
@@ -362,14 +364,14 @@ public class ImportKeysActivity extends BaseNfcActivity {
             }
         }
 
-        mListFragment.loadNew(loaderState, mProxyPrefs.proxy);
+        mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
     }
 
     /**
      * disables use of Tor as proxy for this session
      */
     private void disableTorForSession() {
-        mProxyPrefs = new Preferences.ProxyPrefs(false, false, null);
+        mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
     }
 
     private void handleMessage(Message message) {
@@ -475,6 +477,8 @@ public class ImportKeysActivity extends BaseNfcActivity {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
 
             data.putString(KeychainService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
+
+            data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, mProxyPrefs.parcelableProxy);
 
             // get selected key entries
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();

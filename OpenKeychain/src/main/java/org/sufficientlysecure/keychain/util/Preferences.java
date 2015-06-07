@@ -306,23 +306,22 @@ public class Preferences {
     }
 
     public ProxyPrefs getProxyPrefs() {
-        Proxy proxy = null;
         boolean useTor = getUseTorProxy();
         boolean useNormalProxy = getUseNormalProxy();
 
         if (useTor) {
-            proxy = new Proxy(Constants.Orbot.PROXY_TYPE,
-                    new InetSocketAddress(Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT));
+            return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
+                    Constants.Orbot.PROXY_TYPE);
         }
         else if (useNormalProxy) {
-            proxy = new Proxy(getProxyType(), new InetSocketAddress(getProxyHost(), getProxyPort()));
+            return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
+        } else {
+            return new ProxyPrefs(false, false, null, -1, null);
         }
-
-        return new ProxyPrefs(getUseTorProxy(), getUseNormalProxy(), proxy);
     }
 
     public static class ProxyPrefs {
-        public final Proxy proxy;
+        public final ParcelableProxy parcelableProxy;
         public final boolean torEnabled;
         public final boolean normalPorxyEnabled;
 
@@ -331,12 +330,12 @@ public class Preferences {
          *
          * @param torEnabled         if Tor is to be used
          * @param normalPorxyEnabled if user-specified proxy is to be used
-         * @param proxy              proxy to use, leave null if none
          */
-        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, Proxy proxy) {
+        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
             this.torEnabled = torEnabled;
             this.normalPorxyEnabled = normalPorxyEnabled;
-            this.proxy = proxy;
+            if(!torEnabled && !normalPorxyEnabled) this.parcelableProxy = null;
+            else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
     }
 

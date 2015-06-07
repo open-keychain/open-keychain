@@ -190,21 +190,6 @@ public class HkpKeyserver extends Keyserver {
         return mSecure ? "https://" : "http://";
     }
 
-    private HttpURLConnection openConnectioan(URL url) throws IOException {
-        HttpURLConnection conn = null;
-        try {
-            conn = (HttpURLConnection) TlsHelper.opeanConnection(url);
-        } catch (TlsHelper.TlsHelperException e) {
-            Log.w(Constants.TAG, e);
-        }
-        if (conn == null) {
-            conn = (HttpURLConnection) url.openConnection();
-        }
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(25000);
-        return conn;
-    }
-
     /**
      * returns a client with pinned certificate if necessary
      *
@@ -223,8 +208,8 @@ public class HkpKeyserver extends Keyserver {
 
         client.setProxy(proxy);
         // TODO: PHILIP if proxy !=null increase timeout?
-        client.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(25000, TimeUnit.MILLISECONDS);
+        client.setConnectTimeout(proxy != null ? 30000 : 5000, TimeUnit.MILLISECONDS);
+        client.setReadTimeout(45000, TimeUnit.MILLISECONDS);
 
         return client;
     }
@@ -233,8 +218,11 @@ public class HkpKeyserver extends Keyserver {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url);
+            Log.d("PHILIP", "hkpKeyserver query(): " + proxy);
             OkHttpClient client = getClient(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
+
+            tempIpTest(proxy);
 
             String responseBody = response.body().string();// contains body both in case of success or failure
 
@@ -247,6 +235,12 @@ public class HkpKeyserver extends Keyserver {
             e.printStackTrace();
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
         }
+    }
+
+    private void tempIpTest(Proxy proxy) throws IOException {
+        URL url = new URL("https://wtfismyip.com/text");
+        Response response = getClient(url, proxy).newCall(new Request.Builder().url(url).build()).execute();
+        Log.e("PHILIP", "proxy Test: " + response.body().string());
     }
 
     /**
