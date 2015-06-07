@@ -100,8 +100,7 @@ public class ImportKeysListCloudLoader
      */
     private void queryServer(boolean enforceFingerprint) {
         try {
-            ArrayList<ImportKeysListEntry> searchResult
-                    = CloudSearch.search(mServerQuery, mCloudPrefs, mProxy);
+            ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(mServerQuery, mCloudPrefs, mProxy);
 
             mEntryList.clear();
             // add result to data
