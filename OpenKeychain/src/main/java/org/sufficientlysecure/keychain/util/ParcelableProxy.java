@@ -34,13 +34,11 @@ public class ParcelableProxy implements Parcelable {
     private final int TYPE_HTTP = 1;
     private final int TYPE_SOCKS = 2;
 
-    public ParcelableProxy(Proxy proxy) {
-        InetSocketAddress address = (InetSocketAddress) proxy.address();
+    public ParcelableProxy(String hostName, int port, Proxy.Type type) {
+        mProxyHost = hostName;
+        mProxyPort = port;
 
-        mProxyHost = address.getHostName();
-        mProxyPort = address.getPort();
-
-        switch (proxy.type()) {
+        switch (type) {
             case HTTP: {
                 mProxyType = TYPE_HTTP;
                 break;

@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +66,7 @@ public class ImportKeysListFragment extends ListFragment implements
     private ImportKeysAdapter mAdapter;
 
     private LoaderState mLoaderState;
-    private Proxy mProxy;
+    private ParcelableProxy mProxy;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
@@ -262,7 +263,7 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(LoaderState loaderState, Proxy proxy) {
+    public void loadNew(LoaderState loaderState, ParcelableProxy proxy) {
         mProxy = proxy;
 
         mLoaderState = loaderState;
