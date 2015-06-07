@@ -193,7 +193,7 @@ public class HkpKeyserver extends Keyserver {
     private HttpURLConnection openConnectioan(URL url) throws IOException {
         HttpURLConnection conn = null;
         try {
-            conn = (HttpURLConnection) TlsHelper.openConnection(url);
+            conn = (HttpURLConnection) TlsHelper.opeanConnection(url);
         } catch (TlsHelper.TlsHelperException e) {
             Log.w(Constants.TAG, e);
         }
@@ -212,7 +212,7 @@ public class HkpKeyserver extends Keyserver {
      * @param proxy
      * @return
      */
-    private OkHttpClient getClient(URL url, Proxy proxy) {
+    public static OkHttpClient getClient(URL url, Proxy proxy) throws  IOException {
         OkHttpClient client = new OkHttpClient();
 
         try {
@@ -222,7 +222,7 @@ public class HkpKeyserver extends Keyserver {
         }
 
         client.setProxy(proxy);
-        // TODO: if proxy !=null increase timeout?
+        // TODO: PHILIP if proxy !=null increase timeout?
         client.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
         client.setReadTimeout(25000, TimeUnit.MILLISECONDS);
 
@@ -244,6 +244,7 @@ public class HkpKeyserver extends Keyserver {
                 throw new HttpError(response.code(), responseBody);
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
         }
     }
@@ -421,7 +422,7 @@ public class HkpKeyserver extends Keyserver {
      * Tries to find a server responsible for a given domain
      *
      * @return A responsible Keyserver or null if not found.
-     * TODO: Add proxy functionality
+     * TODO: PHILIP Add proxy functionality
      */
     public static HkpKeyserver resolve(String domain) {
         try {
