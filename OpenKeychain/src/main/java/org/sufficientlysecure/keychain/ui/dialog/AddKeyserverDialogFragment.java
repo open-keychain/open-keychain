@@ -42,17 +42,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -80,7 +79,6 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
     /**
      * Creates new instance of this dialog fragment
      *
-     * @param title     title of dialog
      * @param messenger to communicate back after setting the passphrase
      * @return
      */
@@ -171,7 +169,8 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
                 public void onClick(View v) {
                     String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
-                        verifyConnection(keyserverUrl);
+                        // TODO: PHILIP Implement proxy
+                        verifyConnection(keyserverUrl, null);
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
@@ -198,7 +197,7 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
         sendMessageToHandler(MESSAGE_VERIFICATION_FAILED, data);
     }
 
-    public void verifyConnection(String keyserver) {
+    public void verifyConnection(String keyserver, final Proxy proxy) {
 
         new AsyncTask<String, Void, FailureReason>() {
             ProgressDialog mProgressDialog;
@@ -228,7 +227,10 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
                     URI newKeyserver = new URI(scheme, schemeSpecificPart, fragment);
 
                     Log.d("Converted URL", newKeyserver.toString());
-                    TlsHelper.openConnection(newKeyserver.toURL()).getInputStream();
+
+                    OkHttpClient client = HkpKeyserver.getClient(newKeyserver.toURL(), proxy);
+                    TlsHelper.pinCertificateIfNecessary(client, newKeyserver.toURL());
+                    client.newCall(new Request.Builder().url(newKeyserver.toURL()).build()).execute();
                 } catch (TlsHelper.TlsHelperException e) {
                     reason = FailureReason.CONNECTION_FAILED;
                 } catch (MalformedURLException e) {

@@ -466,13 +466,13 @@ public class KeychainService extends Service implements Progressable {
 
         Thread actionThread = new Thread(actionRunnable);
         actionThread.start();
-        
+
         return START_NOT_STICKY;
     }
 
     private final Proxy getProxyFromBundle(Bundle data) {
         ParcelableProxy parcelableProxy = data.getParcelable(EXTRA_PARCELABLE_PROXY);
-        return parcelableProxy==null?null:parcelableProxy.getProxy();
+        return parcelableProxy == null ? null : parcelableProxy.getProxy();
     }
 
     private void sendProofError(List<String> log, String label) {
