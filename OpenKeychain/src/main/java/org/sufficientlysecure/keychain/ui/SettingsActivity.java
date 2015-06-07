@@ -279,6 +279,9 @@ public class SettingsActivity extends PreferenceActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            // makes android's preference framework write to our file instead of default
+            // This allows us to use the "persistent" attribute to simplify code
+            sPreferences.setPreferenceManagerFileAndMode(getPreferenceManager());
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.proxy_prefs);
