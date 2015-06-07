@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -32,9 +31,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -61,10 +57,6 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
@@ -78,7 +70,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class DecryptFilesListFragment
-        extends CryptoOperationFragment
+        extends CryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
         implements OnMenuItemClickListener {
     public static final String ARG_URIS = "uris";
 
@@ -195,57 +187,77 @@ public class DecryptFilesListFragment
         cryptoOperation();
     }
 
-    private void displayProgress(Uri uri, int progress, int max, String msg) {
-        mAdapter.setProgress(uri, progress, max, msg);
+    @Override
+    protected void onCryptoSetProgress(String msg, int progress, int max) {
+        mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
     }
 
-    private void displayInputResult(final Uri uri, DecryptVerifyResult result) {
+    @Override
+    public void showProgressFragment(
+            String progressDialogMessage, int progressDialogStyle, boolean cancelable) {
+        // progress shown inline, so never mind
+    }
+
+    @Override
+    protected void dismissProgress() {
+        // progress shown inline, so never mind
+    }
+
+    @Override
+    protected void onCryptoOperationError(DecryptVerifyResult result) {
+        final Uri uri = mCurrentInputUri;
+        mCurrentInputUri = null;
+
+        mAdapter.addResult(uri, result, null, null, null);
+    }
+
+    @Override
+    protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
+        final Uri uri = mCurrentInputUri;
+        mCurrentInputUri = null;
+
         Drawable icon = null;
         OnClickListener onFileClick = null, onKeyClick = null;
 
-        if (result.success()) {
+        if (result.getDecryptMetadata() != null && result.getDecryptMetadata().getMimeType() != null) {
+            icon = loadIcon(result.getDecryptMetadata().getMimeType());
+        }
 
-            if (result.getDecryptMetadata() != null && result.getDecryptMetadata().getMimeType() != null) {
-                icon = loadIcon(result.getDecryptMetadata().getMimeType());
-            }
-
-            OpenPgpSignatureResult sigResult = result.getSignatureResult();
-            if (sigResult != null) {
-                final long keyId = sigResult.getKeyId();
-                if (sigResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
-                    onKeyClick = new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Activity activity = getActivity();
-                            if (activity == null) {
-                                return;
-                            }
-                            Intent intent = new Intent(activity, ViewKeyActivity.class);
-                            intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
-                            activity.startActivity(intent);
-                        }
-                    };
-                }
-            }
-
-            if (result.success() && result.getDecryptMetadata() != null) {
-                final OpenPgpMetadata metadata = result.getDecryptMetadata();
-                onFileClick = new OnClickListener() {
+        OpenPgpSignatureResult sigResult = result.getSignatureResult();
+        if (sigResult != null) {
+            final long keyId = sigResult.getKeyId();
+            if (sigResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
+                onKeyClick = new OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Activity activity = getActivity();
-                        if (activity == null || mCurrentInputUri != null) {
+                        if (activity == null) {
                             return;
                         }
-
-                        Uri outputUri = mOutputUris.get(uri);
-                        Intent intent = new Intent();
-                        intent.setDataAndType(outputUri, metadata.getMimeType());
+                        Intent intent = new Intent(activity, ViewKeyActivity.class);
+                        intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
                         activity.startActivity(intent);
                     }
                 };
             }
+        }
 
+        if (result.success() && result.getDecryptMetadata() != null) {
+            final OpenPgpMetadata metadata = result.getDecryptMetadata();
+            onFileClick = new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Activity activity = getActivity();
+                    if (activity == null || mCurrentInputUri != null) {
+                        return;
+                    }
+
+                    Uri outputUri = mOutputUris.get(uri);
+                    Intent intent = new Intent();
+                    intent.setDataAndType(outputUri, metadata.getMimeType());
+                    activity.startActivity(intent);
+                }
+            };
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
@@ -253,104 +265,23 @@ public class DecryptFilesListFragment
     }
 
     @Override
-    @SuppressLint("HandlerLeak")
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+    protected PgpDecryptVerifyInputParcel createOperationInput() {
 
         if (mCurrentInputUri == null) {
-
             if (mPendingInputUris.isEmpty()) {
-                return;
+                // nothing left to do
+                return null;
             }
 
             mCurrentInputUri = mPendingInputUris.remove(0);
-
         }
-
-        // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-        // use current operation, either decrypt metadata or decrypt payload
-        intent.setAction(KeychainService.ACTION_DECRYPT_VERIFY);
-
-        // data
 
         Uri currentOutputUri = mOutputUris.get(mCurrentInputUri);
         Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + currentOutputUri);
 
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCurrentInputUri, currentOutputUri)
+        return new PgpDecryptVerifyInputParcel(mCurrentInputUri, currentOutputUri)
                 .setAllowSymmetricDecryption(true);
 
-        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after decrypting is done in KeychainIntentService
-        Handler saveHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                // handle pending messages
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                MessageStatus status = MessageStatus.fromInt(message.arg1);
-                Bundle data = message.getData();
-
-                switch (status) {
-                    case UNKNOWN:
-                    case EXCEPTION: {
-                        Log.e(Constants.TAG, "error: " + status);
-                        break;
-                    }
-
-                    case UPDATE_PROGRESS: {
-                        int progress = data.getInt(ServiceProgressHandler.DATA_PROGRESS);
-                        int max = data.getInt(ServiceProgressHandler.DATA_PROGRESS_MAX);
-                        String msg;
-                        if (data.containsKey(ServiceProgressHandler.DATA_MESSAGE_ID)) {
-                            msg = getString(data.getInt(ServiceProgressHandler.DATA_MESSAGE_ID));
-                        } else if (data.containsKey(ServiceProgressHandler.DATA_MESSAGE)) {
-                            msg = data.getString(ServiceProgressHandler.DATA_MESSAGE);
-                        } else {
-                            msg = null;
-                        }
-                        displayProgress(mCurrentInputUri, progress, max, msg);
-                        break;
-                    }
-
-                    case OKAY: {
-                        // get returned data bundle
-                        Bundle returnData = message.getData();
-
-                        DecryptVerifyResult result =
-                                returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                        if (result.success()) {
-                            // display signature result in activity
-                            displayInputResult(mCurrentInputUri, result);
-                            mCurrentInputUri = null;
-                            return;
-                        }
-
-                        result.createNotify(getActivity()).show(DecryptFilesListFragment.this);
-                    }
-                }
-
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // start service with intent
-        getActivity().startService(intent);
     }
 
     @Override

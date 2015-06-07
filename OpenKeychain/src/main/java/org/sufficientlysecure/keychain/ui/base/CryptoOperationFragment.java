@@ -193,6 +193,18 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         dismissProgress();
     }
 
+    protected void onCryptoSetProgress(String msg, int progress, int max) {
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            return;
+        }
+
+        progressDialogFragment.setProgress(msg, progress, max);
+
+    }
+
     @SuppressWarnings("unused") // it's an EventBus method
     public void onEventMainThread(OperationResult result) {
 
@@ -219,16 +231,7 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
     @SuppressWarnings("unused") // it's an EventBus method
     public void onEventMainThread(ProgressEvent event) {
-
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
-
-        if (progressDialogFragment == null) {
-            return;
-        }
-
-        progressDialogFragment.setProgress(event.mMessage, event.mProgress, event.mMax);
+        onCryptoSetProgress(event.mMessage, event.mProgress, event.mMax);
     }
-
 
 }
