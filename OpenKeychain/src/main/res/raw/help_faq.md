@@ -55,7 +55,7 @@ No. You can, however, simply create a new key just for certification, which will
 
 ## I see no suitable option in the app selection menu when trying to open a local file, what's wrong?
 
-You probably don't have any stand-alone file managers installed, like [OI File Manager](https://f-droid.org/repository/browse/?fdfilter=file+manager&fdid=org.openintents.filemanager) or [Amaze](https://f-droid.org/repository/browse/?fdfilter=file+manager&fdid=com.amaze.filemanager). OpenKeychain needs one in order to select files from local storage or SD card, such as for importing keys or encrypting/decrypting files.
+You probably don't have any stand-alone file managers installed, like [OI File Manager](https://f-droid.org/repository/browse/?fdid=org.openintents.filemanager) or [Amaze](https://f-droid.org/repository/browse/?fdid=com.amaze.filemanager). OpenKeychain needs one in order to select files from local storage or SD card, such as for importing keys or encrypting/decrypting files.
 
 # Avanced Questions
 
