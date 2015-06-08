@@ -52,7 +52,10 @@ However, scanning a QR code, receiving a key via NFC, or exchanging keys via Saf
 ## Can I mark public keys as trusted without certifying them with my own key?
 
 No. You can, however, simply create a new key just for certification, which will essentially be the same thing.
-    
+
+## I see no suitable option in the app selection menu when trying to open a local file, what's wrong?
+
+You probably don't have any stand-alone file managers installed, like OI File Manager, Astro, ES File Explorer, etc.  OpenKeychain needs one in order to select files from local storage or SD card, such as for importing keys or encrypting/decrypting files.
 
 # Avanced Questions
 
