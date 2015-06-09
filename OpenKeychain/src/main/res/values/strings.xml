@@ -1264,9 +1264,35 @@
     <string name="btn_start_exchange">"Start exchange"</string>
     <string name="user_id_none"><![CDATA[<none>]]></string>
 
-    <!-- Passphrase wizard -->
-    <!-- TODO: rename all the things! -->
+    <!-- Create Key wizard TEMPORARY -->
+    <string name="create_key_wizard_title">Create Key Wizard</string>
+    <string name="input_pin">Input your pin to unlock the key</string>
+    <string name="title_unlock">Key Unlock</string>
     <string name="title_unlock_method">Choose an unlock method</string>
+    <string name="reset">Reset</string>
+    <string name="pin">Pin</string>
+    <string name="confirm_caps">CONFIRM</string>
+    <string name="unlock_caps">UNLOCK</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
+
+    <string name="error_no_pin">Your pin code must have at least one pin number</string>
+    <string name="error_pin_mismatch">The pins do not match, reset and re-input your new pin again</string>
+    <string name="error_unknown_operation">Unknown operation error</string>
+    <string name="passphrase_key">Passphrase</string>
+    <string name="passphrase_tip">Use a passphrase to unlock your key</string>
+    <string name="nfc_tip">Use your personal NFC card to unlock your key</string>
+    <string name="lockpattern_tip">Use a lockpattern to unlock your key</string>
+    <string name="pin_tip">Use a pin to unlock your key</string>
+    <string name="wizard_unlock_tip">Choose an unlock method to protect your key. Use your finger to swipe to the preferred method</string>
+    <string name="lockpattern_tip2">Choose a strong lockpattern. It protects your key when your device gets stolen.</string>
+    <string name="error_lockpattern_mismatch">Your lock pattern does not match. Please click on the reset button and try again</string>
+    <string name="pin_tip2">Choose a strong pin. It protects your key when your device gets stolen.</string>
+
+
+    <!-- TODO: rename all the things! -->
+
+
     <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
     <string name="enter_passphrase">Enter password</string>
     <string name="passphrase">Password</string>
@@ -1305,5 +1331,8 @@
     <string name="error_nfc">"NFC Error: %s"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

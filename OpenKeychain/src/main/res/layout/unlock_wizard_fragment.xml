@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/createKeyWizardActivityUnlockSuggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/lock_pattern_key_margin"
+        android:text="@string/wizard_unlock_tip"
+        android:textColor="@color/primary_text_default_material_light"
+        android:textSize="14sp"/>
+
+    <View
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/createKeyWizardActivityUnlockSuggestion"
+        android:background="@color/primary_text_default_material_light"/>
+
+    <org.sufficientlysecure.keychain.ui.keyunlock.components.ViewPagerIndicator
+        android:id="@+id/viewPagerIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/unlockWizardFragmentViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/viewPagerIndicator"
+        android:layout_below="@id/horizontalLine">
+    </android.support.v4.view.ViewPager>
+</RelativeLayout>
