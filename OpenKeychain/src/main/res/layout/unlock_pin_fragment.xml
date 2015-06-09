@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:persistentDrawingCache="all">
+
+    <TextView
+        android:id="@+id/unlockTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:text="@string/pin_tip2"/>
+
+
+    <RelativeLayout
+        android:id="@+id/unlockDialogBottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp">
+
+        <ImageView
+            android:id="@+id/check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check_black_48dp"
+            android:tint="@color/zxing_result_points"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:id="@+id/wrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close_black_48dp"
+            android:tint="@color/android_red_dark"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/unlockDialogStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/wrong"
+            android:text=""
+            android:textColor="@color/android_red_dark"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/unlockInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/unlockDialogBottomContainer"
+        android:layout_below="@id/unlockTip">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:src="@android:drawable/sym_def_app_icon"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:persistentDrawingCache="all">
+
+            <Button
+                android:id="@+id/unlockKey1"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="1"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey2"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey1"
+                android:text="2"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey3"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey2"
+                android:text="3"
+                android:textSize="18sp"/>
+
+
+            <!-- second row -->
+
+            <Button
+                android:id="@+id/unlockKey4"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/unlockKey1"
+                android:layout_marginTop="24dp"
+                android:text="4"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey5"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBaseline="@id/unlockKey4"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey4"
+                android:text="5"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey6"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBaseline="@id/unlockKey5"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey5"
+                android:text="6"
+                android:textSize="18sp"/>
+
+            <!-- third row -->
+
+            <Button
+                android:id="@+id/unlockKey7"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/unlockKey4"
+                android:layout_marginTop="@dimen/lock_pattern_key_margin"
+                android:text="7"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey8"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBaseline="@id/unlockKey7"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey4"
+                android:text="8"
+                android:textSize="18sp"/>
+
+            <Button
+                android:id="@+id/unlockKey9"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBaseline="@id/unlockKey7"
+                android:layout_marginLeft="@dimen/lock_pattern_key_margin"
+                android:layout_toRightOf="@id/unlockKey5"
+                android:text="9"
+                android:textSize="18sp"/>
+
+            <!-- fourth row -->
+            <Button
+                android:id="@+id/unlockKey0"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/unlockKey7"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/lock_pattern_key_margin"
+                android:text="0"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

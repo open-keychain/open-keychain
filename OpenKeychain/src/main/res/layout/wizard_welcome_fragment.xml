@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:persistentDrawingCache="all">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+
+        android:id="@+id/create_key_buttons">
+
+        <TextView
+            android:id="@+id/create_key_create_key_button"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/first_time_create_key"
+            android:textAllCaps="true"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="right|center_vertical"
+            android:clickable="true"
+            style="?android:attr/borderlessButtonStyle" />
+
+        <TextView
+            android:id="@+id/create_key_cancel"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_below="@id/create_key_create_key_button"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_do_not_save"
+            android:textAllCaps="true"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:drawableRight="@drawable/ic_close_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="right|center_vertical"
+            android:clickable="true"
+            style="?android:attr/borderlessButtonStyle" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/create_key_buttons"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/first_time_1" />
+</RelativeLayout>
