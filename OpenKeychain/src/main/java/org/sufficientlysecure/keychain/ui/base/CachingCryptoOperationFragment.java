@@ -5,11 +5,13 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainNewService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
@@ -55,6 +57,7 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
                 // Notify was created by createCryptoInput.
                 return;
             }
+
         }
 
         // Send all information needed to service to edit key in other thread
@@ -63,12 +66,36 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
         intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, mCachedActionsParcel);
         intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        showProgressFragment(
-                getString(R.string.progress_start),
-                ProgressDialog.STYLE_HORIZONTAL,
-                false);
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+            @Override
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
 
-        // start service with intent
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+
+                    final OperationResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+
+                    onHandleResult(result);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_building_key),
+                ProgressDialog.STYLE_HORIZONTAL, false);
+
         getActivity().startService(intent);
 
     }

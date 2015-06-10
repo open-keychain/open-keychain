@@ -263,7 +263,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
+        if (mListFragment != null) {
             return;
         }
 
@@ -283,7 +283,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
+        if (mTopFragment != null) {
             return;
         }
 
@@ -314,7 +314,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
+        if (mTopFragment != null) {
             return;
         }
 
@@ -388,12 +388,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
             return;
         }
 
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -435,7 +430,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
                 intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
-                serviceHandler.showProgressDialog(this);
+                serviceHandler.showProgressDialog(
+                        getString(R.string.progress_importing),
+                        ProgressDialog.STYLE_HORIZONTAL,
+                        true
+                );
 
                 // start service with intent
                 startService(intent);
@@ -469,7 +468,10 @@ public class ImportKeysActivity extends BaseNfcActivity {
             intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
-            serviceHandler.showProgressDialog(this);
+            serviceHandler.showProgressDialog(
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL, true
+            );
 
             // start service with intent
             startService(intent);

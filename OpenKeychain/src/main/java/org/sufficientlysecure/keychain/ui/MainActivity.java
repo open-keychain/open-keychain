@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -42,7 +43,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class MainActivity extends BaseNfcActivity implements FabContainer {
+public class MainActivity extends BaseNfcActivity implements FabContainer, OnBackStackChangedListener {
 
     private static final int ID_KEYS = 1;
     private static final int ID_ENCRYPT_DECRYPT = 2;
@@ -120,6 +121,8 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
             finish();
             return;
         }
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         Intent data = getIntent();
         // If we got an EXTRA_RESULT in the intent, show the notification
@@ -205,5 +208,26 @@ public class MainActivity extends BaseNfcActivity implements FabContainer {
         }
     }
 
+
+    @Override
+    public void onBackStackChanged() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager == null) {
+            return;
+        }
+        Fragment frag = fragmentManager.findFragmentById(R.id.main_fragment_container);
+        if (frag == null) {
+            return;
+        }
+
+        // make sure the selected icon is the one shown at this point
+        if (frag instanceof KeyListFragment) {
+            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_KEYS), false);
+        } else if (frag instanceof EncryptDecryptOverviewFragment) {
+            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
+        } else if (frag instanceof AppsListFragment) {
+            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_APPS), false);
+        }
+    }
 
 }

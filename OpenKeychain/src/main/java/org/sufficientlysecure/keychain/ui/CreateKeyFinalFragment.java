@@ -197,11 +197,7 @@ public class CreateKeyFinalFragment extends Fragment {
         Intent intent = new Intent(getActivity(), KeychainService.class);
         intent.setAction(KeychainService.ACTION_EDIT_KEYRING);
 
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -245,7 +241,8 @@ public class CreateKeyFinalFragment extends Fragment {
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        saveHandler.showProgressDialog(getActivity());
+        saveHandler.showProgressDialog(getString(R.string.progress_building_key),
+                ProgressDialog.STYLE_HORIZONTAL, false);
 
         getActivity().startService(intent);
     }
@@ -271,11 +268,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
         intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_uploading),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -301,10 +294,13 @@ public class CreateKeyFinalFragment extends Fragment {
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_uploading),
+                ProgressDialog.STYLE_HORIZONTAL, false);
 
         // start service with intent
         getActivity().startService(intent);
+
     }
 
 }

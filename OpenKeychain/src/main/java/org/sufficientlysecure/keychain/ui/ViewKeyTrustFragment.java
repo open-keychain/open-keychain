@@ -360,12 +360,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         mProofVerifyDetail.setVisibility(View.GONE);
 
         // Create a new Messenger for the communication back after proof work is done
-        //
-        ServiceProgressHandler handler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_verifying_signature),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler handler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -454,7 +449,10 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        handler.showProgressDialog(getActivity());
+        handler.showProgressDialog(
+                getString(R.string.progress_verifying_signature),
+                ProgressDialog.STYLE_HORIZONTAL, false
+        );
 
         // start service with intent
         getActivity().startService(intent);

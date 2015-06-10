@@ -97,10 +97,7 @@ public class ExportHelper {
         intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         // Message is received after exporting is done in KeychainService
-        ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity,
-                mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -121,7 +118,10 @@ public class ExportHelper {
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        exportHandler.showProgressDialog(mActivity);
+        exportHandler.showProgressDialog(
+                mActivity.getString(R.string.progress_exporting),
+                ProgressDialog.STYLE_HORIZONTAL, false
+        );
 
         // start service with intent
         mActivity.startService(intent);

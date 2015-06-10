@@ -135,12 +135,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 intent.setAction(KeychainService.ACTION_DELETE);
 
                 // Message is received after importing is done in KeychainService
-                ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                        getActivity(),
-                        getString(R.string.progress_deleting),
-                        ProgressDialog.STYLE_HORIZONTAL,
-                        true
-                ) {
+                ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
                     @Override
                     public void handleMessage(Message message) {
                         super.handleMessage(message);
@@ -168,7 +163,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
-                saveHandler.showProgressDialog(getActivity());
+                saveHandler.showProgressDialog(getString(R.string.progress_deleting),
+                        ProgressDialog.STYLE_HORIZONTAL, true);
 
                 // start service with intent
                 getActivity().startService(intent);

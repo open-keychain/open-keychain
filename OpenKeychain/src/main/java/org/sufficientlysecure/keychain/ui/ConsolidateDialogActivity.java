@@ -49,11 +49,7 @@ public class ConsolidateDialogActivity extends FragmentActivity {
 
     private void consolidateRecovery(boolean recovery) {
         // Message is received after importing is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -94,7 +90,10 @@ public class ConsolidateDialogActivity extends FragmentActivity {
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        saveHandler.showProgressDialog(this);
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL, false
+        );
 
         // start service with intent
         startService(intent);

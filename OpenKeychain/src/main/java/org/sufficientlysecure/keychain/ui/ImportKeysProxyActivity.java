@@ -206,12 +206,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
 
         // Message is received after importing is done in KeychainService
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -273,7 +268,9 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        serviceHandler.showProgressDialog(this);
+        serviceHandler.showProgressDialog(
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL, true);
 
         // start service with intent
         startService(intent);
