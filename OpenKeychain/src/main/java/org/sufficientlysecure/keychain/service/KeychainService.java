@@ -441,9 +441,9 @@ public class KeychainService extends Service implements Progressable {
                             ImportExportOperation importExportOperation = new ImportExportOperation(KeychainService.this,
                                     providerHelper, KeychainService.this);
 
-                            try {
-                                importExportOperation.uploadKeyRingToServer(server, keyring, getProxyFromBundle(data));
-                            } catch (Keyserver.AddKeyException e) {
+                            ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(server, keyring,
+                                        getProxyFromBundle(data));
+                            if (uploadResult.getResult() != ExportResult.RESULT_OK) {
                                 throw new PgpGeneralException("Unable to export key to selected server");
                             }
 

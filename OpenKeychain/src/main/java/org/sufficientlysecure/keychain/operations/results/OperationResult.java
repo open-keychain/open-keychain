@@ -685,6 +685,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_CRT_WARN_NOT_FOUND (LogLevel.WARN, R.string.msg_crt_warn_not_found),
         MSG_CRT_WARN_CERT_FAILED (LogLevel.WARN, R.string.msg_crt_warn_cert_failed),
         MSG_CRT_WARN_SAVE_FAILED (LogLevel.WARN, R.string.msg_crt_warn_save_failed),
+        MSG_CRT_WARN_UPLOAD_FAILED (LogLevel.WARN, R.string.msg_crt_warn_upload_failed),
 
         MSG_IMPORT (LogLevel.START, R.plurals.msg_import),
 
@@ -705,6 +706,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
 
         MSG_EXPORT (LogLevel.START, R.plurals.msg_export),
+        MSG_EXPORT_UPLOAD_PUBLIC(LogLevel.START, R.string.msg_export_upload_public),
         MSG_EXPORT_PUBLIC (LogLevel.DEBUG, R.string.msg_export_public),
         MSG_EXPORT_SECRET (LogLevel.DEBUG, R.string.msg_export_secret),
         MSG_EXPORT_ALL (LogLevel.START, R.string.msg_export_all),
@@ -716,7 +718,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_EXPORT_ERROR_DB (LogLevel.ERROR, R.string.msg_export_error_db),
         MSG_EXPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_export_error_io),
         MSG_EXPORT_ERROR_KEY (LogLevel.ERROR, R.string.msg_export_error_key),
+        MSG_EXPORT_ERROR_UPLOAD (LogLevel.ERROR, R.string.msg_export_error_upload),
         MSG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_success),
+        MSG_EXPORT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_export_upload_success),
 
         MSG_CRT_UPLOAD_SUCCESS (LogLevel.OK, R.string.msg_crt_upload_success),
 
