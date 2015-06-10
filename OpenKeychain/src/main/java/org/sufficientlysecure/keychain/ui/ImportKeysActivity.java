@@ -21,6 +21,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -28,7 +29,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import info.guardianproject.onionkit.ui.OrbotHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -39,13 +39,14 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -348,30 +349,38 @@ public class ImportKeysActivity extends BaseNfcActivity {
         }
     }
 
-    public void loadCallback(ImportKeysListFragment.LoaderState loaderState) {
+    public void loadCallback(final ImportKeysListFragment.LoaderState loaderState) {
         if (loaderState instanceof ImportKeysListFragment.CloudLoaderState) {
             // do the tor check
-            OrbotHelper helper = new OrbotHelper(this);
-            // TODO: Add callbacks by modifying OrbotHelper so we know if the user wants to not use Tor
+            // this handle will set tor to be ignored whenever a message is received
+            Handler ignoreTorHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    // disables Tor until Activity is recreated
+                    mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
+                    mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
+                }
+            };
 
-            if(mProxyPrefs.torEnabled && !helper.isOrbotInstalled()) {
-                helper.promptToInstall(this);
+            if(mProxyPrefs.torEnabled && !OrbotHelper.isOrbotInstalled(this)) {
+
+                OrbotHelper.getInstallDialogFragmentWithThirdButton(
+                        new Messenger(ignoreTorHandler),
+                        R.string.orbot_install_dialog_ignore_tor
+                ).show(getSupportFragmentManager(), "orbotInstallDialog");
+
                 return;
             }
-            if(mProxyPrefs.torEnabled && !helper.isOrbotRunning()) {
-                helper.requestOrbotStart(this);
+
+            if(mProxyPrefs.torEnabled && !OrbotHelper.isOrbotRunning()) {
+                OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
+                        R.string.orbot_install_dialog_ignore_tor)
+                        .show(getSupportFragmentManager(), "orbotStartDialog");
                 return;
             }
         }
 
         mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
-    }
-
-    /**
-     * disables use of Tor as proxy for this session
-     */
-    private void disableTorForSession() {
-        mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
     }
 
     private void handleMessage(Message message) {

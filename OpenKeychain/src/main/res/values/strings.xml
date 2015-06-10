@@ -167,20 +167,37 @@
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
     <!-- Proxy Preferences -->
-    <string name="pref_proxy_tor_label">"Enable Tor"</string>
+    <string name="pref_proxy_tor_title">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
-    <string name="pref_proxy_normal">"Enable other proxy"</string>
-    <string name="pref_proxy_host_label">"Proxy Host"</string>
+    <string name="pref_proxy_normal_title">"Enable other proxy"</string>
+    <string name="pref_proxy_host_title">"Proxy Host"</string>
     <string name="pref_proxy_host_err_invalid">"Proxy host cannot be empty"</string>
-    <string name="pref_proxy_port_label">"Proxy Port"</string>
+    <string name="pref_proxy_port_title">"Proxy Port"</string>
     <string name="pref_proxy_port_err_invalid">"Invalid port number entered"</string>
-    <string name="pref_proxy_type_label">"Proxy Type"</string>
+    <string name="pref_proxy_type_title">"Proxy Type"</string>
 
-    <!-- proxy type choices -->
+    <!-- proxy type choices and values -->
     <string name="pref_proxy_type_choice_http">"HTTP"</string>
     <string name="pref_proxy_type_choice_socks">"SOCKS"</string>
     <string name="pref_proxy_type_value_http">"proxyHttp"</string>
     <string name="pref_proxy_type_value_socks">"proxySocks"</string>
+
+    <!-- OrbotHelper strings -->
+    <!-- InstallDialogFragment strings -->
+    <string name="orbot_install_dialog_title">Install Orbot to use Tor?</string>
+    <string name="orbot_install_dialog_install">"Install"</string>
+    <string name="orbot_install_dialog_content">You must have Orbot installed and activated to proxy traffic through it. Would you like to install it?</string>
+    <string name="orbot_install_dialog_cancel">"Cancel"</string>
+    <string name="orbot_install_dialog_ignore_tor">"Don\'t use Tor"</string>
+
+    <!-- StartOrbotDialogFragment strings -->
+    <string name="orbot_start_dialog_title">Start Orbot?</string>
+    <string name="orbot_start_dialog_content">"Orbot doesn\'t appear to be running. Would you like to start it up and connect to Tor?"</string>
+    <string name="orbot_start_btn">"Start Orbot"</string>
+    <string name="orbot_start_dialog_start">"Start Orbot"</string>
+    <string name="orbot_start_dialog_cancel">"Cancel"</string>
+    <string name="orbot_start_dialog_ignore_tor">"Don\'t use Tor"</string>
+
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>

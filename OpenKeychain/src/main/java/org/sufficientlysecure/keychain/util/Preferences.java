@@ -23,12 +23,10 @@ import android.content.SharedPreferences;
 
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
-import info.guardianproject.onionkit.ui.OrbotHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.R;
 
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,7 +63,7 @@ public class Preferences {
         updateSharedPreferences(context);
     }
 
-    public void setPreferenceManagerFileAndMode(PreferenceManager manager) {
+    public static void setPreferenceManagerFileAndMode(PreferenceManager manager) {
         manager.setSharedPreferencesName(PREF_FILE_NAME);
         manager.setSharedPreferencesMode(PREF_FILE_MODE);
     }
@@ -245,30 +243,12 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.USE_NORMAL_PROXY, false);
     }
 
-    public void setUseNormalProxy(boolean use) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.USE_NORMAL_PROXY, use);
-        editor.commit();
-    }
-
     public boolean getUseTorProxy() {
         return mSharedPreferences.getBoolean(Constants.Pref.USE_TOR_PROXY, false);
     }
 
-    public void setUseTorProxy(boolean use) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.USE_TOR_PROXY, use);
-        editor.commit();
-    }
-
     public String getProxyHost() {
         return mSharedPreferences.getString(Constants.Pref.PROXY_HOST, null);
-    }
-
-    public void setProxyHost(String host) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(Constants.Pref.PROXY_HOST, host);
-        editor.commit();
     }
 
     /**
@@ -334,7 +314,7 @@ public class Preferences {
         public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
             this.torEnabled = torEnabled;
             this.normalPorxyEnabled = normalPorxyEnabled;
-            if(!torEnabled && !normalPorxyEnabled) this.parcelableProxy = null;
+            if(!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
             else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
     }
