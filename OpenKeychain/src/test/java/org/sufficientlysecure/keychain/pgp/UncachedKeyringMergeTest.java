@@ -23,7 +23,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.PacketTags;
@@ -32,6 +34,7 @@ import org.spongycastle.bcpg.SecretKeyPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -77,8 +80,8 @@ import java.util.Random;
  * packet will be copied regardless. Filtering out bad packets is done with canonicalization.
  *
  */
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;

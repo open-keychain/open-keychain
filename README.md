@@ -51,7 +51,8 @@ Select everything for the newest SDK Platform, API 22, and also API 21
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew test``
+2. Execute ``./gradlew clean``
+3. Execute ``./gradlew testDebug --continue``
 
 ### Development with Android Studio
 

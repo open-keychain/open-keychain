@@ -25,16 +25,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ParcelableFileCacheTest {
 
     @Before
@@ -45,7 +49,7 @@ public class ParcelableFileCacheTest {
     @Test
     public void testInputOutput() throws Exception {
 
-        ParcelableFileCache<Bundle> cache = new ParcelableFileCache<Bundle>(Robolectric.application, "test.pcl");
+        ParcelableFileCache<Bundle> cache = new ParcelableFileCache<Bundle>(RuntimeEnvironment.application, "test.pcl");
 
         ArrayList<Bundle> list = new ArrayList<Bundle>();
 

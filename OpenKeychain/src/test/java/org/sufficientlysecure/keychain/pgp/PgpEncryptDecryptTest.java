@@ -25,10 +25,12 @@ import org.junit.runner.RunWith;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.*;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -52,8 +54,8 @@ import java.io.PrintStream;
 import java.security.Security;
 import java.util.HashSet;
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class PgpEncryptDecryptTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
@@ -112,7 +114,7 @@ public class PgpEncryptDecryptTest {
 
     @Before
     public void setUp() {
-        ProviderHelper providerHelper = new ProviderHelper(Robolectric.application);
+        ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -134,8 +136,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -156,8 +158,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(
@@ -179,8 +181,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(input,
@@ -198,8 +200,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(input,
@@ -216,8 +218,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(false);
             DecryptVerifyResult result = op.execute(input,
@@ -240,8 +242,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
             PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
@@ -321,8 +323,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
 
@@ -406,7 +408,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            new ProviderHelper(Robolectric.application).getContentResolver().delete(
+            new ProviderHelper(RuntimeEnvironment.application).getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
             );
 
@@ -437,8 +439,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
@@ -482,7 +484,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            new ProviderHelper(Robolectric.application).getContentResolver().delete(
+            new ProviderHelper(RuntimeEnvironment.application).getContentResolver().delete(
                     KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
             );
 
@@ -520,8 +522,8 @@ public class PgpEncryptDecryptTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaindata);
 
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(Robolectric.application,
-                    new ProviderHelper(Robolectric.application), null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
 
             InputData data = new InputData(in, in.available());
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
@@ -562,8 +564,8 @@ public class PgpEncryptDecryptTest {
     private PgpDecryptVerify operationWithFakePassphraseCache(
             final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
-        return new PgpDecryptVerify(Robolectric.application,
-                new ProviderHelper(Robolectric.application), null) {
+        return new PgpDecryptVerify(RuntimeEnvironment.application,
+                new ProviderHelper(RuntimeEnvironment.application), null) {
             @Override
             public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
                     throws NoSecretKeyException {

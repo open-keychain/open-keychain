@@ -23,10 +23,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -48,8 +52,8 @@ import java.io.PrintStream;
 import java.security.Security;
 import java.util.Iterator;
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ExportTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
@@ -108,7 +112,7 @@ public class ExportTest {
 
     @Before
     public void setUp() {
-        ProviderHelper providerHelper = new ProviderHelper(Robolectric.application);
+        ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -122,8 +126,8 @@ public class ExportTest {
 
     @Test
     public void testExportAll() throws Exception {
-        ImportExportOperation op = new ImportExportOperation(Robolectric.application,
-                new ProviderHelper(Robolectric.application), null);
+        ImportExportOperation op = new ImportExportOperation(RuntimeEnvironment.application,
+                new ProviderHelper(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
         Assert.assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));

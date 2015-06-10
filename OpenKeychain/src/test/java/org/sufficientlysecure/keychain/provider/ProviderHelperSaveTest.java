@@ -23,10 +23,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -40,11 +44,11 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 import java.util.Arrays;
 import java.util.Iterator;
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ProviderHelperSaveTest {
 
-    ProviderHelper mProviderHelper = new ProviderHelper(Robolectric.application);
+    ProviderHelper mProviderHelper = new ProviderHelper(RuntimeEnvironment.application);
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -62,17 +66,17 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(first);
+        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(second);
+        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
-        new KeychainDatabase(Robolectric.application).clearDatabase();
+        new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
-        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(second);
+        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(first);
+        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -91,13 +95,13 @@ public class ProviderHelperSaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = new ProviderHelper(Robolectric.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = new ProviderHelper(Robolectric.application).savePublicKeyRing(pubkey);
+        result = new ProviderHelper(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = new ProviderHelper(Robolectric.application).saveSecretKeyRing(seckey, new ProgressScaler());
+        result = new ProviderHelper(RuntimeEnvironment.application).saveSecretKeyRing(seckey, new ProgressScaler());
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
     }
