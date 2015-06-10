@@ -23,6 +23,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -211,12 +213,12 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
             if (exportOperation != null) {
-                // TODO use subresult, get rid of try/catch!
-                try {
-                    exportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
+                ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey, proxy);
+                log.add(uploadResult, 2);
+
+                if (uploadResult.success()) {
                     uploadOk += 1;
-                } catch (AddKeyException e) {
-                    Log.e(Constants.TAG, "error uploading key", e);
+                } else {
                     uploadError += 1;
                 }
             }
@@ -236,11 +238,15 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError, uploadOk, uploadError);
         }
 
-        log.add(LogType.MSG_CRT_SUCCESS, 0);
-        //since only verified keys are synced to contacts, we need to initiate a sync now
+        // since only verified keys are synced to contacts, we need to initiate a sync now
         ContactSyncAdapterService.requestSync();
-        
-        return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError, uploadOk, uploadError);
+
+        log.add(LogType.MSG_CRT_SUCCESS, 0);
+        if (uploadError != 0) {
+            return new CertifyResult(CertifyResult.RESULT_WARNINGS, log, certifyOk, certifyError, uploadOk, uploadError);
+        } else {
+            return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError, uploadOk, uploadError);
+        }
 
     }
 

@@ -1197,6 +1197,7 @@
     <string name="msg_crt_warn_not_found">"Key not found!"</string>
     <string name="msg_crt_warn_cert_failed">"Certificate generation failed!"</string>
     <string name="msg_crt_warn_save_failed">"Save operation failed!"</string>
+    <string name="msg_crt_warn_upload_failed">"Upload operation failed!"</string>
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
 
@@ -1226,6 +1227,7 @@
     </plurals>
     <string name="msg_export_all">"Exporting all keys"</string>
     <string name="msg_export_public">"Exporting public key %s"</string>
+    <string name="msg_export_upload_public">"Uploading public key %s"</string>
     <string name="msg_export_secret">"Exporting secret key %s"</string>
     <string name="msg_export_error_no_file">"No filename specified!"</string>
     <string name="msg_export_error_fopen">"Error opening file!"</string>
@@ -1235,7 +1237,9 @@
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
     <string name="msg_export_error_key">"Error preprocessing key data!"</string>
+    <string name="msg_export_error_upload">"Error uploading key to server! Please check your internet connection"</string>
     <string name="msg_export_success">"Export operation successful"</string>
+    <string name="msg_export_upload_success">"Upload to keyserver successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
     <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>
