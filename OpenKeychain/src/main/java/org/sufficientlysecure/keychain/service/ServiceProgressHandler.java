@@ -128,17 +128,18 @@ public class ServiceProgressHandler extends Handler {
             case UPDATE_PROGRESS:
                 if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
 
+                    String msg = null;
+                    int progress = data.getInt(DATA_PROGRESS), max =data.getInt(DATA_PROGRESS_MAX);
+
                     // update progress from service
                     if (data.containsKey(DATA_MESSAGE)) {
-                        progressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
-                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                        msg = data.getString(DATA_MESSAGE);
                     } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                        progressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
-                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                    } else {
-                        progressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
-                                data.getInt(DATA_PROGRESS_MAX));
+                        msg = mActivity.getString(data.getInt(DATA_MESSAGE_ID));
                     }
+
+                    onSetProgress(msg, progress, max);
+
                 }
 
                 break;
@@ -152,4 +153,19 @@ public class ServiceProgressHandler extends Handler {
                 break;
         }
     }
+
+    protected void onSetProgress(String msg, int progress, int max) {
+
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
+                        .findFragmentByTag("progressDialog");
+
+        if (msg != null) {
+            progressDialogFragment.setProgress(msg, progress, max);
+        } else {
+            progressDialogFragment.setProgress(progress, max);
+        }
+
+    }
+
 }

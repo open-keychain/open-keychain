@@ -188,14 +188,9 @@ public class DecryptFilesListFragment
     }
 
     @Override
-    protected void onCryptoSetProgress(String msg, int progress, int max) {
+    protected boolean onCryptoSetProgress(String msg, int progress, int max) {
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
-    }
-
-    @Override
-    public void showProgressFragment(
-            String progressDialogMessage, int progressDialogStyle, boolean cancelable) {
-        // progress shown inline, so never mind
+        return true;
     }
 
     @Override

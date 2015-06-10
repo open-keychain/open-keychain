@@ -155,6 +155,14 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     onHandleResult(result);
                 }
             }
+
+            @Override
+            protected void onSetProgress(String msg, int progress, int max) {
+                // allow handling of progress in fragment, or delegate upwards
+                if ( ! onCryptoSetProgress(msg, progress, max)) {
+                    super.onSetProgress(msg, progress, max);
+                }
+            }
         };
 
         // Create a new Messenger for the communication back
@@ -211,6 +219,10 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     + result.getClass().getSimpleName() + "), this is a programming error!");
         }
 
+    }
+
+    protected boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
     }
 
 }
