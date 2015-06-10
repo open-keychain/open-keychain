@@ -31,13 +31,16 @@ public final class Constants {
     public static final boolean DEBUG_LOG_DB_QUERIES = false;
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
 
-    public static final String TAG = "Keychain";
+    public static final String TAG = DEBUG ? "Keychain D" : "Keychain";
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
-    public static final String ACCOUNT_NAME = "OpenKeychain";
-    public static final String ACCOUNT_TYPE = PACKAGE_NAME + ".account";
+    public static final String ACCOUNT_NAME = DEBUG ? "OpenKeychain D" : "OpenKeychain";
+    public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
+
+    public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_AUTHORITY;
+    public static final String TEMPSTORAGE_AUTHORITY = BuildConfig.TEMPSTORAGE_AUTHORITY;
 
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";

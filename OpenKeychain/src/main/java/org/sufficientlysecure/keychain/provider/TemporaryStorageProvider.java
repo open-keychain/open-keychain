@@ -45,7 +45,8 @@ public class TemporaryStorageProvider extends ContentProvider {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_TIME = "time";
-    private static final Uri BASE_URI = Uri.parse("content://org.sufficientlysecure.keychain.tempstorage/");
+    public static final String CONTENT_AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
+    private static final Uri BASE_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     private static final int DB_VERSION = 2;
 
     private static File cacheDir;

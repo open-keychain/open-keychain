@@ -111,6 +111,30 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            
+            // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
+            buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.account\""
+            buildConfigField "String", "PROVIDER_AUTHORITY", "\"org.sufficientlysecure.keychain.provider\""
+            buildConfigField "String", "TEMPSTORAGE_AUTHORITY", "\"org.sufficientlysecure.keychain.tempstorage\""
+
+            // Reference them in .xml files.
+            resValue "string", "account_type", "org.sufficientlysecure.keychain.account"
+            resValue "string", "provider_authority", "org.sufficientlysecure.keychain.provider"
+            resValue "string", "tempstorage_authority", "org.sufficientlysecure.keychain.tempstorage"
+        }
+        
+        debug {
+            applicationIdSuffix ".debug"
+            
+            // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
+            buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
+            buildConfigField "String", "PROVIDER_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.provider\""
+            buildConfigField "String", "TEMPSTORAGE_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.tempstorage\""
+
+            // Reference them in .xml files.
+            resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
+            resValue "string", "provider_authority", "org.sufficientlysecure.keychain.debug.provider"
+            resValue "string", "tempstorage_authority", "org.sufficientlysecure.keychain.debug.tempstorage"
         }
     }
 

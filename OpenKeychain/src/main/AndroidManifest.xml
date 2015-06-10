@@ -50,9 +50,9 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
-    <permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+    <permission android:name="${applicationId}.WRITE_TEMPORARY_STORAGE" />
 
-    <uses-permission android:name="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+    <uses-permission android:name="${applicationId}.WRITE_TEMPORARY_STORAGE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -727,7 +727,7 @@
 
         <provider
             android:name=".provider.KeychainProvider"
-            android:authorities="org.sufficientlysecure.keychain.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
@@ -805,9 +805,9 @@
         <!-- Storage Provider for temporary decrypted files -->
         <provider
             android:name=".provider.TemporaryStorageProvider"
-            android:authorities="org.sufficientlysecure.keychain.tempstorage"
+            android:authorities="${applicationId}.tempstorage"
             android:exported="true"
-            android:writePermission="org.sufficientlysecure.keychain.WRITE_TEMPORARY_STORAGE" />
+            android:writePermission="${applicationId}.WRITE_TEMPORARY_STORAGE" />
 
     </application>
 

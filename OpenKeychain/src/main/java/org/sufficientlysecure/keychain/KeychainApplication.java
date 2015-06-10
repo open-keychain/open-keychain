@@ -128,8 +128,6 @@ public class KeychainApplication extends Application {
 
     /**
      * Add OpenKeychain account to Android to link contacts with keys
-     *
-     * @param context
      */
     public static void setupAccountAsNeeded(Context context) {
         try {
@@ -165,7 +163,7 @@ public class KeychainApplication extends Application {
                 int edgeDrawableId = context.getResources().getIdentifier("overscroll_edge", "drawable", "android");
                 Drawable androidEdge = context.getResources().getDrawable(edgeDrawableId);
                 androidEdge.setColorFilter(brandColor, PorterDuff.Mode.SRC_IN);
-            } catch (Resources.NotFoundException e) {
+            } catch (Exception ignored) {
             }
         }
     }
