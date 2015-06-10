@@ -98,7 +98,9 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
-
+        versionCode 32300
+        versionName "3.2.3"
+        applicationId "org.sufficientlysecure.keychain"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -124,6 +126,18 @@ android {
         }
         
         debug {
+            // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
+            buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.account\""
+            buildConfigField "String", "PROVIDER_AUTHORITY", "\"org.sufficientlysecure.keychain.provider\""
+            buildConfigField "String", "TEMPSTORAGE_AUTHORITY", "\"org.sufficientlysecure.keychain.tempstorage\""
+
+            // Reference them in .xml files.
+            resValue "string", "account_type", "org.sufficientlysecure.keychain.account"
+            resValue "string", "provider_authority", "org.sufficientlysecure.keychain.provider"
+            resValue "string", "tempstorage_authority", "org.sufficientlysecure.keychain.tempstorage"
+        }
+        
+        extra {
             applicationIdSuffix ".debug"
             
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
@@ -187,6 +201,12 @@ android {
     }
 }
 
+
+// workaround?
+//tasks.withType(Test).whenTaskAdded {
+//    project.android.defaultConfig.applicationId 'org.sufficientlysecure.keychain'
+//}
+    
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
     if (task.name.contains('lint')) {

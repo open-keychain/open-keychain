@@ -2,9 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.sufficientlysecure.keychain"
-    android:installLocation="auto"
-    android:versionCode="32300"
-    android:versionName="3.2.3">
+    android:installLocation="auto">
 
     <!--
         General remarks
@@ -724,7 +722,7 @@
 
         <provider
             android:name=".provider.KeychainProvider"
-            android:authorities="@string/provider_authority"
+            android:authorities="org.sufficientlysecure.keychain.provider"
             android:exported="false" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
