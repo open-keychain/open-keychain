@@ -721,13 +721,10 @@
         <service
             android:name=".service.KeychainService"
             android:exported="false" />
-        <service
-            android:name=".service.CloudImportService"
-            android:exported="false" />
 
         <provider
             android:name=".provider.KeychainProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="@string/provider_authority"
             android:exported="false" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
@@ -805,7 +802,7 @@
         <!-- Storage Provider for temporary decrypted files -->
         <provider
             android:name=".provider.TemporaryStorageProvider"
-            android:authorities="${applicationId}.tempstorage"
+            android:authorities="@string/tempstorage_authority"
             android:exported="true"
             android:writePermission="${applicationId}.WRITE_TEMPORARY_STORAGE" />
 
