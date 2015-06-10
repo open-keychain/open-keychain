@@ -397,10 +397,12 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = new OkHttpClient().setProxy(proxy).newCall(request).execute();
+            Response response =  getClient(url, proxy).newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
+
+            tempIpTest(proxy);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();

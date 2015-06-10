@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 
@@ -90,10 +91,13 @@ public class CertifyKeyFragment
     private static final int INDEX_IS_REVOKED = 4;
 
     private MultiUserIdsAdapter mUserIdsAdapter;
+    private Preferences.ProxyPrefs mProxyPrefs;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mProxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
 
         mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(CertifyKeyActivity.EXTRA_KEY_IDS);
         if (mPubMasterKeyIds == null) {
@@ -171,7 +175,25 @@ public class CertifyKeyFragment
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
                 } else {
-                    cryptoOperation();
+
+                    if (mUploadKeyCheckbox.isChecked() && mProxyPrefs.torEnabled) {
+                        Handler ignoreTorHandler = new Handler() {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
+                                cryptoOperation();
+                            }
+                        };
+                        if (!OrbotHelper.isOrbotInstalled(getActivity())) {
+                            OrbotHelper.getInstallDialogFragmentWithThirdButton(new Messenger(ignoreTorHandler),
+                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "installOrbot");
+                        } else if (!OrbotHelper.isOrbotRunning()) {
+                            OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
+                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "startOrbot");
+                        } else {
+                            cryptoOperation();
+                        }
+                    }
                 }
             }
         });
