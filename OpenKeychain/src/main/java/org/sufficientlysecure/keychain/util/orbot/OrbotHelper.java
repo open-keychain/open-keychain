@@ -1,5 +1,53 @@
+/* This is the license for Orlib, a free software project to
+        provide anonymity on the Internet from a Google Android smartphone.
 
-package info.guardianproject.onionkit.ui;
+        For more information about Orlib, see https://guardianproject.info/
+
+        If you got this file as a part of a larger bundle, there may be other
+        license terms that you should be aware of.
+        ===============================================================================
+        Orlib is distributed under this license (aka the 3-clause BSD license)
+
+        Copyright (c) 2009-2010, Nathan Freitas, The Guardian Project
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are
+        met:
+
+        * Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+        * Redistributions in binary form must reproduce the above
+        copyright notice, this list of conditions and the following disclaimer
+        in the documentation and/or other materials provided with the
+        distribution.
+
+        * Neither the names of the copyright owners nor the names of its
+        contributors may be used to endorse or promote products derived from
+        this software without specific prior written permission.
+
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+        "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+        LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+        A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+        OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+        SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+        LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+        DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+        THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+        (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+        *****
+        Orlib contains a binary distribution of the JSocks library:
+        http://code.google.com/p/jsocks-mirror/
+        which is licensed under the GNU Lesser General Public License:
+        http://www.gnu.org/licenses/lgpl.html
+
+        *****
+*/
+
+package org.sufficientlysecure.keychain.util.orbot;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,42 +55,37 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.os.Messenger;
+import android.support.v4.app.DialogFragment;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
 
-import info.guardianproject.onionkit.R;
-
+/**
+ * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
+ */
 public class OrbotHelper {
-
-    private final static int REQUEST_CODE_STATUS = 100;
 
     public final static String ORBOT_PACKAGE_NAME = "org.torproject.android";
     public final static String TOR_BIN_PATH = "/data/data/org.torproject.android/app_bin/tor";
 
     public final static String ACTION_START_TOR = "org.torproject.android.START_TOR";
-    public final static String ACTION_REQUEST_HS = "org.torproject.android.REQUEST_HS_PORT";
-    public final static int HS_REQUEST_CODE = 9999;
 
-    private Context mContext = null;
-
-    public OrbotHelper(Context context)
-    {
-        mContext = context;
-    }
-
-    public boolean isOrbotRunning()
+    public static boolean isOrbotRunning()
     {
         int procId = TorServiceUtils.findProcessId(TOR_BIN_PATH);
 
         return (procId != -1);
     }
 
-    public boolean isOrbotInstalled()
+    public static boolean isOrbotInstalled(Context context)
     {
-        return isAppInstalled(ORBOT_PACKAGE_NAME);
+        return isAppInstalled(ORBOT_PACKAGE_NAME, context);
     }
 
-    private boolean isAppInstalled(String uri) {
-        PackageManager pm = mContext.getPackageManager();
+    private static boolean isAppInstalled(String uri, Context context) {
+        PackageManager pm = context.getPackageManager();
         boolean installed = false;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
@@ -53,66 +96,32 @@ public class OrbotHelper {
         return installed;
     }
 
-    public void promptToInstall(Activity activity)
+    /**
+     * hack to get around teh fact that PreferenceActivity still supports only android.app.DialogFragment
+     *
+     * @return
+     */
+    public static android.app.DialogFragment getPreferenceInstallDialogFragment()
     {
-        String uriMarket = activity.getString(R.string.market_orbot);
-        // show dialog - install from market, f-droid or direct APK
-        showDownloadDialog(activity, activity.getString(R.string.install_orbot_),
-                activity.getString(R.string.you_must_have_orbot),
-                activity.getString(R.string.yes), activity.getString(R.string.no), uriMarket);
+        return PreferenceInstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
+                R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME);
     }
 
-    private static AlertDialog showDownloadDialog(final Activity activity,
-            CharSequence stringTitle, CharSequence stringMessage, CharSequence stringButtonYes,
-            CharSequence stringButtonNo, final String uriString) {
-        AlertDialog.Builder downloadDialog = new AlertDialog.Builder(activity);
-        downloadDialog.setTitle(stringTitle);
-        downloadDialog.setMessage(stringMessage);
-        downloadDialog.setPositiveButton(stringButtonYes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Uri uri = Uri.parse(uriString);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                activity.startActivity(intent);
-            }
-        });
-        downloadDialog.setNegativeButton(stringButtonNo, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        return downloadDialog.show();
+    public static DialogFragment getInstallDialogFragment()
+    {
+        return InstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
+                R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME);
     }
 
-    public void requestOrbotStart(final Activity activity)
+    public static DialogFragment getInstallDialogFragmentWithThirdButton(Messenger messenger, int middleButton)
     {
-
-        AlertDialog.Builder downloadDialog = new AlertDialog.Builder(activity);
-        downloadDialog.setTitle(R.string.start_orbot_);
-        downloadDialog
-                .setMessage(R.string.orbot_doesn_t_appear_to_be_running_would_you_like_to_start_it_up_and_connect_to_tor_);
-        downloadDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                activity.startActivityForResult(getOrbotStartIntent(), 1);
-            }
-        });
-        downloadDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-            }
-        });
-        downloadDialog.show();
-
+        return InstallDialogFragment.newInstance(messenger, R.string.orbot_install_dialog_title,
+                R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME, middleButton, true);
     }
 
-    public void requestHiddenServiceOnPort(Activity activity, int port)
-    {
-        Intent intent = new Intent(ACTION_REQUEST_HS);
-        intent.setPackage(ORBOT_PACKAGE_NAME);
-        intent.putExtra("hs_port", port);
-
-        activity.startActivityForResult(intent, HS_REQUEST_CODE);
+    public static DialogFragment getOrbotStartDialogFragment(Messenger messenger, int middleButton) {
+        return OrbotStartDialogFragment.newInstance(messenger, R.string.orbot_start_dialog_title, R.string.orbot_start_dialog_content,
+                middleButton);
     }
 
     public static Intent getOrbotStartIntent() {
