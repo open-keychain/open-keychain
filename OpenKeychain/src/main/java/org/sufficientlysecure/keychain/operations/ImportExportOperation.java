@@ -30,12 +30,9 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.*;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -44,7 +41,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -99,13 +95,18 @@ public class ImportExportOperation extends BaseOperation {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) throws AddKeyException {
-        uploadKeyRingToServer(server, keyring.getUncachedKeyRing(), proxy);
+    public ExportResult uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) {
+        return uploadKeyRingToServer(server, keyring.getUncachedKeyRing(), proxy);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) throws AddKeyException {
+    public ExportResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
+        OperationLog log = new OperationLog();
+        log.add(LogType.MSG_EXPORT_UPLOAD_PUBLIC, 0, KeyFormattingUtils.convertKeyIdToHex(
+                keyring.getPublicKey().getKeyId()
+        ));
+
         try {
             aos = new ArmoredOutputStream(bos);
             keyring.encode(aos);
@@ -113,9 +114,19 @@ public class ImportExportOperation extends BaseOperation {
 
             String armoredKey = bos.toString("UTF-8");
             server.add(armoredKey, proxy);
+
+            log.add(LogType.MSG_EXPORT_UPLOAD_SUCCESS, 1);
+            return new ExportResult(ExportResult.RESULT_OK, log);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
-            throw new AddKeyException();
+
+            log.add(LogType.MSG_EXPORT_ERROR_KEY, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        } catch (AddKeyException e) {
+            Log.e(Constants.TAG, "AddKeyException", e);
+
+            log.add(LogType.MSG_EXPORT_ERROR_UPLOAD, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
         } finally {
             try {
                 if (aos != null) {
