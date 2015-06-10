@@ -176,11 +176,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
     public void importKey() {
 
         // Message is received after decrypting is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -243,7 +239,10 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        saveHandler.showProgressDialog(getActivity());
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL, false
+        );
 
         // start service with intent
         getActivity().startService(intent);

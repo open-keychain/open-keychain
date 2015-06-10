@@ -124,12 +124,7 @@ public class SafeSlingerActivity extends BaseActivity {
             final FragmentActivity activity = SafeSlingerActivity.this;
 
             // Message is received after importing is done in KeychainService
-            ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                    activity,
-                    getString(R.string.progress_importing),
-                    ProgressDialog.STYLE_HORIZONTAL,
-                    true
-            ) {
+            ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
                 @Override
                 public void handleMessage(Message message) {
                     // handle messages by standard KeychainIntentServiceHandler first
@@ -202,7 +197,10 @@ public class SafeSlingerActivity extends BaseActivity {
                 intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
-                saveHandler.showProgressDialog(activity);
+                saveHandler.showProgressDialog(
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL, true
+                );
 
                 // start service with intent
                 activity.startService(intent);

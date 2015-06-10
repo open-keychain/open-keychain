@@ -698,9 +698,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         Messenger messenger = new Messenger(serviceHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        // show progress dialog
-        serviceHandler.showProgressDialog(this);
-
         // start service with intent
         startService(intent);
 

@@ -30,7 +30,6 @@ import android.os.RemoteException;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
 
-import de.greenrobot.event.EventBus;
 import org.json.JSONObject;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;

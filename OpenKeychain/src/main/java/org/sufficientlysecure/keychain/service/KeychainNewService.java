@@ -25,9 +25,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.Parcelable;
+import android.os.RemoteException;
 
-import de.greenrobot.event.EventBus;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
@@ -40,6 +42,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -49,12 +52,17 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainNewService extends Service implements Progressable {
 
-    /* extras that can be given by intent */
+    // messenger for communication (hack)
+    public static final String EXTRA_MESSENGER = "messenger";
+
+    // extras for operation
     public static final String EXTRA_OPERATION_INPUT = "op_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // this attribute can possibly merged with the one above? not sure...
     private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
+
+    ThreadLocal<Messenger> mMessenger = new ThreadLocal<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,56 +74,82 @@ public class KeychainNewService extends Service implements Progressable {
      */
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-        EventBus bus = EventBus.getDefault();
-        if (!bus.isRegistered(this)) {
-            bus.register(this);
-        }
 
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            bus.post(extras);
-        } else {
-            Log.e(Constants.TAG, "Extras bundle is null!");
-        }
+        Runnable actionRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // We have not been cancelled! (yet)
+                mActionCanceled.set(false);
+
+                Bundle extras = intent.getExtras();
+
+                // Set messenger for communication (for this particular thread)
+                mMessenger.set(extras.<Messenger>getParcelable(EXTRA_MESSENGER));
+
+                // Input
+                Parcelable inputParcel = extras.getParcelable(EXTRA_OPERATION_INPUT);
+                CryptoInputParcel cryptoInput = extras.getParcelable(EXTRA_CRYPTO_INPUT);
+
+                // Operation
+                BaseOperation op;
+
+                // just for brevity
+                KeychainNewService outerThis = KeychainNewService.this;
+                if (inputParcel instanceof SignEncryptParcel) {
+                    op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
+                    op = new PgpDecryptVerify(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof SaveKeyringParcel) {
+                    op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                } else if (inputParcel instanceof CertifyAction) {
+                    op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                } else {
+                    return;
+                }
+
+                @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
+                OperationResult result = op.execute(inputParcel, cryptoInput);
+
+                sendMessageToHandler(MessageStatus.OKAY, result);
+
+            }
+        };
+
+        Thread actionThread = new Thread(actionRunnable);
+        actionThread.start();
 
         return START_NOT_STICKY;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
+    private void sendMessageToHandler(MessageStatus status, Integer arg2, Bundle data) {
 
-    public void onEventAsync(Bundle bundle) {
-
-        // Input
-        Parcelable inputParcel = bundle.getParcelable(EXTRA_OPERATION_INPUT);
-        CryptoInputParcel cryptoInput = bundle.getParcelable(EXTRA_CRYPTO_INPUT);
-
-        // Operation
-        BaseOperation op;
-
-        if (inputParcel instanceof SignEncryptParcel) {
-            op = new SignEncryptOperation(this, new ProviderHelper(this), this, mActionCanceled);
-        } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
-            op = new PgpDecryptVerify(this, new ProviderHelper(this), this);
-        } else if (inputParcel instanceof SaveKeyringParcel) {
-            op = new EditKeyOperation(this, new ProviderHelper(this), this, mActionCanceled);
-        } else if (inputParcel instanceof CertifyAction) {
-            op = new CertifyOperation(this, new ProviderHelper(this), this, mActionCanceled);
-        } else {
-            return;
+        Message msg = Message.obtain();
+        assert msg != null;
+        msg.arg1 = status.ordinal();
+        if (arg2 != null) {
+            msg.arg2 = arg2;
+        }
+        if (data != null) {
+            msg.setData(data);
         }
 
-        @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
-        OperationResult result = op.execute(inputParcel, cryptoInput);
+        try {
+            mMessenger.get().send(msg);
+        } catch (RemoteException e) {
+            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+        } catch (NullPointerException e) {
+            Log.w(Constants.TAG, "Messenger is null!", e);
+        }
+    }
 
-        // Result
-        EventBus.getDefault().post(result);
+    private void sendMessageToHandler(MessageStatus status, OperationResult data) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
+        sendMessageToHandler(status, null, bundle);
+    }
 
-        stopSelf();
-
+    private void sendMessageToHandler(MessageStatus status) {
+        sendMessageToHandler(status, null, null);
     }
 
     /**
@@ -126,9 +160,14 @@ public class KeychainNewService extends Service implements Progressable {
         Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
                 + max);
 
-        ProgressEvent event = new ProgressEvent(message, progress, max);
-        EventBus.getDefault().post(event);
+        Bundle data = new Bundle();
+        if (message != null) {
+            data.putString(ServiceProgressHandler.DATA_MESSAGE, message);
+        }
+        data.putInt(ServiceProgressHandler.DATA_PROGRESS, progress);
+        data.putInt(ServiceProgressHandler.DATA_PROGRESS_MAX, max);
 
+        sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, null, data);
     }
 
     @Override
@@ -143,8 +182,7 @@ public class KeychainNewService extends Service implements Progressable {
 
     @Override
     public void setPreventCancel() {
-        // sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
+        sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
     }
-
 
 }

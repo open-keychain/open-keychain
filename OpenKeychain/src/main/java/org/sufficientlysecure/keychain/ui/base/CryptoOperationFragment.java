@@ -21,16 +21,18 @@ package org.sufficientlysecure.keychain.ui.base;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 
-import de.greenrobot.event.EventBus;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainNewService;
-import org.sufficientlysecure.keychain.service.ProgressEvent;
+import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
@@ -46,18 +48,6 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
-    }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
@@ -130,22 +120,6 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
     }
 
-    public void showProgressFragment(String progressDialogMessage,
-            int progressDialogStyle,
-            boolean cancelable) {
-
-        if (getFragmentManager().findFragmentByTag("progressDialog") != null) {
-            return;
-        }
-
-        ProgressDialogFragment progressDialogFragment = ProgressDialogFragment.newInstance(
-                progressDialogMessage, progressDialogStyle, cancelable);
-
-        FragmentManager manager = getFragmentManager();
-        progressDialogFragment.show(manager, "progressDialog");
-
-    }
-
     protected abstract T createOperationInput();
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
@@ -161,12 +135,36 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
         intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        showProgressFragment(
-                getString(R.string.progress_start),
-                ProgressDialog.STYLE_HORIZONTAL,
-                false);
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+            @Override
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
 
-        // start service with intent
+                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+                    if (returnData == null) {
+                        return;
+                    }
+
+                    final OperationResult result =
+                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
+
+                    onHandleResult(result);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_building_key),
+                ProgressDialog.STYLE_HORIZONTAL, false);
+
         getActivity().startService(intent);
 
     }
@@ -190,11 +188,9 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     }
 
     protected void onCryptoOperationCancelled() {
-        dismissProgress();
     }
 
-    @SuppressWarnings("unused") // it's an EventBus method
-    public void onEventMainThread(OperationResult result) {
+    public void onHandleResult(OperationResult result) {
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;
@@ -215,19 +211,6 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     + result.getClass().getSimpleName() + "), this is a programming error!");
         }
 
-    }
-
-    @SuppressWarnings("unused") // it's an EventBus method
-    public void onEventMainThread(ProgressEvent event) {
-
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
-
-        if (progressDialogFragment == null) {
-            return;
-        }
-
-        progressDialogFragment.setProgress(event.mMessage, event.mProgress, event.mMax);
     }
 
 

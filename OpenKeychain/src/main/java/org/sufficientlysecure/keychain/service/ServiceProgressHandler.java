@@ -17,8 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,7 +26,6 @@ import android.support.v4.app.FragmentManager;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -65,68 +63,58 @@ public class ServiceProgressHandler extends Handler {
     public static final String KEYBASE_PRESENCE_URL = "keybase_presence_url";
     public static final String KEYBASE_PRESENCE_LABEL = "keybase_presence_label";
 
-    Activity mActivity;
-    ProgressDialogFragment mProgressDialogFragment;
+    FragmentActivity mActivity;
 
-    public ServiceProgressHandler(Activity activity) {
-        this.mActivity = activity;
+    public ServiceProgressHandler(FragmentActivity activity) {
+        mActivity = activity;
     }
 
-    public ServiceProgressHandler(Activity activity, ProgressDialogFragment progressDialogFragment) {
-        this.mActivity = activity;
-        this.mProgressDialogFragment = progressDialogFragment;
+    public void showProgressDialog() {
+        showProgressDialog("", ProgressDialog.STYLE_SPINNER, false);
     }
 
-    public ServiceProgressHandler(Activity activity, String progressDialogMessage, int progressDialogStyle) {
-        this(activity, progressDialogMessage, progressDialogStyle, false);
-    }
+    public void showProgressDialog(
+            String progressDialogMessage, int progressDialogStyle, boolean cancelable) {
 
-    public ServiceProgressHandler(Activity activity,
-                                  String progressDialogMessage,
-                                  int progressDialogStyle,
-                                  boolean cancelable) {
-        this.mActivity = activity;
-        this.mProgressDialogFragment = ProgressDialogFragment.newInstance(
+        final ProgressDialogFragment frag = ProgressDialogFragment.newInstance(
                 progressDialogMessage,
                 progressDialogStyle,
                 cancelable);
-    }
-
-    public void showProgressDialog(FragmentActivity activity) {
-        if (mProgressDialogFragment == null) {
-            return;
-        }
 
         // TODO: This is a hack!, see
         // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
-        final FragmentManager manager = activity.getSupportFragmentManager();
+        final FragmentManager manager = mActivity.getSupportFragmentManager();
         Handler handler = new Handler();
         handler.post(new Runnable() {
             public void run() {
-                mProgressDialogFragment.show(manager, "progressDialog");
+                frag.show(manager, "progressDialog");
             }
         });
+
     }
 
     @Override
     public void handleMessage(Message message) {
         Bundle data = message.getData();
 
-        if (mProgressDialogFragment == null) {
-            // Log.e(Constants.TAG,
-            // "Progress has not been updated because mProgressDialogFragment was null!");
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
+                        .findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            Log.e(Constants.TAG, "Progress has not been updated because mProgressDialogFragment was null!");
             return;
         }
 
         MessageStatus status = MessageStatus.fromInt(message.arg1);
         switch (status) {
             case OKAY:
-                mProgressDialogFragment.dismissAllowingStateLoss();
+                progressDialogFragment.dismissAllowingStateLoss();
 
                 break;
 
             case EXCEPTION:
-                mProgressDialogFragment.dismissAllowingStateLoss();
+                progressDialogFragment.dismissAllowingStateLoss();
 
                 // show error from service
                 if (data.containsKey(DATA_ERROR)) {
@@ -142,13 +130,13 @@ public class ServiceProgressHandler extends Handler {
 
                     // update progress from service
                     if (data.containsKey(DATA_MESSAGE)) {
-                        mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
+                        progressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
                                 data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
                     } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                        mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
+                        progressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
                                 data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
                     } else {
-                        mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
+                        progressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
                                 data.getInt(DATA_PROGRESS_MAX));
                     }
                 }
@@ -156,7 +144,7 @@ public class ServiceProgressHandler extends Handler {
                 break;
 
             case PREVENT_CANCEL:
-                mProgressDialogFragment.setPreventCancel(true);
+                progressDialogFragment.setPreventCancel(true);
                 break;
 
             default:
