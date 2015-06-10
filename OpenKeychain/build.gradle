@@ -11,15 +11,12 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:22.1.0'
     compile 'com.android.support:cardview-v7:22.1.0'
     
-    // Local Unit tests with Robolectric
+    // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
     // https://github.com/nenick/AndroidStudioAndRobolectric
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile 'org.hamcrest:hamcrest-core:1.1'
-    testCompile 'org.hamcrest:hamcrest-library:1.1'
-    testCompile 'org.hamcrest:hamcrest-integration:1.1'
-    testCompile "org.robolectric:robolectric:3.0-rc3"
+    testCompile 'org.robolectric:robolectric:3.0-rc3'
 
     // UI testing with Espresso
     androidTestCompile 'com.android.support.test:runner:0.2'
