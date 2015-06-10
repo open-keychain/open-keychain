@@ -55,6 +55,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -82,7 +83,7 @@ import java.util.Iterator;
  */
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class UncachedKeyringCanonicalizeTest {
 
     static UncachedKeyRing staticRing;

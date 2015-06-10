@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -54,7 +55,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;

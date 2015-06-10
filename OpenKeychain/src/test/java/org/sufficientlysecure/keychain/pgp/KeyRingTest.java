@@ -24,9 +24,10 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class KeyRingTest {
 
     @Test

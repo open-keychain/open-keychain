@@ -31,6 +31,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ParcelableFileCacheTest {
 
     @Before

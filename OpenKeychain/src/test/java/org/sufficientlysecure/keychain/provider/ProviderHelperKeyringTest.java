@@ -28,10 +28,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.*;
 import org.robolectric.annotation.Config;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ProviderHelperKeyringTest {
 
     @Test

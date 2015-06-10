@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -53,7 +54,7 @@ import java.security.Security;
 import java.util.Iterator;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ExportTest {
 
     static Passphrase mPassphrase = TestingUtils.genPassphrase(true);

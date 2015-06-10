@@ -722,7 +722,7 @@
 
         <provider
             android:name=".provider.KeychainProvider"
-            android:authorities="org.sufficientlysecure.keychain.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false" />
 
         <!-- Internal classes of the remote APIs (not exported) -->
@@ -800,7 +800,7 @@
         <!-- Storage Provider for temporary decrypted files -->
         <provider
             android:name=".provider.TemporaryStorageProvider"
-            android:authorities="@string/tempstorage_authority"
+            android:authorities="${applicationId}.tempstorage"
             android:exported="true"
             android:writePermission="${applicationId}.WRITE_TEMPORARY_STORAGE" />
 

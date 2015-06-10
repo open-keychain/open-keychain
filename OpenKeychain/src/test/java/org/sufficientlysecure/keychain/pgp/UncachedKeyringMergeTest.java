@@ -35,6 +35,7 @@ import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.Strings;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -81,7 +82,7 @@ import java.util.Random;
  *
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;

@@ -29,6 +29,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -44,7 +45,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class UncachedKeyringTest {
 
     static UncachedKeyRing staticRing, staticPubRing;

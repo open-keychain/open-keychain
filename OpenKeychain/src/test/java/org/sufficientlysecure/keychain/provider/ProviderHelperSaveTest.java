@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -45,7 +46,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class ProviderHelperSaveTest {
 
     ProviderHelper mProviderHelper = new ProviderHelper(RuntimeEnvironment.application);
