@@ -3,17 +3,17 @@
     <CheckBoxPreference
             android:key="useTorProxy"
             android:persistent="true"
-            android:title="@string/pref_proxy_tor_label"
+            android:title="@string/pref_proxy_tor_title"
             android:summary="@string/pref_proxy_tor_summary" />
     <CheckBoxPreference
             android:key="useNormalProxy"
             android:persistent="true"
-            android:title="@string/pref_proxy_normal" />
+            android:title="@string/pref_proxy_normal_title" />
     <EditTextPreference
         android:key="proxyHost"
         android:persistent="true"
         android:defaultValue="127.0.0.1"
-        android:title="@string/pref_proxy_host_label"
+        android:title="@string/pref_proxy_host_title"
         android:cursorVisible="true"
         android:textCursorDrawable="@null"
         android:inputType="textEmailAddress"/>
@@ -21,7 +21,7 @@
             android:key="proxyPort"
             android:defaultValue="8118"
             android:persistent="true"
-            android:title="@string/pref_proxy_port_label"
+            android:title="@string/pref_proxy_port_title"
             android:textCursorDrawable="@null"
             android:inputType="number" />
     <ListPreference
@@ -30,5 +30,5 @@
             android:defaultValue="@string/pref_proxy_type_value_http"
             android:key="proxyType"
             android:persistent="true"
-            android:title="@string/pref_proxy_type_label" />
+            android:title="@string/pref_proxy_type_title" />
 </PreferenceScreen>
