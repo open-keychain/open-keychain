@@ -37,7 +37,9 @@ import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Sends the selected public key to a keyserver
@@ -76,7 +78,19 @@ public class UploadKeyActivity extends BaseActivity
         mUploadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadKey();
+                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(UploadKeyActivity.this)
+                        .getProxyPrefs();
+                Runnable ignoreTor = new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadKey(proxyPrefs.parcelableProxy);
+                    }
+                };
+
+                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        UploadKeyActivity.this)) {
+                    uploadKey(proxyPrefs.parcelableProxy);
+                }
             }
         });
 

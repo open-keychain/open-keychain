@@ -55,12 +55,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
@@ -129,5 +134,48 @@ public class OrbotHelper {
         intent.setPackage(ORBOT_PACKAGE_NAME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
+    }
+
+    /**
+     * checks if Tor is enabled and if it is, that Orbot is installed and runnign. Generates appropriate dialogs.
+     *
+     * @param middleButton resourceId of string to display as the middle button of install and enable dialogs
+     * @param middleButtonRunnable runnable to be executed if the user clicks on the middle button
+     * @param proxyPrefs
+     * @param fragmentActivity
+     * @return true if Tor is not enabled or Tor is enabled and Orbot is installed and running, else false
+     */
+    public static boolean isOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
+                                                 Preferences.ProxyPrefs proxyPrefs, FragmentActivity fragmentActivity) {
+        Handler ignoreTorHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                // every message received by this handler will mean  the middle button was pressed
+                middleButtonRunnable.run();
+            }
+        };
+
+        if (!proxyPrefs.torEnabled) {
+            return true;
+        }
+
+        if(!OrbotHelper.isOrbotInstalled(fragmentActivity)) {
+
+            OrbotHelper.getInstallDialogFragmentWithThirdButton(
+                    new Messenger(ignoreTorHandler),
+                    R.string.orbot_install_dialog_ignore_tor
+            ).show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotInstallDialog");
+
+            return false;
+        } else if(!OrbotHelper.isOrbotRunning()) {
+
+            OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
+                    R.string.orbot_install_dialog_ignore_tor)
+                    .show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotStartDialog");
+
+            return false;
+        } else {
+            return true;
+        }
     }
 }

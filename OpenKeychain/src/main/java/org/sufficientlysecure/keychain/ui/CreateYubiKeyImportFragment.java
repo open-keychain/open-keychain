@@ -41,7 +41,9 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateYubiKeyImportFragment
@@ -120,7 +122,19 @@ public class CreateYubiKeyImportFragment
             mNextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    importKey();
+
+                    final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                    Runnable ignoreTor = new Runnable() {
+                        @Override
+                        public void run() {
+                            importKey(new ParcelableProxy(null, -1, null));
+                        }
+                    };
+
+                    if(OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                            getActivity())) {
+                        importKey(proxyPrefs.parcelableProxy);
+                    }
                 }
             });
         }
@@ -176,7 +190,7 @@ public class CreateYubiKeyImportFragment
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), null);
     }
 
-    public void importKey() {
+    public void importKey(ParcelableProxy parcelableProxy) {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));

@@ -58,7 +58,9 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -136,7 +138,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         }
     }
 
-    private void lookupUnknownKey(long unknownKeyId) {
+    private void lookupUnknownKey(long unknownKeyId, ParcelableProxy parcelableProxy) {
 
         final ArrayList<ParcelableKeyRing> keyList;
         final String keyserver;
@@ -427,7 +429,19 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                 mSignatureLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        lookupUnknownKey(signatureKeyId);
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                                .getProxyPrefs();
+                        Runnable ignoreTor = new Runnable() {
+                            @Override
+                            public void run() {
+                                lookupUnknownKey(signatureKeyId, new ParcelableProxy(null, -1, null));
+                            }
+                        };
+
+                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                                getActivity())) {
+                            lookupUnknownKey(signatureKeyId, proxyPrefs.parcelableProxy);
+                        }
                     }
                 });
 

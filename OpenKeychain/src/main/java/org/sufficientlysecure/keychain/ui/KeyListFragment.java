@@ -71,16 +71,17 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -562,7 +563,7 @@ public class KeyListFragment extends LoaderFragment
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
-    private void updateAllKeys() {
+    private void updateAllKeys(ParcelableProxy parcelableProxy) {
         Activity activity = getActivity();
         if (activity == null) {
             return;
