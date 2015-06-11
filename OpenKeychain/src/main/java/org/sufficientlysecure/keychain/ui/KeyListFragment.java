@@ -71,15 +71,13 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ExportHelper;
-import org.sufficientlysecure.keychain.util.FabContainer;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -465,7 +463,19 @@ public class KeyListFragment extends LoaderFragment
                 return true;
 
             case R.id.menu_key_list_update_all_keys:
-                updateAllKeys();
+                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                    .getProxyPrefs();
+                Runnable ignoreTor = new Runnable() {
+                    @Override
+                    public void run() {
+                        updateAllKeys(new ParcelableProxy(null, -1, null));
+                    }
+                };
+
+                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        getActivity())) {
+                    updateAllKeys(proxyPrefs.parcelableProxy);
+                }
                 return true;
 
             case R.id.menu_key_list_debug_cons:
@@ -552,7 +562,7 @@ public class KeyListFragment extends LoaderFragment
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
-    private void updateAllKeys() {
+    private void updateAllKeys(ParcelableProxy parcelableProxy) {
         Context context = getActivity();
 
         ProviderHelper providerHelper = new ProviderHelper(context);
@@ -612,6 +622,8 @@ public class KeyListFragment extends LoaderFragment
         }
 
         data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyList);
+
+        data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
 
         intent.putExtra(KeychainService.EXTRA_DATA, data);
 

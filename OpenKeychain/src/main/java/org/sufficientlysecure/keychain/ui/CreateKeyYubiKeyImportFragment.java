@@ -45,7 +45,9 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListenerFragment {
@@ -118,7 +120,19 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
             mNextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    importKey();
+
+                    final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                    Runnable ignoreTor = new Runnable() {
+                        @Override
+                        public void run() {
+                            importKey(new ParcelableProxy(null, -1, null));
+                        }
+                    };
+
+                    if(OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                            getActivity())) {
+                        importKey(proxyPrefs.parcelableProxy);
+                    }
                 }
             });
         }
@@ -174,7 +188,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), null);
     }
 
-    public void importKey() {
+    public void importKey(ParcelableProxy parcelableProxy) {
 
         // Message is received after decrypting is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
@@ -233,6 +247,8 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
             data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
         }
+
+        data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
 
         intent.putExtra(KeychainService.EXTRA_DATA, data);
 
