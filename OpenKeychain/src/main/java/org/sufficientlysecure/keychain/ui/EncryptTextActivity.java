@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2010-2015 Thialfihar <thi@thialfihar.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

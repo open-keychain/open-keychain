@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2014 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
+ * Copyright (c) 2013-2015 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
  *
  * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
  */
