@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

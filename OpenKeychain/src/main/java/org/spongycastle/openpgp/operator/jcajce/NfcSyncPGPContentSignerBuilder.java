@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2013-2014 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
- * Copyright (c) 2000-2013 The Legion of the Bouncy Castle Inc. (http://www.bouncycastle.org)
+ * Copyright (c) 2013-2015 Philipp Jakubeit, Signe Rüsch, Dominik Schürmann
+ * Copyright (c) 2000-2015 The Legion of the Bouncy Castle Inc. (http://www.bouncycastle.org)
  *
  * Licensed under the Bouncy Castle License (MIT license). See LICENSE file for details.
  */
