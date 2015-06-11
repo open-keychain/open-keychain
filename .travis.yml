@@ -14,6 +14,5 @@ before_install:
     - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --force --filter build-tools-22.0.1,build-tools-21.1.2,build-tools-21.1.1,build-tools-19.1.0,android-22,android-21,android-19,platform-tools,extra-android-support,extra-android-m2repository
 install: echo "Installation done"
 script:
-    - ./gradlew assemble -S -q
-    - ./gradlew --info OpenKeychain-Test:testDebug
+    - ./gradlew testDebug jacocoTestReport coveralls --info
 

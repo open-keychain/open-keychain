@@ -51,7 +51,12 @@ Select everything for the newest SDK Platform, API 22, and also API 21
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew test``
+2. Execute ``./gradlew clean testDebug --continue``
+
+### Run Jacoco Test Coverage
+1. Use OpenJDK instead of Oracle JDK
+2. Execute ``./gradlew clean testDebug jacocoTestReport``
+3. Report is here: OpenKeychain/build/reports/jacoco/jacocoTestReport/html/index.html
 
 ### Development with Android Studio
 

@@ -5,10 +5,12 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:1.1.3'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.2.7'
+        
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
 
@@ -19,7 +21,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    gradleVersion = '2.4'
 }
 
 subprojects {
@@ -28,7 +30,7 @@ subprojects {
     }
 }
 
-// Ignore tests for external dependency
+// Ignore tests for external spongycastle
 project(':extern:spongycastle') {
     subprojects {
         // Need to re-apply the plugin here otherwise the test property below can't be set.
