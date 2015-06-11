@@ -9,6 +9,8 @@ buildscript {
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.2.7'
+        
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
 

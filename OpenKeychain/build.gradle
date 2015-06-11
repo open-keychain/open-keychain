@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'witness'
 apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
