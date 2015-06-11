@@ -220,6 +220,11 @@ task jacocoTestReport(type:JacocoReport) {
     }
 }
 
+// Fix for: No report file available: [/home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/cobertura/coverage.xml, /home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/jacoco/test/jacocoTestReport.xml]
+coveralls {
+    jacocoReportPath 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+}
+
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
     if (task.name.contains('lint')) {
