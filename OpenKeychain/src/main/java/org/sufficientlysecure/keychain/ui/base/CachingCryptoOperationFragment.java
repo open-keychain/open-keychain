@@ -1,19 +1,10 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainNewService;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
 public abstract class CachingCryptoOperationFragment <T extends Parcelable, S extends OperationResult>
@@ -46,59 +37,6 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
     }
 
     protected abstract T createOperationInput();
-
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-
-        if (mCachedActionsParcel == null) {
-
-            mCachedActionsParcel = createOperationInput();
-            // this is null if invalid, just return in that case
-            if (mCachedActionsParcel == null) {
-                // Notify was created by createCryptoInput.
-                return;
-            }
-
-        }
-
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainNewService.class);
-
-        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, mCachedActionsParcel);
-        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
-
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-
-                    final OperationResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-
-                    onHandleResult(result);
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(
-                getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL, false);
-
-        getActivity().startService(intent);
-
-    }
 
     protected T getCachedActionsParcel() {
         return mCachedActionsParcel;
