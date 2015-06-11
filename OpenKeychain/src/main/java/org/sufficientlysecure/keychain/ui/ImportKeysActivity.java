@@ -21,7 +21,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.Fragment;
@@ -39,7 +38,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
@@ -364,9 +362,9 @@ public class ImportKeysActivity extends BaseNfcActivity {
             if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
                 mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
             }
+        } else if (loaderState instanceof ImportKeysListFragment.BytesLoaderState) { // must always be true
+            mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
         }
-
-        mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
     }
 
     private void handleMessage(Message message) {

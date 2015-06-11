@@ -62,17 +62,21 @@ public class CloudSearch {
             new Thread(r).start();
         }
 
-        // wait for either all the searches to come back, or 10 seconds
+        // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
         synchronized(results) {
             try {
-                results.wait(10 * SECONDS);
+                if (proxy != null) {
+                    results.wait(30 * SECONDS);
+                } else{
+                    results.wait(10 * SECONDS);
+                }
             } catch (InterruptedException e) {
             }
         }
 
         if (results.outstandingSuppliers() > 0) {
-            String message =  "Launched " + servers.size() + " cloud searchers, but" +
-                    results.outstandingSuppliers() + "failed to complete.";
+            String message =  "Launched " + servers.size() + " cloud searchers, but " +
+                    results.outstandingSuppliers() + " failed to complete.";
             problems.add(new Keyserver.QueryFailedException(message));
         }
 
