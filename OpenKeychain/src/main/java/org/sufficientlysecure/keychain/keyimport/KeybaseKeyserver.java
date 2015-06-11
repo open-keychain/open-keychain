@@ -37,7 +37,6 @@ public class KeybaseKeyserver extends Keyserver {
     @Override
     public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
             QueryNeedsRepairException {
-        // TODO: implement proxy
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
         if (query.startsWith("0x")) {
@@ -50,7 +49,7 @@ public class KeybaseKeyserver extends Keyserver {
         mQuery = query;
 
         try {
-            Iterable<Match> matches = Search.search(query);
+            Iterable<Match> matches = Search.search(query, proxy);
             for (Match match : matches) {
                 results.add(makeEntry(match));
             }
@@ -101,9 +100,8 @@ public class KeybaseKeyserver extends Keyserver {
 
     @Override
     public String get(String id, Proxy proxy) throws QueryFailedException {
-        // TODO: implement proxy
         try {
-            return User.keyForUsername(id);
+            return User.keyForUsername(id, proxy);
         } catch (KeybaseException e) {
             throw new QueryFailedException(e.getMessage());
         }
