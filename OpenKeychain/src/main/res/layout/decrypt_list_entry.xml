@@ -2,17 +2,18 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    card_view:cardBackgroundColor="@android:color/white"
-    card_view:cardElevation="2dp"
-    card_view:cardUseCompatPadding="true"
-    card_view:cardCornerRadius="4dp" >
+    custom:cardBackgroundColor="@android:color/white"
+    custom:cardElevation="2dp"
+    custom:cardUseCompatPadding="true"
+    custom:cardCornerRadius="4dp"
+    >
 
-    <ViewAnimator
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
@@ -21,9 +22,10 @@
         android:paddingLeft="8dp"
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
-        android:id="@+id/view_animator">
+        android:id="@+id/view_animator"
+        custom:initialView="1"
+        >
 
-        <!-- -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -172,6 +174,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
+                tools:layout_height="2dip"
                 android:background="?android:attr/listDivider" />
 
             <LinearLayout
@@ -238,6 +241,6 @@
 
         </LinearLayout>
 
-    </ViewAnimator>
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
 </android.support.v7.widget.CardView>
