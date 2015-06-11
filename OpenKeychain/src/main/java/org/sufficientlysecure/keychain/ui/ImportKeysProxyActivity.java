@@ -47,7 +47,9 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -150,8 +152,7 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             returnResult(intent);
             return;
         }
-
-        String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
+        final String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
         if (!fingerprint.matches("[a-fA-F0-9]{40}")) {
             SingletonResult result = new SingletonResult(
                     SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE_FP);
@@ -167,7 +168,18 @@ public class ImportKeysProxyActivity extends FragmentActivity {
             setResult(RESULT_OK, result);
             finish();
         } else {
-            importKeys(fingerprint);
+            final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
+            Runnable ignoreTor = new Runnable() {
+                @Override
+                public void run() {
+                    importKeys(fingerprint, new ParcelableProxy(null, -1, null));
+                }
+            };
+
+            if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                    this)) {
+                importKeys(fingerprint, proxyPrefs.parcelableProxy);
+            }
         }
 
     }
@@ -187,23 +199,23 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         }
     }
 
-    public void importKeys(byte[] keyringData) {
+    public void importKeys(byte[] keyringData, ParcelableProxy parcelableProxy) {
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(keyringData);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
-        startImportService(selectedEntries);
+        startImportService(selectedEntries, parcelableProxy);
     }
 
-    public void importKeys(String fingerprint) {
+    public void importKeys(String fingerprint, ParcelableProxy parcelableProxy) {
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 
-        startImportService(selectedEntries);
+        startImportService(selectedEntries, parcelableProxy);
     }
 
-    private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
+    private void startImportService(ArrayList<ParcelableKeyRing> keyRings, ParcelableProxy parcelableProxy) {
 
         // Message is received after importing is done in KeychainService
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
@@ -258,6 +270,8 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
         data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyRings);
 
+        data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
+
         // Send all information needed to service to query keys in other thread
         Intent intent = new Intent(this, KeychainService.class);
         intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
@@ -285,8 +299,19 @@ public class ImportKeysProxyActivity extends FragmentActivity {
         // only one message sent during the beam
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         // record 0 contains the MIME type, record 1 is the AAR, if present
-        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
-        importKeys(receivedKeyringBytes);
+        final byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(this)
+                .getProxyPrefs();
+        Runnable ignoreTor = new Runnable() {
+            @Override
+            public void run() {
+                importKeys(receivedKeyringBytes, new ParcelableProxy(null, -1, null));
+            }
+        };
+
+        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs, this)) {
+            importKeys(receivedKeyringBytes, proxyPrefs.parcelableProxy);
+        }
     }
 
 }

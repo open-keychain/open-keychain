@@ -37,15 +37,16 @@ import java.util.Set;
 
 public class EmailKeyHelper {
 
-    public static void importContacts(Context context, Messenger messenger, Proxy proxy) {
-        importAll(context, messenger, ContactHelper.getContactMails(context), proxy);
+    public static void importContacts(Context context, Messenger messenger, ParcelableProxy parcelableProxy) {
+        importAll(context, messenger, ContactHelper.getContactMails(context), parcelableProxy);
     }
 
-    public static void importAll(Context context, Messenger messenger, List<String> mails, Proxy proxy) {
+    public static void importAll(Context context, Messenger messenger, List<String> mails,
+                                 ParcelableProxy parcelableProxy) {
         // Collect all candidates as ImportKeysListEntry (set for deduplication)
         Set<ImportKeysListEntry> entries = new HashSet<>();
         for (String mail : mails) {
-            entries.addAll(getEmailKeys(context, mail, proxy));
+            entries.addAll(getEmailKeys(context, mail, parcelableProxy.getProxy()));
         }
 
         // Put them in a list and import
@@ -53,7 +54,7 @@ public class EmailKeyHelper {
         for (ImportKeysListEntry entry : entries) {
             keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
         }
-        importKeys(context, messenger, keys);
+        importKeys(context, messenger, keys, parcelableProxy);
     }
 
     public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail, Proxy proxy) {
@@ -79,11 +80,13 @@ public class EmailKeyHelper {
         return keys;
     }
 
-    private static void importKeys(Context context, Messenger messenger, ArrayList<ParcelableKeyRing> keys) {
+    private static void importKeys(Context context, Messenger messenger, ArrayList<ParcelableKeyRing> keys,
+                                   ParcelableProxy parcelableProxy) {
         Intent importIntent = new Intent(context, KeychainService.class);
         importIntent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
         Bundle importData = new Bundle();
         importData.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keys);
+        importData.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
         importIntent.putExtra(KeychainService.EXTRA_DATA, importData);
         importIntent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 

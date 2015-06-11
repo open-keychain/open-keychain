@@ -39,7 +39,9 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Sends the selected public key to a keyserver
@@ -72,7 +74,19 @@ public class UploadKeyActivity extends BaseActivity {
         mUploadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadKey();
+                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(UploadKeyActivity.this)
+                        .getProxyPrefs();
+                Runnable ignoreTor = new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadKey(proxyPrefs.parcelableProxy);
+                    }
+                };
+
+                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        UploadKeyActivity.this)) {
+                    uploadKey(proxyPrefs.parcelableProxy);
+                }
             }
         });
 
@@ -89,7 +103,7 @@ public class UploadKeyActivity extends BaseActivity {
         setContentView(R.layout.upload_key_activity);
     }
 
-    private void uploadKey() {
+    private void uploadKey(ParcelableProxy parcelableProxy) {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(this, KeychainService.class);
 
@@ -106,6 +120,7 @@ public class UploadKeyActivity extends BaseActivity {
         data.putString(KeychainService.UPLOAD_KEY_SERVER, server);
 
         intent.putExtra(KeychainService.EXTRA_DATA, data);
+        intent.putExtra(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
 
         // Message is received after uploading is done in KeychainService
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {

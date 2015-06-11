@@ -53,6 +53,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -78,11 +79,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.ExportHelper;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.NfcHelper;
-import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.*;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -352,7 +350,22 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             }
             case R.id.menu_key_view_refresh: {
                 try {
-                    updateFromKeyserver(mDataUri, mProviderHelper);
+                    final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
+                    Runnable ignoreTor = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                updateFromKeyserver(mDataUri, mProviderHelper, new ParcelableProxy(null, -1, null));
+                            } catch (ProviderHelper.NotFoundException e) {
+                                Notify.create(ViewKeyActivity.this, R.string.error_key_not_found, Notify.Style.ERROR)
+                                        .show();
+                            }
+                        }
+                    };
+
+                    if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs, this)) {
+                        updateFromKeyserver(mDataUri, mProviderHelper, proxyPrefs.parcelableProxy);
+                    }
                 } catch (ProviderHelper.NotFoundException e) {
                     Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 }
@@ -635,7 +648,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         }
     }
 
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper, ParcelableProxy parcelableProxy)
             throws ProviderHelper.NotFoundException {
 
         mIsRefreshing = true;
@@ -688,6 +701,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         }
 
         data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, entries);
+
+        data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
 
         // Send all information needed to service to query keys in other thread
         Intent intent = new Intent(this, KeychainService.class);
