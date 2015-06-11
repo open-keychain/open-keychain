@@ -122,63 +122,61 @@ public abstract class BaseNfcActivity extends BaseActivity {
         // Otherwise, all status codes are fixed values.
         switch (status) {
             // These errors should not occur in everyday use; if they are returned, it means we
-            // made a mistake sending data to the card.
-            case 0x6A80:
-                throw new AssertionError("Card returned 'Wrong Data' status; this is a programming error!");
-            case 0x6883:
-                throw new AssertionError("Card expected last command in a chain; this is a programming error!");
-            case 0x6B00:
-                throw new AssertionError("Card reported invalid P1/P2 parameter; this is a programming error!");
-            case 0x6D00:
-                throw new AssertionError("Instruction (INS) not supported by smart card; this is a programming error!");
-            case 0x6E00:
-                throw new AssertionError("Class (CLA) not supported by smart card; this is a programming error!");
-
-            // These errors might be encountered in everyday use, and should display a localized
-            // error message to the user.
-            case 0x6285:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_terminated)), Style.WARN).show();
+            // made a mistake sending data to the card, or the card is misbehaving.
+            case 0x6A80: {
+                Notify.create(this, getString(R.string.error_nfc_bad_data), Style.WARN).show();
                 break;
             }
-            case 0x6700:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_wrong_length)), Style.WARN).show();
+            case 0x6883: {
+                Notify.create(this, getString(R.string.error_nfc_chaining_error), Style.WARN).show();
                 break;
             }
-            case 0x6982:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_security_not_satisfied)), Style.WARN).show();
+            case 0x6B00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "P1/P2"), Style.WARN).show();
                 break;
             }
-            case 0x6983:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_authentication_blocked)), Style.WARN).show();
+            case 0x6D00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "INS"), Style.WARN).show();
                 break;
             }
-            case 0x6985:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_conditions_not_satisfied)), Style.WARN).show();
+            case 0x6E00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "CLA"), Style.WARN).show();
                 break;
             }
+            // These error conditions are more likely to be experienced by an end user.
+            case 0x6285: {
+                Notify.create(this, getString(R.string.error_nfc_terminated), Style.WARN).show();
+                break;
+            }
+            case 0x6700: {
+                Notify.create(this, getString(R.string.error_nfc_wrong_length), Style.WARN).show();
+                break;
+            }
+            case 0x6982: {
+                Notify.create(this, getString(R.string.error_nfc_security_not_satisfied),
+                        Style.WARN).show();
+                break;
+            }
+            case 0x6983: {
+                Notify.create(this, getString(R.string.error_nfc_authentication_blocked),
+                        Style.WARN).show();
+                break;
+            }
+            case 0x6985: {
+                Notify.create(this, getString(R.string.error_nfc_conditions_not_satisfied),
+                        Style.WARN).show();
+                break;
+            }
+            // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
             case 0x6A88:
-            case 0x6A83:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_data_not_found)), Style.WARN).show();
+            case 0x6A83: {
+                Notify.create(this, getString(R.string.error_nfc_data_not_found), Style.WARN).show();
                 break;
             }
             // 6F00 is a JavaCard proprietary status code, SW_UNKNOWN, and usually represents an
             // unhandled exception on the smart card.
-            case 0x6F00:
-            {
-                Notify.create(this, getString(R.string.error_nfc,
-                        getString(R.string.error_nfc_unknown)), Style.WARN).show();
+            case 0x6F00: {
+                Notify.create(this, getString(R.string.error_nfc_unknown), Style.WARN).show();
                 break;
             }
             default:
