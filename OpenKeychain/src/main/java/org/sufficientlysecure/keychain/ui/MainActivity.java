@@ -33,6 +33,7 @@ import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
@@ -51,7 +52,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
     private static final int ID_SETTINGS = 4;
     private static final int ID_HELP = 5;
 
-    public Drawer.Result mDrawerResult;
+    public Drawer mDrawer;
     private Toolbar mToolbar;
 
     @Override
@@ -63,7 +64,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 
-        mDrawerResult = new Drawer()
+        mDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withHeader(R.layout.main_drawer_header)
                 .withToolbar(mToolbar)
@@ -82,7 +83,7 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                    public boolean onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             Intent intent = null;
                             switch(drawerItem.getIdentifier()) {
@@ -106,6 +107,8 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                                 MainActivity.this.startActivity(intent);
                             }
                         }
+
+                        return false;
                     }
                 })
                 .withSelectedItem(-1)
@@ -154,21 +157,21 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
     private void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
-        mDrawerResult.setSelectionByIdentifier(ID_KEYS, false);
+        mDrawer.setSelectionByIdentifier(ID_KEYS, false);
         Fragment frag = new KeyListFragment();
         setFragment(frag, false);
     }
 
     private void onEnDecryptSelected() {
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
-        mDrawerResult.setSelectionByIdentifier(ID_ENCRYPT_DECRYPT, false);
+        mDrawer.setSelectionByIdentifier(ID_ENCRYPT_DECRYPT, false);
         Fragment frag = new EncryptDecryptOverviewFragment();
         setFragment(frag, true);
     }
 
     private void onAppsSelected() {
         mToolbar.setTitle(R.string.nav_apps);
-        mDrawerResult.setSelectionByIdentifier(ID_APPS, false);
+        mDrawer.setSelectionByIdentifier(ID_APPS, false);
         Fragment frag = new AppsListFragment();
         setFragment(frag, true);
     }
@@ -176,15 +179,15 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // add the values which need to be saved from the drawer to the bundle
-        outState = mDrawerResult.saveInstanceState(outState);
+        outState = mDrawer.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onBackPressed() {
         // close the drawer first and if the drawer is closed do regular backstack handling
-        if (mDrawerResult != null && mDrawerResult.isDrawerOpen()) {
-            mDrawerResult.closeDrawer();
+        if (mDrawer != null && mDrawer.isDrawerOpen()) {
+            mDrawer.closeDrawer();
         } else {
             super.onBackPressed();
         }
@@ -222,11 +225,11 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
         // make sure the selected icon is the one shown at this point
         if (frag instanceof KeyListFragment) {
-            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_KEYS), false);
+            mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_KEYS), false);
         } else if (frag instanceof EncryptDecryptOverviewFragment) {
-            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
+            mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
         } else if (frag instanceof AppsListFragment) {
-            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_APPS), false);
+            mDrawer.setSelection(mDrawer.getPositionFromIdentifier(ID_APPS), false);
         }
     }
 
