@@ -48,7 +48,10 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.net.*;
@@ -167,10 +170,21 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String keyserverUrl = mKeyserverEditText.getText().toString();
+                    final String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
-                        // TODO: PHILIP Implement proxy
-                        verifyConnection(keyserverUrl, null);
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                                .getProxyPrefs();
+                        Runnable ignoreTor = new Runnable() {
+                            @Override
+                            public void run() {
+                                verifyConnection(keyserverUrl, null);
+                            }
+                        };
+
+                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                                getActivity())) {
+                            verifyConnection(keyserverUrl, proxyPrefs.parcelableProxy.getProxy());
+                        }
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
