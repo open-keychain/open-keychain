@@ -223,7 +223,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         // TODO: PHILIP Implement proxy
-                        verifyConnection(keyserverUrl, null);
+                        verifyConnection(keyserverUrl);
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
