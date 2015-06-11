@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'witness'
+apply plugin: 'jacoco'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
@@ -136,6 +137,10 @@ android {
 
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
+            
+            // Disabled: only works for androidTest not test!
+            // Enable code coverage (Jacoco)
+            //testCoverageEnabled true
         }
     }
 
@@ -187,7 +192,33 @@ android {
         exclude 'LICENSE.txt'
     }
 }
-    
+
+task jacocoTestReport(type:JacocoReport) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: "${buildDir}/intermediates/classes/debug",
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewInjector*.*',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*']
+    )
+
+    sourceDirectories = files("${buildDir.parent}/src/main/java")
+    additionalSourceDirs = files([
+            "${buildDir}/generated/source/buildConfig/debug",
+            "${buildDir}/generated/source/r/debug"
+    ])
+    executionData = files("${buildDir}/jacoco/testDebug.exec")
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
     if (task.name.contains('lint')) {
