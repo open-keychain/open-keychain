@@ -23,11 +23,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -50,8 +55,8 @@ import java.io.PrintStream;
 import java.security.Security;
 import java.util.Iterator;
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class PromoteKeyOperationTest {
 
     static UncachedKeyRing mStaticRing;
@@ -89,7 +94,7 @@ public class PromoteKeyOperationTest {
 
     @Before
     public void setUp() throws Exception {
-        ProviderHelper providerHelper = new ProviderHelper(Robolectric.application);
+        ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -102,15 +107,15 @@ public class PromoteKeyOperationTest {
 
     @Test
     public void testPromote() throws Exception {
-        PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
-                new ProviderHelper(Robolectric.application), null, null);
+        PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
+                new ProviderHelper(RuntimeEnvironment.application), null, null);
 
         PromoteKeyResult result = op.execute(mStaticRing.getMasterKeyId(), null, null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CachedPublicKeyRing ring = new ProviderHelper(Robolectric.application)
+            CachedPublicKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
                     .getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
             Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
 
@@ -126,8 +131,8 @@ public class PromoteKeyOperationTest {
 
     @Test
     public void testPromoteDivert() throws Exception {
-        PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
-                new ProviderHelper(Robolectric.application), null, null);
+        PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
+                new ProviderHelper(RuntimeEnvironment.application), null, null);
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
@@ -136,7 +141,7 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CanonicalizedSecretKeyRing ring = new ProviderHelper(Robolectric.application)
+            CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
                     .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {
@@ -151,8 +156,8 @@ public class PromoteKeyOperationTest {
 
     @Test
     public void testPromoteDivertSpecific() throws Exception {
-        PromoteKeyOperation op = new PromoteKeyOperation(Robolectric.application,
-                new ProviderHelper(Robolectric.application), null, null);
+        PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
+                new ProviderHelper(RuntimeEnvironment.application), null, null);
 
         byte[] aid = Hex.decode("D2760001240102000000012345670000");
 
@@ -166,7 +171,7 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CanonicalizedSecretKeyRing ring = new ProviderHelper(Robolectric.application)
+            CanonicalizedSecretKeyRing ring = new ProviderHelper(RuntimeEnvironment.application)
                     .getCanonicalizedSecretKeyRing(mStaticRing.getMasterKeyId());
 
             for (CanonicalizedSecretKey key : ring.secretKeyIterator()) {

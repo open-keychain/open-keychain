@@ -90,7 +90,7 @@ public class KeychainContract {
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
-    public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".provider";
+    public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY);
