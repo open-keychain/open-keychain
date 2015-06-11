@@ -353,30 +353,16 @@ public class ImportKeysActivity extends BaseNfcActivity {
         if (loaderState instanceof ImportKeysListFragment.CloudLoaderState) {
             // do the tor check
             // this handle will set tor to be ignored whenever a message is received
-            Handler ignoreTorHandler = new Handler() {
+            Runnable ignoreTor = new Runnable() {
                 @Override
-                public void handleMessage(Message msg) {
+                public void run() {
                     // disables Tor until Activity is recreated
                     mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
                     mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
                 }
             };
-
-            if(mProxyPrefs.torEnabled && !OrbotHelper.isOrbotInstalled(this)) {
-
-                OrbotHelper.getInstallDialogFragmentWithThirdButton(
-                        new Messenger(ignoreTorHandler),
-                        R.string.orbot_install_dialog_ignore_tor
-                ).show(getSupportFragmentManager(), "orbotInstallDialog");
-
-                return;
-            }
-
-            if(mProxyPrefs.torEnabled && !OrbotHelper.isOrbotRunning()) {
-                OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
-                        R.string.orbot_install_dialog_ignore_tor)
-                        .show(getSupportFragmentManager(), "orbotStartDialog");
-                return;
+            if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
+                mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
             }
         }
 
