@@ -234,6 +234,8 @@ public class KeychainService extends Service implements Progressable {
                     }
                     case ACTION_VERIFY_KEYBASE_PROOF: {
 
+                        Proxy proxy = getProxyFromBundle(data);
+
                         try {
                             Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
                             setProgress(R.string.keybase_message_fetching_data, 0, 100);
@@ -246,7 +248,7 @@ public class KeychainService extends Service implements Progressable {
                                 return;
                             }
 
-                            if (!prover.fetchProofData()) {
+                            if (!prover.fetchProofData(proxy)) {
                                 sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
                                 return;
                             }

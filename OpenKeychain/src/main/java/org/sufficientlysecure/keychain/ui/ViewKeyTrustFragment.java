@@ -53,7 +53,11 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -190,8 +194,21 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 mStartSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mStartSearch.setEnabled(false);
-                        new DescribeKey().execute(fingerprint);
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+
+                        Runnable ignoreTor = new Runnable() {
+                            @Override
+                            public void run() {
+                                mStartSearch.setEnabled(false);
+                                new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+                            }
+                        };
+
+                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                                getActivity())) {
+                            mStartSearch.setEnabled(false);
+                            new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+                        }
                     }
                 });
             }
@@ -222,6 +239,11 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     // look for evidence from keybase in the background, make tabular version of result
     //
     private class DescribeKey extends AsyncTask<String, Void, ResultPage> {
+        ParcelableProxy mParcelableProxy;
+
+        public DescribeKey(ParcelableProxy parcelableProxy) {
+            mParcelableProxy = parcelableProxy;
+        }
 
         @Override
         protected ResultPage doInBackground(String... args) {
@@ -230,7 +252,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             final ArrayList<CharSequence> proofList = new ArrayList<CharSequence>();
             final Hashtable<Integer, ArrayList<Proof>> proofs = new Hashtable<Integer, ArrayList<Proof>>();
             try {
-                User keybaseUser = User.findByFingerprint(fingerprint);
+                User keybaseUser = User.findByFingerprint(fingerprint, mParcelableProxy.getProxy());
                 for (Proof proof : keybaseUser.getProofs()) {
                     Integer proofType = proof.getType();
                     appendIfOK(proofs, proofType, proof);
@@ -274,7 +296,21 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 ClickableSpan clicker = new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        verify(proof, fingerprint);
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+
+                        Runnable ignoreTor = new Runnable() {
+                            @Override
+                            public void run() {
+                                mStartSearch.setEnabled(false);
+                                verify(proof, fingerprint, new ParcelableProxy(null, -1, null));
+                            }
+                        };
+
+                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                                getActivity())) {
+                            mStartSearch.setEnabled(false);
+                            verify(proof, fingerprint, mParcelableProxy);
+                        }
                     }
                 };
                 ssb.setSpan(clicker, startAt, startAt + verify.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -348,13 +384,16 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         }
     }
 
-    private void verify(final Proof proof, final String fingerprint) {
+    private void verify(final Proof proof, final String fingerprint, ParcelableProxy parcelableProxy) {
         Intent intent = new Intent(getActivity(), KeychainService.class);
         Bundle data = new Bundle();
         intent.setAction(KeychainService.ACTION_VERIFY_KEYBASE_PROOF);
 
         data.putString(KeychainService.KEYBASE_PROOF, proof.toString());
         data.putString(KeychainService.KEYBASE_REQUIRED_FINGERPRINT, fingerprint);
+
+        data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, parcelableProxy);
+
         intent.putExtra(KeychainService.EXTRA_DATA, data);
 
         mProofVerifyDetail.setVisibility(View.GONE);
