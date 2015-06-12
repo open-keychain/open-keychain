@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,8 +25,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,9 +46,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
@@ -72,7 +66,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEncryptParcel> {
+public class EncryptFilesFragment
+        extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
 
     public static final String ARG_DELETE_AFTER_ENCRYPT = "delete_after_encrypt";
     public static final String ARG_ENCRYPT_FILENAMES = "encrypt_filenames";
@@ -272,11 +267,13 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
-                cryptoOperation(false);
+                mShareAfterEncrypt = false;
+                cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
-                cryptoOperation(true);
+                mShareAfterEncrypt = true;
+                cryptoOperation();
                 break;
             }
             case R.id.check_use_armor: {
@@ -374,7 +371,9 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
 
     }
 
-    public void onEncryptSuccess(final SignEncryptResult result) {
+    @Override
+    protected void onCryptoOperationSuccess(final SignEncryptResult result) {
+
         if (mDeleteAfterEncrypt) {
             DeleteFileDialogFragment deleteFileDialog =
                     DeleteFileDialogFragment.newInstance(mFilesAdapter.getAsArrayList());
@@ -402,6 +401,7 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 result.createNotify(getActivity()).show();
             }
         }
+
     }
 
     // prepares mOutputUris, either directly and returns false, or indirectly
@@ -441,7 +441,46 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
         }
     }
 
-    protected SignEncryptParcel createIncompleteEncryptBundle() {
+    protected SignEncryptParcel createOperationInput() {
+
+        SignEncryptParcel actionsParcel = getCachedActionsParcel();
+
+        // we have three cases here: nothing cached, cached except output, fully cached
+        if (actionsParcel == null) {
+
+            // clear output uris for now, they will be created by prepareOutputStreams later
+            mOutputUris = null;
+
+            actionsParcel = createIncompleteCryptoInput();
+            // this is null if invalid, just return in that case
+            if (actionsParcel == null) {
+                return null;
+            }
+
+            cacheActionsParcel(actionsParcel);
+
+        }
+
+        // if it's incomplete, prepare output streams
+        if (actionsParcel.isIncomplete()) {
+            // if this is still null, prepare output streams again
+            if (mOutputUris == null) {
+                // this may interrupt the flow, and call us again from onActivityResult
+                if (prepareOutputStreams(mShareAfterEncrypt)) {
+                    return null;
+                }
+            }
+
+            actionsParcel.addOutputUris(mOutputUris);
+            cacheActionsParcel(actionsParcel);
+
+        }
+
+        return actionsParcel;
+
+    }
+
+    protected SignEncryptParcel createIncompleteCryptoInput() {
 
         // fill values for this action
         SignEncryptParcel data = new SignEncryptParcel();
@@ -546,92 +585,6 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
         return sendIntent;
     }
 
-    public void cryptoOperation(boolean share) {
-        mShareAfterEncrypt = share;
-        cryptoOperation();
-    }
-
-    @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput, SignEncryptParcel actionsParcel) {
-
-        // we have three cases here: nothing cached, cached except output, fully cached
-        if (actionsParcel == null) {
-
-            // clear output uris for now, they will be created by prepareOutputStreams later
-            mOutputUris = null;
-
-            actionsParcel = createIncompleteEncryptBundle();
-            // this is null if invalid, just return in that case
-            if (actionsParcel == null) {
-                // Notify was created by createEncryptBundle.
-                return;
-            }
-
-            cacheActionsParcel(actionsParcel);
-        }
-
-        // if it's incomplete, prepare output streams
-        if (actionsParcel.isIncomplete()) {
-            // if this is still null, prepare output streams again
-            if (mOutputUris == null) {
-                // this may interrupt the flow, and call us again from onActivityResult
-                if (prepareOutputStreams(mShareAfterEncrypt)) {
-                    return;
-                }
-            }
-
-            actionsParcel.addOutputUris(mOutputUris);
-            cacheActionsParcel(actionsParcel);
-        }
-
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_SIGN_ENCRYPT);
-
-        Bundle data = new Bundle();
-        data.putParcelable(KeychainService.SIGN_ENCRYPT_PARCEL, actionsParcel);
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after encrypting is done in KeychainService
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_encrypting),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                // handle pending messages
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    SignEncryptResult result =
-                            message.getData().getParcelable(SignEncryptResult.EXTRA_RESULT);
-                    if (result.success()) {
-                        onEncryptSuccess(result);
-                    } else {
-                        result.createNotify(getActivity()).show();
-                    }
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -646,7 +599,8 @@ public class EncryptFilesFragment extends CachingCryptoOperationFragment<SignEnc
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUris = new ArrayList<>(1);
                     mOutputUris.add(data.getData());
-                    cryptoOperation(false);
+                    mShareAfterEncrypt = false;
+                    cryptoOperation();
                 }
                 return;
             }

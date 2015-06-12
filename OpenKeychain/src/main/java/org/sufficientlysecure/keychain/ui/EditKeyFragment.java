@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -39,6 +40,9 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
@@ -66,9 +70,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-
-public class EditKeyFragment extends CryptoOperationFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, OperationResult>
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
     public static final String ARG_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
@@ -572,7 +575,7 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
     }
 
-    private void returnKeyringParcel() {
+    protected void returnKeyringParcel() {
         if (mSaveKeyringParcel.mAddUserIds.size() == 0) {
             Notify.create(getActivity(), R.string.edit_key_error_add_identity, Notify.Style.ERROR).show();
             return;
@@ -591,76 +594,6 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         getActivity().finish();
     }
 
-    @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-
-        Log.d(Constants.TAG, "cryptoInput:\n" + cryptoInput);
-        Log.d(Constants.TAG, "mSaveKeyringParcel:\n" + mSaveKeyringParcel);
-
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_saving),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final OperationResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        return;
-                    }
-
-                    // if bad -> display here!
-                    if (!result.success()) {
-                        result.createNotify(getActivity()).show();
-                        return;
-                    }
-
-                    // if good -> finish, return result to showkey and display there!
-                    Intent intent = new Intent();
-                    intent.putExtra(OperationResult.EXTRA_RESULT, result);
-                    getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
-                    getActivity().finish();
-
-                }
-            }
-        };
-
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_EDIT_KEYRING);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-        data.putParcelable(KeychainService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
-    }
-
     /**
      * Closes this activity, returning a result parcel with a single error log entry.
      */
@@ -673,6 +606,22 @@ public class EditKeyFragment extends CryptoOperationFragment implements
         // Finish with result
         getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
         getActivity().finish();
+    }
+
+    @Override
+    protected SaveKeyringParcel createOperationInput() {
+        return mSaveKeyringParcel;
+    }
+
+    @Override
+    protected void onCryptoOperationSuccess(OperationResult result) {
+
+        // if good -> finish, return result to showkey and display there!
+        Intent intent = new Intent();
+        intent.putExtra(OperationResult.EXTRA_RESULT, result);
+        getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
+        getActivity().finish();
+
     }
 
 }

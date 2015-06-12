@@ -572,12 +572,7 @@ public class KeyListFragment extends LoaderFragment
             keyList.add(keyEntry);
         }
 
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_updating),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -625,7 +620,9 @@ public class KeyListFragment extends LoaderFragment
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        serviceHandler.showProgressDialog(getActivity());
+        serviceHandler.showProgressDialog(
+                getString(R.string.progress_updating),
+                ProgressDialog.STYLE_HORIZONTAL, true);
 
         // start service with intent
         getActivity().startService(intent);
@@ -633,11 +630,7 @@ public class KeyListFragment extends LoaderFragment
 
     private void consolidate() {
         // Message is received after importing is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -675,7 +668,9 @@ public class KeyListFragment extends LoaderFragment
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
+        saveHandler.showProgressDialog(
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL, false);
 
         // start service with intent
         getActivity().startService(intent);

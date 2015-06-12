@@ -63,8 +63,6 @@ public class DecryptFilesFragment extends DecryptFragment {
     private Uri mInputUri = null;
     private Uri mOutputUri = null;
 
-    private String mCurrentCryptoOperation;
-
     /**
      * Creates new instance of this fragment
      */
@@ -151,7 +149,7 @@ public class DecryptFilesFragment extends DecryptFragment {
             return;
         }
 
-        startDecryptFilenames();
+        cryptoOperation();
     }
 
     private String removeEncryptedAppend(String name) {
@@ -179,112 +177,6 @@ public class DecryptFilesFragment extends DecryptFragment {
         }
     }
 
-    private void startDecrypt() {
-        mCurrentCryptoOperation = KeychainService.ACTION_DECRYPT_VERIFY;
-        cryptoOperation(new CryptoInputParcel());
-    }
-
-    private void startDecryptFilenames() {
-        mCurrentCryptoOperation = KeychainService.ACTION_DECRYPT_METADATA;
-        cryptoOperation(new CryptoInputParcel());
-    }
-
-    @Override
-    @SuppressLint("HandlerLeak")
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-        // use current operation, either decrypt metadata or decrypt payload
-        intent.setAction(mCurrentCryptoOperation);
-
-        // data
-
-        Log.d(Constants.TAG, "mInputUri=" + mInputUri + ", mOutputUri=" + mOutputUri);
-
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri)
-                .setAllowSymmetricDecryption(true);
-
-        data.putParcelable(KeychainService.DECRYPT_VERIFY_PARCEL, input);
-        data.putParcelable(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after decrypting is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(
-                getActivity(),
-                getString(R.string.progress_decrypting),
-                ProgressDialog.STYLE_HORIZONTAL
-        ) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                // handle pending messages
-                if (handlePendingMessage(message)) {
-                    return;
-                }
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    DecryptVerifyResult pgpResult =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    if (pgpResult.success()) {
-                        switch (mCurrentCryptoOperation) {
-                            case KeychainService.ACTION_DECRYPT_METADATA: {
-                                askForOutputFilename(pgpResult.getDecryptMetadata().getFilename());
-                                break;
-                            }
-                            case KeychainService.ACTION_DECRYPT_VERIFY: {
-                                // display signature result in activity
-                                loadVerifyResult(pgpResult);
-
-                                if (mDeleteAfter.isChecked()) {
-                                    // Create and show dialog to delete original file
-                                    DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment.newInstance(mInputUri);
-                                    deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
-                                    setInputUri(null);
-                                }
-
-                                /*
-                                // A future open after decryption feature
-                                if () {
-                                    Intent viewFile = new Intent(Intent.ACTION_VIEW);
-                                    viewFile.setInputData(mOutputUri);
-                                    startActivity(viewFile);
-                                }
-                                */
-                                break;
-                            }
-                            default: {
-                                Log.e(Constants.TAG, "Bug: not supported operation!");
-                                break;
-                            }
-                        }
-                    }
-                    pgpResult.createNotify(getActivity()).show(DecryptFilesFragment.this);
-                }
-
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(getActivity());
-
-        // start service with intent
-        getActivity().startService(intent);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -299,7 +191,7 @@ public class DecryptFilesFragment extends DecryptFragment {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUri = data.getData();
-                    startDecrypt();
+                    cryptoOperation();
                 }
                 return;
             }
@@ -314,4 +206,20 @@ public class DecryptFilesFragment extends DecryptFragment {
     protected void onVerifyLoaded(boolean hideErrorOverlay) {
 
     }
+
+    @Override
+    protected PgpDecryptVerifyInputParcel createOperationInput() {
+        return new PgpDecryptVerifyInputParcel(mInputUri, mOutputUri).setAllowSymmetricDecryption(true);
+    }
+
+    @Override
+    protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
+
+        // display signature result in activity
+        loadVerifyResult(result);
+
+        // TODO delete after decrypt not implemented!
+
+    }
+
 }

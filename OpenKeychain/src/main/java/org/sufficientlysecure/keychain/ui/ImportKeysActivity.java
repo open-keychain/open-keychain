@@ -388,12 +388,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
             return;
         }
 
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(
-                this,
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL,
-                true
-        ) {
+        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -435,7 +430,11 @@ public class ImportKeysActivity extends BaseNfcActivity {
                 intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
                 // show progress dialog
-                serviceHandler.showProgressDialog(this);
+                serviceHandler.showProgressDialog(
+                        getString(R.string.progress_importing),
+                        ProgressDialog.STYLE_HORIZONTAL,
+                        true
+                );
 
                 // start service with intent
                 startService(intent);
@@ -469,7 +468,10 @@ public class ImportKeysActivity extends BaseNfcActivity {
             intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
-            serviceHandler.showProgressDialog(this);
+            serviceHandler.showProgressDialog(
+                    getString(R.string.progress_importing),
+                    ProgressDialog.STYLE_HORIZONTAL, true
+            );
 
             // start service with intent
             startService(intent);
