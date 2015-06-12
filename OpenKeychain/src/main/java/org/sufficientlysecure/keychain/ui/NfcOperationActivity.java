@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -28,6 +27,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -46,6 +46,8 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
+
+    private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,17 +128,29 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     }
 
                     if (key.canSign() || key.canCertify()) {
-                        nfcPutKey(0xB6, key, passphrase);
-                        nfcPutData(0xCE, timestampBytes);
-                        nfcPutData(0xC7, key.getFingerprint());
+                        if (shouldPutKey(key.getFingerprint(), 0)) {
+                            nfcPutKey(0xB6, key, passphrase);
+                            nfcPutData(0xCE, timestampBytes);
+                            nfcPutData(0xC7, key.getFingerprint());
+                        } else {
+                            throw new IOException("Key slot occupied; card must be reset to put new signature key.");
+                        }
                     } else if (key.canEncrypt()) {
-                        nfcPutKey(0xB8, key, passphrase);
-                        nfcPutData(0xCF, timestampBytes);
-                        nfcPutData(0xC8, key.getFingerprint());
+                        if (shouldPutKey(key.getFingerprint(), 1)) {
+                            nfcPutKey(0xB8, key, passphrase);
+                            nfcPutData(0xCF, timestampBytes);
+                            nfcPutData(0xC8, key.getFingerprint());
+                        } else {
+                            throw new IOException("Key slot occupied; card must be reset to put new decryption key.");
+                        }
                     } else if (key.canAuthenticate()) {
-                        nfcPutKey(0xA4, key, passphrase);
-                        nfcPutData(0xD0, timestampBytes);
-                        nfcPutData(0xC9, key.getFingerprint());
+                        if (shouldPutKey(key.getFingerprint(), 2)) {
+                            nfcPutKey(0xA4, key, passphrase);
+                            nfcPutData(0xD0, timestampBytes);
+                            nfcPutData(0xC9, key.getFingerprint());
+                        } else {
+                            throw new IOException("Key slot occupied; card must be reset to put new authentication key.");
+                        }
                     } else {
                         throw new IOException("Inappropriate key flags for smart card key.");
                     }
@@ -156,6 +170,18 @@ public class NfcOperationActivity extends BaseNfcActivity {
         }
 
         finish();
+    }
+
+    private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
+        byte[] cardFingerprint = nfcGetFingerprint(idx);
+        // Slot is empty, or contains this key already. PUT KEY operation is safe
+        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
+            Arrays.equals(cardFingerprint, fingerprint)) {
+            return true;
+        }
+
+        // Slot already contains a different key; don't overwrite it.
+        return false;
     }
 
     @Override
