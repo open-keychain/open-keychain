@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.net.Proxy;
@@ -189,6 +190,7 @@ public class CertifyOperation extends BaseOperation {
 
         HkpKeyserver keyServer = null;
         ImportExportOperation importExportOperation = null;
+        ParcelableProxy parcelableProxy = parcel.parcelableProxy;
         if (parcel.keyServerUri != null) {
             keyServer = new HkpKeyserver(parcel.keyServerUri);
             importExportOperation = new ImportExportOperation(mContext, mProviderHelper, mProgressable);
@@ -210,7 +212,8 @@ public class CertifyOperation extends BaseOperation {
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
             if (importExportOperation != null) {
-                ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey, proxy);
+                ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey,
+                        parcelableProxy.getProxy());
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {
