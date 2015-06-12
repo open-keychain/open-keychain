@@ -26,6 +26,7 @@ import android.database.MatrixCursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcel;
@@ -339,6 +340,11 @@ public class CertifyKeyFragment
         // fill values for this action
         CertifyActionsParcel actionsParcel = new CertifyActionsParcel(selectedKeyId);
         actionsParcel.mCertifyActions.addAll(certifyActions);
+
+        if (mUploadKeyCheckbox.isChecked()) {
+            actionsParcel.keyServerUri = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+            actionsParcel.parcelableProxy = mProxyPrefs.parcelableProxy;
+        }
 
         // cached for next cryptoOperation loop
         cacheActionsParcel(actionsParcel);
