@@ -96,6 +96,7 @@ public final class Constants {
         // proxy settings
         public static final String USE_NORMAL_PROXY = "useNormalProxy";
         public static final String USE_TOR_PROXY = "useTorProxy";
+        public static final String USE_I2P_PROXY = "useI2pProxy";
         public static final String PROXY_HOST = "proxyHost";
         public static final String PROXY_PORT = "proxyPort";
         public static final String PROXY_TYPE = "proxyType";
@@ -107,6 +108,15 @@ public final class Constants {
     public static final class Orbot {
         public static final String PROXY_HOST = "127.0.0.1";
         public static final int PROXY_PORT = 8118;
+        public static final Proxy.Type PROXY_TYPE = Proxy.Type.HTTP;
+    }
+
+    /**
+     * information to connect to I2P
+     */
+    public static final class I2p {
+        public static final String PROXY_HOST = "127.0.0.1";
+        public static final int PROXY_PORT = 4444;
         public static final Proxy.Type PROXY_TYPE = Proxy.Type.HTTP;
     }
 

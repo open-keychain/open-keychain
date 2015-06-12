@@ -247,6 +247,10 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Constants.Pref.USE_TOR_PROXY, false);
     }
 
+    public boolean getUseI2pProxy() {
+        return mSharedPreferences.getBoolean(Pref.USE_I2P_PROXY, false);
+    }
+
     public String getProxyHost() {
         return mSharedPreferences.getString(Constants.Pref.PROXY_HOST, null);
     }
@@ -285,36 +289,58 @@ public class Preferences {
         }
     }
 
-    public ProxyPrefs getProxyPrefs() {
+    public ProxyPrefs.Category getProxyCategory() {
         boolean useTor = getUseTorProxy();
         boolean useNormalProxy = getUseNormalProxy();
+        boolean useI2p = getUseI2pProxy();
 
-        if (useTor) {
-            return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
-                    Constants.Orbot.PROXY_TYPE);
+        if (useI2p) return ProxyPrefs.Category.I2P;
+        if (useTor) return ProxyPrefs.Category.TOR;
+        if (useNormalProxy) return ProxyPrefs.Category.NORMAL;
+        return ProxyPrefs.Category.NONE;
+    }
+
+    public ProxyPrefs getProxyPrefs() {
+        String proxyHost = null;
+        int proxyPort = -1;
+        Proxy.Type proxyType = null;
+
+        ProxyPrefs.Category category = getProxyCategory();
+        switch (category) {
+            case TOR:
+                proxyHost = Constants.Orbot.PROXY_HOST;
+                proxyPort = Constants.Orbot.PROXY_PORT;
+                proxyType = Constants.Orbot.PROXY_TYPE;
+                break;
+            case I2P:
+                proxyHost = Constants.I2p.PROXY_HOST;
+                proxyPort = Constants.I2p.PROXY_PORT;
+                proxyType = Constants.I2p.PROXY_TYPE;
+                break;
+            case NORMAL:
+                proxyHost = getProxyHost();
+                proxyPort = getProxyPort();
+                proxyType = getProxyType();
+                break;
+            // if NONE, do nothing, leave at default values
         }
-        else if (useNormalProxy) {
-            return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
-        } else {
-            return new ProxyPrefs(false, false, null, -1, null);
-        }
+        return new ProxyPrefs(category, proxyHost, proxyPort, proxyType);
     }
 
     public static class ProxyPrefs {
+        public final Category category;
         public final ParcelableProxy parcelableProxy;
-        public final boolean torEnabled;
-        public final boolean normalPorxyEnabled;
+
+        public enum Category {
+            TOR, I2P, NORMAL, NONE
+        }
 
         /**
-         * torEnabled and normalProxyEnabled are not expected to both be true
-         *
-         * @param torEnabled         if Tor is to be used
-         * @param normalPorxyEnabled if user-specified proxy is to be used
+         * a null proxy has category null
          */
-        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
-            this.torEnabled = torEnabled;
-            this.normalPorxyEnabled = normalPorxyEnabled;
-            if(!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
+        public ProxyPrefs(Category catgeory, String hostName, int port, Proxy.Type type) {
+            this.category = catgeory;
+            if(category == Category.NONE) this.parcelableProxy = new ParcelableProxy(null, -1, null);
             else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
     }

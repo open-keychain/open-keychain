@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import net.i2p.android.ui.I2PAndroidHelper;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -303,12 +304,17 @@ public class SettingsActivity extends PreferenceActivity {
 
         public static class Initializer {
             private CheckBoxPreference mUseTor;
+            private CheckBoxPreference mUseI2p;
             private CheckBoxPreference mUseNormalProxy;
             private EditTextPreference mProxyHost;
             private EditTextPreference mProxyPort;
             private ListPreference mProxyType;
             private PreferenceActivity mActivity;
             private PreferenceFragment mFragment;
+
+            private enum ProxyCategory {
+                TOR, I2P, NORMAL
+            }
 
             public Initializer(PreferenceFragment fragment) {
                 mFragment = fragment;
@@ -341,17 +347,23 @@ public class SettingsActivity extends PreferenceActivity {
                 }
 
                 mUseTor = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
+                mUseI2p = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_I2P_PROXY);
                 mUseNormalProxy = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
                 mProxyHost = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_HOST);
                 mProxyPort = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_PORT);
                 mProxyType = (ListPreference) automaticallyFindPreference(Constants.Pref.PROXY_TYPE);
+
                 initializeUseTorPref();
+
+                initializeUseI2pPref();
+
                 initializeUseNormalProxyPref();
                 initializeEditTextPreferences();
                 initializeProxyTypePreference();
 
-                if (mUseTor.isChecked()) disableNormalProxyPrefs();
-                else if (mUseNormalProxy.isChecked()) disableUseTorPrefs();
+                if (mUseTor.isChecked()) disablePrefsOtherThan(ProxyCategory.TOR);
+                else if (mUseNormalProxy.isChecked()) disablePrefsOtherThan(ProxyCategory.NORMAL);
+                else if (mUseI2p.isChecked()) disablePrefsOtherThan(ProxyCategory.I2P);
             }
 
             private void initializeUseTorPref() {
@@ -368,14 +380,45 @@ public class SettingsActivity extends PreferenceActivity {
                                 // don't let the user check the box until he's installed orbot
                                 return false;
                             } else {
-                                disableNormalProxyPrefs();
+                                disablePrefsOtherThan(ProxyCategory.TOR);
                                 // let the enable tor box be checked
                                 return true;
                             }
                         }
                         else {
                             // we're unchecking Tor, so enable other proxy
-                            enableNormalProxyPrefs();
+                            enableAllProxyPrefs();
+                            return true;
+                        }
+                    }
+                });
+            }
+
+            private void initializeUseI2pPref() {
+                mUseI2p.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        // checks whether the Initializer is being used from a fragment or activity, and acts
+                        // accordingly
+                        Activity activity = mFragment != null ? mFragment.getActivity() : mActivity;
+
+                        if ((Boolean)newValue) {
+                            I2PAndroidHelper i2pHelper = new I2PAndroidHelper(activity);
+                            boolean installed = i2pHelper.isI2PAndroidInstalled();
+                            if (!installed) {
+                                Log.d(Constants.TAG, "Prompting to install I2P");
+                                i2pHelper.promptToInstall(activity);
+                                // don't let the user check the box until he's installed I2P
+                                return false;
+                            } else {
+                                disablePrefsOtherThan(ProxyCategory.I2P);
+                                // let the enable I2P box be checked
+                                return true;
+                            }
+                        }
+                        else {
+                            // we're unchecking I2P, so enable other proxy options
+                            enableAllProxyPrefs();
                             return true;
                         }
                     }
@@ -387,9 +430,9 @@ public class SettingsActivity extends PreferenceActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         if ((Boolean) newValue) {
-                            disableUseTorPrefs();
+                            disablePrefsOtherThan(ProxyCategory.NORMAL);
                         } else {
-                            enableUseTorPrefs();
+                            enableAllProxyPrefs();
                         }
                         return true;
                     }
@@ -460,6 +503,29 @@ public class SettingsActivity extends PreferenceActivity {
                 });
             }
 
+            private void disablePrefsOtherThan(ProxyCategory type) {
+                switch(type) {
+                    case TOR:
+                        disableNormalProxyPrefs();
+                        disableI2pPrefs();
+                        break;
+                    case I2P:
+                        disableTorPrefs();
+                        disableNormalProxyPrefs();
+                        break;
+                    case NORMAL:
+                        disableI2pPrefs();
+                        disableTorPrefs();
+                        break;
+                }
+            }
+
+            private void enableAllProxyPrefs() {
+                enableTorPrefs();
+                enableI2pPrefs();
+                enableNormalProxyPrefs();
+            }
+
             private void disableNormalProxyPrefs() {
                 mUseNormalProxy.setChecked(false);
                 mUseNormalProxy.setEnabled(false);
@@ -475,13 +541,22 @@ public class SettingsActivity extends PreferenceActivity {
                 mProxyType.setEnabled(true);
             }
 
-            private void disableUseTorPrefs() {
+            private void disableTorPrefs() {
                 mUseTor.setChecked(false);
                 mUseTor.setEnabled(false);
             }
 
-            private void enableUseTorPrefs() {
+            private void enableTorPrefs() {
                 mUseTor.setEnabled(true);
+            }
+
+            private void disableI2pPrefs() {
+                mUseI2p.setChecked(false);
+                mUseI2p.setEnabled(false);
+            }
+
+            private void enableI2pPrefs() {
+                mUseI2p.setEnabled(true);
             }
         }
 
@@ -491,6 +566,7 @@ public class SettingsActivity extends PreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
+                || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 

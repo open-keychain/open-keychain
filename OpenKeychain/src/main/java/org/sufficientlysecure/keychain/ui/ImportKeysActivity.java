@@ -355,7 +355,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
                 @Override
                 public void run() {
                     // disables Tor until Activity is recreated
-                    mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
+                    mProxyPrefs = new Preferences.ProxyPrefs(Preferences.ProxyPrefs.Category.NONE, null, -1, null);
                     mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
                 }
             };

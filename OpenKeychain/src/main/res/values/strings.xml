@@ -169,6 +169,8 @@
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
+    <string name="pref_proxy_i2p_title">"Enable I2P"</string>
+    <string name="pref_proxy_i2p_summary">"Requires I2P to be installed"</string>
     <string name="pref_proxy_normal_title">"Enable other proxy"</string>
     <string name="pref_proxy_host_title">"Proxy Host"</string>
     <string name="pref_proxy_host_err_invalid">"Proxy host cannot be empty"</string>

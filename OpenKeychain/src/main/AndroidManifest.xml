@@ -66,8 +66,10 @@
     <uses-permission android:name="android.permission.WRITE_PROFILE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
+    <!-- tools:replace="android:allowBackup" to accommodate "true" value in net.i2p.android -->
     <application
         android:name=".KeychainApplication"
+        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"

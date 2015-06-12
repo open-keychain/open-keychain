@@ -6,6 +6,11 @@
             android:title="@string/pref_proxy_tor_title"
             android:summary="@string/pref_proxy_tor_summary" />
     <CheckBoxPreference
+            android:key="useI2pProxy"
+            android:persistent="true"
+            android:title="@string/pref_proxy_i2p_title"
+            android:summary="@string/pref_proxy_i2p_summary" />
+    <CheckBoxPreference
             android:key="useNormalProxy"
             android:persistent="true"
             android:title="@string/pref_proxy_normal_title" />

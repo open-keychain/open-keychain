@@ -155,7 +155,7 @@ public class OrbotHelper {
             }
         };
 
-        if (!proxyPrefs.torEnabled) {
+        if (!(proxyPrefs.category == Preferences.ProxyPrefs.Category.TOR)) {
             return true;
         }
 

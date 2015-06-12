@@ -41,6 +41,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import net.i2p.android.ui.I2PAndroidHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -175,22 +176,27 @@ public class CertifyKeyFragment
                 if (selectedKeyId == Constants.key.none) {
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
-                } else {
+                } else { // check if proxy settings are valid before allowing operation
+                    Runnable ignoreTor = new Runnable() {
+                        @Override
+                        public void run() {
+                            mProxyPrefs = new Preferences.ProxyPrefs(Preferences.ProxyPrefs.Category.NONE, null, -1,
+                                    null);
+                            cryptoOperation();
+                        }
+                    };
 
-                    if (mUploadKeyCheckbox.isChecked() && mProxyPrefs.torEnabled) {
-                        Handler ignoreTorHandler = new Handler() {
-                            @Override
-                            public void handleMessage(Message msg) {
-                                mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
-                                cryptoOperation();
-                            }
-                        };
-                        if (!OrbotHelper.isOrbotInstalled(getActivity())) {
-                            OrbotHelper.getInstallDialogFragmentWithThirdButton(new Messenger(ignoreTorHandler),
-                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "installOrbot");
-                        } else if (!OrbotHelper.isOrbotRunning()) {
-                            OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
-                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "startOrbot");
+                    if (mUploadKeyCheckbox.isChecked() && mProxyPrefs.category == Preferences.ProxyPrefs.Category.TOR) {
+                        OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs,
+                                getActivity());
+                    }
+
+                    if (mUploadKeyCheckbox.isChecked() && mProxyPrefs.category == Preferences.ProxyPrefs.Category.I2P) {
+                        I2PAndroidHelper helper = new I2PAndroidHelper(getActivity());
+                        if (!helper.isI2PAndroidInstalled()) {
+                            helper.promptToInstall(getActivity());
+                        } else if (!helper.isI2PAndroidRunning()) {
+                            helper.requestI2PAndroidStart(getActivity());
                         } else {
                             cryptoOperation();
                         }
