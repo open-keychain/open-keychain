@@ -311,6 +311,11 @@ public class CertifyKeyFragment
         CertifyActionsParcel actionsParcel = new CertifyActionsParcel(selectedKeyId);
         actionsParcel.mCertifyActions.addAll(certifyActions);
 
+        if (mUploadKeyCheckbox.isChecked()) {
+            actionsParcel.keyServerUri = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+            actionsParcel.parcelableProxy = mProxyPrefs.parcelableProxy;
+        }
+
         // cached for next cryptoOperation loop
         cacheActionsParcel(actionsParcel);
 
