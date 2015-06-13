@@ -63,6 +63,8 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingRight="4dp"
+                android:paddingLeft="4dp"
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
