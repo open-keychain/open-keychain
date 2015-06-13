@@ -21,10 +21,14 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0-rc3'
 
     // UI testing with Espresso
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.3'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
 
     // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
     // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
