@@ -18,7 +18,11 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import com.squareup.okhttp.*;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import okio.BufferedSink;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -46,6 +50,8 @@ import de.measite.minidns.Client;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class HkpKeyserver extends Keyserver {
     private static class HttpError extends Exception {
@@ -216,13 +222,13 @@ public class HkpKeyserver extends Keyserver {
 
     private String query(String request, Proxy proxy) throws QueryFailedException, HttpError {
         try {
+
+            tempIpTest(proxy);
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
             Log.d(Constants.TAG, "hkp keyserver query: " + url);
             Log.d("PHILIP", "hkpKeyserver query(): " + proxy);
-            OkHttpClient client = getClient(url, proxy);
+            OkHttpClient client = getClient(new URL("https://www.eepsite.com"), proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
-
-            tempIpTest(proxy);
 
             String responseBody = response.body().string();// contains body both in case of success or failure
 
@@ -238,7 +244,11 @@ public class HkpKeyserver extends Keyserver {
     }
 
     private void tempIpTest(Proxy proxy) throws IOException {
-        URL url = new URL("https://wtfismyip.com/text");
+        URL url = new URL("http://www.eepsite.com");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+        connection.setConnectTimeout(100000);
+        connection.connect();
+        Log.e("Philip", connection.getResponseMessage()+" ");
         Response response = getClient(url, proxy).newCall(new Request.Builder().url(url).build()).execute();
         Log.e("PHILIP", "proxy Test: " + response.body().string());
     }

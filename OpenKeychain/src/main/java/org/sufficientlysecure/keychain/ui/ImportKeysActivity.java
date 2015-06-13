@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import net.i2p.android.ui.I2PAndroidHelper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
@@ -85,11 +86,16 @@ public class ImportKeysActivity extends BaseNfcActivity {
     private Fragment mTopFragment;
     private View mImportButton;
 
+    private I2PAndroidHelper mI2PHelper;
+    private boolean mI2PHelperBound;
+    private boolean mI2PProxyInitialized;
+
     private Preferences.ProxyPrefs mProxyPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mI2PHelper = new I2PAndroidHelper(this);
 
         mProxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
 
@@ -317,7 +323,8 @@ public class ImportKeysActivity extends BaseNfcActivity {
      *                           specified in user preferences
      */
 
-    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String keyserver) {
+    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String
+            keyserver) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -359,12 +366,29 @@ public class ImportKeysActivity extends BaseNfcActivity {
                     mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
                 }
             };
+            if (mProxyPrefs.category == Preferences.ProxyPrefs.Category.I2P) {
+                mI2PProxyInitialized = true;
+                if (mI2PHelperBound && !mI2PHelper.isI2PAndroidRunning()) {
+                    mI2PHelper.requestI2PAndroidStart(this);
+                }
+                Log.e("Philip", "i2p: " + mI2PHelper.areTunnelsActive());
+            }
             if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
                 mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
             }
         } else if (loaderState instanceof ImportKeysListFragment.BytesLoaderState) { // must always be true
             mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
         }
+    }
+
+    public boolean isProxyReady() {
+        if (!mI2PHelper.isI2PAndroidRunning()) {
+            return false;
+        } else if (!mI2PHelper.areTunnelsActive()) {
+            return false;
+        }
+
+        return true;
     }
 
     private void handleMessage(Message message) {
@@ -509,5 +533,26 @@ public class ImportKeysActivity extends BaseNfcActivity {
         super.onNfcPerform();
         // either way, finish afterwards
         finish();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mI2PHelper.unbind();
+        mI2PHelperBound = false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Try to bind to I2P Android
+        mI2PHelper.bind(new I2PAndroidHelper.Callback() {
+            @Override
+            public void onI2PAndroidBound() {
+                mI2PHelperBound = true;
+                if (mI2PProxyInitialized && !mI2PHelper.isI2PAndroidRunning())
+                    mI2PHelper.requestI2PAndroidStart(ImportKeysActivity.this);
+            }
+        });
     }
 }
