@@ -245,10 +245,6 @@ public class HkpKeyserver extends Keyserver {
 
     private void tempIpTest(Proxy proxy) throws IOException {
         URL url = new URL("http://www.eepsite.com");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
-        connection.setConnectTimeout(100000);
-        connection.connect();
-        Log.e("Philip", connection.getResponseMessage()+" ");
         Response response = getClient(url, proxy).newCall(new Request.Builder().url(url).build()).execute();
         Log.e("PHILIP", "proxy Test: " + response.body().string());
     }
