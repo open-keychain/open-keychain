@@ -16,12 +16,14 @@ android:
         - 'android-sdk-preview-license-52d11cd2'
         - 'android-sdk-license-.+'
         - 'google-gdk-license-.+'
-before_script:
-    - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
-    - emulator -avd test -no-skin -no-audio -no-window &
+# before_script:
+# - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
+# - emulator -avd test -no-skin -no-audio -no-window &
 script:
     - ./gradlew
     - ./gradlew testDebug
     - ./gradlew jacocoTestReport coveralls
-    - android-wait-for-emulator && adb shell input keyevent 82 &
-    - ./gradlew connectedAndroidTest
+
+# don't run instrumentation tests for now
+# - android-wait-for-emulator && adb shell input keyevent 82 &
+# - ./gradlew connectedAndroidTest
