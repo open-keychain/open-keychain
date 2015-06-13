@@ -17,14 +17,11 @@
 
 package org.sufficientlysecure.keychain;
 
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -43,18 +40,24 @@ import static org.hamcrest.Matchers.allOf;
 import static org.sufficientlysecure.keychain.matcher.EditTextMatchers.withError;
 import static org.sufficientlysecure.keychain.matcher.EditTextMatchers.withTransformationMethod;
 
-@RunWith(AndroidJUnit4.class)
-public class CreateKeyActivityTest {
+@LargeTest
+public class CreateKeyActivityTest extends ActivityInstrumentationTestCase2<CreateKeyActivity> {
 
     public static final String SAMPLE_NAME = "Sample Name";
     public static final String SAMPLE_EMAIL = "sample_email@gmail.com";
     public static final String SAMPLE_ADDITIONAL_EMAIL = "sample_additional_email@gmail.com";
     public static final String SAMPLE_PASSWORD = "sample_password";
 
-    @Rule
-    public ActivityTestRule<CreateKeyActivity> mActivityRule = new ActivityTestRule<>(CreateKeyActivity.class);
+    public CreateKeyActivityTest() {
+        super(CreateKeyActivity.class);
+    }
 
-    @Test
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        getActivity();
+    }
+
     public void testCreateMyKey() {
         // Clicks create my key
         onView(withId(R.id.create_key_create_key_button))
