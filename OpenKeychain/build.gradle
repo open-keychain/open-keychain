@@ -143,9 +143,8 @@ android {
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
             
-            // Disabled: only works for androidTest not test!
             // Enable code coverage (Jacoco)
-            //testCoverageEnabled true
+            testCoverageEnabled true
         }
     }
 
