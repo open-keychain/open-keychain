@@ -46,6 +46,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDrawer;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 
@@ -96,8 +97,11 @@ public class EncryptDecryptTests {
         pressBack();
         onView(withId(R.id.decrypt_from_clipboard)).perform(click());
 
-        // synchronization with passphrase caching thing doesn't work
-        onView(withId(R.id.passphrase_passphrase)).inRoot(isPlatformPopup()).perform(typeText("x"));
+        {
+            onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
+
+            onView(withText(R.string.btn_unlock)).perform(click());
+        }
 
     }
 
