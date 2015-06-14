@@ -82,7 +82,7 @@ public class EncryptDecryptSymmetricTests {
     };
 
     @Test
-    public void test01ImportKeys() throws Exception {
+    public void testSymmetricTextEncryptDecrypt() throws Exception {
 
         MainActivity activity = mActivity.getActivity();
 
