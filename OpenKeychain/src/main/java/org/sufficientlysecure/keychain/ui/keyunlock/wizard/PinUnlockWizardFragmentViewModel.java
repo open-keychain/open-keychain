@@ -8,9 +8,16 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
 
 public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
+    public static final String STATE_SAVE_LAST_KEYWORD = "STATE_SAVE_LAST_KEYWORD";
+    public static final String STATE_SAVE_CURRENT_KEYWORD = "STATE_SAVE_CURRENT_KEYWORD";
+    public static final String STATE_SAVE_OPERATION_COMPLETED = "STATE_SAVE_OPERATION_COMPLETED";
+    public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
+    public static final String STATE_SAVE_OPERATION_ERROR = "STATE_SAVE_OPERATION_ERROR";
+
     private OperationState mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_KEYWORD;
     private boolean mOperationCompleted = false;
-    private StringBuilder mInputKeyword;
+    private StringBuilder mLastInputKeyWord;
+    private StringBuilder mCurrentInputKeyWord;
     private OperationError mOperationError = OperationError.OPERATION_ERROR_NONE;
     private Context mContext;
 
@@ -34,17 +41,27 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
         mContext = context;
         if (savedInstanceState == null) {
             initializeUnlockOperation();
+        } else {
+            restoreViewModelState(savedInstanceState);
         }
     }
 
     @Override
     public void saveViewModelState(Bundle outState) {
-
+        outState.putSerializable(STATE_SAVE_LAST_KEYWORD, mLastInputKeyWord);
+        outState.putBoolean(STATE_SAVE_OPERATION_COMPLETED, mOperationCompleted);
+        outState.putSerializable(STATE_SAVE_OPERATION_STATE, mOperationState);
+        outState.putSerializable(STATE_SAVE_OPERATION_ERROR, mOperationError);
+        outState.putSerializable(STATE_SAVE_CURRENT_KEYWORD, mCurrentInputKeyWord);
     }
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-
+        mLastInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_LAST_KEYWORD);
+        mOperationCompleted = savedInstanceState.getBoolean(STATE_SAVE_OPERATION_COMPLETED);
+        mOperationState = (OperationState) savedInstanceState.getSerializable(STATE_SAVE_OPERATION_STATE);
+        mOperationError = (OperationError) savedInstanceState.getSerializable(STATE_SAVE_OPERATION_ERROR);
+        mCurrentInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_CURRENT_KEYWORD);
     }
 
     @Override
@@ -56,17 +73,49 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
      * Initializes the operation
      */
     public void initializeUnlockOperation() {
-        mInputKeyword = new StringBuilder();
+        if (mLastInputKeyWord == null) {
+            mLastInputKeyWord = new StringBuilder();
+        } else {
+            clearInputKeyword();
+        }
+
+        if (mCurrentInputKeyWord == null) {
+            mCurrentInputKeyWord = new StringBuilder();
+        } else {
+            clearInputKeyword();
+        }
+
         mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_KEYWORD;
+        mOperationError = OperationError.OPERATION_ERROR_NONE;
+        mOperationCompleted = false;
+    }
+
+    /**
+     * Resets the keyword input to its initial step, allowing the user to re-input the pin again.
+     */
+    public void resetKeywordInputToBegin() {
+        if (mLastInputKeyWord == null) {
+            mLastInputKeyWord = new StringBuilder();
+        } else {
+            clearInputKeyword();
+        }
+
+        if (mCurrentInputKeyWord == null) {
+            mCurrentInputKeyWord = new StringBuilder();
+        } else {
+            clearInputKeyword();
+        }
+
+        mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_KEYWORD;
+        mOperationCompleted = false;
     }
 
     /**
      * Updates the operation state.
      *
-     * @param inputData Data that may be used by an operation.
      * @return
      */
-    public boolean updateOperationState(CharSequence inputData) {
+    public boolean updateOperationState() {
         if (mOperationCompleted) {
             return true;
         }
@@ -76,11 +125,11 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
              * Updates the input data
              */
             case OPERATION_STATE_INPUT_FIRST_KEYWORD: {
-                if (inputData.length() == 0) {
+                if (mCurrentInputKeyWord.length() == 0) {
                     setOperationError(OperationError.OPERATION_ERROR_EMPTY_PIN);
                     return false;
                 }
-                mInputKeyword.append(inputData);
+                mLastInputKeyWord.append(mCurrentInputKeyWord);
                 mOperationState = OperationState.
                         OPERATION_STATE_INPUT_SECOND_KEYWORD;
                 return true;
@@ -89,17 +138,22 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
              * Pin Reenter operation
              */
             case OPERATION_STATE_INPUT_SECOND_KEYWORD: {
-                if (!(mInputKeyword.toString().equals(inputData.toString()))) {
+                if (!(mLastInputKeyWord.toString().equals(mCurrentInputKeyWord.toString()))) {
                     setOperationError(OperationError.OPERATION_ERROR_PIN_MISMATCH);
-                    initializeUnlockOperation();
+                    resetKeywordInputToBegin();
                     return false;
-                } else if (inputData.length() == 0) {
+                } else if (mCurrentInputKeyWord.length() == 0) {
                     setOperationError(OperationError.OPERATION_ERROR_EMPTY_PIN);
-                    initializeUnlockOperation();
+                    resetKeywordInputToBegin();
                     return false;
                 }
                 mOperationState = OperationState.OPERATION_STATE_FINISHED;
                 mOperationCompleted = true;
+                return true;
+            }
+            case OPERATION_STATE_FINISHED: {
+                //reset the fragment to be reusable if the user decides to go back.
+                initializeUnlockOperation();
                 return true;
             }
             default:
@@ -107,6 +161,10 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
         }
     }
 
+    /**
+     * Returns the last operation error string to the view.
+     * @return
+     */
     public CharSequence getLastOperationError() {
         switch (mOperationError) {
             case OPERATION_ERROR_EMPTY_PIN: {
@@ -150,12 +208,24 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
         return mOperationCompleted;
     }
 
-    public StringBuilder getInputKeyword() {
-        return mInputKeyword;
+    /**
+     * Clears all input keywords if they were initialized.
+     */
+    private void clearInputKeyword() {
+        if (mLastInputKeyWord != null) {
+            mLastInputKeyWord.setLength(0);
+        }
+        if (mCurrentInputKeyWord != null) {
+            mCurrentInputKeyWord.setLength(0);
+        }
     }
 
-    public void setInputKeyword(StringBuilder inputKeyword) {
-        this.mInputKeyword = inputKeyword;
+    public StringBuilder getLastInputKeyWord() {
+        return mLastInputKeyWord;
+    }
+
+    public void setLastInputKeyWord(StringBuilder lastInputKeyWord) {
+        this.mLastInputKeyWord = lastInputKeyWord;
     }
 
     public void setOperationError(OperationError operationError) {
@@ -172,5 +242,28 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
 
     public void setOperationState(OperationState operationState) {
         mOperationState = operationState;
+    }
+
+    public StringBuilder getCurrentInputKeyWord() {
+        return mCurrentInputKeyWord;
+    }
+
+    public void setCurrentInputKeyWord(StringBuilder currentInputKeyWord) {
+        mCurrentInputKeyWord = currentInputKeyWord;
+    }
+
+    /**
+     * Resets the current input keyword.
+     */
+    public void resetCurrentKeyword() {
+        mCurrentInputKeyWord.setLength(0);
+    }
+
+    /**
+     * Appends the input text to the current keyword.
+     * @param text
+     */
+    public void appendToCurrentKeyword(CharSequence text) {
+        mCurrentInputKeyWord.append(text);
     }
 }
