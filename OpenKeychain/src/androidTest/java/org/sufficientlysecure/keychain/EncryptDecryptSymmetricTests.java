@@ -39,10 +39,14 @@ import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.not;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
+import static org.sufficientlysecure.keychain.TestHelpers.randomString;
 import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDrawer;
+import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -50,7 +54,7 @@ import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDr
 @LargeTest
 public class EncryptDecryptSymmetricTests {
 
-    public static final String PASSPHRASE = "fn9nf8wnaf";
+    public static final String PASSPHRASE = randomString(5, 20);
 
     @Rule
     public final ActivityTestRule<MainActivity> mActivity
@@ -68,13 +72,14 @@ public class EncryptDecryptSymmetricTests {
 
         MainActivity activity = mActivity.getActivity();
 
+        String text = randomString(10, 40);
+
         // navigate to encrypt/decrypt
         onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
         onView(ViewMatchers.withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         {
-            String text = "how much wood";
             onView(withId(R.id.encrypt_text_text)).perform(typeText(text));
 
             openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -99,7 +104,28 @@ public class EncryptDecryptSymmetricTests {
         pressBack();
         onView(withId(R.id.decrypt_from_clipboard)).perform(click());
 
-        // TODO fix thing, finish test
+        {
+            onView(withId(R.id.passphrase_passphrase)).perform(typeText(PASSPHRASE));
+            onView(withText(R.string.btn_unlock)).perform(click());
+
+            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
+                    withText(text)));
+
+            // TODO write generic status verifier
+
+            onView(withId(R.id.result_encryption_text)).check(matches(
+                    withText(R.string.decrypt_result_encrypted)));
+            onView(withId(R.id.result_signature_text)).check(matches(
+                    withText(R.string.decrypt_result_no_signature)));
+            onView(withId(R.id.result_signature_layout)).check(matches(
+                    not(isDisplayed())));
+
+            onView(withId(R.id.result_encryption_icon)).check(matches(
+                    withDrawable(R.drawable.status_lock_closed_24dp)));
+            onView(withId(R.id.result_signature_icon)).check(matches(
+                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
+
+        }
 
     }
 

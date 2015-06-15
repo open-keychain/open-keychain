@@ -92,8 +92,8 @@ public class EncryptDecryptTests {
 
         {
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
-
             onView(withText(R.string.btn_unlock)).perform(click());
+
         }
 
     }

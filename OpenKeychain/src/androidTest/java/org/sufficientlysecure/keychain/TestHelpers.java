@@ -1,6 +1,8 @@
 package org.sufficientlysecure.keychain;
 
 
+import java.util.Random;
+
 import android.content.Context;
 import android.support.annotation.StringRes;
 
@@ -51,5 +53,17 @@ public class TestHelpers {
         }
 
     }
+
+    public static String randomString(int min, int max) {
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
+        Random r = new Random();
+        StringBuilder passbuilder = new StringBuilder();
+        // 5% chance for an empty string
+        for(int i = 0, j = r.nextInt(max)+min; i < j; i++) {
+            passbuilder.append(chars.charAt(r.nextInt(chars.length())));
+        }
+        return passbuilder.toString();
+    }
+
 
 }
