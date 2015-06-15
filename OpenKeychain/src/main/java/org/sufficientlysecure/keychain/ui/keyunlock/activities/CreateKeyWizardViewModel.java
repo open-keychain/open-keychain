@@ -33,7 +33,8 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
         mContext = context;
         mWizardModel = new WizardModel();
         if (savedInstanceState != null) {
-            mWizardStep = (CreateKeyWizardViewModel.WizardStep) savedInstanceState.getSerializable(STATE_SAVE_WIZARD_STEP);
+            mWizardStep = (CreateKeyWizardViewModel.WizardStep) savedInstanceState.
+                    getSerializable(STATE_SAVE_WIZARD_STEP);
         }
         mWizardStep = WizardStep.WIZARD_STEP_BEGIN;
     }
@@ -65,7 +66,7 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
             }
             break;
             case WIZARD_STEP_CONTACT_NAME: {
-                mWizardStep = WizardStep.WIZARD_STEP_CHOOSE_UNLOCK_METHOD;
+                mWizardStep = WizardStep.WIZARD_STEP_KEYWORD_INPUT_VERIFICATION;
 
             }
             break;

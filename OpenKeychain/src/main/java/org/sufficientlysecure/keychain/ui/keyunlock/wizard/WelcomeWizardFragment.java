@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.wizard;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyunlock.activities.WizardCommonListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 
 
@@ -18,7 +16,6 @@ public class WelcomeWizardFragment extends WizardFragment {
     private TextView mCreatekeycreatekeybutton;
     private TextView mCreatekeycancel;
     private RelativeLayout mCreatekeybuttons;
-    private WizardCommonListener mWizardCommonListener;
 
     public static WelcomeWizardFragment newInstance() {
         return new WelcomeWizardFragment();
@@ -40,26 +37,16 @@ public class WelcomeWizardFragment extends WizardFragment {
         mCreatekeycreatekeybutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mWizardCommonListener != null)
+                if(mWizardFragmentListener != null)
                 {
-                    mWizardCommonListener.onAdvanceToNextWizardStep();
+                    mWizardFragmentListener.onAdvanceToNextWizardStep();
                 }
             }
         });
 
-        if(mWizardCommonListener != null) {
-            mWizardCommonListener.onHideNavigationButtons(true);
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(true);
         }
         return view;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mWizardCommonListener = (WizardCommonListener)activity;
-        }catch(ClassCastException e) {
-            e.printStackTrace();
-        }
     }
 }

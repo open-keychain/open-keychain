@@ -11,10 +11,7 @@ import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 
 public class WizardConfirmationFragment extends WizardFragment {
     public static WizardConfirmationFragment newInstance() {
-        WizardConfirmationFragment fragment = new WizardConfirmationFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+        return new WizardConfirmationFragment();
     }
 
     public WizardConfirmationFragment() {

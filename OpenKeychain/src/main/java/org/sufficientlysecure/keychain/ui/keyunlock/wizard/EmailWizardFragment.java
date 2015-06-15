@@ -18,7 +18,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.keyunlock.activities.WizardCommonListener;
+import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.adapter.WizardEmailAdapter;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -30,12 +30,11 @@ import java.util.ArrayList;
  * Wizard fragment that handle the user emails.
  * TODO: 09/06/2015 Refactor the code and move all checks to the viewModel to add tests later.
  */
-public class EmailWizardFragment extends WizardFragment {
+public class EmailWizardFragment extends WizardFragment{
     private EmailWizardFragmentViewModel mEmailWizardFragmentViewModel;
     private TextView mEmailWizardFragmentTip;
     private EmailEditText mCreateKeyEmail;
     private RecyclerView mCreateKeyEmails;
-    private WizardCommonListener mWizardCommonListener;
     private WizardEmailAdapter mEmailAdapter;
 
     public static EmailWizardFragment newInstance() {
@@ -72,8 +71,8 @@ public class EmailWizardFragment extends WizardFragment {
                 }
             });
 
-            if (mWizardCommonListener.getModel().getAdditionalEmails() != null) {
-                mEmailAdapter.addAll(mWizardCommonListener.getModel().getAdditionalEmails());
+            if (mWizardFragmentListener.getAdditionalEmails() != null) {
+                mEmailAdapter.addAll(mWizardFragmentListener.getAdditionalEmails());
             }
         }
 
@@ -168,15 +167,5 @@ public class EmailWizardFragment extends WizardFragment {
             emails.add(holder.toString());
         }
         return emails;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mWizardCommonListener = (WizardCommonListener) activity;
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-        }
     }
 }
