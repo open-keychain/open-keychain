@@ -854,7 +854,11 @@ public abstract class OperationResult implements Parcelable {
             if (mParcels.isEmpty()) {
                 return null;
             }
-            return mParcels.get(mParcels.size() -1);
+            LogEntryParcel last = mParcels.get(mParcels.size() -1);
+            if (last instanceof SubLogEntryParcel) {
+                return ((SubLogEntryParcel) last).getSubResult().getLog().getLast();
+            }
+            return last;
         }
 
         @Override
