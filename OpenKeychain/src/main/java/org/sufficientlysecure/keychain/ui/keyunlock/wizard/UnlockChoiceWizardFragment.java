@@ -49,6 +49,11 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
                 mUnlockChoiceWizardFragmentViewModel.updateUnlockMethodById(checkedId);
             }
         });
+
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
+        }
+
         return view;
     }
 

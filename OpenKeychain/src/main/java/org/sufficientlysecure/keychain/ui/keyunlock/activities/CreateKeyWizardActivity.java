@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.activities;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -10,9 +9,7 @@ import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.ui.PassphraseWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.keyunlock.Model.WizardModel;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.dialogs.PinUnlockDialog;
@@ -100,7 +97,7 @@ public class CreateKeyWizardActivity
      * @param view
      */
     public void onNextClicked(View view) {
-        if(mCurrentVisibleFragment != null && mCurrentVisibleFragment.onNextClicked()) {
+        if (mCurrentVisibleFragment != null && mCurrentVisibleFragment.onNextClicked()) {
             mCreateKeyWizardViewModel.updateWizardStateOnNext();
             updateWizardState();
         }
@@ -125,7 +122,7 @@ public class CreateKeyWizardActivity
     }
 
     /**
-     * Callback for when the user confirs his unlock pin
+     * Callback for when the user confirms his unlock pin
      * This method is only called when there is an unlock request.
      */
     @Override
@@ -156,6 +153,7 @@ public class CreateKeyWizardActivity
 
     /**
      * Updates the model with the current selected unlock type.
+     *
      * @param secretKeyType
      */
     @Override
@@ -205,6 +203,7 @@ public class CreateKeyWizardActivity
                 mCreateKeyWizardActivityButtonContainer.setVisibility(View.VISIBLE);
                 mCreateKeyWizardActivityButtonContainer.animate().setDuration(300);
                 mCreateKeyWizardActivityButtonContainer.animate().alpha(1);
+
 
                 mCurrentVisibleFragment = UnlockChoiceWizardFragment.newInstance();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -269,7 +268,7 @@ public class CreateKeyWizardActivity
      * Instantiates the unlock fragment based on its type.
      */
     private void instantiateUnlockMethodFragment() {
-        switch(mCreateKeyWizardViewModel.getWizardModel().getSecretKeyType()) {
+        switch (mCreateKeyWizardViewModel.getWizardModel().getSecretKeyType()) {
             case PIN: {
                 mCurrentVisibleFragment = new PinUnlockWizardFragment();
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -281,11 +280,13 @@ public class CreateKeyWizardActivity
                         FRAGMENT_TAG);
                 transaction.commit();
 
-            }break;
+            }
+            break;
 
             case PATTERN: {
 
-            }break;
+            }
+            break;
             default: {
 
             }

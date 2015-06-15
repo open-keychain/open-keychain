@@ -23,6 +23,11 @@ public class UnlockChoiceWizardFragmentViewModel implements BaseViewModel {
     }
 
     @Override
+    public void restoreViewModelState(Bundle savedInstanceState) {
+
+    }
+
+    @Override
     public void onViewModelCreated() {
 
     }

@@ -12,6 +12,7 @@ import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
  */
 public class CreateKeyWizardViewModel implements BaseViewModel {
     public static final String STATE_SAVE_WIZARD_STEP = "STATE_SAVE_WIZARD_STEP";
+    public static final String STATE_SAVE_WIZARD_MODEL = "STATE_SAVE_WIZARD_MODEL";
     private WizardStep mWizardStep;
     private WizardModel mWizardModel;
     private Context mContext;
@@ -33,8 +34,7 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
         mContext = context;
         mWizardModel = new WizardModel();
         if (savedInstanceState != null) {
-            mWizardStep = (CreateKeyWizardViewModel.WizardStep) savedInstanceState.
-                    getSerializable(STATE_SAVE_WIZARD_STEP);
+            restoreViewModelState(savedInstanceState);
         }
         mWizardStep = WizardStep.WIZARD_STEP_BEGIN;
     }
@@ -42,6 +42,15 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
     @Override
     public void saveViewModelState(Bundle outState) {
         outState.putSerializable(STATE_SAVE_WIZARD_STEP, mWizardStep);
+        outState.putParcelable(STATE_SAVE_WIZARD_MODEL, mWizardModel);
+    }
+
+    @Override
+    public void restoreViewModelState(Bundle savedInstanceState) {
+        mWizardStep = (CreateKeyWizardViewModel.WizardStep) savedInstanceState.
+                getSerializable(STATE_SAVE_WIZARD_STEP);
+
+        mWizardModel = savedInstanceState.getParcelable(STATE_SAVE_WIZARD_MODEL);
     }
 
     @Override

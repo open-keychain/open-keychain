@@ -9,5 +9,6 @@ import android.os.Bundle;
 public interface BaseViewModel {
     void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Context context);
     void saveViewModelState(Bundle outState);
+    void restoreViewModelState(Bundle savedInstanceState);
     void onViewModelCreated();
 }
