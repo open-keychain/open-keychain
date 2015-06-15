@@ -78,6 +78,10 @@ public class EmailWizardFragment extends WizardFragment{
 
         mCreateKeyEmails.setAdapter(mEmailAdapter);
 
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
+        }
+
         return view;
     }
 

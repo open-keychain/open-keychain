@@ -28,6 +28,10 @@ public class NameWizardFragment extends WizardFragment {
         mNameWizardFragmentViewModel = new NameWizardFragmentViewModel();
         mNameWizardFragmentViewModel.prepareViewModel(savedInstanceState, getArguments(),
                 getActivity());
+
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
+        }
     }
 
     @Nullable

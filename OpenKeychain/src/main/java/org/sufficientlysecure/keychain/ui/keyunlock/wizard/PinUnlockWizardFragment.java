@@ -13,6 +13,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 
 public class PinUnlockWizardFragment extends WizardFragment {
+    public static final String STATE_SAVE_STATUS_TEXT = "STATE_SAVE_STATUS_ID";
+    public static final String STATE_SAVE_CHECK_VISIBILITY = "STATE_SAVE_CHECK_VISIBILITY";
+    public static final String STATE_SAVE_WRONG_VISIBILITY = "STATE_SAVE_WRONG_VISIBILITY";
+    public static final String STATE_SAVE_STATUS_COLOR = "STATE_SAVE_STATUS_COLOR";
+
     private PinUnlockWizardFragmentViewModel mPinUnlockWizardFragmentViewModel;
 
     private TextView mFragmentPinUnlockTip;
@@ -30,8 +35,6 @@ public class PinUnlockWizardFragment extends WizardFragment {
     private Button mPinUnlockKey9;
     private Button mPinUnlockKey0;
 
-    private StringBuilder mInputKeyword;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +50,7 @@ public class PinUnlockWizardFragment extends WizardFragment {
     private View.OnClickListener mOnKeyClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mInputKeyword.append(((TextView) v).getText());
+            mPinUnlockWizardFragmentViewModel.appendToCurrentKeyword(((TextView) v).getText());
         }
     };
 
@@ -55,7 +58,7 @@ public class PinUnlockWizardFragment extends WizardFragment {
         mPinUnlockDialogStatus.setText("");
         mWrongImageView.setVisibility(View.INVISIBLE);
         mCheckImageView.setVisibility(View.INVISIBLE);
-        mInputKeyword = new StringBuilder();
+        mPinUnlockWizardFragmentViewModel.resetCurrentKeyword();
     }
 
     @Nullable
@@ -88,7 +91,18 @@ public class PinUnlockWizardFragment extends WizardFragment {
         mCheckImageView = (ImageView) view.findViewById(R.id.check);
         mFragmentPinUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
 
-        resetViewState();
+        if (savedInstanceState == null) {
+            resetViewState();
+        } else {
+            mWrongImageView.setVisibility(savedInstanceState.getInt(STATE_SAVE_WRONG_VISIBILITY));
+            mCheckImageView.setVisibility(savedInstanceState.getInt(STATE_SAVE_CHECK_VISIBILITY));
+            mPinUnlockDialogStatus.setTextColor(savedInstanceState.getInt(STATE_SAVE_STATUS_COLOR));
+            mPinUnlockDialogStatus.setText(savedInstanceState.getCharSequence(STATE_SAVE_STATUS_TEXT));
+        }
+
+        if (mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
+        }
 
         return view;
     }
@@ -97,7 +111,7 @@ public class PinUnlockWizardFragment extends WizardFragment {
      * Notifies the user of any errors that may have occurred
      */
     private void onOperationStateError() {
-        mInputKeyword = new StringBuilder();
+        mPinUnlockWizardFragmentViewModel.resetCurrentKeyword();
         mPinUnlockDialogStatus.setText(mPinUnlockWizardFragmentViewModel.getLastOperationError());
         mPinUnlockDialogStatus.setTextColor(getResources().getColor(R.color.android_red_dark));
         mWrongImageView.setVisibility(View.VISIBLE);
@@ -118,14 +132,19 @@ public class PinUnlockWizardFragment extends WizardFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPinUnlockWizardFragmentViewModel.saveViewModelState(outState);
+
+        outState.putCharSequence(STATE_SAVE_STATUS_TEXT, mPinUnlockDialogStatus.getText());
+        outState.putInt(STATE_SAVE_CHECK_VISIBILITY, mCheckImageView.getVisibility());
+        outState.putInt(STATE_SAVE_WRONG_VISIBILITY, mWrongImageView.getVisibility());
+        outState.putInt(STATE_SAVE_STATUS_COLOR, mPinUnlockDialogStatus.getCurrentTextColor());
     }
 
     @Override
     public boolean onNextClicked() {
         if (!mPinUnlockWizardFragmentViewModel.isOperationCompleted()) {
-            if (mPinUnlockWizardFragmentViewModel.updateOperationState(mInputKeyword)) {
+            if (mPinUnlockWizardFragmentViewModel.updateOperationState()) {
                 updateViewStateForOperation();
-                mInputKeyword = new StringBuilder();
+                mPinUnlockWizardFragmentViewModel.resetCurrentKeyword();
             } else {
                 onOperationStateError();
             }

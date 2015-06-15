@@ -38,19 +38,23 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.wizard_unlock_choice_fragment, container, false);
-        mWizardUnlockSuggestion = (android.widget.TextView) view.findViewById(R.id.wizardUnlockSuggestion);
-        mWizardUnlockChoiceRadioGroup = (RadioGroup) view.findViewById(R.id.wizardUnlockChoiceRadioGroup);
+        mWizardUnlockSuggestion = (android.widget.TextView) view.
+                findViewById(R.id.wizardUnlockSuggestion);
+        mWizardUnlockChoiceRadioGroup = (RadioGroup) view.
+                findViewById(R.id.wizardUnlockChoiceRadioGroup);
 
-        mUnlockChoiceWizardFragmentViewModel.updateUnlockMethodById(mWizardUnlockChoiceRadioGroup.getCheckedRadioButtonId());
+        mUnlockChoiceWizardFragmentViewModel.updateUnlockMethodById(mWizardUnlockChoiceRadioGroup.
+                getCheckedRadioButtonId());
 
-        mWizardUnlockChoiceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                mUnlockChoiceWizardFragmentViewModel.updateUnlockMethodById(checkedId);
-            }
-        });
+        mWizardUnlockChoiceRadioGroup.setOnCheckedChangeListener(
+                new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        mUnlockChoiceWizardFragmentViewModel.updateUnlockMethodById(checkedId);
+                    }
+                });
 
-        if(mWizardFragmentListener != null) {
+        if (mWizardFragmentListener != null) {
             mWizardFragmentListener.onHideNavigationButtons(false);
         }
 
@@ -62,8 +66,9 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
      */
     @Override
     public boolean onNextClicked() {
-        if(mUnlockChoiceWizardFragmentViewModel.isUserDataReady()) {
-            mWizardFragmentListener.setUnlockMethod(mUnlockChoiceWizardFragmentViewModel.getSecretKeyType());
+        if (mUnlockChoiceWizardFragmentViewModel.isUserDataReady()) {
+            mWizardFragmentListener.setUnlockMethod(mUnlockChoiceWizardFragmentViewModel.
+                    getSecretKeyType());
             return true;
         }
         return false;
