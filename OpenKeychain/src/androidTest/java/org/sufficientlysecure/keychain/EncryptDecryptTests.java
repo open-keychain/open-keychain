@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
@@ -32,21 +31,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.MainActivity;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.RootMatchers.isDialog;
-import static android.support.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDrawer;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 
@@ -101,22 +94,6 @@ public class EncryptDecryptTests {
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
 
             onView(withText(R.string.btn_unlock)).perform(click());
-        }
-
-    }
-
-    static void importKeysFromResource(Context context, String name) throws Exception {
-        IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
-                getInstrumentation().getContext().getAssets().open(name));
-
-        ProviderHelper helper = new ProviderHelper(context);
-        while(stream.hasNext()) {
-            UncachedKeyRing ring = stream.next();
-            if (ring.isSecret()) {
-                helper.saveSecretKeyRing(ring, new ProgressScaler());
-            } else {
-                helper.saveSecretKeyRing(ring, new ProgressScaler());
-            }
         }
 
     }
