@@ -40,7 +40,7 @@ dependencies {
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
     compile 'com.getbase:floatingactionbutton:1.9.0'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
-    compile "com.splitwise:tokenautocomplete:1.3.3@aar"
+    compile 'com.splitwise:tokenautocomplete:1.3.3@aar'
     compile 'se.emilsjolander:stickylistheaders:2.6.0'
     compile 'org.sufficientlysecure:html-textview:1.1'
     compile 'com.mikepenz.materialdrawer:library:2.8.2@aar'
