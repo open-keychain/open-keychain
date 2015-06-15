@@ -153,7 +153,9 @@ public class DecryptTextFragment extends DecryptFragment {
 
     @Override
     protected PgpDecryptVerifyInputParcel createOperationInput() {
-        return new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
+        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
+        input.setAllowSymmetricDecryption(true);
+        return input;
     }
 
     @Override
