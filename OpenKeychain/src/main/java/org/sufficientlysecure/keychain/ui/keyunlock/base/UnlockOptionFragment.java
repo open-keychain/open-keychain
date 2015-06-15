@@ -15,7 +15,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
  * Base unlock fragment where the user will input the data.
  */
 public class UnlockOptionFragment extends Fragment {
-    private CanonicalizedSecretKey.SecretKeyType secretKeyType;
 
     public static UnlockOptionFragment newInstance() {
         UnlockOptionFragment fragment = new UnlockOptionFragment();
@@ -49,13 +48,5 @@ public class UnlockOptionFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
-        return secretKeyType;
-    }
-
-    public void setSecretKeyType(CanonicalizedSecretKey.SecretKeyType secretKeyType) {
-        this.secretKeyType = secretKeyType;
     }
 }

@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.ui.keyunlock.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
@@ -15,19 +16,7 @@ public class WizardModel implements Parcelable {
     private String mEmail;
     private ArrayList<String> mAdditionalEmails;
     private Passphrase mPassword;
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mName);
-        dest.writeString(this.mEmail);
-        dest.writeStringList(this.mAdditionalEmails);
-        dest.writeParcelable(this.mPassword, 0);
-    }
+    private CanonicalizedSecretKey.SecretKeyType mSecretKeyType;
 
     public String getName() {
         return mName;
@@ -61,7 +50,29 @@ public class WizardModel implements Parcelable {
         this.mPassword = mPassword;
     }
 
+    public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
+        return mSecretKeyType;
+    }
+
+    public void setSecretKeyType(CanonicalizedSecretKey.SecretKeyType secretKeyType) {
+        mSecretKeyType = secretKeyType;
+    }
+
     public WizardModel() {
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mName);
+        dest.writeString(this.mEmail);
+        dest.writeStringList(this.mAdditionalEmails);
+        dest.writeParcelable(this.mPassword, 0);
+        dest.writeInt(this.mSecretKeyType == null ? -1 : this.mSecretKeyType.ordinal());
     }
 
     protected WizardModel(Parcel in) {
@@ -69,10 +80,11 @@ public class WizardModel implements Parcelable {
         this.mEmail = in.readString();
         this.mAdditionalEmails = in.createStringArrayList();
         this.mPassword = in.readParcelable(Passphrase.class.getClassLoader());
+        int tmpMSecretKeyType = in.readInt();
+        this.mSecretKeyType = tmpMSecretKeyType == -1 ? null : CanonicalizedSecretKey.SecretKeyType.values()[tmpMSecretKeyType];
     }
 
-    public static final Parcelable.Creator<WizardModel> CREATOR = new Parcelable.
-            Creator<WizardModel>() {
+    public static final Creator<WizardModel> CREATOR = new Creator<WizardModel>() {
         public WizardModel createFromParcel(Parcel source) {
             return new WizardModel(source);
         }

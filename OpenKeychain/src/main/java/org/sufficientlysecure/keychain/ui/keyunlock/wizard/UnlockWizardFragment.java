@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyunlock.activities.WizardCommonListener;
+import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.adapter.UnlockMethodAdapter;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.components.ViewPagerIndicator;
@@ -27,7 +27,6 @@ public class UnlockWizardFragment extends WizardFragment {
     private ViewPagerIndicator mViewPagerIndicator;
     private UnlockMethodAdapter mUnlockMethodAdapter;
     private UnlockWizardFragmentViewModel mUnlockWizardFragmentViewModel;
-    private WizardCommonListener mWizardCommonListener;
 
     public static UnlockWizardFragment newInstance() {
         return new UnlockWizardFragment();
@@ -59,20 +58,10 @@ public class UnlockWizardFragment extends WizardFragment {
 
         mUnlockWizardFragmentViewPager.setOnPageChangeListener(mViewPagerIndicator);
 
-        if(mWizardCommonListener != null) {
-            mWizardCommonListener.onHideNavigationButtons(false);
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
         }
         return view;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mWizardCommonListener = (WizardCommonListener)activity;
-        }catch(ClassCastException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
