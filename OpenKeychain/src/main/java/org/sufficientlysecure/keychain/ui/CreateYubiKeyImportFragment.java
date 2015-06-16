@@ -145,7 +145,18 @@ public class CreateYubiKeyImportFragment
         view.findViewById(R.id.button_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshSearch();
+                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                Runnable ignoreTor = new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshSearch(new ParcelableProxy(null, -1, null));
+                    }
+                };
+
+                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        getActivity())) {
+                    refreshSearch(proxyPrefs.parcelableProxy);
+                }
             }
         });
 
@@ -184,10 +195,10 @@ public class CreateYubiKeyImportFragment
         }
     }
 
-    public void refreshSearch() {
+    public void refreshSearch(ParcelableProxy parcelableProxy) {
         // TODO: PHILIP implement proxy in YubiKey parts
         mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
-                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), null);
+                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
     }
 
     public void importKey(ParcelableProxy parcelableProxy) {
@@ -225,7 +236,20 @@ public class CreateYubiKeyImportFragment
     public void onNfcPostExecute() throws IOException {
 
         setData();
-        refreshSearch();
+
+        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+        Runnable ignoreTor = new Runnable() {
+            @Override
+            public void run() {
+                refreshSearch(new ParcelableProxy(null, -1, null));
+            }
+        };
+
+        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                getActivity())) {
+            refreshSearch(proxyPrefs.parcelableProxy);
+        }
+
     }
 
     @Override
