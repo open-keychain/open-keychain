@@ -22,32 +22,32 @@ public class WizardModel implements Parcelable {
         return mName;
     }
 
-    public void setName(String mName) {
-        this.mName = mName;
+    public void setName(String name) {
+        mName = name;
     }
 
     public String getEmail() {
         return mEmail;
     }
 
-    public void setEmail(String mEmail) {
-        this.mEmail = mEmail;
+    public void setEmail(String email) {
+        mEmail = email;
     }
 
     public ArrayList<String> getAdditionalEmails() {
         return mAdditionalEmails;
     }
 
-    public void setAdditionalEmails(ArrayList<String> mAdditionalEmails) {
-        this.mAdditionalEmails = mAdditionalEmails;
+    public void setAdditionalEmails(ArrayList<String> additionalEmails) {
+        mAdditionalEmails = additionalEmails;
     }
 
     public Passphrase getPassword() {
         return mPassword;
     }
 
-    public void setPassword(Passphrase mPassword) {
-        this.mPassword = mPassword;
+    public void setPassword(Passphrase password) {
+        this.mPassword = password;
     }
 
     public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {

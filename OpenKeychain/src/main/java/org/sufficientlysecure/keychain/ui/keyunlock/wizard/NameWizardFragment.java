@@ -28,10 +28,6 @@ public class NameWizardFragment extends WizardFragment {
         mNameWizardFragmentViewModel = new NameWizardFragmentViewModel();
         mNameWizardFragmentViewModel.prepareViewModel(savedInstanceState, getArguments(),
                 getActivity());
-
-        if(mWizardFragmentListener != null) {
-            mWizardFragmentListener.onHideNavigationButtons(false);
-        }
     }
 
     @Nullable
@@ -40,6 +36,10 @@ public class NameWizardFragment extends WizardFragment {
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.wizard_name_fragment, container, false);
         mCreateKeyName = (NameEditText) view.findViewById(R.id.create_key_name);
+
+        if(mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false);
+        }
 
         // focus empty edit fields
         if (mWizardFragmentListener.getName() == null) {

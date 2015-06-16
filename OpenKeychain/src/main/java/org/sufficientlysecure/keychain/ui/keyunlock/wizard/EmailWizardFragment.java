@@ -1,7 +1,5 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.wizard;
 
-
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.adapter.WizardEmailAdapter;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -83,6 +80,11 @@ public class EmailWizardFragment extends WizardFragment{
         }
 
         return view;
+    }
+
+    @Override
+    public boolean onNextClicked() {
+        return true;
     }
 
     /**
