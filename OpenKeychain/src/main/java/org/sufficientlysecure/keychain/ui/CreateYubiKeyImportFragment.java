@@ -196,7 +196,7 @@ public class CreateYubiKeyImportFragment
     }
 
     public void refreshSearch(ParcelableProxy parcelableProxy) {
-        // TODO: PHILIP implement proxy in YubiKey parts
+        // TODO: PHILIP verify proxy implementation in YubiKey parts
         mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
     }

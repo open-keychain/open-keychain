@@ -48,7 +48,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -187,7 +186,6 @@ public class ImportKeysListFragment extends ListFragment implements
     static public class CloudLoaderState extends LoaderState {
         Preferences.CloudSearchPrefs mCloudPrefs;
         String mServerQuery;
-        Proxy proxy;
 
         CloudLoaderState(String serverQuery, Preferences.CloudSearchPrefs cloudPrefs) {
             mServerQuery = serverQuery;

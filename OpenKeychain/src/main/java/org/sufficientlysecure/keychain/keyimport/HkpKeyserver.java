@@ -219,8 +219,7 @@ public class HkpKeyserver extends Keyserver {
     private String query(String request, Proxy proxy) throws QueryFailedException, HttpError {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
-            Log.d(Constants.TAG, "hkp keyserver query: " + url);
-            Log.d("PHILIP", "hkpKeyserver query(): " + proxy);
+            Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
             OkHttpClient client = getClient(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
