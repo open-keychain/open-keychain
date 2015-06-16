@@ -19,15 +19,16 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.TimeZone;
+import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.support.v4.widget.CursorAdapter;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +61,6 @@ public class KeyAdapter extends CursorAdapter {
             KeyRings.VERIFIED,
             KeyRings.HAS_ANY_SECRET,
             KeyRings.HAS_DUPLICATE_USER_ID,
-            KeyRings.HAS_ENCRYPT,
             KeyRings.FINGERPRINT,
             KeyRings.CREATION,
     };
@@ -72,9 +72,8 @@ public class KeyAdapter extends CursorAdapter {
     public static final int INDEX_VERIFIED = 5;
     public static final int INDEX_HAS_ANY_SECRET = 6;
     public static final int INDEX_HAS_DUPLICATE_USER_ID = 7;
-    public static final int INDEX_HAS_ENCRYPT = 8;
-    public static final int INDEX_FINGERPRINT = 9;
-    public static final int INDEX_CREATION = 10;
+    public static final int INDEX_FINGERPRINT = 8;
+    public static final int INDEX_CREATION = 9;
 
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -87,6 +86,7 @@ public class KeyAdapter extends CursorAdapter {
     }
 
     public static class KeyItemViewHolder {
+        public View mView;
         public Long mMasterKeyId;
         public TextView mMainUserId;
         public TextView mMainUserIdRest;
@@ -96,6 +96,7 @@ public class KeyAdapter extends CursorAdapter {
         public ImageButton mSlingerButton;
 
         public KeyItemViewHolder(View view) {
+            mView = view;
             mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
             mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
@@ -104,11 +105,10 @@ public class KeyAdapter extends CursorAdapter {
             mCreationDate = (TextView) view.findViewById(R.id.key_list_item_creation);
         }
 
-        public void setData(Context context, Cursor cursor, Highlighter highlighter) {
+        public void setData(Context context, KeyItem item, Highlighter highlighter) {
 
             { // set name and stuff, common to both key types
-                String userId = cursor.getString(INDEX_USER_ID);
-                KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
+                KeyRing.UserId userIdSplit = item.mUserId;
                 if (userIdSplit.name != null) {
                     mMainUserId.setText(highlighter.highlight(userIdSplit.name));
                 } else {
@@ -124,30 +124,23 @@ public class KeyAdapter extends CursorAdapter {
 
             { // set edit button and status, specific by key type
 
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
-                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
-                boolean hasDuplicate = cursor.getInt(INDEX_HAS_DUPLICATE_USER_ID) != 0;
-
-                mMasterKeyId = masterKeyId;
+                mMasterKeyId = item.mKeyId;
 
                 // Note: order is important!
-                if (isRevoked) {
+                if (item.mIsRevoked) {
                     KeyFormattingUtils
                             .setStatusImage(context, mStatus, null, State.REVOKED, R.color.bg_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
                     mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                } else if (isExpired) {
+                } else if (item.mIsExpired) {
                     KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.bg_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
                     mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                } else if (isSecret) {
+                } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
                         mSlinger.setVisibility(View.VISIBLE);
@@ -158,7 +151,7 @@ public class KeyAdapter extends CursorAdapter {
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
                 } else {
                     // this is a public key - show if it's verified
-                    if (isVerified) {
+                    if (item.mIsVerified) {
                         KeyFormattingUtils.setStatusImage(context, mStatus, State.VERIFIED);
                         mStatus.setVisibility(View.VISIBLE);
                     } else {
@@ -170,9 +163,9 @@ public class KeyAdapter extends CursorAdapter {
                     mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
                 }
 
-                if (hasDuplicate) {
+                if (item.mHasDuplicate) {
                     String dateTime = DateUtils.formatDateTime(context,
-                            cursor.getLong(INDEX_CREATION) * 1000,
+                            item.mCreation.getTime(),
                             DateUtils.FORMAT_SHOW_DATE
                                     | DateUtils.FORMAT_SHOW_YEAR
                                     | DateUtils.FORMAT_ABBREV_MONTH);
@@ -190,6 +183,10 @@ public class KeyAdapter extends CursorAdapter {
 
     }
 
+    public boolean isEnabled(Cursor cursor) {
+        return true;
+    }
+
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.key_list_item, parent, false);
@@ -204,7 +201,8 @@ public class KeyAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         Highlighter highlighter = new Highlighter(context, mQuery);
         KeyItemViewHolder h = (KeyItemViewHolder) view.getTag();
-        h.setData(context, cursor, highlighter);
+        KeyItem item = new KeyItem(cursor);
+        h.setData(context, item, highlighter);
     }
 
     public boolean isSecretAvailable(int id) {
@@ -234,8 +232,9 @@ public class KeyAdapter extends CursorAdapter {
 
     @Override
     public long getItemId(int position) {
+        Cursor cursor = getCursor();
         // prevent a crash on rapid cursor changes
-        if (getCursor().isClosed()) {
+        if (cursor != null && getCursor().isClosed()) {
             return 0L;
         }
         return super.getItemId(position);
@@ -250,6 +249,7 @@ public class KeyAdapter extends CursorAdapter {
         public final boolean mHasDuplicate;
         public final Date mCreation;
         public final String mFingerprint;
+        public final boolean mIsSecret, mIsRevoked, mIsExpired, mIsVerified;
 
         private KeyItem(Cursor cursor) {
             String userId = cursor.getString(INDEX_USER_ID);
@@ -260,6 +260,10 @@ public class KeyAdapter extends CursorAdapter {
             mCreation = new Date(cursor.getLong(INDEX_CREATION) * 1000);
             mFingerprint = KeyFormattingUtils.convertFingerprintToHex(
                     cursor.getBlob(INDEX_FINGERPRINT));
+            mIsSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
+            mIsRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+            mIsExpired = cursor.getInt(INDEX_IS_EXPIRED) > 0;
+            mIsVerified = cursor.getInt(INDEX_VERIFIED) > 0;
         }
 
         public KeyItem(CanonicalizedPublicKeyRing ring) {
@@ -272,6 +276,12 @@ public class KeyAdapter extends CursorAdapter {
             mCreation = key.getCreationTime();
             mFingerprint = KeyFormattingUtils.convertFingerprintToHex(
                     ring.getFingerprint());
+            mIsRevoked = key.isRevoked();
+            mIsExpired = key.isExpired();
+
+            // these two are actually "don't know"s
+            mIsSecret = false;
+            mIsVerified = false;
         }
 
         public String getReadableName() {
@@ -282,6 +292,13 @@ public class KeyAdapter extends CursorAdapter {
             }
         }
 
+    }
+
+    public static String[] getProjectionWith(String[] projection) {
+        List<String> list = new ArrayList<>();
+        list.addAll(Arrays.asList(PROJECTION));
+        list.addAll(Arrays.asList(projection));
+        return list.toArray(new String[list.size()]);
     }
 
 }

@@ -167,7 +167,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
     @Override
     public long getAsymmetricSigningKeyId() {
-        return mSignKeySpinner.getSelectedItemId();
+        return mSignKeySpinner.getSelectedKeyId();
     }
 
     @Override
