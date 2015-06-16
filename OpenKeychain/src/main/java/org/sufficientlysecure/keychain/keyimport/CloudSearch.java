@@ -63,11 +63,11 @@ public class CloudSearch {
         }
 
         // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
-        synchronized(results) {
+        synchronized (results) {
             try {
                 if (proxy != null) {
                     results.wait(30 * SECONDS);
-                } else{
+                } else {
                     results.wait(10 * SECONDS);
                 }
             } catch (InterruptedException e) {
@@ -75,7 +75,7 @@ public class CloudSearch {
         }
 
         if (results.outstandingSuppliers() > 0) {
-            String message =  "Launched " + servers.size() + " cloud searchers, but " +
+            String message = "Launched " + servers.size() + " cloud searchers, but " +
                     results.outstandingSuppliers() + " failed to complete.";
             problems.add(new Keyserver.QueryFailedException(message));
         }

@@ -30,9 +30,12 @@ import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.*;
+import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -61,12 +64,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** An operation class which implements high level import and export
+/**
+ * An operation class which implements high level import and export
  * operations.
- *
+ * <p/>
  * This class receives a source and/or destination of keys as input and performs
  * all steps for this import or export.
- *
+ * <p/>
  * For the import operation, the only valid source is an Iterator of
  * ParcelableKeyRing, each of which must contain either a single
  * keyring encoded as bytes, or a unique reference to a keyring
@@ -76,13 +80,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * not include self certificates for user ids in the secret keyring. The import
  * method here will generally import keyrings in the order given by the
  * iterator. so this should be ensured beforehand.
- * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
  *
+ * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
+ * <p/>
  * For the export operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
- *
+ * <p/>
  * TODO rework uploadKeyRingToServer
- *
  */
 public class ImportExportOperation extends BaseOperation {
 
@@ -173,8 +177,8 @@ public class ImportExportOperation extends BaseOperation {
      * Since the introduction of multithreaded import, we expect calling functions to handle the key sync i,e
      * ContactSyncAdapterService.requestSync()
      *
-     * @param entries keys to import
-     * @param num number of keys to import
+     * @param entries      keys to import
+     * @param num          number of keys to import
      * @param keyServerUri contains uri of keyserver to import from, if it is an import from cloud
      * @return
      */
@@ -238,7 +242,8 @@ public class ImportExportOperation extends BaseOperation {
                             byte[] data;
                             // Download by fingerprint, or keyId - whichever is available
                             if (entry.mExpectedFingerprint != null) {
-                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" + entry.mExpectedFingerprint.substring(24));
+                                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" + entry.mExpectedFingerprint
+                                        .substring(24));
                                 data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy).getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
@@ -316,10 +321,12 @@ public class ImportExportOperation extends BaseOperation {
                 mProviderHelper.clearLog();
                 if (key.isSecret()) {
                     result = mProviderHelper.saveSecretKeyRing(key,
-                            new ProgressScaler(mProgressable, (int)(position*progSteps), (int)((position+1)*progSteps), 100));
+                            new ProgressScaler(mProgressable, (int) (position * progSteps), (int) ((position + 1) *
+                                    progSteps), 100));
                 } else {
                     result = mProviderHelper.savePublicKeyRing(key,
-                            new ProgressScaler(mProgressable, (int)(position*progSteps), (int)((position+1)*progSteps), 100));
+                            new ProgressScaler(mProgressable, (int) (position * progSteps), (int) ((position + 1) *
+                                    progSteps), 100));
                 }
                 if (!result.success()) {
                     badKeys += 1;
@@ -390,7 +397,7 @@ public class ImportExportOperation extends BaseOperation {
         }
 
         // Final log entry, it's easier to do this individually
-        if ( (newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
+        if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
             log.add(LogType.MSG_IMPORT_PARTIAL, 1);
         } else if (newKeys > 0 || updatedKeys > 0) {
             log.add(LogType.MSG_IMPORT_SUCCESS, 1);
@@ -464,7 +471,7 @@ public class ImportExportOperation extends BaseOperation {
     }
 
     ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
-                                 OutputStream outStream) {
+                                OutputStream outStream) {
 
         /* TODO isn't this checked above, with the isStorageMounted call?
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -473,7 +480,7 @@ public class ImportExportOperation extends BaseOperation {
         }
         */
 
-        if ( ! BufferedOutputStream.class.isInstance(outStream)) {
+        if (!BufferedOutputStream.class.isInstance(outStream)) {
             outStream = new BufferedOutputStream(outStream);
         }
 

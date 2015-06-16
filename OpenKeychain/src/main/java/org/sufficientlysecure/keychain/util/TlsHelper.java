@@ -62,7 +62,7 @@ public class TlsHelper {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             int reads = is.read();
 
-            while(reads != -1){
+            while (reads != -1) {
                 baos.write(reads);
                 reads = is.read();
             }
@@ -73,17 +73,6 @@ public class TlsHelper {
         } catch (IOException e) {
             Log.w(Constants.TAG, e);
         }
-    }
-
-    public static URLConnection opeanConnection(URL url) throws IOException, TlsHelperException {
-        if (url.getProtocol().equals("https")) {
-            for (String domain : sStaticCA.keySet()) {
-                if (url.getHost().endsWith(domain)) {
-                    return openCAConnection(sStaticCA.get(domain), url);
-                }
-            }
-        }
-        return url.openConnection();
     }
 
     public static void pinCertificateIfNecessary(OkHttpClient client, URL url) throws TlsHelperException, IOException {
@@ -103,7 +92,7 @@ public class TlsHelper {
      * TODO: Refactor - More like SSH StrictHostKeyChecking than pinning?
      *
      * @param certificate certificate to pin
-     * @param client OkHttpClient to enforce pinning on
+     * @param client      OkHttpClient to enforce pinning on
      * @throws TlsHelperException
      * @throws IOException
      */

@@ -54,7 +54,7 @@ public class ParcelableProxy implements Parcelable {
     }
 
     public Proxy getProxy() {
-        if(mProxyHost == null) return null;
+        if (mProxyHost == null) return null;
 
         Proxy.Type type = null;
         switch (mProxyType) {

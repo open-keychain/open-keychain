@@ -68,7 +68,7 @@ public class SettingsActivity extends PreferenceActivity {
         String action = getIntent().getAction();
         if (action == null) return;
 
-        switch(action) {
+        switch (action) {
             case ACTION_PREFS_CLOUD: {
                 addPreferencesFromResource(R.xml.cloud_search_prefs);
 
@@ -319,7 +319,7 @@ public class SettingsActivity extends PreferenceActivity {
             }
 
             public Preference automaticallyFindPreference(String key) {
-                if(mFragment != null) {
+                if (mFragment != null) {
                     return mFragment.findPreference(key);
                 } else {
                     return mActivity.findPreference(key);
@@ -333,8 +333,7 @@ public class SettingsActivity extends PreferenceActivity {
                     Preferences.setPreferenceManagerFileAndMode(mFragment.getPreferenceManager());
                     // Load the preferences from an XML resource
                     mFragment.addPreferencesFromResource(R.xml.proxy_prefs);
-                }
-                else {
+                } else {
                     Preferences.setPreferenceManagerFileAndMode(mActivity.getPreferenceManager());
                     // Load the preferences from an XML resource
                     mActivity.addPreferencesFromResource(R.xml.proxy_prefs);
@@ -359,7 +358,7 @@ public class SettingsActivity extends PreferenceActivity {
                     @Override
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         Activity activity = mFragment != null ? mFragment.getActivity() : mActivity;
-                        if ((Boolean)newValue) {
+                        if ((Boolean) newValue) {
                             boolean installed = OrbotHelper.isOrbotInstalled(activity);
                             if (!installed) {
                                 Log.d(Constants.TAG, "Prompting to install Tor");
@@ -372,8 +371,7 @@ public class SettingsActivity extends PreferenceActivity {
                                 // let the enable tor box be checked
                                 return true;
                             }
-                        }
-                        else {
+                        } else {
                             // we're unchecking Tor, so enable other proxy
                             enableNormalProxyPrefs();
                             return true;
@@ -424,7 +422,7 @@ public class SettingsActivity extends PreferenceActivity {
                         Activity activity = mFragment != null ? mFragment.getActivity() : mActivity;
                         try {
                             int port = Integer.parseInt((String) newValue);
-                            if(port < 0 || port > 65535) {
+                            if (port < 0 || port > 65535) {
                                 Notify.create(
                                         activity,
                                         R.string.pref_proxy_port_err_invalid,

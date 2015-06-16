@@ -129,7 +129,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
                         }
                     };
 
-                    if(OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                    if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                             getActivity())) {
                         importKey(proxyPrefs.parcelableProxy);
                     }

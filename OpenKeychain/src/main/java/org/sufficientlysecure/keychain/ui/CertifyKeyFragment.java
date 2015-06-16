@@ -187,10 +187,12 @@ public class CertifyKeyFragment
                         };
                         if (!OrbotHelper.isOrbotInstalled(getActivity())) {
                             OrbotHelper.getInstallDialogFragmentWithThirdButton(new Messenger(ignoreTorHandler),
-                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "installOrbot");
+                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity()
+                                    .getSupportFragmentManager(), "installOrbot");
                         } else if (!OrbotHelper.isOrbotRunning()) {
                             OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
-                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity().getSupportFragmentManager(), "startOrbot");
+                                    R.string.orbot_install_dialog_ignore_tor).show(getActivity()
+                                    .getSupportFragmentManager(), "startOrbot");
                         } else {
                             cryptoOperation();
                         }

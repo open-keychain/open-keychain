@@ -48,15 +48,16 @@ public class InstallDialogFragment extends DialogFragment {
      * Creates a dialog which prompts the user to install an application. Consists of two default buttons ("Install"
      * and "Cancel") and an optional third button. Callbacks are provided only for the middle button, if set.
      *
-     * @param messenger required only for callback from middle button if it has been set
+     * @param messenger        required only for callback from middle button if it has been set
      * @param title
-     * @param message content of dialog
+     * @param message          content of dialog
      * @param packageToInstall package name of application to install
-     * @param middleButton if not null, adds a third button to the app with a call back
+     * @param middleButton     if not null, adds a third button to the app with a call back
      * @return The dialog to display
      */
     public static InstallDialogFragment newInstance(Messenger messenger, int title, int message,
-                                                 String packageToInstall, int middleButton, boolean useMiddleButton) {
+                                                    String packageToInstall, int middleButton, boolean
+                                                            useMiddleButton) {
         InstallDialogFragment frag = new InstallDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
@@ -125,7 +126,7 @@ public class InstallDialogFragment extends DialogFragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Message msg = new Message();
-                            msg.what=MESSAGE_MIDDLE_CLICKED;
+                            msg.what = MESSAGE_MIDDLE_CLICKED;
                             try {
                                 messenger.send(msg);
                             } catch (RemoteException e) {

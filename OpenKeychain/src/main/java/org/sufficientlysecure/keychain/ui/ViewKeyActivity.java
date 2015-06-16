@@ -53,7 +53,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -79,7 +78,12 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.*;
+import org.sufficientlysecure.keychain.util.ContactHelper;
+import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.NfcHelper;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
@@ -409,7 +413,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] {mMasterKeyId});
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
         startCertifyIntent(intent);
     }
@@ -465,11 +469,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
             HashMap<String, Object> data = providerHelper.getGenericData(
                     baseUri,
-                    new String[] {KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
-                    new int[] {ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
+                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
+                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
 
             exportHelper.showExportKeysDialog(
-                    new long[] {(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
+                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                     Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
             );
         } catch (ProviderHelper.NotFoundException e) {
@@ -493,7 +497,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[] {mMasterKeyId});
+                new long[]{mMasterKeyId});
         deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
@@ -630,7 +634,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             long keyId = new ProviderHelper(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[] {keyId};
+            long[] encryptionKeyIds = new long[]{keyId};
             Intent intent;
             if (text) {
                 intent = new Intent(this, EncryptTextActivity.class);
@@ -774,7 +778,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] {
+    static final String[] PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
@@ -862,7 +866,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     AsyncTask<Long, Void, Bitmap> photoTask =
                             new AsyncTask<Long, Void, Bitmap>() {
                                 protected Bitmap doInBackground(Long... mMasterKeyId) {
-                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(), mMasterKeyId[0], true);
+                                    return ContactHelper.loadPhotoByMasterKeyId(getContentResolver(),
+                                            mMasterKeyId[0], true);
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {

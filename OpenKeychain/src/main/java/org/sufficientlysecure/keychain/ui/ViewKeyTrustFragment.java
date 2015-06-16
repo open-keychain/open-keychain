@@ -57,7 +57,6 @@ import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -194,7 +193,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 mStartSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                                .getProxyPrefs();
 
                         Runnable ignoreTor = new Runnable() {
                             @Override
@@ -283,11 +283,13 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             return new ResultPage(getString(R.string.key_trust_results_prefix), proofList);
         }
 
-        private SpannableStringBuilder appendProofLinks(SpannableStringBuilder ssb, final String fingerprint, final Proof proof) throws KeybaseException {
+        private SpannableStringBuilder appendProofLinks(SpannableStringBuilder ssb, final String fingerprint, final
+        Proof proof) throws KeybaseException {
             int startAt = ssb.length();
             String handle = proof.getHandle();
             ssb.append(handle);
-            ssb.setSpan(new URLSpan(proof.getServiceUrl()), startAt, startAt + handle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            ssb.setSpan(new URLSpan(proof.getServiceUrl()), startAt, startAt + handle.length(), Spanned
+                    .SPAN_EXCLUSIVE_EXCLUSIVE);
             if (haveProofFor(proof.getType())) {
                 ssb.append("\u00a0[");
                 startAt = ssb.length();
@@ -296,7 +298,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 ClickableSpan clicker = new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                                .getProxyPrefs();
 
                         Runnable ignoreTor = new Runnable() {
                             @Override
@@ -349,19 +352,35 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     private String getProofNarrative(int proofType) {
         int stringIndex;
         switch (proofType) {
-            case Proof.PROOF_TYPE_TWITTER: stringIndex = R.string.keybase_narrative_twitter; break;
-            case Proof.PROOF_TYPE_GITHUB: stringIndex = R.string.keybase_narrative_github; break;
-            case Proof.PROOF_TYPE_DNS: stringIndex = R.string.keybase_narrative_dns; break;
-            case Proof.PROOF_TYPE_WEB_SITE: stringIndex = R.string.keybase_narrative_web_site; break;
-            case Proof.PROOF_TYPE_HACKERNEWS: stringIndex = R.string.keybase_narrative_hackernews; break;
-            case Proof.PROOF_TYPE_COINBASE: stringIndex = R.string.keybase_narrative_coinbase; break;
-            case Proof.PROOF_TYPE_REDDIT: stringIndex = R.string.keybase_narrative_reddit; break;
-            default: stringIndex = R.string.keybase_narrative_unknown;
+            case Proof.PROOF_TYPE_TWITTER:
+                stringIndex = R.string.keybase_narrative_twitter;
+                break;
+            case Proof.PROOF_TYPE_GITHUB:
+                stringIndex = R.string.keybase_narrative_github;
+                break;
+            case Proof.PROOF_TYPE_DNS:
+                stringIndex = R.string.keybase_narrative_dns;
+                break;
+            case Proof.PROOF_TYPE_WEB_SITE:
+                stringIndex = R.string.keybase_narrative_web_site;
+                break;
+            case Proof.PROOF_TYPE_HACKERNEWS:
+                stringIndex = R.string.keybase_narrative_hackernews;
+                break;
+            case Proof.PROOF_TYPE_COINBASE:
+                stringIndex = R.string.keybase_narrative_coinbase;
+                break;
+            case Proof.PROOF_TYPE_REDDIT:
+                stringIndex = R.string.keybase_narrative_reddit;
+                break;
+            default:
+                stringIndex = R.string.keybase_narrative_unknown;
         }
         return getActivity().getString(stringIndex);
     }
 
-    private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) throws KeybaseException {
+    private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) throws
+            KeybaseException {
         ArrayList<Proof> list = table.get(proofType);
         if (list == null) {
             list = new ArrayList<Proof>();
@@ -373,14 +392,22 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     // which proofs do we have working verifiers for?
     private boolean haveProofFor(int proofType) {
         switch (proofType) {
-            case Proof.PROOF_TYPE_TWITTER: return true;
-            case Proof.PROOF_TYPE_GITHUB: return true;
-            case Proof.PROOF_TYPE_DNS: return true;
-            case Proof.PROOF_TYPE_WEB_SITE: return true;
-            case Proof.PROOF_TYPE_HACKERNEWS: return true;
-            case Proof.PROOF_TYPE_COINBASE: return true;
-            case Proof.PROOF_TYPE_REDDIT: return true;
-            default: return false;
+            case Proof.PROOF_TYPE_TWITTER:
+                return true;
+            case Proof.PROOF_TYPE_GITHUB:
+                return true;
+            case Proof.PROOF_TYPE_DNS:
+                return true;
+            case Proof.PROOF_TYPE_WEB_SITE:
+                return true;
+            case Proof.PROOF_TYPE_HACKERNEWS:
+                return true;
+            case Proof.PROOF_TYPE_COINBASE:
+                return true;
+            case Proof.PROOF_TYPE_REDDIT:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -447,7 +474,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                         ssb.append(proofLabel);
                         if (proofUrl != null) {
                             URLSpan postLink = new URLSpan(proofUrl);
-                            ssb.setSpan(postLink, length, length + proofLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            ssb.setSpan(postLink, length, length + proofLabel.length(), Spanned
+                                    .SPAN_EXCLUSIVE_EXCLUSIVE);
                         }
                         if (Proof.PROOF_TYPE_DNS == proof.getType()) {
                             ssb.append(" ").append(getString(R.string.keybase_for_the_domain)).append(" ");
@@ -457,7 +485,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                         length = ssb.length();
                         URLSpan presenceLink = new URLSpan(presenceUrl);
                         ssb.append(presenceLabel);
-                        ssb.setSpan(presenceLink, length, length + presenceLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        ssb.setSpan(presenceLink, length, length + presenceLabel.length(), Spanned
+                                .SPAN_EXCLUSIVE_EXCLUSIVE);
                         if (Proof.PROOF_TYPE_REDDIT == proof.getType()) {
                             ssb.append(", ").
                                     append(getString(R.string.keybase_reddit_attribution)).
