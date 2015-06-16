@@ -9,6 +9,7 @@ import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
 
 /**
  * View Model for CreateKeyWizardActivity
+ * // TODO: 17/06/2015 mUseSmartCardSettings is a placeholder
  */
 public class CreateKeyWizardViewModel implements BaseViewModel {
     public static final String STATE_SAVE_WIZARD_STEP = "STATE_SAVE_WIZARD_STEP";
@@ -16,6 +17,7 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
     private WizardStep mWizardStep = WizardStep.WIZARD_STEP_BEGIN;
     private WizardModel mWizardModel;
     private Context mContext;
+    private boolean mUseSmartCardSettings = false;
 
     /**
      * Wizard screen steps
@@ -150,5 +152,13 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
 
     public void setWizardModel(WizardModel mWizardModel) {
         this.mWizardModel = mWizardModel;
+    }
+
+    public boolean isUseSmartCardSettings() {
+        return mUseSmartCardSettings;
+    }
+
+    public void setUseSmartCardSettings(boolean useSmartCardSettings) {
+        mUseSmartCardSettings = useSmartCardSettings;
     }
 }

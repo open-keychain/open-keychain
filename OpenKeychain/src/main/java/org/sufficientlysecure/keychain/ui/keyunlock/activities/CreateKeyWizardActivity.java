@@ -172,13 +172,33 @@ public class CreateKeyWizardActivity
     }
 
     @Override
+    public void setAdditionalEmails(ArrayList<String> additionalEmails) {
+        mCreateKeyWizardViewModel.getWizardModel().setAdditionalEmails(additionalEmails);
+    }
+
+    @Override
+    public void setEmail(CharSequence email) {
+        mCreateKeyWizardViewModel.getWizardModel().setEmail(email.toString());
+    }
+
+    @Override
     public CharSequence getName() {
         return mCreateKeyWizardViewModel.getWizardModel().getName();
     }
 
     @Override
+    public CharSequence getEmail() {
+        return mCreateKeyWizardViewModel.getWizardModel().getEmail();
+    }
+
+    @Override
     public ArrayList<String> getAdditionalEmails() {
         return mCreateKeyWizardViewModel.getWizardModel().getAdditionalEmails();
+    }
+
+    @Override
+    public Passphrase getPassphrase() {
+        return mCreateKeyWizardViewModel.getWizardModel().getPassword();
     }
 
     @Override

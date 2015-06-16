@@ -84,6 +84,8 @@ public class EmailWizardFragment extends WizardFragment{
 
     @Override
     public boolean onNextClicked() {
+        mWizardFragmentListener.setEmail(mCreateKeyEmail.getText());
+        mWizardFragmentListener.setAdditionalEmails(getAdditionalEmails());
         return true;
     }
 

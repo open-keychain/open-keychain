@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 /**
  * Radio based unlock choice fragment

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class PinUnlockWizardFragment extends WizardFragment {
     public static final String STATE_SAVE_STATUS_TEXT = "STATE_SAVE_STATUS_ID";
@@ -154,6 +155,11 @@ public class PinUnlockWizardFragment extends WizardFragment {
                 mWrongImageView.setVisibility(View.INVISIBLE);
             }
         } else {
+
+            mWizardFragmentListener.setPassphrase(
+                    new Passphrase(mPinUnlockWizardFragmentViewModel.getCurrentInputKeyWord().
+                            toString()));
+
             return true;
         }
         return false;
