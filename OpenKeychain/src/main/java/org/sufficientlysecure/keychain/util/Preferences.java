@@ -296,8 +296,7 @@ public class Preferences {
         if (useTor) {
             return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
                     Constants.Orbot.PROXY_TYPE);
-        }
-        else if (useNormalProxy) {
+        } else if (useNormalProxy) {
             return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
         } else {
             return new ProxyPrefs(false, false, null, -1, null);
@@ -318,7 +317,7 @@ public class Preferences {
         public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
             this.torEnabled = torEnabled;
             this.normalPorxyEnabled = normalPorxyEnabled;
-            if(!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
+            if (!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
             else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
         }
     }

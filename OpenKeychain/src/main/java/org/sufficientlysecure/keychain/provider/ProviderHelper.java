@@ -906,7 +906,8 @@ public class ProviderHelper {
             // If there is a secret key, merge new data (if any) and save the key for later
             CanonicalizedSecretKeyRing canSecretRing;
             try {
-                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
+                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId())
+                        .getUncachedKeyRing();
 
                 // Merge data from new public ring into secret one
                 log(LogType.MSG_IP_MERGE_SECRET);
@@ -1031,7 +1032,8 @@ public class ProviderHelper {
                 publicRing = secretRing.extractPublicKeyRing();
             }
 
-            CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
+            CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog,
+                    mIndent);
             if (canPublicRing == null) {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
@@ -1082,7 +1084,7 @@ public class ProviderHelper {
             indent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
-                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
+                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1143,7 +1145,7 @@ public class ProviderHelper {
 
             final Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
-                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
+                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);

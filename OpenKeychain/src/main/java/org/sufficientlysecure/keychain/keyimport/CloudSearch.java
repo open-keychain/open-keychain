@@ -70,7 +70,7 @@ public class CloudSearch {
             try {
                 if (proxy != null) {
                     results.wait(30 * SECONDS);
-                } else{
+                } else {
                     results.wait(10 * SECONDS);
                 }
                 for (Thread thread : searchThreads) {

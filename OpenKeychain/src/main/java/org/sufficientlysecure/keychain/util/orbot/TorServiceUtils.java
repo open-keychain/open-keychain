@@ -49,13 +49,13 @@
 
 package org.sufficientlysecure.keychain.util.orbot;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
-
-import android.util.Log;
 
 /**
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
@@ -68,23 +68,18 @@ public class TorServiceUtils {
     public final static String SHELL_CMD_PS = "ps";
     public final static String SHELL_CMD_PIDOF = "pidof";
 
-    public static int findProcessId(String command)
-    {
+    public static int findProcessId(String command) {
         int procId = -1;
 
-        try
-        {
+        try {
             procId = findProcessIdWithPidOf(command);
 
             if (procId == -1)
                 procId = findProcessIdWithPS(command);
-        } catch (Exception e)
-        {
-            try
-            {
+        } catch (Exception e) {
+            try {
                 procId = findProcessIdWithPS(command);
-            } catch (Exception e2)
-            {
+            } catch (Exception e2) {
                 Log.e(TAG, "Unable to get proc id for command: " + URLEncoder.encode(command), e2);
             }
         }
@@ -93,8 +88,7 @@ public class TorServiceUtils {
     }
 
     // use 'pidof' command
-    public static int findProcessIdWithPidOf(String command) throws Exception
-    {
+    public static int findProcessIdWithPidOf(String command) throws Exception {
 
         int procId = -1;
 
@@ -104,7 +98,7 @@ public class TorServiceUtils {
 
         String baseName = new File(command).getName();
         // fix contributed my mikos on 2010.12.10
-        procPs = r.exec(new String[] {
+        procPs = r.exec(new String[]{
                 SHELL_CMD_PIDOF, baseName
         });
         // procPs = r.exec(SHELL_CMD_PIDOF);
@@ -112,16 +106,13 @@ public class TorServiceUtils {
         BufferedReader reader = new BufferedReader(new InputStreamReader(procPs.getInputStream()));
         String line = null;
 
-        while ((line = reader.readLine()) != null)
-        {
+        while ((line = reader.readLine()) != null) {
 
-            try
-            {
+            try {
                 // this line should just be the process id
                 procId = Integer.parseInt(line.trim());
                 break;
-            } catch (NumberFormatException e)
-            {
+            } catch (NumberFormatException e) {
                 Log.e("TorServiceUtils", "unable to parse process pid: " + line, e);
             }
         }
@@ -131,8 +122,7 @@ public class TorServiceUtils {
     }
 
     // use 'ps' command
-    public static int findProcessIdWithPS(String command) throws Exception
-    {
+    public static int findProcessIdWithPS(String command) throws Exception {
 
         int procId = -1;
 
@@ -145,10 +135,8 @@ public class TorServiceUtils {
         BufferedReader reader = new BufferedReader(new InputStreamReader(procPs.getInputStream()));
         String line = null;
 
-        while ((line = reader.readLine()) != null)
-        {
-            if (line.indexOf(' ' + command) != -1)
-            {
+        while ((line = reader.readLine()) != null) {
+            if (line.indexOf(' ' + command) != -1) {
 
                 StringTokenizer st = new StringTokenizer(line, " ");
                 st.nextToken(); // proc owner

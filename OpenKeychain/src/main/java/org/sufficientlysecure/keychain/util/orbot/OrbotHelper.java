@@ -77,15 +77,13 @@ public class OrbotHelper {
 
     public final static String ACTION_START_TOR = "org.torproject.android.START_TOR";
 
-    public static boolean isOrbotRunning()
-    {
+    public static boolean isOrbotRunning() {
         int procId = TorServiceUtils.findProcessId(TOR_BIN_PATH);
 
         return (procId != -1);
     }
 
-    public static boolean isOrbotInstalled(Context context)
-    {
+    public static boolean isOrbotInstalled(Context context) {
         return isAppInstalled(ORBOT_PACKAGE_NAME, context);
     }
 
@@ -102,30 +100,28 @@ public class OrbotHelper {
     }
 
     /**
-     * hack to get around teh fact that PreferenceActivity still supports only android.app.DialogFragment
+     * hack to get around the fact that PreferenceActivity still supports only android.app.DialogFragment
      *
      * @return
      */
-    public static android.app.DialogFragment getPreferenceInstallDialogFragment()
-    {
+    public static android.app.DialogFragment getPreferenceInstallDialogFragment() {
         return PreferenceInstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
                 R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME);
     }
 
-    public static DialogFragment getInstallDialogFragment()
-    {
+    public static DialogFragment getInstallDialogFragment() {
         return InstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
                 R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME);
     }
 
-    public static DialogFragment getInstallDialogFragmentWithThirdButton(Messenger messenger, int middleButton)
-    {
+    public static DialogFragment getInstallDialogFragmentWithThirdButton(Messenger messenger, int middleButton) {
         return InstallDialogFragment.newInstance(messenger, R.string.orbot_install_dialog_title,
                 R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME, middleButton, true);
     }
 
     public static DialogFragment getOrbotStartDialogFragment(Messenger messenger, int middleButton) {
-        return OrbotStartDialogFragment.newInstance(messenger, R.string.orbot_start_dialog_title, R.string.orbot_start_dialog_content,
+        return OrbotStartDialogFragment.newInstance(messenger, R.string.orbot_start_dialog_title, R.string
+                        .orbot_start_dialog_content,
                 middleButton);
     }
 
@@ -139,7 +135,7 @@ public class OrbotHelper {
     /**
      * checks if Tor is enabled and if it is, that Orbot is installed and runnign. Generates appropriate dialogs.
      *
-     * @param middleButton resourceId of string to display as the middle button of install and enable dialogs
+     * @param middleButton         resourceId of string to display as the middle button of install and enable dialogs
      * @param middleButtonRunnable runnable to be executed if the user clicks on the middle button
      * @param proxyPrefs
      * @param fragmentActivity
@@ -159,7 +155,7 @@ public class OrbotHelper {
             return true;
         }
 
-        if(!OrbotHelper.isOrbotInstalled(fragmentActivity)) {
+        if (!OrbotHelper.isOrbotInstalled(fragmentActivity)) {
 
             OrbotHelper.getInstallDialogFragmentWithThirdButton(
                     new Messenger(ignoreTorHandler),
@@ -167,7 +163,7 @@ public class OrbotHelper {
             ).show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotInstallDialog");
 
             return false;
-        } else if(!OrbotHelper.isOrbotRunning()) {
+        } else if (!OrbotHelper.isOrbotRunning()) {
 
             OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
                     R.string.orbot_install_dialog_ignore_tor)

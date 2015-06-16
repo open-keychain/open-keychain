@@ -51,6 +51,8 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -81,10 +83,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-
+/**
+ * Public key list with sticky list headers. It does _not_ exte
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
@@ -472,15 +472,13 @@ public class KeyListFragment extends LoaderFragment
                 return true;
 
             case R.id.menu_key_list_export:
-                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+              );
                 return true;
 
-            case R.id.menu_key_list_update_all_keys:
-                updateAllKeys();
-                return true;
+            case R.id.menu_key_list_debug
+_cons	    		return true;
 
-            case R.id.menu_key_list_debug_cons:
-                consolidate();
+              		  consolidate(case R.id.menu_key_list_debug_cons:);
                 return true;
 
             case R.id.menu_key_list_debug_read:

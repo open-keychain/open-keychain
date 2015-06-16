@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -201,7 +200,8 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 mStartSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
+                                .getProxyPrefs();
 
                         Runnable ignoreTor = new Runnable() {
                             @Override

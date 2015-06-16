@@ -19,12 +19,9 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -45,26 +42,25 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** An operation which implements a high level user id certification operation.
- *
+/**
+ * An operation which implements a high level user id certification operation.
+ * <p/>
  * This operation takes a specific CertifyActionsParcel as its input. These
  * contain a masterKeyId to be used for certification, and a list of
  * masterKeyIds and related user ids to certify.
  *
  * @see CertifyActionsParcel
- *
  */
 public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
-    public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
+    public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean
+            cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
@@ -178,7 +174,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         }
 
-        if ( ! allRequiredInput.isEmpty()) {
+        if (!allRequiredInput.isEmpty()) {
             log.add(LogType.MSG_CRT_NFC_RETURN, 1);
             return new CertifyResult(log, allRequiredInput.build());
         }
@@ -204,7 +200,8 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             // Check if we were cancelled
             if (checkCancelled()) {
                 log.add(LogType.MSG_OPERATION_CANCELLED, 0);
-                return new CertifyResult(CertifyResult.RESULT_CANCELLED, log, certifyOk, certifyError, uploadOk, uploadError);
+                return new CertifyResult(CertifyResult.RESULT_CANCELLED, log, certifyOk, certifyError, uploadOk,
+                        uploadError);
             }
 
             log.add(LogType.MSG_CRT_SAVE, 2,
@@ -245,7 +242,8 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
         if (uploadError != 0) {
-            return new CertifyResult(CertifyResult.RESULT_WARNINGS, log, certifyOk, certifyError, uploadOk, uploadError);
+            return new CertifyResult(CertifyResult.RESULT_WARNINGS, log, certifyOk, certifyError, uploadOk,
+                    uploadError);
         } else {
             return new CertifyResult(CertifyResult.RESULT_OK, log, certifyOk, certifyError, uploadOk, uploadError);
         }

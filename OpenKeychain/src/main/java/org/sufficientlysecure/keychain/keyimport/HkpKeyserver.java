@@ -18,20 +18,23 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import com.squareup.okhttp.*;
-import okio.BufferedSink;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.*;
+import java.net.Proxy;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -197,7 +200,7 @@ public class HkpKeyserver extends Keyserver {
      * @param proxy
      * @return
      */
-    public static OkHttpClient getClient(URL url, Proxy proxy) throws  IOException {
+    public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         try {
@@ -207,7 +210,6 @@ public class HkpKeyserver extends Keyserver {
         }
 
         client.setProxy(proxy);
-        // TODO: PHILIP if proxy !=null increase timeout?
         client.setConnectTimeout(proxy != null ? 30000 : 5000, TimeUnit.MILLISECONDS);
         client.setReadTimeout(45000, TimeUnit.MILLISECONDS);
 
@@ -222,8 +224,6 @@ public class HkpKeyserver extends Keyserver {
             OkHttpClient client = getClient(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
-            tempIpTest(proxy);
-
             String responseBody = response.body().string();// contains body both in case of success or failure
 
             if (response.isSuccessful()) {
@@ -235,12 +235,6 @@ public class HkpKeyserver extends Keyserver {
             e.printStackTrace();
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
         }
-    }
-
-    private void tempIpTest(Proxy proxy) throws IOException {
-        URL url = new URL("https://wtfismyip.com/text");
-        Response response = getClient(url, proxy).newCall(new Request.Builder().url(url).build()).execute();
-        Log.e("PHILIP", "proxy Test: " + response.body().string());
     }
 
     /**
@@ -388,8 +382,6 @@ public class HkpKeyserver extends Keyserver {
 
             RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params);
 
-            Log.e("PHILIP", "Media Type charset: "+body.contentType().charset());
-
             Request request = new Request.Builder()
                     .url(url)
                     .addHeader("Content-Type", "application/x-www-form-urlencoded")
@@ -397,10 +389,11 @@ public class HkpKeyserver extends Keyserver {
                     .post(body)
                     .build();
 
-            Response response = new OkHttpClient().setProxy(proxy).newCall(request).execute();
+            Response response = getClient(url, proxy).newCall(request).execute();
 
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
+
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();

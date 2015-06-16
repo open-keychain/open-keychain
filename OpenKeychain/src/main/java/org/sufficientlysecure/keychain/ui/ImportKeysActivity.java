@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.ArrayList;
 
 public class ImportKeysActivity extends BaseNfcActivity
@@ -322,7 +321,8 @@ public class ImportKeysActivity extends BaseNfcActivity
      *                           specified in user preferences
      */
 
-    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String keyserver) {
+    private void startCloudFragment(Bundle savedInstanceState, String query, boolean disableQueryEdit, String
+            keyserver) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.

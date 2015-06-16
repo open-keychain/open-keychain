@@ -32,6 +32,7 @@ public abstract class Keyserver {
         public CloudSearchFailureException(String message) {
             super(message);
         }
+
         public CloudSearchFailureException() {
             super();
         }

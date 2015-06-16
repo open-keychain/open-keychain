@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.net.Proxy;
 import java.util.ArrayList;
 
 public class ImportKeysListCloudLoader

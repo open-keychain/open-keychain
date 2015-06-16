@@ -59,14 +59,13 @@ import org.sufficientlysecure.keychain.util.TlsHelper;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
-import java.net.*;
-import javax.net.ssl.HttpsURLConnection;
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
