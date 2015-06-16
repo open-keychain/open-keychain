@@ -72,7 +72,7 @@ public class EncryptDecryptSymmetricTests {
 
         MainActivity activity = mActivity.getActivity();
 
-        String text = randomString(10, 40);
+        String text = randomString(10, 30);
 
         // navigate to encrypt/decrypt
         onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
