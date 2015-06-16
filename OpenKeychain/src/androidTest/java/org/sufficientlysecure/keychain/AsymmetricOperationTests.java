@@ -92,7 +92,8 @@ public class AsymmetricOperationTests {
         String cleartext = randomString(10, 30);
 
         { // encrypt
-            // TODO instrument this (difficult because of TokenCompleteView's async implementation)
+
+            // the EncryptKeyCompletionView is tested individually
             onView(withId(R.id.recipient_list)).perform(tokenEncryptViewAddToken(0x9D604D2F310716A3L));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
@@ -210,6 +211,9 @@ public class AsymmetricOperationTests {
         onView(withId(R.id.encrypt_text)).perform(click());
 
         { // sign
+
+            onView(withId(R.id.encrypt_copy)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.error_empty_text);
 
             // navigate to edit key dialog
             onView(withId(R.id.sign)).perform(click());
