@@ -232,7 +232,8 @@ public class HkpKeyserver extends Keyserver {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
+            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
+            proxy == null?"":" Using proxy " + proxy);
         }
     }
 
