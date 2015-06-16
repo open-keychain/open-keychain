@@ -149,6 +149,14 @@ public class PassphraseCacheService extends Service {
         context.startService(intent);
     }
 
+    public static void clearCachedPassphrases(Context context) {
+        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase()");
+
+        Intent intent = new Intent(context, PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+
+        context.startService(intent);
+    }
 
     /**
      * Gets a cached passphrase from memory by sending an intent to the service. This method is

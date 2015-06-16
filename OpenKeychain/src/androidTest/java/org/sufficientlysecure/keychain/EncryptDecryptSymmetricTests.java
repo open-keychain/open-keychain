@@ -39,13 +39,13 @@ import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.not;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
-import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDrawer;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
 
@@ -75,7 +75,7 @@ public class EncryptDecryptSymmetricTests {
         String text = randomString(10, 30);
 
         // navigate to encrypt/decrypt
-        onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
+        openDrawer(R.id.drawer_layout);
         onView(ViewMatchers.withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 

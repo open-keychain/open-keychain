@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -31,6 +30,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
@@ -40,6 +40,7 @@ import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -50,7 +51,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
-import static org.sufficientlysecure.keychain.actions.CustomActions.actionOpenDrawer;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
@@ -76,13 +76,16 @@ public class AsymmetricOperationTests {
 
         // import these two, make sure they're there
         importKeysFromResource(activity, "x.sec.asc");
+
+        // make sure no passphrases are cached
+        PassphraseCacheService.clearCachedPassphrases(activity);
     }
 
     @Test
     public void testTextEncryptDecryptFromToken() throws Exception {
 
         // navigate to 'encrypt text'
-        onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
+        openDrawer(R.id.drawer_layout);
         onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
@@ -146,7 +149,7 @@ public class AsymmetricOperationTests {
         pressBack();
         pressBack();
 
-        onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
+        openDrawer(R.id.drawer_layout);
         onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.decrypt_from_clipboard)).perform(click());
 
@@ -154,6 +157,28 @@ public class AsymmetricOperationTests {
 
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
             onView(withText(R.string.btn_unlock)).perform(click());
+
+            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
+                    withText(cleartext)));
+
+            onView(withId(R.id.result_encryption_text)).check(matches(
+                    withText(R.string.decrypt_result_encrypted)));
+            onView(withId(R.id.result_signature_text)).check(matches(
+                    withText(R.string.decrypt_result_no_signature)));
+            onView(withId(R.id.result_signature_layout)).check(matches(
+                    not(isDisplayed())));
+
+            onView(withId(R.id.result_encryption_icon)).check(matches(
+                    withDrawable(R.drawable.status_lock_closed_24dp)));
+            onView(withId(R.id.result_signature_icon)).check(matches(
+                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
+
+        }
+
+        pressBack();
+        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
+
+        { // decrypt again, passphrase should be cached
 
             onView(withId(R.id.decrypt_text_plaintext)).check(matches(
                     withText(cleartext)));
@@ -180,7 +205,7 @@ public class AsymmetricOperationTests {
         String cleartext = randomString(10, 30);
 
         // navigate to 'encrypt text'
-        onView(withId(R.id.drawer_layout)).perform(actionOpenDrawer());
+        openDrawer(R.id.drawer_layout);
         onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
