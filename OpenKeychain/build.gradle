@@ -114,7 +114,13 @@ android {
         versionCode 32300
         versionName "3.2.3"
         applicationId "org.sufficientlysecure.keychain"
-        testInstrumentationRunner "org.sufficientlysecure.keychain.JacocoWorkaroundJUnitRunner"
+        // the androidjunitrunner is broken regarding coverage, see here:
+        // https://code.google.com/p/android/issues/detail?id=170607
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // this workaround runner fixes the coverage problem, BUT doesn't work
+        // with android studio single test execution. use it to generate coverage
+        // data, but keep the other one otherwis
+        // testInstrumentationRunner "org.sufficientlysecure.keychain.JacocoWorkaroundJUnitRunner"
     }
 
     compileOptions {
