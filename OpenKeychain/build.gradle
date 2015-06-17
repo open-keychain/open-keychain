@@ -114,7 +114,7 @@ android {
         versionCode 32300
         versionName "3.2.3"
         applicationId "org.sufficientlysecure.keychain"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "org.sufficientlysecure.keychain.JacocoWorkaroundJUnitRunner"
     }
 
     compileOptions {
@@ -217,7 +217,10 @@ task jacocoTestReport(type:JacocoReport) {
             "${buildDir}/generated/source/buildConfig/debug",
             "${buildDir}/generated/source/r/debug"
     ])
-    executionData = files("${buildDir}/jacoco/testDebug.exec")
+    executionData = files([
+        "${buildDir}/jacoco/testDebug.exec",
+        "${buildDir}/outputs/code-coverage/connected/coverage.ec"
+    ])
 
     reports {
         xml.enabled = true
