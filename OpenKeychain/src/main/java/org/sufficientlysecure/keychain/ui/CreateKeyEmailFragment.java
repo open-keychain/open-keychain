@@ -67,6 +67,8 @@ public class CreateKeyEmailFragment extends Fragment {
         return frag;
     }
 
+
+
     /**
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.

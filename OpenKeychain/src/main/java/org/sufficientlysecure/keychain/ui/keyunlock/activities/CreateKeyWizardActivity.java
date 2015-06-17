@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 public class CreateKeyWizardActivity
         extends BaseActivity
-        implements PinUnlockDialog.onKeyUnlockListener, WizardFragmentListener {
+        implements WizardFragmentListener {
 
     public static final String TAG = "CreateKeyWizardActivity";
     public static final String FRAGMENT_TAG = "CurrentWizardFragment";
@@ -87,6 +87,9 @@ public class CreateKeyWizardActivity
      * @param view
      */
     public void onBackClicked(View view) {
+        if (mCurrentVisibleFragment != null) {
+            mCurrentVisibleFragment.onBackClicked();
+        }
         getSupportFragmentManager().popBackStack();
         mCreateKeyWizardViewModel.updateWizardStateOnBack();
     }
@@ -101,33 +104,6 @@ public class CreateKeyWizardActivity
             mCreateKeyWizardViewModel.updateWizardStateOnNext();
             updateWizardState();
         }
-    }
-
-    /**
-     * Callback for when the user confirms his unlock keyword (passphrase, pin, etc)
-     * This method is only called when there is a double keyword confirmation.
-     */
-    @Override
-    public void onNewUnlockKeywordConfirmed() {
-        mCreateKeyWizardViewModel.updateWizardStateOnNext();
-        updateWizardState();
-    }
-
-    /**
-     * User canceled the unlock method dialog, go to previous step.
-     */
-    @Override
-    public void onNewUnlockMethodCancel() {
-        mCreateKeyWizardViewModel.updateWizardStateOnBack();
-    }
-
-    /**
-     * Callback for when the user confirms his unlock pin
-     * This method is only called when there is an unlock request.
-     */
-    @Override
-    public void onUnlockRequest() {
-        Log.v(TAG, "onUnlockRequest");
     }
 
     @Override
@@ -263,6 +239,7 @@ public class CreateKeyWizardActivity
                 transaction.replace(R.id.unlockWizardFragmentContainer, mCurrentVisibleFragment,
                         FRAGMENT_TAG);
                 transaction.commit();
+                mNextButton.setText(R.string.btn_next);
             }
             break;
             case WIZARD_STEP_FINALIZE: {
@@ -277,6 +254,7 @@ public class CreateKeyWizardActivity
                 transaction.replace(R.id.unlockWizardFragmentContainer, mCurrentVisibleFragment,
                         FRAGMENT_TAG);
                 transaction.commit();
+                mNextButton.setText(R.string.btn_create_key);
             }
 
             default:

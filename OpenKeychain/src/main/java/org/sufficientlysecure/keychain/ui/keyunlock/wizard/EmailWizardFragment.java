@@ -11,9 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.ui.CreateKeyPassphraseFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.adapter.WizardEmailAdapter;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
  * Wizard fragment that handle the user emails.
  * TODO: 09/06/2015 Refactor the code and move all checks to the viewModel to add tests later.
  */
-public class EmailWizardFragment extends WizardFragment{
+public class EmailWizardFragment extends WizardFragment {
     private EmailWizardFragmentViewModel mEmailWizardFragmentViewModel;
     private TextView mEmailWizardFragmentTip;
     private EmailEditText mCreateKeyEmail;
@@ -75,7 +78,7 @@ public class EmailWizardFragment extends WizardFragment{
 
         mCreateKeyEmails.setAdapter(mEmailAdapter);
 
-        if(mWizardFragmentListener != null) {
+        if (mWizardFragmentListener != null) {
             mWizardFragmentListener.onHideNavigationButtons(false);
         }
 
@@ -84,9 +87,13 @@ public class EmailWizardFragment extends WizardFragment{
 
     @Override
     public boolean onNextClicked() {
-        mWizardFragmentListener.setEmail(mCreateKeyEmail.getText());
-        mWizardFragmentListener.setAdditionalEmails(getAdditionalEmails());
-        return true;
+        if (isMainEmailValid(mCreateKeyEmail)) {
+            mWizardFragmentListener.setEmail(mCreateKeyEmail.getText());
+            mWizardFragmentListener.setAdditionalEmails(mEmailWizardFragmentViewModel.
+                    getAdditionalEmails());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -106,7 +113,8 @@ public class EmailWizardFragment extends WizardFragment{
         }
 
         // check for duplicated emails
-        if (!additionalEmail && isEmailDuplicatedInsideAdapter(email) || additionalEmail &&
+        if (!additionalEmail && mEmailWizardFragmentViewModel.isEmailDuplicatedInsideAdapter(email)
+                || additionalEmail &&
                 mCreateKeyEmail.getText().length() > 0 && email.equals(mCreateKeyEmail.getText().
                 toString())) {
             Notify.create(getActivity(),
@@ -119,22 +127,25 @@ public class EmailWizardFragment extends WizardFragment{
     }
 
     /**
-     * Checks for duplicated emails inside the additional email adapter.
+     * Checks if text of given EditText is not empty. If it is empty an error is
+     * set and the EditText gets the focus.
      *
-     * @param email
-     * @return
+     * @param editText
+     * @return true if EditText is not empty
      */
-    private boolean isEmailDuplicatedInsideAdapter(String email) {
-        //check for duplicated emails inside the adapter
-        for (WizardEmailAdapter.ViewModel model : mEmailWizardFragmentViewModel.
-                getAdditionalEmailModels()) {
-            if (email.equals(model.getEmail())) {
-                return true;
-            }
+    private boolean isMainEmailValid(EditText editText) {
+        boolean output = true;
+        if (!checkEmail(editText.getText().toString(), false)) {
+            editText.setError(getString(R.string.create_key_empty));
+            editText.requestFocus();
+            output = false;
+        } else {
+            editText.setError(null);
         }
 
-        return false;
+        return output;
     }
+
 
     /**
      * Displays a dialog fragment for the user to input a valid email.
@@ -161,19 +172,5 @@ public class EmailWizardFragment extends WizardFragment{
 
         AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
-    }
-
-
-    /**
-     * Returns all additional emails.
-     * @return
-     */
-    private ArrayList<String> getAdditionalEmails() {
-        ArrayList<String> emails = new ArrayList<>();
-        for (WizardEmailAdapter.ViewModel holder : mEmailWizardFragmentViewModel.
-                getAdditionalEmailModels()) {
-            emails.add(holder.toString());
-        }
-        return emails;
     }
 }

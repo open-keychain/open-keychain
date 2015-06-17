@@ -2,9 +2,12 @@ package org.sufficientlysecure.keychain.ui.keyunlock.wizard;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.widget.EditText;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.keyunlock.adapter.WizardEmailAdapter;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -53,6 +56,38 @@ public class EmailWizardFragmentViewModel implements BaseViewModel {
         // check for email format or if the user did any input
         return !(email.length() == 0 || !EMAIL_PATTERN.matcher(email).matches());
     }
+
+
+    /**
+     * Checks for duplicated emails inside the additional email adapter.
+     *
+     * @param email
+     * @return
+     */
+    public boolean isEmailDuplicatedInsideAdapter(String email) {
+        //check for duplicated emails inside the adapter
+        for (WizardEmailAdapter.ViewModel model : mAdditionalEmailModels) {
+            if (email.equals(model.getEmail())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns all additional emails.
+     *
+     * @return
+     */
+    public ArrayList<String> getAdditionalEmails() {
+        ArrayList<String> emails = new ArrayList<>();
+        for (WizardEmailAdapter.ViewModel holder : mAdditionalEmailModels) {
+            emails.add(holder.toString());
+        }
+        return emails;
+    }
+
 
     public ArrayList<WizardEmailAdapter.ViewModel> getAdditionalEmailModels() {
         return mAdditionalEmailModels;
