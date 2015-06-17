@@ -303,10 +303,13 @@ public class ContactHelper {
         Cursor contactMasterKey = context.getContentResolver().query(contactUri,
                 new String[]{ContactsContract.Data.DATA2}, null, null, null);
         if (contactMasterKey != null) {
-            if (contactMasterKey.moveToNext()) {
-                return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
+            try {
+                if (contactMasterKey.moveToNext()) {
+                    return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
+                }
+            } finally {
+                contactMasterKey.close();
             }
-            contactMasterKey.close();
         }
         return null;
     }
@@ -537,7 +540,7 @@ public class ContactHelper {
                 KEYS_TO_CONTACT_PROJECTION,
                 KeychainContract.KeyRings.HAS_ANY_SECRET + "!=0",
                 null, null);
-        if (cursor != null) {
+        if (cursor != null) try {
             while (cursor.moveToNext()) {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
@@ -565,6 +568,8 @@ public class ContactHelper {
                     }
                 }
             }
+        } finally {
+            cursor.close();
         }
 
         for (long masterKeyId : keysToDelete) {
