@@ -179,7 +179,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
                 + ")";
 
-    KeychainDatabase(Context context) {
+    public KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
 

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <declare-styleable name="ToolableViewAnimator">
+        <attr name="initialView" format="integer" />
+    </declare-styleable>
+
     <declare-styleable name="FoldableLinearLayout">
         <attr name="foldedLabel" format="string" />
         <attr name="unFoldedLabel" format="string" />

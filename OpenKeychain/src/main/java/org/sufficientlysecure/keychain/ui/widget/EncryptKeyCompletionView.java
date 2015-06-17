@@ -38,6 +38,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
@@ -126,7 +127,13 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // These are the rows that we will retrieve.
         Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
-        String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND " + KeyRings.IS_EXPIRED + " = 0 AND "
+
+        String[] projection = KeyAdapter.getProjectionWith(new String[] {
+                KeychainContract.KeyRings.HAS_ENCRYPT,
+        });
+
+        String where = KeyRings.HAS_ENCRYPT + " NOT NULL AND "
+                + KeyRings.IS_EXPIRED + " = 0 AND "
                 + Tables.KEYS + "." + KeyRings.IS_REVOKED + " = 0";
 
         if (args != null && args.containsKey(ARG_QUERY)) {
@@ -135,12 +142,12 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView
 
             where += " AND " + KeyRings.USER_ID + " LIKE ?";
 
-            return new CursorLoader(getContext(), baseUri, KeyAdapter.PROJECTION, where,
+            return new CursorLoader(getContext(), baseUri, projection, where,
                     new String[]{"%" + query + "%"}, null);
         }
 
         mAdapter.setSearchQuery(null);
-        return new CursorLoader(getContext(), baseUri, KeyAdapter.PROJECTION, where, null, null);
+        return new CursorLoader(getContext(), baseUri, projection, where, null, null);
 
     }
 

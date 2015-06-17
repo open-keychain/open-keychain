@@ -11,6 +11,7 @@ buildscript {
         classpath 'com.novoda:bintray-release:0.2.7'
         
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+        // classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.0.2'
     }
 }
 

@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,14 +28,11 @@ import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 
 public class CertifyKeySpinner extends KeySpinner {
     private long mHiddenMasterKeyId = Constants.key.none;
@@ -59,19 +60,9 @@ public class CertifyKeySpinner extends KeySpinner {
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
 
-        // These are the rows that we will retrieve.
-        String[] projection = new String[]{
-                KeychainContract.KeyRings._ID,
-                KeychainContract.KeyRings.MASTER_KEY_ID,
-                KeychainContract.KeyRings.KEY_ID,
-                KeychainContract.KeyRings.USER_ID,
-                KeychainContract.KeyRings.IS_REVOKED,
-                KeychainContract.KeyRings.IS_EXPIRED,
+        String[] projection = KeyAdapter.getProjectionWith(new String[] {
                 KeychainContract.KeyRings.HAS_CERTIFY,
-                KeychainContract.KeyRings.HAS_ANY_SECRET,
-                KeychainContract.KeyRings.HAS_DUPLICATE_USER_ID,
-                KeychainContract.KeyRings.CREATION
-        };
+        });
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
                 + KeychainDatabase.Tables.KEYS + "." + KeychainContract.KeyRings.MASTER_KEY_ID
@@ -82,7 +73,7 @@ public class CertifyKeySpinner extends KeySpinner {
         return new CursorLoader(getContext(), baseUri, projection, where, null, null);
     }
 
-    private int mIndexHasCertify, mIndexIsRevoked, mIndexIsExpired;
+    private int mIndexHasCertify;
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -90,8 +81,6 @@ public class CertifyKeySpinner extends KeySpinner {
 
         if (loader.getId() == LOADER_ID) {
             mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY);
-            mIndexIsRevoked = data.getColumnIndex(KeychainContract.KeyRings.IS_REVOKED);
-            mIndexIsExpired = data.getColumnIndex(KeychainContract.KeyRings.IS_EXPIRED);
 
             // If:
             // - no key has been pre-selected (e.g. by SageSlinger)
@@ -119,18 +108,15 @@ public class CertifyKeySpinner extends KeySpinner {
 
 
     @Override
-    boolean setStatus(Context context, Cursor cursor, ImageView statusView) {
-        if (cursor.getInt(mIndexIsRevoked) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.REVOKED, R.color.bg_gray);
+    boolean isItemEnabled(Cursor cursor) {
+        if (cursor.getInt(KeyAdapter.INDEX_IS_REVOKED) != 0) {
             return false;
         }
-        if (cursor.getInt(mIndexIsExpired) != 0) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.EXPIRED, R.color.bg_gray);
+        if (cursor.getInt(KeyAdapter.INDEX_IS_EXPIRED) != 0) {
             return false;
         }
         // don't invalidate the "None" entry, which is also null!
         if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
-            KeyFormattingUtils.setStatusImage(getContext(), statusView, null, State.UNAVAILABLE, R.color.bg_gray);
             return false;
         }
 

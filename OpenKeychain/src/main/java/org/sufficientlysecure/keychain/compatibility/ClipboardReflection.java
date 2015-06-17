@@ -74,6 +74,10 @@ public class ClipboardReflection {
                 Method methodGetPrimaryClip = clipboard.getClass().getMethod("getPrimaryClip");
                 Object clipData = methodGetPrimaryClip.invoke(clipboard);
 
+                if (clipData == null) {
+                    return null;
+                }
+
                 // ClipData.Item clipDataItem = clipData.getItemAt(0);
                 Method methodGetItemAt = clipData.getClass().getMethod("getItemAt", int.class);
                 Object clipDataItem = methodGetItemAt.invoke(clipData, 0);

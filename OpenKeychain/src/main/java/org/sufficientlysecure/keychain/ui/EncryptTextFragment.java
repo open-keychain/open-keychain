@@ -240,7 +240,7 @@ public class EncryptTextFragment
             boolean gotEncryptionKeys = (encryptionKeyIds != null
                     && encryptionKeyIds.length > 0);
 
-            if (!gotEncryptionKeys && signingKeyId == 0L) {
+            if (!gotEncryptionKeys && signingKeyId == Constants.key.none) {
                 Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
                         .show(this);
                 return null;

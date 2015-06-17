@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -43,14 +44,12 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
@@ -75,8 +74,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
     // special extra for OpenPgpService
     public static final String EXTRA_SERVICE_INTENT = "data";
-
-    private static final int REQUEST_CODE_ENTER_PATTERN = 2;
+    private long mSubKeyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,14 +91,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // this activity itself has no content view (see manifest)
 
-        long keyId;
         if (getIntent().hasExtra(EXTRA_SUBKEY_ID)) {
-            keyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
+            mSubKeyId = getIntent().getLongExtra(EXTRA_SUBKEY_ID, 0);
         } else {
             RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
             switch (requiredInput.mType) {
                 case PASSPHRASE_SYMMETRIC: {
-                    keyId = Constants.key.symmetric;
+                    mSubKeyId = Constants.key.symmetric;
                     break;
                 }
                 case PASSPHRASE: {
@@ -127,7 +124,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         return;
                     }
 
-                    keyId = requiredInput.getSubKeyId();
+                    mSubKeyId = requiredInput.getSubKeyId();
                     break;
                 }
                 default: {
@@ -136,62 +133,35 @@ public class PassphraseDialogActivity extends FragmentActivity {
             }
         }
 
-        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);
-
-        show(this, keyId, serviceIntent);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_ENTER_PATTERN: {
-                /*
-                 * NOTE that there are 4 possible result codes!!!
-                 */
-                switch (resultCode) {
-                    case RESULT_OK:
-                        // The user passed
-                        break;
-                    case RESULT_CANCELED:
-                        // The user cancelled the task
-                        break;
-//                    case LockPatternActivity.RESULT_FAILED:
-//                        // The user failed to enter the pattern
-//                        break;
-//                    case LockPatternActivity.RESULT_FORGOT_PATTERN:
-//                        // The user forgot the pattern and invoked your recovery Activity.
-//                        break;
-                }
+    protected void onResume() {
+        super.onResume();
 
-                /*
-                 * In any case, there's always a key EXTRA_RETRY_COUNT, which holds
-                 * the number of tries that the user did.
-                 */
-//                int retryCount = data.getIntExtra(
-//                        LockPatternActivity.EXTRA_RETRY_COUNT, 0);
+        /* Show passphrase dialog to cache a new passphrase the user enters for using it later for
+         * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
+         * for a symmetric passphrase
+         */
 
-                break;
-            }
-        }
+        Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);
+
+        PassphraseDialogFragment frag = new PassphraseDialogFragment();
+        Bundle args = new Bundle();
+        args.putLong(EXTRA_SUBKEY_ID, mSubKeyId);
+        args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
+        frag.setArguments(args);
+        frag.show(getSupportFragmentManager(), "passphraseDialog");
     }
 
-    /**
-     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
-     * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
-     * for a symmetric passphrase
-     */
-    public static void show(final FragmentActivity context, final long keyId, final Intent serviceIntent) {
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                // do NOT check if the key even needs a passphrase. that's not our job here.
-                PassphraseDialogFragment frag = new PassphraseDialogFragment();
-                Bundle args = new Bundle();
-                args.putLong(EXTRA_SUBKEY_ID, keyId);
-                args.putParcelable(EXTRA_SERVICE_INTENT, serviceIntent);
-                frag.setArguments(args);
-                frag.show(context.getSupportFragmentManager(), "passphraseDialog");
-            }
-        });
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag("passphraseDialog");
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
@@ -205,9 +175,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         private Intent mServiceIntent;
 
-        /**
-         * Creates dialog
-         */
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();
@@ -268,12 +235,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         userId = null;
                     }
 
-                    /* Get key type for message */
-                    // find a master key id for our key
-                    long masterKeyId = new ProviderHelper(activity).getMasterKeyId(mSubKeyId);
-                    CachedPublicKeyRing keyRing = new ProviderHelper(activity).getCachedPublicKeyRing(masterKeyId);
-                    // get the type of key (from the database)
-                    keyType = keyRing.getSecretKeyType(mSubKeyId);
+                    keyType = mSecretRing.getSecretKey(mSubKeyId).getSecretKeyType();
                     switch (keyType) {
                         case PASSPHRASE:
                             message = getString(R.string.passphrase_for, userId);
@@ -468,20 +430,16 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             // note we need no synchronization here, this variable is only accessed in the ui thread
             mIsCancelled = true;
+
+            getActivity().setResult(RESULT_CANCELED);
+            getActivity().finish();
         }
 
         @Override
         public void onDismiss(DialogInterface dialog) {
             super.onDismiss(dialog);
 
-            if (getActivity() == null) {
-                return;
-            }
-
             hideKeyboard();
-
-            getActivity().setResult(RESULT_CANCELED);
-            getActivity().finish();
         }
 
         private void hideKeyboard() {
@@ -495,11 +453,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
             inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
         }
 
-        /**
-         * Associate the "done" button on the soft keyboard with the okay button in the view
-         */
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            // Associate the "done" button on the soft keyboard with the okay button in the view
             if (EditorInfo.IME_ACTION_DONE == actionId) {
                 AlertDialog dialog = ((AlertDialog) getDialog());
                 Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
