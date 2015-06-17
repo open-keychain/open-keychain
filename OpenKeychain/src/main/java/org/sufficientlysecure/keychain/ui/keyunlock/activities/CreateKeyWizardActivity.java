@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.dialogs.PinUnlockDialog;
@@ -28,7 +29,8 @@ import java.util.ArrayList;
  */
 public class CreateKeyWizardActivity
         extends BaseActivity
-        implements WizardFragmentListener {
+        implements WizardFragmentListener,
+        AddEmailDialogFragment.onAddEmailDialogListener{
 
     public static final String TAG = "CreateKeyWizardActivity";
     public static final String FRAGMENT_TAG = "CurrentWizardFragment";
@@ -295,5 +297,11 @@ public class CreateKeyWizardActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mCreateKeyWizardViewModel.saveViewModelState(outState);
+    }
+
+    @Override
+    public void onAddAdditionalEmail(String email) {
+        mCurrentVisibleFragment.onRequestAddEmail(email);
+
     }
 }

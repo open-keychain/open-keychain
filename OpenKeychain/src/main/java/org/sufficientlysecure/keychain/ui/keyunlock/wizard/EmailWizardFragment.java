@@ -146,31 +146,19 @@ public class EmailWizardFragment extends WizardFragment {
         return output;
     }
 
+    @Override
+    public void onRequestAddEmail(String email) {
+        if (checkEmail(email, true)) {
+            // add new user id
+            mEmailAdapter.add(email);
+        }
+    }
 
     /**
      * Displays a dialog fragment for the user to input a valid email.
-     * TODO: 09/06/2015 Warning, handler is unsafe!
      */
     private void addEmail() {
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-
-                    String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
-
-                    if (checkEmail(email, true)) {
-                        // add new user id
-                        mEmailAdapter.add(email);
-                    }
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance(messenger);
+        AddEmailDialogFragment addEmailDialog = AddEmailDialogFragment.newInstance();
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
     }
 }
