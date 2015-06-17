@@ -411,13 +411,17 @@ public class ImportExportOperation extends BaseOperation {
 
         try {
             OutputStream outStream = new FileOutputStream(outputFile);
-            ExportResult result = exportKeyRings(log, masterKeyIds, exportSecret, outStream);
-            if (result.cancelled()) {
-                //noinspection ResultOfMethodCallIgnored
-                new File(outputFile).delete();
+            try {
+                ExportResult result = exportKeyRings(log, masterKeyIds, exportSecret, outStream);
+                if (result.cancelled()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    new File(outputFile).delete();
+                }
+                return result;
+            } finally {
+                outStream.close();
             }
-            return result;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             log.add(LogType.MSG_EXPORT_ERROR_FOPEN, 1);
             return new ExportResult(ExportResult.RESULT_ERROR, log);
         }

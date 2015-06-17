@@ -97,26 +97,23 @@ public class PasswordStrengthView extends View {
     public PasswordStrengthView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        int COLOR_FAIL = context.getResources().getColor(R.color.android_red_light);
-        int COLOR_WEAK = context.getResources().getColor(R.color.android_orange_light);
-        int COLOR_STRONG = context.getResources().getColor(R.color.android_green_light);
+        int COLOR_FAIL = getResources().getColor(R.color.android_red_light);
+        int COLOR_WEAK = getResources().getColor(R.color.android_orange_light);
+        int COLOR_STRONG = getResources().getColor(R.color.android_green_light);
 
         TypedArray style = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.PasswordStrengthView,
                 0, 0);
 
-        try {
-            mStrengthRequirement = style.getInteger(R.styleable.PasswordStrengthView_strength,
-                    STRENGTH_MEDIUM);
-            mShowGuides = style.getBoolean(R.styleable.PasswordStrengthView_showGuides, true);
-            mColorFail = style.getColor(R.styleable.PasswordStrengthView_color_fail, COLOR_FAIL);
-            mColorWeak = style.getColor(R.styleable.PasswordStrengthView_color_weak, COLOR_WEAK);
-            mColorStrong = style.getColor(R.styleable.PasswordStrengthView_color_strong,
-                    COLOR_STRONG);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mStrengthRequirement = style.getInteger(R.styleable.PasswordStrengthView_strength,
+                STRENGTH_MEDIUM);
+        mShowGuides = style.getBoolean(R.styleable.PasswordStrengthView_showGuides, true);
+        mColorFail = style.getColor(R.styleable.PasswordStrengthView_color_fail, COLOR_FAIL);
+        mColorWeak = style.getColor(R.styleable.PasswordStrengthView_color_weak, COLOR_WEAK);
+        mColorStrong = style.getColor(R.styleable.PasswordStrengthView_color_strong,
+                COLOR_STRONG);
+
         // Create and style the paint used for drawing the guide on the indicator
         mGuidePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mGuidePaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -124,6 +121,9 @@ public class PasswordStrengthView extends View {
         // Create and style paint for indicator
         mIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mIndicatorPaint.setStyle(Paint.Style.FILL);
+
+        style.recycle();
+
     }
 
     /**
