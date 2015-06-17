@@ -95,6 +95,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             try {
                 handleNdefDiscoveredIntent(intent);
+            } catch (CardException e) {
+                handleNfcError(e);
             } catch (IOException e) {
                 handleNfcError(e);
             }
@@ -105,6 +107,81 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         Log.e(Constants.TAG, "nfc error", e);
         Notify.create(this, getString(R.string.error_nfc, e.getMessage()), Style.WARN).show();
+    }
+
+    public void handleNfcError(CardException e) {
+        Log.e(Constants.TAG, "card error", e);
+
+        short status = e.getResponseCode();
+        // When entering a PIN, a status of 63CX indicates X attempts remaining.
+        if ((status & (short)0xFFF0) == 0x63C0) {
+            Notify.create(this, getString(R.string.error_pin, status & 0x000F), Style.WARN).show();
+            return;
+        }
+
+        // Otherwise, all status codes are fixed values.
+        switch (status) {
+            // These errors should not occur in everyday use; if they are returned, it means we
+            // made a mistake sending data to the card, or the card is misbehaving.
+            case 0x6A80: {
+                Notify.create(this, getString(R.string.error_nfc_bad_data), Style.WARN).show();
+                break;
+            }
+            case 0x6883: {
+                Notify.create(this, getString(R.string.error_nfc_chaining_error), Style.WARN).show();
+                break;
+            }
+            case 0x6B00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "P1/P2"), Style.WARN).show();
+                break;
+            }
+            case 0x6D00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "INS"), Style.WARN).show();
+                break;
+            }
+            case 0x6E00: {
+                Notify.create(this, getString(R.string.error_nfc_header, "CLA"), Style.WARN).show();
+                break;
+            }
+            // These error conditions are more likely to be experienced by an end user.
+            case 0x6285: {
+                Notify.create(this, getString(R.string.error_nfc_terminated), Style.WARN).show();
+                break;
+            }
+            case 0x6700: {
+                Notify.create(this, getString(R.string.error_nfc_wrong_length), Style.WARN).show();
+                break;
+            }
+            case 0x6982: {
+                Notify.create(this, getString(R.string.error_nfc_security_not_satisfied),
+                        Style.WARN).show();
+                break;
+            }
+            case 0x6983: {
+                Notify.create(this, getString(R.string.error_nfc_authentication_blocked),
+                        Style.WARN).show();
+                break;
+            }
+            case 0x6985: {
+                Notify.create(this, getString(R.string.error_nfc_conditions_not_satisfied),
+                        Style.WARN).show();
+                break;
+            }
+            // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
+            case 0x6A88:
+            case 0x6A83: {
+                Notify.create(this, getString(R.string.error_nfc_data_not_found), Style.WARN).show();
+                break;
+            }
+            // 6F00 is a JavaCard proprietary status code, SW_UNKNOWN, and usually represents an
+            // unhandled exception on the smart card.
+            case 0x6F00: {
+                Notify.create(this, getString(R.string.error_nfc_unknown), Style.WARN).show();
+                break;
+            }
+            default:
+                Notify.create(this, getString(R.string.error_nfc, e.getMessage()), Style.WARN).show();
+        }
 
     }
 
@@ -223,8 +300,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + "06" // Lc (number of bytes)
                         + "D27600012401" // Data (6 bytes)
                         + "00"; // Le
-        if ( ! nfcCommunicate(opening).endsWith(accepted)) { // activate connection
-            throw new IOException("Initialization failed!");
+        String response = nfcCommunicate(opening);  // activate connection
+        if ( ! response.endsWith(accepted) ) {
+            throw new CardException("Initialization failed!", parseCardStatus(response));
         }
 
         byte[] pwStatusBytes = nfcGetPwStatusBytes();
@@ -439,7 +517,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
 
         if ( ! "9000".equals(status)) {
-            throw new IOException("Bad NFC response code: " + status);
+            throw new CardException("Bad NFC response code: " + status, parseCardStatus(response));
         }
 
         // Make sure the signature we received is actually the expected number of bytes long!
@@ -511,9 +589,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + String.format("%02x", mode) // P2
                         + String.format("%02x", pin.length) // Lc
                         + Hex.toHexString(pin);
-            if (!nfcCommunicate(login).equals(accepted)) { // login
+            String response = nfcCommunicate(login); // login
+            if (!response.equals(accepted)) {
                 handlePinError();
-                throw new IOException("Bad PIN!");
+                throw new CardException("Bad PIN!", parseCardStatus(response));
             }
 
             if (mode == 0x81) {
@@ -567,9 +646,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 + String.format("%02x", pin.length + newPin.length) // Lc
                 + getHex(pin)
                 + getHex(newPin);
-        if (!nfcCommunicate(changeReferenceDataApdu).equals("9000")) { // Change reference data
+        String response = nfcCommunicate(changeReferenceDataApdu); // change PIN
+        if (!response.equals("9000")) {
             handlePinError();
-            throw new IOException("Failed to change PIN");
+            throw new CardException("Failed to change PIN", parseCardStatus(response));
         }
     }
 
@@ -600,12 +680,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 + String.format("%02x", data.length) // Lc
                 + getHex(data);
 
-        String response = nfcCommunicate(putDataApdu);
+        String response = nfcCommunicate(putDataApdu); // put data
         if (!response.equals("9000")) {
-            throw new IOException("Failed to put data for tag "
-                    + String.format("%02x", (dataObject & 0xFF00) >> 8)
-                    + String.format("%02x", dataObject & 0xFF)
-                    + ": " + response);
+            throw new CardException("Failed to put data.", parseCardStatus(response));
         }
     }
 
@@ -713,12 +790,30 @@ public abstract class BaseNfcActivity extends BaseActivity {
             }
 
             if (!response.endsWith("9000")) {
-                throw new IOException("Key export to card failed");
+                throw new CardException("Key export to card failed", parseCardStatus(response));
             }
         }
 
         // Clear array with secret data before we return.
         Arrays.fill(dataToSend, (byte) 0);
+    }
+
+    /**
+     * Parses out the status word from a JavaCard response string.
+     *
+     * @param response A hex string with the response from the card
+     * @return A short indicating the SW1/SW2, or 0 if a status could not be determined.
+     */
+    short parseCardStatus(String response) {
+        if (response.length() < 4) {
+            return 0; // invalid input
+        }
+
+        try {
+            return Short.parseShort(response.substring(response.length() - 4), 16);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     /**
@@ -788,6 +883,20 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     public static String getHex(byte[] raw) {
         return new String(Hex.encode(raw));
+    }
+
+    public class CardException extends IOException {
+        private short mResponseCode;
+
+        public CardException(String detailMessage, short responseCode) {
+            super(detailMessage);
+            mResponseCode = responseCode;
+        }
+
+        public short getResponseCode() {
+            return mResponseCode;
+        }
+
     }
 
 }

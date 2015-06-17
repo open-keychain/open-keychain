@@ -365,14 +365,9 @@ public class PgpKeyOperation {
     public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
                                                 CryptoInputParcel cryptoInput,
                                                 SaveKeyringParcel saveParcel) {
-        return modifySecretKeyRing(wsKR, cryptoInput, saveParcel, new OperationLog(), 0);
-    }
 
-    public PgpEditKeyResult modifySecretKeyRing(CanonicalizedSecretKeyRing wsKR,
-            CryptoInputParcel cryptoInput,
-            SaveKeyringParcel saveParcel,
-            OperationLog log,
-            int indent) {
+        OperationLog log = new OperationLog();
+        int indent = 0;
 
         /*
          * 1. Unlock private key

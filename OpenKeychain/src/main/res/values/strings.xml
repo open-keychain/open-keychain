@@ -1310,6 +1310,17 @@
     <string name="btn_import">"Import"</string>
     <string name="snack_yubi_other">Different key stored on YubiKey!</string>
     <string name="error_nfc">"NFC Error: %s"</string>
+    <string name="error_pin">"NFC: Incorrect PIN; %d tries remaining."</string>
+    <string name="error_nfc_terminated">"NFC: Smart card in termination state"</string>
+    <string name="error_nfc_wrong_length">"NFC: Wrong length for sent / received data"</string>
+    <string name="error_nfc_conditions_not_satisfied">"NFC: Conditions of use not satisfied"</string>
+    <string name="error_nfc_security_not_satisfied">"NFC: Security status not satisfied"</string>
+    <string name="error_nfc_authentication_blocked">"NFC: PIN blocked after too many attempts"</string>
+    <string name="error_nfc_data_not_found">"NFC: Key or object not found"</string>
+    <string name="error_nfc_unknown">"NFC: Unknown Error"</string>
+    <string name="error_nfc_bad_data">"NFC: Card reported invalid data"</string>
+    <string name="error_nfc_chaining_error">"NFC: Card expected last command in a chain"</string>
+    <string name="error_nfc_header">"NFC: Card reported invalid %s byte"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
     <string name="btn_delete_original">Delete original file</string>

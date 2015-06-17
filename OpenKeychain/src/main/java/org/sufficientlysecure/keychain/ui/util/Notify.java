@@ -38,25 +38,16 @@ import org.sufficientlysecure.keychain.util.FabContainer;
 public class Notify {
 
     public static enum Style {
-        OK, WARN, ERROR;
+        OK (R.color.android_green_light), WARN(R.color.android_orange_light), ERROR(R.color.android_red_light);
+
+        public final int mLineColor;
+
+        Style(int color) {
+            mLineColor = color;
+        }
 
         public void applyToBar(Snackbar bar) {
-
-            switch (this) {
-                case OK:
-                    // bar.actionColorResource(R.color.android_green_light);
-                    bar.lineColorResource(R.color.android_green_light);
-                    break;
-                case WARN:
-                    // bar.textColorResource(R.color.android_orange_light);
-                    bar.lineColorResource(R.color.android_orange_light);
-                    break;
-                case ERROR:
-                    // bar.textColorResource(R.color.android_red_light);
-                    bar.lineColorResource(R.color.android_red_light);
-                    break;
-            }
-
+            bar.lineColorResource(mLineColor);
         }
     }
 

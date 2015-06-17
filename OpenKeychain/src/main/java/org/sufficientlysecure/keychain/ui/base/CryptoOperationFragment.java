@@ -192,7 +192,7 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     abstract protected void onCryptoOperationSuccess(S result);
 
     protected void onCryptoOperationError(S result) {
-        result.createNotify(getActivity()).show(this);
+        result.createNotify(getActivity()).show();
     }
 
     protected void onCryptoOperationCancelled() {

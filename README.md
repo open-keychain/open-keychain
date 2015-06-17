@@ -9,7 +9,7 @@ For a more detailed description and installation instructions go to http://www.o
 
 ### Travis CI Build Status of master branch
 
-[![Build Status](https://travis-ci.org/open-keychain/open-keychain.png?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
+[![Build Status](https://travis-ci.org/open-keychain/open-keychain.svg?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
 
 ## How to help the project?
 
