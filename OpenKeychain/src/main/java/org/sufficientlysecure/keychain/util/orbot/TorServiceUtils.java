@@ -47,7 +47,7 @@
         *****
 */
 
-package org.sufficientlysecure.keychain.util.tor;
+package org.sufficientlysecure.keychain.util.orbot;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;

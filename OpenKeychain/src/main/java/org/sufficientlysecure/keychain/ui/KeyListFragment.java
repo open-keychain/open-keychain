@@ -83,9 +83,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
-/**
- * Public key list with sticky list headers. It does _not_ exte
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.

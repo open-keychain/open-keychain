@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Sends the selected public key to a keyserver

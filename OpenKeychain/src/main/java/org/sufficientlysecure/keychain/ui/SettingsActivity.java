@@ -42,7 +42,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.List;
 

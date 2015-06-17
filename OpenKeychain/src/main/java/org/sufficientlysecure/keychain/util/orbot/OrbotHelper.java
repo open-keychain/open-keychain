@@ -47,7 +47,7 @@
         *****
 */
 
-package org.sufficientlysecure.keychain.util.tor;
+package org.sufficientlysecure.keychain.util.orbot;
 
 import android.content.Context;
 import android.content.Intent;
