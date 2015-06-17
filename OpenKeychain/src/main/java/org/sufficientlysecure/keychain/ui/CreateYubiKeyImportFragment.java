@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
 
 
 public class CreateYubiKeyImportFragment

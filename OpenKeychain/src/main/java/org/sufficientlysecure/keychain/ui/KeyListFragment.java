@@ -83,6 +83,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
 /**
  * Public key list with sticky list headers. It does _not_ exte
 /**
@@ -472,13 +473,11 @@ public class KeyListFragment extends LoaderFragment
                 return true;
 
             case R.id.menu_key_list_export:
-              );
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
                 return true;
 
-            case R.id.menu_key_list_debug
-_cons	    		return true;
-
-              		  consolidate(case R.id.menu_key_list_debug_cons:);
+            case R.id.menu_key_list_update_all_keys:
+                updateAllKeys();
                 return true;
 
             case R.id.menu_key_list_debug_read:

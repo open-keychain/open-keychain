@@ -47,12 +47,9 @@
         *****
 */
 
-package org.sufficientlysecure.keychain.util.orbot;
+package org.sufficientlysecure.keychain.util.tor;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -60,7 +57,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
@@ -89,7 +86,8 @@ public class OrbotHelper {
 
     private static boolean isAppInstalled(String uri, Context context) {
         PackageManager pm = context.getPackageManager();
-        boolean installed = false;
+
+        boolean installed;
         try {
             pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             installed = true;
