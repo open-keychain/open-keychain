@@ -58,7 +58,7 @@ dependencies {
     compile project(':extern:spongycastle:pg')
     compile project(':extern:spongycastle:pkix')
     compile project(':extern:spongycastle:prov')
-    compile project(':extern:minidns')
+    compile project(':extern:minidns:minidns-core')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
 }
