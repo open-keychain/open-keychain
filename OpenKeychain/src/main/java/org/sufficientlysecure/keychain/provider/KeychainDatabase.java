@@ -391,10 +391,15 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static void copy(File in, File out) throws IOException {
         FileInputStream is = new FileInputStream(in);
         FileOutputStream os = new FileOutputStream(out);
-        byte[] buf = new byte[512];
-        while (is.available() > 0) {
-            int count = is.read(buf, 0, 512);
-            os.write(buf, 0, count);
+        try {
+            byte[] buf = new byte[512];
+            while (is.available() > 0) {
+                int count = is.read(buf, 0, 512);
+                os.write(buf, 0, count);
+            }
+        } finally {
+            is.close();
+            os.close();
         }
     }
 

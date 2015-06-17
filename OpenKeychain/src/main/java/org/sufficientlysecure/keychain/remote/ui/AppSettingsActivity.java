@@ -217,13 +217,15 @@ public class AppSettingsActivity extends BaseActivity {
 
         // show accounts only if available (deprecated API)
         Cursor cursor = getContentResolver().query(accountsUri, null, null, null, null);
-        if (cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) try {
             mAccountsLabel.setVisibility(View.VISIBLE);
             mAccountsListFragment = AccountsListFragment.newInstance(accountsUri);
             // Create an instance of the fragments
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.api_accounts_list_fragment, mAccountsListFragment)
                     .commitAllowingStateLoss();
+        } finally {
+            cursor.close();
         }
 
         // Create an instance of the fragments

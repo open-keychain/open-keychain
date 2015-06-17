@@ -1331,5 +1331,6 @@
     <string name="snack_armor_off">"Output encoded as Binary."</string>
     <string name="snack_compression_on">"Compression <b>enabled</b>."</string>
     <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
+    <string name="error_loading_keys">Error loading keys!</string>
 
 </resources>
