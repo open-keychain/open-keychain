@@ -757,6 +757,12 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 // TODO: slow annealing to fake a progress?
             }
 
+            metadata = new OpenPgpMetadata(
+                    originalFilename,
+                    mimeType,
+                    literalData.getModificationTime().getTime(),
+                    alreadyWritten);
+
             if (signature != null) {
                 updateProgress(R.string.progress_verifying_signature, 90, 100);
                 log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
