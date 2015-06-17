@@ -29,7 +29,7 @@ import android.support.v4.app.DialogFragment;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
 
 /**
  * displays a dialog asking the user to enable Tor
