@@ -47,7 +47,7 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListenerFragment {

@@ -49,7 +49,7 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
-import org.sufficientlysecure.keychain.util.tor.OrbotHelper;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
