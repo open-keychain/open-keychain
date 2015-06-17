@@ -25,11 +25,6 @@ public class NameWizardFragmentViewModel implements BaseViewModel {
 
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     public boolean isTextEmpty(CharSequence text) {
         return text.length() == 0;
     }

@@ -9,7 +9,7 @@ import org.sufficientlysecure.keychain.ui.keyunlock.activities.CreateKeyWizardLi
 /**
  * Base fragment class for any wizard fragment
  */
-public class WizardFragment extends Fragment implements CreateKeyWizardListener {
+public abstract class WizardFragment extends Fragment implements CreateKeyWizardListener {
     protected WizardFragmentListener mWizardFragmentListener;
 
     @Override

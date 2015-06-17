@@ -17,8 +17,6 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingTop="16dp"
                 android:text="@string/create_key_final_text"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 

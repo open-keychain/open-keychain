@@ -50,11 +50,6 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
 
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     public void prepareKeyRingData() {
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();

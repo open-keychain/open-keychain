@@ -40,11 +40,6 @@ public class EmailWizardFragmentViewModel implements BaseViewModel {
 
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     /**
      * Checks the email format
      * Uses the default Android Email Pattern

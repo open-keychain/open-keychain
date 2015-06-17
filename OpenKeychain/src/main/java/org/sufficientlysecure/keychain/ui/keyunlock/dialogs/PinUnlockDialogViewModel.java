@@ -94,11 +94,6 @@ public class PinUnlockDialogViewModel implements BaseViewModel {
 
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     /**
      * Updates the operation state.
      * @param inputData Data that may be used by an operation.

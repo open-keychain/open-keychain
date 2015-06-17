@@ -64,11 +64,6 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
         mCurrentInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_CURRENT_KEYWORD);
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     /**
      * Initializes the operation
      */

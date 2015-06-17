@@ -54,11 +54,6 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
         mWizardModel = savedInstanceState.getParcelable(STATE_SAVE_WIZARD_MODEL);
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     /**
      * Updates the state of the wizard when the user presses the back button.
      */

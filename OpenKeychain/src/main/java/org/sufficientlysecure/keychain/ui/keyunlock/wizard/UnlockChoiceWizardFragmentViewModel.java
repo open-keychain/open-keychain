@@ -30,11 +30,6 @@ public class UnlockChoiceWizardFragmentViewModel implements BaseViewModel {
                 savedInstanceState.getSerializable(STATE_SAVE_UNLOCK_METHOD);
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     /**
      * Updates the chosen unlock method.
      *

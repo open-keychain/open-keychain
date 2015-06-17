@@ -44,11 +44,6 @@ public class UnlockWizardFragmentViewModel implements BaseViewModel {
 
     }
 
-    @Override
-    public void onViewModelCreated() {
-
-    }
-
     public ArrayList<CanonicalizedSecretKey.SecretKeyType> getWizardSecretTypes() {
         return wizardSecretTypes;
     }
@@ -75,7 +70,7 @@ public class UnlockWizardFragmentViewModel implements BaseViewModel {
                 return PassphraseUnlockOptionFragment.newInstance();
             }
             case PATTERN: {
-                return UnlockOptionFragment.newInstance();
+                return null;
             }
             default:
                 return null;
