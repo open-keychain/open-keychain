@@ -415,6 +415,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
+                || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
