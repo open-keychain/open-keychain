@@ -17,30 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.app.DialogFragment;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.util.InstallDialogFragmentHelper;
 
 public class PreferenceInstallDialogFragment extends DialogFragment {
-    private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_TITLE = "title";
-    private static final String ARG_MESSAGE = "message";
-    private static final String ARG_MIDDLE_BUTTON = "middleButton";
-    private static final String ARG_INSTALL_PATH = "installPath";
-    private static final String ARG_USE_MIDDLE_BUTTON = "useMiddleButton";
-
-    public static final String PLAY_STORE_PATH = "market://search?q=pname:";
 
     public static final int MESSAGE_MIDDLE_CLICKED = 1;
 
@@ -60,13 +44,9 @@ public class PreferenceInstallDialogFragment extends DialogFragment {
                                                                       useMiddleButton) {
         PreferenceInstallDialogFragment frag = new PreferenceInstallDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_MESSENGER, messenger);
 
-        args.putInt(ARG_TITLE, title);
-        args.putInt(ARG_MESSAGE, message);
-        args.putInt(ARG_MIDDLE_BUTTON, middleButton);
-        args.putString(ARG_INSTALL_PATH, PLAY_STORE_PATH + packageToInstall);
-        args.putBoolean(ARG_USE_MIDDLE_BUTTON, useMiddleButton);
+        InstallDialogFragmentHelper.wrapIntoArgs(messenger, title, message, packageToInstall, middleButton,
+                useMiddleButton, args);
 
         frag.setArguments(args);
 
@@ -88,58 +68,7 @@ public class PreferenceInstallDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Activity activity = getActivity();
-
-        final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
-
-        final int title = getArguments().getInt(ARG_TITLE);
-        final int message = getArguments().getInt(ARG_MESSAGE);
-        final int middleButton = getArguments().getInt(ARG_MIDDLE_BUTTON);
-        final String installPath = getArguments().getString(ARG_INSTALL_PATH);
-        final boolean useMiddleButton = getArguments().getBoolean(ARG_USE_MIDDLE_BUTTON);
-
-        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(activity);
-
-        builder.setTitle(title).setMessage(message);
-
-        builder.setNegativeButton(R.string.orbot_install_dialog_cancel,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        builder.setPositiveButton(R.string.orbot_install_dialog_install,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri uri = Uri.parse(installPath);
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                        activity.startActivity(intent);
-                    }
-                }
-        );
-
-        if (useMiddleButton) {
-            builder.setNeutralButton(middleButton,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Message msg = new Message();
-                            msg.what = MESSAGE_MIDDLE_CLICKED;
-                            try {
-                                messenger.send(msg);
-                            } catch (RemoteException e) {
-                                Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-                            } catch (NullPointerException e) {
-                                Log.w(Constants.TAG, "Messenger is null!", e);
-                            }
-                        }
-                    }
-            );
-        }
-
-        return builder.show();
+        return InstallDialogFragmentHelper.getInstallDialogFromArgs(getArguments(), getActivity(),
+                MESSAGE_MIDDLE_CLICKED);
     }
 }
