@@ -157,14 +157,14 @@ public class OrbotHelper {
 
             OrbotHelper.getInstallDialogFragmentWithThirdButton(
                     new Messenger(ignoreTorHandler),
-                    R.string.orbot_install_dialog_ignore_tor
+                    middleButton
             ).show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotInstallDialog");
 
             return false;
         } else if (!OrbotHelper.isOrbotRunning()) {
 
             OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
-                    R.string.orbot_install_dialog_ignore_tor)
+                    middleButton)
                     .show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotStartDialog");
 
             return false;
