@@ -48,6 +48,8 @@ public interface WizardFragmentListener {
 
     Passphrase getPassphrase();
 
+    CanonicalizedSecretKey.SecretKeyType getSecretKeyType();
+
 
     /**
      * Notifies the activity of the current fragment state

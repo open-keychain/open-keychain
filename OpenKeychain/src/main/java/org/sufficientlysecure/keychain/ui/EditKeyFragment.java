@@ -324,6 +324,9 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
         }
     }
 
+    /**
+     * Todo: Daniel this needs to be changed later most likely.
+     */
     private void changePassphrase() {
 //        Intent passIntent = new Intent(getActivity(), PassphraseWizardActivity.class);
 //        passIntent.setAction(PassphraseWizardActivity.CREATE_METHOD);
@@ -337,8 +340,7 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
 
                     // cache new returned passphrase!
                     mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE),
-                            null
+                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
                 }
             }

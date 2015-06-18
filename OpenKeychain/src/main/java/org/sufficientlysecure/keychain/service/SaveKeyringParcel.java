@@ -303,32 +303,23 @@ public class SaveKeyringParcel implements Parcelable {
      *
      */
     public static class ChangeUnlockParcel implements Parcelable {
-
-        // The new passphrase to use
+        // The new passphrase type to use.
         public final Passphrase mNewPassphrase;
-        // A new pin to use. Must only contain [0-9]+
-        public final Passphrase mNewPin;
 
         public ChangeUnlockParcel(Passphrase newPassphrase) {
-            this(newPassphrase, null);
-        }
-        public ChangeUnlockParcel(Passphrase newPassphrase, Passphrase newPin) {
-            if (newPassphrase == null && newPin == null) {
-                throw new RuntimeException("Cannot set both passphrase and pin. THIS IS A BUG!");
+            if (newPassphrase == null) {
+                throw new RuntimeException("No passphrase was set!");
             }
             mNewPassphrase = newPassphrase;
-            mNewPin = newPin;
         }
 
         public ChangeUnlockParcel(Parcel source) {
             mNewPassphrase = source.readParcelable(Passphrase.class.getClassLoader());
-            mNewPin = source.readParcelable(Passphrase.class.getClassLoader());
         }
 
         @Override
         public void writeToParcel(Parcel destination, int flags) {
             destination.writeParcelable(mNewPassphrase, flags);
-            destination.writeParcelable(mNewPin, flags);
         }
 
         @Override
@@ -347,11 +338,7 @@ public class SaveKeyringParcel implements Parcelable {
         };
 
         public String toString() {
-            return mNewPassphrase != null
-                    ? ("passphrase (" + mNewPassphrase + ")")
-                    : ("pin (" + mNewPin + ")");
+            return ("passphrase (" + mNewPassphrase + ")");
         }
-
     }
-
 }

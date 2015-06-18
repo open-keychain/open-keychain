@@ -1143,6 +1143,18 @@ public class PgpKeyOperation {
     }
 
 
+    /**
+     * Todo: Daniel change this code to support multiple passphrases in a more clean way.
+     * @param sKR
+     * @param masterPublicKey
+     * @param masterPrivateKey
+     * @param passphrase
+     * @param newUnlock
+     * @param log
+     * @param indent
+     * @return
+     * @throws PGPException
+     */
     private static PGPSecretKeyRing applyNewUnlock(
             PGPSecretKeyRing sKR,
             PGPPublicKey masterPublicKey,
@@ -1151,6 +1163,7 @@ public class PgpKeyOperation {
             ChangeUnlockParcel newUnlock,
             OperationLog log, int indent) throws PGPException {
 
+        /*
         if (newUnlock.mNewPassphrase != null) {
             sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
 
@@ -1207,7 +1220,7 @@ public class PgpKeyOperation {
 
             return sKR;
         }
-
+*/
         throw new UnsupportedOperationException("PIN passphrases not yet implemented!");
 
     }

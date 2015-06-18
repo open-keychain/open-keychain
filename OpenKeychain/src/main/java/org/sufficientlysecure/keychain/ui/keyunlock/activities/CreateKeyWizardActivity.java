@@ -208,6 +208,11 @@ public class CreateKeyWizardActivity
     }
 
     @Override
+    public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
+        return mCreateKeyWizardViewModel.getWizardModel().getSecretKeyType();
+    }
+
+    @Override
     public void onWizardFragmentVisible(WizardFragment fragment) {
         mCurrentVisibleFragment = fragment;
     }

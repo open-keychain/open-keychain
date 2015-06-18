@@ -13,6 +13,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -33,6 +34,7 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
     private String mEmail;
     private ArrayList<String> mAdditionalEmails;
     private Passphrase mPassphrase;
+    private CanonicalizedSecretKey.SecretKeyType mSecretKeyType;
 
 
     @Override
@@ -81,9 +83,10 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
-            mSaveKeyringParcel.mNewUnlock = mPassphrase != null
-                    ? new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase, null)
-                    : null;
+            //Todo:Change this, its ugly :)
+           // mSaveKeyringParcel.mNewUnlock = mPassphrase != null
+            //        ? new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase, null)
+             //       : null;
         }
     }
 
@@ -159,5 +162,13 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
 
     public void setPassphrase(Passphrase passphrase) {
         mPassphrase = passphrase;
+    }
+
+    public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
+        return mSecretKeyType;
+    }
+
+    public void setSecretKeyType(CanonicalizedSecretKey.SecretKeyType secretKeyType) {
+        mSecretKeyType = secretKeyType;
     }
 }
