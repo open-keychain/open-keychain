@@ -41,6 +41,14 @@ public class ToolableViewAnimator extends ViewAnimator {
 
     private int mInitChild = -1;
 
+    public ToolableViewAnimator(Context context) {
+        super(context);
+    }
+
+    public ToolableViewAnimator(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
     public ToolableViewAnimator(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs);
 
