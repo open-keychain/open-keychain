@@ -542,7 +542,7 @@ public class EncryptFilesFragment
 
         // we don't want to encrypt the encrypted, no inception ;)
         String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.EncryptFileActivity",
+                Constants.PACKAGE_NAME + ".ui.EncryptFilesActivity",
                 "org.thialfihar.android.apg.ui.EncryptActivity"
         };
 
