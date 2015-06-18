@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -129,7 +130,8 @@ public class ServiceProgressHandler extends Handler {
                 if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
 
                     String msg = null;
-                    int progress = data.getInt(DATA_PROGRESS), max =data.getInt(DATA_PROGRESS_MAX);
+                    int progress = data.getInt(DATA_PROGRESS);
+                    int max = data.getInt(DATA_PROGRESS_MAX);
 
                     // update progress from service
                     if (data.containsKey(DATA_MESSAGE)) {
