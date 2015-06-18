@@ -397,11 +397,11 @@ public class KeychainService extends Service implements Progressable {
                         break;
                     }
                     case ACTION_IMPORT_KEYRING: {
-                        Proxy proxy = getProxyFromBundle(data);
 
                         // Input
                         String keyServer = data.getString(IMPORT_KEY_SERVER);
                         ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
+                        Proxy proxy = getProxyFromBundle(data);
 
                         // either keyList or cache must be null, no guarantees otherwise
                         if (keyList == null) {// import from file, do serially
