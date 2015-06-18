@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -101,9 +102,9 @@ public abstract class OperationResult implements Parcelable {
     }
 
     public OperationLog getLog() {
-        // If there is only a single entry, and it's a compound one, return that log
-        if (mLog.isSingleCompound()) {
-            return ((SubLogEntryParcel) mLog.getFirst()).getSubResult().getLog();
+        SubLogEntryParcel singleSubLog = mLog.getSubResultIfSingle();
+        if (singleSubLog != null) {
+            return singleSubLog.getSubResult().getLog();
         }
         // Otherwse, return our regular log
         return mLog;
@@ -169,9 +170,9 @@ public abstract class OperationResult implements Parcelable {
 
     public static class SubLogEntryParcel extends LogEntryParcel {
 
-        OperationResult mSubResult;
+        @NonNull OperationResult mSubResult;
 
-        public SubLogEntryParcel(OperationResult subResult, LogType type, int indent, Object... parameters) {
+        public SubLogEntryParcel(@NonNull OperationResult subResult, LogType type, int indent, Object... parameters) {
             super(type, indent, parameters);
             mSubResult = subResult;
 
@@ -209,6 +210,10 @@ public abstract class OperationResult implements Parcelable {
         String logText;
 
         LogEntryParcel entryParcel = mLog.getLast();
+        if (entryParcel == null) {
+            Log.e(Constants.TAG, "Tried to show empty log!");
+            return Notify.create(activity, R.string.error_empty_log, Style.ERROR);
+        }
         // special case: first parameter may be a quantity
         if (entryParcel.mParameters != null && entryParcel.mParameters.length > 0
                 && entryParcel.mParameters[0] instanceof Integer) {
@@ -269,7 +274,7 @@ public abstract class OperationResult implements Parcelable {
      * mark.
      *
      */
-    public static enum LogType {
+    public enum LogType {
 
         MSG_INTERNAL_ERROR (LogLevel.ERROR, R.string.msg_internal_error),
         MSG_OPERATION_CANCELLED (LogLevel.CANCELLED, R.string.msg_cancelled),
@@ -765,7 +770,7 @@ public abstract class OperationResult implements Parcelable {
     }
 
     /** Enumeration of possible log levels. */
-    public static enum LogLevel {
+    public enum LogLevel {
         DEBUG,
         INFO,
         WARN,
@@ -805,8 +810,15 @@ public abstract class OperationResult implements Parcelable {
             mParcels.add(new SubLogEntryParcel(subResult, subLog.getFirst().mType, indent, subLog.getFirst().mParameters));
         }
 
-        boolean isSingleCompound() {
-            return mParcels.size() == 1 && getFirst() instanceof SubLogEntryParcel;
+        public SubLogEntryParcel getSubResultIfSingle() {
+            if (mParcels.size() != 1) {
+                return null;
+            }
+            LogEntryParcel first = getFirst();
+            if (first instanceof SubLogEntryParcel) {
+                return (SubLogEntryParcel) first;
+            }
+            return null;
         }
 
         public void clear() {
