@@ -24,7 +24,7 @@ import android.support.v4.app.DialogFragment;
 
 import org.sufficientlysecure.keychain.ui.util.InstallDialogFragmentHelper;
 
-public class InstallDialogFragment extends DialogFragment {
+public class SupportInstallDialogFragment extends DialogFragment {
 
     public static final int MESSAGE_MIDDLE_CLICKED = 1;
 
@@ -39,10 +39,10 @@ public class InstallDialogFragment extends DialogFragment {
      * @param middleButton     if not null, adds a third button to the app with a call back
      * @return The dialog to display
      */
-    public static InstallDialogFragment newInstance(Messenger messenger, int title, int message,
+    public static SupportInstallDialogFragment newInstance(Messenger messenger, int title, int message,
                                                     String packageToInstall, int middleButton, boolean
                                                             useMiddleButton) {
-        InstallDialogFragment frag = new InstallDialogFragment();
+        SupportInstallDialogFragment frag = new SupportInstallDialogFragment();
         Bundle args = new Bundle();
 
         InstallDialogFragmentHelper.wrapIntoArgs(messenger, title, message, packageToInstall, middleButton,
@@ -61,7 +61,7 @@ public class InstallDialogFragment extends DialogFragment {
      * @param packageToInstall
      * @return
      */
-    public static InstallDialogFragment newInstance(int title, int message,
+    public static SupportInstallDialogFragment newInstance(int title, int message,
                                                     String packageToInstall) {
         return newInstance(null, title, message, packageToInstall, -1, false);
     }
