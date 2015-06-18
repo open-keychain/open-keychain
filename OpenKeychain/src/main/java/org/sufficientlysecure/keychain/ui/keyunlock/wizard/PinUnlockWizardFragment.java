@@ -134,10 +134,12 @@ public class PinUnlockWizardFragment extends WizardFragment {
         super.onSaveInstanceState(outState);
         mPinUnlockWizardFragmentViewModel.saveViewModelState(outState);
 
-        outState.putCharSequence(STATE_SAVE_STATUS_TEXT, mPinUnlockDialogStatus.getText());
-        outState.putInt(STATE_SAVE_CHECK_VISIBILITY, mCheckImageView.getVisibility());
-        outState.putInt(STATE_SAVE_WRONG_VISIBILITY, mWrongImageView.getVisibility());
-        outState.putInt(STATE_SAVE_STATUS_COLOR, mPinUnlockDialogStatus.getCurrentTextColor());
+        if(getView() != null) {
+            outState.putCharSequence(STATE_SAVE_STATUS_TEXT, mPinUnlockDialogStatus.getText());
+            outState.putInt(STATE_SAVE_CHECK_VISIBILITY, mCheckImageView.getVisibility());
+            outState.putInt(STATE_SAVE_WRONG_VISIBILITY, mWrongImageView.getVisibility());
+            outState.putInt(STATE_SAVE_STATUS_COLOR, mPinUnlockDialogStatus.getCurrentTextColor());
+        }
     }
 
     @Override
@@ -159,6 +161,11 @@ public class PinUnlockWizardFragment extends WizardFragment {
             mWizardFragmentListener.setPassphrase(
                     new Passphrase(mPinUnlockWizardFragmentViewModel.getCurrentInputKeyWord().
                             toString()));
+
+            //reset the view model because the user can navigate back
+            mPinUnlockWizardFragmentViewModel = new PinUnlockWizardFragmentViewModel();
+            mPinUnlockWizardFragmentViewModel.prepareViewModel(null, getArguments(),
+                    getActivity());
 
             return true;
         }
