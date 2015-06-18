@@ -38,7 +38,7 @@ public class PreferenceInstallDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_MIDDLE_BUTTON = "middleButton";
     private static final String ARG_INSTALL_PATH = "installPath";
-    private static final String ARG_USE_MIDDLE_BUTTON = "installPath";
+    private static final String ARG_USE_MIDDLE_BUTTON = "useMiddleButton";
 
     public static final String PLAY_STORE_PATH = "market://search?q=pname:";
 
@@ -92,10 +92,10 @@ public class PreferenceInstallDialogFragment extends DialogFragment {
 
         final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
 
-        final String title = getArguments().getString(ARG_TITLE);
-        final String message = getArguments().getString(ARG_MESSAGE);
+        final int title = getArguments().getInt(ARG_TITLE);
+        final int message = getArguments().getInt(ARG_MESSAGE);
+        final int middleButton = getArguments().getInt(ARG_MIDDLE_BUTTON);
         final String installPath = getArguments().getString(ARG_INSTALL_PATH);
-        final String middleButton = getArguments().getString(ARG_MIDDLE_BUTTON);
         final boolean useMiddleButton = getArguments().getBoolean(ARG_USE_MIDDLE_BUTTON);
 
         CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(activity);
