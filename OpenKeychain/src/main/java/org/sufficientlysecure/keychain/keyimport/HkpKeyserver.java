@@ -232,7 +232,7 @@ public class HkpKeyserver extends Keyserver {
                 throw new HttpError(response.code(), responseBody);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
             proxy == null?"":" Using proxy " + proxy);
         }
@@ -351,12 +351,12 @@ public class HkpKeyserver extends Keyserver {
     @Override
     public String get(String keyIdHex, Proxy proxy) throws QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request);
+        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
         String data;
         try {
             data = query(request, proxy);
         } catch (HttpError httpError) {
-            httpError.printStackTrace();
+            Log.e(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
         }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);

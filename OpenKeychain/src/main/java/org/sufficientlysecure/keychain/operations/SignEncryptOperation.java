@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSign
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.io.ByteArrayInputStream;
@@ -85,7 +86,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                         input.getSignatureMasterKeyId()).getSecretSignId();
                 input.setSignatureSubKeyId(signKeyId);
             } catch (PgpKeyNotFoundException e) {
-                e.printStackTrace();
+                Log.e(Constants.TAG, "Key not found", e);
                 return new SignEncryptResult(SignEncryptResult.RESULT_ERROR, log, results);
             }
         }

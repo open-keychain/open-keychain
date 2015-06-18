@@ -31,7 +31,9 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 /**
  * Created by Matt Allen
@@ -115,7 +117,7 @@ public class PasswordStrengthView extends View {
             mColorStrong = style.getColor(R.styleable.PasswordStrengthView_color_strong,
                     COLOR_STRONG);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "Failed to retrieve attribute values for PasswordStrengthView", e);
         }
         // Create and style the paint used for drawing the guide on the indicator
         mGuidePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
