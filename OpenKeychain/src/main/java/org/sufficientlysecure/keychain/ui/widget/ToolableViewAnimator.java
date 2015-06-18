@@ -27,6 +27,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,12 @@ public class ToolableViewAnimator extends ViewAnimator {
 
     public ToolableViewAnimator(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        if (isInEditMode()) {
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ToolableViewAnimator);
+            mInitChild = a.getInt(R.styleable.ToolableViewAnimator_initialView, -1);
+            a.recycle();
+        }
     }
 
     public ToolableViewAnimator(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -60,7 +67,7 @@ public class ToolableViewAnimator extends ViewAnimator {
     }
 
     @Override
-    public void addView(View child, int index, ViewGroup.LayoutParams params) {
+    public void addView(@NonNull View child, int index, ViewGroup.LayoutParams params) {
         if (isInEditMode() && mInitChild-- > 0) {
             return;
         }
