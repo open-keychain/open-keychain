@@ -36,8 +36,8 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.keyunlock.activities.KeyUnlockActivityWrapper;
 
 
 /**
@@ -49,12 +49,8 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
-    /**
-     * Todo: Daniel ENABLE THIS LATER
-     * @param requiredInput
-     */
-    private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
+    private void initiateInputActivity(RequiredInputParcel requiredInput) {
         switch (requiredInput.mType) {
             case NFC_KEYTOCARD:
             case NFC_DECRYPT:
@@ -64,12 +60,11 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                 startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
             }
-
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC: {
-                //Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-                //intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                //startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                Intent intent = new Intent(getActivity(), KeyUnlockActivityWrapper.class);
+                intent.putExtra(KeyUnlockActivityWrapper.EXTRA_REQUIRED_INPUT, requiredInput);
+                startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
                 return;
             }
         }

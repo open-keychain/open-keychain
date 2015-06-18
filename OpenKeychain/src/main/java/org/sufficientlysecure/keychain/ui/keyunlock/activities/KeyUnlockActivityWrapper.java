@@ -29,8 +29,8 @@ public class KeyUnlockActivityWrapper extends FragmentActivity {
     public static final String EXTRA_SERVICE_INTENT = "data";
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         // do not allow screenshots of passphrase input
         // to prevent "too easy" passphrase theft by root apps

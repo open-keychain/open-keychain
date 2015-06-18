@@ -113,6 +113,15 @@ public class CreateKeyWizardActivity
         }
         getSupportFragmentManager().popBackStack();
         mCreateKeyWizardViewModel.updateWizardStateOnBack();
+        restoreNavigationButtonText();
+    }
+
+    /**
+     * Restores the button text if it was altered previously
+     * Note: might be a good idea to let the fragments manipulate the texts instead.
+     */
+    private void restoreNavigationButtonText() {
+        mNextButton.setText(R.string.btn_next);
     }
 
     /**
@@ -273,7 +282,6 @@ public class CreateKeyWizardActivity
                 transaction.replace(R.id.unlockWizardFragmentContainer, mCurrentVisibleFragment,
                         FRAGMENT_TAG);
                 transaction.commit();
-                mNextButton.setText(R.string.btn_next);
             }
             break;
             case WIZARD_STEP_FINALIZE: {
