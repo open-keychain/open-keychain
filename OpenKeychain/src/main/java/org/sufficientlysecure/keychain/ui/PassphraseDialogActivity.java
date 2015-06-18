@@ -65,6 +65,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 /**
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
+ * @deprecated
  */
 public class PassphraseDialogActivity extends FragmentActivity {
     public static final String RESULT_CRYPTO_INPUT = "result_data";

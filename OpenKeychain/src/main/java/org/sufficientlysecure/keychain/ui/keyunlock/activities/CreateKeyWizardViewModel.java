@@ -14,10 +14,12 @@ import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
 public class CreateKeyWizardViewModel implements BaseViewModel {
     public static final String STATE_SAVE_WIZARD_STEP = "STATE_SAVE_WIZARD_STEP";
     public static final String STATE_SAVE_WIZARD_MODEL = "STATE_SAVE_WIZARD_MODEL";
+    public static final String EXTRA_FIRST_TIME = "EXTRA_FIRST_TIME";
     private WizardStep mWizardStep = WizardStep.WIZARD_STEP_BEGIN;
     private WizardModel mWizardModel;
     private Context mContext;
     private boolean mUseSmartCardSettings = false;
+    private boolean mFirstTime = true;
 
     /**
      * Wizard screen steps
@@ -52,6 +54,8 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
                 getSerializable(STATE_SAVE_WIZARD_STEP);
 
         mWizardModel = savedInstanceState.getParcelable(STATE_SAVE_WIZARD_MODEL);
+
+        mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
     }
 
     /**
@@ -155,5 +159,13 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
 
     public void setUseSmartCardSettings(boolean useSmartCardSettings) {
         mUseSmartCardSettings = useSmartCardSettings;
+    }
+
+    public boolean isFirstTime() {
+        return mFirstTime;
+    }
+
+    public void setFirstTime(boolean firstTime) {
+        mFirstTime = firstTime;
     }
 }

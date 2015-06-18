@@ -213,6 +213,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
         enableNfcForegroundDispatch();
     }
 
+    /**
+     * Todo: Daniel RE-ENABLE THIS LATER
+     * @param requiredInput
+     */
     protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
         // shortcut if we only use the default yubikey pin
@@ -229,22 +233,28 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 mPin = phrase;
                 return;
             }
-
+            /*
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
                     RequiredInputParcel.createRequiredPassphrase(requiredInput));
             startActivityForResult(intent, REQUEST_CODE_PIN);
+            */
         } catch (KeyNotFoundException e) {
             throw new AssertionError(
                     "tried to find passphrase for non-existing key. this is a programming error!");
         }
-
     }
 
     protected void setYubiKeyPin(Passphrase pin) {
         mPin = pin;
     }
 
+    /**
+     * Todo: Daniel ENABLE THIS LATER
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -254,8 +264,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
                     finish();
                     return;
                 }
-                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mPin = input.getPassphrase();
+                //CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                //mPin = input.getPassphrase();
                 break;
             }
 

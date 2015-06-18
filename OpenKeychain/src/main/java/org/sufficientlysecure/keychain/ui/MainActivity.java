@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.keyunlock.activities.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -114,11 +115,12 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                 .withSavedInstance(savedInstanceState)
                 .build();
 
+        //Todo: Daniel implement first time
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
-        if (!getIntent().getBooleanExtra(EXTRA_SKIP_FIRST_TIME, false) && prefs.isFirstTime()) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+        if (!getIntent().getBooleanExtra(EXTRA_SKIP_FIRST_TIME, false)  && prefs.isFirstTime()) {
+            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
             startActivity(intent);
             finish();
             return;

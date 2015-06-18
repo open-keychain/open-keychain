@@ -49,6 +49,10 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
 
+    /**
+     * Todo: Daniel ENABLE THIS LATER
+     * @param requiredInput
+     */
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
         switch (requiredInput.mType) {
@@ -63,9 +67,9 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC: {
-                Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                //Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+                //intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                //startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
                 return;
             }
         }
@@ -73,6 +77,12 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         throw new RuntimeException("Unhandled pending result!");
     }
 
+    /**
+     * Todo: Daniel ENABLE THIS LATER
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
@@ -83,9 +93,9 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                    cryptoOperation(cryptoInput);
+                    //CryptoInputParcel cryptoInput =
+                            //data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                    //cryptoOperation(cryptoInput);
                     return;
                 }
                 break;

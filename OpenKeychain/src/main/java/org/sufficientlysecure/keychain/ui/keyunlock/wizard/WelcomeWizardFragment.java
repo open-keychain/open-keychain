@@ -33,18 +33,25 @@ public class WelcomeWizardFragment extends WizardFragment {
         View view = inflater.inflate(R.layout.wizard_welcome_fragment, container, false);
         mCreatekeybuttons = (RelativeLayout) view.findViewById(R.id.create_key_buttons);
         mCreatekeycancel = (TextView) view.findViewById(R.id.create_key_cancel);
+        mCreatekeycancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mWizardFragmentListener != null) {
+                    mWizardFragmentListener.cancelRequest();
+                }
+            }
+        });
         mCreatekeycreatekeybutton = (TextView) view.findViewById(R.id.create_key_create_key_button);
         mCreatekeycreatekeybutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mWizardFragmentListener != null)
-                {
+                if (mWizardFragmentListener != null) {
                     mWizardFragmentListener.onAdvanceToNextWizardStep();
                 }
             }
         });
 
-        if(mWizardFragmentListener != null) {
+        if (mWizardFragmentListener != null) {
             mWizardFragmentListener.onHideNavigationButtons(true);
         }
         return view;

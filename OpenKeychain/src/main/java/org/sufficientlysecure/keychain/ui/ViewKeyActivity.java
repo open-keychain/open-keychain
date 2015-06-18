@@ -440,10 +440,14 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
+    /**
+     * Todo: Daniel I DISABLED THIS ON PURPOSE!
+     * @param requestCode
+     */
     private void startPassphraseActivity(int requestCode) {
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
-        startActivityForResult(intent, requestCode);
+        //Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        //intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+        //startActivityForResult(intent, requestCode);
     }
 
     private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper) {

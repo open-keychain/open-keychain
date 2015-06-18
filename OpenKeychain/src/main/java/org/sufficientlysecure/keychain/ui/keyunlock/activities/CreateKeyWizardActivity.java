@@ -1,7 +1,12 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.activities;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +14,7 @@ import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
+import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
@@ -21,6 +27,7 @@ import org.sufficientlysecure.keychain.ui.keyunlock.wizard.UnlockChoiceWizardFra
 import org.sufficientlysecure.keychain.ui.keyunlock.wizard.WelcomeWizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.wizard.WizardConfirmationFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
@@ -30,10 +37,11 @@ import java.util.ArrayList;
 public class CreateKeyWizardActivity
         extends BaseActivity
         implements WizardFragmentListener,
-        AddEmailDialogFragment.onAddEmailDialogListener{
+        AddEmailDialogFragment.onAddEmailDialogListener {
 
     public static final String TAG = "CreateKeyWizardActivity";
     public static final String FRAGMENT_TAG = "CurrentWizardFragment";
+    public static final String EXTRA_FIRST_TIME = "EXTRA_FIRST_TIME";
 
     private CreateKeyWizardViewModel mCreateKeyWizardViewModel;
     private Button mNextButton;
@@ -79,8 +87,19 @@ public class CreateKeyWizardActivity
 
         mCreateKeyWizardActivityButtonContainer =
                 (LinearLayout) findViewById(R.id.createKeyWizardActivityButtonContainer);
+    }
 
-        setTitle(getString(R.string.create_key_wizard_title));
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (mCreateKeyWizardViewModel.isFirstTime()) {
+            setTitle(R.string.create_key_wizard_title);
+            mToolbar.setNavigationIcon(null);
+            mToolbar.setNavigationOnClickListener(null);
+        } else {
+            setTitle(R.string.title_manage_my_keys);
+        }
     }
 
     /**
@@ -182,6 +201,19 @@ public class CreateKeyWizardActivity
     @Override
     public void onWizardFragmentVisible(WizardFragment fragment) {
         mCurrentVisibleFragment = fragment;
+    }
+
+    @Override
+    public void cancelRequest() {
+        if (mCreateKeyWizardViewModel.isFirstTime()) {
+            Preferences prefs = Preferences.getPreferences(this);
+            prefs.setFirstTime(false);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            finish();
+        }
     }
 
     /**

@@ -715,11 +715,14 @@ public class KeyListFragment extends LoaderFragment
                 mAdapter.isAnySecretSelected());
     }
 
+    /**
+     * @Todo Daniel: I DISABLED THIS ON PURPOSE!!
+     */
     private void startPassphraseActivity() {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+        //Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        //long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
+        //intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        //startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
 
     @Override

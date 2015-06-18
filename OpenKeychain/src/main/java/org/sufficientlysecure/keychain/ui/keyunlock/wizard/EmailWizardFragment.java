@@ -146,6 +146,10 @@ public class EmailWizardFragment extends WizardFragment {
         return output;
     }
 
+    /**
+     * Method that receives an email to be added to the recycler view.
+     * @param email
+     */
     @Override
     public void onRequestAddEmail(String email) {
         if (checkEmail(email, true)) {

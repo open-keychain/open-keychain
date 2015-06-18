@@ -55,5 +55,11 @@ public interface WizardFragmentListener {
 
     void onWizardFragmentVisible(WizardFragment fragment);
 
+    /**
+     * Cancels the key creation process.
+     * @return
+     */
+    void cancelRequest();
+
 
 }
