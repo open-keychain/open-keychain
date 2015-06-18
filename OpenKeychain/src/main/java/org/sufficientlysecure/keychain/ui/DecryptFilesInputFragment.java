@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -44,11 +46,10 @@ public class DecryptFilesInputFragment extends Fragment {
 
     private Uri mInputUri = null;
 
-    public static DecryptFilesInputFragment newInstance(Uri uri, boolean openDirectly) {
+    public static DecryptFilesInputFragment newInstance(boolean openDirectly) {
         DecryptFilesInputFragment frag = new DecryptFilesInputFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_URI, uri);
         args.putBoolean(ARG_OPEN_DIRECTLY, openDirectly);
 
         frag.setArguments(args);
@@ -127,7 +128,10 @@ public class DecryptFilesInputFragment extends Fragment {
         }
 
         DecryptFilesActivity activity = (DecryptFilesActivity) getActivity();
-        activity.displayListFragment(mInputUri);
+
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(mInputUri);
+        activity.displayListFragment(uris);
     }
 
     @Override

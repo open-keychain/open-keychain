@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
@@ -188,6 +189,11 @@ public class DecryptFilesListFragment
     }
 
     @Override
+    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+        super.cryptoOperation(cryptoInput, false);
+    }
+
+    @Override
     protected boolean onCryptoSetProgress(String msg, int progress, int max) {
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
         return true;
@@ -204,6 +210,8 @@ public class DecryptFilesListFragment
         mCurrentInputUri = null;
 
         mAdapter.addResult(uri, result, null, null, null);
+
+        cryptoOperation();
     }
 
     @Override
@@ -256,6 +264,8 @@ public class DecryptFilesListFragment
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+
+        cryptoOperation();
 
     }
 

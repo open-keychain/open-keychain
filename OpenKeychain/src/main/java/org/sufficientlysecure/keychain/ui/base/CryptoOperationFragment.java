@@ -123,6 +123,14 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     protected abstract T createOperationInput();
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+        cryptoOperation(cryptoInput, true);
+    }
+
+    protected void cryptoOperation() {
+        cryptoOperation(new CryptoInputParcel());
+    }
+
+    protected void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
 
         T operationInput = createOperationInput();
         if (operationInput == null) {
@@ -169,16 +177,14 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        saveHandler.showProgressDialog(
-                getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL, false);
+        if (showProgress) {
+            saveHandler.showProgressDialog(
+                    getString(R.string.progress_building_key),
+                    ProgressDialog.STYLE_HORIZONTAL, false);
+        }
 
         getActivity().startService(intent);
 
-    }
-
-    protected void cryptoOperation() {
-        cryptoOperation(new CryptoInputParcel());
     }
 
     protected void onCryptoOperationResult(S result) {

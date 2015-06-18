@@ -23,6 +23,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Toast;
 
@@ -65,56 +67,83 @@ public class DecryptFilesActivity extends BaseActivity {
      * Handles all actions with this intent
      */
     private void handleActions(Bundle savedInstanceState, Intent intent) {
-        String action = intent.getAction();
-        String type = intent.getType();
-        Uri uri = intent.getData();
 
-        if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to Keychain Decrypt via share menu
-            // Binary via content provider (could also be files)
-            // override uri to get stream from send
-            uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            action = ACTION_DECRYPT_DATA;
-        } else if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-
-            // override action
-            action = ACTION_DECRYPT_DATA;
-        }
-
-        // No need to initialize fragments if we are being restored
+        // No need to initialize fragments if we are just being restored
         if (savedInstanceState != null) {
             return;
         }
 
-        // Definitely need a data uri with the decrypt_data intent
-        if (ACTION_DECRYPT_DATA.equals(action) && uri == null) {
-            Toast.makeText(this, "No data to decrypt!", Toast.LENGTH_LONG).show();
-            setResult(Activity.RESULT_CANCELED);
-            finish();
+        ArrayList<Uri> uris = new ArrayList<>();
+
+        String action = intent.getAction();
+
+        switch (action) {
+            case Intent.ACTION_SEND: {
+                // When sending to Keychain Decrypt via share menu
+                // Binary via content provider (could also be files)
+                // override uri to get stream from send
+                action = ACTION_DECRYPT_DATA;
+                uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
+                break;
+            }
+
+            case Intent.ACTION_SEND_MULTIPLE: {
+                action = ACTION_DECRYPT_DATA;
+                uris.addAll(intent.<Uri>getParcelableArrayListExtra(Intent.EXTRA_STREAM));
+                break;
+            }
+
+            case Intent.ACTION_VIEW:
+                // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
+                action = ACTION_DECRYPT_DATA;
+
+                // fallthrough
+            default:
+                uris.add(intent.getData());
+
+        }
+
+        if (ACTION_DECRYPT_DATA.equals(action)) {
+            // Definitely need a data uri with the decrypt_data intent
+            if (uris.isEmpty()) {
+                Toast.makeText(this, "No data to decrypt!", Toast.LENGTH_LONG).show();
+                setResult(Activity.RESULT_CANCELED);
+                finish();
+            }
+            displayListFragment(uris);
+            return;
         }
 
         boolean showOpenDialog = ACTION_DECRYPT_DATA_OPEN.equals(action);
-        DecryptFilesInputFragment frag = DecryptFilesInputFragment.newInstance(uri, showOpenDialog);
+        displayInputFragment(showOpenDialog);
+
+    }
+
+    public void displayInputFragment(boolean showOpenDialog) {
+        DecryptFilesInputFragment frag = DecryptFilesInputFragment.newInstance(showOpenDialog);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.decrypt_files_fragment_container, frag)
                 .commit();
-
     }
 
-    public void displayListFragment(Uri inputUri) {
+    public void displayListFragment(ArrayList<Uri> inputUris) {
 
-        ArrayList<Uri> uris = new ArrayList<>();
-        uris.add(inputUri);
-        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(uris);
+        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(inputUris);
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.decrypt_files_fragment_container, frag)
-                .addToBackStack("list")
-                .commit();
+        FragmentManager fragMan = getSupportFragmentManager();
+
+        FragmentTransaction trans = fragMan.beginTransaction();
+        trans.replace(R.id.decrypt_files_fragment_container, frag);
+
+        // if there already is a fragment, allow going back to that. otherwise, we're top level!
+        if (fragMan.getFragments() != null && !fragMan.getFragments().isEmpty()) {
+            trans.addToBackStack("list");
+        }
+
+        trans.commit();
 
     }
 

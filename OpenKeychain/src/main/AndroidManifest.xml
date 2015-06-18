@@ -210,15 +210,6 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            <!-- Android's Send Action -->
-            <intent-filter android:label="@string/intent_send_decrypt">
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/*" />
-                <data android:mimeType="message/*" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.DecryptFilesActivity"
@@ -266,13 +257,15 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
             </intent-filter>
-            <!-- Android's Send Action -->
+            <!-- Android's Send and Multi-Send Actions -->
             <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <!-- everything except text/* and message/* -->
+                <data android:mimeType="text/*" />
+                <data android:mimeType="message/*" />
                 <data android:mimeType="image/*" />
                 <data android:mimeType="audio/*" />
                 <data android:mimeType="video/*" />
