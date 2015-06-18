@@ -34,10 +34,12 @@ import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
-public class DecryptFilesActivity extends BaseActivity {
+public class DecryptActivity extends BaseActivity {
 
     /* Intents */
     public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
+    // TODO handle this intent
+    public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
 
     // intern
     public static final String ACTION_DECRYPT_DATA_OPEN = Constants.INTENT_PREFIX + "DECRYPT_DATA_OPEN";
@@ -77,6 +79,7 @@ public class DecryptFilesActivity extends BaseActivity {
 
         String action = intent.getAction();
 
+        // TODO handle ACTION_DECRYPT_FROM_CLIPBOARD
         switch (action) {
             case Intent.ACTION_SEND: {
                 // When sending to Keychain Decrypt via share menu
@@ -131,7 +134,7 @@ public class DecryptFilesActivity extends BaseActivity {
 
     public void displayListFragment(ArrayList<Uri> inputUris) {
 
-        DecryptFilesListFragment frag = DecryptFilesListFragment.newInstance(inputUris);
+        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris);
 
         FragmentManager fragMan = getSupportFragmentManager();
 

@@ -127,7 +127,7 @@ public class DecryptFilesInputFragment extends Fragment {
             return;
         }
 
-        DecryptFilesActivity activity = (DecryptFilesActivity) getActivity();
+        DecryptActivity activity = (DecryptActivity) getActivity();
 
         ArrayList<Uri> uris = new ArrayList<>();
         uris.add(mInputUri);

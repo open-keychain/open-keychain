@@ -38,7 +38,9 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.regex.Matcher;
 
-public class DecryptTextActivity extends BaseActivity {
+public class DisplayTextActivity extends BaseActivity {
+
+    // TODO make this only display text (maybe we need only the fragment?)
 
     /* Intents */
     public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
@@ -214,7 +216,7 @@ public class DecryptTextActivity extends BaseActivity {
 
     private void loadFragment(String ciphertext) {
         // Create an instance of the fragment
-        Fragment frag = DecryptTextFragment.newInstance(ciphertext);
+        Fragment frag = DisplayTextFragment.newInstance(ciphertext);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!

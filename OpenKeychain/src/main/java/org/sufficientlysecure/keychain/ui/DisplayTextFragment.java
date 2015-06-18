@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.io.UnsupportedEncodingException;
 
-public class DecryptTextFragment extends DecryptFragment {
+public class DisplayTextFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
     public static final String ARG_SHOW_MENU = "show_menu";
 
@@ -48,8 +48,8 @@ public class DecryptTextFragment extends DecryptFragment {
     private String mCiphertext;
     private boolean mShowMenuOptions;
 
-    public static DecryptTextFragment newInstance(String ciphertext) {
-        DecryptTextFragment frag = new DecryptTextFragment();
+    public static DisplayTextFragment newInstance(String ciphertext) {
+        DisplayTextFragment frag = new DisplayTextFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_CIPHERTEXT, ciphertext);

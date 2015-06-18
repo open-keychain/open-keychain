@@ -60,7 +60,7 @@ import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
-import org.sufficientlysecure.keychain.ui.DecryptFilesListFragment.DecryptFilesAdapter.ViewModel;
+import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -70,7 +70,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class DecryptFilesListFragment
+public class DecryptListFragment
         extends CryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
         implements OnMenuItemClickListener {
     public static final String ARG_URIS = "uris";
@@ -88,8 +88,8 @@ public class DecryptFilesListFragment
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptFilesListFragment newInstance(ArrayList<Uri> uris) {
-        DecryptFilesListFragment frag = new DecryptFilesListFragment();
+    public static DecryptListFragment newInstance(ArrayList<Uri> uris) {
+        DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_URIS, uris);
