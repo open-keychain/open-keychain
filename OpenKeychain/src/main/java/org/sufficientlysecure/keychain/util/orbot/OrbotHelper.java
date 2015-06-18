@@ -59,7 +59,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.dialog.InstallDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.SupportInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -108,12 +108,12 @@ public class OrbotHelper {
     }
 
     public static DialogFragment getInstallDialogFragment() {
-        return InstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
+        return SupportInstallDialogFragment.newInstance(R.string.orbot_install_dialog_title,
                 R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME);
     }
 
     public static DialogFragment getInstallDialogFragmentWithThirdButton(Messenger messenger, int middleButton) {
-        return InstallDialogFragment.newInstance(messenger, R.string.orbot_install_dialog_title,
+        return SupportInstallDialogFragment.newInstance(messenger, R.string.orbot_install_dialog_title,
                 R.string.orbot_install_dialog_content, ORBOT_PACKAGE_NAME, middleButton, true);
     }
 
