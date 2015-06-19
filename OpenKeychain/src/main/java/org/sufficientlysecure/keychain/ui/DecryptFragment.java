@@ -25,15 +25,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
@@ -43,24 +46,19 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public abstract class DecryptFragment
-        extends CachingCryptoOperationFragment<PgpDecryptVerifyInputParcel, DecryptVerifyResult>
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int LOADER_ID_UNIFIED = 0;
     public static final String ARG_DECRYPT_VERIFY_RESULT = "decrypt_verify_result";
@@ -75,11 +73,9 @@ public abstract class DecryptFragment
     protected TextView mSignatureEmail;
     protected TextView mSignatureAction;
 
-    private LinearLayout mContentLayout;
-    private LinearLayout mErrorOverlayLayout;
-
     private OpenPgpSignatureResult mSignatureResult;
     private DecryptVerifyResult mDecryptVerifyResult;
+    private ViewAnimator mOverlayAnimator;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -98,16 +94,21 @@ public abstract class DecryptFragment
         mSignatureAction = (TextView) getActivity().findViewById(R.id.result_signature_action);
 
         // Overlay
-        mContentLayout = (LinearLayout) view.findViewById(R.id.decrypt_content);
-        mErrorOverlayLayout = (LinearLayout) view.findViewById(R.id.decrypt_error_overlay);
+        mOverlayAnimator = (ViewAnimator) view;
         Button vErrorOverlayButton = (Button) view.findViewById(R.id.decrypt_error_overlay_button);
-        vErrorOverlayButton.setOnClickListener(new View.OnClickListener() {
+        vErrorOverlayButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mErrorOverlayLayout.setVisibility(View.GONE);
-                mContentLayout.setVisibility(View.VISIBLE);
+                mOverlayAnimator.setDisplayedChild(0);
             }
         });
+    }
+
+    private void showErrorOverlay(boolean overlay) {
+        int child = overlay ? 1 : 0;
+        if (mOverlayAnimator.getDisplayedChild() != child) {
+            mOverlayAnimator.setDisplayedChild(child);
+        }
     }
 
     @Override
@@ -205,9 +206,6 @@ public abstract class DecryptFragment
         }
     }
 
-    /**
-     * @return returns false if signature is invalid, key is revoked or expired.
-     */
     protected void loadVerifyResult(DecryptVerifyResult decryptVerifyResult) {
 
         mDecryptVerifyResult = decryptVerifyResult;
@@ -227,8 +225,7 @@ public abstract class DecryptFragment
 
             getLoaderManager().destroyLoader(LOADER_ID_UNIFIED);
 
-            mErrorOverlayLayout.setVisibility(View.GONE);
-            mContentLayout.setVisibility(View.VISIBLE);
+            showErrorOverlay(false);
 
             onVerifyLoaded(true);
 
@@ -330,10 +327,7 @@ public abstract class DecryptFragment
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
-            mErrorOverlayLayout.setVisibility(View.VISIBLE);
-            mContentLayout.setVisibility(View.GONE);
-
-            onVerifyLoaded(false);
+            onVerifyLoaded(true);
 
         } else if (isExpired) {
             mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
@@ -342,8 +336,7 @@ public abstract class DecryptFragment
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
-            mErrorOverlayLayout.setVisibility(View.GONE);
-            mContentLayout.setVisibility(View.VISIBLE);
+            showErrorOverlay(false);
 
             onVerifyLoaded(true);
 
@@ -355,8 +348,7 @@ public abstract class DecryptFragment
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
-            mErrorOverlayLayout.setVisibility(View.GONE);
-            mContentLayout.setVisibility(View.VISIBLE);
+            showErrorOverlay(false);
 
             onVerifyLoaded(true);
 
@@ -367,8 +359,7 @@ public abstract class DecryptFragment
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
-            mErrorOverlayLayout.setVisibility(View.GONE);
-            mContentLayout.setVisibility(View.VISIBLE);
+            showErrorOverlay(false);
 
             onVerifyLoaded(true);
 
@@ -379,8 +370,7 @@ public abstract class DecryptFragment
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
 
-            mErrorOverlayLayout.setVisibility(View.GONE);
-            mContentLayout.setVisibility(View.VISIBLE);
+            showErrorOverlay(false);
 
             onVerifyLoaded(true);
         }
@@ -438,8 +428,7 @@ public abstract class DecryptFragment
                     }
                 });
 
-                mErrorOverlayLayout.setVisibility(View.GONE);
-                mContentLayout.setVisibility(View.VISIBLE);
+                showErrorOverlay(false);
 
                 onVerifyLoaded(true);
 
@@ -452,8 +441,7 @@ public abstract class DecryptFragment
 
                 setSignatureLayoutVisibility(View.GONE);
 
-                mErrorOverlayLayout.setVisibility(View.VISIBLE);
-                mContentLayout.setVisibility(View.GONE);
+                showErrorOverlay(true);
 
                 onVerifyLoaded(false);
                 break;

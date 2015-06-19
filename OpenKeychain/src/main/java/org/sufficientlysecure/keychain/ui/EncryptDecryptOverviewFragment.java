@@ -83,8 +83,8 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         mDecryptFromClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent clipboardDecrypt = new Intent(getActivity(), DisplayTextActivity.class);
-                clipboardDecrypt.setAction(DisplayTextActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
+                Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);
+                clipboardDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
                 startActivityForResult(clipboardDecrypt, 0);
             }
         });

@@ -32,7 +32,9 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
@@ -42,7 +44,8 @@ public class DecryptActivity extends BaseActivity {
     /* Intents */
     public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
     // TODO handle this intent
-    public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
+    // public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
+    public static final String ACTION_DECRYPT_FROM_CLIPBOARD = Constants.INTENT_PREFIX + "DECRYPT_DATA_CLIPBOARD";
 
     // intern
     public static final String ACTION_DECRYPT_DATA_OPEN = Constants.INTENT_PREFIX + "DECRYPT_DATA_OPEN";
@@ -114,6 +117,17 @@ public class DecryptActivity extends BaseActivity {
                             uris.add(uri);
                         }
                     }
+
+                    break;
+                }
+
+                case ACTION_DECRYPT_FROM_CLIPBOARD: {
+                    action = ACTION_DECRYPT_DATA;
+
+                    CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
+                    String text = PgpHelper.getPgpContent(clipboardText);
+                    Uri uri = readToTempFile(text);
+                    uris.add(uri);
 
                     break;
                 }

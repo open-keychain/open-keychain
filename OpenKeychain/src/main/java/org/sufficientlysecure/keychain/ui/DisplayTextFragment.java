@@ -31,43 +31,30 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
-import java.io.UnsupportedEncodingException;
-
 public class DisplayTextFragment extends DecryptFragment {
-    public static final String ARG_CIPHERTEXT = "ciphertext";
+    public static final String ARG_PLAINTEXT = "ciphertext";
     public static final String ARG_SHOW_MENU = "show_menu";
 
     // view
     private TextView mText;
 
     // model
-    private String mCiphertext;
     private boolean mShowMenuOptions;
+    private String mPlaintext;
 
-    public static DisplayTextFragment newInstance(String ciphertext) {
+    public static DisplayTextFragment newInstance(String plaintext, DecryptVerifyResult result) {
         DisplayTextFragment frag = new DisplayTextFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_CIPHERTEXT, ciphertext);
+        args.putString(ARG_PLAINTEXT, plaintext);
+        args.putParcelable(ARG_DECRYPT_VERIFY_RESULT, result);
 
         frag.setArguments(args);
 
         return frag;
-    }
-
-    /**
-     * Inflate the layout for this fragment
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
-        mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
-
-        return view;
     }
 
     /**
@@ -79,7 +66,7 @@ public class DisplayTextFragment extends DecryptFragment {
 
         // we don't want to decrypt the decrypted, no inception ;)
         String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.DecryptTextActivity",
+                Constants.PACKAGE_NAME + ".ui.DecryptActivity",
                 "org.thialfihar.android.apg.ui.DecryptActivity"
         };
 
@@ -104,13 +91,30 @@ public class DisplayTextFragment extends DecryptFragment {
 
         setHasOptionsMenu(true);
 
-        Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
-        mCiphertext = args.getString(ARG_CIPHERTEXT);
+        Bundle args = getArguments();
         mShowMenuOptions = args.getBoolean(ARG_SHOW_MENU, false);
 
-        if (savedInstanceState == null) {
-            cryptoOperation();
-        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
+        mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Bundle args = getArguments();
+
+        String plaintext = args.getString(ARG_PLAINTEXT);
+        DecryptVerifyResult result = args.getParcelable(ARG_DECRYPT_VERIFY_RESULT);
+
+        // display signature result in activity
+        mText.setText(plaintext);
+        loadVerifyResult(result);
 
     }
 
@@ -118,10 +122,15 @@ public class DisplayTextFragment extends DecryptFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(ARG_CIPHERTEXT, mCiphertext);
         outState.putBoolean(ARG_SHOW_MENU, mShowMenuOptions);
         // no need to save the decrypted text, it's in the textview
 
+    }
+
+    @Override
+    protected void onVerifyLoaded(boolean hideErrorOverlay) {
+        mShowMenuOptions = hideErrorOverlay;
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     @Override
@@ -149,41 +158,6 @@ public class DisplayTextFragment extends DecryptFragment {
         }
 
         return true;
-    }
-
-    @Override
-    protected PgpDecryptVerifyInputParcel createOperationInput() {
-        PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(mCiphertext.getBytes());
-        input.setAllowSymmetricDecryption(true);
-        return input;
-    }
-
-    @Override
-    protected void onVerifyLoaded(boolean hideErrorOverlay) {
-        mShowMenuOptions = hideErrorOverlay;
-        getActivity().supportInvalidateOptionsMenu();
-    }
-
-    @Override
-    protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
-
-        byte[] decryptedMessage = result.getOutputBytes();
-        String displayMessage;
-        if (result.getCharset() != null) {
-            try {
-                displayMessage = new String(decryptedMessage, result.getCharset());
-            } catch (UnsupportedEncodingException e) {
-                // if we can't decode properly, just fall back to utf-8
-                displayMessage = new String(decryptedMessage);
-            }
-        } else {
-            displayMessage = new String(decryptedMessage);
-        }
-        mText.setText(displayMessage);
-
-        // display signature result in activity
-        loadVerifyResult(result);
-
     }
 
 }

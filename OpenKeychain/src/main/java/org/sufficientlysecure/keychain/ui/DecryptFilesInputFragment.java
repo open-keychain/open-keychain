@@ -61,9 +61,6 @@ public class DecryptFilesInputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_files_input_fragment, container, false);
 
-        // hide result view for this fragment
-        getActivity().findViewById(R.id.result_main_layout).setVisibility(View.GONE);
-
         mFilename = (TextView) view.findViewById(R.id.decrypt_files_filename);
         mDecryptButton = view.findViewById(R.id.decrypt_files_action_decrypt);
         view.findViewById(R.id.decrypt_files_browse).setOnClickListener(new View.OnClickListener() {

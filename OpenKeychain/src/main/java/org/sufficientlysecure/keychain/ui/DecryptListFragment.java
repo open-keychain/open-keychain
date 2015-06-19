@@ -18,7 +18,13 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -262,7 +268,7 @@ public class DecryptListFragment
         cryptoOperation();
     }
 
-    private void processResult(final Uri uri, DecryptVerifyResult result) {
+    private void processResult(final Uri uri, final DecryptVerifyResult result) {
 
         Drawable icon = null;
         OnClickListener onFileClick = null, onKeyClick = null;
@@ -301,9 +307,59 @@ public class DecryptListFragment
                     }
 
                     Uri outputUri = mOutputUris.get(uri);
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(outputUri, metadata.getMimeType());
-                    activity.startActivity(intent);
+
+                    if ("text/plain".equals(metadata.getMimeType())) {
+
+                        Intent intent = new Intent(activity, DisplayTextActivity.class);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+                        intent.setDataAndType(outputUri, "text/plain");
+
+                        try {
+
+                            byte[] decryptedMessage;
+                            {
+                                InputStream in = activity.getContentResolver().openInputStream(outputUri);
+                                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                byte[] buf = new byte[256];
+                                int read;
+                                while ( (read = in.read(buf)) > 0) {
+                                    out.write(buf, 0, read);
+                                }
+                                in.close();
+                                out.close();
+                                decryptedMessage = out.toByteArray();
+                            }
+
+                            String plaintext;
+                            if (result.getCharset() != null) {
+                                try {
+                                    plaintext = new String(decryptedMessage, result.getCharset());
+                                } catch (UnsupportedEncodingException e) {
+                                    // if we can't decode properly, just fall back to utf-8
+                                    plaintext = new String(decryptedMessage);
+                                }
+                            } else {
+                                plaintext = new String(decryptedMessage);
+                            }
+
+                            intent.putExtra(Intent.EXTRA_TEXT, plaintext);
+
+                        } catch (IOException e) {
+                            Notify.create(activity, "error", Style.ERROR).show();
+                            return;
+                        }
+
+                        activity.startActivity(intent);
+
+                    } else {
+                        Intent intent = new Intent(activity, DisplayTextActivity.class);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+                        intent.setDataAndType(outputUri, metadata.getMimeType());
+                        activity.startActivity(intent);
+                    }
+
                 }
             };
         }
