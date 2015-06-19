@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
@@ -79,31 +82,57 @@ public class DecryptActivity extends BaseActivity {
 
         String action = intent.getAction();
 
-        // TODO handle ACTION_DECRYPT_FROM_CLIPBOARD
-        switch (action) {
-            case Intent.ACTION_SEND: {
-                // When sending to Keychain Decrypt via share menu
-                // Binary via content provider (could also be files)
-                // override uri to get stream from send
-                action = ACTION_DECRYPT_DATA;
-                uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
-                break;
+        try {
+
+            // TODO handle ACTION_DECRYPT_FROM_CLIPBOARD
+            switch (action) {
+                case Intent.ACTION_SEND: {
+                    // When sending to Keychain Decrypt via share menu
+                    // Binary via content provider (could also be files)
+                    // override uri to get stream from send
+                    action = ACTION_DECRYPT_DATA;
+
+                    if (intent.hasExtra(Intent.EXTRA_STREAM)) {
+                        uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
+                    } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+                        String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        Uri uri = readToTempFile(text);
+                        uris.add(uri);
+                    }
+
+                    break;
+                }
+
+                case Intent.ACTION_SEND_MULTIPLE: {
+                    action = ACTION_DECRYPT_DATA;
+
+                    if (intent.hasExtra(Intent.EXTRA_STREAM)) {
+                        uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
+                        for (String text : intent.getStringArrayListExtra(Intent.EXTRA_TEXT)) {
+                            Uri uri = readToTempFile(text);
+                            uris.add(uri);
+                        }
+                    }
+
+                    break;
+                }
+
+                case Intent.ACTION_VIEW:
+                    // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
+                    action = ACTION_DECRYPT_DATA;
+
+                    // fallthrough
+                default:
+                    uris.add(intent.getData());
+
             }
 
-            case Intent.ACTION_SEND_MULTIPLE: {
-                action = ACTION_DECRYPT_DATA;
-                uris.addAll(intent.<Uri>getParcelableArrayListExtra(Intent.EXTRA_STREAM));
-                break;
-            }
 
-            case Intent.ACTION_VIEW:
-                // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-                action = ACTION_DECRYPT_DATA;
-
-                // fallthrough
-            default:
-                uris.add(intent.getData());
-
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.error_reading_text, Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
 
         if (ACTION_DECRYPT_DATA.equals(action)) {
@@ -120,6 +149,14 @@ public class DecryptActivity extends BaseActivity {
         boolean showOpenDialog = ACTION_DECRYPT_DATA_OPEN.equals(action);
         displayInputFragment(showOpenDialog);
 
+    }
+
+    public Uri readToTempFile(String text) throws IOException {
+        Uri tempFile = TemporaryStorageProvider.createFile(this);
+        OutputStream outStream = getContentResolver().openOutputStream(tempFile);
+        outStream.write(text.getBytes());
+        outStream.close();
+        return tempFile;
     }
 
     public void displayInputFragment(boolean showOpenDialog) {
