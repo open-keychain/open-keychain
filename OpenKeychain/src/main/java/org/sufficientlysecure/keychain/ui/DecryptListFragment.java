@@ -69,11 +69,16 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableHashMap;
+
 
 public class DecryptListFragment
         extends CryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
         implements OnMenuItemClickListener {
-    public static final String ARG_URIS = "uris";
+
+    public static final String ARG_INPUT_URIS = "input_uris";
+    public static final String ARG_OUTPUT_URIS = "output_uris";
+    public static final String ARG_RESULTS = "results";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
@@ -92,7 +97,7 @@ public class DecryptListFragment
         DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_URIS, uris);
+        args.putParcelableArrayList(ARG_INPUT_URIS, uris);
         frag.setArguments(args);
 
         return frag;
@@ -123,14 +128,59 @@ public class DecryptListFragment
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putParcelableArrayList(ARG_URIS, mInputUris);
+        outState.putParcelableArrayList(ARG_INPUT_URIS, mInputUris);
+
+        HashMap<Uri,DecryptVerifyResult> results = new HashMap<>(mInputUris.size());
+        for (Uri uri : mInputUris) {
+            if (mPendingInputUris.contains(uri)) {
+                continue;
+            }
+            DecryptVerifyResult result = mAdapter.getItemResult(uri);
+            if (result != null) {
+                results.put(uri, result);
+            }
+        }
+
+        outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
+        outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mOutputUris));
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        displayInputUris(getArguments().<Uri>getParcelableArrayList(ARG_URIS));
+        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+
+        ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
+        ParcelableHashMap<Uri,Uri> outputUris = args.getParcelable(ARG_OUTPUT_URIS);
+        ParcelableHashMap<Uri,DecryptVerifyResult> results = args.getParcelable(ARG_RESULTS);
+
+        displayInputUris(inputUris,
+                outputUris != null ? outputUris.getMap() : null,
+                results != null ? results.getMap() : null
+        );
+    }
+
+    private void displayInputUris(ArrayList<Uri> inputUris, HashMap<Uri,Uri> outputUris,
+            HashMap<Uri,DecryptVerifyResult> results) {
+
+        mInputUris = inputUris;
+        mOutputUris = outputUris != null ? outputUris : new HashMap<Uri,Uri>(inputUris.size());
+
+        mPendingInputUris = new ArrayList<>();
+
+        for (Uri uri : inputUris) {
+            mAdapter.add(uri);
+            if (results != null && results.containsKey(uri)) {
+                processResult(uri, results.get(uri));
+            } else {
+                mOutputUris.put(uri, TemporaryStorageProvider.createFile(getActivity()));
+                mPendingInputUris.add(uri);
+            }
+        }
+
+        cryptoOperation();
     }
 
     private String removeEncryptedAppend(String name) {
@@ -175,19 +225,6 @@ public class DecryptListFragment
         }
     }
 
-    private void displayInputUris(ArrayList<Uri> uris) {
-        mInputUris = uris;
-        mOutputUris = new HashMap<>(uris.size());
-        for (Uri uri : uris) {
-            mAdapter.add(uri);
-            mOutputUris.put(uri, TemporaryStorageProvider.createFile(getActivity()));
-        }
-
-        mPendingInputUris = uris;
-
-        cryptoOperation();
-    }
-
     @Override
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         super.cryptoOperation(cryptoInput, false);
@@ -216,8 +253,15 @@ public class DecryptListFragment
 
     @Override
     protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
-        final Uri uri = mCurrentInputUri;
+        Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
+
+        processResult(uri, result);
+
+        cryptoOperation();
+    }
+
+    private void processResult(final Uri uri, DecryptVerifyResult result) {
 
         Drawable icon = null;
         OnClickListener onFileClick = null, onKeyClick = null;
@@ -256,7 +300,7 @@ public class DecryptListFragment
                     }
 
                     Uri outputUri = mOutputUris.get(uri);
-                    Intent intent = new Intent();
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setDataAndType(outputUri, metadata.getMimeType());
                     activity.startActivity(intent);
                 }
@@ -264,8 +308,6 @@ public class DecryptListFragment
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
-
-        cryptoOperation();
 
     }
 
@@ -380,11 +422,15 @@ public class DecryptListFragment
             // Depends on inputUri only
             @Override
             public boolean equals(Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
+                if (this == o) {
+                    return true;
+                }
+                if (o == null || getClass() != o.getClass()) {
+                    return false;
+                }
                 ViewModel viewModel = (ViewModel) o;
-                return !(mResult != null ? !mResult.equals(viewModel.mResult)
-                        : viewModel.mResult != null);
+                return !(mInputUri != null ? !mInputUri.equals(viewModel.mInputUri)
+                        : viewModel.mInputUri != null);
             }
 
             // Depends on inputUri only
@@ -439,7 +485,7 @@ public class DecryptListFragment
                     holder.vFilesize.setText(FileHelper.readableFileSize(size));
                 }
 
-                // TODO thumbnail from OpenPgpMetadata
+                // TODO thumbnail from OpenPgpMetadata?
                 if (model.mIcon != null) {
                     holder.vThumbnail.setImageDrawable(model.mIcon);
                 } else {
@@ -483,6 +529,17 @@ public class DecryptListFragment
         @Override
         public int getItemCount() {
             return mDataset.size();
+        }
+
+        public DecryptVerifyResult getItemResult(Uri uri) {
+            ViewModel model = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(model);
+            if (pos == -1) {
+                return null;
+            }
+            model = mDataset.get(pos);
+
+            return model.mResult;
         }
 
         public void add(Uri uri) {
