@@ -58,19 +58,12 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import de.measite.minidns.Client;
@@ -80,7 +73,6 @@ import de.measite.minidns.Record;
 import de.measite.minidns.record.Data;
 import de.measite.minidns.record.TXT;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -155,9 +147,6 @@ public class KeychainService extends Service implements Progressable {
 
     // this attribute can possibly merged with the one above? not sure...
     private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
-
-
-    private KeyImportAccumulator mKeyImportAccumulator;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -401,25 +390,14 @@ public class KeychainService extends Service implements Progressable {
                         // Input
                         String keyServer = data.getString(IMPORT_KEY_SERVER);
                         ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
-                        Proxy proxy = getProxyFromBundle(data);
 
-                        // either keyList or cache must be null, no guarantees otherwise
-                        if (keyList == null) {// import from file, do serially
-                            serialKeyImport(null, keyServer, providerHelper, proxy);
-                        } else {
-                            // if there is more than one key with the same fingerprint, we do a serial import to prevent
-                            // https://github.com/open-keychain/open-keychain/issues/1221
-                            HashSet<String> keyFingerprintSet = new HashSet<>();
-                            for (int i = 0; i < keyList.size(); i++) {
-                                keyFingerprintSet.add(keyList.get(i).mExpectedFingerprint);
-                            }
-                            if (keyFingerprintSet.size() == keyList.size()) {
-                                // all keys have unique fingerprints
-                                multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
-                            } else {
-                                serialKeyImport(keyList, keyServer, providerHelper, proxy);
-                            }
-                        }
+                        ImportExportOperation importExportOperation = new ImportExportOperation(KeychainService.this,
+                                providerHelper, KeychainService.this, mActionCanceled);
+
+                        ImportKeyResult result =
+                                importExportOperation.importKeys(keyList, keyServer, KeychainService.this);
+
+                        sendMessageToHandler(MessageStatus.OKAY, result);
 
                         break;
                     }
@@ -450,10 +428,7 @@ public class KeychainService extends Service implements Progressable {
                         break;
                     }
                 }
-                if (!intent.getAction().equals(ACTION_IMPORT_KEYRING)) {
-                    // import keyring handles stopping service on its own
-                    stopSelf();
-                }
+                stopSelf();
             }
         };
 
@@ -567,216 +542,5 @@ public class KeychainService extends Service implements Progressable {
     @Override
     public void setPreventCancel() {
         sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
-    }
-
-    public void serialKeyImport(ArrayList<ParcelableKeyRing> keyList, final String keyServer,
-                                ProviderHelper providerHelper, Proxy proxy) {
-        Log.d(Constants.TAG, "serial key import starting");
-        ParcelableFileCache<ParcelableKeyRing> cache =
-                new ParcelableFileCache<>(KeychainService.this, "key_import.pcl");
-
-        // Operation
-        ImportExportOperation importExportOperation = new ImportExportOperation(
-                KeychainService.this, providerHelper, KeychainService.this,
-                mActionCanceled);
-        // Either list or cache must be null, no guarantees otherwise.
-        ImportKeyResult result = keyList != null
-                ? importExportOperation.importKeyRings(keyList, keyServer, proxy)
-                : importExportOperation.importKeyRings(cache, keyServer, proxy);
-
-        ContactSyncAdapterService.requestSync();
-        // Result
-        sendMessageToHandler(MessageStatus.OKAY, result);
-
-        stopSelf();
-    }
-
-    public void multiThreadedKeyImport(Iterator<ParcelableKeyRing> keyListIterator, int totKeys, final String
-            keyServer, final Proxy proxy) {
-        Log.d(Constants.TAG, "Multi-threaded key import starting");
-        if (keyListIterator != null) {
-            mKeyImportAccumulator = new KeyImportAccumulator(totKeys, KeychainService.this);
-            setProgress(0, totKeys);
-
-            final int maxThreads = 200;
-            ExecutorService importExecutor = new ThreadPoolExecutor(0, maxThreads,
-                    30L, TimeUnit.SECONDS,
-                    new SynchronousQueue<Runnable>());
-
-            while (keyListIterator.hasNext()) {
-
-                final ParcelableKeyRing pkRing = keyListIterator.next();
-
-                Runnable importOperationRunnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        ImportKeyResult result = null;
-                        try {
-                            ImportExportOperation importExportOperation = new ImportExportOperation(
-                                    KeychainService.this,
-                                    new ProviderHelper(KeychainService.this),
-                                    mKeyImportAccumulator.getImportProgressable(),
-                                    mActionCanceled);
-
-                            ArrayList<ParcelableKeyRing> list = new ArrayList<>();
-                            list.add(pkRing);
-
-                            result = importExportOperation.importKeyRings(list,
-                                    keyServer, proxy);
-                        } finally {
-                            // in the off-chance that importKeyRings does something to crash the
-                            // thread before it can call singleKeyRingImportCompleted, our imported
-                            // key count will go wrong. This will cause the service to never die,
-                            // and the progress dialog to stay displayed. The finally block was
-                            // originally meant to ensure singleKeyRingImportCompleted was called,
-                            // and checks for null were to be introduced, but in such a scenario,
-                            // knowing an uncaught error exists in importKeyRings is more important.
-
-                            // if a null gets passed, something wrong is happening. We want a crash.
-
-                            mKeyImportAccumulator.singleKeyRingImportCompleted(result);
-                        }
-                    }
-                };
-
-                importExecutor.execute(importOperationRunnable);
-            }
-        }
-    }
-
-    /**
-     * Used to accumulate the results of individual key imports
-     */
-    private class KeyImportAccumulator {
-        private OperationResult.OperationLog mImportLog = new OperationResult.OperationLog();
-        private int mTotalKeys;
-        private int mImportedKeys = 0;
-        private Progressable mInternalProgressable;
-        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<Long>();
-        private int mBadKeys = 0;
-        private int mNewKeys = 0;
-        private int mUpdatedKeys = 0;
-        private int mSecret = 0;
-        private int mResultType = 0;
-
-        /**
-         * meant to be used with a service due to stopSelf() in singleKeyRingImportCompleted. Remove this if
-         * generalising.
-         *
-         * @param totalKeys            total number of keys to be imported
-         * @param externalProgressable the external progressable to be updated every time a key is imported
-         */
-        public KeyImportAccumulator(int totalKeys, Progressable externalProgressable) {
-            mTotalKeys = totalKeys;
-            // ignore updates from ImportExportOperation for now
-            mInternalProgressable = new Progressable() {
-                @Override
-                public void setProgress(String message, int current, int total) {
-
-                }
-
-                @Override
-                public void setProgress(int resourceId, int current, int total) {
-
-                }
-
-                @Override
-                public void setProgress(int current, int total) {
-
-                }
-
-                @Override
-                public void setPreventCancel() {
-
-                }
-            };
-        }
-
-        private synchronized void singleKeyRingImportCompleted(ImportKeyResult result) {
-            // increase imported key count and accumulate log and bad, new etc. key counts from result
-            mKeyImportAccumulator.accumulateKeyImport(result);
-
-            setProgress(mKeyImportAccumulator.getImportedKeys(), mKeyImportAccumulator.getTotalKeys());
-
-            if (mKeyImportAccumulator.isImportFinished()) {
-                ContactSyncAdapterService.requestSync();
-
-                sendMessageToHandler(ServiceProgressHandler.MessageStatus.OKAY,
-                        mKeyImportAccumulator.getConsolidatedImportKeyResult());
-
-                stopSelf();//we're done here
-            }
-        }
-
-        public Progressable getImportProgressable() {
-            return mInternalProgressable;
-        }
-
-        public int getTotalKeys() {
-            return mTotalKeys;
-        }
-
-        public int getImportedKeys() {
-            return mImportedKeys;
-        }
-
-        public synchronized void accumulateKeyImport(ImportKeyResult result) {
-            mImportedKeys++;
-            mImportLog.addAll(result.getLog().toList());//accumulates log
-            mBadKeys += result.mBadKeys;
-            mNewKeys += result.mNewKeys;
-            mUpdatedKeys += result.mUpdatedKeys;
-            mSecret += result.mSecret;
-
-            long[] masterKeyIds = result.getImportedMasterKeyIds();
-            for (long masterKeyId : masterKeyIds) {
-                mImportedMasterKeyIds.add(masterKeyId);
-            }
-
-            // if any key import has been cancelled, set result type to cancelled
-            // resultType is added to in getConsolidatedKayImport to account for remaining factors
-            mResultType |= result.getResult() & ImportKeyResult.RESULT_CANCELLED;
-        }
-
-        /**
-         * returns accumulated result of all imports so far
-         */
-        public ImportKeyResult getConsolidatedImportKeyResult() {
-
-            // adding required information to mResultType
-            // special case,no keys requested for import
-            if (mBadKeys == 0 && mNewKeys == 0 && mUpdatedKeys == 0) {
-                mResultType = ImportKeyResult.RESULT_FAIL_NOTHING;
-            } else {
-                if (mNewKeys > 0) {
-                    mResultType |= ImportKeyResult.RESULT_OK_NEWKEYS;
-                }
-                if (mUpdatedKeys > 0) {
-                    mResultType |= ImportKeyResult.RESULT_OK_UPDATED;
-                }
-                if (mBadKeys > 0) {
-                    mResultType |= ImportKeyResult.RESULT_WITH_ERRORS;
-                    if (mNewKeys == 0 && mUpdatedKeys == 0) {
-                        mResultType |= ImportKeyResult.RESULT_ERROR;
-                    }
-                }
-                if (mImportLog.containsWarnings()) {
-                    mResultType |= ImportKeyResult.RESULT_WARNINGS;
-                }
-            }
-
-            long masterKeyIds[] = new long[mImportedMasterKeyIds.size()];
-            for (int i = 0; i < masterKeyIds.length; i++) {
-                masterKeyIds[i] = mImportedMasterKeyIds.get(i);
-            }
-
-            return new ImportKeyResult(mResultType, mImportLog, mNewKeys, mUpdatedKeys, mBadKeys,
-                    mSecret, masterKeyIds);
-        }
-
-        public boolean isImportFinished() {
-            return mTotalKeys == mImportedKeys;
-        }
     }
 }
