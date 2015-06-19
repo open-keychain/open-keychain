@@ -1334,5 +1334,6 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
+    <string name="filename_unknown"><![CDATA[<no filename>]]></string>
 
 </resources>

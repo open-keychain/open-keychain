@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -476,7 +477,10 @@ public class DecryptListFragment
                 KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
 
                 OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
-                holder.vFilename.setText(metadata.getFilename());
+
+                String filename = metadata.getFilename();
+                holder.vFilename.setText(
+                        !TextUtils.isEmpty(filename) ? filename : mContext.getString(R.string.filename_unknown));
 
                 long size = metadata.getOriginalSize();
                 if (size == -1 || size == 0) {
