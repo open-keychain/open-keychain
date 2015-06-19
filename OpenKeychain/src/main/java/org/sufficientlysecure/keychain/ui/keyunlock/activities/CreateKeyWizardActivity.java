@@ -1,13 +1,8 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.activities;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -19,7 +14,6 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.WizardFragment;
-import org.sufficientlysecure.keychain.ui.keyunlock.dialogs.PinUnlockDialog;
 import org.sufficientlysecure.keychain.ui.keyunlock.wizard.EmailWizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.wizard.NameWizardFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.wizard.PinUnlockWizardFragment;
@@ -169,7 +163,7 @@ public class CreateKeyWizardActivity
 
     @Override
     public void setPassphrase(Passphrase passphrase) {
-        mCreateKeyWizardViewModel.getWizardModel().setPassword(passphrase);
+        mCreateKeyWizardViewModel.getWizardModel().setPassphrase(passphrase);
     }
 
     @Override
@@ -204,7 +198,7 @@ public class CreateKeyWizardActivity
 
     @Override
     public Passphrase getPassphrase() {
-        return mCreateKeyWizardViewModel.getWizardModel().getPassword();
+        return mCreateKeyWizardViewModel.getWizardModel().getPassphrase();
     }
 
     @Override

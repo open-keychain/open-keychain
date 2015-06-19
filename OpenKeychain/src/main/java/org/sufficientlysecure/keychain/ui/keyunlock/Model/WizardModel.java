@@ -15,8 +15,8 @@ public class WizardModel implements Parcelable {
     private String mName;
     private String mEmail;
     private ArrayList<String> mAdditionalEmails;
-    private Passphrase mPassword;
     private CanonicalizedSecretKey.SecretKeyType mSecretKeyType;
+    private Passphrase mPassphrase;
 
     public String getName() {
         return mName;
@@ -42,12 +42,12 @@ public class WizardModel implements Parcelable {
         mAdditionalEmails = additionalEmails;
     }
 
-    public Passphrase getPassword() {
-        return mPassword;
+    public Passphrase getPassphrase() {
+        return mPassphrase;
     }
 
-    public void setPassword(Passphrase password) {
-        this.mPassword = password;
+    public void setPassphrase(Passphrase password) {
+        this.mPassphrase = password;
     }
 
     public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
@@ -59,6 +59,7 @@ public class WizardModel implements Parcelable {
     }
 
     public WizardModel() {
+
     }
 
     @Override
@@ -71,17 +72,17 @@ public class WizardModel implements Parcelable {
         dest.writeString(this.mName);
         dest.writeString(this.mEmail);
         dest.writeStringList(this.mAdditionalEmails);
-        dest.writeParcelable(this.mPassword, 0);
         dest.writeInt(this.mSecretKeyType == null ? -1 : this.mSecretKeyType.ordinal());
+        dest.writeParcelable(this.mPassphrase, 0);
     }
 
     protected WizardModel(Parcel in) {
         this.mName = in.readString();
         this.mEmail = in.readString();
         this.mAdditionalEmails = in.createStringArrayList();
-        this.mPassword = in.readParcelable(Passphrase.class.getClassLoader());
         int tmpMSecretKeyType = in.readInt();
         this.mSecretKeyType = tmpMSecretKeyType == -1 ? null : CanonicalizedSecretKey.SecretKeyType.values()[tmpMSecretKeyType];
+        this.mPassphrase = in.readParcelable(Passphrase.class.getClassLoader());
     }
 
     public static final Creator<WizardModel> CREATOR = new Creator<WizardModel>() {

@@ -1,27 +1,14 @@
 package org.sufficientlysecure.keychain.ui.keyunlock.wizard;
 
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.ui.PassphraseWizardActivity;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyunlock.base.BaseViewModel;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
@@ -83,10 +70,7 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
-            //Todo:Change this, its ugly :)
-           // mSaveKeyringParcel.mNewUnlock = mPassphrase != null
-            //        ? new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase, null)
-             //       : null;
+            mSaveKeyringParcel.mNewUnlock =  new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase);
         }
     }
 

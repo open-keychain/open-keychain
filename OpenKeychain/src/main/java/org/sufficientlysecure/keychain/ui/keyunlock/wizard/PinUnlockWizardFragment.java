@@ -158,9 +158,12 @@ public class PinUnlockWizardFragment extends WizardFragment {
             }
         } else {
 
-            mWizardFragmentListener.setPassphrase(
-                    new Passphrase(mPinUnlockWizardFragmentViewModel.getCurrentInputKeyWord().
-                            toString()));
+            Passphrase passphrase = new Passphrase(mPinUnlockWizardFragmentViewModel.getLastInputKeyWord().
+                    toString());
+            passphrase.setSecretKeyType(mWizardFragmentListener.getSecretKeyType());
+            if(mWizardFragmentListener != null) {
+                mWizardFragmentListener.setPassphrase(passphrase);
+            }
 
             //reset the view model because the user can navigate back
             mPinUnlockWizardFragmentViewModel = new PinUnlockWizardFragmentViewModel();
