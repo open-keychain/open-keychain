@@ -12,7 +12,7 @@ import android.os.Parcelable;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_KEYTOCARD
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_KEYTOCARD, ENABLE_ORBOT
     }
 
     public Date mSignatureTime;
@@ -109,6 +109,10 @@ public class RequiredInputParcel implements Parcelable {
             RequiredInputParcel req) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
                 null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId);
+    }
+
+    public static RequiredInputParcel createRequiredOrbotEnable() {
+        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0l, 0l);
     }
 
     @Override

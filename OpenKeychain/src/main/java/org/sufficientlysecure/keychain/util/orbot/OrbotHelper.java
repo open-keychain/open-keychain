@@ -84,6 +84,10 @@ public class OrbotHelper {
         return isAppInstalled(ORBOT_PACKAGE_NAME, context);
     }
 
+    public static boolean isOrbotInstalledAndRunning(Context context) {
+        return isOrbotRunning() && isOrbotInstalled(context);
+    }
+
     private static boolean isAppInstalled(String uri, Context context) {
         PackageManager pm = context.getPackageManager();
 
@@ -171,5 +175,16 @@ public class OrbotHelper {
         } else {
             return true;
         }
+    }
+
+    // TODO: PHILIP return an Intent to required dialog activity
+    public static Intent getRequiredIntent(Context context) {
+        if (!isOrbotInstalled(context)) {
+
+        }
+        if (!isOrbotRunning()) {
+
+        }
+        return null;
     }
 }

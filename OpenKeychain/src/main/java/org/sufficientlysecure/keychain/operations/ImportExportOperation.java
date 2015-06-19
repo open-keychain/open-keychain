@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
+import android.os.Parcelable;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -46,13 +47,13 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.*;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -66,7 +67,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -93,7 +100,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p/>
  * TODO rework uploadKeyRingToServer
  */
-public class ImportExportOperation extends BaseOperation {
+public class ImportExportOperation extends BaseOperation<ImportKeyringParcel> {
 
     public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
@@ -630,15 +637,31 @@ public class ImportExportOperation extends BaseOperation {
 
     }
 
-    public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer, Context context) {
-        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(context).getProxyPrefs();
+    @Override
+    public ImportKeyResult execute(ImportKeyringParcel input, CryptoInputParcel cryptoInput) {
+        Proxy proxy = null;
 
-        Proxy proxy = proxyPrefs.parcelableProxy.getProxy();
+        if (cryptoInput.getParcelableProxy() == null) {
+            // if a proxy is not specified, we retrieve from preferences
+            Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(mContext).getProxyPrefs();
+
+            if (proxyPrefs.torEnabled && !OrbotHelper.isOrbotInstalledAndRunning(mContext)) {
+                // is it okay to pass null for log?
+                return new ImportKeyResult(null, RequiredInputParcel.createRequiredOrbotEnable());
+            }
+        } else {
+            proxy = cryptoInput.getParcelableProxy().getProxy();
+        }
+
+        return importKeys(input.mKeyList, input.mKeyserver, proxy);
+    }
+
+    public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer, Proxy proxy) {
 
         ImportKeyResult result = null;
 
         if (keyList == null) {// import from file, do serially
-            ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(context, "key_import.pcl");
+            ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext, "key_import.pcl");
 
             result =  serialKeyRingImport(cache, keyServer, proxy);
         } else {

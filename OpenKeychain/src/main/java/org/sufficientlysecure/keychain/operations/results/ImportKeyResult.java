@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -30,7 +31,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-public class ImportKeyResult extends OperationResult {
+public class ImportKeyResult extends InputPendingResult {
 
     public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
     public final long[] mImportedMasterKeyIds;
@@ -79,6 +80,14 @@ public class ImportKeyResult extends OperationResult {
         mImportedMasterKeyIds = source.createLongArray();
     }
 
+    /**
+     * Creates a result with attributes other than the log set to defaults.
+     * This constructor is used when the operation fails (including when there is nothing to import) and only the log
+     * and result code matters.
+     *
+     * @param result the result code
+     * @param log
+     */
     public ImportKeyResult(int result, OperationLog log) {
         this(result, log, 0, 0, 0, 0, new long[] { });
     }
@@ -92,6 +101,22 @@ public class ImportKeyResult extends OperationResult {
         mBadKeys = badKeys;
         mSecret = secret;
         mImportedMasterKeyIds = importedMasterKeyIds;
+    }
+
+    /**
+     * When extra input is required. Super constructor will set the "data pending" field of mResult.
+     *
+     * @param log
+     * @param requiredInput specifies the extra input required
+     */
+    public ImportKeyResult(OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+        // just supply default values, we won't use them
+        mNewKeys = 0;
+        mUpdatedKeys = 0;
+        mBadKeys = 0;
+        mSecret = 0;
+        mImportedMasterKeyIds = new long[]{};
     }
 
     @Override

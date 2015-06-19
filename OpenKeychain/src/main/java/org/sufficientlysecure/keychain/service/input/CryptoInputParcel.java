@@ -26,6 +26,7 @@ import java.util.Map;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 /**
@@ -40,9 +41,18 @@ public class CryptoInputParcel implements Parcelable {
     // used in the crypto operation described by this parcel.
     private HashMap<ByteBuffer, byte[]> mCryptoData = new HashMap<>();
 
+    // used to specify an explicit proxy for operations that require it
+    private ParcelableProxy mParcelableProxy;
+
     public CryptoInputParcel() {
         mSignatureTime = new Date();
         mPassphrase = null;
+    }
+
+    public CryptoInputParcel(ParcelableProxy parcelableProxy) {
+        mSignatureTime = new Date();
+        mPassphrase = null;
+        mParcelableProxy = parcelableProxy;
     }
 
     public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
@@ -74,6 +84,8 @@ public class CryptoInputParcel implements Parcelable {
             }
         }
 
+        mParcelableProxy = source.readParcelable(getClass().getClassLoader());
+
     }
 
     @Override
@@ -91,6 +103,8 @@ public class CryptoInputParcel implements Parcelable {
             dest.writeByteArray(entry.getKey().array());
             dest.writeByteArray(entry.getValue());
         }
+
+        dest.writeParcelable(mParcelableProxy, 0);
     }
 
     public void addCryptoData(byte[] hash, byte[] signedHash) {
@@ -111,6 +125,10 @@ public class CryptoInputParcel implements Parcelable {
 
     public Passphrase getPassphrase() {
         return mPassphrase;
+    }
+
+    public ParcelableProxy getParcelableProxy() {
+        return mParcelableProxy;
     }
 
     public static final Creator<CryptoInputParcel> CREATOR = new Creator<CryptoInputParcel>() {

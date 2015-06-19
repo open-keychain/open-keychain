@@ -21,11 +21,7 @@ package org.sufficientlysecure.keychain.service;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
+import android.os.*;
 
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
@@ -394,8 +390,10 @@ public class KeychainService extends Service implements Progressable {
                         ImportExportOperation importExportOperation = new ImportExportOperation(KeychainService.this,
                                 providerHelper, KeychainService.this, mActionCanceled);
 
-                        ImportKeyResult result =
-                                importExportOperation.importKeys(keyList, keyServer, KeychainService.this);
+                        ImportKeyringParcel inputParcel = new ImportKeyringParcel(keyList, keyServer);
+                        CryptoInputParcel cryptoInputParcel = new CryptoInputParcel();
+
+                        ImportKeyResult result = importExportOperation.execute(inputParcel, cryptoInputParcel);
 
                         sendMessageToHandler(MessageStatus.OKAY, result);
 

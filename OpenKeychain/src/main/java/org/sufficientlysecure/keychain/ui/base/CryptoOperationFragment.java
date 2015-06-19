@@ -36,8 +36,10 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
+import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 /**
@@ -48,6 +50,7 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
+    public static final int REQUEST_ENABLE_ORBOT = 0x00008004;
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
@@ -66,6 +69,12 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                 Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                return;
+            }
+
+            case ENABLE_ORBOT: {
+                Intent intent = new Intent(getActivity(), OrbotRequiredDialogActivity.class);
+                startActivityForResult(intent, REQUEST_ENABLE_ORBOT);
                 return;
             }
         }
@@ -99,6 +108,14 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     return;
                 }
                 break;
+            }
+
+            case REQUEST_ENABLE_ORBOT: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.getBooleanExtra(OrbotRequiredDialogActivity.RESULT_IGNORE_TOR, false)) {
+                        cryptoOperation(new CryptoInputParcel());
+                    }
+                }
             }
 
             default: {

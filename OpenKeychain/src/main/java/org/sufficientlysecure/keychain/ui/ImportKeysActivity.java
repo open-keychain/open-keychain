@@ -306,8 +306,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
     }
 
     /**
-     * loads the CloudFragment, which consists of the search bar, search button and settings icon
-     * visually.
+     * loads the CloudFragment, which consists of the search bar, search button and settings icon.
      *
      * @param savedInstanceState
      * @param query              search query
