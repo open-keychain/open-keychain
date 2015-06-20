@@ -70,7 +70,7 @@ public class FileHelper {
      * @param last        default selected Uri, not supported by all file managers
      * @param mimeType    can be text/plain for example
      * @param requestCode requestCode used to identify the result coming back from file manager to
-     *                    onActivityResult() in your activity
+     *                    handleActivityResult() in your activity
      */
     public static void openFile(Fragment fragment, Uri last, String mimeType, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -144,7 +144,7 @@ public class FileHelper {
      * @param fragment
      * @param mimeType    can be text/plain for example
      * @param multiple    allow file chooser to return multiple files
-     * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
+     * @param requestCode used to identify the result coming back from storage browser handleActivityResult() in your
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static void openDocument(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
@@ -162,7 +162,7 @@ public class FileHelper {
      * @param fragment
      * @param mimeType      can be text/plain for example
      * @param suggestedName a filename desirable for the file to be saved
-     * @param requestCode   used to identify the result coming back from storage browser onActivityResult() in your
+     * @param requestCode   used to identify the result coming back from storage browser handleActivityResult() in your
      */
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static void saveDocument(Fragment fragment, String mimeType, String suggestedName, int requestCode) {

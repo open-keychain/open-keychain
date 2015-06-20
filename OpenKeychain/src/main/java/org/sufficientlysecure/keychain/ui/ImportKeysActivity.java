@@ -35,7 +35,10 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.KeychainNewService;
 import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -373,8 +376,7 @@ public class ImportKeysActivity extends BaseNfcActivity {
             if (returnData == null) {
                 return;
             }
-            final ImportKeyResult result =
-                    returnData.getParcelable(OperationResult.EXTRA_RESULT);
+            final ImportKeyResult result = returnData.getParcelable(OperationResult.EXTRA_RESULT);
             if (result == null) {
                 Log.e(Constants.TAG, "result == null");
                 return;
@@ -421,12 +423,9 @@ public class ImportKeysActivity extends BaseNfcActivity {
         };
 
         // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, KeychainService.class);
-
-        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-
-        // fill values for this action
-        Bundle data = new Bundle();
+        Intent intent = new Intent(this, KeychainNewService.class);
+        ImportKeyringParcel operationInput = null;
+        CryptoInputParcel cryptoInput = null;
 
         ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
@@ -445,21 +444,9 @@ public class ImportKeysActivity extends BaseNfcActivity {
                         new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
-                intent.putExtra(KeychainService.EXTRA_DATA, data);
+                operationInput = new ImportKeyringParcel(null, null);
+                cryptoInput = new CryptoInputParcel();
 
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(serviceHandler);
-                intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-                // show progress dialog
-                serviceHandler.showProgressDialog(
-                        getString(R.string.progress_importing),
-                        ProgressDialog.STYLE_HORIZONTAL,
-                        true
-                );
-
-                // start service with intent
-                startService(intent);
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
@@ -467,10 +454,6 @@ public class ImportKeysActivity extends BaseNfcActivity {
             }
         } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
-
-            data.putString(KeychainService.IMPORT_KEY_SERVER, sls.mCloudPrefs.keyserver);
-
-            data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, mProxyPrefs.parcelableProxy);
 
             // get selected key entries
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
@@ -483,23 +466,30 @@ public class ImportKeysActivity extends BaseNfcActivity {
                     );
                 }
             }
-            data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keys);
 
-            intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-            // Create a new Messenger for the communication back
-            Messenger messenger = new Messenger(serviceHandler);
-            intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-            // show progress dialog
-            serviceHandler.showProgressDialog(
-                    getString(R.string.progress_importing),
-                    ProgressDialog.STYLE_HORIZONTAL, true
-            );
-
-            // start service with intent
-            startService(intent);
+            operationInput = new ImportKeyringParcel(keys, sls.mCloudPrefs.keyserver);
+            if (mProxyPrefs != null) { // if not null means we have specified an explicit proxy
+                cryptoInput = new CryptoInputParcel(mProxyPrefs.parcelableProxy);
+            } else {
+                cryptoInput = new CryptoInputParcel();
+            }
         }
+
+        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
+        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(serviceHandler);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        serviceHandler.showProgressDialog(
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL, true
+        );
+
+        // start service with intent
+        startService(intent);
     }
 
     @Override

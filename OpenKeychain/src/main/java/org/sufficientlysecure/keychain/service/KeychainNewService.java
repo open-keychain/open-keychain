@@ -103,8 +103,7 @@ public class KeychainNewService extends Service implements Progressable {
                 } else if (inputParcel instanceof ImportKeyringParcel) {
                     op = new ImportExportOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
-                }
-                else {
+                } else {
                     return;
                 }
 

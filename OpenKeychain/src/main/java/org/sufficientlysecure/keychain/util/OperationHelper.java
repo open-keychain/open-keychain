@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2015 Adithya Abraham Philip <adithyaphilip@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.base;
+package org.sufficientlysecure.keychain.util;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,8 +26,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
-
+import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -36,36 +36,45 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
+import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
-
-/**
- * All fragments executing crypto operations need to extend this class.
- */
-public abstract class CryptoOperationFragment <T extends Parcelable, S extends OperationResult>
-        extends Fragment {
-
+public abstract class OperationHelper <T extends Parcelable, S extends OperationResult> {
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
+    public static final int REQUEST_ENABLE_ORBOT = 0x00008004;
+
+    private FragmentActivity mActivity;
+
+    public OperationHelper(FragmentActivity activity) {
+        mActivity = activity;
+    }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
+        Log.d("PHILIP", "Initating input " + requiredInput.mType);
         switch (requiredInput.mType) {
             case NFC_KEYTOCARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
-                Intent intent = new Intent(getActivity(), NfcOperationActivity.class);
+                Intent intent = new Intent(mActivity, NfcOperationActivity.class);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                startActivityForResult(intent, REQUEST_CODE_NFC);
+                mActivity.startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
             }
 
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC: {
-                Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+                Intent intent = new Intent(mActivity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                mActivity.startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                return;
+            }
+
+            case ENABLE_ORBOT: {
+                Intent intent = new Intent(mActivity, OrbotRequiredDialogActivity.class);
+                mActivity.startActivityForResult(intent, REQUEST_ENABLE_ORBOT);
                 return;
             }
         }
@@ -73,11 +82,19 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         throw new RuntimeException("Unhandled pending result!");
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    /**
+     * Attempts the result of an activity started by this helper. Returns true if request code is recognized,
+     * false otherwise.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     * @return true if requestCode was recognized, false otherwise
+     */
+    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_CANCELED) {
             onCryptoOperationCancelled();
-            return;
+            return true;
         }
 
         switch (requestCode) {
@@ -86,7 +103,7 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
-                    return;
+                    return true;
                 }
                 break;
             }
@@ -96,21 +113,31 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(NfcOperationActivity.RESULT_DATA);
                     cryptoOperation(cryptoInput);
-                    return;
+                    return true;
+                }
+                break;
+            }
+
+            case REQUEST_ENABLE_ORBOT: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.getBooleanExtra(OrbotRequiredDialogActivity.RESULT_IGNORE_TOR, false)) {
+                        cryptoOperation(new CryptoInputParcel());
+                    }
+                    return true;
                 }
                 break;
             }
 
             default: {
-                super.onActivityResult(requestCode, resultCode, data);
+                return false;
             }
         }
+        return true;
     }
 
     protected void dismissProgress() {
-
         ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) getFragmentManager().findFragmentByTag("progressDialog");
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager().findFragmentByTag("progressDialog");
 
         if (progressDialogFragment == null) {
             return;
@@ -120,9 +147,9 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
 
     }
 
-    protected abstract T createOperationInput();
+    public abstract T createOperationInput();
 
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
+    public void cryptoOperation(CryptoInputParcel cryptoInput) {
 
         T operationInput = createOperationInput();
         if (operationInput == null) {
@@ -130,12 +157,12 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         }
 
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(getActivity(), KeychainNewService.class);
+        Intent intent = new Intent(mActivity, KeychainNewService.class);
 
         intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
         intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+        ServiceProgressHandler saveHandler = new ServiceProgressHandler(mActivity) {
             @Override
             public void handleMessage(Message message) {
                 // handle messages by standard KeychainIntentServiceHandler first
@@ -162,18 +189,19 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         saveHandler.showProgressDialog(
-                getString(R.string.progress_building_key),
+                mActivity.getString(R.string.progress_building_key),
                 ProgressDialog.STYLE_HORIZONTAL, false);
 
-        getActivity().startService(intent);
+        mActivity.startService(intent);
 
     }
 
-    protected void cryptoOperation() {
+    public void cryptoOperation() {
         cryptoOperation(new CryptoInputParcel());
     }
 
     protected void onCryptoOperationResult(S result) {
+        Log.d("PHILIP", "cryptoResult " + result.success());
         if (result.success()) {
             onCryptoOperationSuccess(result);
         } else {
@@ -184,17 +212,21 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     abstract protected void onCryptoOperationSuccess(S result);
 
     protected void onCryptoOperationError(S result) {
-        result.createNotify(getActivity()).show();
+        result.createNotify(mActivity).show();
     }
 
     protected void onCryptoOperationCancelled() {
     }
 
     public void onHandleResult(OperationResult result) {
+        Log.d("PHILIP", "Handling result in OperationHelper");
 
         if (result instanceof InputPendingResult) {
+            Log.d("PHILIP", "is pending result");
             InputPendingResult pendingResult = (InputPendingResult) result;
             if (pendingResult.isPending()) {
+
+                Log.d("PHILIP", "Is pending");
                 RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
                 initiateInputActivity(requiredInput);
                 return;
@@ -212,6 +244,4 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         }
 
     }
-
-
 }

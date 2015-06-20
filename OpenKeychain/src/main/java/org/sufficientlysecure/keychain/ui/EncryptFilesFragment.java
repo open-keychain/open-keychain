@@ -465,7 +465,7 @@ public class EncryptFilesFragment
         if (actionsParcel.isIncomplete()) {
             // if this is still null, prepare output streams again
             if (mOutputUris == null) {
-                // this may interrupt the flow, and call us again from onActivityResult
+                // this may interrupt the flow, and call us again from handleActivityResult
                 if (prepareOutputStreams(mShareAfterEncrypt)) {
                     return null;
                 }
