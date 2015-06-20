@@ -682,6 +682,13 @@
             android:theme="@android:style/Theme.NoDisplay">
         </activity>
 
+        <activity
+            android:name=".ui.PassphraseDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay">
+        </activity>
+
+
+
 
 
         <!--

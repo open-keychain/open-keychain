@@ -88,9 +88,9 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
         switch (requestCode) {
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    //CryptoInputParcel cryptoInput =
-                            //data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                    //cryptoOperation(cryptoInput);
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                    cryptoOperation(cryptoInput);
                     return;
                 }
                 break;
