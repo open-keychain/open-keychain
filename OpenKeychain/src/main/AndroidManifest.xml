@@ -673,6 +673,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_log_display" />
         <activity
+            android:name=".ui.OrbotRequiredDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity

@@ -145,7 +145,7 @@ public class EditKeyFragment extends NewCryptoOperationFragment<SaveKeyringParce
         super.onActivityCreated(savedInstanceState);
 
         super.setOperationHelper(
-                new OperationHelper<SaveKeyringParcel, OperationResult>(this) {
+                new OperationHelper<SaveKeyringParcel, OperationResult>(this, R.string.progress_building_key) {
 
                     @Override
                     public SaveKeyringParcel createOperationInput() {

@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
 /**
  * Designed to be intergrated into activities or fragments used for CryptoOperations.
@@ -54,6 +55,8 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
     public static final int REQUEST_CODE_NFC = 0x00008002;
     public static final int REQUEST_ENABLE_ORBOT = 0x00008004;
 
+    private int mProgressMessageString;
+
     private FragmentActivity mActivity;
     private Fragment mFragment;
 
@@ -64,9 +67,10 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
      *
      * @param activity
      */
-    public OperationHelper(FragmentActivity activity) {
+    public OperationHelper(FragmentActivity activity, int progressMessageString) {
         mActivity = activity;
         mUseFragment = false;
+        mProgressMessageString = progressMessageString;
     }
 
     /**
@@ -74,10 +78,11 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
      *
      * @param fragment
      */
-    public OperationHelper(Fragment fragment) {
+    public OperationHelper(Fragment fragment, int progressMessageString) {
         mFragment = fragment;
         mActivity = fragment.getActivity();
         mUseFragment = true;
+        mProgressMessageString = progressMessageString;
     }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
@@ -124,7 +129,7 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
     }
 
     /**
-     * Attempts the result of an activity started by this helper. Returns true if request code is recognized,
+     * Attempts the result of an activity started by this helper. Returns true if requestCode is recognized,
      * false otherwise.
      *
      * @param requestCode
@@ -163,7 +168,7 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
             case REQUEST_ENABLE_ORBOT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.getBooleanExtra(OrbotRequiredDialogActivity.RESULT_IGNORE_TOR, false)) {
-                        cryptoOperation(new CryptoInputParcel());
+                        cryptoOperation(new CryptoInputParcel(ParcelableProxy.getForNoProxy()));
                     }
                     return true;
                 }
@@ -226,13 +231,13 @@ public abstract class OperationHelper<T extends Parcelable, S extends OperationR
             }
         };
 
+        saveHandler.showProgressDialog(
+                mActivity.getString(mProgressMessageString),
+                ProgressDialog.STYLE_HORIZONTAL, false);
+
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(
-                mActivity.getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL, false);
 
         mActivity.startService(intent);
 

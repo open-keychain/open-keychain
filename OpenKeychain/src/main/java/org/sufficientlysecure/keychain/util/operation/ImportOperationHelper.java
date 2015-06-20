@@ -29,8 +29,9 @@ public abstract class ImportOperationHelper extends OperationHelper<ImportKeyrin
     private ArrayList<ParcelableKeyRing> mKeyList;
     private String mKeyserver;
 
-    public ImportOperationHelper(FragmentActivity activity, ArrayList<ParcelableKeyRing> keyList, String keyserver) {
-        super(activity);
+    public ImportOperationHelper(FragmentActivity activity, int progressMessageString,
+                                 ArrayList<ParcelableKeyRing> keyList, String keyserver) {
+        super(activity, progressMessageString);
         mKeyList = keyList;
         mKeyserver = keyserver;
     }

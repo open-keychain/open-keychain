@@ -68,6 +68,10 @@ public class ParcelableProxy implements Parcelable {
         return new Proxy(type, new InetSocketAddress(mProxyHost, mProxyPort));
     }
 
+    public static ParcelableProxy getForNoProxy() {
+        return new ParcelableProxy(null, -1, null);
+    }
+
     protected ParcelableProxy(Parcel in) {
         mProxyHost = in.readString();
         mProxyPort = in.readInt();

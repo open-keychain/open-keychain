@@ -47,6 +47,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.operation.ImportOperationHelper;
+import org.sufficientlysecure.keychain.util.operation.OperationHelper;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
@@ -87,13 +89,13 @@ public class ImportKeysActivity extends BaseNfcActivity {
     private Fragment mTopFragment;
     private View mImportButton;
 
-    private Preferences.ProxyPrefs mProxyPrefs;
+    private Preferences.ProxyPrefs mProxyPrefs; // set only when an explicit proxy is to be used
+
+    private OperationHelper mImportOperationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mProxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
 
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
@@ -109,6 +111,12 @@ public class ImportKeysActivity extends BaseNfcActivity {
     @Override
     protected void initLayout() {
         setContentView(R.layout.import_keys_activity);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mImportOperationHelper != null) mImportOperationHelper.handleActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
@@ -351,6 +359,8 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
     public void loadCallback(final ImportKeysListFragment.LoaderState loaderState) {
         if (loaderState instanceof ImportKeysListFragment.CloudLoaderState) {
+            Preferences.ProxyPrefs proxyPrefs =
+                    mProxyPrefs == null ? Preferences.getPreferences(this).getProxyPrefs() : mProxyPrefs;
             // do the tor check
             // this handle will set tor to be ignored whenever a message is received
             Runnable ignoreTor = new Runnable() {
@@ -361,22 +371,15 @@ public class ImportKeysActivity extends BaseNfcActivity {
                     mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
                 }
             };
-            if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
-                mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
+            if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs, this)) {
+                mListFragment.loadNew(loaderState, proxyPrefs.parcelableProxy);
             }
         } else if (loaderState instanceof ImportKeysListFragment.BytesLoaderState) { // must always be true
             mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
         }
     }
 
-    private void handleMessage(Message message) {
-        if (message.arg1 == ServiceProgressHandler.MessageStatus.OKAY.ordinal()) {
-            // get returned data bundle
-            Bundle returnData = message.getData();
-            if (returnData == null) {
-                return;
-            }
-            final ImportKeyResult result = returnData.getParcelable(OperationResult.EXTRA_RESULT);
+    private void handleResult(ImportKeyResult result) {
             if (result == null) {
                 Log.e(Constants.TAG, "result == null");
                 return;
@@ -398,7 +401,6 @@ public class ImportKeysActivity extends BaseNfcActivity {
 
             result.createNotify(ImportKeysActivity.this)
                     .show((ViewGroup) findViewById(R.id.import_snackbar));
-        }
     }
 
     /**
@@ -412,20 +414,9 @@ public class ImportKeysActivity extends BaseNfcActivity {
             return;
         }
 
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                ImportKeysActivity.this.handleMessage(message);
-            }
-        };
-
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, KeychainNewService.class);
-        ImportKeyringParcel operationInput = null;
-        CryptoInputParcel cryptoInput = null;
+        ArrayList<ParcelableKeyRing> keyList = null;
+        String keyserver = null;
+        CryptoInputParcel cryptoInput = new CryptoInputParcel();
 
         ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();
         if (ls instanceof ImportKeysListFragment.BytesLoaderState) {
@@ -444,9 +435,6 @@ public class ImportKeysActivity extends BaseNfcActivity {
                         new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(selectedEntries);
 
-                operationInput = new ImportKeyringParcel(null, null);
-                cryptoInput = new CryptoInputParcel();
-
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR)
@@ -456,40 +444,32 @@ public class ImportKeysActivity extends BaseNfcActivity {
             ImportKeysListFragment.CloudLoaderState sls = (ImportKeysListFragment.CloudLoaderState) ls;
 
             // get selected key entries
-            ArrayList<ParcelableKeyRing> keys = new ArrayList<>();
+            keyList = new ArrayList<>();
             {
                 // change the format into ParcelableKeyRing
                 ArrayList<ImportKeysListEntry> entries = mListFragment.getSelectedEntries();
                 for (ImportKeysListEntry entry : entries) {
-                    keys.add(new ParcelableKeyRing(
+                    keyList.add(new ParcelableKeyRing(
                                     entry.getFingerprintHex(), entry.getKeyIdHex(), entry.getExtraData())
                     );
                 }
             }
 
-            operationInput = new ImportKeyringParcel(keys, sls.mCloudPrefs.keyserver);
+            keyserver = sls.mCloudPrefs.keyserver;
+
             if (mProxyPrefs != null) { // if not null means we have specified an explicit proxy
                 cryptoInput = new CryptoInputParcel(mProxyPrefs.parcelableProxy);
-            } else {
-                cryptoInput = new CryptoInputParcel();
             }
         }
 
-        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
-        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        mImportOperationHelper = new ImportOperationHelper(this, R.string.progress_importing, keyList, keyserver) {
+            @Override
+            protected void onCryptoOperationSuccess(ImportKeyResult result) {
+                handleResult(result);
+            }
+        };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL, true
-        );
-
-        // start service with intent
-        startService(intent);
+        mImportOperationHelper.cryptoOperation(cryptoInput);
     }
 
     @Override

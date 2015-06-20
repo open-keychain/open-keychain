@@ -135,7 +135,9 @@ public class OrbotHelper {
     }
 
     /**
-     * checks if Tor is enabled and if it is, that Orbot is installed and runnign. Generates appropriate dialogs.
+     * checks if Tor is enabled and if it is, that Orbot is installed and running. Generates appropriate dialogs.
+     * Convenience function for isOrbotinRequiredState(int, Runnable, FragmentActivity) by checking for tor being
+     * enabled internally
      *
      * @param middleButton         resourceId of string to display as the middle button of install and enable dialogs
      * @param middleButtonRunnable runnable to be executed if the user clicks on the middle button
@@ -145,6 +147,25 @@ public class OrbotHelper {
      */
     public static boolean isOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
                                                  Preferences.ProxyPrefs proxyPrefs, FragmentActivity fragmentActivity) {
+
+        if (!proxyPrefs.torEnabled) {
+            return true;
+        } else {
+            return isOrbotInRequiredState(middleButton, middleButtonRunnable, fragmentActivity);
+        }
+
+    }
+
+    /**
+     * checks if Orbot is installed and running. Generates appropriate dialogs.
+     *
+     * @param middleButton         resourceId of string to display as the middle button of install and enable dialogs
+     * @param middleButtonRunnable runnable to be executed if the user clicks on the middle button
+     * @param fragmentActivity
+     * @return true if Tor is not enabled or Tor is enabled and Orbot is installed and running, else false
+     */
+    public static boolean isOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
+                                                 FragmentActivity fragmentActivity) {
         Handler ignoreTorHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -152,10 +173,6 @@ public class OrbotHelper {
                 middleButtonRunnable.run();
             }
         };
-
-        if (!proxyPrefs.torEnabled) {
-            return true;
-        }
 
         if (!OrbotHelper.isOrbotInstalled(fragmentActivity)) {
 
@@ -175,16 +192,5 @@ public class OrbotHelper {
         } else {
             return true;
         }
-    }
-
-    // TODO: PHILIP return an Intent to required dialog activity
-    public static Intent getRequiredIntent(Context context) {
-        if (!isOrbotInstalled(context)) {
-
-        }
-        if (!isOrbotRunning()) {
-
-        }
-        return null;
     }
 }
