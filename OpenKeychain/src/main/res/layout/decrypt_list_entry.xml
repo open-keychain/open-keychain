@@ -237,7 +237,7 @@
                     android:layout_height="48dip"
                     android:clickable="true"
                     android:background="?android:selectableItemBackground"
-                    android:src="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha" />
+                    android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
 
             </LinearLayout>
 
