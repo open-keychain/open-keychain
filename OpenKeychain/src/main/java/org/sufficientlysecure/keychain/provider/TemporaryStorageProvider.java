@@ -18,14 +18,17 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 
@@ -45,11 +48,19 @@ public class TemporaryStorageProvider extends ContentProvider {
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_TIME = "time";
+    private static final String COLUMN_TYPE = "mimetype";
     public static final String CONTENT_AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
     private static final Uri BASE_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     private static File cacheDir;
+
+    public static Uri createFile(Context context, String targetName, String mimeType) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_NAME, targetName);
+        contentValues.put(COLUMN_TYPE, mimeType);
+        return context.getContentResolver().insert(BASE_URI, contentValues);
+    }
 
     public static Uri createFile(Context context, String targetName) {
         ContentValues contentValues = new ContentValues();
@@ -78,6 +89,7 @@ public class TemporaryStorageProvider extends ContentProvider {
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_FILES + " (" +
                     COLUMN_ID + " TEXT PRIMARY KEY, " +
                     COLUMN_NAME + " TEXT, " +
+                    COLUMN_TYPE + " TEXT, " +
                     COLUMN_TIME + " INTEGER" +
                     ");");
         }
@@ -94,6 +106,8 @@ public class TemporaryStorageProvider extends ContentProvider {
                             COLUMN_NAME + " TEXT, " +
                             COLUMN_TIME + " INTEGER" +
                             ");");
+                case 2:
+                    db.execSQL("ALTER TABLE files ADD COLUMN " + COLUMN_TYPE + " TEXT");
             }
         }
     }
@@ -144,9 +158,30 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        // Note: If we can find a files mime type, we can decrypt it to temp storage and open it after
-        //       encryption. The mime type is needed, else UI really sucks and some apps break.
+        Cursor cursor = db.getReadableDatabase().query(TABLE_FILES,
+                new String[]{ COLUMN_TYPE }, COLUMN_ID + "=?",
+                new String[]{ uri.getLastPathSegment() }, null, null, null);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToNext()) {
+                    if (!cursor.isNull(0)) {
+                        return cursor.getString(0);
+                    }
+                }
+            } finally {
+                cursor.close();
+            }
+        }
         return "*/*";
+    }
+
+    @Override
+    public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
+        String type = getType(uri);
+        if (ClipDescription.compareMimeTypes(type, mimeTypeFilter)) {
+            return new String[] { type };
+        }
+        return null;
     }
 
     @Override
@@ -183,9 +218,22 @@ public class TemporaryStorageProvider extends ContentProvider {
         return 0;
     }
 
+    public int setMimeType(Uri uri, String mimetype) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TYPE, mimetype);
+        return update(uri, values, null, null);
+    }
+
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException("Update not supported");
+        if (values.size() != 1 || !values.containsKey(COLUMN_TYPE)) {
+            throw new UnsupportedOperationException("Update supported only for type field!");
+        }
+        if (selection != null || selectionArgs != null) {
+            throw new UnsupportedOperationException("Update supported only for plain uri!");
+        }
+        return db.getWritableDatabase().update(TABLE_FILES, values,
+                COLUMN_ID + " = ?", new String[]{ uri.getLastPathSegment() });
     }
 
     @Override
