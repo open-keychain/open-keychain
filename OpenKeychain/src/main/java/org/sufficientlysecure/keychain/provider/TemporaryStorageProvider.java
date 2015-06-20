@@ -18,6 +18,12 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.UUID;
+
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -29,17 +35,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.UUID;
 
 public class TemporaryStorageProvider extends ContentProvider {
 
@@ -71,6 +73,12 @@ public class TemporaryStorageProvider extends ContentProvider {
     public static Uri createFile(Context context) {
         ContentValues contentValues = new ContentValues();
         return context.getContentResolver().insert(BASE_URI, contentValues);
+    }
+
+    public static int setMimeType(Context context, Uri uri, String mimetype) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TYPE, mimetype);
+        return context.getContentResolver().update(uri, values, null, null);
     }
 
     public static int cleanUp(Context context) {
@@ -218,12 +226,6 @@ public class TemporaryStorageProvider extends ContentProvider {
         return 0;
     }
 
-    public int setMimeType(Uri uri, String mimetype) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TYPE, mimetype);
-        return update(uri, values, null, null);
-    }
-
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         if (values.size() != 1 || !values.containsKey(COLUMN_TYPE)) {
@@ -240,4 +242,5 @@ public class TemporaryStorageProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
         return openFileHelper(uri, mode);
     }
+
 }

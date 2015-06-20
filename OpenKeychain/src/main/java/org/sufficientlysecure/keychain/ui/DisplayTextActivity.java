@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +33,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class DisplayTextActivity extends BaseActivity {
@@ -66,15 +71,19 @@ public class DisplayTextActivity extends BaseActivity {
             return;
         }
 
-        Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT");
-
         DecryptVerifyResult result = intent.getParcelableExtra(EXTRA_METADATA);
-        String plaintext = intent.getStringExtra(Intent.EXTRA_TEXT);
 
-        if (plaintext != null && result != null) {
+        String plaintext;
+        try {
+            plaintext = FileHelper.readTextFromUri(this, intent.getData(), result.getCharset());
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.error_preparing_data, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (plaintext != null) {
             loadFragment(plaintext, result);
         } else {
-            Log.e(Constants.TAG, "Invalid data error!");
             Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
             finish();
         }

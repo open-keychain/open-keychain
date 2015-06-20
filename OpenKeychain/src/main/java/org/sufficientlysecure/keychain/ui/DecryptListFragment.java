@@ -25,10 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -270,12 +274,54 @@ public class DecryptListFragment
 
     private void processResult(final Uri uri, final DecryptVerifyResult result) {
 
-        Drawable icon = null;
-        OnClickListener onFileClick = null, onKeyClick = null;
+        new AsyncTask<Void, Void, Drawable>() {
+            @Override
+            protected Drawable doInBackground(Void... params) {
 
-        if (result.getDecryptMetadata() != null && result.getDecryptMetadata().getMimeType() != null) {
-            icon = loadIcon(result.getDecryptMetadata().getMimeType());
-        }
+                Context context = getActivity();
+                if (result.getDecryptMetadata() == null || context == null) {
+                    return null;
+                }
+
+                String type = result.getDecryptMetadata().getMimeType();
+                Uri outputUri = mOutputUris.get(uri);
+                if (type == null || outputUri == null) {
+                    return null;
+                }
+
+                TemporaryStorageProvider.setMimeType(context, outputUri, type);
+
+                if (ClipDescription.compareMimeTypes(type, "image/*")) {
+                    int px = FormattingUtils.dpToPx(context, 48);
+                    Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
+                    return new BitmapDrawable(context.getResources(), bitmap);
+                }
+
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setType(type);
+
+                final List<ResolveInfo> matches =
+                        context.getPackageManager().queryIntentActivities(intent, 0);
+                //noinspection LoopStatementThatDoesntLoop
+                for (ResolveInfo match : matches) {
+                    return match.loadIcon(getActivity().getPackageManager());
+                }
+
+                return null;
+
+            }
+
+            @Override
+            protected void onPostExecute(Drawable icon) {
+                processResult(uri, result, icon);
+            }
+        }.execute();
+
+    }
+
+    private void processResult(final Uri uri, DecryptVerifyResult result, Drawable icon) {
+
+        OnClickListener onFileClick = null, onKeyClick = null;
 
         OpenPgpSignatureResult sigResult = result.getSignatureResult();
         if (sigResult != null) {
@@ -300,7 +346,7 @@ public class DecryptListFragment
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    displayUri(uri);
+                    displayWithViewIntent(uri);
                 }
             };
         }
@@ -309,7 +355,7 @@ public class DecryptListFragment
 
     }
 
-    public void displayUri(final Uri uri) {
+    public void displayWithViewIntent(final Uri uri) {
         Activity activity = getActivity();
         if (activity == null || mCurrentInputUri != null) {
             return;
@@ -340,18 +386,7 @@ public class DecryptListFragment
                     }
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
                     intent.setDataAndType(outputUri, "text/plain");
-
-                    String plaintext;
-                    try {
-                        plaintext = FileHelper.readTextFromUri(activity, outputUri, result.getCharset());
-                    } catch (IOException e) {
-                        Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
-                        return null;
-                    }
-                    intent.putExtra(Intent.EXTRA_TEXT, plaintext);
-
                     return intent;
                 }
 
@@ -364,7 +399,9 @@ public class DecryptListFragment
                     }
 
                     LabeledIntent internalIntent = new LabeledIntent(
-                            new Intent(intent).setClass(activity, DisplayTextActivity.class),
+                            new Intent(intent)
+                                    .setClass(activity, DisplayTextActivity.class)
+                                    .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
                             BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
 
                     Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
@@ -376,20 +413,13 @@ public class DecryptListFragment
 
             }.execute();
 
-
         } else {
-            Intent intent = new Intent(activity, DisplayTextActivity.class);
-            intent.setAction(Intent.ACTION_VIEW);
-
-            // put output uri as stream, and grant permission to other apps to use it
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(outputUri, metadata.getMimeType());
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.putExtra(Intent.EXTRA_STREAM, outputUri);
-            intent.setType(metadata.getMimeType());
-
-            // put metadata, although this is not likely to be used
-            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
 
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+            chooserIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             activity.startActivity(chooserIntent);
         }
 
@@ -761,20 +791,6 @@ public class DecryptListFragment
         public boolean hasEncrypt() {
             return true;
         }
-    }
-
-    private Drawable loadIcon(String mimeType) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setType(mimeType);
-
-        final List<ResolveInfo> matches = getActivity()
-                .getPackageManager().queryIntentActivities(intent, 0);
-        //noinspection LoopStatementThatDoesntLoop
-        for (ResolveInfo match : matches) {
-            return match.loadIcon(getActivity().getPackageManager());
-        }
-        return null;
-
     }
 
 }
