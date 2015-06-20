@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -592,14 +591,18 @@ public class DecryptListFragment
 
                 OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
 
-                String filename = metadata.getFilename();
-                if (TextUtils.isEmpty(filename)) {
+                String filename;
+                if (metadata == null) {
+                    filename = mContext.getString(R.string.filename_unknown);
+                } else if (TextUtils.isEmpty(metadata.getFilename())) {
                     filename = mContext.getString("text/plain".equals(metadata.getMimeType())
                             ? R.string.filename_unknown_text : R.string.filename_unknown);
+                } else {
+                    filename = metadata.getFilename();
                 }
                 holder.vFilename.setText(filename);
 
-                long size = metadata.getOriginalSize();
+                long size = metadata == null ? 0 : metadata.getOriginalSize();
                 if (size == -1 || size == 0) {
                     holder.vFilesize.setText("");
                 } else {
