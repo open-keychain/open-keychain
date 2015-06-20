@@ -19,8 +19,8 @@ package org.sufficientlysecure.keychain;
 
 
 import android.content.Intent;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.ViewMatchers;
-import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
@@ -29,6 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
@@ -40,13 +41,26 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasFlags;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static android.support.test.espresso.intent.matcher.UriMatchers.hasScheme;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
-import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withEncryptionStatus;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureNone;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -57,8 +71,8 @@ public class EncryptDecryptSymmetricTests {
     public static final String PASSPHRASE = randomString(5, 20);
 
     @Rule
-    public final ActivityTestRule<MainActivity> mActivity
-            = new ActivityTestRule<MainActivity>(MainActivity.class) {
+    public final IntentsTestRule<MainActivity> mActivity
+            = new IntentsTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected Intent getActivityIntent() {
             Intent intent = super.getActivityIntent();
@@ -68,9 +82,9 @@ public class EncryptDecryptSymmetricTests {
     };
 
     @Test
-    public void testSymmetricTextEncryptDecrypt() throws Exception {
+    public void testSymmetricCryptClipboard() throws Exception {
 
-        MainActivity activity = mActivity.getActivity();
+        mActivity.getActivity();
 
         String text = randomString(10, 30);
 
@@ -108,25 +122,67 @@ public class EncryptDecryptSymmetricTests {
             onView(withId(R.id.passphrase_passphrase)).perform(typeText(PASSPHRASE));
             onView(withText(R.string.btn_unlock)).perform(click());
 
-            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
-                    withText(text)));
+            onView(isRecyclerItemView(R.id.decrypted_files_list,
+                    hasDescendant(withText(R.string.filename_unknown_text))))
+                    .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
 
-            // TODO write generic status verifier
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(R.string.filename_unknown_text)))),
+                    withId(R.id.file))).perform(click());
 
-            onView(withId(R.id.result_encryption_text)).check(matches(
-                    withText(R.string.decrypt_result_encrypted)));
-            onView(withId(R.id.result_signature_text)).check(matches(
-                    withText(R.string.decrypt_result_no_signature)));
-            onView(withId(R.id.result_signature_layout)).check(matches(
-                    not(isDisplayed())));
-
-            onView(withId(R.id.result_encryption_icon)).check(matches(
-                    withDrawable(R.drawable.status_lock_closed_24dp)));
-            onView(withId(R.id.result_signature_icon)).check(matches(
-                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
+            intended(allOf(
+                    hasAction("android.intent.action.CHOOSER"),
+                    hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
+                            hasAction(Intent.ACTION_VIEW),
+                            hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                            hasData(allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.CONTENT_AUTHORITY))),
+                            hasType("text/plain")
+                    ))
+            ));
 
         }
 
     }
+
+    @Test
+    public void testSymmetricCryptShare() throws Exception {
+
+        mActivity.getActivity();
+
+        String text = randomString(10, 30);
+
+        // navigate to encrypt/decrypt
+        openDrawer(R.id.drawer_layout);
+        onView(ViewMatchers.withText(R.string.nav_encrypt_decrypt)).perform(click());
+        onView(withId(R.id.encrypt_text)).perform(click());
+
+        {
+            onView(withId(R.id.encrypt_text_text)).perform(typeText(text));
+
+            openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+            onView(withText(R.string.label_symmetric)).perform(click());
+
+            onView(withId(R.id.passphrase)).perform(typeText(PASSPHRASE));
+
+            onView(withId(R.id.passphraseAgain)).perform(typeText(PASSPHRASE));
+
+            onView(withId(R.id.encrypt_text_text)).check(matches(withText(text)));
+
+            onView(withId(R.id.encrypt_share)).perform(click());
+
+        }
+
+        intended(allOf(
+                hasAction("android.intent.action.CHOOSER"),
+                hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
+                        hasAction(Intent.ACTION_SEND),
+                        hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                        hasExtraWithKey(Intent.EXTRA_TEXT),
+                        hasType("text/plain")
+                ))
+        ));
+
+    }
+
 
 }

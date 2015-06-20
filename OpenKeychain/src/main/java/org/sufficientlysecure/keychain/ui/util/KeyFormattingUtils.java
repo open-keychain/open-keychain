@@ -457,8 +457,8 @@ public class KeyFormattingUtils {
             }
 
             int encColorRes = context.getResources().getColor(encColor);
-            holder.getEncryptionStatusIcon().setImageDrawable(context.getResources().getDrawable(encIcon));
             holder.getEncryptionStatusIcon().setColorFilter(encColorRes, PorterDuff.Mode.SRC_IN);
+            holder.getEncryptionStatusIcon().setImageDrawable(context.getResources().getDrawable(encIcon));
             holder.getEncryptionStatusText().setText(encText);
             holder.getEncryptionStatusText().setTextColor(encColorRes);
         }
@@ -542,8 +542,8 @@ public class KeyFormattingUtils {
         }
 
         int sigColorRes = context.getResources().getColor(sigColor);
-        holder.getSignatureStatusIcon().setImageDrawable(context.getResources().getDrawable(sigIcon));
         holder.getSignatureStatusIcon().setColorFilter(sigColorRes, PorterDuff.Mode.SRC_IN);
+        holder.getSignatureStatusIcon().setImageDrawable(context.getResources().getDrawable(sigIcon));
         holder.getSignatureStatusText().setText(sigText);
         holder.getSignatureStatusText().setTextColor(sigColorRes);
 

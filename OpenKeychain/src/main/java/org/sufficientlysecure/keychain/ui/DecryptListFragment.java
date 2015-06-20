@@ -387,6 +387,7 @@ public class DecryptListFragment
 
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setDataAndType(outputUri, "text/plain");
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     return intent;
                 }
 

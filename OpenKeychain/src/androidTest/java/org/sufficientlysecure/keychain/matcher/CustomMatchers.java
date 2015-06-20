@@ -19,18 +19,46 @@
 package org.sufficientlysecure.keychain.matcher;
 
 
+import java.util.EnumSet;
+
 import android.support.annotation.ColorRes;
+import android.support.annotation.IdRes;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.ViewInteraction;
+import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.matcher.BoundedMatcher;
+import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ViewAnimator;
 
 import com.nispok.snackbar.Snackbar;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.EncryptKeyCompletionViewTest;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.DecryptListFragment;
+import org.sufficientlysecure.keychain.ui.DecryptListFragment.ViewHolder;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withChild;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static android.support.test.internal.util.Checks.checkNotNull;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.not;
+import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
 
 public abstract class CustomMatchers {
@@ -80,5 +108,57 @@ public abstract class CustomMatchers {
         };
     }
 
+    public static Matcher<View> withRecyclerView(@IdRes int viewId) {
+        return allOf(isAssignableFrom(RecyclerView.class), withId(viewId));
+    }
+
+    public static Matcher<View> isRecyclerItemView(@IdRes int recyclerId, Matcher<View> specificChildMatcher) {
+        return allOf(withParent(withRecyclerView(recyclerId)), specificChildMatcher);
+    }
+
+    public static Matcher<View> withEncryptionStatus(boolean encrypted) {
+
+        if (encrypted) {
+            return allOf(
+                hasDescendant(allOf(
+                        withId(R.id.result_encryption_text), withText(R.string.decrypt_result_encrypted))),
+                hasDescendant(allOf(
+                        withId(R.id.result_encryption_icon), withDrawable(R.drawable.status_lock_closed_24dp, true)))
+            );
+        } else {
+            return allOf(
+                hasDescendant(allOf(
+                        withId(R.id.result_encryption_text), withText(R.string.decrypt_result_encrypted))),
+                hasDescendant(allOf(
+                        withId(R.id.result_encryption_icon), withDrawable(R.drawable.status_lock_open_24dp, true)))
+            );
+        }
+    }
+
+    public static Matcher<View> withSignatureNone() {
+
+        return allOf(
+            hasDescendant(allOf(
+                    withId(R.id.result_signature_text), withText(R.string.decrypt_result_no_signature))),
+            hasDescendant(allOf(
+                    withId(R.id.result_signature_icon), withDrawable(R.drawable.status_signature_invalid_cutout_24dp, true))),
+             hasDescendant(allOf(
+                    withId(R.id.result_signature_layout), not(isDisplayed())))
+        );
+
+    }
+
+    public static Matcher<View> withSignatureMyKey() {
+
+        return allOf(
+            hasDescendant(allOf(
+                    withId(R.id.result_signature_text), withText(R.string.decrypt_result_signature_secret))),
+            hasDescendant(allOf(
+                    withId(R.id.result_signature_icon), withDrawable(R.drawable.status_signature_verified_cutout_24dp, true))),
+            hasDescendant(allOf(
+                    withId(R.id.result_signature_layout), isDisplayed()))
+        );
+
+    }
 
 }
