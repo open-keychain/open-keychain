@@ -49,6 +49,7 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -85,7 +86,10 @@ public class EncryptFilesFragment
     private boolean mEncryptFilenames;
     private boolean mHiddenRecipients = false;
 
-    private boolean mShareAfterEncrypt;
+    private AfterEncryptAction mAfterEncryptAction;
+    private enum AfterEncryptAction {
+        SAVE, SHARE, COPY;
+    }
 
     private ArrayList<Uri> mOutputUris;
 
@@ -268,12 +272,17 @@ public class EncryptFilesFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
-                mShareAfterEncrypt = false;
+                mAfterEncryptAction = AfterEncryptAction.SAVE;
                 cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
-                mShareAfterEncrypt = true;
+                mAfterEncryptAction = AfterEncryptAction.SHARE;
+                cryptoOperation();
+                break;
+            }
+            case R.id.encrypt_copy: {
+                mAfterEncryptAction = AfterEncryptAction.COPY;
                 cryptoOperation();
                 break;
             }
@@ -376,13 +385,14 @@ public class EncryptFilesFragment
     protected void onCryptoOperationSuccess(final SignEncryptResult result) {
 
         if (mDeleteAfterEncrypt) {
+            // TODO make behavior coherent here
             DeleteFileDialogFragment deleteFileDialog =
                     DeleteFileDialogFragment.newInstance(mFilesAdapter.getAsArrayList());
             deleteFileDialog.setOnDeletedListener(new DeleteFileDialogFragment.OnDeletedListener() {
 
                 @Override
                 public void onDeleted() {
-                    if (mShareAfterEncrypt) {
+                    if (mAfterEncryptAction == AfterEncryptAction.SHARE) {
                         // Share encrypted message/file
                         startActivity(sendWithChooserExcludingEncrypt());
                     } else {
@@ -394,12 +404,24 @@ public class EncryptFilesFragment
             });
             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
         } else {
-            if (mShareAfterEncrypt) {
-                // Share encrypted message/file
-                startActivity(sendWithChooserExcludingEncrypt());
-            } else {
-                // Save encrypted file
-                result.createNotify(getActivity()).show();
+
+            switch (mAfterEncryptAction) {
+
+                case SHARE:
+                    // Share encrypted message/file
+                    startActivity(sendWithChooserExcludingEncrypt());
+                    break;
+
+                case COPY:
+                    byte[] resultBytes = result.getResultBytes();
+                    ClipboardReflection.copyToClipboard(getActivity(), new String(resultBytes));
+                    result.createNotify(getActivity()).show();
+                    break;
+
+                case SAVE:
+                    // Encrypted file was saved already, just show notification
+                    result.createNotify(getActivity()).show();
+                    break;
             }
         }
 
@@ -408,19 +430,19 @@ public class EncryptFilesFragment
     // prepares mOutputUris, either directly and returns false, or indirectly
     // which returns true and will call cryptoOperation after mOutputUris has
     // been set at a later point.
-    private boolean prepareOutputStreams(boolean share) {
+    private boolean prepareOutputStreams() {
 
         if (mFilesModels.isEmpty()) {
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
                     .show(this);
             return true;
-        } else if (mFilesModels.size() > 1 && !mShareAfterEncrypt) {
-            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !mShareAfterEncrypt");
+        } else if (mFilesModels.size() > 1 && mAfterEncryptAction != AfterEncryptAction.SHARE) {
+            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !afterEncryptAction");
             // This should be impossible...
             return true;
         }
 
-        if (share) {
+        if (mAfterEncryptAction == AfterEncryptAction.SHARE) {
             mOutputUris = new ArrayList<>();
             int filenameCounter = 1;
             for (FilesAdapter.ViewModel model : mFilesModels) {
@@ -467,7 +489,7 @@ public class EncryptFilesFragment
             // if this is still null, prepare output streams again
             if (mOutputUris == null) {
                 // this may interrupt the flow, and call us again from onActivityResult
-                if (prepareOutputStreams(mShareAfterEncrypt)) {
+                if (prepareOutputStreams()) {
                     return null;
                 }
             }
@@ -600,7 +622,8 @@ public class EncryptFilesFragment
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUris = new ArrayList<>(1);
                     mOutputUris.add(data.getData());
-                    mShareAfterEncrypt = false;
+                    // make sure this is correct!
+                    mAfterEncryptAction = AfterEncryptAction.SAVE;
                     cryptoOperation();
                 }
                 return;
