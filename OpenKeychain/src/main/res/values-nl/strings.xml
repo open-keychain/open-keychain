@@ -1131,7 +1131,7 @@
   <string name="contact_show_key">Toon sleutel (%s)</string>
   <string name="swipe_to_update">Veeg naar beneden om van sleutelserver te updaten</string>
   <string name="error_no_file_selected">Selecteer minstens een bestand om te versleutelen!</string>
-  <string name="error_multi_not_supported">Opslaan van meerdere bestanden wordt niet ondersteund. Dit is een beperking van Android.</string>
+  <string name="error_multi_files">Opslaan van meerdere bestanden wordt niet ondersteund. Dit is een beperking van Android.</string>
   <string name="key_colon">Sleutel:</string>
   <string name="exchange_description">Selecteer om een sleuteluitwisseling te starten het aantal deelnemers aan de rechterkant, en klik vervolgens op de knop \'Start uitwisseling\'.\n\nJe zal twee vragne gesteld worden om zeker te zijn dat enkel de juiste deelnemers zich in de uitwisseling bevinden en dat hun vingerafdrukken correct zijn.</string>
   <string name="btn_start_exchange">Uitwisseling starten</string>

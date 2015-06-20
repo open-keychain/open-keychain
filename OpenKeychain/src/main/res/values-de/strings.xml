@@ -1132,7 +1132,7 @@
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
   <string name="swipe_to_update">Nach unten wischen um von Schlüsselserver zu aktualisieren</string>
   <string name="error_no_file_selected">Mindestens eine Datei zum Verschlüsseln auswählen!</string>
-  <string name="error_multi_not_supported">Das speichern von mehreren Dateien wird nicht unterstützt. Dies ist eine Einschränkung der aktuellen Android Version.</string>
+  <string name="error_multi_files">Das speichern von mehreren Dateien wird nicht unterstützt. Dies ist eine Einschränkung der aktuellen Android Version.</string>
   <string name="key_colon">Schlüssel:</string>
   <string name="exchange_description">Um einen Schlüsselaustausch zu starten wähle auf der rechten Seite die Teilnehmer aus, drücke dann den \"Austausch starten\"-Knopf.\n\nDu wirst zusätzlich zwei Fragen gestellt bekommen um sicherzustellen, dass nur die richtigen Teilnehmer am Austausch beteiligt sind und deren Fingerabdrücke korrekt sind.</string>
   <string name="btn_start_exchange">Austausch starten</string>

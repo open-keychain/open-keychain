@@ -1102,7 +1102,7 @@
   <string name="contact_show_key">鍵 (%s) を表示</string>
   <string name="swipe_to_update">下スワイプでキーサーバから更新します</string>
   <string name="error_no_file_selected">暗号化するファイルを少なくとも1つ選択して下さい。</string>
-  <string name="error_multi_not_supported">複数ファイルの保存はサポートされていません。これは現在のAndroidでの制限です。</string>
+  <string name="error_multi_files">複数ファイルの保存はサポートされていません。これは現在のAndroidでの制限です。</string>
   <string name="key_colon">鍵:</string>
   <string name="exchange_description">鍵交換の開始は、右側の参加者の番号を選択し、その後、\"交換開始\"ボタンを推します。\n\n2つ以上の質問で交換にいる右の参加者とその指紋が正しいかを確認してください。</string>
   <string name="btn_start_exchange">交換開始</string>

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -413,8 +415,20 @@ public class EncryptFilesFragment
                     break;
 
                 case COPY:
-                    byte[] resultBytes = result.getResultBytes();
-                    ClipboardReflection.copyToClipboard(getActivity(), new String(resultBytes));
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        // it's gone, there's nothing we can do here
+                        return;
+                    }
+
+                    ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    // ClipData clip = ClipData.newUri(getActivity().getContentResolver(),
+                            // getString(R.string.label_clip_title), mOutputUris.get(0));
+                    ClipData clip = new ClipData(getString(R.string.label_clip_title),
+                            new String[] { "text/plain" },
+                            new ClipData.Item(mOutputUris.get(0))
+                    );
+                    clipMan.setPrimaryClip(clip);
                     result.createNotify(getActivity()).show();
                     break;
 
@@ -436,32 +450,44 @@ public class EncryptFilesFragment
             Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
                     .show(this);
             return true;
-        } else if (mFilesModels.size() > 1 && mAfterEncryptAction != AfterEncryptAction.SHARE) {
-            Log.e(Constants.TAG, "Aborting: mInputUris.size() > 1 && !afterEncryptAction");
-            // This should be impossible...
-            return true;
         }
 
-        if (mAfterEncryptAction == AfterEncryptAction.SHARE) {
-            mOutputUris = new ArrayList<>();
-            int filenameCounter = 1;
-            for (FilesAdapter.ViewModel model : mFilesModels) {
-                String targetName =
-                        (mEncryptFilenames ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
-                                + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
-                filenameCounter++;
-            }
-            return false;
-        } else {
-            if (mFilesModels.size() > 1) {
-                Notify.create(getActivity(), R.string.error_multi_not_supported,
-                        Notify.Style.ERROR).show(this);
+        switch (mAfterEncryptAction) {
+            default:
+            case SHARE:
+                mOutputUris = new ArrayList<>();
+                int filenameCounter = 1;
+                for (FilesAdapter.ViewModel model : mFilesModels) {
+                    String targetName = (mEncryptFilenames
+                            ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
+                                    + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+                    mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName));
+                    filenameCounter++;
+                }
+                return false;
+
+            case SAVE:
+                if (mFilesModels.size() > 1) {
+                    Notify.create(getActivity(), R.string.error_multi_files, Notify.Style.ERROR).show(this);
+                    return true;
+                }
+                showOutputFileDialog();
                 return true;
-            }
-            showOutputFileDialog();
-            return true;
+
+            case COPY:
+                // nothing to do here, but make sure
+                if (mFilesModels.size() > 1) {
+                    Notify.create(getActivity(), R.string.error_multi_clipboard, Notify.Style.ERROR).show(this);
+                    return true;
+                }
+                mOutputUris = new ArrayList<>();
+                String targetName = (mEncryptFilenames
+                        ? String.valueOf(1) : FileHelper.getFilename(getActivity(), mFilesModels.get(0).inputUri))
+                        + Constants.FILE_EXTENSION_ASC;
+                mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName, "text/plain"));
+                return false;
         }
+
     }
 
     protected SignEncryptParcel createOperationInput() {
@@ -516,7 +542,7 @@ public class EncryptFilesFragment
             data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
-        data.setEnableAsciiArmorOutput(mUseArmor);
+        data.setEnableAsciiArmorOutput(mAfterEncryptAction == AfterEncryptAction.COPY || mUseArmor);
         data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
         data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
 
@@ -622,7 +648,7 @@ public class EncryptFilesFragment
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mOutputUris = new ArrayList<>(1);
                     mOutputUris.add(data.getData());
-                    // make sure this is correct!
+                    // make sure this is correct at this point
                     mAfterEncryptAction = AfterEncryptAction.SAVE;
                     cryptoOperation();
                 }

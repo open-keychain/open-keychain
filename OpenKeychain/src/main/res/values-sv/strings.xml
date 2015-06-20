@@ -873,7 +873,7 @@
   <string name="contact_show_key">Visa nyckel (%s)</string>
   <string name="swipe_to_update">Dra nedåt för att uppdatera från nyckelserver</string>
   <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
-  <string name="error_multi_not_supported">Att spara flera filer stöds ej. Detta är en begränsning i nuvarande Android.</string>
+  <string name="error_multi_files">Att spara flera filer stöds ej. Detta är en begränsning i nuvarande Android.</string>
   <string name="key_colon">Nyckel:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Passphrase wizard-->

@@ -1112,7 +1112,7 @@
   <string name="contact_show_key">Прикажи кључ (%s)</string>
   <string name="swipe_to_update">Превуците прстом доле да ажурирате са сервера кључева</string>
   <string name="error_no_file_selected">Изаберите бар један фајл за шифровање!</string>
-  <string name="error_multi_not_supported">Упис више фајлова није подржан. Ово је ограничење у текућем издању Андроида.</string>
+  <string name="error_multi_files">Упис више фајлова није подржан. Ово је ограничење у текућем издању Андроида.</string>
   <string name="key_colon">Кључ:</string>
   <string name="exchange_description">Да бисте почели размену кључева, са десне стране изаберите број учесника и додирните дугме „Почни размену“.\n\nБиће вам постављено још два питања да би се осигурало да су само исправни учесници у размени и да су њихови отисци тачни.</string>
   <string name="btn_start_exchange">Почни размену</string>
