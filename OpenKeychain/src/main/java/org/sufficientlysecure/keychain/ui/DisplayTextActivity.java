@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class DisplayTextActivity extends BaseActivity {
 
-    public static final String EXTRA_METADATA = OpenKeychainIntents.DECRYPT_EXTRA_METADATA;
+    public static final String EXTRA_METADATA = "metadata";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
