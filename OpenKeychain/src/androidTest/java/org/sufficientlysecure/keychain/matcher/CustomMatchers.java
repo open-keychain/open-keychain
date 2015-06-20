@@ -128,7 +128,7 @@ public abstract class CustomMatchers {
         } else {
             return allOf(
                 hasDescendant(allOf(
-                        withId(R.id.result_encryption_text), withText(R.string.decrypt_result_encrypted))),
+                        withId(R.id.result_encryption_text), withText(R.string.decrypt_result_not_encrypted))),
                 hasDescendant(allOf(
                         withId(R.id.result_encryption_icon), withDrawable(R.drawable.status_lock_open_24dp, true)))
             );
@@ -152,7 +152,7 @@ public abstract class CustomMatchers {
 
         return allOf(
             hasDescendant(allOf(
-                    withId(R.id.result_signature_text), withText(R.string.decrypt_result_signature_secret))),
+                    withId(R.id.result_signature_text), withText(R.string.decrypt_result_signature_certified))),
             hasDescendant(allOf(
                     withId(R.id.result_signature_icon), withDrawable(R.drawable.status_signature_verified_cutout_24dp, true))),
             hasDescendant(allOf(
