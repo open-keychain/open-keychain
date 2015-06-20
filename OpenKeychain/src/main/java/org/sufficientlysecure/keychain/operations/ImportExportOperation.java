@@ -641,19 +641,26 @@ public class ImportExportOperation extends BaseOperation<ImportKeyringParcel> {
     public ImportKeyResult execute(ImportKeyringParcel input, CryptoInputParcel cryptoInput) {
         Proxy proxy = null;
 
-        if (cryptoInput.getParcelableProxy() == null) {
-            // if a proxy is not specified, we retrieve from preferences
-            Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(mContext).getProxyPrefs();
+        if (!isOfflineImport(input)) {
+            if (cryptoInput.getParcelableProxy() == null) {
+                // if a proxy is not specified, we retrieve from preferences
+                Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(mContext).getProxyPrefs();
 
-            if (proxyPrefs.torEnabled && !OrbotHelper.isOrbotInstalledAndRunning(mContext)) {
-                // is it okay to pass null for log?
-                return new ImportKeyResult(null, RequiredInputParcel.createRequiredOrbotEnable());
+                if (proxyPrefs.torEnabled && !OrbotHelper.isOrbotInstalledAndRunning(mContext)) {
+                    // is it okay to pass null for log?
+                    return new ImportKeyResult(null, RequiredInputParcel.createRequiredOrbotEnable());
+                }
+            } else {
+                proxy = cryptoInput.getParcelableProxy().getProxy();
             }
-        } else {
-            proxy = cryptoInput.getParcelableProxy().getProxy();
         }
 
         return importKeys(input.mKeyList, input.mKeyserver, proxy);
+    }
+
+    // TODO: Verify if this is sufficient to determine offline import
+    private boolean isOfflineImport(ImportKeyringParcel importParcel) {
+        return importParcel.mKeyList == null;
     }
 
     public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer, Proxy proxy) {
