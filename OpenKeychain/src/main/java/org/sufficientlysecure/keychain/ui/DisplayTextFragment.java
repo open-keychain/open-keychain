@@ -35,15 +35,14 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 public class DisplayTextFragment extends DecryptFragment {
-    public static final String ARG_PLAINTEXT = "ciphertext";
-    public static final String ARG_SHOW_MENU = "show_menu";
+
+    public static final String ARG_PLAINTEXT = "plaintext";
 
     // view
     private TextView mText;
 
-    // model
-    private boolean mShowMenuOptions;
-    private String mPlaintext;
+    // model (no state to persist though, that's all in arguments!)
+    private boolean mShowMenuOptions = false;
 
     public static DisplayTextFragment newInstance(String plaintext, DecryptVerifyResult result) {
         DisplayTextFragment frag = new DisplayTextFragment();
@@ -90,10 +89,6 @@ public class DisplayTextFragment extends DecryptFragment {
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-
-        Bundle args = getArguments();
-        mShowMenuOptions = args.getBoolean(ARG_SHOW_MENU, false);
-
     }
 
     @Override
@@ -115,15 +110,6 @@ public class DisplayTextFragment extends DecryptFragment {
         // display signature result in activity
         mText.setText(plaintext);
         loadVerifyResult(result);
-
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(ARG_SHOW_MENU, mShowMenuOptions);
-        // no need to save the decrypted text, it's in the textview
 
     }
 

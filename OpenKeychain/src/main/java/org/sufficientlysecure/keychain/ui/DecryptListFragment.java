@@ -18,10 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -32,11 +30,14 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,14 +59,15 @@ import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-// this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+// this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
@@ -122,6 +124,7 @@ public class DecryptListFragment
         vFilesList.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
         vFilesList.setHasFixedSize(true);
+        // TODO make this a grid, for tablets!
         vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         vFilesList.setItemAnimator(new DefaultItemAnimator());
 
@@ -297,74 +300,127 @@ public class DecryptListFragment
         }
 
         if (result.success() && result.getDecryptMetadata() != null) {
-            final OpenPgpMetadata metadata = result.getDecryptMetadata();
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Activity activity = getActivity();
-                    if (activity == null || mCurrentInputUri != null) {
-                        return;
-                    }
-
-                    Uri outputUri = mOutputUris.get(uri);
-
-                    if ("text/plain".equals(metadata.getMimeType())) {
-
-                        Intent intent = new Intent(activity, DisplayTextActivity.class);
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
-                        intent.setDataAndType(outputUri, "text/plain");
-
-                        try {
-
-                            byte[] decryptedMessage;
-                            {
-                                InputStream in = activity.getContentResolver().openInputStream(outputUri);
-                                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                byte[] buf = new byte[256];
-                                int read;
-                                while ( (read = in.read(buf)) > 0) {
-                                    out.write(buf, 0, read);
-                                }
-                                in.close();
-                                out.close();
-                                decryptedMessage = out.toByteArray();
-                            }
-
-                            String plaintext;
-                            if (result.getCharset() != null) {
-                                try {
-                                    plaintext = new String(decryptedMessage, result.getCharset());
-                                } catch (UnsupportedEncodingException e) {
-                                    // if we can't decode properly, just fall back to utf-8
-                                    plaintext = new String(decryptedMessage);
-                                }
-                            } else {
-                                plaintext = new String(decryptedMessage);
-                            }
-
-                            intent.putExtra(Intent.EXTRA_TEXT, plaintext);
-
-                        } catch (IOException e) {
-                            Notify.create(activity, "error", Style.ERROR).show();
-                            return;
-                        }
-
-                        activity.startActivity(intent);
-
-                    } else {
-                        Intent intent = new Intent(activity, DisplayTextActivity.class);
-                        intent.setAction(Intent.ACTION_VIEW);
-                        intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
-                        intent.setDataAndType(outputUri, metadata.getMimeType());
-                        activity.startActivity(intent);
-                    }
-
+                    displayUri(uri);
                 }
             };
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+
+    }
+
+    public void displayUri(final Uri uri) {
+        Activity activity = getActivity();
+        if (activity == null || mCurrentInputUri != null) {
+            return;
+        }
+
+        final Uri outputUri = mOutputUris.get(uri);
+        final DecryptVerifyResult result = mAdapter.getItemResult(uri);
+        if (outputUri == null || result == null) {
+            return;
+        }
+
+        final OpenPgpMetadata metadata = result.getDecryptMetadata();
+
+        // text/plain is a special case where we extract the uri content into
+        // the EXTRA_TEXT extra ourselves, and display a chooser which includes
+        // OpenKeychain's internal viewer
+        if ("text/plain".equals(metadata.getMimeType())) {
+
+            // this is a significant i/o operation, use an asynctask
+            new AsyncTask<Void,Void,Intent>() {
+
+                @Override
+                protected Intent doInBackground(Void... params) {
+
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        return null;
+                    }
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+                    intent.setDataAndType(outputUri, "text/plain");
+
+                    try {
+
+                        byte[] decryptedMessage;
+                        {
+                            InputStream in = activity.getContentResolver().openInputStream(outputUri);
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            byte[] buf = new byte[256];
+                            int read;
+                            while ( (read = in.read(buf)) > 0) {
+                                out.write(buf, 0, read);
+                            }
+                            in.close();
+                            out.close();
+                            decryptedMessage = out.toByteArray();
+                        }
+
+                        String plaintext;
+                        if (result.getCharset() != null) {
+                            try {
+                                plaintext = new String(decryptedMessage, result.getCharset());
+                            } catch (UnsupportedEncodingException e) {
+                                // if we can't decode properly, just fall back to utf-8
+                                plaintext = new String(decryptedMessage);
+                            }
+                        } else {
+                            plaintext = new String(decryptedMessage);
+                        }
+
+                        intent.putExtra(Intent.EXTRA_TEXT, plaintext);
+
+                    } catch (IOException e) {
+                        Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
+                        return null;
+                    }
+
+                    return intent;
+                }
+
+                @Override
+                protected void onPostExecute(Intent intent) {
+                    // for result so we can possibly get a snackbar error from internal viewer
+                    Activity activity = getActivity();
+                    if (intent == null || activity == null) {
+                        return;
+                    }
+
+                    LabeledIntent internalIntent = new LabeledIntent(
+                            new Intent(intent).setClass(activity, DisplayTextActivity.class),
+                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
+
+                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                            new Parcelable[] { internalIntent });
+
+                    activity.startActivity(chooserIntent);
+                }
+
+            }.execute();
+
+
+        } else {
+            Intent intent = new Intent(activity, DisplayTextActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+
+            // put output uri as stream, and grant permission to other apps to use it
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.putExtra(Intent.EXTRA_STREAM, outputUri);
+            intent.setType(metadata.getMimeType());
+
+            // put metadata, although this is not likely to be used
+            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+
+            Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+            activity.startActivity(chooserIntent);
+        }
 
     }
 
@@ -535,8 +591,11 @@ public class DecryptListFragment
                 OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
 
                 String filename = metadata.getFilename();
-                holder.vFilename.setText(
-                        !TextUtils.isEmpty(filename) ? filename : mContext.getString(R.string.filename_unknown));
+                if (TextUtils.isEmpty(filename)) {
+                    filename = mContext.getString("text/plain".equals(metadata.getMimeType())
+                            ? R.string.filename_unknown_text : R.string.filename_unknown);
+                }
+                holder.vFilename.setText(filename);
 
                 long size = metadata.getOriginalSize();
                 if (size == -1 || size == 0) {

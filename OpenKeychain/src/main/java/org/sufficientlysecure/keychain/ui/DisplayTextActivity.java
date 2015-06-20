@@ -18,32 +18,23 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.regex.Matcher;
-
 public class DisplayTextActivity extends BaseActivity {
 
-    // TODO make this only display text (maybe we need only the fragment?)
-
-    /* Intents */
     public static final String EXTRA_METADATA = OpenKeychainIntents.DECRYPT_EXTRA_METADATA;
 
     @Override
@@ -71,39 +62,22 @@ public class DisplayTextActivity extends BaseActivity {
      * Handles all actions with this intent
      */
     private void handleActions(Bundle savedInstanceState, Intent intent) {
-        String action = intent.getAction();
-        Bundle extras = intent.getExtras();
-        String type = intent.getType();
-
-        if (extras == null) {
-            extras = new Bundle();
-        }
-
         if (savedInstanceState != null) {
             return;
         }
 
         Log.d(Constants.TAG, "ACTION_DECRYPT_TEXT");
 
-        DecryptVerifyResult result = extras.getParcelable(EXTRA_METADATA);
-        String plaintext = extras.getString(Intent.EXTRA_TEXT);
+        DecryptVerifyResult result = intent.getParcelableExtra(EXTRA_METADATA);
+        String plaintext = intent.getStringExtra(Intent.EXTRA_TEXT);
 
-        if (plaintext != null) {
+        if (plaintext != null && result != null) {
             loadFragment(plaintext, result);
         } else {
-            Log.e(Constants.TAG, "EXTRA_TEXT does not contain PGP content!");
+            Log.e(Constants.TAG, "Invalid data error!");
             Toast.makeText(this, R.string.error_invalid_data, Toast.LENGTH_LONG).show();
             finish();
         }
-    }
-
-    private void returnInvalidResult() {
-        SingletonResult result = new SingletonResult(
-                SingletonResult.RESULT_ERROR, OperationResult.LogType.MSG_NO_VALID_ENC);
-        Intent intent = new Intent();
-        intent.putExtra(SingletonResult.EXTRA_RESULT, result);
-        setResult(RESULT_OK, intent);
-        finish();
     }
 
     private void loadFragment(String plaintext, DecryptVerifyResult result) {
