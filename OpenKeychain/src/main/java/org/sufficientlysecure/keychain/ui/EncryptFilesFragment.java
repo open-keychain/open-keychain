@@ -51,7 +51,6 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -422,9 +421,8 @@ public class EncryptFilesFragment
                     }
 
                     ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                    // ClipData clip = ClipData.newUri(getActivity().getContentResolver(),
-                            // getString(R.string.label_clip_title), mOutputUris.get(0));
                     ClipData clip = new ClipData(getString(R.string.label_clip_title),
+                            // make available as application/pgp-encrypted
                             new String[] { "text/plain" },
                             new ClipData.Item(mOutputUris.get(0))
                     );

@@ -22,6 +22,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,9 +35,7 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
@@ -87,7 +88,6 @@ public class DecryptActivity extends BaseActivity {
 
         try {
 
-            // TODO handle ACTION_DECRYPT_FROM_CLIPBOARD
             switch (action) {
                 case Intent.ACTION_SEND: {
                     // When sending to Keychain Decrypt via share menu
@@ -124,9 +124,25 @@ public class DecryptActivity extends BaseActivity {
                 case ACTION_DECRYPT_FROM_CLIPBOARD: {
                     action = ACTION_DECRYPT_DATA;
 
-                    CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
-                    String text = PgpHelper.getPgpContent(clipboardText);
-                    Uri uri = readToTempFile(text);
+                    ClipboardManager clipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = clipMan.getPrimaryClip();
+
+                    // check if data is available as uri
+                    Uri uri = null;
+                    for (int i = 0; i < clip.getItemCount(); i++) {
+                        ClipData.Item item = clip.getItemAt(i);
+                        Uri itemUri = item.getUri();
+                        if (itemUri != null) {
+                            uri = itemUri;
+                            break;
+                        }
+                    }
+
+                    // otherwise, coerce to text (almost always possible) and work from there
+                    if (uri == null) {
+                        String text = clip.getItemAt(0).coerceToText(this).toString();
+                        uri = readToTempFile(text);
+                    }
                     uris.add(uri);
 
                     break;
