@@ -446,11 +446,6 @@ public class DecryptListFragment
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
-
-    @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (mAdapter.mMenuClickedModel == null || !mAdapter.mMenuClickedModel.hasResult()) {
             return false;
@@ -589,7 +584,7 @@ public class DecryptListFragment
 
                 KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
 
-                OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
+                final OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
 
                 String filename;
                 if (metadata == null) {
@@ -626,6 +621,9 @@ public class DecryptListFragment
                         mMenuClickedModel = model;
                         PopupMenu menu = new PopupMenu(mContext, view);
                         menu.inflate(R.menu.decrypt_item_context_menu);
+                        if (!"file".equals(model.mInputUri.getScheme())) {
+                            menu.getMenu().findItem(R.id.decrypt_delete).setVisible(false);
+                        }
                         menu.setOnMenuItemClickListener(mMenuItemClickListener);
                         menu.setOnDismissListener(new OnDismissListener() {
                             @Override
