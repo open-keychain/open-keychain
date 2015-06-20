@@ -41,7 +41,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 
 public class FileHelper {
@@ -232,6 +236,39 @@ public class FileHelper {
         final String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
         int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+
+    public static String readTextFromUri(Context context, Uri outputUri, String charset)
+        throws IOException {
+
+        byte[] decryptedMessage;
+        {
+            InputStream in = context.getContentResolver().openInputStream(outputUri);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[256];
+            int read;
+            while ( (read = in.read(buf)) > 0) {
+                out.write(buf, 0, read);
+            }
+            in.close();
+            out.close();
+            decryptedMessage = out.toByteArray();
+        }
+
+        String plaintext;
+        if (charset != null) {
+            try {
+                plaintext = new String(decryptedMessage, charset);
+            } catch (UnsupportedEncodingException e) {
+                // if we can't decode properly, just fall back to utf-8
+                plaintext = new String(decryptedMessage);
+            }
+        } else {
+            plaintext = new String(decryptedMessage);
+        }
+
+        return plaintext;
+
     }
 
     public static interface FileDialogCallback {

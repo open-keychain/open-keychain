@@ -18,11 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -346,40 +343,14 @@ public class DecryptListFragment
                     intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
                     intent.setDataAndType(outputUri, "text/plain");
 
+                    String plaintext;
                     try {
-
-                        byte[] decryptedMessage;
-                        {
-                            InputStream in = activity.getContentResolver().openInputStream(outputUri);
-                            ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            byte[] buf = new byte[256];
-                            int read;
-                            while ( (read = in.read(buf)) > 0) {
-                                out.write(buf, 0, read);
-                            }
-                            in.close();
-                            out.close();
-                            decryptedMessage = out.toByteArray();
-                        }
-
-                        String plaintext;
-                        if (result.getCharset() != null) {
-                            try {
-                                plaintext = new String(decryptedMessage, result.getCharset());
-                            } catch (UnsupportedEncodingException e) {
-                                // if we can't decode properly, just fall back to utf-8
-                                plaintext = new String(decryptedMessage);
-                            }
-                        } else {
-                            plaintext = new String(decryptedMessage);
-                        }
-
-                        intent.putExtra(Intent.EXTRA_TEXT, plaintext);
-
+                        plaintext = FileHelper.readTextFromUri(activity, outputUri, result.getCharset());
                     } catch (IOException e) {
                         Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
                         return null;
                     }
+                    intent.putExtra(Intent.EXTRA_TEXT, plaintext);
 
                     return intent;
                 }
