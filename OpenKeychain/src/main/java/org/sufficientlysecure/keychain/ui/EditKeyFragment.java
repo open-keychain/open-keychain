@@ -66,8 +66,8 @@ import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.OperationHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.operation.OperationHelper;
 
 public class EditKeyFragment extends NewCryptoOperationFragment<SaveKeyringParcel, OperationResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -144,18 +144,19 @@ public class EditKeyFragment extends NewCryptoOperationFragment<SaveKeyringParce
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setOperationHelper(
-                new OperationHelper<SaveKeyringParcel, OperationResult>(getActivity()) {
+        super.setOperationHelper(
+                new OperationHelper<SaveKeyringParcel, OperationResult>(this) {
 
                     @Override
                     public SaveKeyringParcel createOperationInput() {
+                        Log.d("PHILIP", "edit key creating operation input " + mSaveKeyringParcel);
                         return mSaveKeyringParcel;
                     }
 
                     @Override
                     protected void onCryptoOperationSuccess(OperationResult result) {
-
-                        // if good -> finish, return result to showkey and display there!
+                        Log.d("PHILIP", "edit key success");
+                        // if good -> finish, return result to showkey and display thered!
                         Intent intent = new Intent();
                         intent.putExtra(OperationResult.EXTRA_RESULT, result);
                         getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
@@ -198,6 +199,12 @@ public class EditKeyFragment extends NewCryptoOperationFragment<SaveKeyringParce
         } else {
             loadSaveKeyringParcel(saveKeyringParcel);
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("PHILIP","Frament onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadSaveKeyringParcel(SaveKeyringParcel saveKeyringParcel) {

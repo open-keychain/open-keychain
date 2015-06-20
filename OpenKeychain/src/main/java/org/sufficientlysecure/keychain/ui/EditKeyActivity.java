@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -45,6 +46,12 @@ public class EditKeyActivity extends BaseActivity {
         }
 
         loadFragment(savedInstanceState, dataUri, saveKeyringParcel);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("PHILIP", "activity result");
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

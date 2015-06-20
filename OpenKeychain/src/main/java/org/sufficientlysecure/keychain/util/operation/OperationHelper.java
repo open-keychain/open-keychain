@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.util;
+package org.sufficientlysecure.keychain.util.operation;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
@@ -39,16 +40,44 @@ import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
 
-public abstract class OperationHelper <T extends Parcelable, S extends OperationResult> {
+/**
+ * Designed to be intergrated into activities or fragments used for CryptoOperations.
+ * Encapsulates the execution of a crypto operation and handling of input pending cases.s
+ *
+ * @param <T> The type of input parcel sent to the operation
+ * @param <S> The type of result retruend by the operation
+ */
+public abstract class OperationHelper<T extends Parcelable, S extends OperationResult> {
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
     public static final int REQUEST_ENABLE_ORBOT = 0x00008004;
 
     private FragmentActivity mActivity;
+    private Fragment mFragment;
 
+    private boolean mUseFragment;
+
+    /**
+     * If OperationHelper is being integrated into an activity
+     *
+     * @param activity
+     */
     public OperationHelper(FragmentActivity activity) {
         mActivity = activity;
+        mUseFragment = false;
+    }
+
+    /**
+     * if OperationHelper is being integrated into a fragment
+     *
+     * @param fragment
+     */
+    public OperationHelper(Fragment fragment) {
+        mFragment = fragment;
+        mActivity = fragment.getActivity();
+        mUseFragment = true;
     }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
@@ -60,7 +89,11 @@ public abstract class OperationHelper <T extends Parcelable, S extends Operation
             case NFC_SIGN: {
                 Intent intent = new Intent(mActivity, NfcOperationActivity.class);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                mActivity.startActivityForResult(intent, REQUEST_CODE_NFC);
+                if (mUseFragment) {
+                    mFragment.startActivityForResult(intent, REQUEST_CODE_NFC);
+                } else {
+                    mActivity.startActivityForResult(intent, REQUEST_CODE_NFC);
+                }
                 return;
             }
 
@@ -68,13 +101,21 @@ public abstract class OperationHelper <T extends Parcelable, S extends Operation
             case PASSPHRASE_SYMMETRIC: {
                 Intent intent = new Intent(mActivity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                mActivity.startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                if (mUseFragment) {
+                    mFragment.startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                } else {
+                    mActivity.startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
+                }
                 return;
             }
 
             case ENABLE_ORBOT: {
                 Intent intent = new Intent(mActivity, OrbotRequiredDialogActivity.class);
-                mActivity.startActivityForResult(intent, REQUEST_ENABLE_ORBOT);
+                if (mUseFragment) {
+                    mFragment.startActivityForResult(intent, REQUEST_ENABLE_ORBOT);
+                } else {
+                    mActivity.startActivityForResult(intent, REQUEST_ENABLE_ORBOT);
+                }
                 return;
             }
         }
@@ -92,6 +133,7 @@ public abstract class OperationHelper <T extends Parcelable, S extends Operation
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d("PHILIP", "received activity result in OperationHelper");
         if (resultCode == Activity.RESULT_CANCELED) {
             onCryptoOperationCancelled();
             return true;
