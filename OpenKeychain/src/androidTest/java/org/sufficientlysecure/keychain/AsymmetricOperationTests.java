@@ -38,11 +38,13 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
@@ -51,10 +53,12 @@ import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withEncryptionStatus;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureMyKey;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureNone;
+
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -95,7 +99,9 @@ public class AsymmetricOperationTests {
         { // encrypt
 
             // the EncryptKeyCompletionView is tested individually
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(0)));
             onView(withId(R.id.recipient_list)).perform(tokenEncryptViewAddToken(0x9D604D2F310716A3L));
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
 
@@ -132,6 +138,9 @@ public class AsymmetricOperationTests {
                             isDescendantOfA(withId(R.id.key_list_list))))
                     .perform(click());
             onView(withId(R.id.view_key_action_encrypt_text)).perform(click());
+
+            // make sure the encrypt is correctly set
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
 
@@ -185,11 +194,12 @@ public class AsymmetricOperationTests {
             onView(withId(R.id.encrypt_copy)).perform(click());
             checkSnackbar(Style.ERROR, R.string.error_empty_text);
 
-            // navigate to edit key dialog
+            onView(withId(R.id.result_signature_icon)).check(matches(withDisplayedChild(0)));
             onView(withId(R.id.sign)).perform(click());
             onData(withKeyItemId(0x9D604D2F310716A3L))
                     .inAdapterView(isAssignableFrom(AdapterView.class))
                     .perform(click());
+            onView(withId(R.id.result_signature_icon)).check(matches(withDisplayedChild(1)));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
 
@@ -212,6 +222,19 @@ public class AsymmetricOperationTests {
             onView(isRecyclerItemView(R.id.decrypted_files_list,
                     hasDescendant(withText(R.string.filename_unknown))))
                     .check(matches(allOf(withEncryptionStatus(false), withSignatureMyKey())));
+
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(R.string.filename_unknown)))),
+                    withId(R.id.context_menu))).perform(click());
+
+            // "delete file" shouldn't be there
+            onView(withText(R.string.btn_delete_original)).check(doesNotExist());
+
+            // check if log looks ok
+            onView(withText(R.string.view_log)).perform(click());
+            onView(withText(R.string.msg_dc_clear_signature_ok)).check(matches(isDisplayed()));
+            pressBack();
 
         }
 
