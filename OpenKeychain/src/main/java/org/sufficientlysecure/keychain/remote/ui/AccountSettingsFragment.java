@@ -116,7 +116,7 @@ public class AccountSettingsFragment extends Fragment {
             }
         }
 
-        // execute activity's handleActivityResult to show log notify
+        // execute activity's onActivityResult to show log notify
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
