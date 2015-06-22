@@ -18,6 +18,13 @@
 package org.sufficientlysecure.keychain;
 
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Random;
 
 import android.content.Context;
@@ -55,7 +62,7 @@ public class TestHelpers {
     }
 
 
-    static void importKeysFromResource(Context context, String name) throws Exception {
+    public static void importKeysFromResource(Context context, String name) throws Exception {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
                 getInstrumentation().getContext().getAssets().open(name));
 
@@ -69,6 +76,37 @@ public class TestHelpers {
             }
         }
 
+    }
+
+    public static void copyFiles() throws IOException {
+        File cacheDir = getInstrumentation().getTargetContext().getFilesDir();
+        byte[] buf = new byte[256];
+        for (String filename : FILES) {
+            File outFile = new File(cacheDir, filename);
+            if (outFile.exists()) {
+                continue;
+            }
+            InputStream in = new BufferedInputStream(getInstrumentation().getContext().getAssets().open(filename));
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
+            int len;
+            while( (len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        }
+    }
+
+    public static final String[] FILES = new String[] { "pa.png", "re.png", "ci.png" };
+    public static File[] getImageNames() {
+        File cacheDir = getInstrumentation().getTargetContext().getFilesDir();
+        File[] ret = new File[FILES.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = new File(cacheDir, FILES[i]);
+        }
+        return ret;
+    }
+
+    public static <T> T pickRandom(T[] haystack) {
+        return haystack[new Random().nextInt(haystack.length)];
     }
 
     public static String randomString(int min, int max) {

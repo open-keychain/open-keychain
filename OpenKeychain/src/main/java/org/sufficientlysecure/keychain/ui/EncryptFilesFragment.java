@@ -78,7 +78,7 @@ public class EncryptFilesFragment
     public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ARG_URIS = "uris";
 
-    private static final int REQUEST_CODE_INPUT = 0x00007003;
+    public static final int REQUEST_CODE_INPUT = 0x00007003;
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
     private boolean mUseArmor;
@@ -229,8 +229,13 @@ public class EncryptFilesFragment
         String targetName =
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
+        Uri inputUri = model.inputUri;
+        saveDocumentIntent(targetName, inputUri);
+    }
+
+    private void saveDocumentIntent(String targetName, Uri inputUri) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(model.inputUri.getPath());
+            File file = new File(inputUri.getPath());
             File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
             File targetFile = new File(parentDir, targetName);
             FileHelper.saveFile(this, getString(R.string.title_encrypt_to_file),

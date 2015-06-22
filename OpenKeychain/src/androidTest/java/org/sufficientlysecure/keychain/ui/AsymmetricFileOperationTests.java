@@ -15,24 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Instrumentation;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
+import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.intent.Intents;
+import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.AdapterView;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.TestHelpers;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
+import static android.support.test.InstrumentationRegistry.*;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
@@ -41,6 +54,12 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
+import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -48,8 +67,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
+import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
@@ -62,15 +84,16 @@ import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatu
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class AsymmetricOperationTests {
+public class AsymmetricFileOperationTests {
 
     @Rule
-    public final ActivityTestRule<MainActivity> mActivity
-            = new ActivityTestRule<MainActivity>(MainActivity.class) {
+    public final IntentsTestRule<MainActivity> mActivity
+            = new IntentsTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected Intent getActivityIntent() {
             Intent intent = super.getActivityIntent();
             intent.putExtra(MainActivity.EXTRA_SKIP_FIRST_TIME, true);
+            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_ENCRYPT_DECRYPT);
             return intent;
         }
     };
@@ -78,6 +101,8 @@ public class AsymmetricOperationTests {
     @Before
     public void setUp() throws Exception {
         Activity activity = mActivity.getActivity();
+
+        TestHelpers.copyFiles();
 
         // import these two, make sure they're there
         importKeysFromResource(activity, "x.sec.asc");
@@ -90,45 +115,126 @@ public class AsymmetricOperationTests {
     public void testTextEncryptDecryptFromToken() throws Exception {
 
         // navigate to 'encrypt text'
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
-        onView(withId(R.id.encrypt_text)).perform(click());
+        onView(withId(R.id.encrypt_files)).perform(click());
 
-        String cleartext = randomString(10, 30);
+        File file = pickRandom(getImageNames());
+        File outputFile = new File(getInstrumentation().getTargetContext().getFilesDir(), "output-token.gpg");
 
         { // encrypt
 
             // the EncryptKeyCompletionView is tested individually
-            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(0)));
             onView(withId(R.id.recipient_list)).perform(tokenEncryptViewAddToken(0x9D604D2F310716A3L));
-            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
-            onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
+            handleAddFileIntent(file);
+            onView(withId(R.id.file_list_entry_add)).perform(click());
 
-            onView(withId(R.id.encrypt_copy)).perform(click());
+            handleSaveFileIntent(outputFile);
+            onView(withId(R.id.encrypt_save)).perform(click());
+
+            assertThat("output file has been written", true, CoreMatchers.is(outputFile.exists()));
+
         }
 
         // go to decrypt from clipboard view
         pressBack();
-        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
+
+        handleOpenFileIntentKitKat(outputFile);
+        onView(withId(R.id.decrypt_files)).perform(click());
+
+        onView(withId(R.id.decrypt_files_action_decrypt)).perform(click());
 
         { // decrypt
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
             onView(withText(R.string.btn_unlock)).perform(click());
 
-
             onView(isRecyclerItemView(R.id.decrypted_files_list,
-                    hasDescendant(withText(R.string.filename_unknown_text))))
+                    hasDescendant(withText(file.getName()))))
                     .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
 
         }
 
     }
 
+    private void handleAddFileIntent(File file) {
+        if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+            handleAddFileIntentKitKat(file);
+        } else {
+            handleAddFileIntentOlder(file);
+        }
+    }
+
+    @TargetApi(VERSION_CODES.KITKAT)
+    private void handleAddFileIntentKitKat(File file) {
+        Intent data = new Intent();
+        data.setData(Uri.fromFile(file));
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_OPEN_DOCUMENT),
+                hasType("*/*"),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE)),
+                hasExtraWithKey(Intent.EXTRA_ALLOW_MULTIPLE)
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
+
+    private void handleAddFileIntentOlder(File file) {
+        Intent data = new Intent();
+        data.setData(Uri.fromFile(file));
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_GET_CONTENT),
+                hasType("*/*"),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE))
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
+
+    @TargetApi(VERSION_CODES.KITKAT)
+    private void handleSaveFileIntent(File file) {
+
+        try {
+            file.delete();
+        } catch (Exception e) {
+            // nvm
+        }
+
+        Intent data = new Intent();
+        data.setData(Uri.fromFile(file));
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_CREATE_DOCUMENT),
+                hasType("*/*"),
+                hasExtra("android.content.extra.SHOW_ADVANCED", true),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE))
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
+
+    @TargetApi(VERSION_CODES.KITKAT)
+    private void handleOpenFileIntentKitKat(File file) {
+        Intent data = new Intent();
+        data.setData(Uri.fromFile(file));
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_OPEN_DOCUMENT),
+                hasType("*/*"),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE))
+                // hasExtraWithKey(Intent.EXTRA_ALLOW_MULTIPLE)
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
+
     @Test
     public void testTextEncryptDecryptFromKeyView() throws Exception {
 
         String cleartext = randomString(10, 30);
+
+        // navigate to key list
+        pressBack();
 
         { // encrypt
 
@@ -185,8 +291,6 @@ public class AsymmetricOperationTests {
         String cleartext = randomString(10, 30);
 
         // navigate to 'encrypt text'
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         { // sign

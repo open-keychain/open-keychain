@@ -50,13 +50,8 @@ public class EncryptFilesActivity extends EncryptActivity {
 
         Intent intent = getIntent();
         String action = intent.getAction();
-        Bundle extras = intent.getExtras();
         String type = intent.getType();
         ArrayList<Uri> uris = new ArrayList<>();
-
-        if (extras == null) {
-            extras = new Bundle();
-        }
 
         if (intent.getData() != null) {
             uris.add(intent.getData());
