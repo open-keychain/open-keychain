@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 import android.app.Activity;
@@ -152,7 +151,7 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK && data != null) {
             Uri uri = data.getData();
             if (uri == null) {
-                Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show(this);
+                Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show();
                 return;
             }
 

@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -152,7 +153,10 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                     final ImportKeyResult result =
                             returnData.getParcelable(OperationResult.EXTRA_RESULT);
 
-                    result.createNotify(getActivity()).show();
+                    Activity activity = getActivity();
+                    if (result != null && activity != null) {
+                        result.createNotify(activity).show();
+                    }
 
                     getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, DecryptFragment.this);
                 }

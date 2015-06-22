@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.TestHelpers;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -51,6 +52,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
@@ -97,8 +99,6 @@ public class MiscFileOperationTests {
         handleOpenFileIntentKitKat(file);
         onView(withId(R.id.decrypt_files)).perform(click());
 
-        onView(withId(R.id.decrypt_files_action_decrypt)).perform(click());
-
         { // decrypt
 
             // open context menu
@@ -109,6 +109,17 @@ public class MiscFileOperationTests {
                 withId(R.id.result_error_log))).perform(click());
 
         }
+
+    }
+
+    @Test
+    public void testDecryptEmptySelection() throws Exception {
+
+        // decrypt any non-pgp file
+        handleOpenFileEmptyKitKat();
+        onView(withId(R.id.decrypt_files)).perform(click());
+
+        checkSnackbar(Style.ERROR, R.string.no_file_selected);
 
     }
 
@@ -133,6 +144,21 @@ public class MiscFileOperationTests {
 
     }
 
+
+    @TargetApi(VERSION_CODES.KITKAT)
+    private void handleOpenFileEmptyKitKat() {
+        Intent data = new Intent();
+        data.setData(null);
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_OPEN_DOCUMENT),
+                hasType("*/*"),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE))
+                // hasExtraWithKey(Intent.EXTRA_ALLOW_MULTIPLE)
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
 
     @TargetApi(VERSION_CODES.KITKAT)
     private void handleOpenFileIntentKitKat(File file) {

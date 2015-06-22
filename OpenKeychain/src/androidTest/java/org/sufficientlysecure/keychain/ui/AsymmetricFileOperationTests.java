@@ -52,7 +52,6 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
@@ -139,8 +138,6 @@ public class AsymmetricFileOperationTests {
 
         handleOpenFileIntentKitKat(outputFile);
         onView(withId(R.id.decrypt_files)).perform(click());
-
-        onView(withId(R.id.decrypt_files_action_decrypt)).perform(click());
 
         { // decrypt
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));

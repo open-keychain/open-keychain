@@ -221,7 +221,7 @@
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
-    <string name="no_file_selected">"Select a file first."</string>
+    <string name="no_file_selected">"No file selected."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
