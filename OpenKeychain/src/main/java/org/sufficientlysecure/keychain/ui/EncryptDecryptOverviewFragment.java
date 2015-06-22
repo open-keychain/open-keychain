@@ -18,8 +18,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,15 +36,16 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
-
-import java.util.regex.Matcher;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class EncryptDecryptOverviewFragment extends Fragment {
 
     View mClipboardIcon;
+
+    private static final int REQUEST_CODE_INPUT = 0x00007003;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -74,9 +82,11 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent filesDecrypt = new Intent(getActivity(), DecryptActivity.class);
-                filesDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_DATA_OPEN);
-                startActivity(filesDecrypt);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    FileHelper.openDocument(EncryptDecryptOverviewFragment.this, "*/*", REQUEST_CODE_INPUT);
+                } else {
+                    FileHelper.openFile(EncryptDecryptOverviewFragment.this, null, "*/*", REQUEST_CODE_INPUT);
+                }
             }
         });
 
@@ -135,12 +145,23 @@ public class EncryptDecryptOverviewFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if a result has been returned, display a notify
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(getActivity()).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_CODE_INPUT) {
+            return;
+        }
+
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri == null) {
+                Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR).show(this);
+                return;
+            }
+
+            Intent intent = new Intent(getActivity(), DecryptActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(uri);
+            startActivity(intent);
+
         }
     }
+
 }

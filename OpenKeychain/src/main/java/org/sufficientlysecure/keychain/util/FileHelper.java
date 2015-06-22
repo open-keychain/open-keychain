@@ -53,7 +53,6 @@ public class FileHelper {
     /**
      * Checks if external storage is mounted if file is located on external storage
      *
-     * @param file
      * @return true if storage is mounted
      */
     public static boolean isStorageMounted(String file) {
@@ -70,7 +69,6 @@ public class FileHelper {
      * Opens the preferred installed file manager on Android and shows a toast if no manager is
      * installed.
      *
-     * @param fragment
      * @param last        default selected Uri, not supported by all file managers
      * @param mimeType    can be text/plain for example
      * @param requestCode requestCode used to identify the result coming back from file manager to
@@ -145,7 +143,6 @@ public class FileHelper {
     /**
      * Opens the storage browser on Android 4.4 or later for opening a file
      *
-     * @param fragment
      * @param mimeType    can be text/plain for example
      * @param multiple    allow file chooser to return multiple files
      * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
@@ -163,7 +160,6 @@ public class FileHelper {
     /**
      * Opens the storage browser on Android 4.4 or later for saving a file
      *
-     * @param fragment
      * @param mimeType      can be text/plain for example
      * @param suggestedName a filename desirable for the file to be saved
      * @param requestCode   used to identify the result coming back from storage browser onActivityResult() in your
@@ -271,7 +267,7 @@ public class FileHelper {
 
     }
 
-    public static interface FileDialogCallback {
-        public void onFileSelected(File file, boolean checked);
+    public interface FileDialogCallback {
+        void onFileSelected(File file, boolean checked);
     }
 }

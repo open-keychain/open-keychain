@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
@@ -43,13 +43,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 public class DecryptActivity extends BaseActivity {
 
     /* Intents */
-    public static final String ACTION_DECRYPT_DATA = OpenKeychainIntents.DECRYPT_DATA;
-    // TODO handle this intent
-    // public static final String ACTION_DECRYPT_TEXT = OpenKeychainIntents.DECRYPT_TEXT;
-    public static final String ACTION_DECRYPT_FROM_CLIPBOARD = Constants.INTENT_PREFIX + "DECRYPT_DATA_CLIPBOARD";
-
-    // intern
-    public static final String ACTION_DECRYPT_DATA_OPEN = Constants.INTENT_PREFIX + "DECRYPT_DATA_OPEN";
+    public static final String ACTION_DECRYPT_FROM_CLIPBOARD = "DECRYPT_DATA_CLIPBOARD";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +80,13 @@ public class DecryptActivity extends BaseActivity {
 
         String action = intent.getAction();
 
+        if (action == null) {
+            Toast.makeText(this, "Error: No action specified!", Toast.LENGTH_LONG).show();
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+            return;
+        }
+
         try {
 
             switch (action) {
@@ -93,8 +94,6 @@ public class DecryptActivity extends BaseActivity {
                     // When sending to Keychain Decrypt via share menu
                     // Binary via content provider (could also be files)
                     // override uri to get stream from send
-                    action = ACTION_DECRYPT_DATA;
-
                     if (intent.hasExtra(Intent.EXTRA_STREAM)) {
                         uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -107,8 +106,6 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 case Intent.ACTION_SEND_MULTIPLE: {
-                    action = ACTION_DECRYPT_DATA;
-
                     if (intent.hasExtra(Intent.EXTRA_STREAM)) {
                         uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
@@ -122,8 +119,6 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 case ACTION_DECRYPT_FROM_CLIPBOARD: {
-                    action = ACTION_DECRYPT_DATA;
-
                     ClipboardManager clipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = clipMan.getPrimaryClip();
 
@@ -148,11 +143,9 @@ public class DecryptActivity extends BaseActivity {
                     break;
                 }
 
+                // for everything else, just work on the intent data
+                case OpenKeychainIntents.DECRYPT_DATA:
                 case Intent.ACTION_VIEW:
-                    // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-                    action = ACTION_DECRYPT_DATA;
-
-                    // fallthrough
                 default:
                     uris.add(intent.getData());
 
@@ -165,19 +158,15 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
-        if (ACTION_DECRYPT_DATA.equals(action)) {
-            // Definitely need a data uri with the decrypt_data intent
-            if (uris.isEmpty()) {
-                Toast.makeText(this, "No data to decrypt!", Toast.LENGTH_LONG).show();
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
-            displayListFragment(uris);
+        // Definitely need a data uri with the decrypt_data intent
+        if (uris.isEmpty()) {
+            Toast.makeText(this, "No data to decrypt!", Toast.LENGTH_LONG).show();
+            setResult(Activity.RESULT_CANCELED);
+            finish();
             return;
         }
 
-        boolean showOpenDialog = ACTION_DECRYPT_DATA_OPEN.equals(action);
-        displayInputFragment(showOpenDialog);
+        displayListFragment(uris);
 
     }
 
@@ -187,16 +176,6 @@ public class DecryptActivity extends BaseActivity {
         outStream.write(text.getBytes());
         outStream.close();
         return tempFile;
-    }
-
-    public void displayInputFragment(boolean showOpenDialog) {
-        DecryptFilesInputFragment frag = DecryptFilesInputFragment.newInstance(showOpenDialog);
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.decrypt_files_fragment_container, frag)
-                .commit();
     }
 
     public void displayListFragment(ArrayList<Uri> inputUris) {
