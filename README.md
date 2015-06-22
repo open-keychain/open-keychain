@@ -151,12 +151,13 @@ see http://help.transifex.net/features/client/index.html#user-client
 ## Coding Style
 
 ### Code
-* Indentation: 4 spaces, no tabs
-* Maximum line width for code and comments: 100
-* Opening braces don't go on their own line
+* Indentation: 4 spaces, no tabs.
+* Maximum line width for code and comments: 100.
+* Opening braces don't go on their own line.
 * Field names: Non-public, non-static fields start with m.
 * Acronyms are words: Treat acronyms as words in names, yielding !XmlHttpRequest, getUrl(), etc.
 * Fully Qualify Imports: Do *not* use wildcard-imports such as ``import foo.*;``
+* Android Studio warnings should be fixed, or suppressed if they are incorrect.
 
 The full coding style can be found at http://source.android.com/source/code-style.html
 

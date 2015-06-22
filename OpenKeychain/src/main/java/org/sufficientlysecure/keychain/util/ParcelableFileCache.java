@@ -66,20 +66,23 @@ public class ParcelableFileCache<E extends Parcelable> {
 
         File tempFile = new File(mContext.getCacheDir(), mFilename);
 
+
         DataOutputStream oos = new DataOutputStream(new FileOutputStream(tempFile));
 
-        oos.writeInt(numEntries);
+        try {
+            oos.writeInt(numEntries);
 
-        while (it.hasNext()) {
-            Parcel p = Parcel.obtain(); // creating empty parcel object
-            p.writeParcelable(it.next(), 0); // saving bundle as parcel
-            byte[] buf = p.marshall();
-            oos.writeInt(buf.length);
-            oos.write(buf);
-            p.recycle();
+            while (it.hasNext()) {
+                Parcel p = Parcel.obtain(); // creating empty parcel object
+                p.writeParcelable(it.next(), 0); // saving bundle as parcel
+                byte[] buf = p.marshall();
+                oos.writeInt(buf.length);
+                oos.write(buf);
+                p.recycle();
+            }
+        } finally {
+            oos.close();
         }
-
-        oos.close();
 
     }
 

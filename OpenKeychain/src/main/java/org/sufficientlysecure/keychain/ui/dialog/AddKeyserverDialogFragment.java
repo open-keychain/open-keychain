@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,8 +35,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.test.suitebuilder.TestSuiteBuilder;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,15 +53,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
-
 public class AddKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
 
@@ -70,20 +67,11 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
     private EditText mKeyserverEditText;
     private CheckBox mVerifyKeyserverCheckBox;
 
-    public static enum FailureReason {
+    public enum FailureReason {
         INVALID_URL,
         CONNECTION_FAILED
     }
 
-    ;
-
-    /**
-     * Creates new instance of this dialog fragment
-     *
-     * @param title     title of dialog
-     * @param messenger to communicate back after setting the passphrase
-     * @return
-     */
     public static AddKeyserverDialogFragment newInstance(Messenger messenger) {
         AddKeyserverDialogFragment frag = new AddKeyserverDialogFragment();
         Bundle args = new Bundle();
@@ -94,9 +82,7 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
         return frag;
     }
 
-    /**
-     * Creates dialog
-     */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
@@ -222,19 +208,23 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
                     String scheme = keyserverUri.getScheme();
                     String schemeSpecificPart = keyserverUri.getSchemeSpecificPart();
                     String fragment = keyserverUri.getFragment();
-                    if (scheme == null) throw new MalformedURLException();
-                    if (scheme.equalsIgnoreCase("hkps")) scheme = "https";
-                    else if (scheme.equalsIgnoreCase("hkp")) scheme = "http";
+                    if (scheme == null) {
+                        throw new MalformedURLException();
+                    }
+                    if ("hkps".equalsIgnoreCase(scheme)) {
+                        scheme = "https";
+                    } else if ("hkp".equalsIgnoreCase(scheme)) {
+                        scheme = "http";
+                    }
                     URI newKeyserver = new URI(scheme, schemeSpecificPart, fragment);
 
-                    Log.d("Converted URL", newKeyserver.toString());
-                    TlsHelper.openConnection(newKeyserver.toURL()).getInputStream();
+                    Log.d(Constants.TAG, "Converted URL" + newKeyserver);
+
+                    // just see if we can get a connection, then immediately close
+                    TlsHelper.openConnection(newKeyserver.toURL()).getInputStream().close();
                 } catch (TlsHelper.TlsHelperException e) {
                     reason = FailureReason.CONNECTION_FAILED;
-                } catch (MalformedURLException e) {
-                    Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
-                    reason = FailureReason.INVALID_URL;
-                } catch (URISyntaxException e) {
+                } catch (MalformedURLException | URISyntaxException e) {
                     Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
                     reason = FailureReason.INVALID_URL;
                 } catch (IOException e) {

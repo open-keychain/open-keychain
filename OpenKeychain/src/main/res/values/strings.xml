@@ -1355,6 +1355,8 @@
     <string name="snack_armor_off">"Output encoded as Binary."</string>
     <string name="snack_compression_on">"Compression <b>enabled</b>."</string>
     <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
+    <string name="error_loading_keys">Error loading keys!</string>
+    <string name="error_empty_log">(error, empty log)</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

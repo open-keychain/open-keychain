@@ -21,10 +21,14 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.0-rc3'
 
     // UI testing with Espresso
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.1'
+    androidTestCompile 'com.android.support.test:runner:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.3'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
 
     // Temporary workaround for bug: https://code.google.com/p/android-test-kit/issues/detail?id=136
     // from https://github.com/googlesamples/android-testing/blob/master/build.gradle#L21
@@ -110,7 +114,13 @@ android {
         versionCode 32300
         versionName "3.2.3"
         applicationId "org.sufficientlysecure.keychain"
+        // the androidjunitrunner is broken regarding coverage, see here:
+        // https://code.google.com/p/android/issues/detail?id=170607
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // this workaround runner fixes the coverage problem, BUT doesn't work
+        // with android studio single test execution. use it to generate coverage
+        // data, but keep the other one otherwis
+        // testInstrumentationRunner "org.sufficientlysecure.keychain.JacocoWorkaroundJUnitRunner"
     }
 
     compileOptions {
@@ -139,9 +149,8 @@ android {
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
             
-            // Disabled: only works for androidTest not test!
             // Enable code coverage (Jacoco)
-            //testCoverageEnabled true
+            testCoverageEnabled true
         }
     }
 
@@ -194,6 +203,8 @@ android {
     }
 }
 
+// apply plugin: 'spoon'
+
 task jacocoTestReport(type:JacocoReport) {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
@@ -212,7 +223,10 @@ task jacocoTestReport(type:JacocoReport) {
             "${buildDir}/generated/source/buildConfig/debug",
             "${buildDir}/generated/source/r/debug"
     ])
-    executionData = files("${buildDir}/jacoco/testDebug.exec")
+    executionData = files([
+        "${buildDir}/jacoco/testDebug.exec",
+        "${buildDir}/outputs/code-coverage/connected/coverage.ec"
+    ])
 
     reports {
         xml.enabled = true

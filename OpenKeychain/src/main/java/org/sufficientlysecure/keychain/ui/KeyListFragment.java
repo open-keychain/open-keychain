@@ -71,6 +71,7 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
@@ -553,9 +554,12 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void updateAllKeys() {
-        Context context = getActivity();
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
 
-        ProviderHelper providerHelper = new ProviderHelper(context);
+        ProviderHelper providerHelper = new ProviderHelper(activity);
 
         Cursor cursor = providerHelper.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
@@ -563,13 +567,21 @@ public class KeyListFragment extends LoaderFragment
                 }, null, null, null
         );
 
-        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
+        if (cursor == null) {
+            Notify.create(activity, R.string.error_loading_keys, Style.ERROR);
+            return;
+        }
 
-        while (cursor.moveToNext()) {
-            byte[] blob = cursor.getBlob(0);//fingerprint column is 0
-            String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-            ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-            keyList.add(keyEntry);
+        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
+        try {
+            while (cursor.moveToNext()) {
+                byte[] blob = cursor.getBlob(0);//fingerprint column is 0
+                String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+                ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+                keyList.add(keyEntry);
+            }
+        } finally {
+            cursor.close();
         }
 
         ServiceProgressHandler serviceHandler = new ServiceProgressHandler(getActivity()) {

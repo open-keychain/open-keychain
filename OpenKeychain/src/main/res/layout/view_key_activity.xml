@@ -60,6 +60,7 @@
             android:layout_marginRight="48dp"
             android:layout_marginEnd="48dp"
             android:text=""
+            tools:text="Alice Skywalker"
             android:textColor="@color/icons"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_above="@+id/view_key_status" />
@@ -73,6 +74,7 @@
             android:layout_marginRight="48dp"
             android:layout_marginEnd="48dp"
             android:text=""
+            tools:text="My Key"
             android:textColor="@color/tab_text"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_above="@+id/toolbar2" />
@@ -95,6 +97,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:visibility="invisible"
+                tools:visibility="visible"
                 style="?android:attr/borderlessButtonStyle"
                 android:src="@drawable/ic_action_encrypt_file_24dp" />
 
@@ -103,6 +106,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:visibility="invisible"
+                tools:visibility="visible"
                 style="?android:attr/borderlessButtonStyle"
                 android:src="@drawable/ic_action_encrypt_text_24dp" />
 
@@ -111,6 +115,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:visibility="invisible"
+                tools:visibility="visible"
                 style="?android:attr/borderlessButtonStyle"
                 android:src="@drawable/ic_nfc_white_24dp" />
 
@@ -120,6 +125,7 @@
             android:id="@+id/view_key_status_image"
             android:layout_width="96dp"
             android:visibility="invisible"
+            tools:visibility="visible"
             android:src="@drawable/status_signature_unverified_cutout_96dp"
             android:layout_height="96dp"
             android:layout_above="@id/toolbar2"
@@ -139,6 +145,7 @@
             android:layout_height="wrap_content"
             android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
+            tools:visibility="invisible"
             card_view:cardBackgroundColor="@android:color/white"
             card_view:cardElevation="2dp"
             card_view:cardUseCompatPadding="true"
@@ -147,7 +154,8 @@
             <ImageView
                 android:id="@+id/view_key_qr_code"
                 android:layout_width="96dp"
-                android:layout_height="96dp" />
+                android:layout_height="96dp"
+                />
         </android.support.v7.widget.CardView>
 
     </RelativeLayout>
@@ -189,6 +197,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
+        tools:visibility="visible"
         android:elevation="4dp"
         fab:fab_icon="@drawable/ic_qrcode_white_24dp"
         fab:fab_colorNormal="@color/fab"

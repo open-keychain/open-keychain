@@ -300,7 +300,7 @@ public class ViewKeyFragment extends LoaderFragment implements
          * because the notification triggers faster than the activity closes.
          */
         // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
+        if (data == null || data.getCount() == 0) {
             return;
         }
         // Swap the new cursor in. (The framework will take care of closing the

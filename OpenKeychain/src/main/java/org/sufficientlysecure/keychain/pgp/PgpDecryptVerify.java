@@ -149,7 +149,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                         return verifySignedLiteralData(input, aIn, outputStream, 0);
                     } else if (aIn.isClearText()) {
                         // a cleartext signature, verify it with the other method
-                        return verifyCleartextSignature(aIn, 0);
+                        return verifyCleartextSignature(aIn, outputStream, 0);
                     } else {
                         // else: ascii armored encryption! go on...
                         return decryptVerify(input, cryptoInput, in, outputStream, 0);
@@ -757,6 +757,12 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 // TODO: slow annealing to fake a progress?
             }
 
+            metadata = new OpenPgpMetadata(
+                    originalFilename,
+                    mimeType,
+                    literalData.getModificationTime().getTime(),
+                    alreadyWritten);
+
             if (signature != null) {
                 updateProgress(R.string.progress_verifying_signature, 90, 100);
                 log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
@@ -833,7 +839,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
      * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
      */
     private DecryptVerifyResult verifyCleartextSignature(
-            ArmoredInputStream aIn, int indent) throws IOException, PGPException {
+            ArmoredInputStream aIn, OutputStream outputStream, int indent) throws IOException, PGPException {
 
         OperationLog log = new OperationLog();
 
@@ -863,8 +869,9 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         out.close();
 
         byte[] clearText = out.toByteArray();
-        if (out != null) {
-            out.write(clearText);
+        if (outputStream != null) {
+            outputStream.write(clearText);
+            outputStream.close();
         }
 
         updateProgress(R.string.progress_processing_signature, 60, 100);
