@@ -248,39 +248,6 @@ public class AsymmetricFileOperationTests {
             // make sure the encrypt is correctly set
             onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
-            onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
-
-            onView(withId(R.id.encrypt_copy)).perform(click());
-        }
-
-        // go to decrypt from clipboard view
-        pressBack();
-        pressBack();
-
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
-        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
-
-        { // decrypt
-
-            onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
-            onView(withText(R.string.btn_unlock)).perform(click());
-
-            onView(isRecyclerItemView(R.id.decrypted_files_list,
-                    hasDescendant(withText(R.string.filename_unknown_text))))
-                    .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
-
-        }
-
-        pressBack();
-        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
-
-        { // decrypt again, passphrase should be cached
-
-            onView(isRecyclerItemView(R.id.decrypted_files_list,
-                    hasDescendant(withText(R.string.filename_unknown_text))))
-                    .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
-
         }
 
     }

@@ -77,6 +77,7 @@ public class SymmetricTextOperationTests {
         protected Intent getActivityIntent() {
             Intent intent = super.getActivityIntent();
             intent.putExtra(MainActivity.EXTRA_SKIP_FIRST_TIME, true);
+            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_ENCRYPT_DECRYPT);
             return intent;
         }
     };
@@ -89,8 +90,6 @@ public class SymmetricTextOperationTests {
         String text = randomString(10, 30);
 
         // navigate to encrypt/decrypt
-        openDrawer(R.id.drawer_layout);
-        onView(ViewMatchers.withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         {
@@ -152,8 +151,6 @@ public class SymmetricTextOperationTests {
         String text = randomString(10, 30);
 
         // navigate to encrypt/decrypt
-        openDrawer(R.id.drawer_layout);
-        onView(ViewMatchers.withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         {
@@ -170,17 +167,17 @@ public class SymmetricTextOperationTests {
 
             onView(withId(R.id.encrypt_share)).perform(click());
 
-        }
+            intended(allOf(
+                    hasAction("android.intent.action.CHOOSER"),
+                    hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
+                            hasAction(Intent.ACTION_SEND),
+                            hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                            hasExtraWithKey(Intent.EXTRA_TEXT),
+                            hasType("text/plain")
+                    ))
+            ));
 
-        intended(allOf(
-                hasAction("android.intent.action.CHOOSER"),
-                hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
-                        hasAction(Intent.ACTION_SEND),
-                        hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                        hasExtraWithKey(Intent.EXTRA_TEXT),
-                        hasType("text/plain")
-                ))
-        ));
+        }
 
     }
 

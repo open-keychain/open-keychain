@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import android.content.Intent;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -30,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -58,16 +56,10 @@ public class CreateKeyActivityTest {
     public static final String SAMPLE_PASSWORD = "sample_password";
 
     @Rule
-    public final ActivityTestRule<MainActivity> mActivity
-            = new ActivityTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected Intent getActivityIntent() {
-            Intent intent = super.getActivityIntent();
-            intent.putExtra(MainActivity.EXTRA_SKIP_FIRST_TIME, true);
-            return intent;
-        }
-    };
+    public final ActivityTestRule<CreateKeyActivity> mActivity
+            = new ActivityTestRule<>(CreateKeyActivity.class);
 
+    @Test
     public void testCreateMyKey() {
 
         mActivity.getActivity();
