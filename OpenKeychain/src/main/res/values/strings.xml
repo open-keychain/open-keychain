@@ -226,7 +226,7 @@
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
-    <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
+    <string name="error_no_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists!"</string>
@@ -1266,6 +1266,7 @@
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
     <string name="error_multi_files">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="error_multi_clipboard">"Encryption of multiple files to clipboard not supported."</string>
+    <string name="error_detached_signature">"Sign-only operation of binary files is not supported, select at least one encryption key."</string>
     <string name="error_empty_text">"Type some text to encrypt!"</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>

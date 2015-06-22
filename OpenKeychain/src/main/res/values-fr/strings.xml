@@ -201,7 +201,7 @@
   <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
   <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
-  <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
+  <string name="error_no_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
   <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>

@@ -96,7 +96,6 @@ public class EncryptFilesFragment
 
     private RecyclerView mSelectedFiles;
 
-    ArrayList<FilesAdapter.ViewModel> mFilesModels;
     FilesAdapter mFilesAdapter;
 
     /**
@@ -134,8 +133,7 @@ public class EncryptFilesFragment
         mSelectedFiles.setLayoutManager(new LinearLayoutManager(getActivity()));
         mSelectedFiles.setItemAnimator(new DefaultItemAnimator());
 
-        mFilesModels = new ArrayList<>();
-        mFilesAdapter = new FilesAdapter(getActivity(), mFilesModels, new View.OnClickListener() {
+        mFilesAdapter = new FilesAdapter(getActivity(), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addInputUri();
@@ -199,8 +197,8 @@ public class EncryptFilesFragment
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
         } else {
-            FileHelper.openFile(EncryptFilesFragment.this, mFilesModels.isEmpty() ?
-                            null : mFilesModels.get(mFilesModels.size() - 1).inputUri,
+            FileHelper.openFile(EncryptFilesFragment.this, mFilesAdapter.getModelCount() == 0 ?
+                            null : mFilesAdapter.getModelItem(mFilesAdapter.getModelCount() - 1).inputUri,
                     "*/*", REQUEST_CODE_INPUT);
         }
     }
@@ -222,10 +220,10 @@ public class EncryptFilesFragment
     }
 
     private void showOutputFileDialog() {
-        if (mFilesModels.size() > 1 || mFilesModels.isEmpty()) {
+        if (mFilesAdapter.getModelCount() != 1) {
             throw new IllegalStateException();
         }
-        FilesAdapter.ViewModel model = mFilesModels.get(0);
+        FilesAdapter.ViewModel model = mFilesAdapter.getModelItem(0);
         String targetName =
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
@@ -449,18 +447,12 @@ public class EncryptFilesFragment
     // been set at a later point.
     private boolean prepareOutputStreams() {
 
-        if (mFilesModels.isEmpty()) {
-            Notify.create(getActivity(), R.string.no_file_selected, Notify.Style.ERROR)
-                    .show(this);
-            return true;
-        }
-
         switch (mAfterEncryptAction) {
             default:
             case SHARE:
                 mOutputUris = new ArrayList<>();
                 int filenameCounter = 1;
-                for (FilesAdapter.ViewModel model : mFilesModels) {
+                for (FilesAdapter.ViewModel model : mFilesAdapter.mDataset) {
                     String targetName = (mEncryptFilenames
                             ? String.valueOf(filenameCounter) : FileHelper.getFilename(getActivity(), model.inputUri))
                                     + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
@@ -470,7 +462,7 @@ public class EncryptFilesFragment
                 return false;
 
             case SAVE:
-                if (mFilesModels.size() > 1) {
+                if (mFilesAdapter.getModelCount() > 1) {
                     Notify.create(getActivity(), R.string.error_multi_files, Notify.Style.ERROR).show(this);
                     return true;
                 }
@@ -479,14 +471,14 @@ public class EncryptFilesFragment
 
             case COPY:
                 // nothing to do here, but make sure
-                if (mFilesModels.size() > 1) {
+                if (mFilesAdapter.getModelCount() > 1) {
                     Notify.create(getActivity(), R.string.error_multi_clipboard, Notify.Style.ERROR).show(this);
                     return true;
                 }
                 mOutputUris = new ArrayList<>();
                 String targetName = (mEncryptFilenames
-                        ? String.valueOf(1) : FileHelper.getFilename(getActivity(), mFilesModels.get(0).inputUri))
-                        + Constants.FILE_EXTENSION_ASC;
+                        ? String.valueOf(1) : FileHelper.getFilename(getActivity(),
+                        mFilesAdapter.getModelItem(0).inputUri)) + Constants.FILE_EXTENSION_ASC;
                 mOutputUris.add(TemporaryStorageProvider.createFile(getActivity(), targetName, "text/plain"));
                 return false;
         }
@@ -534,6 +526,11 @@ public class EncryptFilesFragment
 
     protected SignEncryptParcel createIncompleteCryptoInput() {
 
+        if (mFilesAdapter.getModelCount() == 0) {
+            Notify.create(getActivity(), R.string.error_no_file_selected, Notify.Style.ERROR).show(this);
+            return null;
+        }
+
         // fill values for this action
         SignEncryptParcel data = new SignEncryptParcel();
 
@@ -556,12 +553,14 @@ public class EncryptFilesFragment
             long[] encryptionKeyIds = modeFragment.getAsymmetricEncryptionKeyIds();
             long signingKeyId = modeFragment.getAsymmetricSigningKeyId();
 
-            boolean gotEncryptionKeys = (encryptionKeyIds != null
-                    && encryptionKeyIds.length > 0);
+            boolean gotEncryptionKeys = (encryptionKeyIds != null && encryptionKeyIds.length > 0);
 
-            if (!gotEncryptionKeys && signingKeyId == 0) {
-                Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
-                        .show(this);
+            if (!gotEncryptionKeys && signingKeyId != 0) {
+                Notify.create(getActivity(), R.string.error_detached_signature, Notify.Style.ERROR).show(this);
+                return null;
+            }
+            if (!gotEncryptionKeys) {
+                Notify.create(getActivity(), R.string.select_encryption_key, Notify.Style.ERROR).show(this);
                 return null;
             }
 
@@ -741,9 +740,9 @@ public class EncryptFilesFragment
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public FilesAdapter(Activity activity, List<ViewModel> myDataset, View.OnClickListener onFooterClickListener) {
+        public FilesAdapter(Activity activity, View.OnClickListener onFooterClickListener) {
             mActivity = activity;
-            mDataset = myDataset;
+            mDataset = new ArrayList<>();
             mFooterOnClickListener = onFooterClickListener;
         }
 
@@ -797,7 +796,8 @@ public class EncryptFilesFragment
         // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
-            return mDataset.size() + 1;
+            // one extra for the footer!
+            return mDataset.size() +1;
         }
 
         @Override
@@ -835,6 +835,14 @@ public class EncryptFilesFragment
                 }
                 notifyItemRangeInserted(startIndex, mDataset.size() - startIndex);
             }
+        }
+
+        public int getModelCount() {
+            return mDataset.size();
+        }
+
+        public ViewModel getModelItem(int position) {
+            return mDataset.get(position);
         }
 
         public void remove(ViewModel model) {

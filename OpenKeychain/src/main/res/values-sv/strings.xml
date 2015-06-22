@@ -192,7 +192,7 @@
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
-  <string name="select_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
+  <string name="error_no_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>

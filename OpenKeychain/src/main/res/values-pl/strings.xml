@@ -163,7 +163,7 @@
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
-  <string name="select_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
+  <string name="error_no_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
   <string name="also_export_secret_keys">Także eksportuj tajne klucze</string>
   <string name="reinstall_openkeychain">Napotkałeś się na znany błąd w Androidzie. Proszę ponownie zainstalować OpenKeychain jeśli chcesz połączyć kontakty z kluczami.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>

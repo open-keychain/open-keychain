@@ -149,7 +149,7 @@
   <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
   <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
-  <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
+  <string name="error_no_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
   <string name="also_export_secret_keys">Esporta anche chiave segreta</string>
   <string name="reinstall_openkeychain">Hai riscontrato un bug noto con Android. Si prega di reinstallare OpenKeychain se vuoi collegare i tuoi contatti con le chiavi.</string>
   <string name="key_exported">1 chiave esportata correttamente.</string>

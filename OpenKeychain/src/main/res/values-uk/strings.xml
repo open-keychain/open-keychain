@@ -153,7 +153,7 @@
   <string name="encrypt_sign_successful">Успішно підписано та/або перевірено.</string>
   <string name="encrypt_sign_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
-  <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
+  <string name="error_no_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
   <string name="keys_exported">Успішно експортовано %d ключів.</string>

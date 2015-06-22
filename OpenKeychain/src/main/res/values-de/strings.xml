@@ -201,7 +201,7 @@
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
   <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
-  <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
+  <string name="error_no_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
