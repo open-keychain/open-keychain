@@ -577,73 +577,103 @@ public class DecryptListFragment
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
 
-            if (model.hasResult()) {
-                if (holder.vAnimator.getDisplayedChild() != 1) {
-                    holder.vAnimator.setDisplayedChild(1);
-                }
-
-                KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
-
-                final OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
-
-                String filename;
-                if (metadata == null) {
-                    filename = mContext.getString(R.string.filename_unknown);
-                } else if (TextUtils.isEmpty(metadata.getFilename())) {
-                    filename = mContext.getString("text/plain".equals(metadata.getMimeType())
-                            ? R.string.filename_unknown_text : R.string.filename_unknown);
-                } else {
-                    filename = metadata.getFilename();
-                }
-                holder.vFilename.setText(filename);
-
-                long size = metadata == null ? 0 : metadata.getOriginalSize();
-                if (size == -1 || size == 0) {
-                    holder.vFilesize.setText("");
-                } else {
-                    holder.vFilesize.setText(FileHelper.readableFileSize(size));
-                }
-
-                // TODO thumbnail from OpenPgpMetadata?
-                if (model.mIcon != null) {
-                    holder.vThumbnail.setImageDrawable(model.mIcon);
-                } else {
-                    holder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
-                }
-
-                holder.vFile.setOnClickListener(model.mOnFileClickListener);
-                holder.vSignatureLayout.setOnClickListener(model.mOnKeyClickListener);
-
-                holder.vContextMenu.setTag(model);
-                holder.vContextMenu.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mMenuClickedModel = model;
-                        PopupMenu menu = new PopupMenu(mContext, view);
-                        menu.inflate(R.menu.decrypt_item_context_menu);
-                        if (!"file".equals(model.mInputUri.getScheme())) {
-                            menu.getMenu().findItem(R.id.decrypt_delete).setVisible(false);
-                        }
-                        menu.setOnMenuItemClickListener(mMenuItemClickListener);
-                        menu.setOnDismissListener(new OnDismissListener() {
-                            @Override
-                            public void onDismiss(PopupMenu popupMenu) {
-                                mMenuClickedModel = null;
-                            }
-                        });
-                        menu.show();
-                    }
-                });
-
-            } else {
-                if (holder.vAnimator.getDisplayedChild() != 0) {
-                    holder.vAnimator.setDisplayedChild(0);
-                }
-
-                holder.vProgress.setProgress(model.mProgress);
-                holder.vProgress.setMax(model.mMax);
-                holder.vProgressMsg.setText(model.mProgressMsg);
+            if (!model.hasResult()) {
+                bindItemProgress(holder, model);
+                return;
             }
+
+            if (model.mResult.success()) {
+                bindItemSuccess(holder, model);
+            } else {
+                bindItemFailure(holder, model);
+            }
+
+        }
+
+        private void bindItemProgress(ViewHolder holder, ViewModel model) {
+            if (holder.vAnimator.getDisplayedChild() != 0) {
+                holder.vAnimator.setDisplayedChild(0);
+            }
+
+            holder.vProgress.setProgress(model.mProgress);
+            holder.vProgress.setMax(model.mMax);
+            holder.vProgressMsg.setText(model.mProgressMsg);
+        }
+
+        private void bindItemSuccess(ViewHolder holder, final ViewModel model) {
+            if (holder.vAnimator.getDisplayedChild() != 1) {
+                holder.vAnimator.setDisplayedChild(1);
+            }
+
+            KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
+
+            final OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
+
+            String filename;
+            if (metadata == null) {
+                filename = mContext.getString(R.string.filename_unknown);
+            } else if (TextUtils.isEmpty(metadata.getFilename())) {
+                filename = mContext.getString("text/plain".equals(metadata.getMimeType())
+                        ? R.string.filename_unknown_text : R.string.filename_unknown);
+            } else {
+                filename = metadata.getFilename();
+            }
+            holder.vFilename.setText(filename);
+
+            long size = metadata == null ? 0 : metadata.getOriginalSize();
+            if (size == -1 || size == 0) {
+                holder.vFilesize.setText("");
+            } else {
+                holder.vFilesize.setText(FileHelper.readableFileSize(size));
+            }
+
+            // TODO thumbnail from OpenPgpMetadata?
+            if (model.mIcon != null) {
+                holder.vThumbnail.setImageDrawable(model.mIcon);
+            } else {
+                holder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+            }
+
+            holder.vFile.setOnClickListener(model.mOnFileClickListener);
+            holder.vSignatureLayout.setOnClickListener(model.mOnKeyClickListener);
+
+            holder.vContextMenu.setTag(model);
+            holder.vContextMenu.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mMenuClickedModel = model;
+                    PopupMenu menu = new PopupMenu(mContext, view);
+                    menu.inflate(R.menu.decrypt_item_context_menu);
+                    if (!"file".equals(model.mInputUri.getScheme())) {
+                        menu.getMenu().findItem(R.id.decrypt_delete).setVisible(false);
+                    }
+                    menu.setOnMenuItemClickListener(mMenuItemClickListener);
+                    menu.setOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(PopupMenu popupMenu) {
+                            mMenuClickedModel = null;
+                        }
+                    });
+                    menu.show();
+                }
+            });
+        }
+
+        private void bindItemFailure(ViewHolder holder, final ViewModel model) {
+            if (holder.vAnimator.getDisplayedChild() != 2) {
+                holder.vAnimator.setDisplayedChild(2);
+            }
+
+            holder.vErrorMsg.setText(model.mResult.getLog().getLast().mType.getMsgId());
+
+            holder.vErrorViewLog.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, LogDisplayActivity.class);
+                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
+                    mContext.startActivity(intent);
+                }
+            });
 
         }
 
@@ -719,8 +749,10 @@ public class DecryptListFragment
         public TextView vSignatureName;
         public TextView vSignatureMail;
         public TextView vSignatureAction;
-
         public View vContextMenu;
+
+        public TextView vErrorMsg;
+        public ImageView vErrorViewLog;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -746,6 +778,9 @@ public class DecryptListFragment
             vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
 
             vContextMenu = itemView.findViewById(R.id.context_menu);
+
+            vErrorMsg = (TextView) itemView.findViewById(R.id.result_error_msg);
+            vErrorViewLog = (ImageView) itemView.findViewById(R.id.result_error_log);
 
         }
 
