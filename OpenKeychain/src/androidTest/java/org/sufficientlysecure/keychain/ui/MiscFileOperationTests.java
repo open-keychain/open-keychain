@@ -25,59 +25,37 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.widget.AdapterView;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.TestHelpers;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
-import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withEncryptionStatus;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureMyKey;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureNone;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
 
@@ -86,7 +64,7 @@ import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawab
 public class MiscFileOperationTests {
 
     @Rule
-    public final IntentsTestRule<MainActivity> mActivity
+    public final IntentsTestRule<MainActivity> mActivityRule
             = new IntentsTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected Intent getActivityIntent() {
@@ -96,18 +74,19 @@ public class MiscFileOperationTests {
             return intent;
         }
     };
+    private Activity mActivity;
 
     @Before
     public void setUp() throws Exception {
-        Activity activity = mActivity.getActivity();
+        mActivity = mActivityRule.getActivity();
 
         TestHelpers.copyFiles();
 
         // import these two, make sure they're there
-        importKeysFromResource(activity, "x.sec.asc");
+        importKeysFromResource(mActivity, "x.sec.asc");
 
         // make sure no passphrases are cached
-        PassphraseCacheService.clearCachedPassphrases(activity);
+        PassphraseCacheService.clearCachedPassphrases(mActivity);
     }
 
     @Test
@@ -132,6 +111,28 @@ public class MiscFileOperationTests {
         }
 
     }
+
+    @Test
+    public void testDecryptNonPgpClipboard() throws Exception {
+
+        // decrypt any non-pgp file
+        ClipboardReflection.copyToClipboard(mActivity, randomString(0, 50));
+
+        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
+
+        { // decrypt
+
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(allOf(
+                                    hasDescendant(withDrawable(R.drawable.status_signature_invalid_cutout_24dp, true)),
+                                    hasDescendant(withText(R.string.msg_dc_error_invalid_data)))))),
+                    withId(R.id.result_error_log))).perform(click());
+
+        }
+
+    }
+
 
     @TargetApi(VERSION_CODES.KITKAT)
     private void handleOpenFileIntentKitKat(File file) {

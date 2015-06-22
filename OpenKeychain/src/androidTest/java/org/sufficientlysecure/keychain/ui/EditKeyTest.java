@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui;
 
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -30,8 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -75,7 +76,7 @@ public class EditKeyTest {
         // navigate to edit key dialog
         onData(withKeyItemId(0x9D604D2F310716A3L))
                 .inAdapterView(allOf(isAssignableFrom(AdapterView.class),
-                        isDescendantOfA(withId(R.id.key_list_list))))
+                        isDescendantOfA(ViewMatchers.withId(R.id.key_list_list))))
                 .perform(click());
         onView(withId(R.id.menu_key_view_edit)).perform(click());
 

@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui.widget;
 
 
 import android.app.Activity;
 import android.content.Intent;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.matcher.RootMatchers;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -31,6 +32,7 @@ import android.widget.AdapterView;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -67,7 +69,7 @@ public class EncryptKeyCompletionViewTest {
         importKeysFromResource(activity, "x.sec.asc");
 
         // check if the element passed in from intent
-        onView(withId(R.id.recipient_list)).check(matches(withKeyToken(0x9D604D2F310716A3L)));
+        onView(ViewMatchers.withId(R.id.recipient_list)).check(matches(withKeyToken(0x9D604D2F310716A3L)));
         onView(withId(R.id.recipient_list)).perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL));
 
         // type X, select from list, check if it's there

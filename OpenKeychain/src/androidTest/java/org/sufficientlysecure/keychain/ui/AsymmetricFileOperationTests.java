@@ -22,13 +22,11 @@ import java.io.File;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -45,7 +43,7 @@ import org.sufficientlysecure.keychain.TestHelpers;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import static android.support.test.InstrumentationRegistry.*;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
@@ -195,6 +193,7 @@ public class AsymmetricFileOperationTests {
     private void handleSaveFileIntent(File file) {
 
         try {
+            //noinspection ResultOfMethodCallIgnored
             file.delete();
         } catch (Exception e) {
             // nvm

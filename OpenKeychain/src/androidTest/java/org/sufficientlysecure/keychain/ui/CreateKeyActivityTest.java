@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Intent;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -28,6 +29,7 @@ import android.text.method.PasswordTransformationMethod;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -71,7 +73,7 @@ public class CreateKeyActivityTest {
         mActivity.getActivity();
 
         // Clicks create my key
-        onView(withId(R.id.create_key_create_key_button))
+        onView(ViewMatchers.withId(R.id.create_key_create_key_button))
                 .perform(click());
 
         // Clicks next with empty name

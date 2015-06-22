@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Intent;
@@ -29,8 +29,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
@@ -66,7 +66,7 @@ import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatu
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class EncryptDecryptSymmetricTests {
+public class SymmetricTextOperationTests {
 
     public static final String PASSPHRASE = randomString(5, 20);
 
