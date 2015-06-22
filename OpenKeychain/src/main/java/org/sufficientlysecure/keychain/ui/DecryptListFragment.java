@@ -42,8 +42,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -597,7 +595,9 @@ public class DecryptListFragment
 
             holder.vProgress.setProgress(model.mProgress);
             holder.vProgress.setMax(model.mMax);
-            holder.vProgressMsg.setText(model.mProgressMsg);
+            if (model.mProgressMsg != null) {
+                holder.vProgressMsg.setText(model.mProgressMsg);
+            }
         }
 
         private void bindItemSuccess(ViewHolder holder, final ViewModel model) {
@@ -627,7 +627,6 @@ public class DecryptListFragment
                 holder.vFilesize.setText(FileHelper.readableFileSize(size));
             }
 
-            // TODO thumbnail from OpenPgpMetadata?
             if (model.mIcon != null) {
                 holder.vThumbnail.setImageDrawable(model.mIcon);
             } else {

@@ -24,33 +24,34 @@
         android:outAnimation="@anim/fade_out"
         android:id="@+id/view_animator"
         android:measureAllChildren="false"
-        custom:initialView="2"
+        custom:initialView="0"
+        android:minHeight="?listPreferredItemHeightSmall"
+        android:animateLayoutChanges="true"
         >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
+            android:orientation="horizontal">
 
             <ProgressBar
                 android:id="@+id/progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:progress="40"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:padding="4dp"
                 android:layout_gravity="center_vertical" />
 
             <TextView
                 android:id="@+id/progress_msg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text=""
-                tools:text="Progress Message"
-                android:layout_gravity="center_vertical" />
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/progress_processing"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
 
         </LinearLayout>
         <!-- -->
@@ -245,49 +246,43 @@
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            tools:ignore="UseCompoundDrawables">
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:ignore="UseCompoundDrawables">
+                android:padding="4dp"
+                android:src="@drawable/status_signature_invalid_cutout_24dp"
+                android:tint="@color/android_red_light"
+                android:layout_gravity="center_vertical" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="4dp"
-                    android:src="@drawable/status_signature_invalid_cutout_24dp"
-                    android:tint="@color/android_red_light"
-                    android:layout_gravity="center_vertical" />
+            <TextView
+                android:id="@+id/result_error_msg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text=""
+                android:layout_gravity="center_vertical"
+                tools:text="Error processing data!" />
 
-                <TextView
-                    android:id="@+id/result_error_msg"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text=""
-                    android:layout_gravity="center_vertical"
-                    tools:text="Error processing data!" />
-
-                <ImageView
-                    android:id="@+id/result_error_log"
-                    android:scaleType="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:padding="6dp"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_view_list_grey_24dp"
-                    android:layout_gravity="center_vertical" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/result_error_log"
+                android:scaleType="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:padding="6dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_view_list_grey_24dp"
+                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
 

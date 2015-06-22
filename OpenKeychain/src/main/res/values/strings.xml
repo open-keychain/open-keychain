@@ -1341,5 +1341,6 @@
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
     <string name="label_clip_title">"Encrypted Data"</string>
+    <string name="progress_processing">Processing…</string>
 
 </resources>
