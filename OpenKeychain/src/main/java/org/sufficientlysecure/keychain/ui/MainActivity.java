@@ -45,13 +45,15 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 public class MainActivity extends BaseNfcActivity implements FabContainer, OnBackStackChangedListener {
 
-    private static final int ID_KEYS = 1;
-    private static final int ID_ENCRYPT_DECRYPT = 2;
-    private static final int ID_APPS = 3;
-    private static final int ID_SETTINGS = 4;
-    private static final int ID_HELP = 5;
+    static final int ID_KEYS = 1;
+    static final int ID_ENCRYPT_DECRYPT = 2;
+    static final int ID_APPS = 3;
+    static final int ID_SETTINGS = 4;
+    static final int ID_HELP = 5;
 
+    // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
+    public static final String EXTRA_INIT_FRAG = "init_frag";
 
     public Drawer.Result mDrawerResult;
     private Toolbar mToolbar;
@@ -134,8 +136,20 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         }
 
         if (savedInstanceState == null) {
-            // initialize FragmentLayout with KeyListFragment at first
+            // always initialize keys fragment to the bottom of the backstack
             onKeysSelected();
+
+            if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
+                // initialize FragmentLayout with KeyListFragment at first
+                switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
+                    case ID_ENCRYPT_DECRYPT:
+                        onEnDecryptSelected();
+                        break;
+                    case ID_APPS:
+                        onAppsSelected();
+                        break;
+                }
+            }
         }
 
     }
