@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -201,10 +202,15 @@ public class PinUnlockDialog extends UnlockDialog {
         mPinUnlockDialogViewModel = new PinUnlockDialogViewModel();
         mPinUnlockDialogViewModel.prepareViewModel(savedInstanceState, getArguments(), getActivity());
 
-        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(getActivity());
+        // if the dialog is displayed from the application class, design is missing
+        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
+        ContextThemeWrapper theme = new ContextThemeWrapper(getActivity(),
+                R.style.KeychainTheme);
+
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
 
 
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.unlock_pin_fragment,
+        View view = LayoutInflater.from(theme).inflate(R.layout.unlock_pin_fragment,
                 null);
         alert.setView(view);
 
