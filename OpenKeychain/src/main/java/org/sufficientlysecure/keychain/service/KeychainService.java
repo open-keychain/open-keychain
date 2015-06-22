@@ -62,7 +62,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import de.measite.minidns.Client;
+import de.measite.minidns.DNSCache;
+import de.measite.minidns.DNSClient;
 import de.measite.minidns.DNSMessage;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
@@ -239,7 +240,8 @@ public class KeychainService extends Service implements Progressable {
 
                             String domain = prover.dnsTxtCheckRequired();
                             if (domain != null) {
-                                DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
+                                DNSMessage dnsQuery = new DNSClient((DNSCache) null).query(new Question(domain,
+                                        Record.TYPE.TXT));
                                 if (dnsQuery == null) {
                                     sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
                                     return;
@@ -314,7 +316,8 @@ public class KeychainService extends Service implements Progressable {
                         boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
 
                         // Operation
-                        DeleteOperation op = new DeleteOperation(KeychainService.this, providerHelper, KeychainService.this);
+                        DeleteOperation op = new DeleteOperation(KeychainService.this, providerHelper,
+                                KeychainService.this);
                         DeleteResult result = op.execute(masterKeyIds, isSecret);
 
                         // Result
@@ -410,11 +413,12 @@ public class KeychainService extends Service implements Progressable {
                             HkpKeyserver server = new HkpKeyserver(keyServer);
 
                             CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                            ImportExportOperation importExportOperation = new ImportExportOperation(KeychainService.this,
+                            ImportExportOperation importExportOperation = new ImportExportOperation(KeychainService
+                                    .this,
                                     providerHelper, KeychainService.this);
 
                             ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(server, keyring,
-                                        getProxyFromBundle(data));
+                                    getProxyFromBundle(data));
                             if (uploadResult.getResult() != ExportResult.RESULT_OK) {
                                 throw new PgpGeneralException("Unable to export key to selected server");
                             }

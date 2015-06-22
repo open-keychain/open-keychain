@@ -23,6 +23,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import de.measite.minidns.DNSCache;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -45,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.measite.minidns.Client;
+import de.measite.minidns.DNSClient;
 import de.measite.minidns.Question;
 import de.measite.minidns.Record;
 import de.measite.minidns.record.SRV;
@@ -234,7 +235,7 @@ public class HkpKeyserver extends Keyserver {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
-            proxy == null?"":" Using proxy " + proxy);
+                    proxy == null ? "" : " Using proxy " + proxy);
         }
     }
 
@@ -414,20 +415,21 @@ public class HkpKeyserver extends Keyserver {
      */
     public static HkpKeyserver resolve(String domain) {
         try {
-            Record[] records = new Client().query(new Question("_hkp._tcp." + domain, Record.TYPE.SRV)).getAnswers();
+            Record[] records = new DNSClient((DNSCache) null).query(new Question("_hkp._tcp." + domain, Record.TYPE
+                    .SRV)).getAnswers();
             if (records.length > 0) {
                 Arrays.sort(records, new Comparator<Record>() {
                     @Override
                     public int compare(Record lhs, Record rhs) {
                         if (lhs.getPayload().getType() != Record.TYPE.SRV) return 1;
                         if (rhs.getPayload().getType() != Record.TYPE.SRV) return -1;
-                        return ((SRV) lhs.getPayload()).getPriority() - ((SRV) rhs.getPayload()).getPriority();
+                        return ((SRV) lhs.getPayload()).priority - ((SRV) rhs.getPayload()).priority;
                     }
                 });
                 Record record = records[0]; // This is our best choice
                 if (record.getPayload().getType() == Record.TYPE.SRV) {
-                    return new HkpKeyserver(((SRV) record.getPayload()).getName(),
-                            (short) ((SRV) record.getPayload()).getPort());
+                    return new HkpKeyserver(((SRV) record.getPayload()).name,
+                            (short) ((SRV) record.getPayload()).port);
                 }
             }
         } catch (Exception ignored) {
