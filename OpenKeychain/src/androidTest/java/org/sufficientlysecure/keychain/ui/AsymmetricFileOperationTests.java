@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
@@ -338,6 +339,50 @@ public class AsymmetricFileOperationTests {
             onView(withText(R.string.view_log)).perform(click());
             onView(withText(R.string.msg_dc_clear_signature_ok)).check(matches(isDisplayed()));
             pressBack();
+
+        }
+
+    }
+
+    @Test
+    public void testGeneralErrorHandling() throws Exception {
+
+        // navigate to encrypt files fragment
+        onView(withId(R.id.encrypt_files)).perform(click());
+
+        File[] files = getImageNames();
+
+        { // encrypt screen
+
+            onView(withId(R.id.encrypt_share)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.error_no_file_selected);
+
+            handleAddFileIntent(files[0]);
+            onView(withId(R.id.file_list_entry_add)).perform(click());
+
+            handleAddFileIntent(files[1]);
+            onView(withId(R.id.file_list_entry_add)).perform(click());
+
+            onView(withId(R.id.encrypt_share)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.select_encryption_key);
+
+            onView(withId(R.id.sign)).perform(click());
+            onData(withKeyItemId(0x9D604D2F310716A3L))
+                    .inAdapterView(isAssignableFrom(AdapterView.class))
+                    .perform(click());
+
+            onView(withId(R.id.encrypt_share)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.error_detached_signature);
+
+            // the EncryptKeyCompletionView is tested individually
+            onView(withId(R.id.recipient_list)).perform(tokenEncryptViewAddToken(0x9D604D2F310716A3L));
+
+            onView(withId(R.id.encrypt_save)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.error_multi_files);
+
+            openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+            onView(withText(R.string.btn_copy_encrypted_signed)).perform(click());
+            checkSnackbar(Style.ERROR, R.string.error_multi_clipboard);
 
         }
 
