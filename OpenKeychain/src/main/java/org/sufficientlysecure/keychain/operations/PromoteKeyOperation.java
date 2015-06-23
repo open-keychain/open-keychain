@@ -62,6 +62,11 @@ public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
         byte[] cardAid = promoteKeyringParcel.mCardAid;
         long[] subKeyIds = promoteKeyringParcel.mSubKeyIds;
 
+        return execute(masterKeyId, cardAid, subKeyIds);
+    }
+
+    public PromoteKeyResult execute(long masterKeyId, byte[] cardAid, long[] subKeyIds) {
+
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_PR, 0);
 
