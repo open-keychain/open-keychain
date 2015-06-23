@@ -37,10 +37,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.DeleteOperation;
-import org.sufficientlysecure.keychain.operations.EditKeyOperation;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
-import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
+import org.sufficientlysecure.keychain.operations.*;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
@@ -157,21 +154,6 @@ public class KeychainService extends Service implements Progressable {
 
                 // executeServiceMethod action from extra bundle
                 switch (action) {
-                    case ACTION_CONSOLIDATE: {
-
-                        // Operation
-                        ConsolidateResult result;
-                        if (data.containsKey(CONSOLIDATE_RECOVERY) && data.getBoolean(CONSOLIDATE_RECOVERY)) {
-                            result = providerHelper.consolidateDatabaseStep2(KeychainService.this);
-                        } else {
-                            result = providerHelper.consolidateDatabaseStep1(KeychainService.this);
-                        }
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
                     case ACTION_VERIFY_KEYBASE_PROOF: {
 
                         try {

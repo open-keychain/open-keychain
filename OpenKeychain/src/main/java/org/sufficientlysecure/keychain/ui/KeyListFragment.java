@@ -64,10 +64,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.*;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -114,6 +111,9 @@ public class KeyListFragment extends LoaderFragment
     private ArrayList<ParcelableKeyRing> mKeyList;
     private String mKeyserver;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
+
+    // for ConsolidateOperation
+    private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;
@@ -607,51 +607,35 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void consolidate() {
-        // Message is received after importing is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
+
+        CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult> callback
+                = new CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult>() {
+
             @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
+            public ConsolidateInputParcel createOperationInput() {
+                return new ConsolidateInputParcel(false); // we want to perform a full consolidate
+            }
 
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final ConsolidateResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        return;
-                    }
+            @Override
+            public void onCryptoOperationSuccess(ConsolidateResult result) {
+                result.createNotify(getActivity()).show();
+            }
 
-                    result.createNotify(getActivity()).show();
-                }
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(ConsolidateResult result) {
+                result.createNotify(getActivity()).show();
             }
         };
 
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
+        mConsolidateOpHelper =
+                new CryptoOperationHelper<>(this, callback, R.string.progress_importing);
 
-        intent.setAction(KeychainService.ACTION_CONSOLIDATE);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL, false);
-
-        // start service with intent
-        getActivity().startService(intent);
+        mConsolidateOpHelper.cryptoOperation();
     }
 
     private void showMultiExportDialog(long[] masterKeyIds) {
@@ -693,6 +677,11 @@ public class KeyListFragment extends LoaderFragment
         if (mImportOpHelper != null) {
             mImportOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
+
+        if (mConsolidateOpHelper != null) {
+            mConsolidateOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
         if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
             if (resultCode != Activity.RESULT_OK) {
                 return;
