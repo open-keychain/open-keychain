@@ -87,8 +87,6 @@ public class KeychainService extends Service implements Progressable {
 
     public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
 
-    public static final String ACTION_PROMOTE_KEYRING = Constants.INTENT_PREFIX + "PROMOTE_KEYRING";
-
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
 
     public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
@@ -98,11 +96,6 @@ public class KeychainService extends Service implements Progressable {
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
     public static final String KEYBASE_PROOF = "keybase_proof";
-
-    // promote key
-    public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
-    public static final String PROMOTE_CARD_AID = "promote_card_aid";
-    public static final String PROMOTE_SUBKEY_IDS = "promote_fingerprints";
 
     // consolidate
     public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
@@ -270,24 +263,6 @@ public class KeychainService extends Service implements Progressable {
                         } catch (Exception e) {
                             sendErrorToHandler(e);
                         }
-
-                        break;
-                    }
-                    case ACTION_PROMOTE_KEYRING: {
-
-                        // Input
-                        long keyRingId = data.getLong(PROMOTE_MASTER_KEY_ID);
-                        byte[] cardAid = data.getByteArray(PROMOTE_CARD_AID);
-                        long[] subKeyIds = data.getLongArray(PROMOTE_SUBKEY_IDS);
-
-                        // Operation
-                        PromoteKeyOperation op = new PromoteKeyOperation(
-                                KeychainService.this, providerHelper, KeychainService.this,
-                                mActionCanceled);
-                        PromoteKeyResult result = op.execute(keyRingId, cardAid, subKeyIds);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
 
                         break;
                     }

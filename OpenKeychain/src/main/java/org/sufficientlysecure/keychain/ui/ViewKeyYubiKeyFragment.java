@@ -44,11 +44,14 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-public class ViewKeyYubiKeyFragment extends Fragment
+public class ViewKeyYubiKeyFragment
+        extends CryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>
         implements LoaderCallbacks<Cursor> {
 
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
@@ -60,6 +63,8 @@ public class ViewKeyYubiKeyFragment extends Fragment
     private String mUserId;
     private byte[] mCardAid;
     private long mMasterKeyId;
+    private long[] mSubKeyIds;
+
     private Button vButton;
     private TextView vStatus;
 
@@ -127,50 +132,15 @@ public class ViewKeyYubiKeyFragment extends Fragment
     }
 
     public void promoteToSecretKey() {
-
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    PromoteKeyResult result =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    result.createNotify(getActivity()).show();
-                }
-
-            }
-        };
-
-        // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-
-        // fill values for this action
-
-        intent.setAction(KeychainService.ACTION_PROMOTE_KEYRING);
-
-        Bundle data = new Bundle();
-        data.putLong(KeychainService.PROMOTE_MASTER_KEY_ID, mMasterKeyId);
-        data.putByteArray(KeychainService.PROMOTE_CARD_AID, mCardAid);
         long[] subKeyIds = new long[mFingerprints.length];
         for (int i = 0; i < subKeyIds.length; i++) {
             subKeyIds[i] = KeyFormattingUtils.getKeyIdFromFingerprint(mFingerprints[i]);
         }
-        data.putLongArray(KeychainService.PROMOTE_SUBKEY_IDS, subKeyIds);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+        // mMasterKeyId and mCardAid are already set
+        mSubKeyIds = subKeyIds;
 
-        // start service with intent
-        getActivity().startService(intent);
-
+        cryptoOperation();
     }
 
     public static final String[] PROJECTION = new String[]{
@@ -239,5 +209,15 @@ public class ViewKeyYubiKeyFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    protected PromoteKeyringParcel createOperationInput() {
+        return new PromoteKeyringParcel(mMasterKeyId, mCardAid, mSubKeyIds);
+    }
+
+    @Override
+    protected void onCryptoOperationResult(PromoteKeyResult result) {
+        result.createNotify(getActivity()).show();
     }
 }
