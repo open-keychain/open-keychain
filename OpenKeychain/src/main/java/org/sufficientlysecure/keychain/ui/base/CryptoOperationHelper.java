@@ -67,7 +67,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     // otherwise all CryptoOperationHandlers may respond to the same onActivityResult
     private int mRequestedCode = -1;
 
-    private int mProgressMessageString;
+    private int mProgressMessageResource;
 
     private FragmentActivity mActivity;
     private Fragment mFragment;
@@ -84,7 +84,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         mActivity = activity;
         mUseFragment = false;
         mCallback = callback;
-        mProgressMessageString = progressMessageString;
+        mProgressMessageResource = progressMessageString;
     }
 
     /**
@@ -95,7 +95,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback, int progressMessageString) {
         mFragment = fragment;
         mUseFragment = true;
-        mProgressMessageString = progressMessageString;
+        mProgressMessageResource = progressMessageString;
         mCallback = callback;
     }
 
@@ -107,8 +107,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback) {
         mFragment = fragment;
         mUseFragment = true;
-        mProgressMessageString = R.string.progress_building_key;
+        mProgressMessageResource = R.string.progress_building_key;
         mCallback = callback;
+    }
+
+    public void setProgressMessageResource(int id) {
+        mProgressMessageResource = id;
     }
 
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
@@ -254,7 +258,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         };
 
         saveHandler.showProgressDialog(
-                activity.getString(mProgressMessageString),
+                activity.getString(mProgressMessageResource),
                 ProgressDialog.STYLE_HORIZONTAL, false);
 
         // Create a new Messenger for the communication back

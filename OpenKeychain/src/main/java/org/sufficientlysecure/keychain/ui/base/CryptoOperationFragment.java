@@ -63,6 +63,11 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
         mOperationHelper = new CryptoOperationHelper<>(this, callback);
     }
 
+    public void setProgressMessageResource(int id) {
+        mOperationHelper.setProgressMessageResource(id);
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         mOperationHelper.handleActivityResult(requestCode, resultCode, data);

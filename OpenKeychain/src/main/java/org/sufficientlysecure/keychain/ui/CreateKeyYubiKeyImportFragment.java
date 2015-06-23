@@ -183,45 +183,6 @@ public class CreateKeyYubiKeyImportFragment
 
     public void importKey() {
 
-        // Message is received after decrypting is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    ImportKeyResult result =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    long[] masterKeyIds = result.getImportedMasterKeyIds();
-
-                    // TODO handle masterKeyIds.length != 1...? sorta outlandish scenario
-
-                    if (!result.success() || masterKeyIds.length == 0) {
-                        result.createNotify(getActivity()).show();
-                        return;
-                    }
-
-                    Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
-                    // use the imported masterKeyId, not the one from the yubikey, because
-                    // that one might* just have been a subkey of the imported key
-                    intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
-                    intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-                    startActivity(intent);
-                    getActivity().finish();
-
-                }
-
-            }
-        };
-
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));
         mKeyList = keyList;
@@ -233,9 +194,9 @@ public class CreateKeyYubiKeyImportFragment
             mKeyserver = cloudPrefs.keyserver;
         }
 
-        // TODO: PHILIP make the progress dialog show importing
+        super.setProgressMessageResource(R.string.progress_importing);
 
-        cryptoOperation();
+        super.cryptoOperation();
 
     }
 
@@ -267,7 +228,7 @@ public class CreateKeyYubiKeyImportFragment
             super.onCryptoOperationError(result);
             return;
         }
-        
+
         Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
         // use the imported masterKeyId, not the one from the yubikey, because
         // that one might* just have been a subkey of the imported key
