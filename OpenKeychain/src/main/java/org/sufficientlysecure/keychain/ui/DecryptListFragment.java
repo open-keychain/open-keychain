@@ -219,9 +219,9 @@ public class DecryptListFragment
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
+                    Uri decryptedFileUri = mOutputUris.get(mCurrentInputUri);
                     Uri saveUri = data.getData();
-                    Uri outputUri = mOutputUris.get(mCurrentInputUri);
-                    saveFile(saveUri, outputUri);
+                    saveFile(decryptedFileUri, saveUri);
                     mCurrentInputUri = null;
                 }
                 return;
@@ -233,15 +233,15 @@ public class DecryptListFragment
         }
     }
 
-    private void saveFile(Uri outputUri, Uri saveUri) {
+    private void saveFile(Uri decryptedFileUri, Uri saveUri) {
         Activity activity = getActivity();
         if (activity == null) {
             return;
         }
 
         try {
-            FileHelper.copyUriData(activity, outputUri, saveUri);
-            Notify.create(activity, R.string.file_saved, Style.ERROR).show();
+            FileHelper.copyUriData(activity, decryptedFileUri, saveUri);
+            Notify.create(activity, R.string.file_saved, Style.OK).show();
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving file", e);
             Notify.create(activity, R.string.error_saving_file, Style.ERROR).show();
