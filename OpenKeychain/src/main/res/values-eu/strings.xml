@@ -304,7 +304,7 @@
   <string name="import_qr_code_button">Eskaneatu QR Kodea</string>
   <string name="import_qr_code_text">Jarri zure kamera QR Kodearen gainean!</string>
   <!--Generic result toast-->
-  <string name="view_log">Xehetasunak</string>
+  <string name="snackbar_details">Xehetasunak</string>
   <string name="with_warnings">, kontuz oharrekin</string>
   <!--Import result toast-->
   <string name="import_error_nothing">Ez dago ezer inportatzeko.</string>

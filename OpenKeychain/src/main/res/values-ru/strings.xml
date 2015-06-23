@@ -332,7 +332,7 @@
   <string name="import_qr_code_button">Сканировать QR код...</string>
   <string name="import_qr_code_text">Расположите вашу камеру над QR кодом!</string>
   <!--Generic result toast-->
-  <string name="view_log">Сведения</string>
+  <string name="snackbar_details">Сведения</string>
   <string name="with_warnings">, с предупреждениями</string>
   <string name="with_cancelled">, до отмены</string>
   <!--Import result toast-->

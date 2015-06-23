@@ -132,7 +132,7 @@ public class CertifyResult extends InputPendingResult {
                 intent.putExtra(LogDisplayFragment.EXTRA_RESULT, CertifyResult.this);
                 activity.startActivity(intent);
             }
-        }, R.string.view_log);
+        }, R.string.snackbar_details);
 
     }
 

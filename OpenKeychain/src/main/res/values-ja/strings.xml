@@ -364,7 +364,7 @@
   <string name="import_qr_code_button">QCコードのスキャン</string>
   <string name="import_qr_code_text">カメラをQRコードにかざしてください!</string>
   <!--Generic result toast-->
-  <string name="view_log">概要</string>
+  <string name="snackbar_details">概要</string>
   <string name="with_warnings">、とワーニング</string>
   <string name="with_cancelled">、キャンセルされるまで</string>
   <!--Import result toast-->

@@ -491,10 +491,26 @@ public class DecryptListFragment
                 askForOutputFilename(model.mInputUri, metadata.getFilename(), metadata.getMimeType());
                 return true;
             case R.id.decrypt_delete:
-                Notify.create(activity, "decrypt/delete not yet implemented", Style.ERROR).show(this);
+                deleteFile(activity, model.mInputUri);
                 return true;
         }
         return false;
+    }
+
+    private void deleteFile(Activity activity, Uri uri) {
+
+        try {
+            int deleted = activity.getContentResolver().delete(uri, null, null);
+            if (deleted > 0) {
+                Notify.create(activity, R.string.file_delete_ok, Style.OK).show();
+            } else {
+                Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
+            }
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "exception deleting file", e);
+            Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
+        }
+
     }
 
     public static class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -664,9 +680,6 @@ public class DecryptListFragment
                     mMenuClickedModel = model;
                     PopupMenu menu = new PopupMenu(mContext, view);
                     menu.inflate(R.menu.decrypt_item_context_menu);
-                    if (!"file".equals(model.mInputUri.getScheme())) {
-                        menu.getMenu().findItem(R.id.decrypt_delete).setVisible(false);
-                    }
                     menu.setOnMenuItemClickListener(mMenuItemClickListener);
                     menu.setOnDismissListener(new OnDismissListener() {
                         @Override

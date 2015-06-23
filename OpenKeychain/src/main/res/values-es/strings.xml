@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">Escanear código QR</string>
   <string name="import_qr_code_text">¡Sitúe su cámara sobre el código QR!</string>
   <!--Generic result toast-->
-  <string name="view_log">Detalles</string>
+  <string name="snackbar_details">Detalles</string>
   <string name="with_warnings">, con advertencias</string>
   <string name="with_cancelled">, hasta que sea cancelado</string>
   <!--Import result toast-->

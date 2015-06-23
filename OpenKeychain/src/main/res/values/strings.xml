@@ -63,7 +63,8 @@
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
-    <string name="btn_save">"Save"</string>
+    <string name="btn_save">"Save file"</string>
+    <string name="btn_view_log">"View log"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
     <string name="btn_no_date">"No Expiry"</string>
@@ -420,7 +421,7 @@
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
 
     <!-- Generic result toast -->
-    <string name="view_log">"Details"</string>
+    <string name="snackbar_details">"Details"</string>
     <string name="with_warnings">", with warnings"</string>
     <string name="with_cancelled">", until cancelled"</string>
 
@@ -1341,8 +1342,11 @@
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
     <string name="label_clip_title">"Encrypted Data"</string>
-    <string name="progress_processing">Processing…</string>
-    <string name="error_saving_file">Error saving file!</string>
-    <string name="file_saved">File saved!</string>
+    <string name="progress_processing">"Processing…"</string>
+    <string name="error_saving_file">"Error saving file!"</string>
+    <string name="file_saved">"File saved!"</string>
+    <string name="file_delete_ok">"Original file deleted."</string>
+    <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
+    <string name="file_delete_exception">"Could not delete original file!"</string>
 
 </resources>

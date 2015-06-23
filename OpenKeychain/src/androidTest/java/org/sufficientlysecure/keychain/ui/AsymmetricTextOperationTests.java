@@ -198,7 +198,7 @@ public class AsymmetricTextOperationTests {
             onView(withText(R.string.btn_delete_original)).check(doesNotExist());
 
             // check if log looks ok
-            onView(withText(R.string.view_log)).perform(click());
+            onView(withText(R.string.snackbar_details)).perform(click());
             onView(withText(R.string.msg_dc_clear_signature_ok)).check(matches(isDisplayed()));
             pressBack();
 

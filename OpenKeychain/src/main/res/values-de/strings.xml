@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">QR-Code scannen</string>
   <string name="import_qr_code_text">Halte deine Kamera über den QR-Code!</string>
   <!--Generic result toast-->
-  <string name="view_log">Details</string>
+  <string name="snackbar_details">Details</string>
   <string name="with_warnings">, mit Warnungen</string>
   <string name="with_cancelled">. bis abgebrochen wurde</string>
   <!--Import result toast-->

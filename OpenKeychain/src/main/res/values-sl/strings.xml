@@ -371,7 +371,7 @@
   <string name="import_qr_code_button">Skeniraj kodo QR</string>
   <string name="import_qr_code_text">Zajamite kodo QR s kamero!</string>
   <!--Generic result toast-->
-  <string name="view_log">Podrobnosti</string>
+  <string name="snackbar_details">Podrobnosti</string>
   <string name="with_warnings">, z opozorili</string>
   <string name="with_cancelled">, do preklica</string>
   <!--Import result toast-->

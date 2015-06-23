@@ -370,7 +370,7 @@
   <string name="import_qr_code_button">Очитај бар-код</string>
   <string name="import_qr_code_text">Усмерите камеру на бар-код!</string>
   <!--Generic result toast-->
-  <string name="view_log">Детаљи</string>
+  <string name="snackbar_details">Детаљи</string>
   <string name="with_warnings">, са упозорењима</string>
   <string name="with_cancelled">, док није отказано</string>
   <!--Import result toast-->

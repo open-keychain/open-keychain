@@ -350,7 +350,7 @@
   <string name="import_qr_code_button">Skanna QR-kod</string>
   <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
   <!--Generic result toast-->
-  <string name="view_log">Detaljer</string>
+  <string name="snackbar_details">Detaljer</string>
   <string name="with_warnings">, med varningar</string>
   <string name="with_cancelled">, tills det avbryts</string>
   <!--Import result toast-->

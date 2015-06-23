@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">QR code scannen</string>
   <string name="import_qr_code_text">Plaats je camera voor de QR-code!</string>
   <!--Generic result toast-->
-  <string name="view_log">Details</string>
+  <string name="snackbar_details">Details</string>
   <string name="with_warnings">, met waarschuwingen</string>
   <string name="with_cancelled">, tot annulatie</string>
   <!--Import result toast-->

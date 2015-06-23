@@ -348,7 +348,7 @@
   <string name="import_qr_code_button">掃描二維條碼</string>
   <string name="import_qr_code_text">將您的相機對準 QR Code !</string>
   <!--Generic result toast-->
-  <string name="view_log">詳細</string>
+  <string name="snackbar_details">詳細</string>
   <string name="with_warnings">，包含警告</string>
   <string name="with_cancelled">，直到被取消</string>
   <!--Import result toast-->
