@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.util.Log;
 
 /**
@@ -103,6 +104,9 @@ public class KeychainNewService extends Service implements Progressable {
                 } else if (inputParcel instanceof CertifyAction) {
                     op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
+                } else if (inputParcel instanceof DeleteKeyringParcel){
+                    Log.e("PHILIP", "delete in KeychainNewService");
+                    op = new DeleteOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof ImportKeyringParcel
                         || inputParcel instanceof ExportKeyringParcel){
                     op = new ImportExportOperation(outerThis, new ProviderHelper(outerThis),
@@ -110,10 +114,10 @@ public class KeychainNewService extends Service implements Progressable {
                 } else {
                     return;
                 }
-
+                Log.e("PHILIP", "exec in KeychainNewService");
                 @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
                 OperationResult result = op.execute(inputParcel, cryptoInput);
-
+                Log.e("PHILIP", "result in KeychainNewService" + result);
                 sendMessageToHandler(MessageStatus.OKAY, result);
 
             }

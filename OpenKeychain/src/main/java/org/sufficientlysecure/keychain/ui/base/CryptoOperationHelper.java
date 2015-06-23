@@ -208,6 +208,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 mUseFragment ? mFragment.getFragmentManager() :
                         mActivity.getSupportFragmentManager();
 
+        if (fragmentManager == null) { // the fragment holding us has died
+            // fragmentManager was null when used with DialogFragments. (they close on click?)
+            return;
+        }
+
         ProgressDialogFragment progressDialogFragment =
                 (ProgressDialogFragment) fragmentManager.findFragmentByTag(
                         ServiceProgressHandler.TAG_PROGRESS_DIALOG);
@@ -283,7 +288,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void onHandleResult(OperationResult result) {
-        Log.d("PHILIP", "Handling result in OperationHelper");
+        Log.d("PHILIP", "Handling result in OperationHelper " + result);
 
         if (result instanceof InputPendingResult) {
             Log.d("PHILIP", "is pending result");

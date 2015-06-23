@@ -87,11 +87,7 @@ public class KeychainService extends Service implements Progressable {
 
     public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
 
-    public static final String ACTION_EDIT_KEYRING = Constants.INTENT_PREFIX + "EDIT_KEYRING";
-
     public static final String ACTION_PROMOTE_KEYRING = Constants.INTENT_PREFIX + "PROMOTE_KEYRING";
-
-    public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
 
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
 
@@ -102,10 +98,6 @@ public class KeychainService extends Service implements Progressable {
     // keybase proof
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
     public static final String KEYBASE_PROOF = "keybase_proof";
-
-    // delete keyring(s)
-    public static final String DELETE_KEY_LIST = "delete_list";
-    public static final String DELETE_IS_SECRET = "delete_is_secret";
 
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
@@ -278,21 +270,6 @@ public class KeychainService extends Service implements Progressable {
                         } catch (Exception e) {
                             sendErrorToHandler(e);
                         }
-
-                        break;
-                    }
-                    case ACTION_DELETE: {
-
-                        // Input
-                        long[] masterKeyIds = data.getLongArray(DELETE_KEY_LIST);
-                        boolean isSecret = data.getBoolean(DELETE_IS_SECRET);
-
-                        // Operation
-                        DeleteOperation op = new DeleteOperation(KeychainService.this, providerHelper, KeychainService.this);
-                        DeleteResult result = op.execute(masterKeyIds, isSecret);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
 
                         break;
                     }

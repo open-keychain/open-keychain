@@ -33,16 +33,22 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.input.DeleteKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.HashMap;
 
-public class DeleteKeyDialogFragment extends DialogFragment {
+public class DeleteKeyDialogFragment extends DialogFragment
+        implements CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult> {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_DELETE_MASTER_KEY_IDS = "delete_master_key_ids";
 
@@ -51,6 +57,13 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
     private TextView mMainMessage;
     private View mInflateView;
+
+    private Messenger mMessenger;
+
+    // for CryptoOperationHelper.Callback
+    private long[] mMasterKeyIds;
+    private boolean mHasSecret;
+    private CryptoOperationHelper<DeleteKeyringParcel, DeleteResult> mDeleteOpHelper;
 
     /**
      * Creates new instance of this delete file dialog fragment
@@ -68,9 +81,17 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mDeleteOpHelper != null) {
+            mDeleteOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
-        final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
+        mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         final long[] masterKeyIds = getArguments().getLongArray(ARG_DELETE_MASTER_KEY_IDS);
 
@@ -129,47 +150,16 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                // Send all information needed to service to import key in other thread
-                Intent intent = new Intent(getActivity(), KeychainService.class);
+                mMasterKeyIds = masterKeyIds;
+                mHasSecret = hasSecret;
 
-                intent.setAction(KeychainService.ACTION_DELETE);
-
-                // Message is received after importing is done in KeychainService
-                ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-                    @Override
-                    public void handleMessage(Message message) {
-                        super.handleMessage(message);
-                        // handle messages by standard KeychainIntentServiceHandler first
-                        if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                            try {
-                                Message msg = Message.obtain();
-                                msg.copyFrom(message);
-                                messenger.send(msg);
-                            } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "messenger error", e);
-                            }
-                        }
-                    }
-                };
-
-                // fill values for this action
-                Bundle data = new Bundle();
-                data.putLongArray(KeychainService.DELETE_KEY_LIST, masterKeyIds);
-                data.putBoolean(KeychainService.DELETE_IS_SECRET, hasSecret);
-                intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-                // show progress dialog
-                saveHandler.showProgressDialog(getString(R.string.progress_deleting),
-                        ProgressDialog.STYLE_HORIZONTAL, true);
-
-                // start service with intent
-                getActivity().startService(intent);
-
-                dismiss();
+                mDeleteOpHelper = new CryptoOperationHelper<>
+                        (DeleteKeyDialogFragment.this, DeleteKeyDialogFragment.this,
+                                R.string.progress_deleting);
+                mDeleteOpHelper.cryptoOperation();
+                // do NOT dismiss here, it'll give
+                // OperationHelper a null fragmentManager
+                // dismiss();
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -183,4 +173,37 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         return builder.show();
     }
 
+    @Override
+    public DeleteKeyringParcel createOperationInput() {
+        return new DeleteKeyringParcel(mMasterKeyIds, mHasSecret);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(DeleteResult result) {
+        handleResult(result);
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(DeleteResult result) {
+        handleResult(result);
+    }
+
+    public void handleResult(DeleteResult result) {
+        try {
+            Bundle data = new Bundle();
+            data.putParcelable(OperationResult.EXTRA_RESULT, result);
+            Message msg = Message.obtain();
+            msg.arg1 = ServiceProgressHandler.MessageStatus.OKAY.ordinal();
+            msg.setData(data);
+            mMessenger.send(msg);
+        } catch (RemoteException e) {
+            Log.e(Constants.TAG, "messenger error", e);
+        }
+        dismiss();
+    }
 }
