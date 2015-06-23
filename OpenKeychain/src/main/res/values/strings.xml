@@ -1342,5 +1342,7 @@
     <string name="error_preparing_data">"Error preparing data!"</string>
     <string name="label_clip_title">"Encrypted Data"</string>
     <string name="progress_processing">Processing…</string>
+    <string name="error_saving_file">Error saving file!</string>
+    <string name="file_saved">File saved!</string>
 
 </resources>

@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -220,8 +221,7 @@ public class DecryptListFragment
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     Uri saveUri = data.getData();
                     Uri outputUri = mOutputUris.get(mCurrentInputUri);
-                    // TODO save from outputUri to saveUri
-
+                    saveFile(saveUri, outputUri);
                     mCurrentInputUri = null;
                 }
                 return;
@@ -230,6 +230,21 @@ public class DecryptListFragment
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
             }
+        }
+    }
+
+    private void saveFile(Uri outputUri, Uri saveUri) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        try {
+            FileHelper.copyUriData(activity, outputUri, saveUri);
+            Notify.create(activity, R.string.file_saved, Style.ERROR).show();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "error saving file", e);
+            Notify.create(activity, R.string.error_saving_file, Style.ERROR).show();
         }
     }
 
@@ -448,6 +463,12 @@ public class DecryptListFragment
         if (mAdapter.mMenuClickedModel == null || !mAdapter.mMenuClickedModel.hasResult()) {
             return false;
         }
+
+        // don't process menu items until all items are done!
+        if (!mPendingInputUris.isEmpty()) {
+            return true;
+        }
+
         Activity activity = getActivity();
         if (activity == null) {
             return false;

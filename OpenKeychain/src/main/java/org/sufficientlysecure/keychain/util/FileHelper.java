@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.util;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -41,8 +42,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -265,6 +269,33 @@ public class FileHelper {
 
         return plaintext;
 
+    }
+
+    public static void copyUriData(Context context, Uri fromUri, Uri toUri) throws IOException {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            bis = new BufferedInputStream(resolver.openInputStream(fromUri));
+            bos = new BufferedOutputStream(resolver.openOutputStream(toUri));
+            byte[] buf = new byte[1024];
+            int len;
+            while ( (len = bis.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
+            } catch (IOException e) {
+                // ignore, it's just stream closin'
+            }
+        }
     }
 
     public interface FileDialogCallback {
