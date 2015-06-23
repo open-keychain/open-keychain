@@ -1347,6 +1347,6 @@
     <string name="file_saved">"File saved!"</string>
     <string name="file_delete_ok">"Original file deleted."</string>
     <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
-    <string name="file_delete_exception">"Could not delete original file!"</string>
+    <string name="file_delete_exception">"Original file could not be deleted!"</string>
 
 </resources>

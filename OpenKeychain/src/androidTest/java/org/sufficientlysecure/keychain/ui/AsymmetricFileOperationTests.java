@@ -165,7 +165,7 @@ public class AsymmetricFileOperationTests {
             // delete file
             onView(withText(R.string.btn_delete_original)).perform(click());
 
-            checkSnackbar(Style.OK, R.string.file_delete_none);
+            checkSnackbar(Style.WARN, R.string.file_delete_none);
 
         }
 

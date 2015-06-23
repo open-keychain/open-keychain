@@ -499,17 +499,32 @@ public class DecryptListFragment
 
     private void deleteFile(Activity activity, Uri uri) {
 
-        try {
-            int deleted = activity.getContentResolver().delete(uri, null, null);
-            if (deleted > 0) {
+        if ("file".equals(uri.getScheme())) {
+            File file = new File(uri.getPath());
+            if (file.delete()) {
                 Notify.create(activity, R.string.file_delete_ok, Style.OK).show();
             } else {
                 Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
             }
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "exception deleting file", e);
-            Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
+            return;
         }
+
+        if ("content".equals(uri.getScheme())) {
+            try {
+                int deleted = activity.getContentResolver().delete(uri, null, null);
+                if (deleted > 0) {
+                    Notify.create(activity, R.string.file_delete_ok, Style.OK).show();
+                } else {
+                    Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
+                }
+            } catch (Exception e) {
+                Log.e(Constants.TAG, "exception deleting file", e);
+                Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
+            }
+            return;
+        }
+
+        Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
 
     }
 

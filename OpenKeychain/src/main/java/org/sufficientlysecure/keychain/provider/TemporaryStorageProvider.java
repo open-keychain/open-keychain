@@ -210,10 +210,13 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (uri.getLastPathSegment() != null) {
-            selection = DatabaseUtil.concatenateWhere(selection, COLUMN_ID + "=?");
-            selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{uri.getLastPathSegment()});
+        if (uri == null || uri.getLastPathSegment() == null) {
+            return 0;
         }
+
+        selection = DatabaseUtil.concatenateWhere(selection, COLUMN_ID + "=?");
+        selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{uri.getLastPathSegment()});
+
         Cursor files = db.getReadableDatabase().query(TABLE_FILES, new String[]{COLUMN_ID}, selection,
                 selectionArgs, null, null, null);
         if (files != null) {
