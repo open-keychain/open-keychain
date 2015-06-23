@@ -26,8 +26,13 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,24 +40,35 @@ import java.util.Locale;
 import java.util.Set;
 
 public class EmailKeyHelper {
+    // to import keys, simply use CryptoOperationHelper with this callback
+    public abstract class ImportContactKeysCallback
+            implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    public static void importContacts(Context context, Messenger messenger) {
-        importAll(context, messenger, ContactHelper.getContactMails(context));
-    }
+        private ArrayList<ParcelableKeyRing> mKeyList;
+        private String mKeyserver;
 
-    public static void importAll(Context context, Messenger messenger, List<String> mails) {
-        // Collect all candidates as ImportKeysListEntry (set for deduplication)
-        Set<ImportKeysListEntry> entries = new HashSet<>();
-        for (String mail : mails) {
-            entries.addAll(getEmailKeys(context, mail));
+        public ImportContactKeysCallback(Context context, String keyserver) {
+            this(context, ContactHelper.getContactMails(context), keyserver);
         }
 
-        // Put them in a list and import
-        ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
-        for (ImportKeysListEntry entry : entries) {
-            keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
+        public ImportContactKeysCallback(Context context, List<String> mails, String keyserver) {
+            Set<ImportKeysListEntry> entries = new HashSet<>();
+            for (String mail : mails) {
+                entries.addAll(getEmailKeys(context, mail));
+            }
+
+            // Put them in a list and import
+            ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
+            for (ImportKeysListEntry entry : entries) {
+                keys.add(new ParcelableKeyRing(entry.getFingerprintHex(), entry.getKeyIdHex(), null));
+            }
+            mKeyList = keys;
+            mKeyserver = keyserver;
         }
-        importKeys(context, messenger, keys);
+        @Override
+        public ImportKeyringParcel createOperationInput() {
+            return new ImportKeyringParcel(mKeyList, mKeyserver);
+        }
     }
 
     public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
@@ -76,17 +92,6 @@ public class EmailKeyHelper {
             }
         }
         return keys;
-    }
-
-    private static void importKeys(Context context, Messenger messenger, ArrayList<ParcelableKeyRing> keys) {
-        Intent importIntent = new Intent(context, KeychainService.class);
-        importIntent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-        Bundle importData = new Bundle();
-        importData.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keys);
-        importIntent.putExtra(KeychainService.EXTRA_DATA, importData);
-        importIntent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        context.startService(importIntent);
     }
 
     public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
