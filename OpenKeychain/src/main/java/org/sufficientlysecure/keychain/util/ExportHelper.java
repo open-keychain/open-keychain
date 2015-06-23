@@ -27,15 +27,22 @@ import android.support.v4.app.FragmentActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
 import java.io.File;
 
-public class ExportHelper {
+public class ExportHelper
+        implements CryptoOperationHelper.Callback <ExportKeyringParcel, ExportResult> {
     protected File mExportFile;
 
     FragmentActivity mActivity;
+
+    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mExportOpHelper;
+    private boolean mExportSecret;
+    private long[] mMasterKeyIds;
 
     public ExportHelper(FragmentActivity activity) {
         super();
@@ -71,60 +78,38 @@ public class ExportHelper {
         }, mActivity.getSupportFragmentManager() ,title, message, exportFile, checkMsg);
     }
 
+    // TODO: If ExportHelper requires pending data (see CryptoOPerationHelper), activities using
+    // TODO: this class should be able to call mExportOpHelper.handleActivity
+
     /**
      * Export keys
      */
     public void exportKeys(long[] masterKeyIds, boolean exportSecret) {
         Log.d(Constants.TAG, "exportKeys started");
+        mExportSecret = exportSecret;
+        mMasterKeyIds = masterKeyIds; // if masterKeyIds is null it means export all
 
-        // Send all information needed to service to export key in other thread
-        final Intent intent = new Intent(mActivity, KeychainService.class);
-
-        intent.setAction(KeychainService.ACTION_EXPORT_KEYRING);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        data.putString(KeychainService.EXPORT_FILENAME, mExportFile.getAbsolutePath());
-        data.putBoolean(KeychainService.EXPORT_SECRET, exportSecret);
-
-        if (masterKeyIds == null) {
-            data.putBoolean(KeychainService.EXPORT_ALL, true);
-        } else {
-            data.putLongArray(KeychainService.EXPORT_KEY_RING_MASTER_KEY_ID, masterKeyIds);
-        }
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after exporting is done in KeychainService
-        ServiceProgressHandler exportHandler = new ServiceProgressHandler(mActivity) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle data = message.getData();
-
-                    ExportResult result = data.getParcelable(ExportResult.EXTRA_RESULT);
-                    result.createNotify(mActivity).show();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(exportHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        exportHandler.showProgressDialog(
-                mActivity.getString(R.string.progress_exporting),
-                ProgressDialog.STYLE_HORIZONTAL, false
-        );
-
-        // start service with intent
-        mActivity.startService(intent);
+        mExportOpHelper = new CryptoOperationHelper(mActivity, this, R.string.progress_exporting);
+        mExportOpHelper.cryptoOperation();
     }
 
+    @Override
+    public ExportKeyringParcel createOperationInput() {
+        return new ExportKeyringParcel(mMasterKeyIds, mExportSecret, mExportFile.getAbsolutePath());
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ExportResult result) {
+        result.createNotify(mActivity).show();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ExportResult result) {
+        result.createNotify(mActivity).show();
+    }
 }

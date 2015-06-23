@@ -47,9 +47,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.service.ImportExportParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -101,7 +102,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * TODO rework uploadKeyRingToServer
  *
  */
-public class ImportExportOperation extends BaseOperation<ImportKeyringParcel> {
+public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
 
     public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
@@ -629,9 +630,44 @@ public class ImportExportOperation extends BaseOperation<ImportKeyringParcel> {
     }
 
     @Override
-    public ImportKeyResult execute(ImportKeyringParcel input, CryptoInputParcel cryptoInput) {
-
-        return importKeys(input.mKeyList, input.mKeyserver);
+    public OperationResult execute(ImportExportParcel input, CryptoInputParcel cryptoInput) {
+        if (input instanceof ExportKeyringParcel) {
+            ExportKeyringParcel exportInput = (ExportKeyringParcel) input;
+            switch (exportInput.mExportType) {
+                case UPLOAD_KEYSERVER: {
+                    HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
+                    try {
+                        CanonicalizedPublicKeyRing keyring
+                                = mProviderHelper.getCanonicalizedPublicKeyRing(
+                                exportInput.mCanonicalizedPublicKeyringUri);
+                        uploadKeyRingToServer(hkpKeyserver, keyring);
+                        // TODO: replace with proper log
+                        return new ExportResult(ExportResult.RESULT_OK, new OperationLog());
+                    } catch (Exception e) {
+                        // TODO: Implement better exception handling, replace with log
+                    }
+                    break;
+                }
+                case EXPORT_FILE: {
+                    return exportToFile(exportInput.mMasterKeyIds, exportInput.mExportSecret,
+                            exportInput.mOutputFile);
+                }
+                case EXPORT_URI: {
+                    return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret,
+                            exportInput.mOutputUri);
+                }
+                default: {
+                    return null;
+                }
+            }
+        }
+        else if (input instanceof ImportKeyringParcel) {
+            ImportKeyringParcel importInput = (ImportKeyringParcel) input;
+            return importKeys(importInput.mKeyList, importInput.mKeyserver);
+        } else {
+            throw new RuntimeException("Invalid input parcel at ImportExportOperation");
+        }
+        return null;
     }
 
     public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer) {

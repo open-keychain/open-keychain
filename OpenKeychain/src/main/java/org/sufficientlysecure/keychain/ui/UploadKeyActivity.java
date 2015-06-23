@@ -17,12 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,22 +30,30 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * Sends the selected public key to a keyserver
  */
-public class UploadKeyActivity extends BaseActivity {
+public class UploadKeyActivity extends BaseActivity
+        implements CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult> {
     private View mUploadButton;
     private Spinner mKeyServerSpinner;
 
     private Uri mDataUri;
+
+    // CryptoOperationHelper.Callback vars
+    private String mKeyserver;
+    private Uri mUnifiedKeyringUri;
+    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mUploadOpHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,51 +94,23 @@ public class UploadKeyActivity extends BaseActivity {
         setContentView(R.layout.upload_key_activity);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mUploadOpHelper != null) {
+            mUploadOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void uploadKey() {
-        // Send all information needed to service to upload key in other thread
-        Intent intent = new Intent(this, KeychainService.class);
-
-        intent.setAction(KeychainService.ACTION_UPLOAD_KEYRING);
-
-        // set data uri as path to keyring
         Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-        intent.setData(blobUri);
-
-        // fill values for this action
-        Bundle data = new Bundle();
+        mUnifiedKeyringUri = blobUri;
 
         String server = (String) mKeyServerSpinner.getSelectedItem();
-        data.putString(KeychainService.UPLOAD_KEY_SERVER, server);
+        mKeyserver = server;
 
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Message is received after uploading is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-
-                    Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
-                            Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(
-                getString(R.string.progress_uploading),
-                ProgressDialog.STYLE_HORIZONTAL, false);
-
-        // start service with intent
-        startService(intent);
+        mUploadOpHelper = new CryptoOperationHelper(this, this, R.string.progress_uploading);
+        mUploadOpHelper.cryptoOperation();
     }
 
     @Override
@@ -147,5 +124,26 @@ public class UploadKeyActivity extends BaseActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public ExportKeyringParcel createOperationInput() {
+        return new ExportKeyringParcel(mKeyserver, mUnifiedKeyringUri);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ExportResult result) {
+        Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ExportResult result) {
+        // TODO: Implement proper log for key upload then show error
     }
 }

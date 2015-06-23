@@ -91,11 +91,6 @@ public class KeychainService extends Service implements Progressable {
 
     public static final String ACTION_PROMOTE_KEYRING = Constants.INTENT_PREFIX + "PROMOTE_KEYRING";
 
-    public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
-    public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
-
-    public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
-
     public static final String ACTION_DELETE = Constants.INTENT_PREFIX + "DELETE";
 
     public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
@@ -116,20 +111,6 @@ public class KeychainService extends Service implements Progressable {
     // delete keyring(s)
     public static final String DELETE_KEY_LIST = "delete_list";
     public static final String DELETE_IS_SECRET = "delete_is_secret";
-
-    // import key
-    public static final String IMPORT_KEY_LIST = "import_key_list";
-    public static final String IMPORT_KEY_SERVER = "import_key_server";
-
-    // export key
-    public static final String EXPORT_FILENAME = "export_filename";
-    public static final String EXPORT_URI = "export_uri";
-    public static final String EXPORT_SECRET = "export_secret";
-    public static final String EXPORT_ALL = "export_all";
-    public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
-
-    // upload key
-    public static final String UPLOAD_KEY_SERVER = "upload_key_server";
 
     // promote key
     public static final String PROMOTE_MASTER_KEY_ID = "promote_master_key_id";
@@ -352,76 +333,6 @@ public class KeychainService extends Service implements Progressable {
                         // Result
                         sendMessageToHandler(MessageStatus.OKAY, result);
 
-                        break;
-                    }
-                    case ACTION_EXPORT_KEYRING: {
-
-                        // Input
-                        boolean exportSecret = data.getBoolean(EXPORT_SECRET, false);
-                        String outputFile = data.getString(EXPORT_FILENAME);
-                        Uri outputUri = data.getParcelable(EXPORT_URI);
-
-                        boolean exportAll = data.getBoolean(EXPORT_ALL);
-                        long[] masterKeyIds = exportAll ? null : data.getLongArray(EXPORT_KEY_RING_MASTER_KEY_ID);
-
-                        // Operation
-                        ImportExportOperation importExportOperation = new ImportExportOperation(
-                                KeychainService.this, providerHelper, KeychainService.this);
-                        ExportResult result;
-                        if (outputFile != null) {
-                            result = importExportOperation.exportToFile(masterKeyIds, exportSecret, outputFile);
-                        } else {
-                            result = importExportOperation.exportToUri(masterKeyIds, exportSecret, outputUri);
-                        }
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
-                    case ACTION_IMPORT_KEYRING: {
-
-                        // Input
-                        String keyServer = data.getString(IMPORT_KEY_SERVER);
-                        ArrayList<ParcelableKeyRing> keyList = data.getParcelableArrayList(IMPORT_KEY_LIST);
-
-                        ImportExportOperation importExportOperation = new ImportExportOperation(
-                                KeychainService.this,
-                                providerHelper, KeychainService.this, mActionCanceled);
-
-                        ImportKeyringParcel inputParcel = new ImportKeyringParcel(keyList, keyServer);
-                        CryptoInputParcel cryptoInputParcel = new CryptoInputParcel();
-
-                        ImportKeyResult result = importExportOperation.execute(inputParcel, cryptoInputParcel);
-
-                        sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
-                    case ACTION_UPLOAD_KEYRING: {
-                        try {
-
-                            // Input
-                            String keyServer = data.getString(UPLOAD_KEY_SERVER);
-                            // and dataUri!
-
-                            // Operation
-                            HkpKeyserver server = new HkpKeyserver(keyServer);
-
-                            CanonicalizedPublicKeyRing keyring = providerHelper.getCanonicalizedPublicKeyRing(dataUri);
-                            ImportExportOperation importExportOperation = new ImportExportOperation(
-                                    KeychainService.this, providerHelper, KeychainService.this);
-
-                            try {
-                                importExportOperation.uploadKeyRingToServer(server, keyring);
-                            } catch (Keyserver.AddKeyException e) {
-                                throw new PgpGeneralException("Unable to export key to selected server");
-                            }
-
-                            sendMessageToHandler(MessageStatus.OKAY);
-                        } catch (Exception e) {
-                            sendErrorToHandler(e);
-                        }
                         break;
                     }
                 }
