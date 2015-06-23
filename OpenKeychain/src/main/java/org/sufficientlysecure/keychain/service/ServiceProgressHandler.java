@@ -64,6 +64,8 @@ public class ServiceProgressHandler extends Handler {
     public static final String KEYBASE_PRESENCE_URL = "keybase_presence_url";
     public static final String KEYBASE_PRESENCE_LABEL = "keybase_presence_label";
 
+    public static final String TAG_PROGRESS_DIALOG = "progressDialog";
+
     FragmentActivity mActivity;
 
     public ServiceProgressHandler(FragmentActivity activity) {
@@ -88,7 +90,7 @@ public class ServiceProgressHandler extends Handler {
         Handler handler = new Handler();
         handler.post(new Runnable() {
             public void run() {
-                frag.show(manager, "progressDialog");
+                frag.show(manager, TAG_PROGRESS_DIALOG);
             }
         });
 

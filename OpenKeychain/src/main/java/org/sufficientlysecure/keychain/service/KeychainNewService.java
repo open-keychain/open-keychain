@@ -31,10 +31,7 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.operations.BaseOperation;
-import org.sufficientlysecure.keychain.operations.CertifyOperation;
-import org.sufficientlysecure.keychain.operations.EditKeyOperation;
-import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
+import org.sufficientlysecure.keychain.operations.*;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
@@ -96,13 +93,19 @@ public class KeychainNewService extends Service implements Progressable {
                 // just for brevity
                 KeychainNewService outerThis = KeychainNewService.this;
                 if (inputParcel instanceof SignEncryptParcel) {
-                    op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                    op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis),
+                            outerThis, mActionCanceled);
                 } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
                     op = new PgpDecryptVerify(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof SaveKeyringParcel) {
-                    op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                    op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
+                            mActionCanceled);
                 } else if (inputParcel instanceof CertifyAction) {
-                    op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
+                    op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
+                            mActionCanceled);
+                } else if (inputParcel instanceof ImportKeyringParcel){
+                    op = new ImportExportOperation(outerThis, new ProviderHelper(outerThis),
+                            outerThis, mActionCanceled);
                 } else {
                     return;
                 }
