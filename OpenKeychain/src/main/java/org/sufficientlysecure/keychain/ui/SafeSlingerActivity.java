@@ -38,9 +38,11 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -52,7 +54,8 @@ import edu.cmu.cylab.starslinger.exchange.ExchangeActivity;
 import edu.cmu.cylab.starslinger.exchange.ExchangeConfig;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class SafeSlingerActivity extends BaseActivity {
+public class SafeSlingerActivity extends BaseActivity
+        implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     private static final int REQUEST_CODE_SAFE_SLINGER = 211;
 
@@ -60,6 +63,12 @@ public class SafeSlingerActivity extends BaseActivity {
 
     private long mMasterKeyId;
     private int mSelectedNumber = 2;
+
+    // for CryptoOperationHelper
+    private ArrayList<ParcelableKeyRing> mKeyList;
+    private String mKeyserver;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,64 +125,16 @@ public class SafeSlingerActivity extends BaseActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mOperationHelper != null) {
+            mOperationHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
         if (requestCode == REQUEST_CODE_SAFE_SLINGER) {
             if (resultCode == ExchangeActivity.RESULT_EXCHANGE_CANCELED) {
                 return;
             }
 
-            final FragmentActivity activity = SafeSlingerActivity.this;
-
-            // Message is received after importing is done in KeychainService
-            ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
-                @Override
-                public void handleMessage(Message message) {
-                    // handle messages by standard KeychainIntentServiceHandler first
-                    super.handleMessage(message);
-
-                    if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                        // get returned data bundle
-                        Bundle returnData = message.getData();
-                        if (returnData == null) {
-                            return;
-                        }
-                        final ImportKeyResult result =
-                                returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                        if (result == null) {
-                            Log.e(Constants.TAG, "result == null");
-                            return;
-                        }
-
-                        if (!result.success()) {
-//                            result.createNotify(activity).show();
-                            // only return if no success...
-                            Intent data = new Intent();
-                            data.putExtras(returnData);
-                            setResult(RESULT_OK, data);
-                            finish();
-                            return;
-                        }
-
-//                        if (mExchangeMasterKeyId == null) {
-//                            return;
-//                        }
-
-                        Intent certifyIntent = new Intent(activity, CertifyKeyActivity.class);
-                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
-                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
-                        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
-                        startActivityForResult(certifyIntent, 0);
-
-//                        mExchangeMasterKeyId = null;
-                    }
-                }
-            };
-
             Log.d(Constants.TAG, "importKeys started");
-
-            // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(activity, KeychainService.class);
-
-            intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
 
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -185,28 +146,18 @@ public class SafeSlingerActivity extends BaseActivity {
                 // We parcel this iteratively into a file - anything we can
                 // display here, we should be able to import.
                 ParcelableFileCache<ParcelableKeyRing> cache =
-                        new ParcelableFileCache<>(activity, "key_import.pcl");
+                        new ParcelableFileCache<>(this, "key_import.pcl");
                 cache.writeCache(it.size(), it.iterator());
 
-                // fill values for this action
-                Bundle bundle = new Bundle();
-                intent.putExtra(KeychainService.EXTRA_DATA, bundle);
+                mOperationHelper =
+                        new CryptoOperationHelper(this, this, R.string.progress_importing);
 
-                // Create a new Messenger for the communication back
-                Messenger messenger = new Messenger(saveHandler);
-                intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-                // show progress dialog
-                saveHandler.showProgressDialog(
-                    getString(R.string.progress_importing),
-                    ProgressDialog.STYLE_HORIZONTAL, true
-                );
-
-                // start service with intent
-                activity.startService(intent);
+                mKeyList = null;
+                mKeyserver = null;
+                mOperationHelper.cryptoOperation();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Problem writing cache file", e);
-                Notify.create(activity, "Problem writing cache file!", Notify.Style.ERROR).show();
+                Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
         } else {
             // give everything else down to KeyListActivity!
@@ -233,4 +184,34 @@ public class SafeSlingerActivity extends BaseActivity {
         return list;
     }
 
+    // CryptoOperationHelper.Callback functions
+
+    @Override
+    public ImportKeyringParcel createOperationInput() {
+        return new ImportKeyringParcel(mKeyList, mKeyserver);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
+        Intent certifyIntent = new Intent(this, CertifyKeyActivity.class);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, result.getImportedMasterKeyIds());
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, mMasterKeyId);
+        startActivityForResult(certifyIntent, 0);
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ImportKeyResult result) {
+        Bundle returnData = new Bundle();
+        returnData.putParcelable(OperationResult.EXTRA_RESULT, result);
+        Intent data = new Intent();
+        data.putExtras(returnData);
+        setResult(RESULT_OK, data);
+        finish();
+    }
 }

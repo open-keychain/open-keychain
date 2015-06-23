@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
@@ -26,8 +25,6 @@ import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
@@ -43,8 +40,8 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.SingletonResult;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -55,7 +52,8 @@ import java.util.Locale;
 /**
  * Proxy activity (just a transparent content view) to scan QR Codes using the Barcode Scanner app
  */
-public class ImportKeysProxyActivity extends FragmentActivity {
+public class ImportKeysProxyActivity extends FragmentActivity
+        implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     public static final String ACTION_QR_CODE_API = OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE;
     // implies activity returns scanned fingerprint as extra and does not import
@@ -63,6 +61,11 @@ public class ImportKeysProxyActivity extends FragmentActivity {
     public static final String ACTION_SCAN_IMPORT = Constants.INTENT_PREFIX + "SCAN_QR_CODE_IMPORT";
 
     public static final String EXTRA_FINGERPRINT = "fingerprint";
+
+    // for CryptoOperationHelper
+    private String mKeyserver;
+    private ArrayList<ParcelableKeyRing> mKeyList;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +109,10 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mImportOpHelper != null) {
+            mImportOpHelper.cryptoOperation();
+        }
+
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
             IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
                     resultCode, data);
@@ -205,75 +212,51 @@ public class ImportKeysProxyActivity extends FragmentActivity {
 
     private void startImportService(ArrayList<ParcelableKeyRing> keyRings) {
 
-        // Message is received after importing is done in KeychainService
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        finish();
-                        return;
-                    }
-                    final ImportKeyResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        Log.e(Constants.TAG, "result == null");
-                        finish();
-                        return;
-                    }
-
-                    if (!result.success()) {
-                        // only return if no success...
-                        Intent data = new Intent();
-                        data.putExtras(returnData);
-                        returnResult(data);
-                        return;
-                    }
-
-                    Intent certifyIntent = new Intent(ImportKeysProxyActivity.this,
-                            CertifyKeyActivity.class);
-                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
-                    certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS,
-                            result.getImportedMasterKeyIds());
-                    startActivityForResult(certifyIntent, 0);
-                }
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
         // search config
         {
             Preferences prefs = Preferences.getPreferences(this);
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            mKeyserver = cloudPrefs.keyserver;
         }
 
-        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyRings);
+        mKeyList = keyRings;
 
-        // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, KeychainService.class);
-        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
+        mImportOpHelper = new CryptoOperationHelper<>(this, this, R.string.progress_importing);
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+        mImportOpHelper.cryptoOperation();
+    }
 
-        // show progress dialog
-        serviceHandler.showProgressDialog(
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL, true);
 
-        // start service with intent
-        startService(intent);
+    // CryptoOperationHelper.Callback methods
+
+    @Override
+    public ImportKeyringParcel createOperationInput() {
+        return new ImportKeyringParcel(mKeyList, mKeyserver);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
+        Intent certifyIntent = new Intent(this, CertifyKeyActivity.class);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_RESULT, result);
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS,
+                result.getImportedMasterKeyIds());
+        startActivityForResult(certifyIntent, 0);
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ImportKeyResult result) {
+        Bundle returnData = new Bundle();
+        returnData.putParcelable(OperationResult.EXTRA_RESULT, result);
+        Intent data = new Intent();
+        data.putExtras(returnData);
+        returnResult(data);
+        return;
     }
 
     /**

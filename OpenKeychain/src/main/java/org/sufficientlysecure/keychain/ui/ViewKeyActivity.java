@@ -65,11 +65,13 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -85,11 +87,13 @@ import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ViewKeyActivity extends BaseNfcActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     public static final String EXTRA_NFC_USER_ID = "nfc_user_id";
     public static final String EXTRA_NFC_AID = "nfc_aid";
@@ -104,6 +108,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     ProviderHelper mProviderHelper;
 
     protected Uri mDataUri;
+
+    // For CryptoOperationHelper.Callback
+    private String mKeyserver;
+    private ArrayList<ParcelableKeyRing> mKeyList;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
     private TextView mName;
     private TextView mStatusText;
@@ -396,7 +405,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] {mMasterKeyId});
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
         startCertifyIntent(intent);
     }
@@ -486,6 +495,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mOperationHelper != null) {
+            mOperationHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
         if (requestCode == REQUEST_QR_FINGERPRINT && resultCode == Activity.RESULT_OK) {
 
             // If there is an EXTRA_RESULT, that's an error. Just show it.
@@ -651,56 +664,20 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
         ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
         entries.add(keyEntry);
-
-        // Message is received after importing is done in KeychainService
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(this) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    mIsRefreshing = false;
-
-                    if (returnData == null) {
-                        finish();
-                        return;
-                    }
-                    final ImportKeyResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    result.createNotify(ViewKeyActivity.this).show();
-                }
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
+        mKeyList = entries;
 
         // search config
         {
             Preferences prefs = Preferences.getPreferences(this);
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            mKeyserver = cloudPrefs.keyserver;
         }
 
-        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, entries);
+        mOperationHelper = new CryptoOperationHelper<>(
+                this, this, R.string.progress_importing);
 
-        // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, KeychainService.class);
-        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // start service with intent
-        startService(intent);
-
+        mOperationHelper.cryptoOperation();
     }
 
     private void editKey(Uri dataUri) {
@@ -985,5 +962,29 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    // CryptoOperationHelper.Callback functions
+
+    @Override
+    public ImportKeyringParcel createOperationInput() {
+        return new ImportKeyringParcel(mKeyList, mKeyserver);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
+        mIsRefreshing = false;
+        result.createNotify(this).show();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        mIsRefreshing = false;
+    }
+
+    @Override
+    public void onCryptoOperationError(ImportKeyResult result) {
+        mIsRefreshing = false;
+        result.createNotify(this).show();
     }
 }

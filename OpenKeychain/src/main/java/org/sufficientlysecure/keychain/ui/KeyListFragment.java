@@ -64,9 +64,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
@@ -90,7 +92,8 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class KeyListFragment extends LoaderFragment
         implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor>, FabContainer {
+        LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
+        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     static final int REQUEST_REPEAT_PASSPHRASE = 1;
     static final int REQUEST_ACTION = 2;
@@ -106,6 +109,11 @@ public class KeyListFragment extends LoaderFragment
     private String mQuery;
 
     private FloatingActionsMenu mFab;
+
+    // for CryptoOperationHelper import
+    private ArrayList<ParcelableKeyRing> mKeyList;
+    private String mKeyserver;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;
@@ -580,64 +588,22 @@ public class KeyListFragment extends LoaderFragment
                 ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
                 keyList.add(keyEntry);
             }
+            mKeyList = keyList;
         } finally {
             cursor.close();
         }
-
-        ServiceProgressHandler serviceHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final ImportKeyResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        Log.e(Constants.TAG, "result == null");
-                        return;
-                    }
-
-                    result.createNotify(getActivity()).show();
-                }
-            }
-        };
-
-        // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-
-        // fill values for this action
-        Bundle data = new Bundle();
 
         // search config
         {
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            mKeyserver = cloudPrefs.keyserver;
         }
 
-        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyList);
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(serviceHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        serviceHandler.showProgressDialog(
-                getString(R.string.progress_updating),
-                ProgressDialog.STYLE_HORIZONTAL, true);
-
-        // start service with intent
-        getActivity().startService(intent);
+        mImportOpHelper = new CryptoOperationHelper<>(this,
+                this, R.string.progress_updating);
+        mImportOpHelper.cryptoOperation();
     }
 
     private void consolidate() {
@@ -724,6 +690,9 @@ public class KeyListFragment extends LoaderFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mImportOpHelper != null) {
+            mImportOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
         if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
             if (resultCode != Activity.RESULT_OK) {
                 return;
@@ -767,6 +736,27 @@ public class KeyListFragment extends LoaderFragment
         anim.setStartDelay(70);
         anim.setDuration(300);
         anim.start();
+    }
+
+    // CryptoOperationHelper.Callback methods
+    @Override
+    public ImportKeyringParcel createOperationInput() {
+        return new ImportKeyringParcel(mKeyList, mKeyserver);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
+        result.createNotify(getActivity()).show();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(ImportKeyResult result) {
+        result.createNotify(getActivity()).show();
     }
 
     public class KeyListAdapter extends KeyAdapter implements StickyListHeadersAdapter {
