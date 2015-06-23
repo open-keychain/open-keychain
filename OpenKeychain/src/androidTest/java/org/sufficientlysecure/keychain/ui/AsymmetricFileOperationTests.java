@@ -125,7 +125,7 @@ public class AsymmetricFileOperationTests {
             handleAddFileIntent(file);
             onView(withId(R.id.file_list_entry_add)).perform(click());
 
-            handleSaveFileIntent(outputFile);
+            handleSaveEncryptedFileIntent(outputFile);
             onView(withId(R.id.encrypt_save)).perform(click());
 
             assertThat("output file has been written", true, is(outputFile.exists()));
@@ -145,6 +145,9 @@ public class AsymmetricFileOperationTests {
             onView(isRecyclerItemView(R.id.decrypted_files_list,
                     hasDescendant(withText(file.getName()))))
                     .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
+        }
+
+        { // delete original file
 
             // open context menu
             onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
@@ -166,6 +169,29 @@ public class AsymmetricFileOperationTests {
             onView(withText(R.string.btn_delete_original)).perform(click());
 
             checkSnackbar(Style.WARN, R.string.file_delete_none);
+
+        }
+
+        { // save file (*after* deletion~)
+
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(file.getName())))),
+                    withId(R.id.context_menu))).perform(click());
+
+            File savedFile =
+                    new File(getInstrumentation().getTargetContext().getFilesDir(), "vo.png");
+            handleSaveDecryptedFileIntent(savedFile, file.getName());
+
+            // save decrypted content
+            onView(withText(R.string.btn_save)).perform(click());
+
+            checkSnackbar(Style.OK, R.string.file_saved);
+            assertThat("decrypted file has been saved", true, is(savedFile.exists()));
+
+            // cleanup
+            // noinspection ResultOfMethodCallIgnored
+            file.delete();
 
         }
 
@@ -208,7 +234,22 @@ public class AsymmetricFileOperationTests {
     }
 
     @TargetApi(VERSION_CODES.KITKAT)
-    private void handleSaveFileIntent(File file) {
+    private void handleSaveDecryptedFileIntent(File file, String expectedTitle) {
+        Intent data = new Intent();
+        data.setData(Uri.fromFile(file));
+
+        Intents.intending(allOf(
+                hasAction(Intent.ACTION_CREATE_DOCUMENT),
+                hasExtra("android.content.extra.SHOW_ADVANCED", true),
+                hasExtra(Intent.EXTRA_TITLE, expectedTitle),
+                hasCategories(hasItem(Intent.CATEGORY_OPENABLE))
+        )).respondWith(
+                new ActivityResult(Activity.RESULT_OK, data)
+        );
+    }
+
+    @TargetApi(VERSION_CODES.KITKAT)
+    private void handleSaveEncryptedFileIntent(File file) {
 
         try {
             //noinspection ResultOfMethodCallIgnored
