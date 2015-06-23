@@ -33,7 +33,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.AdapterView;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +49,6 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCategories;
@@ -66,6 +64,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
@@ -110,7 +109,7 @@ public class AsymmetricFileOperationTests {
     }
 
     @Test
-    public void testTextEncryptDecryptFromToken() throws Exception {
+    public void testFileSaveEncryptDecrypt() throws Exception {
 
         // navigate to 'encrypt text'
         onView(withId(R.id.encrypt_files)).perform(click());
@@ -129,7 +128,7 @@ public class AsymmetricFileOperationTests {
             handleSaveFileIntent(outputFile);
             onView(withId(R.id.encrypt_save)).perform(click());
 
-            assertThat("output file has been written", true, CoreMatchers.is(outputFile.exists()));
+            assertThat("output file has been written", true, is(outputFile.exists()));
 
         }
 
@@ -146,6 +145,27 @@ public class AsymmetricFileOperationTests {
             onView(isRecyclerItemView(R.id.decrypted_files_list,
                     hasDescendant(withText(file.getName()))))
                     .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
+
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(file.getName())))),
+                    withId(R.id.context_menu))).perform(click());
+
+            // delete file
+            onView(withText(R.string.btn_delete_original)).perform(click());
+
+            checkSnackbar(Style.OK, R.string.file_delete_ok);
+            assertThat("output file has been deleted", false, is(outputFile.exists()));
+
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(file.getName())))),
+                    withId(R.id.context_menu))).perform(click());
+
+            // delete file
+            onView(withText(R.string.btn_delete_original)).perform(click());
+
+            checkSnackbar(Style.OK, R.string.file_delete_none);
 
         }
 
@@ -226,30 +246,6 @@ public class AsymmetricFileOperationTests {
     }
 
     @Test
-    public void testTextEncryptDecryptFromKeyView() throws Exception {
-
-        String cleartext = randomString(10, 30);
-
-        // navigate to key list
-        pressBack();
-
-        { // encrypt
-
-            // navigate to edit key dialog
-            onData(withKeyItemId(0x9D604D2F310716A3L))
-                    .inAdapterView(allOf(isAssignableFrom(AdapterView.class),
-                            isDescendantOfA(withId(R.id.key_list_list))))
-                    .perform(click());
-            onView(withId(R.id.view_key_action_encrypt_text)).perform(click());
-
-            // make sure the encrypt is correctly set
-            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
-
-        }
-
-    }
-
-    @Test
     public void testSignVerify() throws Exception {
 
         String cleartext = randomString(10, 30);
@@ -295,9 +291,6 @@ public class AsymmetricFileOperationTests {
             onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
                             hasDescendant(withText(R.string.filename_unknown)))),
                     withId(R.id.context_menu))).perform(click());
-
-            // "delete file" shouldn't be there
-            onView(withText(R.string.btn_delete_original)).check(doesNotExist());
 
             // check if log looks ok
             onView(withText(R.string.snackbar_details)).perform(click());

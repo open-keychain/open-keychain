@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -42,6 +44,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtra;
@@ -125,11 +128,7 @@ public class SymmetricTextOperationTests {
                     hasDescendant(withText(R.string.filename_unknown_text))))
                     .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
 
-            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
-                            hasDescendant(withText(R.string.filename_unknown_text)))),
-                    withId(R.id.file))).perform(click());
-
-            intended(allOf(
+            intending(allOf(
                     hasAction("android.intent.action.CHOOSER"),
                     hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
                             hasAction(Intent.ACTION_VIEW),
@@ -137,7 +136,11 @@ public class SymmetricTextOperationTests {
                             hasData(allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.CONTENT_AUTHORITY))),
                             hasType("text/plain")
                     ))
-            ));
+            )).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(R.string.filename_unknown_text)))),
+                    withId(R.id.file))).perform(click());
 
         }
 
@@ -165,9 +168,7 @@ public class SymmetricTextOperationTests {
 
             onView(withId(R.id.encrypt_text_text)).check(matches(withText(text)));
 
-            onView(withId(R.id.encrypt_share)).perform(click());
-
-            intended(allOf(
+            intending(allOf(
                     hasAction("android.intent.action.CHOOSER"),
                     hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
                             hasAction(Intent.ACTION_SEND),
@@ -175,7 +176,9 @@ public class SymmetricTextOperationTests {
                             hasExtraWithKey(Intent.EXTRA_TEXT),
                             hasType("text/plain")
                     ))
-            ));
+            )).respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            onView(withId(R.id.encrypt_share)).perform(click());
 
         }
 

@@ -29,8 +29,16 @@ import java.util.Random;
 
 import android.content.Context;
 import android.support.annotation.StringRes;
+import android.support.test.espresso.UiController;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.base.DefaultFailureHandler;
+import android.support.test.espresso.matcher.ViewMatchers;
+import android.view.View;
 
+import com.nispok.snackbar.Snackbar;
+import com.tokenautocomplete.TokenCompleteTextView;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -43,19 +51,39 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSnackbarLineColor;
 
 
 public class TestHelpers {
 
+    public static void dismissSnackbar() {
+        onView(withClassName(endsWith("Snackbar")))
+            .perform(new ViewAction() {
+                @Override
+                public Matcher<View> getConstraints() {
+                    return ViewMatchers.isAssignableFrom(Snackbar.class);
+                }
+
+                @Override
+                public String getDescription() {
+                    return "dismiss snackbar";
+                }
+
+                @Override
+                public void perform(UiController uiController, View view) {
+                    ((Snackbar) view).dismiss();
+                }
+            });
+    }
 
     public static void checkSnackbar(Style style, @StringRes Integer text) {
 
-        onView(withClassName(CoreMatchers.endsWith("Snackbar")))
+        onView(withClassName(endsWith("Snackbar")))
                 .check(matches(withSnackbarLineColor(style.mLineColor)));
 
         if (text != null) {
-            onView(withClassName(CoreMatchers.endsWith("Snackbar")))
+            onView(withClassName(endsWith("Snackbar")))
                     .check(matches(hasDescendant(withText(text))));
         }
 
