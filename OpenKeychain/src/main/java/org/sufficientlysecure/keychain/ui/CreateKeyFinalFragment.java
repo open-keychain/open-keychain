@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,13 +45,15 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Iterator;
 
-public class CreateKeyFinalFragment extends Fragment {
+public class CreateKeyFinalFragment
+        extends CryptoOperationFragment<SaveKeyringParcel, EditKeyResult> {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
 
@@ -66,7 +67,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
     SaveKeyringParcel mSaveKeyringParcel;
 
-    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mOperationHelper;
+    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mUploadOpHelper;
 
     public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
@@ -139,8 +140,8 @@ public class CreateKeyFinalFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mOperationHelper != null) {
-            mOperationHelper.handleActivityResult(requestCode, resultCode, data);
+        if (mUploadOpHelper != null) {
+            mUploadOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
         switch (requestCode) {
             case REQUEST_EDIT_KEY: {
@@ -154,6 +155,30 @@ public class CreateKeyFinalFragment extends Fragment {
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    protected SaveKeyringParcel createOperationInput() {
+        return mSaveKeyringParcel;
+    }
+
+    @Override
+    protected void onCryptoOperationSuccess(EditKeyResult result) {
+        if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
+            // result will be displayed after upload
+            uploadKey(result);
+        } else {
+            Intent data = new Intent();
+            data.putExtra(OperationResult.EXTRA_RESULT, result);
+            getActivity().setResult(Activity.RESULT_OK, data);
+            getActivity().finish();
+        }
+    }
+
+    @Override
+    protected void onCryptoOperationResult(EditKeyResult result) {
+        // do something else?
+        super.onCryptoOperationResult(result);
     }
 
     @Override
@@ -202,57 +227,8 @@ public class CreateKeyFinalFragment extends Fragment {
 
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        intent.setAction(KeychainService.ACTION_EDIT_KEYRING);
-
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-                    final EditKeyResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-                    if (result == null) {
-                        Log.e(Constants.TAG, "result == null");
-                        return;
-                    }
-
-                    if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
-                        // result will be displayed after upload
-                        uploadKey(result);
-                    } else {
-                        Intent data = new Intent();
-                        data.putExtra(OperationResult.EXTRA_RESULT, result);
-                        getActivity().setResult(Activity.RESULT_OK, data);
-                        getActivity().finish();
-                    }
-                }
-            }
-        };
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        // get selected key entries
-        data.putParcelable(KeychainService.EDIT_KEYRING_PARCEL, mSaveKeyringParcel);
-
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(getString(R.string.progress_building_key),
-                ProgressDialog.STYLE_HORIZONTAL, false);
-
-        getActivity().startService(intent);
+        super.setProgressMessageResource(R.string.progress_building_key);
+        super.cryptoOperation();
     }
 
     // TODO move into EditKeyOperation
@@ -274,16 +250,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
             @Override
             public void onCryptoOperationSuccess(ExportResult result) {
-                // TODO: upload operation needs a result!
-                // TODO: then combine these results (saveKeyResult and update op result)
-                //if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                //Notify.create(getActivity(), R.string.key_send_success,
-                //Notify.Style.OK).show();
-
-                Intent data = new Intent();
-                data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                handleResult(result);
             }
 
             @Override
@@ -293,8 +260,11 @@ public class CreateKeyFinalFragment extends Fragment {
 
             @Override
             public void onCryptoOperationError(ExportResult result) {
+                handleResult(result);
+            }
 
-                // TODO: upload operation needs a result!
+            public void handleResult(ExportResult result) {
+                // TODO: upload operation needs a result! "result" is not currenlty used
                 // TODO: then combine these results (saveKeyResult and update op result)
                 //if (result.getResult() == OperationResultParcel.RESULT_OK) {
                 //Notify.create(getActivity(), R.string.key_send_success,
@@ -307,8 +277,9 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         };
 
-        mOperationHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_uploading);
-        mOperationHelper.cryptoOperation();
+
+        mUploadOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_uploading);
+        mUploadOpHelper.cryptoOperation();
     }
 
 }

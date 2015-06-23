@@ -103,11 +103,6 @@ public class KeychainService extends Service implements Progressable {
     public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
     public static final String KEYBASE_PROOF = "keybase_proof";
 
-    // save keyring
-    public static final String EDIT_KEYRING_PARCEL = "save_parcel";
-    public static final String EDIT_KEYRING_PASSPHRASE = "passphrase";
-    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
-
     // delete keyring(s)
     public static final String DELETE_KEY_LIST = "delete_list";
     public static final String DELETE_IS_SECRET = "delete_is_secret";
@@ -295,22 +290,6 @@ public class KeychainService extends Service implements Progressable {
                         // Operation
                         DeleteOperation op = new DeleteOperation(KeychainService.this, providerHelper, KeychainService.this);
                         DeleteResult result = op.execute(masterKeyIds, isSecret);
-
-                        // Result
-                        sendMessageToHandler(MessageStatus.OKAY, result);
-
-                        break;
-                    }
-                    case ACTION_EDIT_KEYRING: {
-
-                        // Input
-                        SaveKeyringParcel saveParcel = data.getParcelable(EDIT_KEYRING_PARCEL);
-                        CryptoInputParcel cryptoInput = data.getParcelable(EXTRA_CRYPTO_INPUT);
-
-                        // Operation
-                        EditKeyOperation op = new EditKeyOperation(KeychainService.this, providerHelper,
-                                KeychainService.this, mActionCanceled);
-                        OperationResult result = op.execute(saveParcel, cryptoInput);
 
                         // Result
                         sendMessageToHandler(MessageStatus.OKAY, result);

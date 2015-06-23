@@ -84,15 +84,25 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
     }
 
     protected void onCryptoOperationError(S result) {
+        onCryptoOperationResult(result);
         result.createNotify(getActivity()).show();
     }
 
     protected void onCryptoOperationCancelled() {
     }
 
-    abstract protected void onCryptoOperationSuccess(S result);
+    protected void onCryptoOperationSuccess(S result) {
+        onCryptoOperationResult(result);
+    }
 
+    /**
+     *
+     * To be overriden by subclasses, if desired. Provides a way to access the method by the
+     * same name in CryptoOperationHelper, if super.onCryptoOperationSuccess and
+     * super.onCryptoOperationError are called at the start of the respective functions in the
+     * subclass overriding them
+     * @param result
+     */
     protected void onCryptoOperationResult(S result) {
-        mOperationHelper.onCryptoOperationResult(result);
     }
 }
