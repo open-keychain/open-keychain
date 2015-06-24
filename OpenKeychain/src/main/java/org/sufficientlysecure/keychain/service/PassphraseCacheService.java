@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
+import java.util.Date;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -25,8 +28,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -36,9 +44,6 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.LongSparseArray;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -48,8 +53,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -320,7 +323,7 @@ public class PassphraseCacheService extends Service {
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
-                        timeout(context, keyId);
+                        timeout(keyId);
                     }
                 }
             };
@@ -455,7 +458,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Called when one specific passphrase for keyId timed out
      */
-    private void timeout(Context context, long keyId) {
+    private void timeout(long keyId) {
         CachedPassphrase cPass = mPassphraseCache.get(keyId);
         // clean internal char[] from memory!
         cPass.getPassphrase().removeFromMemory();
@@ -478,14 +481,23 @@ public class PassphraseCacheService extends Service {
     }
 
     // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
-    private static Bitmap getBitmap(int resId, Context ctx) {
-        final int mLargeIconWidth = (int) ctx.getResources().getDimension(
+    private static Bitmap getBitmap(int resId, Context context) {
+        int mLargeIconWidth = (int) context.getResources().getDimension(
                                   android.R.dimen.notification_large_icon_width);
-        final int mLargeIconHeight = (int) ctx.getResources().getDimension(
+        int mLargeIconHeight = (int) context.getResources().getDimension(
                                    android.R.dimen.notification_large_icon_height);
-        final Drawable d = ctx.getResources().getDrawable(resId);
-        final Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
-        final Canvas c = new Canvas(b);
+        Drawable d;
+        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            // noinspection deprecation (can't help it at this api level)
+            d = context.getResources().getDrawable(resId);
+        } else {
+            d = context.getDrawable(resId);
+        }
+        if (d == null) {
+            return null;
+        }
+        Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
         d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
         d.draw(c);
         return b;
