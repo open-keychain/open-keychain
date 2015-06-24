@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainNewService;
+import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -234,10 +234,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         }
 
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(activity, KeychainNewService.class);
+        Intent intent = new Intent(activity, KeychainService.class);
 
-        intent.putExtra(KeychainNewService.EXTRA_OPERATION_INPUT, operationInput);
-        intent.putExtra(KeychainNewService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        intent.putExtra(KeychainService.EXTRA_OPERATION_INPUT, operationInput);
+        intent.putExtra(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
 
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
             @Override
@@ -267,7 +267,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainNewService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
         activity.startService(intent);
 

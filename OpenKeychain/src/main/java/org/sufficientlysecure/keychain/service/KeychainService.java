@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
  * data from the activities or other apps, executes them, and stops itself after doing them.
  */
-public class KeychainNewService extends Service implements Progressable {
+public class KeychainService extends Service implements Progressable {
 
     // messenger for communication (hack)
     public static final String EXTRA_MESSENGER = "messenger";
@@ -104,7 +104,7 @@ public class KeychainNewService extends Service implements Progressable {
                 BaseOperation op;
 
                 // just for brevity
-                KeychainNewService outerThis = KeychainNewService.this;
+                KeychainService outerThis = KeychainService.this;
                 if (inputParcel instanceof SignEncryptParcel) {
                     op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis),
                             outerThis, mActionCanceled);
