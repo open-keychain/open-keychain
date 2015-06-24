@@ -18,9 +18,6 @@
 
 package org.sufficientlysecure.keychain.service;
 
-
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,18 +28,26 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.operations.*;
+import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.CertifyOperation;
+import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
+import org.sufficientlysecure.keychain.operations.DeleteOperation;
+import org.sufficientlysecure.keychain.operations.EditKeyOperation;
+import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
+import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
+import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.service.input.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with

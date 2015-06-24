@@ -30,6 +30,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
 import android.support.v4.app.FragmentManager;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -118,7 +119,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
-        Log.d("PHILIP", "Initating input " + requiredInput.mType);
         switch (requiredInput.mType) {
             case NFC_KEYTOCARD:
             case NFC_DECRYPT:
@@ -161,7 +161,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("PHILIP", "received activity result in OperationHelper");
+        Log.d(Constants.TAG, "received activity result in OperationHelper");
 
         if (mRequestedCode != requestCode) {
             // this wasn't meant for us to handle
@@ -278,7 +278,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     protected void onCryptoOperationResult(S result) {
-        Log.d("PHILIP", "cryptoResult " + result.success());
         if (result.success()) {
             mCallback.onCryptoOperationSuccess(result);
         } else {
@@ -287,14 +286,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void onHandleResult(OperationResult result) {
-        Log.d("PHILIP", "Handling result in OperationHelper " + result);
+        Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
 
         if (result instanceof InputPendingResult) {
-            Log.d("PHILIP", "is pending result");
             InputPendingResult pendingResult = (InputPendingResult) result;
             if (pendingResult.isPending()) {
 
-                Log.d("PHILIP", "Is pending");
                 RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
                 initiateInputActivity(requiredInput);
                 return;
