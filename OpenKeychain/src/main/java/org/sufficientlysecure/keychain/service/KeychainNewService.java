@@ -106,19 +106,23 @@ public class KeychainNewService extends Service implements Progressable {
                             mActionCanceled);
                 } else if (inputParcel instanceof DeleteKeyringParcel) {
                     op = new DeleteOperation(outerThis, new ProviderHelper(outerThis), outerThis);
-                } else if (inputParcel instanceof PromoteKeyringParcel){
+                } else if (inputParcel instanceof PromoteKeyringParcel) {
                     op = new PromoteKeyOperation(outerThis, new ProviderHelper(outerThis),
                             outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ImportKeyringParcel
-                        || inputParcel instanceof ExportKeyringParcel){
+                        || inputParcel instanceof ExportKeyringParcel) {
                     op = new ImportExportOperation(outerThis, new ProviderHelper(outerThis),
                             outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ConsolidateInputParcel) {
                     op = new ConsolidateOperation(outerThis, new ProviderHelper(outerThis),
                             outerThis);
+                } else if (inputParcel instanceof KeybaseVerificationParcel) {
+                    op = new KeybaseVerificationOperation(outerThis, new ProviderHelper(outerThis),
+                            outerThis);
                 } else {
                     return;
                 }
+
                 @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
                 OperationResult result = op.execute(inputParcel, cryptoInput);
                 sendMessageToHandler(MessageStatus.OKAY, result);

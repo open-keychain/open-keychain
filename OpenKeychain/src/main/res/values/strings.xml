@@ -1213,6 +1213,15 @@
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 
+    <!-- Messages for Keybase Verification operation -->
+    <string name="msg_keybase_verification">"Attempting keybase verification for %s"</string>
+    <string name="msg_keybase_error_no_prover">"No proof checker found for %s"</string>
+    <string name="msg_keybase_error_fetching_evidence">"Problem with fetching proof"</string>
+    <string name="msg_keybase_error_key_mismatch">"Key fingerprint doesn’t match that in proof post"</string>
+    <string name="msg_keybase_error_dns_fail">"DNS TXT Record retrieval failed"</string>
+    <string name="msg_keybase_error_specific">"%s"</string>
+    <string name="msg_keybase_error_msg_payload_mismatch">"Decrypted proof post does not match expected value"</string>
+
     <!-- Messages for Export Log operation -->
     <string name="msg_export_log_start">"Exporting log"</string>
     <string name="msg_export_log_error_fopen">"Error opening file"</string>

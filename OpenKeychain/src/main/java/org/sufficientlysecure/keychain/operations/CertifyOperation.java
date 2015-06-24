@@ -58,12 +58,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @see CertifyActionsParcel
  *
  */
-public class CertifyOperation extends BaseOperation {
+public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
     public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @Override
     public CertifyResult execute(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
@@ -86,8 +87,10 @@ public class CertifyOperation extends BaseOperation {
                 case PATTERN:
                 case PASSPHRASE:
                     if (!cryptoInput.hasPassphrase()) {
-                        return new CertifyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                certificationKey.getKeyId(), certificationKey.getKeyId(), null));
+                        return new CertifyResult(log,
+                                RequiredInputParcel.createRequiredSignPassphrase(
+                                certificationKey.getKeyId(), certificationKey.getKeyId(), null)
+                        );
                     }
                     // certification is always with the master key id, so use that one
                     passphrase = cryptoInput.getPassphrase();

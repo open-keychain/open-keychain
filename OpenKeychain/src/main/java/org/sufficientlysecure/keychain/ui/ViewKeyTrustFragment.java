@@ -48,9 +48,12 @@ import com.textuality.keybase.lib.User;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -59,7 +62,8 @@ import java.util.Hashtable;
 import java.util.List;
 
 public class ViewKeyTrustFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        CryptoOperationHelper.Callback<KeybaseVerificationParcel, KeybaseVerificationResult> {
 
     public static final String ARG_DATA_URI = "uri";
 
@@ -75,6 +79,14 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
     // for retrieving the key we’re working on
     private Uri mDataUri;
+
+    private Proof mProof;
+
+    // for CryptoOperationHelper,Callback
+    private String mKeybaseProof;
+    private String mKeybaseFingerprint;
+    private CryptoOperationHelper<KeybaseVerificationParcel, KeybaseVerificationResult>
+            mKeybaseOpHelper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -349,112 +361,125 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     }
 
     private void verify(final Proof proof, final String fingerprint) {
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-        Bundle data = new Bundle();
-        intent.setAction(KeychainService.ACTION_VERIFY_KEYBASE_PROOF);
 
-        data.putString(KeychainService.KEYBASE_PROOF, proof.toString());
-        data.putString(KeychainService.KEYBASE_REQUIRED_FINGERPRINT, fingerprint);
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
+        mProof = proof;
+        mKeybaseProof = proof.toString();
+        mKeybaseFingerprint = fingerprint;
 
         mProofVerifyDetail.setVisibility(View.GONE);
 
-        // Create a new Messenger for the communication back after proof work is done
-        ServiceProgressHandler handler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
+        mKeybaseOpHelper = new CryptoOperationHelper<>(this, this,
+                R.string.progress_verifying_signature);
+        mKeybaseOpHelper.cryptoOperation();
+    }
 
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    Bundle returnData = message.getData();
-                    String msg = returnData.getString(ServiceProgressHandler.DATA_MESSAGE);
-                    SpannableStringBuilder ssb = new SpannableStringBuilder();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mKeybaseOpHelper != null) {
+            mKeybaseOpHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+    }
 
-                    if ((msg != null) && msg.equals("OK")) {
+    // CryptoOperationHelper.Callback methods
+    @Override
+    public KeybaseVerificationParcel createOperationInput() {
+        return new KeybaseVerificationParcel(mKeybaseProof, mKeybaseFingerprint);
+    }
 
-                        //yay
-                        String proofUrl = returnData.getString(ServiceProgressHandler.KEYBASE_PROOF_URL);
-                        String presenceUrl = returnData.getString(ServiceProgressHandler.KEYBASE_PRESENCE_URL);
-                        String presenceLabel = returnData.getString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL);
+    @Override
+    public void onCryptoOperationSuccess(KeybaseVerificationResult result) {
 
-                        String proofLabel;
-                        switch (proof.getType()) {
-                            case Proof.PROOF_TYPE_TWITTER:
-                                proofLabel = getString(R.string.keybase_twitter_proof);
-                                break;
-                            case Proof.PROOF_TYPE_DNS:
-                                proofLabel = getString(R.string.keybase_dns_proof);
-                                break;
-                            case Proof.PROOF_TYPE_WEB_SITE:
-                                proofLabel = getString(R.string.keybase_web_site_proof);
-                                break;
-                            case Proof.PROOF_TYPE_GITHUB:
-                                proofLabel = getString(R.string.keybase_github_proof);
-                                break;
-                            case Proof.PROOF_TYPE_REDDIT:
-                                proofLabel = getString(R.string.keybase_reddit_proof);
-                                break;
-                            default:
-                                proofLabel = getString(R.string.keybase_a_post);
-                                break;
-                        }
+        result.createNotify(getActivity()).show();
 
-                        ssb.append(getString(R.string.keybase_proof_succeeded));
-                        StyleSpan bold = new StyleSpan(Typeface.BOLD);
-                        ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        ssb.append("\n\n");
-                        int length = ssb.length();
-                        ssb.append(proofLabel);
-                        if (proofUrl != null) {
-                            URLSpan postLink = new URLSpan(proofUrl);
-                            ssb.setSpan(postLink, length, length + proofLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        }
-                        if (Proof.PROOF_TYPE_DNS == proof.getType()) {
-                            ssb.append(" ").append(getString(R.string.keybase_for_the_domain)).append(" ");
-                        } else {
-                            ssb.append(" ").append(getString(R.string.keybase_fetched_from)).append(" ");
-                        }
-                        length = ssb.length();
-                        URLSpan presenceLink = new URLSpan(presenceUrl);
-                        ssb.append(presenceLabel);
-                        ssb.setSpan(presenceLink, length, length + presenceLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        if (Proof.PROOF_TYPE_REDDIT == proof.getType()) {
-                            ssb.append(", ").
-                                    append(getString(R.string.keybase_reddit_attribution)).
-                                    append(" “").append(proof.getHandle()).append("”, ");
-                        }
-                        ssb.append(" ").append(getString(R.string.keybase_contained_signature));
-                    } else {
-                        // verification failed!
-                        msg = returnData.getString(ServiceProgressHandler.DATA_ERROR);
-                        ssb.append(getString(R.string.keybase_proof_failure));
-                        if (msg == null) {
-                            msg = getString(R.string.keybase_unknown_proof_failure);
-                        }
-                        StyleSpan bold = new StyleSpan(Typeface.BOLD);
-                        ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        ssb.append("\n\n").append(msg);
-                    }
-                    mProofVerifyHeader.setVisibility(View.VISIBLE);
-                    mProofVerifyDetail.setVisibility(View.VISIBLE);
-                    mProofVerifyDetail.setMovementMethod(LinkMovementMethod.getInstance());
-                    mProofVerifyDetail.setText(ssb);
-                }
-            }
-        };
+        String proofUrl = result.mProofUrl;
+        String presenceUrl = result.mPresenceUrl;
+        String presenceLabel = result.mPresenceLabel;
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(handler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+        Proof proof = mProof; // TODO: should ideally be contained in result
 
-        // show progress dialog
-        handler.showProgressDialog(
-                getString(R.string.progress_verifying_signature),
-                ProgressDialog.STYLE_HORIZONTAL, false
-        );
+        String proofLabel;
+        switch (proof.getType()) {
+            case Proof.PROOF_TYPE_TWITTER:
+                proofLabel = getString(R.string.keybase_twitter_proof);
+                break;
+            case Proof.PROOF_TYPE_DNS:
+                proofLabel = getString(R.string.keybase_dns_proof);
+                break;
+            case Proof.PROOF_TYPE_WEB_SITE:
+                proofLabel = getString(R.string.keybase_web_site_proof);
+                break;
+            case Proof.PROOF_TYPE_GITHUB:
+                proofLabel = getString(R.string.keybase_github_proof);
+                break;
+            case Proof.PROOF_TYPE_REDDIT:
+                proofLabel = getString(R.string.keybase_reddit_proof);
+                break;
+            default:
+                proofLabel = getString(R.string.keybase_a_post);
+                break;
+        }
 
-        // start service with intent
-        getActivity().startService(intent);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
+        ssb.append(getString(R.string.keybase_proof_succeeded));
+        StyleSpan bold = new StyleSpan(Typeface.BOLD);
+        ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append("\n\n");
+        int length = ssb.length();
+        ssb.append(proofLabel);
+        if (proofUrl != null) {
+            URLSpan postLink = new URLSpan(proofUrl);
+            ssb.setSpan(postLink, length, length + proofLabel.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        if (Proof.PROOF_TYPE_DNS == proof.getType()) {
+            ssb.append(" ").append(getString(R.string.keybase_for_the_domain)).append(" ");
+        } else {
+            ssb.append(" ").append(getString(R.string.keybase_fetched_from)).append(" ");
+        }
+        length = ssb.length();
+        URLSpan presenceLink = new URLSpan(presenceUrl);
+        ssb.append(presenceLabel);
+        ssb.setSpan(presenceLink, length, length + presenceLabel.length(), Spanned
+                .SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (Proof.PROOF_TYPE_REDDIT == proof.getType()) {
+            ssb.append(", ").
+                    append(getString(R.string.keybase_reddit_attribution)).
+                    append(" “").append(proof.getHandle()).append("”, ");
+        }
+        ssb.append(" ").append(getString(R.string.keybase_contained_signature));
+
+        displaySpannableResult(ssb);
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+
+    }
+
+    @Override
+    public void onCryptoOperationError(KeybaseVerificationResult result) {
+
+        result.createNotify(getActivity()).show();
+
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
+        ssb.append(getString(R.string.keybase_proof_failure));
+        String msg = getString(result.getLog().getLast().mType.mMsgId);
+        if (msg == null) {
+            msg = getString(R.string.keybase_unknown_proof_failure);
+        }
+        StyleSpan bold = new StyleSpan(Typeface.BOLD);
+        ssb.setSpan(bold, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append("\n\n").append(msg);
+
+        displaySpannableResult(ssb);
+    }
+
+    private void displaySpannableResult(SpannableStringBuilder ssb) {
+        mProofVerifyHeader.setVisibility(View.VISIBLE);
+        mProofVerifyDetail.setVisibility(View.VISIBLE);
+        mProofVerifyDetail.setMovementMethod(LinkMovementMethod.getInstance());
+        mProofVerifyDetail.setText(ssb);
     }
 }

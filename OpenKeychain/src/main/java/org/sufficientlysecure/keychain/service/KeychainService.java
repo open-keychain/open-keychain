@@ -38,14 +38,8 @@ import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.*;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.DeleteResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.*;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
@@ -61,14 +55,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import de.measite.minidns.Client;
-import de.measite.minidns.DNSMessage;
-import de.measite.minidns.Question;
-import de.measite.minidns.Record;
-import de.measite.minidns.record.Data;
-import de.measite.minidns.record.TXT;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -80,27 +66,7 @@ public class KeychainService extends Service implements Progressable {
     public static final String EXTRA_MESSENGER = "messenger";
     public static final String EXTRA_DATA = "data";
 
-    /* possible actions */
-
-    public static final String ACTION_VERIFY_KEYBASE_PROOF = Constants.INTENT_PREFIX + "VERIFY_KEYBASE_PROOF";
-
-    public static final String ACTION_CONSOLIDATE = Constants.INTENT_PREFIX + "CONSOLIDATE";
-
-    public static final String ACTION_CANCEL = Constants.INTENT_PREFIX + "CANCEL";
-
-    /* keys for data bundle */
-
-    // keybase proof
-    public static final String KEYBASE_REQUIRED_FINGERPRINT = "keybase_required_fingerprint";
-    public static final String KEYBASE_PROOF = "keybase_proof";
-
-    // consolidate
-    public static final String CONSOLIDATE_RECOVERY = "consolidate_recovery";
-
     Messenger mMessenger;
-
-    // this attribute can possibly merged with the one above? not sure...
-    private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -112,150 +78,6 @@ public class KeychainService extends Service implements Progressable {
      */
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
-
-        if (ACTION_CANCEL.equals(intent.getAction())) {
-            mActionCanceled.set(true);
-            return START_NOT_STICKY;
-        }
-
-        Runnable actionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // We have not been cancelled! (yet)
-                mActionCanceled.set(false);
-
-                Bundle extras = intent.getExtras();
-                if (extras == null) {
-                    Log.e(Constants.TAG, "Extras bundle is null!");
-                    return;
-                }
-
-                if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) || (intent
-                        .getAction() == null))) {
-                    Log.e(Constants.TAG,
-                            "Extra bundle must contain a messenger, a data bundle, and an action!");
-                    return;
-                }
-
-                Uri dataUri = intent.getData();
-
-                mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
-                Bundle data = extras.getBundle(EXTRA_DATA);
-                if (data == null) {
-                    Log.e(Constants.TAG, "data extra is null!");
-                    return;
-                }
-
-                Log.logDebugBundle(data, "EXTRA_DATA");
-
-                ProviderHelper providerHelper = new ProviderHelper(KeychainService.this);
-
-                String action = intent.getAction();
-
-                // executeServiceMethod action from extra bundle
-                switch (action) {
-                    case ACTION_VERIFY_KEYBASE_PROOF: {
-
-                        try {
-                            Proof proof = new Proof(new JSONObject(data.getString(KEYBASE_PROOF)));
-                            setProgress(R.string.keybase_message_fetching_data, 0, 100);
-
-                            Prover prover = Prover.findProverFor(proof);
-
-                            if (prover == null) {
-                                sendProofError(getString(R.string.keybase_no_prover_found) + ": " + proof
-                                        .getPrettyName());
-                                return;
-                            }
-
-                            if (!prover.fetchProofData()) {
-                                sendProofError(prover.getLog(), getString(R.string.keybase_problem_fetching_evidence));
-                                return;
-                            }
-                            String requiredFingerprint = data.getString(KEYBASE_REQUIRED_FINGERPRINT);
-                            if (!prover.checkFingerprint(requiredFingerprint)) {
-                                sendProofError(getString(R.string.keybase_key_mismatch));
-                                return;
-                            }
-
-                            String domain = prover.dnsTxtCheckRequired();
-                            if (domain != null) {
-                                DNSMessage dnsQuery = new Client().query(new Question(domain, Record.TYPE.TXT));
-                                if (dnsQuery == null) {
-                                    sendProofError(prover.getLog(), getString(R.string.keybase_dns_query_failure));
-                                    return;
-                                }
-                                Record[] records = dnsQuery.getAnswers();
-                                List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
-                                for (Record r : records) {
-                                    Data d = r.getPayload();
-                                    if (d instanceof TXT) {
-                                        extents.add(((TXT) d).getExtents());
-                                    }
-                                }
-                                if (!prover.checkDnsTxt(extents)) {
-                                    sendProofError(prover.getLog(), null);
-                                    return;
-                                }
-                            }
-
-                            byte[] messageBytes = prover.getPgpMessage().getBytes();
-                            if (prover.rawMessageCheckRequired()) {
-                                InputStream messageByteStream = PGPUtil.getDecoderStream(new ByteArrayInputStream
-                                        (messageBytes));
-                                if (!prover.checkRawMessageBytes(messageByteStream)) {
-                                    sendProofError(prover.getLog(), null);
-                                    return;
-                                }
-                            }
-
-                            PgpDecryptVerify op = new PgpDecryptVerify(KeychainService.this, providerHelper,
-                                    KeychainService.this);
-
-                            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
-                                    .setSignedLiteralData(true)
-                                    .setRequiredSignerFingerprint(requiredFingerprint);
-
-                            DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());
-
-                            if (!decryptVerifyResult.success()) {
-                                OperationLog log = decryptVerifyResult.getLog();
-                                OperationResult.LogEntryParcel lastEntry = null;
-                                for (OperationResult.LogEntryParcel entry : log) {
-                                    lastEntry = entry;
-                                }
-                                sendProofError(getString(lastEntry.mType.getMsgId()));
-                                return;
-                            }
-
-                            if (!prover.validate(new String(decryptVerifyResult.getOutputBytes()))) {
-                                sendProofError(getString(R.string.keybase_message_payload_mismatch));
-                                return;
-                            }
-
-                            Bundle resultData = new Bundle();
-                            resultData.putString(ServiceProgressHandler.DATA_MESSAGE, "OK");
-
-                            // these help the handler construct a useful human-readable message
-                            resultData.putString(ServiceProgressHandler.KEYBASE_PROOF_URL, prover.getProofUrl());
-                            resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_URL, prover.getPresenceUrl());
-                            resultData.putString(ServiceProgressHandler.KEYBASE_PRESENCE_LABEL, prover
-                                    .getPresenceLabel());
-                            sendMessageToHandler(MessageStatus.OKAY, resultData);
-                        } catch (Exception e) {
-                            sendErrorToHandler(e);
-                        }
-
-                        break;
-                    }
-                }
-                stopSelf();
-            }
-        };
-
-        Thread actionThread = new Thread(actionRunnable);
-        actionThread.start();
-
         return START_NOT_STICKY;
     }
 

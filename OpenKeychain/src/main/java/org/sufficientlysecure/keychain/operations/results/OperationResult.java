@@ -750,7 +750,19 @@ public abstract class OperationResult implements Parcelable {
         MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
 
-        //export log
+        // keybase verification
+        MSG_KEYBASE_VERIFICATION(LogLevel.START, R.string.msg_keybase_verification),
+
+        MSG_KEYBASE_ERROR_NO_PROVER(LogLevel.ERROR, R.string.msg_keybase_error_no_prover),
+        MSG_KEYBASE_ERROR_FETCH_PROOF(LogLevel.ERROR, R.string.msg_keybase_error_fetching_evidence),
+        MSG_KEYBASE_ERROR_FINGERPRINT_MISMATCH(LogLevel.ERROR,
+                R.string.msg_keybase_error_key_mismatch),
+        MSG_KEYBASE_ERROR_DNS_FAIL(LogLevel.ERROR, R.string.msg_keybase_error_dns_fail),
+        MSG_KEYBASE_ERROR_SPECIFIC(LogLevel.ERROR, R.string.msg_keybase_error_specific),
+        MSG_KEYBASE_ERROR_PAYLOAD_MISMATCH(LogLevel.ERROR,
+                R.string.msg_keybase_error_msg_payload_mismatch),
+
+        // export log
         MSG_EXPORT_LOG(LogLevel.START,R.string.msg_export_log_start),
         MSG_EXPORT_LOG_EXPORT_ERROR_NO_FILE(LogLevel.ERROR,R.string.msg_export_log_error_no_file),
         MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
