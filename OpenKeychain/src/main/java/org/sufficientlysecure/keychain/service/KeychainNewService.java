@@ -75,7 +75,7 @@ public class KeychainNewService extends Service implements Progressable {
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
-        if (intent.getAction().equals(ACTION_CANCEL)) {
+        if (intent.getAction() != null && intent.getAction().equals(ACTION_CANCEL)) {
             mActionCanceled.set(true);
             return START_NOT_STICKY;
         }
@@ -108,7 +108,7 @@ public class KeychainNewService extends Service implements Progressable {
                 } else if (inputParcel instanceof SaveKeyringParcel) {
                     op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
-                } else if (inputParcel instanceof CertifyAction) {
+                } else if (inputParcel instanceof CertifyActionsParcel) {
                     op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
                 } else if (inputParcel instanceof DeleteKeyringParcel) {

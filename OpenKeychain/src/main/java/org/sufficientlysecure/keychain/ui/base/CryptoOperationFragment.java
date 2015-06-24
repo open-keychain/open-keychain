@@ -25,7 +25,6 @@ import android.support.v4.app.Fragment;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
-
 /**
  * All fragments executing crypto operations need to extend this class.
  */

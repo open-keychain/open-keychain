@@ -31,11 +31,12 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
     }
 
     @Override
-    protected void onCryptoOperationResult(S result) {
+    protected void onCryptoOperationSuccess(S result) {
         super.onCryptoOperationResult(result);
         mCachedActionsParcel = null;
     }
 
+    @Override
     protected abstract T createOperationInput();
 
     protected T getCachedActionsParcel() {
