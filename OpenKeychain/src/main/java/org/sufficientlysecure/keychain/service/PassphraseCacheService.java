@@ -493,59 +493,42 @@ public class PassphraseCacheService extends Service {
 
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
+                .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
+                        mPassphraseCache.size(), mPassphraseCache.size()))
+                .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                    .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
-                            mPassphraseCache.size()));
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
-            inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
-
-            // Moves events into the big view
-            for (int i = 0; i < mPassphraseCache.size(); i++) {
-                inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
-            }
-
-            // Moves the big view style object into the notification object.
-            builder.setStyle(inboxStyle);
-
-            // Add purging action
-            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
-            builder.addAction(
-                    R.drawable.abc_ic_clear_mtrl_alpha,
-                    getString(R.string.passp_cache_notif_clear),
-                    PendingIntent.getService(
-                            getApplicationContext(),
-                            0,
-                            intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-            );
-        } else {
-            // Fallback, since expandable notifications weren't available back then
-            builder.setSmallIcon(R.drawable.ic_stat_notify)
-                    .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
-                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys),
-                            mPassphraseCache.size()))
-                    .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
-
-            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
-
-            builder.setContentIntent(
-                    PendingIntent.getService(
-                            getApplicationContext(),
-                            0,
-                            intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-            );
+        // Moves events into the big view
+        for (int i = 0; i < mPassphraseCache.size(); i++) {
+            inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
         }
+
+        // Moves the big view style object into the notification object.
+        builder.setStyle(inboxStyle);
+
+        Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+        PendingIntent clearCachePi = PendingIntent.getService(
+                getApplicationContext(),
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        // Add cache clear PI to normal touch
+        builder.setContentIntent(clearCachePi);
+
+        // Add clear PI action below text
+        builder.addAction(
+                R.drawable.abc_ic_clear_mtrl_alpha,
+                getString(R.string.passp_cache_notif_clear),
+                clearCachePi
+        );
 
         return builder.build();
     }
