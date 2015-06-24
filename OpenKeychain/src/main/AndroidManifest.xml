@@ -713,9 +713,6 @@
         <service
             android:name=".service.KeychainNewService"
             android:exported="false" />
-        <service
-            android:name=".service.KeychainService"
-            android:exported="false" />
 
         <provider
             android:name=".provider.KeychainProvider"

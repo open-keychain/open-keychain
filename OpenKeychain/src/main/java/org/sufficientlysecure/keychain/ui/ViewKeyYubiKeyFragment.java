@@ -21,12 +21,8 @@ package org.sufficientlysecure.keychain.ui;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -39,13 +35,10 @@ import android.widget.TextView;
 
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 

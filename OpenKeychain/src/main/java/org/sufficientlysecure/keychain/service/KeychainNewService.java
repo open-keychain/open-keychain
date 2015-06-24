@@ -57,6 +57,8 @@ public class KeychainNewService extends Service implements Progressable {
     public static final String EXTRA_OPERATION_INPUT = "op_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
+    public static final String ACTION_CANCEL = "action_cancel";
+
     // this attribute can possibly merged with the one above? not sure...
     private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
 
@@ -72,6 +74,11 @@ public class KeychainNewService extends Service implements Progressable {
      */
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
+
+        if (intent.getAction().equals(ACTION_CANCEL)) {
+            mActionCanceled.set(true);
+            return START_NOT_STICKY;
+        }
 
         Runnable actionRunnable = new Runnable() {
             @Override
