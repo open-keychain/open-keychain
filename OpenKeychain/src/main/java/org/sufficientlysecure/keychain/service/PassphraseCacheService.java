@@ -36,6 +36,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.LongSparseArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -474,11 +477,26 @@ public class PassphraseCacheService extends Service {
         }
     }
 
+    // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
+    private static Bitmap getBitmap(int resId, Context ctx) {
+        final int mLargeIconWidth = (int) ctx.getResources().getDimension(
+                                  android.R.dimen.notification_large_icon_width);
+        final int mLargeIconHeight = (int) ctx.getResources().getDimension(
+                                   android.R.dimen.notification_large_icon_height);
+        final Drawable d = ctx.getResources().getDrawable(resId);
+        final Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
+        final Canvas c = new Canvas(b);
+        d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
+        d.draw(c);
+        return b;
+    }
+
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder.setSmallIcon(R.drawable.ic_launcher)
+            builder.setSmallIcon(R.drawable.ic_stat_notify)
+                    .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
                             mPassphraseCache.size()));
@@ -510,7 +528,8 @@ public class PassphraseCacheService extends Service {
             );
         } else {
             // Fallback, since expandable notifications weren't available back then
-            builder.setSmallIcon(R.drawable.ic_launcher)
+            builder.setSmallIcon(R.drawable.ic_stat_notify)
+                    .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
                     .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys),
                             mPassphraseCache.size()))
                     .setContentText(getString(R.string.passp_cache_notif_click_to_clear));

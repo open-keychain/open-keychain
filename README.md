@@ -204,15 +204,18 @@ See [In-app about screen](https://github.com/open-keychain/open-keychain/blob/HE
 ### Images
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
-  
+
+* ic_stat_notify.svg
+  modified version of Key by Egor Culcea from the Noun Project https://thenounproject.com/term/key/2511/
+
 * Actionbar icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
-  
+
 * QR Code Actionbar icon  
   https://github.com/openintents/openintents/blob/master/extensions/qrcode_ext/icons/ic_menu_qr_code/ic_menu_qr_code_holo_light/ic_menu_qr_code.svg
 
 * Key status icons by the ModernPGP working group  
   https://github.com/ModernPGP
-  
+
 * Purple color scheme  
   http://android-holo-colors.com/
