@@ -202,12 +202,6 @@ Some parts and some libraries are Apache License v2, MIT X11 License (see below)
 See [In-app about screen](https://github.com/open-keychain/open-keychain/blob/HEAD/OpenKeychain/src/main/res/raw/help_about.md)
 
 ### Images
-* icon.svg  
-  modified version of kgpg_key2_kopete.svgz
-
-* ic_stat_notify.svg
-  modified version of Key by Egor Culcea from the Noun Project https://thenounproject.com/term/key/2511/
-
 * Actionbar icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
 
@@ -216,6 +210,3 @@ See [In-app about screen](https://github.com/open-keychain/open-keychain/blob/HE
 
 * Key status icons by the ModernPGP working group  
   https://github.com/ModernPGP
-
-* Purple color scheme  
-  http://android-holo-colors.com/

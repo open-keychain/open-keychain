@@ -495,7 +495,7 @@ public class PassphraseCacheService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder.setSmallIcon(R.drawable.ic_stat_notify)
+            builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                     .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
