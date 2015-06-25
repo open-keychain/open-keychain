@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -39,21 +40,45 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     protected View mStatusBar;
     private static Preferences sPreferences;
+    private String mCurrentTheme = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sPreferences = Preferences.getPreferences(this);
+
+        changeTheme();
+        super.onCreate(savedInstanceState);
+        initLayout();
+        initToolbar();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (changeTheme()) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }
+    }
+
+    protected boolean changeTheme() {
+        String newTheme = sPreferences.getTheme();
+        if (mCurrentTheme != null && mCurrentTheme.equals(newTheme)) {
+            return false;
+        }
+
         int themeId = R.style.LightTheme;
-        if ("dark".equals(sPreferences.getTheme())) {
+        if ("dark".equals(newTheme)) {
             themeId = R.style.DarkTheme;
         }
 
         ContextThemeWrapper w = new ContextThemeWrapper(this, themeId);
         getTheme().setTo(w.getTheme());
+        mCurrentTheme = newTheme;
 
-        super.onCreate(savedInstanceState);
-        initLayout();
-        initToolbar();
+        return true;
     }
 
     protected void initLayout() {
