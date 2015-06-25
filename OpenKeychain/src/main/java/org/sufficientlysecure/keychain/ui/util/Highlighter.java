@@ -18,8 +18,10 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
+import android.content.res.Resources.Theme;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 
 import org.sufficientlysecure.keychain.R;
 
@@ -44,9 +46,15 @@ public class Highlighter {
 
         Pattern pattern = Pattern.compile("(?i)(" + mQuery.trim().replaceAll("\\s+", "|") + ")");
         Matcher matcher = pattern.matcher(text);
+
+        TypedValue typedValue = new TypedValue();
+        Theme theme = mContext.getTheme();
+        theme.resolveAttribute(R.attr.colorEmphasis, typedValue, true);
+        int colorEmphasis = typedValue.data;
+
         while (matcher.find()) {
             highlight.setSpan(
-                    new ForegroundColorSpan(mContext.getResources().getColor(R.color.emphasis)),
+                    new ForegroundColorSpan(colorEmphasis),
                     matcher.start(),
                     matcher.end(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

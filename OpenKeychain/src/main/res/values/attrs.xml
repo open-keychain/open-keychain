@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomTheme">
+        <attr name="colorFab" format="color" />
+        <attr name="colorFabPressed" format="color" />
+        <attr name="colorEmphasis" format="color" />
+    </declare-styleable>
+</resources>

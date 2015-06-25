@@ -28,6 +28,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources.Theme;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -46,6 +47,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.util.TypedValue;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -675,8 +677,11 @@ public class KeyListFragment extends LoaderFragment
 
         private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
+        private Context mContext;
+
         public KeyListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
+            mContext = context;
         }
 
         @Override
@@ -705,9 +710,14 @@ public class KeyListFragment extends LoaderFragment
             // let the adapter handle setting up the row views
             View v = super.getView(position, convertView, parent);
 
+            TypedValue typedValue = new TypedValue();
+            Theme theme = mContext.getTheme();
+            theme.resolveAttribute(R.attr.colorEmphasis, typedValue, true);
+            int colorEmphasis = typedValue.data;
+
             if (mSelection.get(position) != null) {
                 // selected position color
-                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+                v.setBackgroundColor(colorEmphasis);
             } else {
                 // default color
                 v.setBackgroundColor(Color.TRANSPARENT);

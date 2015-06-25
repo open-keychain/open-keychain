@@ -2,9 +2,14 @@
 <resources>
 
     <style name="LightBaseTheme" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">#7bad45</item>
+        <item name="colorPrimaryDark">#6c983d</item>
+        <item name="colorAccent">#2196f3</item>
+
+        <item name="colorFab">#2196f3</item>
+        <item name="colorFabPressed">#1976d2</item>
+
+        <item name="colorEmphasis">#2196f3</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
@@ -14,10 +19,15 @@
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
     </style>
 
-    <style name="DarkBaseTheme" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+    <style name="DarkBaseTheme" parent="MaterialDrawerTheme.ActionBar">
+        <item name="colorPrimary">#268bd2</item>
+        <item name="colorPrimaryDark">#166bb2</item>
+        <item name="colorAccent">#2196f3</item>
+
+        <item name="colorFab">#2196f3</item>
+        <item name="colorFabPressed">#1976d2</item>
+
+        <item name="colorEmphasis">#2196f3</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
