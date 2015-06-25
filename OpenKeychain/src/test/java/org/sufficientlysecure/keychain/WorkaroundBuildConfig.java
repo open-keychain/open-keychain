@@ -1,5 +1,7 @@
 package org.sufficientlysecure.keychain;
 
+import org.sufficientlysecure.keychain.BuildConfig;
+
 /**
  * Temporary workaround for https://github.com/robolectric/robolectric/issues/1747
  */
