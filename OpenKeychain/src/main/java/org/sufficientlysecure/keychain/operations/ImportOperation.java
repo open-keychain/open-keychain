@@ -19,53 +19,32 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 
-import android.os.Parcelable;
-import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
-import org.sufficientlysecure.keychain.service.ImportExportParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -79,12 +58,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** An operation class which implements high level import and export
+/**
+ * An operation class which implements high level import
  * operations.
- *
  * This class receives a source and/or destination of keys as input and performs
- * all steps for this import or export.
- *
+ * all steps for this import.
  * For the import operation, the only valid source is an Iterator of
  * ParcelableKeyRing, each of which must contain either a single
  * keyring encoded as bytes, or a unique reference to a keyring
@@ -93,53 +71,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * secret keys, because some implementations (notably Symantec PGP Desktop) do
  * not include self certificates for user ids in the secret keyring. The import
  * method here will generally import keyrings in the order given by the
- * iterator. so this should be ensured beforehand.
+ * iterator, so this should be ensured beforehand.
+ *
  * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
- *
- * For the export operation, the input consists of a set of key ids and
- * either the name of a file or an output uri to write to.
- *
- * TODO rework uploadKeyRingToServer
- *
  */
-public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
+public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
-    public ImportExportOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
+    public ImportOperation(Context context, ProviderHelper providerHelper, Progressable
+            progressable) {
         super(context, providerHelper, progressable);
     }
 
-    public ImportExportOperation(Context context, ProviderHelper providerHelper,
-                                 Progressable progressable, AtomicBoolean cancelled) {
+    public ImportOperation(Context context, ProviderHelper providerHelper,
+                           Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
-    }
-
-    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring) throws AddKeyException {
-        uploadKeyRingToServer(server, keyring.getUncachedKeyRing());
-    }
-
-    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring) throws AddKeyException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ArmoredOutputStream aos = null;
-        try {
-            aos = new ArmoredOutputStream(bos);
-            keyring.encode(aos);
-            aos.close();
-
-            String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey);
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
-            throw new AddKeyException();
-        } finally {
-            try {
-                if (aos != null) {
-                    aos.close();
-                }
-                bos.close();
-            } catch (IOException e) {
-                // this is just a finally thing, no matter if it doesn't work out.
-            }
-        }
     }
 
     // Overloaded functions for using progressable supplied in constructor during import
@@ -244,7 +189,8 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
                 else {
 
                     // We fetch from keyservers first, because we tend to get more certificates
-                    // from there, so the number of certificates which are merged in later is smaller.
+                    // from there, so the number of certificates which are merged in later is
+                    // smaller.
 
                     // If we have a keyServerUri and a fingerprint or at least a keyId,
                     // download from HKP
@@ -339,12 +285,12 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
                 mProviderHelper.clearLog();
                 if (key.isSecret()) {
                     result = mProviderHelper.saveSecretKeyRing(key,
-                            new ProgressScaler(progressable, (int)(position*progSteps),
-                                    (int)((position+1)*progSteps), 100));
+                            new ProgressScaler(progressable, (int) (position * progSteps),
+                                    (int) ((position + 1) * progSteps), 100));
                 } else {
                     result = mProviderHelper.savePublicKeyRing(key,
-                            new ProgressScaler(progressable, (int)(position*progSteps),
-                                    (int)((position+1)*progSteps), 100));
+                            new ProgressScaler(progressable, (int) (position * progSteps),
+                                    (int) ((position + 1) * progSteps), 100));
                 }
                 if (!result.success()) {
                     badKeys += 1;
@@ -415,7 +361,7 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
         }
 
         // Final log entry, it's easier to do this individually
-        if ( (newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
+        if ((newKeys > 0 || updatedKeys > 0) && badKeys > 0) {
             log.add(LogType.MSG_IMPORT_PARTIAL, 1);
         } else if (newKeys > 0 || updatedKeys > 0) {
             log.add(LogType.MSG_IMPORT_SUCCESS, 1);
@@ -427,247 +373,9 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
                 importedMasterKeyIdsArray);
     }
 
-    public ExportResult exportToFile(long[] masterKeyIds, boolean exportSecret, String outputFile) {
-
-        OperationLog log = new OperationLog();
-        if (masterKeyIds != null) {
-            log.add(LogType.MSG_EXPORT, 0, masterKeyIds.length);
-        } else {
-            log.add(LogType.MSG_EXPORT_ALL, 0);
-        }
-
-        // do we have a file name?
-        if (outputFile == null) {
-            log.add(LogType.MSG_EXPORT_ERROR_NO_FILE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-        // check if storage is ready
-        if (!FileHelper.isStorageMounted(outputFile)) {
-            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-        try {
-            OutputStream outStream = new FileOutputStream(outputFile);
-            try {
-                ExportResult result = exportKeyRings(log, masterKeyIds, exportSecret, outStream);
-                if (result.cancelled()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    new File(outputFile).delete();
-                }
-                return result;
-            } finally {
-                outStream.close();
-            }
-        } catch (IOException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_FOPEN, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-    }
-
-    public ExportResult exportToUri(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
-
-        OperationLog log = new OperationLog();
-        if (masterKeyIds != null) {
-            log.add(LogType.MSG_EXPORT, 0, masterKeyIds.length);
-        } else {
-            log.add(LogType.MSG_EXPORT_ALL, 0);
-        }
-
-        // do we have a file name?
-        if (outputUri == null) {
-            log.add(LogType.MSG_EXPORT_ERROR_NO_URI, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-        try {
-            OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream(outputUri);
-            return exportKeyRings(log, masterKeyIds, exportSecret, outStream);
-        } catch (FileNotFoundException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-    }
-
-    ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
-                                 OutputStream outStream) {
-
-        /* TODO isn't this checked above, with the isStorageMounted call?
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-        */
-
-        if ( ! BufferedOutputStream.class.isInstance(outStream)) {
-            outStream = new BufferedOutputStream(outStream);
-        }
-
-        int okSecret = 0, okPublic = 0, progress = 0;
-
-        Cursor cursor = null;
-        try {
-
-            String selection = null, ids[] = null;
-
-            if (masterKeyIds != null) {
-                // generate placeholders and string selection args
-                ids = new String[masterKeyIds.length];
-                StringBuilder placeholders = new StringBuilder("?");
-                for (int i = 0; i < masterKeyIds.length; i++) {
-                    ids[i] = Long.toString(masterKeyIds[i]);
-                    if (i != 0) {
-                        placeholders.append(",?");
-                    }
-                }
-
-                // put together selection string
-                selection = Tables.KEY_RINGS_PUBLIC + "." + KeyRings.MASTER_KEY_ID
-                        + " IN (" + placeholders + ")";
-            }
-
-            cursor = mProviderHelper.getContentResolver().query(
-                    KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                            KeyRings.MASTER_KEY_ID, KeyRings.PUBKEY_DATA,
-                            KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET
-                    }, selection, ids, Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-            );
-
-            if (cursor == null || !cursor.moveToFirst()) {
-                log.add(LogType.MSG_EXPORT_ERROR_DB, 1);
-                return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
-            }
-
-            int numKeys = cursor.getCount();
-
-            updateProgress(
-                    mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
-                            numKeys), 0, numKeys);
-
-            // For each public masterKey id
-            while (!cursor.isAfterLast()) {
-
-                long keyId = cursor.getLong(0);
-                ArmoredOutputStream arOutStream = null;
-
-                // Create an output stream
-                try {
-                    arOutStream = new ArmoredOutputStream(outStream);
-
-                    log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
-
-                    byte[] data = cursor.getBlob(1);
-                    CanonicalizedKeyRing ring =
-                            UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
-                    ring.encode(arOutStream);
-
-                    okPublic += 1;
-                } catch (PgpGeneralException e) {
-                    log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                    updateProgress(progress++, numKeys);
-                    continue;
-                } finally {
-                    // make sure this is closed
-                    if (arOutStream != null) {
-                        arOutStream.close();
-                    }
-                    arOutStream = null;
-                }
-
-                if (exportSecret && cursor.getInt(3) > 0) {
-                    try {
-                        arOutStream = new ArmoredOutputStream(outStream);
-
-                        // export secret key part
-                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                        byte[] data = cursor.getBlob(2);
-                        CanonicalizedKeyRing ring =
-                                UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
-                        ring.encode(arOutStream);
-
-                        okSecret += 1;
-                    } catch (PgpGeneralException e) {
-                        log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                        updateProgress(progress++, numKeys);
-                        continue;
-                    } finally {
-                        // make sure this is closed
-                        if (arOutStream != null) {
-                            arOutStream.close();
-                        }
-                    }
-                }
-
-                updateProgress(progress++, numKeys);
-
-                cursor.moveToNext();
-            }
-
-            updateProgress(R.string.progress_done, numKeys, numKeys);
-
-        } catch (IOException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_IO, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
-        } finally {
-            // Make sure the stream is closed
-            if (outStream != null) try {
-                outStream.close();
-            } catch (Exception e) {
-                Log.e(Constants.TAG, "error closing stream", e);
-            }
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-
-        log.add(LogType.MSG_EXPORT_SUCCESS, 1);
-        return new ExportResult(ExportResult.RESULT_OK, log, okPublic, okSecret);
-
-    }
-
     @Override
-    public OperationResult execute(ImportExportParcel input, CryptoInputParcel cryptoInput) {
-        if (input instanceof ExportKeyringParcel) {
-            ExportKeyringParcel exportInput = (ExportKeyringParcel) input;
-            switch (exportInput.mExportType) {
-                case UPLOAD_KEYSERVER: {
-                    HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
-                    try {
-                        CanonicalizedPublicKeyRing keyring
-                                = mProviderHelper.getCanonicalizedPublicKeyRing(
-                                exportInput.mCanonicalizedPublicKeyringUri);
-                        uploadKeyRingToServer(hkpKeyserver, keyring);
-                        // TODO: replace with proper log
-                        return new ExportResult(ExportResult.RESULT_OK, new OperationLog());
-                    } catch (Exception e) {
-                        // TODO: Implement better exception handling, replace with log
-                    }
-                    break;
-                }
-                case EXPORT_FILE: {
-                    return exportToFile(exportInput.mMasterKeyIds, exportInput.mExportSecret,
-                            exportInput.mOutputFile);
-                }
-                case EXPORT_URI: {
-                    return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret,
-                            exportInput.mOutputUri);
-                }
-                default: {
-                    return null;
-                }
-            }
-        }
-        else if (input instanceof ImportKeyringParcel) {
-            ImportKeyringParcel importInput = (ImportKeyringParcel) input;
-            return importKeys(importInput.mKeyList, importInput.mKeyserver);
-        } else {
-            throw new RuntimeException("Invalid input parcel at ImportExportOperation");
-        }
-        return null;
+    public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
+        return importKeys(importInput.mKeyList, importInput.mKeyserver);
     }
 
     public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer) {
@@ -678,9 +386,10 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
             ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext,
                     "key_import.pcl");
 
-            result =  serialKeyRingImport(cache, keyServer);
+            result = serialKeyRingImport(cache, keyServer);
         } else {
-            // if there is more than one key with the same fingerprint, we do a serial import to prevent
+            // if there is more than one key with the same fingerprint, we do a serial import to
+            // prevent
             // https://github.com/open-keychain/open-keychain/issues/1221
             HashSet<String> keyFingerprintSet = new HashSet<>();
             for (int i = 0; i < keyList.size(); i++) {
@@ -688,7 +397,7 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
             }
             if (keyFingerprintSet.size() == keyList.size()) {
                 // all keys have unique fingerprints
-                result =  multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer);
+                result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer);
             } else {
                 result = serialKeyRingImport(keyList, keyServer);
             }
@@ -704,28 +413,7 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
         if (keyListIterator != null) {
             KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
 
-            final Progressable ignoreProgressable = new Progressable() {
-                @Override
-                public void setProgress(String message, int current, int total) {
-
-                }
-
-                @Override
-                public void setProgress(int resourceId, int current, int total) {
-
-                }
-
-                @Override
-                public void setProgress(int current, int total) {
-
-                }
-
-                @Override
-                public void setPreventCancel() {
-
-                }
-            };
-
+            final ProgressScaler ignoreProgressable = new ProgressScaler();
 
             final int maxThreads = 200;
             ExecutorService importExecutor = new ThreadPoolExecutor(0, maxThreads,
@@ -739,7 +427,8 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
 
                 final ParcelableKeyRing pkRing = keyListIterator.next();
 
-                Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>() {
+                Callable<ImportKeyResult> importOperationCallable = new Callable<ImportKeyResult>
+                        () {
 
                     @Override
                     public ImportKeyResult call() {
@@ -758,10 +447,12 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
                 try {
                     accumulator.accumulateKeyImport(importCompletionService.take().get());
                 } catch (InterruptedException | ExecutionException e) {
-                    Log.e(Constants.TAG, "A key could not be imported during multi-threaded import", e);
+                    Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
+                            "import", e);
                     // do nothing?
                     if (e instanceof ExecutionException) {
-                        // Since serialKeyRingImport does not throw any exceptions, this is what would have happened if
+                        // Since serialKeyRingImport does not throw any exceptions, this is what
+                        // would have happened if
                         // we were importing the key on this thread
                         throw new RuntimeException();
                     }
@@ -792,7 +483,8 @@ public class ImportExportOperation extends BaseOperation<ImportExportParcel> {
          * Also sets the progress to 0 on instantiation.
          *
          * @param totalKeys            total number of keys to be imported
-         * @param externalProgressable the external progressable to be updated every time a key is imported
+         * @param externalProgressable the external progressable to be updated every time a key
+         *                             is imported
          */
         public KeyImportAccumulator(int totalKeys, Progressable externalProgressable) {
             mTotalKeys = totalKeys;

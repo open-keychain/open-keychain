@@ -188,10 +188,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         }
 
         HkpKeyserver keyServer = null;
-        ImportExportOperation importExportOperation = null;
+        ExportOperation exportOperation = null;
         if (parcel.keyServerUri != null) {
             keyServer = new HkpKeyserver(parcel.keyServerUri);
-            importExportOperation = new ImportExportOperation(mContext, mProviderHelper, mProgressable);
+            exportOperation = new ExportOperation(mContext, mProviderHelper, mProgressable);
         }
 
         // Write all certified keys into the database
@@ -209,10 +209,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
-            if (importExportOperation != null) {
+            if (exportOperation != null) {
                 // TODO use subresult, get rid of try/catch!
                 try {
-                    importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
+                    exportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
                     uploadOk += 1;
                 } catch (AddKeyException e) {
                     Log.e(Constants.TAG, "error uploading key", e);

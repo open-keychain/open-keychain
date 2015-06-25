@@ -23,7 +23,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ExportKeyringParcel extends ImportExportParcel implements Parcelable {
+public class ExportKeyringParcel implements Parcelable {
     public String mKeyserver;
     public Uri mCanonicalizedPublicKeyringUri;
 
