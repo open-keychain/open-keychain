@@ -1,0 +1,10 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:persistent="false"
+        android:key="theme"
+        android:title="@string/label_theme"
+        android:entries="@array/theme_entries"
+        android:entryValues="@array/theme_values"
+        android:dialogTitle="@string/label_theme" />
+
+</PreferenceScreen>

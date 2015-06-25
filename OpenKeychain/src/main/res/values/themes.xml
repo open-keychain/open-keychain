@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="KeychainTheme" parent="KeychainTheme.Base" />
-
-    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
+    <style name="LightBaseTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
@@ -14,6 +12,25 @@
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="DarkBaseTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
+
+        <!-- remove actionbar and title, we use toolbar! -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="LightTheme" parent="LightBaseTheme">
+    </style>
+
+    <style name="DarkTheme" parent="DarkBaseTheme">
     </style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->

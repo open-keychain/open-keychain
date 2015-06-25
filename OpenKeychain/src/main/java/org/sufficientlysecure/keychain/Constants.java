@@ -103,6 +103,7 @@ public final class Constants {
         public static final String PROXY_HOST = "proxyHost";
         public static final String PROXY_PORT = "proxyPort";
         public static final String PROXY_TYPE = "proxyType";
+        public static final String THEME = "theme";
     }
 
     /**

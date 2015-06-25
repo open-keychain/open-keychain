@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 /**
  * Setups Toolbar
@@ -36,9 +38,19 @@ import org.sufficientlysecure.keychain.R;
 public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     protected View mStatusBar;
+    private static Preferences sPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        sPreferences = Preferences.getPreferences(this);
+        int themeId = R.style.LightTheme;
+        if ("dark".equals(sPreferences.getTheme())) {
+            themeId = R.style.DarkTheme;
+        }
+
+        ContextThemeWrapper w = new ContextThemeWrapper(this, themeId);
+        getTheme().setTo(w.getTheme());
+
         super.onCreate(savedInstanceState);
         initLayout();
         initToolbar();

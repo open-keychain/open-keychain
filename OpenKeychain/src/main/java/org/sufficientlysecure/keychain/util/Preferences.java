@@ -220,6 +220,15 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.TEXT_USE_COMPRESSION, true);
     }
 
+    public String getTheme() {
+        return mSharedPreferences.getString(Pref.THEME, "light");
+    }
+
+    public void setTheme(String value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Constants.Pref.THEME, value);
+        editor.commit();
+    }
 
     public void setUseArmor(boolean useArmor) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
