@@ -502,4 +502,9 @@ public class ImportKeysActivity extends BaseNfcActivity
     public void onCryptoOperationError(ImportKeyResult result) {
         handleResult(result);
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

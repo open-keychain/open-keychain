@@ -57,6 +57,12 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
             public void onCryptoOperationError(S result) {
                 CryptoOperationFragment.this.onCryptoOperationError(result);
             }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return CryptoOperationFragment.this.onCryptoSetProgress(msg, progress, max);
+            }
+
         };
 
         mOperationHelper = new CryptoOperationHelper<>(this, callback);
@@ -79,7 +85,15 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
     }
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        mOperationHelper.cryptoOperation(cryptoInput);
+        cryptoOperation(cryptoInput);
+    }
+
+    protected void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
+        mOperationHelper.cryptoOperation(cryptoInput, showProgress);
+    }
+
+    protected boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
     }
 
     protected void onCryptoOperationError(S result) {

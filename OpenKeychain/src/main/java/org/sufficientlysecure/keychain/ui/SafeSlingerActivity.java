@@ -208,4 +208,9 @@ public class SafeSlingerActivity extends BaseActivity
         setResult(RESULT_OK, data);
         finish();
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

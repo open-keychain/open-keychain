@@ -471,6 +471,11 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         displaySpannableResult(ssb);
     }
 
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
+
     private void displaySpannableResult(SpannableStringBuilder ssb) {
         mProofVerifyHeader.setVisibility(View.VISIBLE);
         mProofVerifyDetail.setVisibility(View.VISIBLE);

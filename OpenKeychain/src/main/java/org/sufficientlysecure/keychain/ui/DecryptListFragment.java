@@ -258,12 +258,6 @@ public class DecryptListFragment
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
         return true;
     }
-
-    @Override
-    protected void dismissProgress() {
-        // progress shown inline, so never mind
-    }
-
     @Override
     protected void onCryptoOperationError(DecryptVerifyResult result) {
         final Uri uri = mCurrentInputUri;

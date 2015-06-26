@@ -268,6 +268,11 @@ public class CreateKeyFinalFragment
                 getActivity().setResult(Activity.RESULT_OK, data);
                 getActivity().finish();
             }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
         };
 
 

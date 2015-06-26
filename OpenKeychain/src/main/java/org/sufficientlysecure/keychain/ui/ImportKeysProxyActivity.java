@@ -259,6 +259,11 @@ public class ImportKeysProxyActivity extends FragmentActivity
         return;
     }
 
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
+
     /**
      * NFC: Parses the NDEF Message from the intent and prints to the TextView
      */

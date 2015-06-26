@@ -190,6 +190,11 @@ public class DeleteKeyDialogFragment extends DialogFragment
         handleResult(result);
     }
 
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
+
     public void handleResult(DeleteResult result) {
         try {
             Bundle data = new Bundle();

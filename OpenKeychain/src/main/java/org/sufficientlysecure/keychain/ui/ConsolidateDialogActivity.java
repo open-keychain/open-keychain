@@ -86,4 +86,9 @@ public class ConsolidateDialogActivity extends FragmentActivity
         // don't care about result (for now?)
         ConsolidateDialogActivity.this.finish();
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

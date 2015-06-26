@@ -182,6 +182,11 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             public void onCryptoOperationError(ImportKeyResult result) {
                 result.createNotify(getActivity()).show();
             }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
         };
 
         mImportOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_importing);

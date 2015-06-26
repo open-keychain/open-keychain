@@ -986,4 +986,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mIsRefreshing = false;
         result.createNotify(this).show();
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

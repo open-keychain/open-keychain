@@ -105,4 +105,9 @@ public class ExportHelper
     public void onCryptoOperationError(ExportResult result) {
         result.createNotify(mActivity).show();
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

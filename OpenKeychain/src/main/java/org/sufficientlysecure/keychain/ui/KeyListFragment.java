@@ -631,6 +631,11 @@ public class KeyListFragment extends LoaderFragment
             public void onCryptoOperationError(ConsolidateResult result) {
                 result.createNotify(getActivity()).show();
             }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
         };
 
         mConsolidateOpHelper =
@@ -747,6 +752,11 @@ public class KeyListFragment extends LoaderFragment
     @Override
     public void onCryptoOperationError(ImportKeyResult result) {
         result.createNotify(getActivity()).show();
+    }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
     }
 
     public class KeyListAdapter extends KeyAdapter implements StickyListHeadersAdapter {

@@ -145,4 +145,9 @@ public class UploadKeyActivity extends BaseActivity
     public void onCryptoOperationError(ExportResult result) {
         // TODO: Implement proper log for key upload then show error
     }
+
+    @Override
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
+        return false;
+    }
 }

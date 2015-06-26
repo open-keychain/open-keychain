@@ -57,6 +57,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         void onCryptoOperationSuccess(S result);
         void onCryptoOperationCancelled();
         void onCryptoOperationError(S result);
+        boolean onCryptoSetProgress(String msg, int progress, int max);
     }
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
@@ -224,7 +225,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     }
 
-    public void cryptoOperation(CryptoInputParcel cryptoInput) {
+    public void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
 
         FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
@@ -259,18 +260,31 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     onHandleResult(result);
                 }
             }
-        };
 
-        saveHandler.showProgressDialog(
-                activity.getString(mProgressMessageResource),
-                ProgressDialog.STYLE_HORIZONTAL, false);
+            @Override
+            protected void onSetProgress(String msg, int progress, int max) {
+                // allow handling of progress in fragment, or delegate upwards
+                if ( ! mCallback.onCryptoSetProgress(msg, progress, max)) {
+                    super.onSetProgress(msg, progress, max);
+                }
+            }
+        };
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        activity.startService(intent);
+        if (showProgress) {
+            saveHandler.showProgressDialog(
+                    activity.getString(mProgressMessageResource),
+                    ProgressDialog.STYLE_HORIZONTAL, false);
+        }
 
+        activity.startService(intent);
+    }
+
+    public void cryptoOperation(CryptoInputParcel cryptoInputParcel) {
+        cryptoOperation(cryptoInputParcel, true);
     }
 
     public void cryptoOperation() {
