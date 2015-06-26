@@ -6,5 +6,6 @@
         <attr name="colorEmphasis" format="color" />
         <attr name="colorHeaderText" format="color" />
         <attr name="colorTertiaryText" format="color" />
+        <attr name="colorButtonRow" format="color" />
     </declare-styleable>
 </resources>

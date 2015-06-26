@@ -6,8 +6,6 @@
 
     <color name="bg_gray">#cecbce</color>
 
-    <color name="holo_gray_bright">#33CCCCCC</color>
-
     <!-- tabs -->
     <color name="tab_text">#70FFFFFF</color>
     <color name="tab_text_selected">#FFFFFF</color>
