@@ -38,7 +38,7 @@ public class ClipboardReflection {
 
     }
 
-    public static CharSequence getClipboardText(Context context) {
+    public static String getClipboardText(Context context) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 
         ClipData clip = clipboard.getPrimaryClip();
@@ -48,6 +48,10 @@ public class ClipboardReflection {
         }
 
         ClipData.Item item = clip.getItemAt(0);
-        return item.coerceToText(context);
+        CharSequence seq = item.coerceToText(context);
+        if (seq != null) {
+            return seq.toString();
+        }
+        return null;
     }
 }
