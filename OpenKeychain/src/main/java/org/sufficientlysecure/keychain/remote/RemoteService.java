@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -65,12 +66,11 @@ public abstract class RemoteService extends Service {
     /**
      * Checks if caller is allowed to access the API
      *
-     * @param data
      * @return null if caller is allowed, or a Bundle with a PendingIntent
      */
     protected Intent isAllowed(Intent data) {
         try {
-            if (isCallerAllowed(false)) {
+            if (isCallerAllowed()) {
                 return null;
             } else {
                 String packageName = getCurrentCallingPackage();
@@ -130,8 +130,8 @@ public abstract class RemoteService extends Service {
     }
 
     private byte[] getPackageCertificate(String packageName) throws NameNotFoundException {
-        PackageInfo pkgInfo = getPackageManager().getPackageInfo(packageName,
-                PackageManager.GET_SIGNATURES);
+        @SuppressLint("PackageManagerGetSignatures") // we do check the byte array of *all* signatures
+        PackageInfo pkgInfo = getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
         // NOTE: Silly Android API naming: Signatures are actually certificates
         Signature[] certificates = pkgInfo.signatures;
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -211,22 +211,15 @@ public abstract class RemoteService extends Service {
      * Checks if process that binds to this service (i.e. the package name corresponding to the
      * process) is in the list of allowed package names.
      *
-     * @param allowOnlySelf allow only Keychain app itself
      * @return true if process is allowed to use this service
      * @throws WrongPackageCertificateException
      */
-    private boolean isCallerAllowed(boolean allowOnlySelf) throws WrongPackageCertificateException {
-        return isUidAllowed(Binder.getCallingUid(), allowOnlySelf);
+    private boolean isCallerAllowed() throws WrongPackageCertificateException {
+        return isUidAllowed(Binder.getCallingUid());
     }
 
-    private boolean isUidAllowed(int uid, boolean allowOnlySelf)
+    private boolean isUidAllowed(int uid)
             throws WrongPackageCertificateException {
-        if (android.os.Process.myUid() == uid) {
-            return true;
-        }
-        if (allowOnlySelf) { // barrier
-            return false;
-        }
 
         String[] callingPackages = getPackageManager().getPackagesForUid(uid);
 
@@ -237,7 +230,7 @@ public abstract class RemoteService extends Service {
             }
         }
 
-        Log.d(Constants.TAG, "Uid is NOT allowed!");
+        Log.e(Constants.TAG, "Uid is NOT allowed!");
         return false;
     }
 

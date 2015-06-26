@@ -23,6 +23,8 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
+import org.sufficientlysecure.keychain.BuildConfig;
+
 import java.io.File;
 
 public final class Constants {
