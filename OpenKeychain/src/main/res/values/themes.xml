@@ -10,6 +10,9 @@
         <item name="colorFabPressed">#1976d2</item>
 
         <item name="colorEmphasis">#2196f3</item>
+        <item name="colorHeaderText">#212121</item>
+        <item name="colorTertiaryText">#808080</item>
+
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
@@ -28,6 +31,8 @@
         <item name="colorFabPressed">#1976d2</item>
 
         <item name="colorEmphasis">#2196f3</item>
+        <item name="colorHeaderText">#a0a0a0</item>
+        <item name="colorTertiaryText">#808080</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>

@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
@@ -81,7 +82,7 @@ public class SafeSlingerActivity extends BaseActivity
         });
 
         ImageView buttonIcon = (ImageView) findViewById(R.id.safe_slinger_button_image);
-        buttonIcon.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+        buttonIcon.setColorFilter(FormattingUtils.getColorFromAttr(this, R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
         View button = findViewById(R.id.safe_slinger_button);

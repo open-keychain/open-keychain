@@ -29,7 +29,7 @@
         android:id="@+id/add_user_id_comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/tertiary_text_light"
+        android:textColor="?attr/colorTertiaryText"
         android:singleLine="true"
         android:lines="1"
         android:maxLines="1"

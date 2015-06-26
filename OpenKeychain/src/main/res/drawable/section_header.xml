@@ -6,6 +6,6 @@
         android:height="2dp"
         android:width="1000dp" />
 
-    <solid android:color="@color/header_text" />
+    <solid android:color="?attr/colorHeaderText" />
 
 </shape>

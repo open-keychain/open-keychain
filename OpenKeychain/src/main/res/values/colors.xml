@@ -4,11 +4,7 @@
     <color name="icons">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="header_text">#212121</color>
-
     <color name="bg_gray">#cecbce</color>
-    <color name="tertiary_text_light">#808080</color>
-    <color name="alert">#ffdd3333</color>
 
     <color name="holo_gray_bright">#33CCCCCC</color>
 

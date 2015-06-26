@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -111,7 +112,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
-        vKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+        vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
         vFingerprintShareButton.setOnClickListener(new View.OnClickListener() {

@@ -18,9 +18,11 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
+import android.content.res.Resources.Theme;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
+import android.util.TypedValue;
 
 public class FormattingUtils {
 
@@ -32,4 +34,10 @@ public class FormattingUtils {
         return (int) ((px / context.getResources().getDisplayMetrics().density) + 0.5f);
     }
 
+    public static int getColorFromAttr(Context context, int attr) {
+        TypedValue typedValue = new TypedValue();
+        Theme theme = context.getTheme();
+        theme.resolveAttribute(attr, typedValue, true);
+        return typedValue.data;
+    }
 }

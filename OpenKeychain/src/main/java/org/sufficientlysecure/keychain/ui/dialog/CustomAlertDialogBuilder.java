@@ -28,5 +28,4 @@ public class CustomAlertDialogBuilder extends AlertDialog.Builder {
     public CustomAlertDialogBuilder(Context context) {
         super(context);
     }
-
 }

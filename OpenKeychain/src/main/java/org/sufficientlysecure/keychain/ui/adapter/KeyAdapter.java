@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
@@ -49,6 +50,7 @@ public class KeyAdapter extends CursorAdapter {
 
     protected String mQuery;
     protected LayoutInflater mInflater;
+    protected Context mContext;
 
     // These are the rows that we will retrieve.
     public static final String[] PROJECTION = new String[]{
@@ -77,6 +79,7 @@ public class KeyAdapter extends CursorAdapter {
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
+        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -151,7 +154,7 @@ public class KeyAdapter extends CursorAdapter {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
                         mSlingerButton.setColorFilter(
-                                context.getResources().getColor(R.color.tertiary_text_light),
+                                FormattingUtils.getColorFromAttr(context, R.attr.colorTertiaryText),
                                 PorterDuff.Mode.SRC_IN);
                         mSlinger.setVisibility(View.VISIBLE);
                     } else {

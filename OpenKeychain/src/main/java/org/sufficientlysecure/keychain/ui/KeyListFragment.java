@@ -28,7 +28,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources.Theme;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -47,7 +46,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.util.TypedValue;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -70,6 +68,7 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -710,10 +709,7 @@ public class KeyListFragment extends LoaderFragment
             // let the adapter handle setting up the row views
             View v = super.getView(position, convertView, parent);
 
-            TypedValue typedValue = new TypedValue();
-            Theme theme = mContext.getTheme();
-            theme.resolveAttribute(R.attr.colorEmphasis, typedValue, true);
-            int colorEmphasis = typedValue.data;
+            int colorEmphasis = FormattingUtils.getColorFromAttr(mContext, R.attr.colorEmphasis);
 
             if (mSelection.get(position) != null) {
                 // selected position color

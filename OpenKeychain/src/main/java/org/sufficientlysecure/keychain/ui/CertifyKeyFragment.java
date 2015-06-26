@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -154,7 +155,7 @@ public class CertifyKeyFragment
         // make certify image gray, like action icons
         ImageView vActionCertifyImage =
                 (ImageView) view.findViewById(R.id.certify_key_action_certify_image);
-        vActionCertifyImage.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
+        vActionCertifyImage.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
         View vCertifyButton = view.findViewById(R.id.certify_key_certify_button);

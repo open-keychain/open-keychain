@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:text="@string/label_name"
-                android:textColor="@color/tertiary_text_light"
+                android:textColor="?attr/colorTertiaryText"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:text="@string/label_email"
-                android:textColor="@color/tertiary_text_light"
+                android:textColor="?attr/colorTertiaryText"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
