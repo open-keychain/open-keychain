@@ -91,6 +91,7 @@ public class ShareHelper {
                 // Create chooser with only one Intent in it
                 Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(targetedShareIntents.size() - 1), title);
                 // append all other Intents
+                // TODO this line looks wrong?!
                 chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
                 return chooserIntent;
             }

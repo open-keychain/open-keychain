@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -97,24 +98,15 @@ public class ServiceProgressHandler extends Handler {
     public void handleMessage(Message message) {
         Bundle data = message.getData();
 
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
-                        .findFragmentByTag("progressDialog");
-
-        if (progressDialogFragment == null) {
-            Log.e(Constants.TAG, "Progress has not been updated because mProgressDialogFragment was null!");
-            return;
-        }
-
         MessageStatus status = MessageStatus.fromInt(message.arg1);
         switch (status) {
             case OKAY:
-                progressDialogFragment.dismissAllowingStateLoss();
+                dismissAllowingStateLoss();
 
                 break;
 
             case EXCEPTION:
-                progressDialogFragment.dismissAllowingStateLoss();
+                dismissAllowingStateLoss();
 
                 // show error from service
                 if (data.containsKey(DATA_ERROR)) {
@@ -128,23 +120,25 @@ public class ServiceProgressHandler extends Handler {
             case UPDATE_PROGRESS:
                 if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
 
+                    String msg = null;
+                    int progress = data.getInt(DATA_PROGRESS);
+                    int max = data.getInt(DATA_PROGRESS_MAX);
+
                     // update progress from service
                     if (data.containsKey(DATA_MESSAGE)) {
-                        progressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
-                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                        msg = data.getString(DATA_MESSAGE);
                     } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                        progressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
-                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                    } else {
-                        progressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
-                                data.getInt(DATA_PROGRESS_MAX));
+                        msg = mActivity.getString(data.getInt(DATA_MESSAGE_ID));
                     }
+
+                    onSetProgress(msg, progress, max);
+
                 }
 
                 break;
 
             case PREVENT_CANCEL:
-                progressDialogFragment.setPreventCancel(true);
+                setPreventCancel(true);
                 break;
 
             default:
@@ -152,4 +146,48 @@ public class ServiceProgressHandler extends Handler {
                 break;
         }
     }
+
+    private void setPreventCancel(boolean preventCancel) {
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
+                        .findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            return;
+        }
+
+        progressDialogFragment.setPreventCancel(preventCancel);
+    }
+
+    protected void dismissAllowingStateLoss() {
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
+                        .findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            return;
+        }
+
+        progressDialogFragment.dismissAllowingStateLoss();
+    }
+
+
+    protected void onSetProgress(String msg, int progress, int max) {
+
+        ProgressDialogFragment progressDialogFragment =
+                (ProgressDialogFragment) mActivity.getSupportFragmentManager()
+                        .findFragmentByTag("progressDialog");
+
+        if (progressDialogFragment == null) {
+            return;
+        }
+
+        if (msg != null) {
+            progressDialogFragment.setProgress(msg, progress, max);
+        } else {
+            progressDialogFragment.setProgress(progress, max);
+        }
+
+    }
+
 }

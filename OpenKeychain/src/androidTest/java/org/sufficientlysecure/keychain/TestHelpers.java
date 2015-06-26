@@ -18,12 +18,27 @@
 package org.sufficientlysecure.keychain;
 
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Random;
 
 import android.content.Context;
 import android.support.annotation.StringRes;
+import android.support.test.espresso.UiController;
+import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.base.DefaultFailureHandler;
+import android.support.test.espresso.matcher.ViewMatchers;
+import android.view.View;
 
+import com.nispok.snackbar.Snackbar;
+import com.tokenautocomplete.TokenCompleteTextView;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
@@ -38,19 +53,39 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSnackbarLineColor;
 
 
 public class TestHelpers {
 
+    public static void dismissSnackbar() {
+        onView(withClassName(endsWith("Snackbar")))
+            .perform(new ViewAction() {
+                @Override
+                public Matcher<View> getConstraints() {
+                    return ViewMatchers.isAssignableFrom(Snackbar.class);
+                }
+
+                @Override
+                public String getDescription() {
+                    return "dismiss snackbar";
+                }
+
+                @Override
+                public void perform(UiController uiController, View view) {
+                    ((Snackbar) view).dismiss();
+                }
+            });
+    }
 
     public static void checkSnackbar(Style style, @StringRes Integer text) {
 
-        onView(withClassName(CoreMatchers.endsWith("Snackbar")))
+        onView(withClassName(endsWith("Snackbar")))
                 .check(matches(withSnackbarLineColor(style.mLineColor)));
 
         if (text != null) {
-            onView(withClassName(CoreMatchers.endsWith("Snackbar")))
+            onView(withClassName(endsWith("Snackbar")))
                     .check(matches(hasDescendant(withText(text))));
         }
 
@@ -71,6 +106,37 @@ public class TestHelpers {
             }
         }
 
+    }
+
+    public static void copyFiles() throws IOException {
+        File cacheDir = getInstrumentation().getTargetContext().getFilesDir();
+        byte[] buf = new byte[256];
+        for (String filename : FILES) {
+            File outFile = new File(cacheDir, filename);
+            if (outFile.exists()) {
+                continue;
+            }
+            InputStream in = new BufferedInputStream(getInstrumentation().getContext().getAssets().open(filename));
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
+            int len;
+            while( (len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+        }
+    }
+
+    public static final String[] FILES = new String[] { "pa.png", "re.png", "ci.png" };
+    public static File[] getImageNames() {
+        File cacheDir = getInstrumentation().getTargetContext().getFilesDir();
+        File[] ret = new File[FILES.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = new File(cacheDir, FILES[i]);
+        }
+        return ret;
+    }
+
+    public static <T> T pickRandom(T[] haystack) {
+        return haystack[new Random().nextInt(haystack.length)];
     }
 
     public static String randomString(int min, int max) {

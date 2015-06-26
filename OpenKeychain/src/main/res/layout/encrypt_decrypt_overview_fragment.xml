@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="4dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
@@ -89,31 +90,16 @@
         style="?android:attr/borderlessButtonStyle"
         android:orientation="horizontal"
         android:paddingLeft="8dp"
-        android:paddingRight="0dp">
+        android:paddingRight="0dp"
+        tools:ignore="UseCompoundDrawables">
 
-        <LinearLayout
+        <TextView
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingRight="4dp"
-            android:gravity="center_vertical"
-            android:orientation="vertical">
-
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_decrypt_clipboard" />
-
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/tertiary_text_light"
-                android:text="@string/btn_decrypt_and_verify"
-                android:gravity="center_vertical" />
-
-        </LinearLayout>
+            android:layout_gravity="center_vertical"
+            android:text="@string/btn_decrypt_clipboard" />
 
         <ImageView
             android:id="@+id/clipboard_icon"

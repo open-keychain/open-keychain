@@ -192,7 +192,7 @@
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
-  <string name="select_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
+  <string name="error_no_encryption_or_signature_key">Välj åtminstone en krypterings- eller signeringsnyckel.</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>
@@ -350,7 +350,7 @@
   <string name="import_qr_code_button">Skanna QR-kod</string>
   <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
   <!--Generic result toast-->
-  <string name="view_log">Detaljer</string>
+  <string name="snackbar_details">Detaljer</string>
   <string name="with_warnings">, med varningar</string>
   <string name="with_cancelled">, tills det avbryts</string>
   <!--Import result toast-->
@@ -873,7 +873,7 @@
   <string name="contact_show_key">Visa nyckel (%s)</string>
   <string name="swipe_to_update">Dra nedåt för att uppdatera från nyckelserver</string>
   <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
-  <string name="error_multi_not_supported">Att spara flera filer stöds ej. Detta är en begränsning i nuvarande Android.</string>
+  <string name="error_multi_files">Att spara flera filer stöds ej. Detta är en begränsning i nuvarande Android.</string>
   <string name="key_colon">Nyckel:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Passphrase wizard-->

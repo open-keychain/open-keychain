@@ -97,8 +97,12 @@ public class CryptoInputParcel implements Parcelable {
         mCryptoData.put(ByteBuffer.wrap(hash), signedHash);
     }
 
+    public void addCryptoData(Map<ByteBuffer, byte[]> cachedSessionKeys) {
+        mCryptoData.putAll(cachedSessionKeys);
+    }
+
     public Map<ByteBuffer, byte[]> getCryptoData() {
-        return Collections.unmodifiableMap(mCryptoData);
+        return mCryptoData;
     }
 
     public Date getSignatureTime() {
@@ -138,4 +142,5 @@ public class CryptoInputParcel implements Parcelable {
         b.append("}");
         return b.toString();
     }
+
 }

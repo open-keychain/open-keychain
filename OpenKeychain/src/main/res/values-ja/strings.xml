@@ -199,7 +199,7 @@
   <string name="encrypt_sign_successful">署名/暗号化に成功しました。</string>
   <string name="encrypt_sign_clipboard_successful">クリップボードの中身の署名/暗号化に成功しました。</string>
   <string name="select_encryption_key">少なくとも1つの暗号化鍵を選択して下さい。</string>
-  <string name="select_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
+  <string name="error_no_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
   <string name="specify_file_to_encrypt_to">どれのファイルを暗号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
   <string name="specify_file_to_decrypt_to">どれのファイルを暗号するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
   <string name="specify_file_to_export_to">どれのファイルを復号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
@@ -364,7 +364,7 @@
   <string name="import_qr_code_button">QCコードのスキャン</string>
   <string name="import_qr_code_text">カメラをQRコードにかざしてください!</string>
   <!--Generic result toast-->
-  <string name="view_log">概要</string>
+  <string name="snackbar_details">概要</string>
   <string name="with_warnings">、とワーニング</string>
   <string name="with_cancelled">、キャンセルされるまで</string>
   <!--Import result toast-->
@@ -1102,7 +1102,7 @@
   <string name="contact_show_key">鍵 (%s) を表示</string>
   <string name="swipe_to_update">下スワイプでキーサーバから更新します</string>
   <string name="error_no_file_selected">暗号化するファイルを少なくとも1つ選択して下さい。</string>
-  <string name="error_multi_not_supported">複数ファイルの保存はサポートされていません。これは現在のAndroidでの制限です。</string>
+  <string name="error_multi_files">複数ファイルの保存はサポートされていません。これは現在のAndroidでの制限です。</string>
   <string name="key_colon">鍵:</string>
   <string name="exchange_description">鍵交換の開始は、右側の参加者の番号を選択し、その後、\"交換開始\"ボタンを推します。\n\n2つ以上の質問で交換にいる右の参加者とその指紋が正しいかを確認してください。</string>
   <string name="btn_start_exchange">交換開始</string>

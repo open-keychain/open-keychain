@@ -172,7 +172,7 @@
   <string name="encrypt_sign_successful">Ongi sinatu eta/edo enkriptatu da.</string>
   <string name="encrypt_sign_clipboard_successful">Ongi sinatu eta/edo enkriptatu da gakora.</string>
   <string name="select_encryption_key">Hautatu enkriptaketa giltza bat gutxienez.</string>
-  <string name="select_encryption_or_signature_key">Hautatu enkriptaketa giltza bat edo sinadura giltza bat gutxienez.</string>
+  <string name="error_no_encryption_or_signature_key">Hautatu enkriptaketa giltza bat edo sinadura giltza bat gutxienez.</string>
   <string name="key_deletion_confirmation_multi">Egitan nahi duzu hautaturiko giltzak ezabatzea?</string>
   <string name="public_key_deletetion_confirmation">Ezabatu \'%s\' giltza?</string>
   <string name="also_export_secret_keys">Esportatu giltza sekretuak ere</string>
@@ -304,7 +304,7 @@
   <string name="import_qr_code_button">Eskaneatu QR Kodea</string>
   <string name="import_qr_code_text">Jarri zure kamera QR Kodearen gainean!</string>
   <!--Generic result toast-->
-  <string name="view_log">Xehetasunak</string>
+  <string name="snackbar_details">Xehetasunak</string>
   <string name="with_warnings">, kontuz oharrekin</string>
   <!--Import result toast-->
   <string name="import_error_nothing">Ez dago ezer inportatzeko.</string>

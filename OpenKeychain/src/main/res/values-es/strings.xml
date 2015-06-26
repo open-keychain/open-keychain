@@ -201,7 +201,7 @@
   <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
   <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
-  <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
+  <string name="error_no_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
   <string name="specify_file_to_encrypt_to">Por favor especifique hacia qué fichero cifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="specify_file_to_decrypt_to">Por favor especifique hacia qué fichero descifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="specify_file_to_export_to">Por favor especifique hacia qué fichero exportar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">Escanear código QR</string>
   <string name="import_qr_code_text">¡Sitúe su cámara sobre el código QR!</string>
   <!--Generic result toast-->
-  <string name="view_log">Detalles</string>
+  <string name="snackbar_details">Detalles</string>
   <string name="with_warnings">, con advertencias</string>
   <string name="with_cancelled">, hasta que sea cancelado</string>
   <!--Import result toast-->
@@ -1131,7 +1131,7 @@
   <string name="contact_show_key">Mostrar clave (%s)</string>
   <string name="swipe_to_update">Gesto de barrido hacia abajo para actualizar desde el servidor de claves</string>
   <string name="error_no_file_selected">¡Seleccione al menos un fichero a cifrar!</string>
-  <string name="error_multi_not_supported">El guardado de múltiples ficheros no está soportado. Esto es una limitación de su Android actual.</string>
+  <string name="error_multi_files">El guardado de múltiples ficheros no está soportado. Esto es una limitación de su Android actual.</string>
   <string name="key_colon">Clave:</string>
   <string name="exchange_description">Para iniciar un intercambio de claves, en el lado derecho elija el número de participantes, y luego pulse el botón \"Iniciar intercambio\".\n\nSe le formularán dos preguntas más para asegurar que sólo están en el intercambio los participantes debidos, y que sus huellas de validación son correctas.</string>
   <string name="btn_start_exchange">Comenzar intercambio</string>

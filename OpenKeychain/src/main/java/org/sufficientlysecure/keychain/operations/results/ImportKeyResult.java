@@ -190,7 +190,7 @@ public class ImportKeyResult extends OperationResult {
                 intent.putExtra(LogDisplayFragment.EXTRA_RESULT, ImportKeyResult.this);
                 activity.startActivity(intent);
             }
-        }, R.string.view_log);
+        }, R.string.snackbar_details);
 
     }
 

@@ -253,7 +253,7 @@ public abstract class OperationResult implements Parcelable {
                     intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
                     activity.startActivity(intent);
                 }
-            }, R.string.view_log);
+            }, R.string.snackbar_details);
 
     }
 

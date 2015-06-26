@@ -190,7 +190,7 @@
   <string name="encrypt_sign_successful">成功簽名並/或加密。</string>
   <string name="encrypt_sign_clipboard_successful">成功簽名並/或加密到剪貼簿。</string>
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
-  <string name="select_encryption_or_signature_key">選擇至少一把加密或簽名金鑰。</string>
+  <string name="error_no_encryption_or_signature_key">選擇至少一把加密或簽名金鑰。</string>
   <string name="specify_file_to_encrypt_to">請指定欲加密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_decrypt_to">請指定欲解密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_export_to">請指定欲輸出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
@@ -348,7 +348,7 @@
   <string name="import_qr_code_button">掃描二維條碼</string>
   <string name="import_qr_code_text">將您的相機對準 QR Code !</string>
   <!--Generic result toast-->
-  <string name="view_log">詳細</string>
+  <string name="snackbar_details">詳細</string>
   <string name="with_warnings">，包含警告</string>
   <string name="with_cancelled">，直到被取消</string>
   <!--Import result toast-->

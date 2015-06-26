@@ -55,7 +55,7 @@
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
     <string name="section_encrypt">"Encrypt"</string>
-    <string name="section_decrypt">"Decrypt"</string>
+    <string name="section_decrypt">"Decrypt / Verify"</string>
     <string name="section_current_expiry">"Current expiry"</string>
     <string name="section_new_expiry">"New expiry"</string>
 
@@ -63,7 +63,8 @@
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
-    <string name="btn_save">"Save"</string>
+    <string name="btn_save">"Save file"</string>
+    <string name="btn_view_log">"View log"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
     <string name="btn_no_date">"No Expiry"</string>
@@ -80,9 +81,8 @@
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_share_decrypted_text">"Share decrypted text"</string>
     <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
-    <string name="btn_decrypt_clipboard">"Decrypt text from clipboard"</string>
-    <string name="btn_decrypt_and_verify">"and verify signatures"</string>
-    <string name="btn_decrypt_files">"Decrypt files"</string>
+    <string name="btn_decrypt_clipboard">"Read from clipboard"</string>
+    <string name="btn_decrypt_files">"Select input file"</string>
     <string name="btn_encrypt_files">"Encrypt files"</string>
     <string name="btn_encrypt_text">"Encrypt text"</string>
     <string name="btn_add_email">"Add additional email address"</string>
@@ -222,11 +222,11 @@
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
-    <string name="no_file_selected">"Select a file first."</string>
+    <string name="no_file_selected">"No file selected."</string>
     <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
     <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
-    <string name="select_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
+    <string name="error_no_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists!"</string>
@@ -421,7 +421,7 @@
     <string name="import_url_warn_no_search_parameter">"No search query defined. You can still manually search on this keyserver."</string>
 
     <!-- Generic result toast -->
-    <string name="view_log">"Details"</string>
+    <string name="snackbar_details">"Details"</string>
     <string name="with_warnings">", with warnings"</string>
     <string name="with_cancelled">", until cancelled"</string>
 
@@ -1267,7 +1267,9 @@
     <string name="contact_show_key">"Show key (%s)"</string>
     <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
-    <string name="error_multi_not_supported">"Saving of multiple files not supported. This is a limitation on current Android."</string>
+    <string name="error_multi_files">"Saving of multiple files not supported. This is a limitation on current Android."</string>
+    <string name="error_multi_clipboard">"Encryption of multiple files to clipboard not supported."</string>
+    <string name="error_detached_signature">"Sign-only operation of binary files is not supported, select at least one encryption key."</string>
     <string name="error_empty_text">"Type some text to encrypt!"</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
@@ -1326,13 +1328,28 @@
     <string name="error_nfc_header">"NFC: Card reported invalid %s byte"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+    <string name="btn_delete_original">Delete original file</string>
+
     <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>
     <string name="snack_encrypt_filenames_off">"Filenames <b>are not</b> encrypted."</string>
     <string name="snack_armor_on">"Output encoded as Text."</string>
     <string name="snack_armor_off">"Output encoded as Binary."</string>
     <string name="snack_compression_on">"Compression <b>enabled</b>."</string>
     <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
-    <string name="error_loading_keys">Error loading keys!</string>
-    <string name="error_empty_log">(error, empty log)</string>
+    <string name="error_loading_keys">"Error loading keys!"</string>
+    <string name="error_empty_log">"(error, empty log)"</string>
+    <string name="error_reading_text">"Could not read input to decrypt!"</string>
+    <string name="filename_unknown"><![CDATA[<no filename>]]></string>
+    <string name="filename_unknown_text"><![CDATA[<plain text data>]]></string>
+    <string name="intent_show">Show Signed/Encrypted Content</string>
+    <string name="view_internal">"View in OpenKeychain"</string>
+    <string name="error_preparing_data">"Error preparing data!"</string>
+    <string name="label_clip_title">"Encrypted Data"</string>
+    <string name="progress_processing">"Processing…"</string>
+    <string name="error_saving_file">"Error saving file!"</string>
+    <string name="file_saved">"File saved!"</string>
+    <string name="file_delete_ok">"Original file deleted."</string>
+    <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
+    <string name="file_delete_exception">"Original file could not be deleted!"</string>
 
 </resources>

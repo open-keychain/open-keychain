@@ -185,7 +185,7 @@
   <string name="encrypt_sign_successful">Úspěšně podepsáno a/nebo zašifrováno.</string>
   <string name="encrypt_sign_clipboard_successful">Úspěšně podepsání a/nebo zašifrováno do schránky.</string>
   <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
-  <string name="select_encryption_or_signature_key">Vyberte alespoň jeden šifrovací nebo podpisový klíč.</string>
+  <string name="error_no_encryption_or_signature_key">Vyberte alespoň jeden šifrovací nebo podpisový klíč.</string>
   <string name="also_export_secret_keys">Zárověň exportovat tajný klíč</string>
   <string name="reinstall_openkeychain">Narazili jste na známou chybu v Androidu. Přeinstalujte prosím OpenKeychain pokud chcete své propojit kontakty s klíči.</string>
   <string name="key_exported">Úspěšně exportován 1 klíč.</string>

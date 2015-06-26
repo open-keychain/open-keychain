@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.SecureRandom;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PgpHelper {
@@ -52,9 +54,6 @@ public class PgpHelper {
      * <p/>
      * TODO: Does this really help on flash storage?
      *
-     * @param context
-     * @param progressable
-     * @param file
      * @throws IOException
      */
     public static void deleteFileSecurely(Context context, Progressable progressable, File file)
@@ -78,4 +77,72 @@ public class PgpHelper {
         raf.close();
         file.delete();
     }
+
+    /**
+     * Fixing broken PGP MESSAGE Strings coming from GMail/AOSP Mail
+     */
+    public static String fixPgpMessage(String message) {
+        // windows newline -> unix newline
+        message = message.replaceAll("\r\n", "\n");
+        // Mac OS before X newline -> unix newline
+        message = message.replaceAll("\r", "\n");
+
+        // remove whitespaces before newline
+        message = message.replaceAll(" +\n", "\n");
+        // only two consecutive newlines are allowed
+        message = message.replaceAll("\n\n+", "\n\n");
+
+        // replace non breakable spaces
+        message = message.replaceAll("\\xa0", " ");
+
+        return message;
+    }
+
+    /**
+     * Fixing broken PGP SIGNED MESSAGE Strings coming from GMail/AOSP Mail
+     */
+    public static String fixPgpCleartextSignature(CharSequence input) {
+        if (!TextUtils.isEmpty(input)) {
+            String text = input.toString();
+
+            // windows newline -> unix newline
+            text = text.replaceAll("\r\n", "\n");
+            // Mac OS before X newline -> unix newline
+            text = text.replaceAll("\r", "\n");
+
+            return text;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getPgpContent(CharSequence input) {
+        // only decrypt if clipboard content is available and a pgp message or cleartext signature
+        if (!TextUtils.isEmpty(input)) {
+            Log.dEscaped(Constants.TAG, "input: " + input);
+
+            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
+            if (matcher.matches()) {
+                String text = matcher.group(1);
+                text = fixPgpMessage(text);
+
+                Log.dEscaped(Constants.TAG, "input fixed: " + text);
+                return text;
+            } else {
+                matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
+                if (matcher.matches()) {
+                    String text = matcher.group(1);
+                    text = fixPgpCleartextSignature(text);
+
+                    Log.dEscaped(Constants.TAG, "input fixed: " + text);
+                    return text;
+                } else {
+                    return null;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
 }

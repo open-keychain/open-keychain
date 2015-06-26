@@ -290,4 +290,9 @@ public class Preferences {
                     .commit();
         }
     }
+
+    public void clear() {
+        mSharedPreferences.edit().clear().commit();
+    }
+
 }

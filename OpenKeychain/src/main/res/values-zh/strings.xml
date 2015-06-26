@@ -115,7 +115,7 @@
   <string name="encrypt_sign_successful">加密并签名成功</string>
   <string name="encrypt_sign_clipboard_successful">加密签名并复制到剪贴板成功</string>
   <string name="select_encryption_key">选择至少一个加密密钥</string>
-  <string name="select_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
+  <string name="error_no_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
   <string name="also_export_secret_keys">同时导出密钥</string>
   <string name="key_exported">成功地导出了1个密钥</string>
   <string name="keys_exported">成功导出多个密钥</string>

@@ -201,7 +201,7 @@
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
   <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
-  <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
+  <string name="error_no_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">QR-Code scannen</string>
   <string name="import_qr_code_text">Halte deine Kamera über den QR-Code!</string>
   <!--Generic result toast-->
-  <string name="view_log">Details</string>
+  <string name="snackbar_details">Details</string>
   <string name="with_warnings">, mit Warnungen</string>
   <string name="with_cancelled">. bis abgebrochen wurde</string>
   <!--Import result toast-->
@@ -1132,7 +1132,7 @@
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
   <string name="swipe_to_update">Nach unten wischen um von Schlüsselserver zu aktualisieren</string>
   <string name="error_no_file_selected">Mindestens eine Datei zum Verschlüsseln auswählen!</string>
-  <string name="error_multi_not_supported">Das speichern von mehreren Dateien wird nicht unterstützt. Dies ist eine Einschränkung der aktuellen Android Version.</string>
+  <string name="error_multi_files">Das speichern von mehreren Dateien wird nicht unterstützt. Dies ist eine Einschränkung der aktuellen Android Version.</string>
   <string name="key_colon">Schlüssel:</string>
   <string name="exchange_description">Um einen Schlüsselaustausch zu starten wähle auf der rechten Seite die Teilnehmer aus, drücke dann den \"Austausch starten\"-Knopf.\n\nDu wirst zusätzlich zwei Fragen gestellt bekommen um sicherzustellen, dass nur die richtigen Teilnehmer am Austausch beteiligt sind und deren Fingerabdrücke korrekt sind.</string>
   <string name="btn_start_exchange">Austausch starten</string>

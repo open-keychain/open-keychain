@@ -195,7 +195,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DecryptTextActivity"
+            android:name=".ui.DisplayTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:parentActivityName=".ui.MainActivity"
@@ -203,25 +203,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
-
-            <!-- DECRYPT_TEXT with text as extra -->
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_TEXT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <!-- Android's Send Action -->
-            <intent-filter android:label="@string/intent_send_decrypt">
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/*" />
-                <data android:mimeType="message/*" />
-            </intent-filter>
         </activity>
         <activity
-            android:name=".ui.DecryptFilesActivity"
+            android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:parentActivityName=".ui.MainActivity"
@@ -266,13 +250,23 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
             </intent-filter>
-            <!-- Android's Send Action -->
+
+            <!-- DECRYPT_TEXT -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_TEXT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- Android's Send and Multi-Send Actions -->
             <intent-filter android:label="@string/intent_send_decrypt">
                 <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <!-- everything except text/* and message/* -->
+                <data android:mimeType="text/*" />
+                <data android:mimeType="message/*" />
                 <data android:mimeType="image/*" />
                 <data android:mimeType="audio/*" />
                 <data android:mimeType="video/*" />

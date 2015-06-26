@@ -152,7 +152,7 @@
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
-  <string name="select_encryption_or_signature_key">En az bir şifreleme anahtarı veya imza anahtarı seçiniz.</string>
+  <string name="error_no_encryption_or_signature_key">En az bir şifreleme anahtarı veya imza anahtarı seçiniz.</string>
   <string name="also_export_secret_keys">Özel anahtarları da dışa aktar</string>
   <string name="reinstall_openkeychain">Android için bilinen bir hataya denk geldiniz. Eğer kişilerinizi anahtarlarla eşlemek istiyorsanız, lütfen OpenKeychain uygulamasını yeniden yükleyin.</string>
   <string name="key_exported">1 anahtar başarıyla dışa aktarıldı.</string>
@@ -480,7 +480,7 @@
   <string name="contact_show_key">Anahtarı göster (%s)</string>
   <string name="swipe_to_update">Anahtar sunucudan güncelleme almak için parmağınızı aşağıya doğru kaydırın</string>
   <string name="error_no_file_selected">Şifrelemek için en az bir dosya seçin!</string>
-  <string name="error_multi_not_supported">Birden çok dosyanın kaydedilmesi desteklenmiyor. Bu şu anki Android\'in bir kısıtlamasıdır.</string>
+  <string name="error_multi_files">Birden çok dosyanın kaydedilmesi desteklenmiyor. Bu şu anki Android\'in bir kısıtlamasıdır.</string>
   <string name="key_colon">Anahtar:</string>
   <string name="exchange_description">Anahtar değiş tokuşu başlatmak için sağ taraftan katılımcıların sayısını seçin ve \"Değiş tokuşu başlat\" tuşuna tıklayın.\n\nSadece istenilen katılımcıların değişim işleminde olduğundan ve parmak izlerinin doğruluğundan emin olmak için size iki soru daha sorulacak.</string>
   <!--Passphrase wizard-->

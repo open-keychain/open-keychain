@@ -171,6 +171,10 @@ public class PgpEncryptDecryptTest {
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature should be an error", result.getSignatureResult());
 
+            CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
+            Assert.assertEquals("cached session keys must be empty",
+                    0, cryptoInput.getCryptoData().size());
+
             OpenPgpMetadata metadata = result.getDecryptMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
@@ -272,6 +276,10 @@ public class PgpEncryptDecryptTest {
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature be empty", result.getSignatureResult());
 
+            CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
+            Assert.assertEquals("must have one cached session key",
+                    1, cryptoInput.getCryptoData().size());
+
             OpenPgpMetadata metadata = result.getDecryptMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
@@ -288,6 +296,10 @@ public class PgpEncryptDecryptTest {
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
+
+            CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
+            Assert.assertEquals("must have one cached session key",
+                    1, cryptoInput.getCryptoData().size());
 
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",

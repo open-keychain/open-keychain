@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.ui;
 
 
 import android.app.Activity;
@@ -25,13 +25,12 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.widget.AdapterView;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.espresso.Espresso.onData;
@@ -39,25 +38,31 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.not;
 import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.TestHelpers.randomString;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withEncryptionStatus;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
-import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureMyKey;
+import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSignatureNone;
+
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class AsymmetricOperationTests {
+public class AsymmetricTextOperationTests {
 
     @Rule
     public final ActivityTestRule<MainActivity> mActivity
@@ -66,6 +71,7 @@ public class AsymmetricOperationTests {
         protected Intent getActivityIntent() {
             Intent intent = super.getActivityIntent();
             intent.putExtra(MainActivity.EXTRA_SKIP_FIRST_TIME, true);
+            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_ENCRYPT_DECRYPT);
             return intent;
         }
     };
@@ -85,8 +91,6 @@ public class AsymmetricOperationTests {
     public void testTextEncryptDecryptFromToken() throws Exception {
 
         // navigate to 'encrypt text'
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         String cleartext = randomString(10, 30);
@@ -94,7 +98,9 @@ public class AsymmetricOperationTests {
         { // encrypt
 
             // the EncryptKeyCompletionView is tested individually
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(0)));
             onView(withId(R.id.recipient_list)).perform(tokenEncryptViewAddToken(0x9D604D2F310716A3L));
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
 
@@ -109,20 +115,11 @@ public class AsymmetricOperationTests {
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
             onView(withText(R.string.btn_unlock)).perform(click());
 
-            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
-                    withText(cleartext)));
 
-            onView(withId(R.id.result_encryption_text)).check(matches(
-                    withText(R.string.decrypt_result_encrypted)));
-            onView(withId(R.id.result_signature_text)).check(matches(
-                    withText(R.string.decrypt_result_no_signature)));
-            onView(withId(R.id.result_signature_layout)).check(matches(
-                    not(isDisplayed())));
+            onView(isRecyclerItemView(R.id.decrypted_files_list,
+                    hasDescendant(withText(R.string.filename_unknown_text))))
+                    .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
 
-            onView(withId(R.id.result_encryption_icon)).check(matches(
-                    withDrawable(R.drawable.status_lock_closed_24dp)));
-            onView(withId(R.id.result_signature_icon)).check(matches(
-                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
         }
 
     }
@@ -131,6 +128,8 @@ public class AsymmetricOperationTests {
     public void testTextEncryptDecryptFromKeyView() throws Exception {
 
         String cleartext = randomString(10, 30);
+
+        pressBack();
 
         { // encrypt
 
@@ -141,60 +140,8 @@ public class AsymmetricOperationTests {
                     .perform(click());
             onView(withId(R.id.view_key_action_encrypt_text)).perform(click());
 
-            onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
-
-            onView(withId(R.id.encrypt_copy)).perform(click());
-        }
-
-        // go to decrypt from clipboard view
-        pressBack();
-        pressBack();
-
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
-        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
-
-        { // decrypt
-
-            onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
-            onView(withText(R.string.btn_unlock)).perform(click());
-
-            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
-                    withText(cleartext)));
-
-            onView(withId(R.id.result_encryption_text)).check(matches(
-                    withText(R.string.decrypt_result_encrypted)));
-            onView(withId(R.id.result_signature_text)).check(matches(
-                    withText(R.string.decrypt_result_no_signature)));
-            onView(withId(R.id.result_signature_layout)).check(matches(
-                    not(isDisplayed())));
-
-            onView(withId(R.id.result_encryption_icon)).check(matches(
-                    withDrawable(R.drawable.status_lock_closed_24dp)));
-            onView(withId(R.id.result_signature_icon)).check(matches(
-                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
-
-        }
-
-        pressBack();
-        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
-
-        { // decrypt again, passphrase should be cached
-
-            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
-                    withText(cleartext)));
-
-            onView(withId(R.id.result_encryption_text)).check(matches(
-                    withText(R.string.decrypt_result_encrypted)));
-            onView(withId(R.id.result_signature_text)).check(matches(
-                    withText(R.string.decrypt_result_no_signature)));
-            onView(withId(R.id.result_signature_layout)).check(matches(
-                    not(isDisplayed())));
-
-            onView(withId(R.id.result_encryption_icon)).check(matches(
-                    withDrawable(R.drawable.status_lock_closed_24dp)));
-            onView(withId(R.id.result_signature_icon)).check(matches(
-                    withDrawable(R.drawable.status_signature_unknown_cutout_24dp)));
+            // make sure the encrypt is correctly set
+            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
 
         }
 
@@ -206,8 +153,6 @@ public class AsymmetricOperationTests {
         String cleartext = randomString(10, 30);
 
         // navigate to 'encrypt text'
-        openDrawer(R.id.drawer_layout);
-        onView(withText(R.string.nav_encrypt_decrypt)).perform(click());
         onView(withId(R.id.encrypt_text)).perform(click());
 
         { // sign
@@ -215,11 +160,12 @@ public class AsymmetricOperationTests {
             onView(withId(R.id.encrypt_copy)).perform(click());
             checkSnackbar(Style.ERROR, R.string.error_empty_text);
 
-            // navigate to edit key dialog
+            onView(withId(R.id.result_signature_icon)).check(matches(withDisplayedChild(0)));
             onView(withId(R.id.sign)).perform(click());
             onData(withKeyItemId(0x9D604D2F310716A3L))
                     .inAdapterView(isAssignableFrom(AdapterView.class))
                     .perform(click());
+            onView(withId(R.id.result_signature_icon)).check(matches(withDisplayedChild(1)));
 
             onView(withId(R.id.encrypt_text_text)).perform(typeText(cleartext));
 
@@ -239,21 +185,19 @@ public class AsymmetricOperationTests {
 
         { // decrypt
 
-            onView(withId(R.id.decrypt_text_plaintext)).check(matches(
-                    // startsWith because there may be extra newlines
-                    withText(CoreMatchers.startsWith(cleartext))));
+            onView(isRecyclerItemView(R.id.decrypted_files_list,
+                    hasDescendant(withText(R.string.filename_unknown))))
+                    .check(matches(allOf(withEncryptionStatus(false), withSignatureMyKey())));
 
-            onView(withId(R.id.result_encryption_text)).check(matches(
-                    withText(R.string.decrypt_result_not_encrypted)));
-            onView(withId(R.id.result_signature_text)).check(matches(
-                    withText(R.string.decrypt_result_signature_secret)));
-            onView(withId(R.id.result_signature_layout)).check(matches(
-                    isDisplayed()));
+            // open context menu
+            onView(allOf(isDescendantOfA(isRecyclerItemView(R.id.decrypted_files_list,
+                            hasDescendant(withText(R.string.filename_unknown)))),
+                    withId(R.id.context_menu))).perform(click());
 
-            onView(withId(R.id.result_encryption_icon)).check(matches(
-                    withDrawable(R.drawable.status_lock_open_24dp)));
-            onView(withId(R.id.result_signature_icon)).check(matches(
-                    withDrawable(R.drawable.status_signature_verified_cutout_24dp)));
+            // check if log looks ok
+            onView(withText(R.string.snackbar_details)).perform(click());
+            onView(withText(R.string.msg_dc_clear_signature_ok)).check(matches(isDisplayed()));
+            pressBack();
 
         }
 

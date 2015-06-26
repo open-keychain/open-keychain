@@ -201,7 +201,7 @@
   <string name="encrypt_sign_successful">Signé et/ou chiffré avec succès.</string>
   <string name="encrypt_sign_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
-  <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
+  <string name="error_no_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
   <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
@@ -363,7 +363,7 @@
   <string name="import_qr_code_button">Balayer le code QR</string>
   <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR !</string>
   <!--Generic result toast-->
-  <string name="view_log">Détails</string>
+  <string name="snackbar_details">Détails</string>
   <string name="with_warnings">, avec des avertissements</string>
   <string name="with_cancelled">, jusqu\'à l\'annulation</string>
   <!--Import result toast-->
@@ -1131,7 +1131,7 @@
   <string name="contact_show_key">Montrer la clef (%s)</string>
   <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clefs</string>
   <string name="error_no_file_selected">Choisir au moins un fichier à chiffrer !</string>
-  <string name="error_multi_not_supported">L\'enregistrement des fichiers multiples n\'est pas pris en charge. Ceci est actuellement une limitation d\'Android.</string>
+  <string name="error_multi_files">L\'enregistrement des fichiers multiples n\'est pas pris en charge. Ceci est actuellement une limitation d\'Android.</string>
   <string name="key_colon">Clef :</string>
   <string name="exchange_description">Pour démarrer un échange de clef, choisir le nombre de participants du côté droit, puis cliquer sur le bouton « Démarrer l\'échange ».\n\Deux questions de plus seront posées pour s\'assurer que seuls les bons participants sont dans l\'échange et que les empreintes sont correctes.</string>
   <string name="btn_start_exchange">Démarrer l\'échange</string>

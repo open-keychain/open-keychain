@@ -241,7 +241,7 @@ public class EncryptTextFragment
                     && encryptionKeyIds.length > 0);
 
             if (!gotEncryptionKeys && signingKeyId == Constants.key.none) {
-                Notify.create(getActivity(), R.string.select_encryption_or_signature_key, Notify.Style.ERROR)
+                Notify.create(getActivity(), R.string.error_no_encryption_or_signature_key, Notify.Style.ERROR)
                         .show(this);
                 return null;
             }

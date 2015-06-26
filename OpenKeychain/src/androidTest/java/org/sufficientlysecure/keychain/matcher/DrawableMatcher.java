@@ -102,7 +102,7 @@ public class DrawableMatcher extends TypeSafeMatcher<View> {
         }
         // if those are both bitmap drawables, compare their bitmaps (ignores color filters, which is what we want!)
         if (mIgnoreFilters && drawable instanceof BitmapDrawable && expectedDrawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap().equals(((BitmapDrawable) expectedDrawable).getBitmap());
+            return ((BitmapDrawable) drawable).getBitmap().sameAs((((BitmapDrawable) expectedDrawable).getBitmap()));
         }
         return expectedDrawable.getConstantState().equals(drawable.getConstantState());
     }

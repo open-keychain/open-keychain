@@ -209,7 +209,7 @@
   <string name="encrypt_sign_clipboard_successful">Потписивање и/или шифровање на клипборд је успело.</string>
   <string name="enter_passphrase_twice">Унесите лозинку два пута.</string>
   <string name="select_encryption_key">Изаберите бар један кључ за шифровање.</string>
-  <string name="select_encryption_or_signature_key">Изаберите бар један кључ за шифровање или потписивање.</string>
+  <string name="error_no_encryption_or_signature_key">Изаберите бар један кључ за шифровање или потписивање.</string>
   <string name="specify_file_to_encrypt_to">Одредите у који фајл да шифрујем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
   <string name="specify_file_to_decrypt_to">Одредите у који фајл да дешифрујем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
   <string name="specify_file_to_export_to">Одредите у који фајл да извезем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
@@ -370,7 +370,7 @@
   <string name="import_qr_code_button">Очитај бар-код</string>
   <string name="import_qr_code_text">Усмерите камеру на бар-код!</string>
   <!--Generic result toast-->
-  <string name="view_log">Детаљи</string>
+  <string name="snackbar_details">Детаљи</string>
   <string name="with_warnings">, са упозорењима</string>
   <string name="with_cancelled">, док није отказано</string>
   <!--Import result toast-->
@@ -1112,7 +1112,7 @@
   <string name="contact_show_key">Прикажи кључ (%s)</string>
   <string name="swipe_to_update">Превуците прстом доле да ажурирате са сервера кључева</string>
   <string name="error_no_file_selected">Изаберите бар један фајл за шифровање!</string>
-  <string name="error_multi_not_supported">Упис више фајлова није подржан. Ово је ограничење у текућем издању Андроида.</string>
+  <string name="error_multi_files">Упис више фајлова није подржан. Ово је ограничење у текућем издању Андроида.</string>
   <string name="key_colon">Кључ:</string>
   <string name="exchange_description">Да бисте почели размену кључева, са десне стране изаберите број учесника и додирните дугме „Почни размену“.\n\nБиће вам постављено још два питања да би се осигурало да су само исправни учесници у размени и да су њихови отисци тачни.</string>
   <string name="btn_start_exchange">Почни размену</string>

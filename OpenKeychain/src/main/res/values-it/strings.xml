@@ -149,7 +149,7 @@
   <string name="encrypt_sign_successful">Firmato e/o codificato con successo.</string>
   <string name="encrypt_sign_clipboard_successful">Firmato e/o codificato con successo negli appunti.</string>
   <string name="select_encryption_key">Seleziona almeno una chiave di codifica.</string>
-  <string name="select_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
+  <string name="error_no_encryption_or_signature_key">Seleziona almeno una chiave di codifica o di firma.</string>
   <string name="also_export_secret_keys">Esporta anche chiave segreta</string>
   <string name="reinstall_openkeychain">Hai riscontrato un bug noto con Android. Si prega di reinstallare OpenKeychain se vuoi collegare i tuoi contatti con le chiavi.</string>
   <string name="key_exported">1 chiave esportata correttamente.</string>
@@ -686,7 +686,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="info_no_manual_account_creation">Non creare account OpenKeychain manualmente.\nPer ulteriori informazioni, vedere la Guida.</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
-  <string name="error_multi_not_supported">Il salvataggio di più file non è supportato. Questa è una limitazione corrente di Android.</string>
+  <string name="error_multi_files">Il salvataggio di più file non è supportato. Questa è una limitazione corrente di Android.</string>
   <string name="key_colon">Chiave:</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->

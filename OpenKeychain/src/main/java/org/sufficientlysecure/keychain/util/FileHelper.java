@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.util;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -41,7 +42,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 
 public class FileHelper {
@@ -49,7 +57,6 @@ public class FileHelper {
     /**
      * Checks if external storage is mounted if file is located on external storage
      *
-     * @param file
      * @return true if storage is mounted
      */
     public static boolean isStorageMounted(String file) {
@@ -66,7 +73,6 @@ public class FileHelper {
      * Opens the preferred installed file manager on Android and shows a toast if no manager is
      * installed.
      *
-     * @param fragment
      * @param last        default selected Uri, not supported by all file managers
      * @param mimeType    can be text/plain for example
      * @param requestCode requestCode used to identify the result coming back from file manager to
@@ -141,7 +147,6 @@ public class FileHelper {
     /**
      * Opens the storage browser on Android 4.4 or later for opening a file
      *
-     * @param fragment
      * @param mimeType    can be text/plain for example
      * @param multiple    allow file chooser to return multiple files
      * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
@@ -159,7 +164,6 @@ public class FileHelper {
     /**
      * Opens the storage browser on Android 4.4 or later for saving a file
      *
-     * @param fragment
      * @param mimeType      can be text/plain for example
      * @param suggestedName a filename desirable for the file to be saved
      * @param requestCode   used to identify the result coming back from storage browser onActivityResult() in your
@@ -234,7 +238,67 @@ public class FileHelper {
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
-    public static interface FileDialogCallback {
-        public void onFileSelected(File file, boolean checked);
+    public static String readTextFromUri(Context context, Uri outputUri, String charset)
+        throws IOException {
+
+        byte[] decryptedMessage;
+        {
+            InputStream in = context.getContentResolver().openInputStream(outputUri);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[256];
+            int read;
+            while ( (read = in.read(buf)) > 0) {
+                out.write(buf, 0, read);
+            }
+            in.close();
+            out.close();
+            decryptedMessage = out.toByteArray();
+        }
+
+        String plaintext;
+        if (charset != null) {
+            try {
+                plaintext = new String(decryptedMessage, charset);
+            } catch (UnsupportedEncodingException e) {
+                // if we can't decode properly, just fall back to utf-8
+                plaintext = new String(decryptedMessage);
+            }
+        } else {
+            plaintext = new String(decryptedMessage);
+        }
+
+        return plaintext;
+
+    }
+
+    public static void copyUriData(Context context, Uri fromUri, Uri toUri) throws IOException {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            bis = new BufferedInputStream(resolver.openInputStream(fromUri));
+            bos = new BufferedOutputStream(resolver.openOutputStream(toUri));
+            byte[] buf = new byte[1024];
+            int len;
+            while ( (len = bis.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+        } finally {
+            try {
+                if (bis != null) {
+                    bis.close();
+                }
+                if (bos != null) {
+                    bos.close();
+                }
+            } catch (IOException e) {
+                // ignore, it's just stream closin'
+            }
+        }
+    }
+
+    public interface FileDialogCallback {
+        void onFileSelected(File file, boolean checked);
     }
 }
