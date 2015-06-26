@@ -48,7 +48,7 @@
     <string name="section_cloud_evidence">"Proofs from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
-    <string name="section_passphrase_cache">"Password Cache"</string>
+    <string name="section_passphrase_cache">"Password/PIN Handling"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -133,8 +133,8 @@
     <string name="label_encryption_algorithm">"Encryption algorithm"</string>
     <string name="label_hash_algorithm">"Hash algorithm"</string>
     <string name="label_symmetric">"Encrypt with password"</string>
-    <string name="label_passphrase_cache_ttl">"Cache time"</string>
-    <string name="label_passphrase_cache_subs">"Cache passwords by subkey"</string>
+    <string name="label_passphrase_cache_ttl">"Remember time"</string>
+    <string name="label_passphrase_cache_subs">"Remember passwords by subkey"</string>
     <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Select OpenPGP keyservers"</string>
@@ -1221,13 +1221,13 @@
     <string name="msg_export_log_success">"Log exported successfully!"</string>
 
     <!-- PassphraseCache -->
-    <string name="passp_cache_notif_click_to_clear">"Touch to clear password cache."</string>
+    <string name="passp_cache_notif_click_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
-        <item quantity="one">"%d password cached"</item>
-        <item quantity="other">"%d passwords cached"</item>
+        <item quantity="one">"%d password remembered"</item>
+        <item quantity="other">"%d passwords remembered"</item>
     </plurals>
-    <string name="passp_cache_notif_keys">"Cached passwords"</string>
-    <string name="passp_cache_notif_clear">"Clear Cache"</string>
+    <string name="passp_cache_notif_keys">"Remembered passwords"</string>
+    <string name="passp_cache_notif_clear">"Clear Passwords"</string>
     <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- First Time -->
