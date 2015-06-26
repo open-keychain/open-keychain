@@ -6,6 +6,6 @@
         android:height="1dp"
         android:width="1000dp" />
 
-    <solid android:color="@color/bg_gray" />
+    <solid android:color="?attr/colorCardViewHeaderDivider" />
 
 </shape>

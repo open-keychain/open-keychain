@@ -10,5 +10,6 @@
         <attr name="colorTertiaryText" format="color" />
         <attr name="colorButtonRow" format="color" />
         <attr name="colorLogBackground" format="color" />
+        <attr name="colorCardViewHeaderDivider" format="color" />
     </declare-styleable>
 </resources>
