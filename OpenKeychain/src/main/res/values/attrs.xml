@@ -11,5 +11,6 @@
         <attr name="colorButtonRow" format="color" />
         <attr name="colorLogBackground" format="color" />
         <attr name="colorCardViewHeaderDivider" format="color" />
+        <attr name="colorText" format="color" />
     </declare-styleable>
 </resources>

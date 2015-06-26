@@ -12,11 +12,13 @@
         <item name="colorFabText">#fafafa</item>
 
         <item name="colorEmphasis">#2196f3</item>
-        <item name="colorHeaderText">#212121</item>
-        <item name="colorTertiaryText">#808080</item>
         <item name="colorButtonRow">#33cccccc</item>
         <item name="colorLogBackground">#cecbce</item>
         <item name="colorCardViewHeaderDivider">#808080</item>
+
+        <item name="colorText">#000000</item>
+        <item name="colorHeaderText">#212121</item>
+        <item name="colorTertiaryText">#808080</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
@@ -37,11 +39,13 @@
         <item name="colorFabText">#fafafa</item>
 
         <item name="colorEmphasis">#2196f3</item>
-        <item name="colorHeaderText">#a0a0a0</item>
-        <item name="colorTertiaryText">#808080</item>
         <item name="colorButtonRow">#33cccccc</item>
         <item name="colorLogBackground">#303030</item>
         <item name="colorCardViewHeaderDivider">#808080</item>
+
+        <item name="colorText">#ffffff</item>
+        <item name="colorHeaderText">#d0d0d0</item>
+        <item name="colorTertiaryText">#808080</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>

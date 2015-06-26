@@ -244,7 +244,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 if (entry.isRevoked() || entry.isExpired()) {
                     uidView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
                 } else {
-                    uidView.setTextColor(getContext().getResources().getColor(R.color.black));
+                    uidView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
                 }
 
                 holder.userIdsList.addView(uidView);
@@ -260,7 +260,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                     if (entry.isRevoked() || entry.isExpired()) {
                         emailView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
                     } else {
-                        emailView.setTextColor(getContext().getResources().getColor(R.color.black));
+                        emailView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
                     }
 
                     holder.userIdsList.addView(emailView);

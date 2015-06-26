@@ -160,7 +160,7 @@ public class KeyAdapter extends CursorAdapter {
                     } else {
                         mSlinger.setVisibility(View.GONE);
                     }
-                    textColor = R.color.black;
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 } else {
                     // this is a public key - show if it's verified
                     if (item.mIsVerified) {
@@ -171,7 +171,7 @@ public class KeyAdapter extends CursorAdapter {
                         mStatus.setVisibility(View.VISIBLE);
                     }
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.black;
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 }
 
                 if (!enabled) {
