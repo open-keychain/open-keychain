@@ -22,7 +22,7 @@ SRC_DIR=./drawables/
 #inkscape -w 512 -h 512 -e "$PLAY_DIR/$NAME.png" $NAME.svg
 
 
-for NAME in "ic_cloud_search" "ic_action_encrypt_file" "ic_action_encrypt_text" "ic_action_verified_cutout" "ic_action_encrypt_copy" "ic_action_encrypt_save" "ic_action_encrypt_share" "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign" "yubi_icon"
+for NAME in "ic_cloud_search" "ic_action_encrypt_file" "ic_action_encrypt_text" "ic_action_verified_cutout" "ic_action_encrypt_copy" "ic_action_encrypt_save" "ic_action_encrypt_share" "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign" "yubi_icon" "ic_stat_notify"
 do
 echo $NAME
 inkscape -w 24 -h 24 -e "$MDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"

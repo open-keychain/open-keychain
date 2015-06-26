@@ -41,7 +41,9 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -148,5 +150,16 @@ public class TestHelpers {
         return passbuilder.toString();
     }
 
+    public static void cleanupForTests(Context context) throws Exception {
+
+        new KeychainDatabase(context).clearDatabase();
+
+        // import these two, make sure they're there
+        importKeysFromResource(context, "x.sec.asc");
+
+        // make sure no passphrases are cached
+        PassphraseCacheService.clearCachedPassphrases(context);
+
+    }
 
 }

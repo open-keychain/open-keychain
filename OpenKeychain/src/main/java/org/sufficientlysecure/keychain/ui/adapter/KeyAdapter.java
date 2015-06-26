@@ -95,6 +95,8 @@ public class KeyAdapter extends CursorAdapter {
         public View mSlinger;
         public ImageButton mSlingerButton;
 
+        public KeyItem mDisplayedItem;
+
         public KeyItemViewHolder(View view) {
             mView = view;
             mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
@@ -106,6 +108,8 @@ public class KeyAdapter extends CursorAdapter {
         }
 
         public void setData(Context context, KeyItem item, Highlighter highlighter) {
+
+            mDisplayedItem = item;
 
             { // set name and stuff, common to both key types
                 KeyRing.UserId userIdSplit = item.mUserId;
@@ -143,6 +147,9 @@ public class KeyAdapter extends CursorAdapter {
                 } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
+                        mSlingerButton.setColorFilter(
+                                context.getResources().getColor(R.color.tertiary_text_light),
+                                PorterDuff.Mode.SRC_IN);
                         mSlinger.setVisibility(View.VISIBLE);
                     } else {
                         mSlinger.setVisibility(View.GONE);
@@ -192,8 +199,6 @@ public class KeyAdapter extends CursorAdapter {
         View view = mInflater.inflate(R.layout.key_list_item, parent, false);
         KeyItemViewHolder holder = new KeyItemViewHolder(view);
         view.setTag(holder);
-        holder.mSlingerButton.setColorFilter(context.getResources().getColor(R.color.tertiary_text_light),
-                PorterDuff.Mode.SRC_IN);
         return view;
     }
 

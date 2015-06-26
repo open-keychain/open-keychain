@@ -17,10 +17,11 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
-import android.content.Context;
+
+import java.util.Set;
+
 import android.content.OperationApplicationException;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -35,23 +36,17 @@ import android.widget.ListView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Vector;
 
 public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String ARG_DATA_URI = "uri";
 
-    private SelectKeyCursorAdapter mAdapter;
-    private Set<Long> mSelectedMasterKeyIds;
+    private KeySelectableAdapter mAdapter;
     private ProviderHelper mProviderHelper;
 
     private Uri mDataUri;
@@ -80,8 +75,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View layout = super.onCreateView(inflater, container,
-                savedInstanceState);
+        View layout = super.onCreateView(inflater, container, savedInstanceState);
         ListView lv = (ListView) layout.findViewById(android.R.id.list);
         ViewGroup parent = (ViewGroup) lv.getParent();
 
@@ -109,67 +103,29 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
 
         mDataUri = getArguments().getParcelable(ARG_DATA_URI);
 
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        mAdapter = new SecretKeyCursorAdapter(getActivity(), null, 0, getListView());
-
+        Set<Long> checked = mProviderHelper.getAllKeyIdsForApp(mDataUri);
+        mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
         setListAdapter(mAdapter);
+        getListView().setOnItemClickListener(mAdapter);
 
         // Start out with a progress indicator.
         setListShown(false);
 
-        mSelectedMasterKeyIds = mProviderHelper.getAllKeyIdsForApp(mDataUri);
-        Log.d(Constants.TAG, "allowed: " + mSelectedMasterKeyIds.toString());
-
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
 
-    /**
-     * Selects items based on master key ids in list view
-     *
-     * @param masterKeyIds
-     */
-    private void preselectMasterKeyIds(Set<Long> masterKeyIds) {
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            long listKeyId = mAdapter.getMasterKeyId(i);
-            for (long keyId : masterKeyIds) {
-                if (listKeyId == keyId) {
-                    getListView().setItemChecked(i, true);
-                    break;
-                }
-            }
-        }
     }
-
-    /**
-     * Returns all selected master key ids
-     *
-     * @return
-     */
+    /** Returns all selected master key ids. */
     public Set<Long> getSelectedMasterKeyIds() {
-        // mListView.getCheckedItemIds() would give the row ids of the KeyRings not the master key
-        // ids!
-        Set<Long> keyIds = new HashSet<>();
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            if (getListView().isItemChecked(i)) {
-                keyIds.add(mAdapter.getMasterKeyId(i));
-            }
-        }
-
-        return keyIds;
+        return mAdapter.getSelectedMasterKeyIds();
     }
 
-    /**
-     * Returns all selected user ids
-     *
-     * @return
-     */
+    /** Returns all selected user ids.
     public String[] getSelectedUserIds() {
         Vector<String> userIds = new Vector<>();
         for (int i = 0; i < getListView().getCount(); ++i) {
@@ -181,7 +137,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // make empty array to not return null
         String userIdArray[] = new String[0];
         return userIds.toArray(userIdArray);
-    }
+    } */
 
     public void saveAllowedKeys() {
         try {
@@ -192,46 +148,11 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle data) {
+        Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
+        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";
 
-        // These are the rows that we will retrieve.
-        String[] projection = new String[]{
-                KeyRings._ID,
-                KeyRings.MASTER_KEY_ID,
-                KeyRings.USER_ID,
-                KeyRings.IS_EXPIRED,
-                KeyRings.IS_REVOKED,
-                KeyRings.HAS_ENCRYPT,
-                KeyRings.VERIFIED,
-                KeyRings.HAS_ANY_SECRET,
-                KeyRings.HAS_DUPLICATE_USER_ID,
-                KeyRings.CREATION,
-        };
-
-        String inMasterKeyList = null;
-        if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.size() > 0) {
-            inMasterKeyList = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN (";
-            Iterator iter = mSelectedMasterKeyIds.iterator();
-            while (iter.hasNext()) {
-                inMasterKeyList += DatabaseUtils.sqlEscapeString("" + iter.next());
-                if (iter.hasNext()) {
-                    inMasterKeyList += ", ";
-                }
-            }
-            inMasterKeyList += ")";
-        }
-
-        String selection = KeyRings.HAS_ANY_SECRET + " != 0";
-
-        String orderBy = KeyRings.USER_ID + " ASC";
-        if (inMasterKeyList != null) {
-            // sort by selected master keys
-            orderBy = inMasterKeyList + " DESC, " + orderBy;
-        }
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, selection, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, KeyAdapter.PROJECTION, where, null, null);
     }
 
     @Override
@@ -246,9 +167,6 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         } else {
             setListShownNoAnimation(true);
         }
-
-        // preselect given master keys
-        preselectMasterKeyIds(mSelectedMasterKeyIds);
     }
 
     @Override
@@ -257,38 +175,6 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // above is about to be closed. We need to make sure we are no
         // longer using it.
         mAdapter.swapCursor(null);
-    }
-
-    private class SecretKeyCursorAdapter extends SelectKeyCursorAdapter {
-
-        public SecretKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView) {
-            super(context, c, flags, listView);
-        }
-
-        @Override
-        protected void initIndex(Cursor cursor) {
-            super.initIndex(cursor);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            super.bindView(view, context, cursor);
-            ViewHolderItem h = (ViewHolderItem) view.getTag();
-
-            // We care about the checkbox
-            h.selected.setVisibility(View.VISIBLE);
-            // the getListView works because this is not a static subclass!
-            h.selected.setChecked(getListView().isItemChecked(cursor.getPosition()));
-
-            boolean enabled = false;
-            if ((Boolean) h.statusIcon.getTag()) {
-                h.statusIcon.setVisibility(View.GONE);
-                enabled = true;
-            }
-
-            h.setEnabled(enabled);
-        }
-
     }
 
 }

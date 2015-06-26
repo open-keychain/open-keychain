@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
+import java.util.Date;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -25,8 +28,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -45,8 +53,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -317,7 +323,7 @@ public class PassphraseCacheService extends Service {
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
-                        timeout(context, keyId);
+                        timeout(keyId);
                     }
                 }
             };
@@ -452,7 +458,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Called when one specific passphrase for keyId timed out
      */
-    private void timeout(Context context, long keyId) {
+    private void timeout(long keyId) {
         CachedPassphrase cPass = mPassphraseCache.get(keyId);
         // clean internal char[] from memory!
         cPass.getPassphrase().removeFromMemory();
@@ -474,59 +480,67 @@ public class PassphraseCacheService extends Service {
         }
     }
 
+    // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
+    private static Bitmap getBitmap(int resId, Context context) {
+        int mLargeIconWidth = (int) context.getResources().getDimension(
+                                  android.R.dimen.notification_large_icon_width);
+        int mLargeIconHeight = (int) context.getResources().getDimension(
+                                   android.R.dimen.notification_large_icon_height);
+        Drawable d;
+        if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
+            // noinspection deprecation (can't help it at this api level)
+            d = context.getResources().getDrawable(resId);
+        } else {
+            d = context.getDrawable(resId);
+        }
+        if (d == null) {
+            return null;
+        }
+        Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
+        d.draw(c);
+        return b;
+    }
+
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
+                .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
+                        mPassphraseCache.size(), mPassphraseCache.size()))
+                .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText(String.format(getString(R.string.passp_cache_notif_n_keys),
-                            mPassphraseCache.size()));
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 
-            NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
-            inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
-
-            // Moves events into the big view
-            for (int i = 0; i < mPassphraseCache.size(); i++) {
-                inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
-            }
-
-            // Moves the big view style object into the notification object.
-            builder.setStyle(inboxStyle);
-
-            // Add purging action
-            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
-            builder.addAction(
-                    R.drawable.abc_ic_clear_mtrl_alpha,
-                    getString(R.string.passp_cache_notif_clear),
-                    PendingIntent.getService(
-                            getApplicationContext(),
-                            0,
-                            intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-            );
-        } else {
-            // Fallback, since expandable notifications weren't available back then
-            builder.setSmallIcon(R.drawable.ic_launcher)
-                    .setContentTitle(String.format(getString(R.string.passp_cache_notif_n_keys),
-                            mPassphraseCache.size()))
-                    .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
-
-            Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
-            intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
-
-            builder.setContentIntent(
-                    PendingIntent.getService(
-                            getApplicationContext(),
-                            0,
-                            intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-            );
+        // Moves events into the big view
+        for (int i = 0; i < mPassphraseCache.size(); i++) {
+            inboxStyle.addLine(mPassphraseCache.valueAt(i).getPrimaryUserID());
         }
+
+        // Moves the big view style object into the notification object.
+        builder.setStyle(inboxStyle);
+
+        Intent intent = new Intent(getApplicationContext(), PassphraseCacheService.class);
+        intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
+        PendingIntent clearCachePi = PendingIntent.getService(
+                getApplicationContext(),
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        // Add cache clear PI to normal touch
+        builder.setContentIntent(clearCachePi);
+
+        // Add clear PI action below text
+        builder.addAction(
+                R.drawable.abc_ic_clear_mtrl_alpha,
+                getString(R.string.passp_cache_notif_clear),
+                clearCachePi
+        );
 
         return builder.build();
     }

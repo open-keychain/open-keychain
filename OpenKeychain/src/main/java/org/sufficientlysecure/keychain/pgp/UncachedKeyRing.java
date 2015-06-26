@@ -219,7 +219,7 @@ public class UncachedKeyRing {
         Iterator<PGPPublicKey> it = mRing.getPublicKeys();
         while (it.hasNext()) {
             if (KeyFormattingUtils.convertFingerprintToHex(
-                    it.next().getFingerprint()).equals(expectedFingerprint)) {
+                    it.next().getFingerprint()).equalsIgnoreCase(expectedFingerprint)) {
                 return true;
             }
         }
