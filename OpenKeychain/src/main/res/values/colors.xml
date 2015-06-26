@@ -4,7 +4,7 @@
     <color name="icons">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="bg_gray">#cecbce</color>
+    <color name="bg_gray">#00ff00</color>
 
     <!-- tabs -->
     <color name="tab_text">#70FFFFFF</color>

@@ -15,6 +15,7 @@
         <item name="colorHeaderText">#212121</item>
         <item name="colorTertiaryText">#808080</item>
         <item name="colorButtonRow">#33cccccc</item>
+        <item name="colorLogBackground">#cecbce</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
@@ -38,6 +39,7 @@
         <item name="colorHeaderText">#a0a0a0</item>
         <item name="colorTertiaryText">#808080</item>
         <item name="colorButtonRow">#33cccccc</item>
+        <item name="colorLogBackground">#303030</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
