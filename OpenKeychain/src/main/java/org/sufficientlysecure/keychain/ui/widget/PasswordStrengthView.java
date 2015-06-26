@@ -99,9 +99,9 @@ public class PasswordStrengthView extends View {
     public PasswordStrengthView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        int COLOR_FAIL = getResources().getColor(R.color.android_red_light);
-        int COLOR_WEAK = getResources().getColor(R.color.android_orange_light);
-        int COLOR_STRONG = getResources().getColor(R.color.android_green_light);
+        int COLOR_FAIL = getResources().getColor(R.color.password_strength_low);
+        int COLOR_WEAK = getResources().getColor(R.color.password_strength_medium);
+        int COLOR_STRONG = getResources().getColor(R.color.password_strength_high);
 
         TypedArray style = context.getTheme().obtainStyledAttributes(
                 attrs,

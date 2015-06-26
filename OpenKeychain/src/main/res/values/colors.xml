@@ -14,12 +14,16 @@
     <color name="tab_text_selected">#FFFFFF</color>
     <color name="tab_indicator">#FFFFFF</color>
 
+    <color name="password_strength_low">#f44336</color>
+    <color name="password_strength_medium">#ff9800</color>
+    <color name="password_strength_high">#7bad45</color>
 
     <!-- floating action buttons -->
     <color name="black">#000000</color>
     <color name="white">#fafafa</color>
 
     <!--
+        Standard Android colors:
         http://www.google.com/design/spec/style/color.html#color-color-palette
         light = normal color
         dark = 900
@@ -29,10 +33,7 @@
     <color name="android_red_light">#f44336</color>
     <color name="android_red_dark">#b71c1c</color>
     <color name="android_orange_light">#ff9800</color>
-    <color name="android_orange_dark">#e65100</color>
     <color name="android_green_light">#7bad45</color>
     <color name="android_green_dark">#6c983d</color>
-    <color name="android_purple_light">#673ab7</color>
-    <color name="android_purple_dark">#311b92</color>
 
 </resources>
