@@ -13,5 +13,6 @@
         <attr name="colorCardViewHeaderDivider" format="color" />
         <attr name="colorText" format="color" />
         <attr name="colorBrightToolbar" format="color" />
+        <attr name="colorCardViewBackground" format="color" />
     </declare-styleable>
 </resources>

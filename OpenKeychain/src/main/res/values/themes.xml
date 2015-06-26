@@ -16,6 +16,7 @@
         <item name="colorButtonRow">#33cccccc</item>
         <item name="colorLogBackground">#cecbce</item>
         <item name="colorCardViewHeaderDivider">#808080</item>
+        <item name="colorCardViewBackground">#ffffff</item>
 
         <item name="colorText">#000000</item>
         <item name="colorHeaderText">#212121</item>
@@ -44,6 +45,7 @@
         <item name="colorButtonRow">#33cccccc</item>
         <item name="colorLogBackground">#303030</item>
         <item name="colorCardViewHeaderDivider">#808080</item>
+        <item name="colorCardViewBackground">#505050</item>
 
         <item name="colorText">#ffffff</item>
         <item name="colorHeaderText">#d0d0d0</item>
