@@ -12,6 +12,10 @@
         <item name="colorFabBackground">#b2000000</item>
         <item name="colorFabText">#fafafa</item>
 
+        <item name="colorTabText">#70ffffff</item>
+        <item name="colorTabTextSelected">#ffffff</item>
+        <item name="colorTabIndicator">#ffffff</item>
+
         <item name="colorEmphasis">#2196f3</item>
         <item name="colorButtonRow">#33cccccc</item>
         <item name="colorLogBackground">#cecbce</item>
@@ -40,6 +44,10 @@
         <item name="colorFabPressed">#1976d2</item>
         <item name="colorFabBackground">#b2000000</item>
         <item name="colorFabText">#fafafa</item>
+
+        <item name="colorTabText">#70ffffff</item>
+        <item name="colorTabTextSelected">#ffffff</item>
+        <item name="colorTabIndicator">#ffffff</item>
 
         <item name="colorEmphasis">#2196f3</item>
         <item name="colorButtonRow">#33cccccc</item>

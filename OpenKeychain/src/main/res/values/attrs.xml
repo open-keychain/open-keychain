@@ -14,5 +14,8 @@
         <attr name="colorText" format="color" />
         <attr name="colorBrightToolbar" format="color" />
         <attr name="colorCardViewBackground" format="color" />
+        <attr name="colorTabText" format="color" />
+        <attr name="colorTabTextSelected" format="color" />
+        <attr name="colorTabIndicator" format="color" />
     </declare-styleable>
 </resources>

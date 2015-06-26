@@ -9,11 +9,6 @@
     <color name="key_flag_orange">#ff9800</color>
     <color name="key_flag_green">#7bad45</color>
 
-    <!-- tabs -->
-    <color name="tab_text">#70FFFFFF</color>
-    <color name="tab_text_selected">#FFFFFF</color>
-    <color name="tab_indicator">#FFFFFF</color>
-
     <color name="password_strength_low">#f44336</color>
     <color name="password_strength_medium">#ff9800</color>
     <color name="password_strength_high">#7bad45</color>

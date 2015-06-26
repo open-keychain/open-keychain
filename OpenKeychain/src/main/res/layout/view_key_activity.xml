@@ -75,7 +75,7 @@
             android:layout_marginEnd="48dp"
             android:text=""
             tools:text="My Key"
-            android:textColor="@color/tab_text"
+            android:textColor="?attr/colorTabText"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_above="@+id/toolbar2" />
 
