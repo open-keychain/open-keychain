@@ -5,6 +5,7 @@
         <item name="colorPrimary">#7bad45</item>
         <item name="colorPrimaryDark">#6c983d</item>
         <item name="colorAccent">#2196f3</item>
+        <item name="colorBrightToolbar">#dddddd</item>
 
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>
@@ -32,6 +33,7 @@
         <item name="colorPrimary">#268bd2</item>
         <item name="colorPrimaryDark">#166bb2</item>
         <item name="colorAccent">#2196f3</item>
+        <item name="colorBrightToolbar">#808080</item>
 
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>

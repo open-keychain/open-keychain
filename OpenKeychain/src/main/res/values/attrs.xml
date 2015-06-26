@@ -12,5 +12,6 @@
         <attr name="colorLogBackground" format="color" />
         <attr name="colorCardViewHeaderDivider" format="color" />
         <attr name="colorText" format="color" />
+        <attr name="colorBrightToolbar" format="color" />
     </declare-styleable>
 </resources>
