@@ -63,6 +63,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Apply the theme set in preferences if it isn't equal to mCurrentTheme
+     * anymore or mCurrentTheme hasn't been set yet.
+     * If a new theme is applied in this method, then return true, so
+     * the caller can re-create the activity, if need be.
+     */
     protected boolean changeTheme() {
         String newTheme = sPreferences.getTheme();
         if (mCurrentTheme != null && mCurrentTheme.equals(newTheme)) {
