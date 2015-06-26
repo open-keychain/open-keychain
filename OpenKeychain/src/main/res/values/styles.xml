@@ -23,7 +23,7 @@
 
     <style name="FabMenuStyle">
         <item name="android:background">@drawable/fab_label_background</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">?attr/colorFabText</item>
     </style>
 
     <!-- This style is for use with our drag and drop RecyclerView since ItemDecoration did not

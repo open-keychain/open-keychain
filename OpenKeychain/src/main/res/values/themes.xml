@@ -8,6 +8,8 @@
 
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>
+        <item name="colorFabBackground">#b2000000</item>
+        <item name="colorFabText">#fafafa</item>
 
         <item name="colorEmphasis">#2196f3</item>
         <item name="colorHeaderText">#212121</item>
@@ -29,6 +31,8 @@
 
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>
+        <item name="colorFabBackground">#b2000000</item>
+        <item name="colorFabText">#fafafa</item>
 
         <item name="colorEmphasis">#2196f3</item>
         <item name="colorHeaderText">#a0a0a0</item>

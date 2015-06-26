@@ -3,6 +3,8 @@
     <declare-styleable name="CustomTheme">
         <attr name="colorFab" format="color" />
         <attr name="colorFabPressed" format="color" />
+        <attr name="colorFabBackground" format="color" />
+        <attr name="colorFabText" format="color" />
         <attr name="colorEmphasis" format="color" />
         <attr name="colorHeaderText" format="color" />
         <attr name="colorTertiaryText" format="color" />
