@@ -141,15 +141,15 @@ public class KeyAdapter extends CursorAdapter {
                 // Note: order is important!
                 if (item.mIsRevoked) {
                     KeyFormattingUtils
-                            .setStatusImage(context, mStatus, null, State.REVOKED, R.color.bg_gray);
+                            .setStatusImage(context, mStatus, null, State.REVOKED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsExpired) {
-                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
@@ -175,11 +175,11 @@ public class KeyAdapter extends CursorAdapter {
                 }
 
                 if (!enabled) {
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 }
 
-                mMainUserId.setTextColor(context.getResources().getColor(textColor));
-                mMainUserIdRest.setTextColor(context.getResources().getColor(textColor));
+                mMainUserId.setTextColor(textColor);
+                mMainUserIdRest.setTextColor(textColor);
 
                 if (item.mHasDuplicate) {
                     String dateTime = DateUtils.formatDateTime(context,

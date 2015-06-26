@@ -760,7 +760,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.REVOKED, R.color.icons, true);
-                        color = getResources().getColor(R.color.android_red_light);
+                        color = getResources().getColor(R.color.key_flag_red);
 
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
@@ -776,7 +776,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mStatusImage.setVisibility(View.VISIBLE);
                         KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                 State.EXPIRED, R.color.icons, true);
-                        color = getResources().getColor(R.color.android_red_light);
+                        color = getResources().getColor(R.color.key_flag_red);
 
                         mActionEncryptFile.setVisibility(View.GONE);
                         mActionEncryptText.setVisibility(View.GONE);
@@ -846,7 +846,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.UNVERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.android_orange_light);
+                            color = getResources().getColor(R.color.key_flag_orange);
 
                             mFab.setVisibility(View.VISIBLE);
                         }

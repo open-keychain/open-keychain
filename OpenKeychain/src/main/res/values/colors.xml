@@ -4,7 +4,10 @@
     <color name="icons">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="bg_gray">#00ff00</color>
+    <color name="key_flag_gray">#808080</color>
+    <color name="key_flag_red">#f44336</color>
+    <color name="key_flag_orange">#ff9800</color>
+    <color name="key_flag_green">#7bad45</color>
 
     <!-- tabs -->
     <color name="tab_text">#70FFFFFF</color>
@@ -27,8 +30,8 @@
     <color name="android_red_dark">#b71c1c</color>
     <color name="android_orange_light">#ff9800</color>
     <color name="android_orange_dark">#e65100</color>
-    <color name="android_green_light">#00ff00</color>
-    <color name="android_green_dark">#008000</color>
+    <color name="android_green_light">#7bad45</color>
+    <color name="android_green_dark">#6c983d</color>
     <color name="android_purple_light">#673ab7</color>
     <color name="android_purple_dark">#311b92</color>
 

@@ -128,7 +128,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.REVOKED, R.color.key_flag_gray);
 
             // disable revoked user ids
             vName.setEnabled(false);

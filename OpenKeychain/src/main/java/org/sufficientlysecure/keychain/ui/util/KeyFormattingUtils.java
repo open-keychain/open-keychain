@@ -595,7 +595,7 @@ public class KeyFormattingUtils {
                             context.getResources().getDrawable(R.drawable.status_signature_verified_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_green_light;
+                    color = R.color.key_flag_green;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -608,7 +608,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_closed_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_green_light;
+                    color = R.color.key_flag_green;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -627,7 +627,7 @@ public class KeyFormattingUtils {
                             context.getResources().getDrawable(R.drawable.status_signature_unverified_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_orange_light;
+                    color = R.color.key_flag_orange;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -640,7 +640,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -659,7 +659,7 @@ public class KeyFormattingUtils {
                             context.getResources().getDrawable(R.drawable.status_signature_revoked_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -677,7 +677,7 @@ public class KeyFormattingUtils {
                             context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -690,7 +690,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_lock_open_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -703,7 +703,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_unknown_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -716,7 +716,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.android_red_light;
+                    color = R.color.key_flag_red;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);
@@ -730,7 +730,7 @@ public class KeyFormattingUtils {
                 statusIcon.setImageDrawable(
                         context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24dp));
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
-                    color = R.color.bg_gray;
+                    color = R.color.key_flag_gray;
                 }
                 statusIcon.setColorFilter(context.getResources().getColor(color),
                         PorterDuff.Mode.SRC_IN);

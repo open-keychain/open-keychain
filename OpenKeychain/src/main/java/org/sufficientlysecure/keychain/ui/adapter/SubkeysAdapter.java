@@ -284,27 +284,27 @@ public class SubkeysAdapter extends CursorAdapter {
             vStatus.setVisibility(View.VISIBLE);
 
             vCertifyIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.bg_gray),
+                    mContext.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vSignIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.bg_gray),
+                    mContext.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vEncryptIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.bg_gray),
+                    mContext.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vAuthenticateIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.bg_gray),
+                    mContext.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
 
             if (isRevoked) {
                 vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24dp);
                 vStatus.setColorFilter(
-                        mContext.getResources().getColor(R.color.bg_gray),
+                        mContext.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
                 vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24dp);
                 vStatus.setColorFilter(
-                        mContext.getResources().getColor(R.color.bg_gray),
+                        mContext.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
             }
         } else {
