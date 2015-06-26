@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="icons">#FFFFFF</color>
-    <color name="transparent">#00FFFFFF</color>
+    <color name="icons">#ffffff</color>
+    <color name="transparent">#00ffffff</color>
 
     <color name="key_flag_gray">#808080</color>
     <color name="key_flag_red">#f44336</color>
