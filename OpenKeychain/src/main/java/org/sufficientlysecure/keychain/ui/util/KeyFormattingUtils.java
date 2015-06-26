@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
@@ -449,11 +450,11 @@ public class KeyFormattingUtils {
             if (signatureResult != null && signatureResult.isSignatureOnly()) {
                 encIcon = R.drawable.status_lock_open_24dp;
                 encText = R.string.decrypt_result_not_encrypted;
-                encColor = R.color.android_red_light;
+                encColor = R.color.key_flag_red;
             } else {
                 encIcon = R.drawable.status_lock_closed_24dp;
                 encText = R.string.decrypt_result_encrypted;
-                encColor = R.color.android_green_light;
+                encColor = R.color.key_flag_green;
             }
 
             int encColorRes = context.getResources().getColor(encColor);
@@ -470,7 +471,7 @@ public class KeyFormattingUtils {
 
             sigText = R.string.decrypt_result_no_signature;
             sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
-            sigColor = R.color.bg_gray;
+            sigColor = R.color.key_flag_gray;
 
             // won't be used, but makes compiler happy
             sigActionText = 0;
@@ -481,7 +482,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
                 sigText = R.string.decrypt_result_signature_certified;
                 sigIcon = R.drawable.status_signature_verified_cutout_24dp;
-                sigColor = R.color.android_green_light;
+                sigColor = R.color.key_flag_green;
 
                 sigActionText = R.string.decrypt_result_action_show;
                 sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
@@ -491,7 +492,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
                 sigText = R.string.decrypt_result_signature_uncertified;
                 sigIcon = R.drawable.status_signature_unverified_cutout_24dp;
-                sigColor = R.color.android_orange_light;
+                sigColor = R.color.key_flag_orange;
 
                 sigActionText = R.string.decrypt_result_action_show;
                 sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
@@ -501,7 +502,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
                 sigText = R.string.decrypt_result_signature_revoked_key;
                 sigIcon = R.drawable.status_signature_revoked_cutout_24dp;
-                sigColor = R.color.android_red_light;
+                sigColor = R.color.key_flag_red;
 
                 sigActionText = R.string.decrypt_result_action_show;
                 sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
@@ -511,7 +512,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
                 sigText = R.string.decrypt_result_signature_expired_key;
                 sigIcon = R.drawable.status_signature_expired_cutout_24dp;
-                sigColor = R.color.android_red_light;
+                sigColor = R.color.key_flag_red;
 
                 sigActionText = R.string.decrypt_result_action_show;
                 sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
@@ -521,7 +522,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
                 sigText = R.string.decrypt_result_signature_missing_key;
                 sigIcon = R.drawable.status_signature_unknown_cutout_24dp;
-                sigColor = R.color.android_red_light;
+                sigColor = R.color.key_flag_red;
 
                 sigActionText = R.string.decrypt_result_action_Lookup;
                 sigActionIcon = R.drawable.ic_file_download_grey_24dp;
@@ -532,7 +533,7 @@ public class KeyFormattingUtils {
             case OpenPgpSignatureResult.SIGNATURE_ERROR: {
                 sigText = R.string.decrypt_result_invalid_signature;
                 sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
-                sigColor = R.color.android_red_light;
+                sigColor = R.color.key_flag_red;
 
                 sigActionText = R.string.decrypt_result_action_show;
                 sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
