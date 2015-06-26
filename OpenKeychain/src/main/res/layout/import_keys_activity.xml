@@ -25,21 +25,11 @@
             android:id="@+id/import_keys_top_container"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:orientation="vertical"
-            android:background="@android:color/white" />
+            android:orientation="vertical" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dip"
-            android:background="?android:attr/listDivider" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="?android:attr/listDivider" />
 
         <FrameLayout
@@ -47,22 +37,18 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="vertical"
-            android:layout_weight="1"
-            android:background="@android:color/white" />
+            android:layout_weight="1" />
 
         <RelativeLayout
             android:id="@+id/import_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@android:color/white">
+            android:orientation="vertical">
 
             <View
                 android:id="@+id/import_divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dip"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
                 android:background="?android:attr/listDivider" />
 
             <TextView
