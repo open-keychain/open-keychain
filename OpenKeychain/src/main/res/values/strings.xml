@@ -1327,7 +1327,7 @@
     <string name="error_nfc_chaining_error">"NFC: Card expected last command in a chain"</string>
     <string name="error_nfc_header">"NFC: Card reported invalid %s byte"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
-    <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+    <string name="error_temp_file">Error creating temporary file.</string>
     <string name="btn_delete_original">Delete original file</string>
 
     <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>
