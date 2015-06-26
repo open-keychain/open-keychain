@@ -194,9 +194,6 @@ public class AsymmetricTextOperationTests {
                             hasDescendant(withText(R.string.filename_unknown)))),
                     withId(R.id.context_menu))).perform(click());
 
-            // "delete file" shouldn't be there
-            onView(withText(R.string.btn_delete_original)).check(doesNotExist());
-
             // check if log looks ok
             onView(withText(R.string.snackbar_details)).perform(click());
             onView(withText(R.string.msg_dc_clear_signature_ok)).check(matches(isDisplayed()));
