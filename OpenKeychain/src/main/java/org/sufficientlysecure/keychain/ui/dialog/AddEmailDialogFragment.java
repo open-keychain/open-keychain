@@ -43,24 +43,19 @@ import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AddEmailDialogFragment extends DialogFragment implements OnEditorActionListener {
-    private static final String ARG_MESSENGER = "messenger";
-
-    public static final int MESSAGE_OKAY = 1;
-    public static final int MESSAGE_CANCEL = 2;
-
-    public static final String MESSAGE_DATA_EMAIL = "email";
-
-    private Messenger mMessenger;
     private EmailEditText mEmail;
 
-    public static AddEmailDialogFragment newInstance(Messenger messenger) {
+    private onAddEmailDialogListener mOnAddEmailDialogListener;
 
-        AddEmailDialogFragment frag = new AddEmailDialogFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_MESSENGER, messenger);
-        frag.setArguments(args);
+    /**
+     * Communication interface, use this to send back the email to the activity
+     */
+    public interface onAddEmailDialogListener {
+        void onAddAdditionalEmail(String email);
+    }
 
-        return frag;
+    public static AddEmailDialogFragment newInstance() {
+        return new AddEmailDialogFragment();
     }
 
     /**
@@ -69,7 +64,6 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
-        mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
@@ -86,11 +80,9 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                // return new user id back to activity
-                Bundle data = new Bundle();
-                String email = mEmail.getText().toString();
-                data.putString(MESSAGE_DATA_EMAIL, email);
-                sendMessageToHandler(MESSAGE_OKAY, data);
+                if (mOnAddEmailDialogListener != null) {
+                    mOnAddEmailDialogListener.onAddAdditionalEmail(mEmail.getText().toString());
+                }
             }
         });
 
@@ -112,7 +104,7 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
                 mEmail.post(new Runnable() {
                     @Override
                     public void run() {
-                        if(getActivity() != null) {
+                        if (getActivity() != null) {
                             InputMethodManager imm = (InputMethodManager) getActivity()
                                     .getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.showSoftInput(mEmail, InputMethodManager.SHOW_IMPLICIT);
@@ -132,9 +124,7 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-
         dismiss();
-        sendMessageToHandler(MESSAGE_CANCEL);
     }
 
     @Override
@@ -175,43 +165,14 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
         return false;
     }
 
-    /**
-     * Send message back to handler which is initialized in a activity
-     *
-     * @param what Message integer you want to send
-     */
-    private void sendMessageToHandler(Integer what) {
-        Message msg = Message.obtain();
-        msg.what = what;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
         try {
-            mMessenger.send(msg);
-        } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-        } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            mOnAddEmailDialogListener = (onAddEmailDialogListener) activity;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-    /**
-     * Send message back to handler which is initialized in a activity
-     *
-     * @param what Message integer you want to send
-     */
-    private void sendMessageToHandler(Integer what, Bundle data) {
-        Message msg = Message.obtain();
-        msg.what = what;
-        if (data != null) {
-            msg.setData(data);
-        }
-
-        try {
-            mMessenger.send(msg);
-        } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-        } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
-        }
-    }
-
 }

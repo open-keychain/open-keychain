@@ -79,22 +79,11 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:launchMode="singleTop">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.CreateKeyActivity"
-            android:allowTaskReparenting="true"
-            android:label="@string/title_manage_my_keys"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
@@ -670,10 +659,33 @@
         <activity
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
+
+        <activity
+            android:name=".ui.keyunlock.activities.CreateKeyWizardActivity"
+            android:allowTaskReparenting="true"
+            android:label="@string/title_manage_my_keys"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />>
+        </activity>
+
+        <activity
+            android:name=".ui.keyunlock.activities.KeyUnlockActivityWrapper"
+            android:theme="@android:style/Theme.NoDisplay">
+        </activity>
+
         <activity
             android:name=".ui.PassphraseDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
-        <activity android:name=".ui.PassphraseWizardActivity" />
+            android:theme="@android:style/Theme.NoDisplay">
+        </activity>
+
+
+
+
+
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!

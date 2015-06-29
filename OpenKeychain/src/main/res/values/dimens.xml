@@ -5,4 +5,5 @@
     <dimen name="big_toolbar">120dp</dimen>
     <dimen name="huge_toolbar">222dp</dimen>
     <dimen name="minus_statusbar_height">0dp</dimen>
+    <dimen name="lock_pattern_key_margin">12dp</dimen>
 </resources>

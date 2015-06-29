@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:persistentDrawingCache="all"
+    android:layout_margin="@dimen/lock_pattern_key_margin">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/create_key_name_text" />
+
+            <org.sufficientlysecure.keychain.ui.widget.NameEditText
+                android:id="@+id/create_key_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:imeOptions="actionNext"
+                android:inputType="textAutoCorrect|textPersonName|textCapWords"
+                android:hint="@string/create_key_hint_full_name"
+                android:ems="10" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

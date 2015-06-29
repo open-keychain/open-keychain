@@ -36,6 +36,9 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * @deprecated
+ */
 public class CreateKeyActivity extends BaseNfcActivity {
 
     public static final String EXTRA_NAME = "name";

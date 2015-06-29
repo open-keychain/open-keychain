@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/lock_pattern_key_margin"
+    android:persistentDrawingCache="all">
+
+    <TextView
+        android:id="@+id/wizardPassphraseOptionFragmentTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pin"
+        android:textSize="28sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/wizardPassphraseOptionFragmentTitle"
+        android:layout_toRightOf="@id/wizardPassphraseOptionFragmentTitle"
+        android:src="@android:drawable/sym_def_app_icon" />
+
+    <TextView
+        android:id="@+id/wizardPassphraseOptionFragmentSuggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/wizardPassphraseOptionFragmentTitle"
+        android:layout_marginTop="8dp"
+        android:text="@string/pin_tip"
+        android:textSize="12sp" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/wizardPassphraseOptionFragmentSuggestion">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/pin_option" />
+    </RelativeLayout>
+</RelativeLayout>

@@ -23,6 +23,7 @@ import android.text.Editable;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 
 import java.util.Arrays;
 
@@ -37,6 +38,8 @@ import java.util.Arrays;
  * http://stackoverflow.com/a/15844273
  */
 public class Passphrase implements Parcelable {
+    private CanonicalizedSecretKey.SecretKeyType mSecretKeyType = CanonicalizedSecretKey.
+            SecretKeyType.PASSPHRASE;
     private char[] mPassphrase;
 
     /**
@@ -61,6 +64,14 @@ public class Passphrase implements Parcelable {
 
     public Passphrase(String passphrase) {
         mPassphrase = passphrase.toCharArray();
+    }
+
+    public CanonicalizedSecretKey.SecretKeyType getSecretKeyType() {
+        return mSecretKeyType;
+    }
+
+    public void setSecretKeyType(CanonicalizedSecretKey.SecretKeyType secretKeyType) {
+        mSecretKeyType = secretKeyType;
     }
 
     /**
@@ -111,6 +122,7 @@ public class Passphrase implements Parcelable {
         if (Constants.DEBUG) {
             return "Passphrase{" +
                     "mPassphrase=" + Arrays.toString(mPassphrase) +
+                    "mSecretKeyType=" + mSecretKeyType +
                     '}';
         } else {
             return "Passphrase: hidden";
@@ -139,25 +151,30 @@ public class Passphrase implements Parcelable {
         return mPassphrase != null ? Arrays.hashCode(mPassphrase) : 0;
     }
 
-    private Passphrase(Parcel source) {
-        mPassphrase = source.createCharArray();
-    }
-
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeCharArray(mPassphrase);
-    }
-
-    public static final Creator<Passphrase> CREATOR = new Creator<Passphrase>() {
-        public Passphrase createFromParcel(final Parcel source) {
-            return new Passphrase(source);
-        }
-
-        public Passphrase[] newArray(final int size) {
-            return new Passphrase[size];
-        }
-    };
-
+    @Override
     public int describeContents() {
         return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.mSecretKeyType == null ? -1 : this.mSecretKeyType.ordinal());
+        dest.writeCharArray(this.mPassphrase);
+    }
+
+    protected Passphrase(Parcel in) {
+        int tmpMSecretKeyType = in.readInt();
+        this.mSecretKeyType = tmpMSecretKeyType == -1 ? null : CanonicalizedSecretKey.SecretKeyType.values()[tmpMSecretKeyType];
+        this.mPassphrase = in.createCharArray();
+    }
+
+    public static final Creator<Passphrase> CREATOR = new Creator<Passphrase>() {
+        public Passphrase createFromParcel(Parcel source) {
+            return new Passphrase(source);
+        }
+
+        public Passphrase[] newArray(int size) {
+            return new Passphrase[size];
+        }
+    };
 }

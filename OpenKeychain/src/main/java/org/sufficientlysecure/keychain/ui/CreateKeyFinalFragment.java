@@ -49,6 +49,9 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Iterator;
 
+/**
+ * @deprecated
+ */
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
@@ -186,9 +189,9 @@ public class CreateKeyFinalFragment extends Fragment {
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
+
             mSaveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
-                    : null;
+                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase) : null;
         }
     }
 

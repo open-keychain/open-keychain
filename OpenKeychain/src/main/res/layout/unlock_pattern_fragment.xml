@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:persistentDrawingCache="all">
+
+    <TextView
+        android:id="@+id/unlockTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:text="@string/lockpattern_tip2"/>
+
+
+    <RelativeLayout
+        android:id="@+id/unlockDialogBottomContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp">
+
+        <ImageView
+            android:id="@+id/check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_check_black_48dp"
+            android:tint="@color/zxing_result_points"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:id="@+id/wrong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close_black_48dp"
+            android:tint="@color/android_red_dark"
+            android:visibility="invisible"/>
+
+        <TextView
+            android:id="@+id/unlockDialogStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/wrong"
+            android:text=""
+            android:textColor="@color/android_red_dark"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/unlockInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/unlockDialogBottomContainer"
+        android:layout_below="@id/unlockTip">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:src="@android:drawable/sym_def_app_icon"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:persistentDrawingCache="all">
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

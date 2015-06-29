@@ -68,6 +68,8 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.keyunlock.activities.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -549,7 +551,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
@@ -715,11 +717,14 @@ public class KeyListFragment extends LoaderFragment
                 mAdapter.isAnySecretSelected());
     }
 
+    /**
+     * @Todo Daniel: I DISABLED THIS ON PURPOSE!!
+     */
     private void startPassphraseActivity() {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+        //Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        //long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
+        //intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        //startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
 
     @Override

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:persistentDrawingCache="all">
+
+    <TextView
+        android:id="@+id/wizardUnlockSuggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/lock_pattern_key_margin"
+        android:text="@string/wizard_unlock_tip"
+        android:textColor="@color/primary_text_default_material_light"
+        android:textSize="14sp"/>
+
+    <View
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/wizardUnlockSuggestion"
+        android:background="@color/primary_text_default_material_light"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/horizontalLine">
+
+        <RadioGroup
+            android:id="@+id/wizardUnlockChoiceRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="24dp"
+            android:checkedButton="@+id/radioPinUnlock">
+
+            <RadioButton
+                android:id="@id/radioPinUnlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:drawableRight="@drawable/pin_option_black"
+                android:text="Pin unlock"/>
+
+            <RadioButton
+                android:id="@+id/radioPatternUnlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:drawablePadding="8dp"
+                android:drawableRight="@drawable/pattern_option"
+                android:text="Pattern unlock"/>
+        </RadioGroup>
+    </ScrollView>
+</RelativeLayout>
