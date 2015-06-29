@@ -20,20 +20,19 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 
 public class CreateKeyNameFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
-    NameEditText mNameEdit;
+    TextInputLayout mNameEditLayout;
     View mBackButton;
     View mNextButton;
 
@@ -55,17 +54,16 @@ public class CreateKeyNameFragment extends Fragment {
      * set and the EditText gets the focus.
      *
      * @param context
-     * @param editText
      * @return true if EditText is not empty
      */
-    private static boolean isEditTextNotEmpty(Context context, EditText editText) {
+    private static boolean isEditTextNotEmpty(Context context, TextInputLayout layout) {
         boolean output = true;
-        if (editText.getText().length() == 0) {
-            editText.setError(context.getString(R.string.create_key_empty));
-            editText.requestFocus();
+        if (layout.getEditText().getText().length() == 0) {
+            layout.setError(context.getString(R.string.create_key_empty));
+            layout.requestFocus();
             output = false;
         } else {
-            editText.setError(null);
+            layout.setError(null);
         }
 
         return output;
@@ -75,16 +73,16 @@ public class CreateKeyNameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_name_fragment, container, false);
 
-        mNameEdit = (NameEditText) view.findViewById(R.id.create_key_name);
+        mNameEditLayout = (TextInputLayout) view.findViewById(R.id.create_key_name);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
         // initial values
-        mNameEdit.setText(mCreateKeyActivity.mName);
+        mNameEditLayout.getEditText().setText(mCreateKeyActivity.mName);
 
         // focus empty edit fields
         if (mCreateKeyActivity.mName == null) {
-            mNameEdit.requestFocus();
+            mNameEditLayout.getEditText().requestFocus();
         }
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,9 +107,9 @@ public class CreateKeyNameFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mNameEdit)) {
+        if (isEditTextNotEmpty(getActivity(), mNameEditLayout)) {
             // save state
-            mCreateKeyActivity.mName = mNameEdit.getText().toString();
+            mCreateKeyActivity.mName = mNameEditLayout.getEditText().getText().toString();
 
             CreateKeyEmailFragment frag = CreateKeyEmailFragment.newInstance();
             mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
