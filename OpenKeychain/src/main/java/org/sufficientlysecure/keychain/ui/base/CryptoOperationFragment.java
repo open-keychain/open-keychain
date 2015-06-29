@@ -52,7 +52,7 @@ public abstract class CryptoOperationFragment <T extends Parcelable, S extends O
     private void initiateInputActivity(RequiredInputParcel requiredInput) {
 
         switch (requiredInput.mType) {
-            case NFC_KEYTOCARD:
+            case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(getActivity(), NfcOperationActivity.class);

@@ -63,7 +63,8 @@
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
-    <string name="btn_save">"Save file"</string>
+    <string name="btn_save_file">"Save file"</string>
+    <string name="btn_save">"Save"</string>
     <string name="btn_view_log">"View log"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
@@ -1236,8 +1237,8 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-    <string name="first_time_blank_smartcard_title">"Blank smart card / YubiKey detected"</string>
-    <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
+    <string name="first_time_blank_yubikey">"Would you like to use this blank YubiKey NEO with OpenKeychain?\n\nPlease take away the YubiKey now, you will be prompted when it is needed again!"</string>
+    <string name="first_time_blank_yubikey_yes">"Use this YubiKey"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>

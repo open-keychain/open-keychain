@@ -64,7 +64,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
     private TextView vSerNo;
     private TextView vUserId;
 
-    public static Fragment createInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
+    public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
 
         CreateKeyYubiKeyImportFragment frag = new CreateKeyYubiKeyImportFragment();
 
@@ -95,7 +95,7 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubikey_import_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_yubi_key_import_fragment, container, false);
 
         vSerNo = (TextView) view.findViewById(R.id.yubikey_serno);
         vUserId = (TextView) view.findViewById(R.id.yubikey_userid);

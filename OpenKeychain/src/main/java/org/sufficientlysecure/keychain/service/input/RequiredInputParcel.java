@@ -12,7 +12,7 @@ import android.os.Parcelable;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_KEYTOCARD
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD
     }
 
     public Date mSignatureTime;
@@ -226,7 +226,7 @@ public class RequiredInputParcel implements Parcelable {
             ByteBuffer buf = ByteBuffer.wrap(mSubkeysToExport.get(0));
 
             // We need to pass in a subkey here...
-            return new RequiredInputParcel(RequiredInputType.NFC_KEYTOCARD,
+            return new RequiredInputParcel(RequiredInputType.NFC_MOVE_KEY_TO_CARD,
                     inputHashes, null, null, mMasterKeyId, buf.getLong());
         }
 
@@ -241,7 +241,7 @@ public class RequiredInputParcel implements Parcelable {
             if (!mMasterKeyId.equals(input.mMasterKeyId)) {
                 throw new AssertionError("Master keys must match, this is a programming error!");
             }
-            if (input.mType != RequiredInputType.NFC_KEYTOCARD) {
+            if (input.mType != RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
                 throw new AssertionError("Operation types must match, this is a programming error!");
             }
 

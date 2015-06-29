@@ -95,6 +95,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
+            <!-- Connect with YubiKeys. This Activity will automatically show/import/create key -->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.nfc.action.NDEF_DISCOVERED"/>-->
+                <!--<category android:name="android.intent.category.DEFAULT"/>-->
+                <!--<data-->
+                    <!--android:scheme="https"-->
+                    <!--android:host="my.yubico.com"-->
+                    <!--android:pathPrefix="/neo"/>-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
@@ -686,17 +695,6 @@
             android:allowTaskReparenting="true"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc" />
-
-        <!--<activity-->
-        <!--android:name=".ui.NfcIntentActivity"-->
-        <!--android:launchMode="singleTop">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.nfc.action.NDEF_DISCOVERED" />-->
-
-        <!--<category android:name="android.intent.category.DEFAULT" />-->
-        <!--<data android:host="my.yubico.com" android:scheme="https"/>-->
-        <!--</intent-filter>-->
-        <!--</activity>-->
 
         <activity
             android:name=".ui.HelpActivity"

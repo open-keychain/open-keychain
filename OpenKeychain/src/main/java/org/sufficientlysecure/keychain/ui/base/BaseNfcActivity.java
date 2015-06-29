@@ -269,7 +269,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * This method is called by onNewIntent above upon discovery of an NFC tag.
      * It handles initialization and login to the application, subsequently
      * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
-     * finishes the activity with an appropiate result.
+     * finishes the activity with an appropriate result.
      *
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx

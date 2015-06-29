@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -89,13 +87,19 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
 
-                Fragment frag2 = CreateKeyYubiKeyImportFragment.createInstance(
-                        nfcFingerprints, nfcAid, nfcUserId);
-                loadFragment(frag2, FragAction.START);
+                if (containsKeys(nfcFingerprints)) {
+                    Fragment frag = CreateKeyYubiKeyImportFragment.newInstance(
+                            nfcFingerprints, nfcAid, nfcUserId);
+                    loadFragment(frag, FragAction.START);
 
-                setTitle(R.string.title_import_keys);
+                    setTitle(R.string.title_import_keys);
+                } else {
+                    Fragment frag = CreateKeyYubiKeyBlankFragment.newInstance();
+                    loadFragment(frag, FragAction.START);
+                }
                 return;
             } else {
+                // normal key creation
                 CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
                 loadFragment(frag, FragAction.START);
             }
@@ -122,16 +126,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         byte[] nfcAid = nfcGetAid();
         String userId = nfcGetUserId();
 
-        // If all fingerprint bytes are 0, the card contains no keys.
-        boolean cardContainsKeys = false;
-        for (byte b : scannedFingerprints) {
-            if (b != 0) {
-                cardContainsKeys = true;
-                break;
-            }
-        }
-
-        if (cardContainsKeys) {
+        if (containsKeys(scannedFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
                 CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
@@ -146,23 +141,27 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateKeyYubiKeyImportFragment.createInstance(
+                Fragment frag = CreateKeyYubiKeyImportFragment.newInstance(
                         scannedFingerprints, nfcAid, userId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.first_time_blank_smartcard_title)
-                    .setMessage(R.string.first_time_blank_smartcard_message)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int button) {
-                            CreateKeyActivity.this.mUseSmartCardSettings = true;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null).show();
+            Fragment frag = CreateKeyYubiKeyBlankFragment.newInstance();
+            loadFragment(frag, FragAction.TO_RIGHT);
         }
 
+    }
+
+    private boolean containsKeys(byte[] scannedFingerprints) {
+        // If all fingerprint bytes are 0, the card contains no keys.
+        boolean cardContainsKeys = false;
+        for (byte b : scannedFingerprints) {
+            if (b != 0) {
+                cardContainsKeys = true;
+                break;
+            }
+        }
+        return cardContainsKeys;
     }
 
     @Override
@@ -182,7 +181,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         setContentView(R.layout.create_key_activity);
     }
 
-    public static enum FragAction {
+    public enum FragAction {
         START,
         TO_RIGHT,
         TO_LEFT
