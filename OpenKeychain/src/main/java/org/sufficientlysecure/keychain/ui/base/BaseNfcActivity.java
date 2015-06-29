@@ -94,7 +94,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     public void onNewIntent(Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             try {
-                handleNdefDiscoveredIntent(intent);
+                handleTagDiscoveredIntent(intent);
             } catch (CardException e) {
                 handleNfcError(e);
             } catch (IOException e) {
@@ -278,7 +278,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * on ISO SmartCard Systems specification.
      *
      */
-    protected void handleNdefDiscoveredIntent(Intent intent) throws IOException {
+    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
 
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 

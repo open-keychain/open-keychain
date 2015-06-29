@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -62,6 +63,23 @@ public class CreateKeyActivity extends BaseNfcActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // React on NDEF_DISCOVERED from Manifest
+        // NOTE: ACTION_NDEF_DISCOVERED and not ACTION_TAG_DISCOVERED like in BaseNfcActivity
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            try {
+                handleTagDiscoveredIntent(getIntent());
+            } catch (CardException e) {
+                handleNfcError(e);
+            } catch (IOException e) {
+                handleNfcError(e);
+            }
+
+            setTitle(R.string.title_manage_my_keys);
+
+            // done
+            return;
+        }
+
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
             // Restore value of members from saved state
@@ -96,14 +114,16 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 } else {
                     Fragment frag = CreateKeyYubiKeyBlankFragment.newInstance();
                     loadFragment(frag, FragAction.START);
+                    setTitle(R.string.title_manage_my_keys);
                 }
+
+                // done
                 return;
-            } else {
-                // normal key creation
-                CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
-                loadFragment(frag, FragAction.START);
             }
 
+            // normal key creation
+            CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
+            loadFragment(frag, FragAction.START);
         }
 
         if (mFirstTime) {
