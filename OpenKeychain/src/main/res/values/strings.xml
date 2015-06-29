@@ -1339,8 +1339,8 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
-    <string name="filename_unknown"><![CDATA[<no filename>]]></string>
-    <string name="filename_unknown_text"><![CDATA[<plain text data>]]></string>
+    <string name="filename_unknown">"&lt;no filename&gt;"</string>
+    <string name="filename_unknown_text">"&lt;plain text data&gt;"</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
