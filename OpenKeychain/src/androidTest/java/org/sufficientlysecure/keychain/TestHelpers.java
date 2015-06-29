@@ -91,6 +91,10 @@ public class TestHelpers {
 
     }
 
+    public static void checkAndDismissSnackbar(Style style, @StringRes Integer text) {
+        checkSnackbar(style, text);
+        dismissSnackbar();
+    }
 
     public static void importKeysFromResource(Context context, String name) throws Exception {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(

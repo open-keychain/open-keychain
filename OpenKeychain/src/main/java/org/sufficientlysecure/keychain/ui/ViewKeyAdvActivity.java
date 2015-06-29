@@ -53,13 +53,15 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     protected Uri mDataUri;
 
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
-    public static final int TAB_MAIN = 0;
-    public static final int TAB_SHARE = 1;
+    public static final int TAB_SHARE = 0;
+    public static final int TAB_IDENTITIES = 1;
+    public static final int TAB_SUBKEYS = 2;
+    public static final int TAB_CERTS = 3;
+    public static final int TAB_KEYBASE = 4;
 
     // view
     private ViewPager mViewPager;
     private PagerSlidingTabStrip mSlidingTabLayout;
-    private PagerTabStripAdapter mTabsAdapter;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
@@ -80,11 +82,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
 
-        int switchToTab = TAB_MAIN;
         Intent intent = getIntent();
-        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
-            switchToTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
-        }
+        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_SHARE);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
@@ -102,8 +101,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         }
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
@@ -120,32 +117,32 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     }
 
     private void initTabs(Uri dataUri) {
-        mTabsAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(mTabsAdapter);
+        PagerTabStripAdapter adapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(adapter);
 
         Bundle shareBundle = new Bundle();
         shareBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvShareFragment.class,
+        adapter.addTab(ViewKeyAdvShareFragment.class,
                 shareBundle, getString(R.string.key_view_tab_share));
 
         Bundle userIdsBundle = new Bundle();
         userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
+        adapter.addTab(ViewKeyAdvUserIdsFragment.class,
                 userIdsBundle, getString(R.string.section_user_ids));
 
         Bundle keysBundle = new Bundle();
         keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
+        adapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
 
         Bundle certsBundle = new Bundle();
         certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyAdvCertsFragment.class,
+        adapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
 
         Bundle trustBundle = new Bundle();
         trustBundle.putParcelable(ViewKeyTrustFragment.ARG_DATA_URI, dataUri);
-        mTabsAdapter.addTab(ViewKeyTrustFragment.class,
+        adapter.addTab(ViewKeyTrustFragment.class,
                 trustBundle, getString(R.string.key_view_tab_keybase));
 
         // update layout after operations
@@ -185,11 +182,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
         // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
+        if (data == null || data.getCount() == 0) {
             return;
         }
         // Swap the new cursor in. (The framework will take care of closing the
