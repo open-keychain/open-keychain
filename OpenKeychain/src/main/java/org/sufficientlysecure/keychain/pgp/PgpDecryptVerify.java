@@ -941,8 +941,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         OpenPgpMetadata metadata = new OpenPgpMetadata(
                 "",
                 "text/plain",
-                0,
-                0);
+                -1,
+                clearText.length);
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setDecryptMetadata(metadata);
