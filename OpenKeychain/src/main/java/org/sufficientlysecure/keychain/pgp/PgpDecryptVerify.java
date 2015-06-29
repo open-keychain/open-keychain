@@ -938,7 +938,14 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
         log.add(LogType.MSG_DC_OK, indent);
 
+        OpenPgpMetadata metadata = new OpenPgpMetadata(
+                "",
+                "text/plain",
+                0,
+                0);
+
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
         return result;
     }
