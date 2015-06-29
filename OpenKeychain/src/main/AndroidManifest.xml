@@ -48,9 +48,10 @@
         android:name="android.hardware.screen.portrait"
         android:required="false" />
 
-    <permission android:name="${applicationId}.WRITE_TEMPORARY_STORAGE" />
-
-    <uses-permission android:name="${applicationId}.WRITE_TEMPORARY_STORAGE" />
+    <!-- TemporaryStorageProvider should be writable by OpenKeychain only, thus signature-level permission -->
+    <permission
+        android:name="${applicationId}.WRITE_TEMPORARY_STORAGE"
+        android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
