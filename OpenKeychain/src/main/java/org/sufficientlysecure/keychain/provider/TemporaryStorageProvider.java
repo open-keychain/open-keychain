@@ -180,7 +180,7 @@ public class TemporaryStorageProvider extends ContentProvider {
                 cursor.close();
             }
         }
-        return "*/*";
+        return "application/octet-stream";
     }
 
     @Override
