@@ -520,7 +520,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             }
 
             case KEY_RINGS_PUBLIC:
@@ -607,23 +606,26 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
-            case API_APPS:
+            case API_APPS: {
                 qb.setTables(Tables.API_APPS);
 
                 break;
-            case API_APPS_BY_PACKAGE_NAME:
+            }
+            case API_APPS_BY_PACKAGE_NAME: {
                 qb.setTables(Tables.API_APPS);
                 qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
-            case API_ACCOUNTS:
+            }
+            case API_ACCOUNTS: {
                 qb.setTables(Tables.API_ACCOUNTS);
                 qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
-            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+            }
+            case API_ACCOUNTS_BY_ACCOUNT_NAME: {
                 qb.setTables(Tables.API_ACCOUNTS);
                 qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
@@ -632,14 +634,17 @@ public class KeychainProvider extends ContentProvider {
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
-            case API_ALLOWED_KEYS:
+            }
+            case API_ALLOWED_KEYS: {
                 qb.setTables(Tables.API_ALLOWED_KEYS);
                 qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAccounts.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
-            default:
+            }
+            default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
+            }
 
         }
 
@@ -684,47 +689,47 @@ public class KeychainProvider extends ContentProvider {
             final int match = mUriMatcher.match(uri);
 
             switch (match) {
-                case KEY_RING_PUBLIC:
+                case KEY_RING_PUBLIC: {
                     db.insertOrThrow(Tables.KEY_RINGS_PUBLIC, null, values);
                     keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
-
-                case KEY_RING_SECRET:
+                }
+                case KEY_RING_SECRET: {
                     db.insertOrThrow(Tables.KEY_RINGS_SECRET, null, values);
                     keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
-
-                case KEY_RING_KEYS:
+                }
+                case KEY_RING_KEYS: {
                     db.insertOrThrow(Tables.KEYS, null, values);
                     keyId = values.getAsLong(Keys.MASTER_KEY_ID);
                     break;
-
-                case KEY_RING_USER_IDS:
+                }
+                case KEY_RING_USER_IDS: {
                     // iff TYPE is null, user_id MUST be null as well
-                    if ( ! (values.get(UserPacketsColumns.TYPE) == null
+                    if (!(values.get(UserPacketsColumns.TYPE) == null
                             ? (values.get(UserPacketsColumns.USER_ID) != null && values.get(UserPacketsColumns.ATTRIBUTE_DATA) == null)
                             : (values.get(UserPacketsColumns.ATTRIBUTE_DATA) != null && values.get(UserPacketsColumns.USER_ID) == null)
-                        )) {
+                    )) {
                         throw new AssertionError("Incorrect type for user packet! This is a bug!");
                     }
-                    if (((Number)values.get(UserPacketsColumns.RANK)).intValue() == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
+                    if (((Number) values.get(UserPacketsColumns.RANK)).intValue() == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
                         throw new AssertionError("Rank 0 user packet must be a user id!");
                     }
                     db.insertOrThrow(Tables.USER_PACKETS, null, values);
                     keyId = values.getAsLong(UserPackets.MASTER_KEY_ID);
                     break;
-
-                case KEY_RING_CERTS:
+                }
+                case KEY_RING_CERTS: {
                     // we replace here, keeping only the latest signature
                     // TODO this would be better handled in savePublicKeyRing directly!
                     db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;
-
-                case API_APPS:
+                }
+                case API_APPS: {
                     db.insertOrThrow(Tables.API_APPS, null, values);
                     break;
-
+                }
                 case API_ACCOUNTS: {
                     // set foreign key automatically based on given uri
                     // e.g., api_apps/com.example.app/accounts/
@@ -743,8 +748,9 @@ public class KeychainProvider extends ContentProvider {
                     db.insertOrThrow(Tables.API_ALLOWED_KEYS, null, values);
                     break;
                 }
-                default:
+                default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
+                }
             }
 
             if (keyId != null) {
@@ -802,20 +808,24 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
-            case API_APPS_BY_PACKAGE_NAME:
+            case API_APPS_BY_PACKAGE_NAME: {
                 count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, additionalSelection),
                         selectionArgs);
                 break;
-            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+            }
+            case API_ACCOUNTS_BY_ACCOUNT_NAME: {
                 count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, additionalSelection),
                         selectionArgs);
                 break;
-            case API_ALLOWED_KEYS:
+            }
+            case API_ALLOWED_KEYS: {
                 count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
                         selectionArgs);
                 break;
-            default:
+            }
+            default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
         }
 
         // notify of changes in db
@@ -851,16 +861,19 @@ public class KeychainProvider extends ContentProvider {
                     count = db.update(Tables.KEYS, values, actualSelection, selectionArgs);
                     break;
                 }
-                case API_APPS_BY_PACKAGE_NAME:
+                case API_APPS_BY_PACKAGE_NAME: {
                     count = db.update(Tables.API_APPS, values,
                             buildDefaultApiAppsSelection(uri, selection), selectionArgs);
                     break;
-                case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                }
+                case API_ACCOUNTS_BY_ACCOUNT_NAME: {
                     count = db.update(Tables.API_ACCOUNTS, values,
                             buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
                     break;
-                default:
+                }
+                default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
+                }
             }
 
             // notify of changes in db
