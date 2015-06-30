@@ -459,11 +459,16 @@ public class PassphraseCacheService extends Service {
      * Called when one specific passphrase for keyId timed out
      */
     private void timeout(long keyId) {
+
         CachedPassphrase cPass = mPassphraseCache.get(keyId);
-        // clean internal char[] from memory!
-        cPass.getPassphrase().removeFromMemory();
-        // remove passphrase object
-        mPassphraseCache.remove(keyId);
+        if (cPass != null) {
+            if (cPass.getPassphrase() != null) {
+                // clean internal char[] from memory!
+                cPass.getPassphrase().removeFromMemory();
+            }
+            // remove passphrase object
+            mPassphraseCache.remove(keyId);
+        }
 
         Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
 

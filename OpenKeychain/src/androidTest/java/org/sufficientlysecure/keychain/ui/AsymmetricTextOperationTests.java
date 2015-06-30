@@ -32,15 +32,14 @@ import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerActions.openDrawer;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -115,33 +114,13 @@ public class AsymmetricTextOperationTests {
             onView(withId(R.id.passphrase_passphrase)).perform(typeText("x"));
             onView(withText(R.string.btn_unlock)).perform(click());
 
-
             onView(isRecyclerItemView(R.id.decrypted_files_list,
                     hasDescendant(withText(R.string.filename_unknown_text))))
-                    .check(matches(allOf(withEncryptionStatus(true), withSignatureNone())));
-
-        }
-
-    }
-
-    @Test
-    public void testTextEncryptDecryptFromKeyView() throws Exception {
-
-        String cleartext = randomString(10, 30);
-
-        pressBack();
-
-        { // encrypt
-
-            // navigate to edit key dialog
-            onData(withKeyItemId(0x9D604D2F310716A3L))
-                    .inAdapterView(allOf(isAssignableFrom(AdapterView.class),
-                            isDescendantOfA(withId(R.id.key_list_list))))
-                    .perform(click());
-            onView(withId(R.id.view_key_action_encrypt_text)).perform(click());
-
-            // make sure the encrypt is correctly set
-            onView(withId(R.id.result_encryption_icon)).check(matches(withDisplayedChild(1)));
+                    .check(matches(allOf(
+                            hasDescendant(withText(FileHelper.readableFileSize(cleartext.length()))),
+                            withEncryptionStatus(true),
+                            withSignatureNone()
+                    )));
 
         }
 
