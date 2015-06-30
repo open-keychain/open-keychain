@@ -6,15 +6,16 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:fillViewport="true">
 
         <EditText
             android:id="@+id/encrypt_text_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:gravity="top"
             android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
             android:hint="@string/encrypt_content_edit_text_hint" />
