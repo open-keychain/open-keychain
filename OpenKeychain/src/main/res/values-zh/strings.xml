@@ -4,12 +4,14 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
+  <string name="title_encrypt_text">加密</string>
+  <string name="title_encrypt_files">加密</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">添加子密钥</string>
   <string name="title_edit_key">编辑密钥</string>
   <string name="title_preferences">设置</string>
   <string name="title_api_registered_apps">已注册应用</string>
-  <string name="title_key_server_preference">密钥服务器</string>
+  <string name="title_key_server_preference">OenPGP 密钥服务器</string>
   <string name="title_change_passphrase">变更密码</string>
   <string name="title_share_fingerprint_with">分享签名</string>
   <string name="title_share_key">分享密钥</string>
@@ -26,21 +28,23 @@
   <string name="title_key_details">密钥详情</string>
   <string name="title_help">帮助</string>
   <string name="title_log_display">日志</string>
-  <string name="title_advanced_key_info">更多密钥详情</string>
+  <string name="title_exchange_keys">交换密钥</string>
   <string name="title_export_log">导出日志</string>
+  <string name="title_manage_my_keys">管理我的密钥</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
+  <string name="section_yubikey">YubiKey</string>
   <string name="section_should_you_trust">应该相信此密钥?</string>
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">在线搜索</string>
-  <string name="section_passphrase_cache">密语缓存</string>
   <string name="section_certify">确认</string>
+  <string name="section_actions">动作</string>
   <string name="section_key_server">密钥服务器</string>
   <string name="section_fingerprint">签名</string>
+  <string name="section_encrypt">加密</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">解密并验证文件</string>
   <string name="btn_encrypt_share_file">加密并分享文件</string>
-  <string name="btn_save">保存</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">删除</string>
   <string name="btn_no_date">没有日期</string>
@@ -48,31 +52,54 @@
   <string name="btn_export_to_server">导出到服务器</string>
   <string name="btn_next">下一步</string>
   <string name="btn_back">返回</string>
+  <string name="btn_share_encrypted_signed">加密并分享</string>
+  <string name="btn_copy_encrypted_signed">加密并复制</string>
   <string name="btn_view_cert_key">显示密钥</string>
   <string name="btn_create_key">创建密钥</string>
   <string name="btn_add_files">添加密钥</string>
-  <string name="btn_add_share_decrypted_text">添加并分享加密后的文本</string>
-  <string name="btn_decrypt_and_verify">解密并验证</string>
-  <string name="btn_decrypt_files">解密文件</string>
+  <string name="btn_share_decrypted_text">分享解密文本</string>
+  <string name="btn_copy_decrypted_text">复制解密文本</string>
+  <string name="btn_encrypt_files">加密文件</string>
+  <string name="btn_encrypt_text">加密文本</string>
+  <string name="btn_add_email">添加额外的邮件地址</string>
+  <string name="btn_unlock">解锁</string>
+  <string name="btn_add_keyserver">添加</string>
+  <string name="btn_saved">已保存</string>
   <!--menu-->
   <string name="menu_preferences">参数设置</string>
   <string name="menu_help">帮助</string>
   <string name="menu_export_key">导出密钥</string>
   <string name="menu_delete_key">删除密钥</string>
+  <string name="menu_manage_keys">管理我的密钥</string>
   <string name="menu_search">搜索</string>
+  <string name="menu_nfc_preferences">NFC设置</string>
   <string name="menu_beam_preferences">参数</string>
   <string name="menu_encrypt_to">加密到...</string>
   <string name="menu_select_all">选择全部</string>
   <string name="menu_export_all_keys">导出全部密钥</string>
-  <string name="menu_advanced">高级</string>
+  <string name="menu_update_all_keys">更新所有密钥</string>
+  <string name="menu_advanced">更多信息</string>
+  <string name="menu_export_log">导出日志</string>
   <!--label-->
   <string name="label_file">文件</string>
   <string name="label_files">多个文件</string>
   <string name="label_no_passphrase">没有密码</string>
   <string name="label_passphrase">密码</string>
-  <string name="label_passphrase_again">确认密码</string>
+  <string name="label_unlock">解锁中...</string>
+  <string name="label_passphrase_again">重复密码</string>
+  <string name="label_show_passphrase">显示密码</string>
   <string name="label_algorithm">算法</string>
+  <string name="label_ascii_armor">文件ASCII文本化</string>
+  <string name="label_file_ascii_armor">启用ASCII文本化</string>
   <string name="label_write_version_header">写入文件头信息</string>
+  <string name="label_use_default_yubikey_pin">使用默认YubiKey PIN</string>
+  <string name="label_message_compression">文本压缩</string>
+  <string name="label_file_compression">文件压缩</string>
+  <string name="label_keyservers">选择OpenPGP 密钥服务器</string>
+  <string name="label_key_id">密钥ID</string>
+  <string name="label_expiry">过期时间</string>
+  <string name="label_usage">用途</string>
+  <string name="label_key_size">密钥大小</string>
   <string name="label_main_user_id">用户名</string>
   <string name="label_name">姓名</string>
   <string name="label_comment">注解</string>
@@ -80,6 +107,8 @@
   <string name="label_fingerprint">指纹</string>
   <string name="expiry_date_dialog_title">有效期</string>
   <string name="label_first_keyserver_is_used">首选服务器</string>
+  <string name="label_encrypt_filenames">加密文件名</string>
+  <string name="pref_keyserver">OpenPGP 密钥服务器</string>
   <plurals name="n_keys">
     <item quantity="other">其他</item>
   </plurals>
@@ -101,21 +130,27 @@
   <string name="choice_4hours">4小时</string>
   <string name="choice_8hours">8小时</string>
   <string name="choice_forever">永远</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="ecdh">ECDH</string>
+  <string name="ecdsa">ECDSA</string>
   <string name="filemanager_title_open">打开...</string>
   <string name="error">错误</string>
+  <string name="error_message">错误：%s</string>
   <!--key flags-->
+  <string name="flag_certify">验证</string>
+  <string name="flag_sign">签名</string>
+  <string name="flag_encrypt">加密</string>
   <!--sentences-->
   <string name="wrong_passphrase">密码错误</string>
   <string name="no_filemanager_installed">安装了不匹配的文件管理器</string>
   <string name="passphrases_do_not_match">密码不匹配</string>
-  <string name="passphrase_must_not_be_empty">密码不能为空</string>
+  <string name="passphrase_must_not_be_empty">请输入一个密码</string>
   <string name="passphrase_for_symmetric_encryption">对称加密</string>
-  <string name="passphrase_for">密码</string>
-  <string name="no_file_selected">先选择一个文件</string>
   <string name="encrypt_sign_successful">加密并签名成功</string>
   <string name="encrypt_sign_clipboard_successful">加密签名并复制到剪贴板成功</string>
   <string name="select_encryption_key">选择至少一个加密密钥</string>
-  <string name="error_no_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
   <string name="also_export_secret_keys">同时导出密钥</string>
   <string name="key_exported">成功地导出了1个密钥</string>
   <string name="keys_exported">成功导出多个密钥</string>
@@ -125,24 +160,24 @@
     <item quantity="other">其他</item>
   </plurals>
   <string name="list_empty">这个列表是空的！</string>
-  <string name="nfc_successful">NFC成功</string>
+  <string name="nfc_successful">成功通过NFC发送密钥</string>
   <string name="key_copied_to_clipboard">复制密钥到剪贴板</string>
   <string name="fingerprint_copied_to_clipboard">复制签名到剪贴板</string>
+  <string name="select_key_to_certify">选择验证密钥</string>
   <string name="key_too_big_for_sharing">密钥太长</string>
   <string name="text_copied_to_clipboard">复制文本到剪贴板</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">还未被删除. 手动删除它们!</string>
+  <string name="error_file_added_already">%s  已经被添加了</string>
   <string name="error_file_not_found">没有找到文件</string>
   <string name="error_no_secret_key_found">没有找到私钥</string>
   <string name="error_external_storage_not_ready">外置存储没有准备好</string>
   <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
   <string name="error_unknown_algorithm_choice">位置的算法选择</string>
-  <string name="error_user_id_no_email">缺少电子邮件</string>
-  <string name="error_no_signature_passphrase">没有提供密码</string>
   <string name="error_no_signature_key">没有提供签名密钥</string>
   <string name="error_integrity_check_failed">检查失败</string>
-  <string name="error_wrong_passphrase">错误的密语</string>
   <!--errors without preceeding Error:-->
   <!--results shown after decryption/verification-->
   <!--Add keys-->
@@ -175,14 +210,13 @@
   <string name="help_tab_about">关于</string>
   <string name="help_about_version">版本:</string>
   <!--Import-->
+  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-  <string name="api_settings_show_advanced">显示高级设置</string>
-  <string name="api_settings_hide_advanced">隐藏高级设置</string>
   <string name="api_settings_select_key">选择密钥</string>
   <string name="api_settings_save">保存</string>
   <string name="api_settings_cancel">取消</string>
@@ -200,6 +234,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -224,6 +259,6 @@
   <!--unsorted-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

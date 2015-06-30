@@ -1,16 +1,16 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
-## How do I activate OpenKeychain in K-9 Mail?
-To use OpenKeychain with K-9 Mail, you want to follow these steps:
+## Hur aktiverar jag OpenKeychain i K-9 Mail?
+För att använda OpenKeychain med K-9 Mail så ska du följa dessa steg:
   1. Open K-9 Mail and long-tap on the account you want to use OpenKeychain with.
-  2. Select "Account settings", scroll to the very bottom and click "Cryptography".
-  3. Click on "OpenPGP Provider" and select OpenKeychain from the list.
+  2. Välj "Konto-inställningar", skrolla längst ner och klicka på "Kryptering".
+  3. Klicka på "OpenPGP-leverantör" och välj OpenKeyChain från listan.
 
-## I found a bug in OpenKeychain!
-Please report the bug using the [issue tracker of OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
+## Jag hittade en bugg i OpenKeychain!
+Vänligen rapportera buggen genom att använda [problemspåraren för OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
 
-## Contribute
-If you want to help us developing OpenKeychain by contributing code [follow our small guide on Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
+## Bidra
+Om du vill hjälpa oss att utveckla OpenKeychain genom att bidra med kod [följ vår lilla guide på Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
 
-## Translations
+## Översättningar
 Help translating OpenKeychain! Everybody can participate at [OpenKeychain on Transifex](https://www.transifex.com/projects/p/open-keychain/).

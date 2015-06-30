@@ -1,66 +1,75 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
+
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
 
 ## 3.2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  Material diseinua
+  * QR Kode eskaneatzea baterapena (Baimen berriak beharrezkoak)
+  * Hobetuta giltza sortze laguntzailea
+  * Zuzenduta harreman galera aldiberetu ondoren
+  * Android 4 behar du
+  * Giltza ikusleihoaren berdiseinua
+  * Kripto hobespenen arruntzea, zifraketa seguruen hautaketa hobea
+  * API: Sinadurak deserantsita, giltza sinatuaren hautaketa askea,...
+  * Zuzenduta: Zenbait baliozko giltza ukatuta edo iraungituta erakusten dira
+  * Ez da sinadurarik onartzen iraungitutako edo ukatutako azpigiltzetatik
+  * Keybase.io sostengua ikuspegi aurreratuan
+  * Giltza guztiak batera eguneratzeko metodoa
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Zuzenduta esportatu giltzak agirietara (orain egitan)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Zuzenduta esportatu giltzak agirietara (partzialki idatzita)
+  * Zuzenduta kraskatzea Android 2.3-an
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Zuzenduta kraskatzea Android 5-ean
+  * Egiaztagiri ikusleiho berria
+  * Trukaketa Segurua zuzenean giltza zerrendatik (SafeSlinger liburutegia)
+  * QR Kode programa berria
+  * Dekriptaketa ikusleihoaren berdiseinua
+  * Ikur berria eta margoak
+  * Zuzenduta inportatu giltza sekretua Symantec Enkriptaketa Mahaigainetik
+  * YubiKey sostengu esperimentala: Azpigiltza ID-ak orain zuzen egiaztatzen dira
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Kudeaketa hobea giltza inportatze handietarako
+  * Hobetuta azpigiltza hautapena
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
   * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
+  * Diseinu berria dekriptaketa ikusleihoentzat
+  * Zuzenketa ugari giltza inportatzean, zuzenduta baita ere giltzen zuriketa
   * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * Erabiltzaile interfazea norbere giltzak sortzeko
+  * Zuzenduta erabiltzaile id ukatze egiaztagiriak
+  * Hodei bilaketa berria (ohiko giltza-zerbitzari eta keybase.io gain bilatzen da)
+  * Sostengua giltza zuriketarako OpenKeychain barne
+  * YubiKey sostengu esperimentala: Sostengua sinadura sortze eta dekriptaketarako
 
 
 ## 2.9.2
 
   * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * Experimental YubiKey support: Decryption now working via API
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
   * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Fixing crashes introduced in v2.8
   * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Experimental YubiKey support: Only signing with imported keys
 
 
 ## 2.8

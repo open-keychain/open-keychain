@@ -27,6 +27,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -41,6 +42,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -65,6 +67,6 @@
   <!--unsorted-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

@@ -19,10 +19,10 @@
 ## 詳細情報
 OpenKeychainでの"鍵の検証"はOpenPGP標準に準拠した証明を生成する実装がなされています。
 この証明は ["汎用証明 (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) として標準に以下として記述されています:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+"この証明書の発行者は、認証者は、鍵の所有者が実際にユーザIDによって記述の人であることを確認したこの証明書のように、任意の特定の主張を行いません。"
 
 歴史的に、証明(またより高いレベルの証明、"肯定的な証明" (0x13))  は OpenPGPによるWeb of Trustとして組織化されます。
 われわれの鍵の証明モデルはとてもシンプルなコンセプトによって関連する一般的なユーザビリティの問題を回避する概念です。
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+私たちは、鍵が唯一の "外出先で"まだ実行されるのに十分な使用可能なある程度検証されることを想定しています。
+しかし私達は(潜在的推移則での)信頼署名やGnuPG式の所有信頼データベースの実装はしません。
+さらに、信頼できるキーで証明された少なくとも1つのユーザIDが含まれるキーは、キーのリストに「確認」としてマークされます。

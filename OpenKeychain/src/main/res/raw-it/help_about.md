@@ -1,13 +1,17 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](http://www.openkeychain.org) e un impelementazione OpenPGP per Android.
 
-License: GPLv3+
+Licenza: GPLv3+
 
-## Developers
-  * Dominik Schürmann (Maintainer)
+## Sviluppatori principali
+  * Dominik Schürmann (Manutentore)
+  * Vincent Breitmoser
+
+## Collaboratori
+  * Adithya Abraham Philip
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -15,20 +19,35 @@ License: GPLv3+
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
+  * Daniel Nelz
+  * Daniel Ramos
   * Greg Witczak
+  * 'iseki'
+  * Ishan Khanna
+  * 'jellysheep'
+  * 'Jesperbk'
+  * 'jkolo'
+  * Joey Castillo
+  * Kai Jiang
+  * Kartik Arora
+  * 'Kent'
+  * 'ligi'
+  * Lukas Zorich
+  * Manoj Khanna
   * 'mar-v-in'
   * Markus Doits
   * Miroojin Bakshi
+  * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
-  * Thialfihar (APG 1.x)
+  * 'steelman'
+  * 'Thialfihar' (Sviluppatore APG)
   * Tim Bray
-  * Vincent Breitmoser
 
-## Libraries
+## Librerie
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 License)
   * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT License)
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
@@ -38,9 +57,9 @@ License: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache License v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache License v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache License v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache License v2)
-  * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache License v2)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT License)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
-  * [HtmlTextView](https://github.com/dschuermann/html-textview) (Apache License v2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache License v2)

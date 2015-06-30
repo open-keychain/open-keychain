@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
@@ -6,8 +6,12 @@
 
 Lizenz: GPLv3+
 
-## Entwickler
+## Hauptentwickler
   * Dominik Schürmann (Leitender Entwickler)
+  * Vincent Breitmoser
+
+## Beitragende
+  * Adithya Abraham Philip
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -15,18 +19,33 @@ Lizenz: GPLv3+
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
+  * Daniel Nelz
+  * Daniel Ramos
   * Greg Witczak
+  * 'iseki'
+  * Ishan Khanna
+  * 'jellysheep'
+  * 'Jesperbk'
+  * 'jkolo'
+  * Joey Castillo
+  * Kai Jiang
+  * Kartik Arora
+  * 'Kent'
+  * 'ligi'
+  * Lukas Zorich
+  * Manoj Khanna
   * 'mar-v-in'
   * Markus Doits
   * Miroojin Bakshi
+  * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
-  * Thialfihar (APG 1.x)
+  * 'steelman'
+  * 'Thialfihar' (APG-Entwickler)
   * Tim Bray
-  * Vincent Breitmoser
 
 ## Bibliotheken
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11-Lizenz)
@@ -38,9 +57,9 @@ Lizenz: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache-Lizenz v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache-Lizenz v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache-Lizenz v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material-Design)</a> (Apache-Lizenz v2)
-  * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Apache-Lizenz v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache-Lizenz v2)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT-Lizenz)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache-Lizenz v2)
-  * [HtmlTextView](https://github.com/dschuermann/html-textview) (Apache-Lizenz v2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache-Lizenz v2)
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache-Lizenz v2)

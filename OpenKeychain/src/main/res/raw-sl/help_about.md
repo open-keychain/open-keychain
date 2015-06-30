@@ -6,8 +6,12 @@
 
 Licenca: GPLv3+
 
-## Razvijalci
+## Main Developers
   * Dominik Schürmann (Skrbnik)
+  * Vincent Breitmoser
+
+## Contributors
+  * Adithya Abraham Philip
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -15,18 +19,33 @@ Licenca: GPLv3+
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
+  * Daniel Nelz
+  * Daniel Ramos
   * Greg Witczak
+  * 'iseki'
+  * Ishan Khanna
+  * 'jellysheep'
+  * 'Jesperbk'
+  * 'jkolo'
+  * Joey Castillo
+  * Kai Jiang
+  * Kartik Arora
+  * 'Kent'
+  * 'ligi'
+  * Lukas Zorich
+  * Manoj Khanna
   * 'mar-v-in'
   * Markus Doits
   * Miroojin Bakshi
+  * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
-  * Thialfihar (APG 1.x)
+  * 'steelman'
+  * 'Thialfihar' (APG developer)
   * Tim Bray
-  * Vincent Breitmoser
 
 ## Knjižnice
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (Licenca MIT X11)
@@ -38,9 +57,9 @@ Licenca: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licenca Apache v2)
   * [ZXing](https://github.com/zxing/zxing) (Licenca Apache v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Licenca Apache v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Licenca Apache v2)
-  * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Licenca Apache v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache License v2)
   * [Snackbar](https://github.com/nispok/snackbar) (Licenca MIT)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Licenca Apache v2)
-  * [HtmlTextView](https://github.com/dschuermann/html-textview) (Licenca Apache v2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Licenca Apache v2)

@@ -1,18 +1,27 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
 
 ## 3.2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
+  * Första versionen med fullt YubiKey-stöd tillgängligt från användargränssnittet: Redigera nycklar. binda YubiKey till nycklar,...
+  * Materialkonstruktion
+  * Integrering av skanning av QR-kod (Nya behörigheter krävs)
+  * Förbättrade guiden för skapande av nyckel
+  * Fixa kontakter som saknas efter synkronisering
+  * Kräver Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
   * Fix: Some valid keys were shown revoked or expired
   * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * Keybase.io-stöd i avancerad vy
+  * Metod för att uppdatera alla nycklar på en gång
 
 
 ## 3.1.2
@@ -23,19 +32,19 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Fixa krasch i Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
+  * Fixa krasch i Android 5
+  Ny certifieringsskärm
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
   * Redesigned decrypt screen
   * New icon usage and colors
   * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Experimental YubiKey support: Subkey IDs are now checked correctly
 
 
 ## 3.0.1
@@ -46,7 +55,6 @@
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
   * Propose installable compatible apps in apps list
   * New design for decryption screens
   * Many fixes for key import, also fixes stripped keys
@@ -55,12 +63,13 @@
   * Fixing user id revocation certificates
   * New cloud search (searches over traditional keyservers and keybase.io)
   * Support for stripping keys inside OpenKeychain
+  * Experimental YubiKey support: Support for signature generation and decryption
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  Fixa trasiga nycklar i 2.9.1
+  * Experimental YubiKey support: Decryption now working via API
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
   * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Fixing crashes introduced in v2.8
   * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Experimental YubiKey support: Only signing with imported keys
 
 
 ## 2.8

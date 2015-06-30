@@ -13,7 +13,6 @@
   <string name="title_help">Abi</string>
   <!--section-->
   <!--button-->
-  <string name="btn_save">Salvesta</string>
   <string name="btn_do_not_save">Katkesta</string>
   <string name="btn_delete">Kustuta</string>
   <string name="btn_export_to_server">Saada võtmeserverisse</string>
@@ -25,8 +24,6 @@
   <string name="menu_search">Otsi</string>
   <!--label-->
   <string name="label_file">Fail</string>
-  <string name="label_no_passphrase">Salasõnet pole</string>
-  <string name="label_passphrase">Salasõne</string>
   <string name="label_algorithm">Algoritm</string>
   <string name="label_creation">Loodud</string>
   <string name="label_expiry">Aegub</string>
@@ -56,8 +53,6 @@
   <string name="error_message">Viga: %s</string>
   <!--key flags-->
   <!--sentences-->
-  <string name="wrong_passphrase">Vale salasõne</string>
-  <string name="passphrases_do_not_match">Salasõned ei ühti.</string>
   <string name="passphrase_for_symmetric_encryption">Sümmeetriline krüpteering</string>
   <!--errors
          no punctuation, all lowercase,
@@ -76,6 +71,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -90,6 +86,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -114,6 +111,6 @@
   <!--unsorted-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

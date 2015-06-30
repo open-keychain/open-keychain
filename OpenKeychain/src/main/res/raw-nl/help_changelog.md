@@ -1,9 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
+  * Eerste versie waarin YubiKey volledig wordt ondersteund vanuit de gebruikersinterface: sleutels aanmaken, YubiKey binden aan sleutels, ...
   * Material design
-  * Integratie van QR-scanner (nieuwe machtigingen vereist)
+  * Integratie van QR-code scannen (nieuwe permissies vereist)
   * Sleutelaanmaakwizard verbeterd
   * Probleem met ontbrekende contacten na synchronisatie opgelost
   * Vereist Android 4
@@ -13,6 +21,7 @@
   * Oplossing voor probleem waarbij sommige geldige sleutels weergegeven werden als ingetrokken of verlopen
   * Aanvaard geen ondertekeningen door verlopen of ingetrokken subsleutels
   * Ondersteuning voor Keybase.io in geavanceerde modus
+  * Methode om alle sleutels tegelijk bij te werken
 
 
 ## 3.1.2
@@ -35,7 +44,7 @@
   * Nieuw design voor ontcijferingsscherm
   * Nieuw icoon en kleuren
   * Oplossing voor importeren van geheime sleutels van Symantec Encryption Desktop
-  * Subsleutel-ID's op Yubikeys worden nu currect gecontroleerd
+  * Experimentele ondersteuning voor YubiKey: subsleutel-ID's worden nu correct gecontroleerd
 
 
 ## 3.0.1
@@ -46,7 +55,6 @@
 
 ## 3.0
 
-  * Volledige ondersteuning voor Yubikey ondertekeningsgeneratie en ontcijfering!
   * Stel installeerbare compatibele apps voor in apps-lijst
   * Nieuw design voor ontcijferingsschermen
   * Veel oplossingen voor sleutelimporteren, lost ook gestripte sleutels op
@@ -55,12 +63,13 @@
   * Oplossing voor gebruikers-ID-intrekkingscertificaten
   * Nieuwe cloud search (zoekt op traditionele sleutelservers en keybase.io)
   * Ondersteuning voor strippen van sleutels in OpenKeychain
+  * Experimentele ondersteuning voor YubiKey: ondersteuning voor aanmaken en ontsleutelen van ondertekeningen
 
 
 ## 2.9.2
 
   * Oplossing voor gebroken sleutels in 2.9.1
-  * Yubikey-ontsleuteling werkt nu via API
+  * Experimentele ondersteuning voor YubiKey: ontsleuteling werkt nu via API
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * Oplossing voor sleutelvlaggen (ondersteunt nu Mailvelope 0.7 sleutels)
   * Verbeterde behandeling van wachtwoorden
   * Sleutels delen via SafeSlinger
-  * Yubikey: optie om andere PINs toe te staan, momenteel werkt enkel ondertekenen via de OpenPGP API, niet in OpenKeychain zelf
+  * Experimentele ondersteuning voor YubiKey: instelling om andere PIN's toe te laten, momenteel werkt ondertekenen enkel via de OpenPGP API, niet binnen OpenKeychain
   * Oplossing voor gestripte sleutels
   * SHA256 als standaard voor compatibiliteit
   * Intent API is veranderd, zie https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Oplossing voor crashes geïntroduceerd in v2.8
   * Experimentele ondersteuning voor ECC
-  * Experimentele ondersteuning voor Yubikey (alleen ondertekenen met geïmporteerde sleutels)
+  * Experimentele ondersteuning voor YubiKey: enkel ondertekenen met geïmporteerde sleutels
 
 
 ## 2.8

@@ -1,18 +1,18 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (注意: 请把每个句子放在其本行中, Transifex把每一行放在它自己的位置！)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+## 密钥确认
+在没有进行确认之前,你无法确保一个密钥与特定的人的密钥是相符的
+确认密钥相符的最简单方式是扫描二维码或者通过NFC交换
+为了确认多于2个人的密钥是相符的, 我们建议使用密钥交换的方法进行确认.
 
-## Key Status
+## 密钥状态
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+已确认: 你已经通过例如二维码扫描这种方式确认了这个密钥  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+未确认: 这个密钥尚未被确认. 你无法确保这个密钥与指定的人的密钥是相同的.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+已过期: 这个密钥不再有效. 只有它的拥有者能扩展它的正确性.  
 <img src="status_signature_revoked_cutout_24dp"/>  
 Revoked: This key is no longer valid. It has been revoked by its owner.
 

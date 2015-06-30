@@ -1,75 +1,84 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
-  * Material design
-  * Integration of QR Scanner (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * 首次完整支援Yubikey：修改金鑰、連結Yubikey與金鑰、...
+  * 素材設計
+  * 整合QR條碼掃描 (需要新權限)
+  * 改進的金鑰建立精靈
+  * 修正同步後遺失聯絡人
+  * 最低要求 Android 4
+  * 重新設計的金鑰畫面
+  * 簡化的加密參數，更佳的安全加密算法選項
+  * API：分離的簽名、自由選擇用來簽名的金鑰、...
+  * 修正：部分有效的金鑰被顯示為已撤銷或過期
+  * 不接受來自已撤銷或過期子金鑰的簽名
+  * 進階檢視中的Keybase.io支援
+  * 可以一次更新所有的金鑰了
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * 修正匯出金鑰到檔案的功能（這次是真的了）
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * 修正匯出金鑰到檔案功能（一部分）
+  * 修正在Android 2.3上的崩潰
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * 修正在Android 5上的崩潰
+  * 新的認證畫面
+  * 直接在金鑰清單進行安全金鑰交換（使用SafeSlinger）
+  * 新的QR條碼作業流程
+  * 重新設計的解密畫面
+  * 新的圖示和配色
+  * 修正從Symantec Encryption Desktop匯入密鑰的問題
+  * 實驗性的YubiKey支援：子金鑰ID現在可以正確的檢查了
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * 更好的大型金鑰匯入處理
+  * 改良的子金鑰選取
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
+  * 在應用列表中建議相容的應用
+  * 新設計的解密畫面
+  * 許多匯入金鑰的修正，並修正剝離的金鑰
   * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * 產生自訂金鑰的介面
+  * 修復使用者身分撤銷
+  * 新的雲端檢索功能（同時搜尋傳統的金鑰伺服器以及keybase.io資料庫）
+  * 現在OpenKeychain可以支援剝離的金鑰了
+  * 實驗性的YubiKey支援：支援簽名和解密
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * 修正2.9.1導致金鑰破損的問題
+  * 實驗性的YubiKey支援：現在可以透過API進行解密
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
+  * 加密畫面現在一分為二
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
   * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Fixing crashes introduced in v2.8
   * Experimental ECC support
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Experimental YubiKey support: Only signing with imported keys
 
 
 ## 2.8

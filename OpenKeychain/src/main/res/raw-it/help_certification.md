@@ -1,28 +1,28 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+## Conferma chiave
+Senza conferma, non puoi essere sicuro la chiave veramente corrisponde a una persona specifica.
+Il modo più semplice per confermare una chiave è la scansione del codice QR o scambiarla via NFC.
+Per confermare le chiavi tra più di due persone, si consiglia di utilizzare il metodo di scambio di chiavi a disposizione per le vostre chiavi.
 
-## Key Status
+## Stato chiave
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Confermato: Hai già confermato questa chiave, ad esempio, attraverso la scansione del codice QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Non confermato: Questa chiave non è ancora stata confermata. Non si può essere sicuri se la chiave corrisponde davvero a una persona specifica.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+Scaduta: Questa chiave non è più valida. Solo il proprietario può estendere la sua validità.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Revoca: Questa chiave non è più valida. È stata revocata dal suo proprietario.
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+## Informazioni avanzate
+Una "conferma chiave" in OpenKeychain è attuato mediante la creazione di una certificazione secondo lo standard OpenPGP.
+Questa certificazione è un ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) indicata nella norma per:
+"L'emittente di tale certificazione non va alcun particolare asserzione da quanto accurato il certificatore ha verificato che il proprietario della chiave è infatti la persona descritta dal ID utente."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Tradizionalmente, certificazioni (anche con livelli di certificazione più elevati, come "certificazioni positivi" (0x13)) sono organizzate su OpenPGP nel web di confidenza ("Web of trust").
+Il nostro modello di conferma chiave è un concetto molto più semplice per evitare problemi di usabilità comuni relativi a questo Web of Trust.
+Assumiamo che le chiavi vengono verificati solo fino ad un certo grado che è ancora abbastanza utilizzabile da eseguire "in movimento".
+Inoltre, non implementiamo (potenzialmente transitive) firme fiduciarie o un database ownertrust come in GnuPG.
+Inoltre, chiavi che contengono almeno un ID utente certificata da una chiave di fiducia saranno contrassegnati come "confermato" negli elenchi principali.
