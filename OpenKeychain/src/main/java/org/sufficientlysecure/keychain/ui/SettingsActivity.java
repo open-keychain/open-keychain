@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
@@ -33,12 +32,13 @@ import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
 
     public static final String ACTION_PREFS_CLOUD = "org.sufficientlysecure.keychain.ui.PREFS_CLOUD";
     public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
@@ -104,13 +104,14 @@ public class SettingsActivity extends PreferenceActivity {
     private void setupToolbar() {
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         LinearLayout content = (LinearLayout) root.getChildAt(0);
-        LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.preference_toolbar_activity, null);
+        LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.preference_toolbar, null);
 
         root.removeAllViews();
         toolbarContainer.addView(content);
         root.addView(toolbarContainer);
 
         Toolbar toolbar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
+
         toolbar.setTitle(R.string.title_preferences);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back_white_24dp));
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
