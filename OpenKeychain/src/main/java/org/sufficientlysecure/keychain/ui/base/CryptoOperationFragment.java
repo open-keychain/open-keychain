@@ -29,43 +29,13 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  * All fragments executing crypto operations need to extend this class.
  */
 public abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
-        extends Fragment {
+        extends Fragment implements CryptoOperationHelper.Callback<T, S> {
 
     private CryptoOperationHelper<T, S> mOperationHelper;
 
     public CryptoOperationFragment() {
-        // this is implemented here instead of by the fragment so that the corresponding methods in
-        // CryptoOperationFragment may continue using the "protected" modifier.
-        CryptoOperationHelper.Callback callback = new CryptoOperationHelper.Callback<T, S>() {
 
-            @Override
-            public T createOperationInput() {
-                return CryptoOperationFragment.this.createOperationInput();
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(S result) {
-                CryptoOperationFragment.this.onCryptoOperationSuccess(result);
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-                CryptoOperationFragment.this.onCryptoOperationCancelled();
-            }
-
-            @Override
-            public void onCryptoOperationError(S result) {
-                CryptoOperationFragment.this.onCryptoOperationError(result);
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return CryptoOperationFragment.this.onCryptoSetProgress(msg, progress, max);
-            }
-
-        };
-
-        mOperationHelper = new CryptoOperationHelper<>(this, callback);
+        mOperationHelper = new CryptoOperationHelper<>(this, this);
     }
 
     public void setProgressMessageResource(int id) {
@@ -78,7 +48,8 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
         mOperationHelper.handleActivityResult(requestCode, resultCode, data);
     }
 
-    protected abstract T createOperationInput();
+    @Override
+    public abstract T createOperationInput();
 
     protected void cryptoOperation() {
         cryptoOperation(new CryptoInputParcel());
@@ -92,19 +63,22 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
         mOperationHelper.cryptoOperation(cryptoInput, showProgress);
     }
 
-    protected boolean onCryptoSetProgress(String msg, int progress, int max) {
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return false;
     }
 
-    protected void onCryptoOperationError(S result) {
+    @Override
+    public void onCryptoOperationError(S result) {
         onCryptoOperationResult(result);
         result.createNotify(getActivity()).show();
     }
 
-    protected void onCryptoOperationCancelled() {
+    @Override
+    public void onCryptoOperationCancelled() {
     }
 
-    protected void onCryptoOperationSuccess(S result) {
+    @Override
+    public void onCryptoOperationSuccess(S result) {
         onCryptoOperationResult(result);
     }
 

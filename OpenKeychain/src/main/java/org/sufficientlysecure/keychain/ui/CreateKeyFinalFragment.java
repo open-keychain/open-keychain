@@ -151,12 +151,12 @@ public class CreateKeyFinalFragment
     }
 
     @Override
-    protected SaveKeyringParcel createOperationInput() {
+    public SaveKeyringParcel createOperationInput() {
         return mSaveKeyringParcel;
     }
 
     @Override
-    protected void onCryptoOperationSuccess(EditKeyResult result) {
+    public void onCryptoOperationSuccess(EditKeyResult result) {
         if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
             // result will be displayed after upload
             uploadKey(result);

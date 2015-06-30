@@ -295,7 +295,7 @@ public class CertifyKeyFragment
     }
 
     @Override
-    protected CertifyActionsParcel createOperationInput() {
+    public CertifyActionsParcel createOperationInput() {
 
         // Bail out if there is not at least one user id selected
         ArrayList<CertifyAction> certifyActions = mUserIdsAdapter.getSelectedCertifyActions();
@@ -318,7 +318,7 @@ public class CertifyKeyFragment
     }
 
     @Override
-    protected void onCryptoOperationSuccess(CertifyResult result) {
+    public void onCryptoOperationSuccess(CertifyResult result) {
         Intent intent = new Intent();
         intent.putExtra(CertifyResult.EXTRA_RESULT, result);
         getActivity().setResult(Activity.RESULT_OK, intent);
@@ -326,7 +326,7 @@ public class CertifyKeyFragment
     }
 
     @Override
-    protected void onCryptoOperationCancelled() {
+    public void onCryptoOperationCancelled() {
         super.onCryptoOperationCancelled();
     }
 

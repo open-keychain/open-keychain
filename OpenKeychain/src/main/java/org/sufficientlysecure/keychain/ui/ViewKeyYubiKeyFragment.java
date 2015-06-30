@@ -205,7 +205,7 @@ public class ViewKeyYubiKeyFragment
     }
 
     @Override
-    protected PromoteKeyringParcel createOperationInput() {
+    public PromoteKeyringParcel createOperationInput() {
         return new PromoteKeyringParcel(mMasterKeyId, mCardAid, mSubKeyIds);
     }
 

@@ -607,12 +607,12 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
     }
 
     @Override
-    protected SaveKeyringParcel createOperationInput() {
+    public SaveKeyringParcel createOperationInput() {
         return mSaveKeyringParcel;
     }
 
     @Override
-    protected void onCryptoOperationSuccess(OperationResult result) {
+    public void onCryptoOperationSuccess(OperationResult result) {
 
         // if good -> finish, return result to showkey and display there!
         Intent intent = new Intent();

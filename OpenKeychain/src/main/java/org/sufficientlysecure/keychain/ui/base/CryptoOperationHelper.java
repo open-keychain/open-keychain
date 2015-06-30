@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
 
-    public interface Callback <T extends Parcelable, S extends  OperationResult> {
+    public interface Callback <T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
         void onCryptoOperationSuccess(S result);
         void onCryptoOperationCancelled();

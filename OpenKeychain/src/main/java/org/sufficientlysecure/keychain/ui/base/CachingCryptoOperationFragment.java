@@ -37,7 +37,7 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
     }
 
     @Override
-    protected abstract T createOperationInput();
+    public abstract T createOperationInput();
 
     protected T getCachedActionsParcel() {
         return mCachedActionsParcel;
@@ -47,7 +47,7 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
         mCachedActionsParcel = cachedActionsParcel;
     }
 
-    protected void onCryptoOperationCancelled() {
+    public void onCryptoOperationCancelled() {
         mCachedActionsParcel = null;
     }
 

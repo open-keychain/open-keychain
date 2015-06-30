@@ -211,12 +211,12 @@ public class CreateKeyYubiKeyImportFragment
     }
 
     @Override
-    protected ImportKeyringParcel createOperationInput() {
+    public ImportKeyringParcel createOperationInput() {
         return new ImportKeyringParcel(mKeyList, mKeyserver);
     }
 
     @Override
-    protected void onCryptoOperationSuccess(ImportKeyResult result) {
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
         long[] masterKeyIds = result.getImportedMasterKeyIds();
         if (masterKeyIds.length == 0) {
             super.onCryptoOperationError(result);
