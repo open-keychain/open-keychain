@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,8 +109,9 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         }
 
         final CharSequence clipboardText = ClipboardReflection.getClipboardText(activity);
-        if (clipboardText == null) {
-            Notify.create(activity, R.string.error_clipboard_empty, Style.ERROR);
+        if (clipboardText == null || TextUtils.isEmpty(clipboardText)) {
+            Notify.create(activity, R.string.error_clipboard_empty, Style.ERROR).show();
+            return;
         }
 
         Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);

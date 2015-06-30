@@ -23,6 +23,9 @@ import java.io.File;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
@@ -140,6 +143,18 @@ public class MiscCryptOperationTests {
         onView(withId(R.id.decrypt_files)).perform(click());
 
         checkSnackbar(Style.ERROR, R.string.no_file_selected);
+
+    }
+
+    @Test
+    public void testDecryptEmptyClipboard() throws Exception {
+
+        // decrypt any non-pgp file
+        ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        clipboard.setPrimaryClip(ClipData.newPlainText("", ""));
+
+        onView(withId(R.id.decrypt_from_clipboard)).perform(click());
+        checkSnackbar(Style.ERROR, R.string.error_clipboard_empty);
 
     }
 
