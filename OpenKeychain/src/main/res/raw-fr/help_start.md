@@ -1,8 +1,8 @@
 [//] : # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
-## Comment puis-je activer OpenKeychain dans K-9 Mail ?
-Pour utiliser OpenKeychain avec K-9 Mail, vous devez suivre ces étapes :
-  1. Ouvrez K-9 Mail et appuyez longuement sur le compte avec lequel vous voulez utiliser OpenKeychain. 
+## Comment puis-je activer OpenKeychain dans Courriel K-9 Mail ?
+Pour utiliser OpenKeychain avec Courriel K-9 Mail, vous devez suivre ces étapes :
+  1. Ouvrez Courriel K-9 Mail et appuyez longuement sur le compte avec lequel vous voulez utiliser OpenKeychain. 
   2. Sélectionnez « Paramètres du compte », faite défiler vers le bas et cliquez sur « Cryptographie ».
   3. Cliquez sur « Fournisseur OpenPGP » et sélectionnez OpenKeychain dans la liste.
 

@@ -33,6 +33,7 @@ import android.provider.ContactsContract;
 import android.widget.Toast;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
@@ -101,7 +102,10 @@ public class KeychainApplication extends Application {
 
         TemporaryStorageProvider.cleanUp(this);
 
-        checkConsolidateRecovery();
+        if (!checkConsolidateRecovery()) {
+            // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
+            new KeychainDatabase(this).getReadableDatabase().close();
+        }
     }
 
     public static HashMap<String,Bitmap> qrCodeCache = new HashMap<>();
@@ -118,12 +122,15 @@ public class KeychainApplication extends Application {
     /**
      * Restart consolidate process if it has been interruped before
      */
-    public void checkConsolidateRecovery() {
+    public boolean checkConsolidateRecovery() {
         if (Preferences.getPreferences(this).getCachedConsolidate()) {
             Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
             consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, true);
             consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(consolidateIntent);
+            return true;
+        } else {
+            return false;
         }
     }
 

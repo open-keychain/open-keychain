@@ -1,28 +1,37 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
+  * Erste Version mit kompletter YubiKey-Unterstützung in der Benutzeroberfläche: Schlüssel bearbeiten, YubiKey mit Schlüsseln verbinden,…
   * Material-Design
   * QR-Scanner-Integration (benötigt neue Berechtigungen)
   * Schlüsselerzeugungsassistent verbessert
   * Fehlende Kontakte nach Synchronisierung behoben
   * Benötigt Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * Neuer Schlüsselbildschirm
+  * Krypto-Einstellungen vereinfacht, bessere Auswahl sicherer Verschlüsselungsverfahren
+  * API: abgetrennte Signaturen, freie Wahl des Signaturschlüssels,...
+  * Behoben: Einige gültige Schlüssel wurden als widerrufen oder abgelaufen angezeigt
+  * Akzeptiert keine Signaturen abgelaufener oder widerrufener Unterschlüssel
+  * Keybase.io-Unterstützung in der erweiterten Ansicht
+  * Möglichkeit, alle Schlüssel auf einmal zu aktualisieren
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Behoben: Schlüsselexport zu Datei (jetzt wirklich)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
+  * Schlüsselexport zu Datei repariert (sie wurden nur teilweise geschrieben)
   * Absturz unter Android 2.3 behoben
 
 
@@ -30,47 +39,47 @@
 
   * Absturz unter Android 5 behoben
   * Neuer Beglaubigungsbildschirm
-  * Secure Exchange directly from key list (SafeSlinger library)
+  * Sicherer Austausch direkt aus der Schlüsselliste (SafeSlinger-Bibliothek)
   * Neuer Programmablauf für QR-Codes
-  * Redesigned decrypt screen
+  * Neugestalteter Entschlüsselungsbildschirm
   * Verwendung neuer Symbole und Farben
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Subkey IDs on Yubikeys are now checked correctly
+  * Behoben: Import geheimer Schlüssel aus Symantec Encryption Desktop
+  * Experimentelle YubiKey-Unterstützung: Unterschlüssel-IDs werden jetzt richtig geprüft
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * Bessere Verarbeitung von großen Schlüsselimporten
+  * Verbesserte Unterschlüsselauswahl
 
 
 ## 3.0
 
-  * Full support for Yubikey signature generation and decryption!
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user id revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * Kompatible, installierbare Apps in der App-Liste vorschlagen
+  * Neues Design für Entschlüsselungsbildschirme
+  * Viele Fehler beim Schlüsselimport behoben, auch bei gekürzten Schlüsseln
+  * Schlüsselauthentifikations-Attribute berücksichtigen und anzeigen
+  * Benutzeroberfläche zum Erzeugen benutzerdefinierter Schlüssel
+  * Benutzer-ID-Widerrufszertifikate repariert
+  * Neue Cloud-Suche (sucht über traditionelle Schlüsselserver und über keybase.io)
+  * Unterstützung für das Kürzen von Schlüsseln innerhalb von OpenKeychain
+  * Experimentelle YubiKey-Unterstützung: Unterstützung für Signaturerzeugung und Entschlüsselung
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Yubikey decryption now working via API
+  * Repariere Schlüssel, die in 2.9.1 beschädigt wurden
+  * Experimentelle YubiKey-Unterstützung: Entschlüsselung funktioniert nun via API
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Yubikey: preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
+  * Verschlüsselungsbildschirm in zwei Bildschirme aufgeteilt
+  * Behoben: Fehler bei Handhabung von Schlüsselattributen (unterstützt nun Schlüssel aus Mailvelope 0.7)
+  * Handhabung von Passwörtern verbessert
+  * Schlüsselaustausch mit SafeSlinger
+  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
+  * Nutzung gekürzter Schlüssel repariert
   * Standardmäßig SHA256 aufgrund von Kompatibilität
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API now handles revoked/expired keys and returns all user ids
@@ -80,7 +89,7 @@
 
   * Fixing crashes introduced in v2.8
   * Experimentelle ECC-Unterstützung
-  * Experimental Yubikey support (signing-only with imported keys)
+  * Experimental YubiKey support: Only signing with imported keys
 
 
 ## 2.8
@@ -203,7 +212,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.8
 
   * Grundlegende Schlüsselserverunterstützung
-  * App2sd
+  * App2SD
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
   * Fehlerbehebungen

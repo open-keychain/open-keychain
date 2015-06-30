@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
@@ -92,13 +94,29 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         mDecryptFromClipboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);
-                clipboardDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
-                startActivityForResult(clipboardDecrypt, 0);
+                decryptFromClipboard();
             }
         });
 
         return view;
+    }
+
+    private void decryptFromClipboard() {
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        final CharSequence clipboardText = ClipboardReflection.getClipboardText(activity);
+        if (clipboardText == null || TextUtils.isEmpty(clipboardText)) {
+            Notify.create(activity, R.string.error_clipboard_empty, Style.ERROR).show();
+            return;
+        }
+
+        Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);
+        clipboardDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
+        startActivityForResult(clipboardDecrypt, 0);
     }
 
     @Override

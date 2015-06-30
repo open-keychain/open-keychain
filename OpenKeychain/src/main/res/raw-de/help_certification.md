@@ -1,28 +1,28 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
 ## Schlüsselbestätigung
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest to use the key exchange method available for your keys.
+Ohne Bestätigung können sie nicht wissen, ob ein Schlüssel wirklich zu einer bestimmten Person gehört.
+Der einfachste Weg einen Schlüssel zu bestätigen ist den QR Code zu scannen oder ihn mit NFC auszutauschen.
+Um Schlüssel zwischen mehr als zwei Personen zu bestätigen empfehlen wir die Schlüsseltausch Methode zu benutzen, welche für ihren Schlüssel verfügbar ist.
 
 ## Schlüsselstatus
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Bestätigt: Sie haben bereits den Schlüssel bestätigt, zum Beispiel durch das Scannen eines QR Codes.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Unbestätigt: Diese Key wurde noch nicht beglaubigt. Sie können nicht sicher sein, ob dieser Key wirklich zu einer bestimmten Person gehört.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+Abgelaufen: Der Key ist nicht mehr gültig. Nur der Besitzer kann die Gültigkeit des Schlüssels verlängern.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Widerrufen: Dieser Schlüssel ist nicht mehr gültig. Er wurde von dem Besitzer widerrufen.
 
 ## Erweiterte Informationen
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+Eine "Schlüsselbestätigung" in OpenKeychain ist implementiert mit dem Erstellen eines Zertifikats bei Beachtung von dem OpenPGP Standard.
+Diese Zertifizierung ist eine ["generische Zertifizierung (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1), im Standard beschrieben durch:
+"Der Ersteller dieser Zertifizierung macht keine Behauptungen darüber, wie gut der Zertifizierer geprüft hat, dass der Schlüsselinhaber tatsächlich die Person ist, die in der Benutzer-ID beschrieben wird."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Normalerweise sind Zertifizierungen (auch höherer Zertifizierungsniveaus, wie z.B. "positive Zertifizierungen" (0x13)) im OpenPGP-Web of Trust organisiert.
+Unser Modell der Schlüsselbestätigung ist ein viel einfacheres Konzept, um allgemeine Nutzbarkeitsprobleme zu vermeiden, die mit diesem Web of Trust verknüpft sind.
+Wir nehmen an, dass Schlüssel nur bis zu einem gewissen Maß bestätigt werden, dass immer noch nutzbar genug ist, um es unterwegs benutzen zu können.
+Wir implementieren auch nicht (möglicherweise transitive) Vertrauenssignaturen oder eine Besitzervertrauensdatenbank wie in GnuPG.
+Weiter werden Schlüssel, die mindestens eine Benutzer-ID enthalten, die von einem vertrauten Schlüssel unterschrieben ist, in der Schlüsselliste als "bestätigt" markiert.

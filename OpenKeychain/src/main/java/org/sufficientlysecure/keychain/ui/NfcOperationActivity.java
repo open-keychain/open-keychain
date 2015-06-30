@@ -63,7 +63,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
         mServiceIntent = data.getParcelable(EXTRA_SERVICE_INTENT);
 
         // obtain passphrase for this subkey
-        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_KEYTOCARD) {
+        if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
             obtainYubiKeyPin(mRequiredInput);
         }
     }
@@ -96,7 +96,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 }
                 break;
             }
-            case NFC_KEYTOCARD: {
+            case NFC_MOVE_KEY_TO_CARD: {
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {

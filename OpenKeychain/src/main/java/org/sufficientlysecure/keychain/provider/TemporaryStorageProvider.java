@@ -19,23 +19,15 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.UUID;
-
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 
@@ -43,6 +35,30 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.UUID;
+
+/**
+ * TemporaryStorageProvider stores decrypted files inside the app's cache directory previously to
+ * sharing them with other applications.
+ *
+ * Security:
+ * - It is writable by OpenKeychain only (see Manifest), but exported for reading files
+ * - It uses UUIDs as identifiers which makes predicting files from outside impossible
+ * - Querying a number of files is not allowed, only querying single files
+ * -> You can only open a file if you know the Uri containing the precise UUID, this Uri is only
+ * revealed when the user shares a decrypted file with another app.
+ *
+ * Why is support lib's FileProvider not used?
+ * Because granting Uri permissions temporarily does not work correctly. See
+ * - https://code.google.com/p/android/issues/detail?id=76683
+ * - https://github.com/nmr8acme/FileProvider-permission-bug
+ * - http://stackoverflow.com/q/24467696
+ * - http://stackoverflow.com/q/18249007
+ * - Comments at http://www.blogc.at/2014/03/23/share-private-files-with-other-apps-fileprovider/
+ */
 public class TemporaryStorageProvider extends ContentProvider {
 
     private static final String DB_NAME = "tempstorage.db";
@@ -143,6 +159,10 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        if (uri.getLastPathSegment() == null) {
+            throw new SecurityException("Listing temporary files is not allowed, only querying single files.");
+        }
+
         File file;
         try {
             file = getFile(uri);
@@ -153,9 +173,15 @@ public class TemporaryStorageProvider extends ContentProvider {
                 new String[]{uri.getLastPathSegment()}, null, null, null);
         if (fileName != null) {
             if (fileName.moveToNext()) {
-                MatrixCursor cursor =
-                        new MatrixCursor(new String[]{OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE, "_data"});
-                cursor.newRow().add(fileName.getString(0)).add(file.length()).add(file.getAbsolutePath());
+                MatrixCursor cursor = new MatrixCursor(new String[]{
+                        OpenableColumns.DISPLAY_NAME,
+                        OpenableColumns.SIZE,
+                        "_data"
+                });
+                cursor.newRow()
+                        .add(fileName.getString(0))
+                        .add(file.length())
+                        .add(file.getAbsolutePath());
                 fileName.close();
                 return cursor;
             }
@@ -167,8 +193,8 @@ public class TemporaryStorageProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         Cursor cursor = db.getReadableDatabase().query(TABLE_FILES,
-                new String[]{ COLUMN_TYPE }, COLUMN_ID + "=?",
-                new String[]{ uri.getLastPathSegment() }, null, null, null);
+                new String[]{COLUMN_TYPE}, COLUMN_ID + "=?",
+                new String[]{uri.getLastPathSegment()}, null, null, null);
         if (cursor != null) {
             try {
                 if (cursor.moveToNext()) {
@@ -180,14 +206,14 @@ public class TemporaryStorageProvider extends ContentProvider {
                 cursor.close();
             }
         }
-        return "*/*";
+        return "application/octet-stream";
     }
 
     @Override
     public String[] getStreamTypes(Uri uri, String mimeTypeFilter) {
         String type = getType(uri);
         if (ClipDescription.compareMimeTypes(type, mimeTypeFilter)) {
-            return new String[] { type };
+            return new String[]{type};
         }
         return null;
     }
@@ -200,9 +226,14 @@ public class TemporaryStorageProvider extends ContentProvider {
         String uuid = UUID.randomUUID().toString();
         values.put(COLUMN_ID, uuid);
         int insert = (int) db.getWritableDatabase().insert(TABLE_FILES, null, values);
+        if (insert == -1) {
+            Log.e(Constants.TAG, "Insert failed!");
+            return null;
+        }
         try {
             getFile(uuid).createNewFile();
         } catch (IOException e) {
+            Log.e(Constants.TAG, "File creation failed!");
             return null;
         }
         return Uri.withAppendedPath(BASE_URI, uuid);
@@ -238,7 +269,7 @@ public class TemporaryStorageProvider extends ContentProvider {
             throw new UnsupportedOperationException("Update supported only for plain uri!");
         }
         return db.getWritableDatabase().update(TABLE_FILES, values,
-                COLUMN_ID + " = ?", new String[]{ uri.getLastPathSegment() });
+                COLUMN_ID + " = ?", new String[]{uri.getLastPathSegment()});
     }
 
     @Override

@@ -4,12 +4,10 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_decrypt">Pura Salaus</string>
-  <string name="title_unlock">Avaa Avain</string>
   <string name="title_add_subkey">Lisää aliavain</string>
   <string name="title_edit_key">Muokkaa avainta</string>
   <string name="title_preferences">Asetukset</string>
   <string name="title_api_registered_apps">Sovellukset</string>
-  <string name="title_change_passphrase">Vaihda Salasana</string>
   <string name="title_share_fingerprint_with">Jaa sormenjälki...</string>
   <string name="title_share_key">Jaa avain...</string>
   <string name="title_share_file">Jaa tiedosto...</string>
@@ -24,12 +22,10 @@
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
   <string name="title_exchange_keys">Vaihda Avaimia</string>
-  <string name="title_advanced_key_info">Lisätietoa Avaimesta</string>
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
   <string name="section_keys">Aliavaimet</string>
   <string name="section_cloud_search">Pilvihaku</string>
-  <string name="section_passphrase_cache">Salasanavälimuisti</string>
   <string name="section_actions">Toiminteet</string>
   <string name="section_share_key">Avain</string>
   <string name="section_key_server">Avainpalvelin</string>
@@ -37,7 +33,6 @@
   <!--button-->
   <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
-  <string name="btn_save">Tallenna</string>
   <string name="btn_do_not_save">Peruuta</string>
   <string name="btn_delete">Poista</string>
   <string name="btn_no_date">Ei umpeutumisaikaa</string>
@@ -48,9 +43,6 @@
   <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
-  <string name="btn_add_share_decrypted_text">Jaa purettu teksti</string>
-  <string name="btn_decrypt_and_verify">ja varmenna allekirjoitukset</string>
-  <string name="btn_decrypt_files">Pura tiedostoja</string>
   <!--menu-->
   <string name="menu_preferences">Asetukset</string>
   <string name="menu_help">Apua</string>
@@ -61,15 +53,11 @@
   <string name="menu_encrypt_to">Salaa...</string>
   <string name="menu_select_all">Valitse kaikki</string>
   <string name="menu_export_all_keys">Vie kaikki avaimet</string>
-  <string name="menu_advanced">Näytä lisäinformaatio</string>
   <!--label-->
   <string name="label_file">Tiedosto</string>
   <string name="label_files">Tiedosto(t)</string>
   <string name="label_file_colon">Tiedosto:</string>
-  <string name="label_no_passphrase">Ei salasanaa</string>
-  <string name="label_passphrase">Salasana</string>
   <string name="label_unlock">Avataan...</string>
-  <string name="label_passphrase_again">Toista salasana</string>
   <string name="label_algorithm">Algoritmi</string>
   <string name="label_ascii_armor">Tiedosto ASCII Armor</string>
   <string name="label_file_ascii_armor">Käytä ASCII Armoria</string>
@@ -83,11 +71,7 @@
   <string name="label_delete_after_decryption">Poista salauksen purkamisen jälkeen</string>
   <string name="label_encryption_algorithm">Salausalgoritmi</string>
   <string name="label_hash_algorithm">Tiivistealgoritmi</string>
-  <string name="label_symmetric">Salaa salasanalla</string>
-  <string name="label_passphrase_cache_ttl">Välimuistiaika</string>
-  <string name="label_passphrase_cache_subs">Väliaikaistalleta salasanat aliavaimen mukaan</string>
   <string name="label_file_compression">Tiedoston pakkaus</string>
-  <string name="label_keyservers">Avainpalvelimet</string>
   <string name="label_key_id">Avaimen ID</string>
   <string name="label_creation">Luontiaika</string>
   <string name="label_expiry">Umpeutumisaika</string>
@@ -142,12 +126,8 @@
   <string name="flag_encrypt">Salaa</string>
   <string name="flag_authenticate">Autentikoi</string>
   <!--sentences-->
-  <string name="wrong_passphrase">Väärä salasana.</string>
   <string name="no_filemanager_installed">Yhteensopivaa tiedostonhallintaa ei ole asennettu.</string>
-  <string name="passphrases_do_not_match">Salasanat eivät vastaa toisiaan.</string>
-  <string name="passphrase_must_not_be_empty">Syötä salasana.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrinen salaus.</string>
-  <string name="passphrase_for">Syötä salasana \'%s\':lle</string>
   <string name="pin_for">Syötä PIN \'%s\':lle</string>
   <!--errors
          no punctuation, all lowercase,
@@ -166,6 +146,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <!--Import from URL-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -180,6 +161,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -204,6 +186,6 @@
   <!--unsorted-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

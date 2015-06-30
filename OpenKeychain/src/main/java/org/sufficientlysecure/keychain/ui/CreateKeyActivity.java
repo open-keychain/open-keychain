@@ -17,9 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -64,6 +63,23 @@ public class CreateKeyActivity extends BaseNfcActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // React on NDEF_DISCOVERED from Manifest
+        // NOTE: ACTION_NDEF_DISCOVERED and not ACTION_TAG_DISCOVERED like in BaseNfcActivity
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            try {
+                handleTagDiscoveredIntent(getIntent());
+            } catch (CardException e) {
+                handleNfcError(e);
+            } catch (IOException e) {
+                handleNfcError(e);
+            }
+
+            setTitle(R.string.title_manage_my_keys);
+
+            // done
+            return;
+        }
+
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
             // Restore value of members from saved state
@@ -89,17 +105,25 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 String nfcUserId = intent.getStringExtra(EXTRA_NFC_USER_ID);
                 byte[] nfcAid = intent.getByteArrayExtra(EXTRA_NFC_AID);
 
-                Fragment frag2 = CreateKeyYubiKeyImportFragment.createInstance(
-                        nfcFingerprints, nfcAid, nfcUserId);
-                loadFragment(frag2, FragAction.START);
+                if (containsKeys(nfcFingerprints)) {
+                    Fragment frag = CreateKeyYubiKeyImportFragment.newInstance(
+                            nfcFingerprints, nfcAid, nfcUserId);
+                    loadFragment(frag, FragAction.START);
 
-                setTitle(R.string.title_import_keys);
+                    setTitle(R.string.title_import_keys);
+                } else {
+                    Fragment frag = CreateKeyYubiKeyBlankFragment.newInstance();
+                    loadFragment(frag, FragAction.START);
+                    setTitle(R.string.title_manage_my_keys);
+                }
+
+                // done
                 return;
-            } else {
-                CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
-                loadFragment(frag, FragAction.START);
             }
 
+            // normal key creation
+            CreateKeyStartFragment frag = CreateKeyStartFragment.newInstance();
+            loadFragment(frag, FragAction.START);
         }
 
         if (mFirstTime) {
@@ -122,16 +146,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         byte[] nfcAid = nfcGetAid();
         String userId = nfcGetUserId();
 
-        // If all fingerprint bytes are 0, the card contains no keys.
-        boolean cardContainsKeys = false;
-        for (byte b : scannedFingerprints) {
-            if (b != 0) {
-                cardContainsKeys = true;
-                break;
-            }
-        }
-
-        if (cardContainsKeys) {
+        if (containsKeys(scannedFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
                 CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
@@ -146,23 +161,27 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-                Fragment frag = CreateKeyYubiKeyImportFragment.createInstance(
+                Fragment frag = CreateKeyYubiKeyImportFragment.newInstance(
                         scannedFingerprints, nfcAid, userId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.first_time_blank_smartcard_title)
-                    .setMessage(R.string.first_time_blank_smartcard_message)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int button) {
-                            CreateKeyActivity.this.mUseSmartCardSettings = true;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.no, null).show();
+            Fragment frag = CreateKeyYubiKeyBlankFragment.newInstance();
+            loadFragment(frag, FragAction.TO_RIGHT);
         }
 
+    }
+
+    private boolean containsKeys(byte[] scannedFingerprints) {
+        // If all fingerprint bytes are 0, the card contains no keys.
+        boolean cardContainsKeys = false;
+        for (byte b : scannedFingerprints) {
+            if (b != 0) {
+                cardContainsKeys = true;
+                break;
+            }
+        }
+        return cardContainsKeys;
     }
 
     @Override
@@ -182,7 +201,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
         setContentView(R.layout.create_key_activity);
     }
 
-    public static enum FragAction {
+    public enum FragAction {
         START,
         TO_RIGHT,
         TO_LEFT

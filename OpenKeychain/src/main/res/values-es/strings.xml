@@ -7,13 +7,12 @@
   <string name="title_encrypt_text">Encriptar</string>
   <string name="title_encrypt_files">Encriptar</string>
   <string name="title_decrypt">Descifrar</string>
-  <string name="title_unlock">Desbloquear clave</string>
   <string name="title_add_subkey">Añadir subclave</string>
   <string name="title_edit_key"> Editar clave</string>
   <string name="title_preferences">Configuración</string>
   <string name="title_api_registered_apps">Aplicaciones</string>
-  <string name="title_key_server_preference">Servidores de claves</string>
-  <string name="title_change_passphrase">Cambiar frase de contraseña</string>
+  <string name="title_key_server_preference">Servidores de claves OpenPGP</string>
+  <string name="title_change_passphrase">Cambiar contraseña</string>
   <string name="title_share_fingerprint_with">Compartir huella digital con...</string>
   <string name="title_share_key">Compartir clave con...</string>
   <string name="title_share_file">Compartir archivo con...</string>
@@ -30,33 +29,34 @@
   <string name="title_help">Ayuda</string>
   <string name="title_log_display">Registro (log)</string>
   <string name="title_exchange_keys">Intercambiar claves</string>
-  <string name="title_advanced_key_info">Información avanzada de clave</string>
+  <string name="title_advanced_key_info">Información extendida</string>
   <string name="title_delete_secret_key">¿Borrar clave \'%s\'?</string>
   <string name="title_export_log">Exportar registro (log)</string>
   <string name="title_manage_my_keys">Administrar mis claves</string>
   <!--section-->
   <string name="section_user_ids">Identificaciones</string>
+  <string name="section_yubikey">YubiKey</string>
   <string name="section_linked_system_contact">Contacto de sistema enlazado</string>
   <string name="section_should_you_trust">¿Debe confiar en esta clave?</string>
   <string name="section_proof_details">Comprobante de verificación</string>
   <string name="section_cloud_evidence">Comprobantes desde la nube</string>
   <string name="section_keys">Subclaves</string>
   <string name="section_cloud_search">Búsqueda en la nube</string>
-  <string name="section_passphrase_cache">Caché de frase-contraseña</string>
+  <string name="section_passphrase_cache">Manejo de contraseña/PIN</string>
   <string name="section_certify">Confirmar</string>
   <string name="section_actions">Acciones</string>
   <string name="section_share_key">Clave</string>
   <string name="section_key_server">Servidor de claves</string>
   <string name="section_fingerprint">Huella digital</string>
   <string name="section_encrypt">Encriptar</string>
-  <string name="section_decrypt">Desencriptar</string>
+  <string name="section_decrypt">Descifrar / Verificar</string>
   <string name="section_current_expiry">Caducidad actual</string>
   <string name="section_new_expiry">Nueva caducidad</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Desencriptar, verificar, y guardar fichero</string>
   <string name="btn_encrypt_share_file">Encriptar y compartir fichero</string>
   <string name="btn_encrypt_save_file">Encriptar y guardar fichero</string>
-  <string name="btn_save">Guardar</string>
+  <string name="btn_view_log">Ver registro (log)</string>
   <string name="btn_do_not_save">Cancelar</string>
   <string name="btn_delete">Eliminar</string>
   <string name="btn_no_date">No caduca</string>
@@ -71,13 +71,17 @@
   <string name="btn_view_cert_key">Ver clave de verificación</string>
   <string name="btn_create_key">Crear clave</string>
   <string name="btn_add_files">Añadir archivo(s)</string>
-  <string name="btn_add_share_decrypted_text">Compartir texto desencriptado</string>
-  <string name="btn_decrypt_clipboard">Descifrar texto desde el portapapeles</string>
-  <string name="btn_decrypt_and_verify">y verificar firmas</string>
-  <string name="btn_decrypt_files">Desencriptar ficheros</string>
+  <string name="btn_share_decrypted_text">Compartir texto descifrado</string>
+  <string name="btn_copy_decrypted_text">Copiar texto descifrado</string>
+  <string name="btn_decrypt_clipboard">Leer del portapapeles</string>
+  <string name="btn_decrypt_files">Seleccionar fichero de entrada</string>
   <string name="btn_encrypt_files">Encriptar ficheros</string>
   <string name="btn_encrypt_text">Encriptar texto</string>
   <string name="btn_add_email">Añadir dirección de correo electrónico adicional</string>
+  <string name="btn_unlock">Desbloquear</string>
+  <string name="btn_add_keyserver">Añadir</string>
+  <string name="btn_save_default">Guardar como predeterminado</string>
+  <string name="btn_saved">¡Guardado!</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
   <string name="menu_help">Ayuda</string>
@@ -91,7 +95,7 @@
   <string name="menu_select_all">Seleccionar todo</string>
   <string name="menu_export_all_keys">Exportar todas las claves</string>
   <string name="menu_update_all_keys">Actualizar todas las claves</string>
-  <string name="menu_advanced">Mostrar información avanzada</string>
+  <string name="menu_advanced">Información extendida</string>
   <string name="menu_certify_fingerprint">Confirmar mediante comparación de la huella digital</string>
   <string name="menu_export_log">Exportar registro</string>
   <!--label-->
@@ -99,11 +103,11 @@
   <string name="label_file">Archivo</string>
   <string name="label_files">Archivo(s)</string>
   <string name="label_file_colon">Archivo:</string>
-  <string name="label_no_passphrase">No hay frase de contraseña</string>
-  <string name="label_passphrase">Frase de contraseña</string>
+  <string name="label_no_passphrase">Sin contraseña</string>
+  <string name="label_passphrase">Contraseña</string>
   <string name="label_unlock">Desbloqueando...</string>
-  <string name="label_passphrase_again">Repetir frase-contraseña</string>
-  <string name="label_show_passphrase">Mostrar frase-contraseña</string>
+  <string name="label_passphrase_again">Repetir contraseña</string>
+  <string name="label_show_passphrase">Mostrar contraseña</string>
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_ascii_armor">Armadura ASCII del fichero</string>
   <string name="label_file_ascii_armor">Habilitar armadura ASCII</string>
@@ -118,13 +122,14 @@
   <string name="label_delete_after_decryption">Eliminar fichero después del descifrado</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo de identificación criptográfica (hash)</string>
-  <string name="label_symmetric">Cifrar con frase-contraseña</string>
-  <string name="label_passphrase_cache_ttl">Duración en caché</string>
-  <string name="label_passphrase_cache_subs">Almacenar en caché frases-contraseña por subclave</string>
+  <string name="label_symmetric">Cifrar con contraseña</string>
+  <string name="label_passphrase_cache_ttl">Recordar hora</string>
+  <string name="label_passphrase_cache_subs">Recordar contraseñas por subclave</string>
   <string name="label_message_compression">Compresión de texto</string>
   <string name="label_file_compression">Compresión del fichero</string>
-  <string name="label_keyservers">Servidores de claves</string>
+  <string name="label_keyservers">Seleccione servidores de claves OpenPGP</string>
   <string name="label_key_id">ID de clave</string>
+  <string name="label_key_created">Clave creada el %s</string>
   <string name="label_creation">Creación</string>
   <string name="label_expiry">Caducidad</string>
   <string name="label_usage">Uso</string>
@@ -142,10 +147,12 @@
   <string name="label_enable_compression">Habilitar compresión</string>
   <string name="label_encrypt_filenames">Cifrar nombres de ficheros</string>
   <string name="label_hidden_recipients">Ocultar receptores</string>
-  <string name="pref_keyserver">Buscar en servidor de claves</string>
-  <string name="pref_keyserver_summary">Buscar en servidor de claves HKP</string>
-  <string name="pref_keybase">Buscar en Keybase.io</string>
-  <string name="pref_keybase_summary">Buscar en el índice de Keybase.io</string>
+  <string name="label_verify_keyserver">Verificar servidor de claves</string>
+  <string name="label_enter_keyserver_url">Introduzca URL de servidor de claves</string>
+  <string name="pref_keyserver">Servidores de claves OpenPGP</string>
+  <string name="pref_keyserver_summary">Busca claves en los servidores de claves OpenPGP seleccionados (protocolo HKP)</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Busca claves en keybase.io</string>
   <string name="user_id_no_name">&lt;sin nombre&gt;</string>
   <string name="none">&lt;ninguna&gt;</string>
   <plurals name="n_keys">
@@ -185,23 +192,23 @@
   <string name="flag_encrypt">Cifrar</string>
   <string name="flag_authenticate">Autentificar</string>
   <!--sentences-->
-  <string name="wrong_passphrase">Frase de contraseña incorrecta.</string>
+  <string name="wrong_passphrase">Contraseña incorrecta.</string>
   <string name="no_filemanager_installed">No hay un gestor de archivos compatible instalado.</string>
-  <string name="passphrases_do_not_match">Las frases de contraseña no coinciden.</string>
-  <string name="passphrase_must_not_be_empty">Por favor, introduce una frase de contraseña.</string>
+  <string name="passphrases_do_not_match">Las contraseñas no coincidieron.</string>
+  <string name="passphrase_must_not_be_empty">Introduzca una contraseña.</string>
   <string name="passphrase_for_symmetric_encryption">Cifrado simétrico.</string>
-  <string name="passphrase_for">Introducir la frase de contraseña para \'%s\'</string>
+  <string name="passphrase_for">Introduzca contraseña para \'%s\'</string>
   <string name="pin_for">Introduzca el PIN para \'%s\'</string>
   <string name="yubikey_pin_for">Introduzca el PIN para acceder a la YubiKey para \'%s\'</string>
   <string name="nfc_text">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
   <string name="file_delete_confirmation_title">¿Borrar ficheros originales?</string>
   <string name="file_delete_confirmation">Los siguientes ficheros se borrarán:%s</string>
   <string name="file_delete_successful">%1$d de %2$d ficheros han sido borrados.%3$s</string>
-  <string name="no_file_selected">Selecciona un archivo antes.</string>
+  <string name="no_file_selected">Ningún fichero seleccionado.</string>
   <string name="encrypt_sign_successful">Firmado y/o cifrado con éxito.</string>
   <string name="encrypt_sign_clipboard_successful">Firmado y/o cifrado del portapapeles con éxito.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
-  <string name="error_no_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
+  <string name="error_no_encryption_or_signature_key">Seleccionar al menos una clave de cifrado o una clave de firma.</string>
   <string name="specify_file_to_encrypt_to">Por favor especifique hacia qué fichero cifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="specify_file_to_decrypt_to">Por favor especifique hacia qué fichero descifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="specify_file_to_export_to">Por favor especifique hacia qué fichero exportar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
@@ -237,34 +244,36 @@
   <string name="error_external_storage_not_ready">el almacenamiento externo no está preparado</string>
   <string name="error_key_size_minimum512bit">el tamaño de clave debe ser de al menos 512bit</string>
   <string name="error_unknown_algorithm_choice">elegido algoritmo desconocido</string>
-  <string name="error_user_id_no_email">no se ha encontrado un email</string>
+  <string name="error_user_id_no_email">no se encontró ninguna dirección de correo</string>
   <string name="error_key_needs_a_user_id">necesita al menos una identificación</string>
-  <string name="error_no_signature_passphrase">no has proporcionado una frase de contraseña</string>
+  <string name="error_no_signature_passphrase">no se estableció contraseña.</string>
   <string name="error_no_signature_key">no has proporcionado una clave de firma</string>
   <string name="error_invalid_data">¡No es un contenido cifrado o firmado con OpenPGP válido!</string>
   <string name="error_integrity_check_failed">¡ha fallado la comprobación de integridad! ¡Los datos han sido modificados!</string>
-  <string name="error_wrong_passphrase">frase de contraseña incorrecta</string>
+  <string name="error_wrong_passphrase">contraseña incorrecta</string>
   <string name="error_could_not_extract_private_key">no se puede extraer la clave privada</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">¡Necesita Android 4.1 para usar la característica NFC Beam (haz NFC) de Android!</string>
   <string name="error_nfc_needed">¡NFC ha de estar habilitado!</string>
   <string name="error_beam_needed">¡Beam ha de estar habilitado!</string>
   <string name="error_nothing_import">¡No se encontraron claves!</string>
+  <string name="error_nothing_import_selected">¡No se seleccionaron claves a importar!</string>
   <string name="error_contacts_key_id_missing">¡Fallo al obtener clave de identificación desde los contactos!</string>
   <string name="error_generic_report_bug">Ha ocurrido un error genérico, por favor, informa de este bug a OpenKeychain</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">No firmado</string>
   <string name="decrypt_result_invalid_signature">¡Firma no válida!</string>
-  <string name="decrypt_result_signature_uncertified">Firmado por (¡no certificada!)</string>
-  <string name="decrypt_result_signature_certified">Firmado por</string>
-  <string name="decrypt_result_signature_expired_key">¡La clave ha caducado!</string>
-  <string name="decrypt_result_signature_revoked_key">¡La clave ha sido revocada!</string>
-  <string name="decrypt_result_signature_missing_key">Clave pública desconocida</string>
+  <string name="decrypt_result_signature_uncertified">Firmado por clave <b>no confirmada</b></string>
+  <string name="decrypt_result_signature_secret">Firmado por la clave de usted</string>
+  <string name="decrypt_result_signature_certified">Firmado por clave confirmada</string>
+  <string name="decrypt_result_signature_expired_key">¡Firmado por clave <b>caducada</b>!</string>
+  <string name="decrypt_result_signature_revoked_key">¡Firmado por clave <b>revocada</b>!</string>
+  <string name="decrypt_result_signature_missing_key">Firmado por <b>clave pública desconocida</b></string>
   <string name="decrypt_result_encrypted">Cifrado</string>
   <string name="decrypt_result_not_encrypted">No cifrado</string>
   <string name="decrypt_result_action_show">Mostrar</string>
   <string name="decrypt_result_action_Lookup">Buscar</string>
-  <string name="decrypt_invalid_text">O bien la firma no es válida, o la clave ha sido revocada o ha caducado. No puede estar seguro de quién escribió el texto. ¿Aún quiere mostrarlo?</string>
+  <string name="decrypt_invalid_text">O bien la firma no es válida o la clave ha sido revocada. No puede estar seguro de quién escribió el texto. ¿Quiere aún mostrarlo?</string>
   <string name="decrypt_invalid_button">Comprendo los riesgos, ¡muéstralo!</string>
   <!--Add keys-->
   <string name="add_keys_my_key">Mi clave:</string>
@@ -294,11 +303,12 @@
   <string name="progress_modify_subkeyrevoke">revocando subclaves...</string>
   <string name="progress_modify_subkeystrip">desnudando claves...</string>
   <string name="progress_modify_subkeyadd">añadiendo subclaves...</string>
-  <string name="progress_modify_passphrase">cambiando frase-contraseña...</string>
+  <string name="progress_modify_passphrase">cambiando contraseña...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">exportando clave...</item>
     <item quantity="other">exportando claves...</item>
   </plurals>
+  <string name="progress_start">preparando operación...</string>
   <string name="progress_extracting_signature_key">extrayendo la clave de firma...</string>
   <string name="progress_extracting_key">extrayendo la clave...</string>
   <string name="progress_preparing_streams">preparando las transmisiones...</string>
@@ -318,6 +328,7 @@
   <string name="progress_deleting">borrando claves...</string>
   <string name="progress_con_saving">consolidación: guardando en caché...</string>
   <string name="progress_con_reimport">consolidación: reimportando</string>
+  <string name="progress_verifying_keyserver_url">verificando servidor de claves...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Buscar mediante Nombre, Correo electrónico...</string>
   <!--key bit length selections-->
@@ -359,9 +370,12 @@
   <string name="import_tab_qr_code">Código QR/NFC</string>
   <string name="import_import">Importar las claves seleccionadas</string>
   <string name="import_qr_code_wrong">¡El código QR está deformado! ¡Por favor, prueba de nuevo!</string>
-  <string name="import_qr_code_too_short_fingerprint">La huella de validación (fingerprint) de clave es demasiado corta (&lt; 16 caracteres)</string>
+  <string name="import_qr_code_fp">¡La huella de validación (fingerprint) está malformada o es demasiado corta!</string>
+  <string name="import_qr_code_too_short_fingerprint">¡La huella de validación (fingerprint) es demasiado corta!</string>
   <string name="import_qr_code_button">Escanear código QR</string>
   <string name="import_qr_code_text">¡Sitúe su cámara sobre el código QR!</string>
+  <!--Import from URL-->
+  <string name="import_url_warn_no_search_parameter">No se definió consulta de búsqueda. Aún puede buscar manualmente en este servidor de claves.</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detalles</string>
   <string name="with_warnings">, con advertencias</string>
@@ -431,10 +445,10 @@
   <string name="intent_send_encrypt">Cifrar con OpenKeychain</string>
   <string name="intent_send_decrypt">Descifrar con OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Mostrar información avanzada</string>
-  <string name="api_settings_hide_info">Ocultar información avanzada</string>
-  <string name="api_settings_show_advanced">Mostrar la configuración avanzada</string>
-  <string name="api_settings_hide_advanced">Ocultar la configuración avanzada</string>
+  <string name="api_settings_show_info">Mostrar información extendida</string>
+  <string name="api_settings_hide_info">Ocultar información extendida</string>
+  <string name="api_settings_show_advanced">Mostrar configuración extendida</string>
+  <string name="api_settings_hide_advanced">Ocultar configuración extendida</string>
   <string name="api_settings_no_key">No se ha seleccionado ninguna clave</string>
   <string name="api_settings_select_key">Seleccionar clave</string>
   <string name="api_settings_create_key">Crear nueva clave</string>
@@ -446,8 +460,8 @@
   <string name="api_settings_delete_account">Borrar cuenta</string>
   <string name="api_settings_package_name">Nombre de paquete</string>
   <string name="api_settings_package_signature">SHA-256 de firma de paquete</string>
-  <string name="api_settings_accounts">Cuentas (API desechada)</string>
-  <string name="api_settings_advanced">Información avanzada</string>
+  <string name="api_settings_accounts">Cuentas (API antigua)</string>
+  <string name="api_settings_advanced">Información extendida</string>
   <string name="api_settings_allowed_keys">Claves permitidas</string>
   <string name="api_settings_settings">Configuración</string>
   <string name="api_settings_key">Clave de la cuenta:</string>
@@ -464,6 +478,7 @@
   <string name="api_select_pub_keys_text_no_user_ids">¡Por favor seleccione los receptores!</string>
   <string name="api_error_wrong_signature">¡La comprobación de la firma ha fallado! ¿Has instalado esta app desde una fuente distinta? Si estás seguro de que esto no es un ataque, revoca el registro de esta app en OpenKeychain y regístrala de nuevo.</string>
   <string name="api_select_sign_key_text">Por favor, seleccione una de sus claves existentes o cree una nueva.</string>
+  <string name="api_select_keys_text">Ninguna de las claves permitidas puede descifrar el contenido. Por favor, seleccione las claves permitidas.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Compartir con código QR</string>
   <string name="share_nfc_dialog">Compartir con NFC</string>
@@ -538,7 +553,7 @@
   <string name="keybase_reddit_attribution">atribuido por Reddit a</string>
   <string name="keybase_verify">Verificar</string>
   <!--Edit key-->
-  <string name="edit_key_action_change_passphrase">Cambiar frase-contraseña</string>
+  <string name="edit_key_action_change_passphrase">Cambiar contraseña</string>
   <string name="edit_key_action_add_identity">Añadir identificación</string>
   <string name="edit_key_action_add_subkey">Añadir subclave</string>
   <string name="edit_key_edit_user_id_title">¡Seleccione una acción!</string>
@@ -552,31 +567,35 @@
   <string name="edit_key_edit_user_id_revoked">Esta identificación se ha revocado. Esto no puede deshacerse.</string>
   <string name="edit_key_edit_subkey_title">¡Seleccione una acción!</string>
   <string-array name="edit_key_edit_subkey">
-    <item>Cambiar expiración</item>
+    <item>Cambiar caducidad</item>
     <item>Revocar subclave</item>
     <item>Desnudar subclave</item>
-    <item>"Move Subkey to Yubikey / Smart Card"</item>
+    <item>Mover subclave a la Yubikey / Tarjeta inteligente</item>
   </string-array>
   <string name="edit_key_new_subkey">nueva subclave</string>
   <string name="edit_key_select_flag">¡Por favor, seleccione al menos un indicador!</string>
   <string name="edit_key_error_add_identity">¡Añadir al menos una identificación!</string>
   <string name="edit_key_error_add_subkey">¡Añadir al menos una subclave!</string>
+  <string name="edit_key_error_bad_nfc_algo">¡Algoritmo no soportado por la tarjeta inteligente!</string>
+  <string name="edit_key_error_bad_nfc_size">¡El tamaño de la clave no está soportado por la tarjeta inteligente!</string>
+  <string name="edit_key_error_bad_nfc_stripped">¡No se puede mover la clave a la tarjeta inteligente (tanto desnuda como \'derivar-a-tarjeta\')!</string>
   <!--Create key-->
   <string name="create_key_upload">Sincronizar con la nube</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
-  <string name="create_key_passphrases_not_equal">Las frases-contraseña no coinciden</string>
+  <string name="create_key_passphrases_not_equal">Las contraseñas no coinciden</string>
   <string name="create_key_final_text">Ha introducido la siguiente identificación:</string>
   <string name="create_key_final_robot_text">Crear una clave puede llevar un tiempo, tómese una taza de café entre tanto...</string>
   <string name="create_key_rsa">(3 subclaves, RSA, 4096 bits)</string>
   <string name="create_key_custom">(configuración de clave personalizada)</string>
   <string name="create_key_name_text">Elija un nombre asociado con esta clave. Este puede ser un nombre completo, ej. \'Juan Nadie\', o un apodo, ej. \'Juanito\'.</string>
   <string name="create_key_email_text">Introduzca su dirección principal de correo electrónico para comunicación segura.</string>
-  <string name="create_key_passphrase_text">Elija una frase-contraseña robusta. Protege su clave cuando su dispositivo es robado.</string>
+  <string name="create_key_passphrase_text">Escoja una contraseña robusta. Protegerá su clave si su dispositivo es robado.</string>
   <string name="create_key_hint_full_name">Nombre completo o apodo</string>
   <string name="create_key_edit">Cambiar configuración de clave</string>
   <string name="create_key_add_email">Añadir dirección de correo electrónico</string>
   <string name="create_key_add_email_text">Las direcciones adicionales de correo electrónico también están asociadas a esta clave y pueden utilizarse para asegurar la comunicación.</string>
-  <string name="create_key_email_already_exists_text">Ya se ha añadido el correo electrónico</string>
+  <string name="create_key_email_already_exists_text">Esta dirección de correo electrónico ya fue añadida</string>
+  <string name="create_key_email_invalid_email">El formato de la dirección de correo no es válido</string>
   <!--View key-->
   <string name="view_key_revoked">Revocada: ¡La clave no debe volver a ser usada!</string>
   <string name="view_key_expired">Caducada: ¡El contacto necesita extender la vigencia de la clave!</string>
@@ -585,6 +604,12 @@
   <string name="view_key_verified">Clave confirmada</string>
   <string name="view_key_unverified">No confirmada: ¡Escanee el código QR para confirmar clave!</string>
   <string name="view_key_fragment_no_system_contact">&lt;ninguno&gt;</string>
+  <!--Add keyserver-->
+  <string name="add_keyserver_dialog_title">Añadir servidor de claves</string>
+  <string name="add_keyserver_verified">¡Servidor de claves verificado!</string>
+  <string name="add_keyserver_without_verification">Servidor de claves añadido sin verificación</string>
+  <string name="add_keyserver_invalid_url">¡URL no válida!</string>
+  <string name="add_keyserver_connection_failed">Fallo al conectar al servidor de claves. Por favor, compuebe la URL y su conexión a Internet.</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Claves</string>
   <string name="nav_encrypt_decrypt">Cifrar/Descifrar</string>
@@ -712,10 +737,10 @@
   <string name="msg_is_pubring_generate">Generando un juego de claves públicas desde el juego de claves secretas (privadas)</string>
   <string name="msg_is_subkey_nonexistent">La subclave %s no está disponible en la clave secreta (privada)</string>
   <string name="msg_is_subkey_ok">Subclave secreta (privada) %s marcada como disponible</string>
-  <string name="msg_is_subkey_empty">Subclave secreta (privada) %s marcada como disponible, con frase-contraseña vacía</string>
+  <string name="msg_is_subkey_empty">Subclave secreta %s marcada como disponible, con contraseña vacía</string>
   <string name="msg_is_subkey_pin">Subclave secreta %s marcada como disponible, con PIN</string>
   <string name="msg_is_subkey_stripped">Subclave secreta (privada) %s marcada como desnuda</string>
-  <string name="msg_is_subkey_divert">Se marcó la subclave secreta (privada) %s como \'desviar a smartcard/NFC\'</string>
+  <string name="msg_is_subkey_divert">Se marcó la subclave sercreta (privada) %s como \'derivar-a-tarjeta\'</string>
   <string name="msg_is_success_identical">El juego de claves no contiene nuevos datos, no hay nada que hacer</string>
   <string name="msg_is_success">Juego de claves secretas (privadas) importado con éxito</string>
   <!--Keyring Canonicalization log entries-->
@@ -742,6 +767,7 @@
   <string name="msg_kc_sub_bad_local">Eliminando certificado de vinculación de subclave con distintivo \'local\'</string>
   <string name="msg_kc_sub_bad_keyid">La identificación del publicante de la vinculación de subclave no coincide</string>
   <string name="msg_kc_sub_bad_time">Eliminando certificado de vinculación de subclave, con marca de tiempo futura</string>
+  <string name="msg_kc_sub_bad_time_early">¡El certificado de acoplamiento de subclave tiene una marca de tiempo anterior a su clave!</string>
   <string name="msg_kc_sub_bad_type">Tipo de certificado de subclave desconocido: %s</string>
   <string name="msg_kc_sub_dup">Eliminando certificado redundante de vinculación de subclave</string>
   <string name="msg_kc_sub_primary_bad">Eliminando certificado de vinculación de subclave debido a un certificado de vinculación principal no vigente</string>
@@ -818,7 +844,8 @@
   <string name="msg_cr_error_flags_ecdh">¡Seleccionados indicativos de clave defectuosa, ECDH no puede usarse para firmado!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modificando el juego de claves %s</string>
-  <string name="msg_mf_error_divert_serial">¡El número de serie de una clave con indicativo desviar-a-tarjeta debe ser de 16 bytes! ¡Esto es un error de programación, por favor consigne un informe de error!</string>
+  <string name="msg_mf_divert">Derivará a la tarjeta inteligente para operaciones de criptografía</string>
+  <string name="msg_mf_error_divert_serial">¡El número de serie de una clave \'derivar-a-tarjeta\' ha de tener 16 bytes! Esto es un error de programación, por favor, ¡consigne un infome de fallo!</string>
   <string name="msg_mf_error_encode">¡Excepción en la codificación!</string>
   <string name="msg_mf_error_fingerprint">¡La actual huella de validación de clave no coincide con la esperada!</string>
   <string name="msg_mf_error_keyid">No hay identificación de clave. Esto es un error interno, por favor ¡consigne un informe de error!</string>
@@ -826,28 +853,37 @@
   <string name="msg_mf_error_master_none">¡No se encontró certificado maestro sobre el que operar! (¿Todos revocados?)</string>
   <string name="msg_mf_error_noexist_primary">¡Se especificó una identificación de usuario principal errónea!</string>
   <string name="msg_mf_error_noexist_revoke">¡Se especificó una identificación de usuario errónea para revocación!</string>
-  <string name="msg_mf_error_restricted">¡Se intentó efectuar una operación restringida sin frase-contraseña! ¡Este es un error de programación, por favor consigne un informe de error!</string>
+  <string name="msg_mf_error_restricted">¡Se intentó ejecutar una operación restringida sin contraseña! Este es un error de programación, por favor, ¡consigne un informe de fallo!</string>
   <string name="msg_mf_error_revoked_primary">¡Las identificaciones de usuario revocadas no pueden ser las principales!</string>
   <string name="msg_mf_error_null_expiry">El periodo hasta la expiración no puede ser \"el mismo que antes\" al crear subclave. Esto es un error de programación, por favor ¡rellene un informe de fallo!</string>
+  <string name="msg_mf_error_noop">¡No hay nada que hacer!</string>
   <string name="msg_mf_error_passphrase_master">¡Error fatal descrifrando la clave maestra! Probablemente esto se daba a un error de programación, por favor ¡rellene un informe de fallo!</string>
   <string name="msg_mf_error_pgp">¡Error OpenPGP interno!</string>
   <string name="msg_mf_error_sig">¡Excepción con la firma!</string>
+  <string name="msg_mf_error_subkey_missing">¡Se intentó operar sobre una subclave desaparecida %s!</string>
+  <string name="msg_mf_error_conflicting_nfc_commands">No se puede mover la clave a la tarjeta inteligente en la misma operación que crea una firma en la tarjeta.</string>
+  <string name="msg_mf_error_duplicate_keytocard_for_slot">La tarjeta inteligente sólo soporta un lector por cada tipo de clave.</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">Indicadores de clave inapropiados para la clave de la tarjeta inteligente.</string>
   <string name="msg_mf_master">Modificando certificaciones maestras</string>
   <string name="msg_mf_notation_empty">Añadiendo paquete de notación vacío</string>
   <string name="msg_mf_notation_pin">Añadiendo paquete de notación de PIN</string>
-  <string name="msg_mf_passphrase">Cambiando la frase-contraseña para el juego de claves</string>
-  <string name="msg_mf_passphrase_key">Re-cifrando subclave %s con nueva frase-contraseña</string>
-  <string name="msg_mf_passphrase_empty_retry">Fallo al establecer nueva frase-contraseña, intentándolo de nuevo con una antigua frase-contraseña vacía</string>
-  <string name="msg_mf_passphrase_fail">¡La frase contraseña para la subclave no pudo cambiarse! (¿Tiene la subclave una diferente de la de las otras claves?)</string>
+  <string name="msg_mf_passphrase">Cambiando contraseña para el juego de claves</string>
+  <string name="msg_mf_passphrase_key">Re-cifrando subclave %s con la nueva contraseña</string>
+  <string name="msg_mf_passphrase_empty_retry">El establecimiento de la nueva contraseña falló, volviéndolo a intentar con una contraseña antigua vacía.</string>
+  <string name="msg_mf_passphrase_fail">¡La contraseña para la subclave no se pudo cambiar! (¿Tiene una contraseña diferente a la del resto de las claves?)</string>
   <string name="msg_mf_primary_replace_old">Reemplazando certificado de la identificación de usuario principal anterior</string>
   <string name="msg_mf_primary_new">Generando nuevo certificado para nueva identificación de usuario primaria</string>
+  <string name="msg_mf_restricted_mode">Cambiando al modo de operación restringido</string>
   <string name="msg_mf_subkey_change">Modificando subclave %s</string>
-  <string name="msg_mf_error_subkey_missing">¡Se intentó operar sobre una subclave desaparecida %s!</string>
+  <string name="msg_mf_require_divert">Derivando a la tarjeta inteligente para operaciones de criptografía</string>
+  <string name="msg_mf_require_passphrase">Contraseña requerida para operaciones</string>
   <string name="msg_mf_subkey_new">Añadiendo nueva subclave de tipo %s</string>
   <string name="msg_mf_subkey_new_id">Nueva identificación de subclave: %s</string>
   <string name="msg_mf_error_past_expiry">¡La fecha de expiración no puede ser del pasado!</string>
   <string name="msg_mf_subkey_revoke">Revocando subclave %s</string>
   <string name="msg_mf_subkey_strip">Desnudando subclave %s</string>
+  <string name="msg_mf_keytocard_start">Moviendo subclave %s a la tarjeta inteligente</string>
+  <string name="msg_mf_keytocard_finish">Se movió %1$s a la tarjeta inteligente %2$s</string>
   <string name="msg_mf_success">Juego de claves modificado con éxito</string>
   <string name="msg_mf_uid_add">Añadiendo identificación de usuario %s</string>
   <string name="msg_mf_uid_primary">Cambiando identificación de usuario primaria a %s</string>
@@ -892,19 +928,20 @@
   <string name="msg_con_warn_delete_secret">Excepción al borrar fichero de caché de claves secretas (privadas)</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Realizando operación en la clave</string>
-  <string name="msg_ed_caching_new">Guardar en caché nueva frase-contraseña</string>
+  <string name="msg_ed_caching_new">Guardando en caché la nueva contraseña</string>
   <string name="msg_ed_error_no_parcel">¡SaveKeyringParcel ausente! (esto es un fallo, por favor notifíquelo)</string>
   <string name="msg_ed_error_key_not_found">¡Clave no encontrada!</string>
   <string name="msg_ed_fetching">Descargando clave a modificar (%s)</string>
   <string name="msg_ed_success">Operación en la clave completada</string>
   <!--Promote key-->
-  <string name="msg_pr">Promover clave pública a clave secreta (privada)</string>
-  <string name="msg_pr_error_already_secret">¡La clave ya es una clave secreta (privada)!</string>
+  <string name="msg_pr">Promocionar clave pública a clave secreta (privada)</string>
+  <string name="msg_pr_all">Promocionando todas las subclaves</string>
   <string name="msg_pr_error_key_not_found">¡Clave no encontrada!</string>
   <string name="msg_pr_fetching">Descargar clave para modificar (%s)</string>
-  <string name="msg_pr_success">La clave se promovió con éxito</string>
+  <string name="msg_pr_subkey_match">Promocionar la subclave: %s</string>
+  <string name="msg_pr_subkey_nomatch">La subclave no está en la Yubikey: %s</string>
+  <string name="msg_pr_success">La clave se promocionó con éxito</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_divert">¡La edición de claves NFC (aún) no está soportada!</string>
   <string name="msg_ek_error_dummy">¡No se pudo editar el juego de claves (keyring) con la clave maestra desnuda!</string>
   <string name="msg_ek_error_not_found">¡Clave no encontrada!</string>
   <!--Messages for DecryptVerify operation-->
@@ -925,11 +962,12 @@
   <string name="msg_dc_clear_signature_ok">Comprobación de firma CORRECTA</string>
   <string name="msg_dc_clear_signature">Guardando datos de firma para más tarde</string>
   <string name="msg_dc_clear">Procesando datos de texto no cifrado (`cleartext`)</string>
-  <string name="msg_dc_error_bad_passphrase">Error al desbloquear clave, ¡frase-contraseña errónea!</string>
+  <string name="msg_dc_error_bad_passphrase">Error desbloqueando clave, ¡contraseña incorrecta!</string>
+  <string name="msg_dc_error_corrupt_data">¡Los datos están corruptos!</string>
   <string name="msg_dc_error_extract_key">¡Error desconocido al desbloquear clave!</string>
   <string name="msg_dc_error_integrity_check">¡Error de comprobación de integridad!</string>
   <string name="msg_dc_error_integrity_missing">¡Verificación de integridad ausente! Esto puede ocurrir porque la aplicación de cifrado no está actualizada, o debido a un ataque desactualización.</string>
-  <string name="msg_dc_error_invalid_data">¡No se encontraron datos de firma válidos!</string>
+  <string name="msg_dc_error_invalid_data">¡No se encontraron datos firmados o cifrados con OpenPGP válidos!</string>
   <string name="msg_dc_error_io">¡Se encontró Excepción de E/S durante la operación!</string>
   <string name="msg_dc_error_no_data">¡No se encontraron datos cifrados en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_key">¡No se encontraron datos cifrados con clave secreta (privada) conocida en el flujo de datos (`stream`)!</string>
@@ -937,9 +975,9 @@
   <string name="msg_dc_integrity_check_ok">¡Comprobación de integridad CORRECTA!</string>
   <string name="msg_dc_ok_meta_only">Sólo fueron solicitados los metadatos, omitiendo descifrado</string>
   <string name="msg_dc_ok">Descifrado/Verificación finalizado</string>
-  <string name="msg_dc_pass_cached">Usando frase-contraseña desde caché</string>
+  <string name="msg_dc_pass_cached">Usando contraseña desde la caché</string>
   <string name="msg_dc_pending_nfc">Se requiere credencial NFC, solicitando su introducción por el usuario...</string>
-  <string name="msg_dc_pending_passphrase">Se requiere frase-contraseña, solicitando su introducción por el usuario...</string>
+  <string name="msg_dc_pending_passphrase">Contraseña requerida, solicitando su introducción al usuario...</string>
   <string name="msg_dc_prep_streams">Preparando flujos de datos (`streams`) para descifrado</string>
   <string name="msg_dc">Comenzando la operación de descifrado...</string>
   <string name="msg_dc_sym_skip">Datos simétricos no permitidos, omitiendo...</string>
@@ -969,20 +1007,19 @@
   <string name="msg_se_error_input_uri_not_found">¡Error al abrir URI para lectura!</string>
   <string name="msg_se_error_output_uri_not_found">¡Error al abrir URI para escritura!</string>
   <string name="msg_se_error_too_many_inputs">¡Se especificaron más entradas que salidas! Probablemente esto es un error de programación, ¡por favor informe!</string>
-  <string name="msg_se_warn_output_left">Se dejaron las salidas pero no las entradas. Probablemente esto es un error de programación, ¡por favor informe!</string>
   <string name="msg_se_success">Operación de firmado/cifrado completada</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Preparando claves públicas para cifrado</string>
   <string name="msg_pse_clearsign_only">¡El fimado de texto sin cifrar (cleartext) no está soportado!</string>
   <string name="msg_pse_compressing">Preparando compresión</string>
   <string name="msg_pse_encrypting">Cifrando datos</string>
-  <string name="msg_pse_error_bad_passphrase">¡Frase-contraseña errónea!</string>
+  <string name="msg_pse_error_bad_passphrase">¡Contraseña incorrecta!</string>
   <string name="msg_pse_error_hash_algo">¡El algoritmo de identificación criptográfica (hash) solicitado no está soportado por esta clave!</string>
   <string name="msg_pse_error_io">¡Se encontró una excepción de E/S durante la operación!</string>
   <string name="msg_pse_error_key_sign">¡La clave de firmado seleccionada no puede firmar datos!</string>
   <string name="msg_pse_error_sign_key">¡Error al descargar clave de firmado!</string>
   <string name="msg_pse_error_nfc">¡Error de datos NFC!</string>
-  <string name="msg_pse_error_no_passphrase">¡No se proporcionó frase-contraseña!</string>
+  <string name="msg_pse_error_no_passphrase">¡No se proporcionó contraseña!</string>
   <string name="msg_pse_error_pgp">¡Error interno de OpenPGP!</string>
   <string name="msg_pse_error_sig">¡Se encontró una excepción de firma OpenPGP!</string>
   <string name="msg_pse_error_unlock">¡Error desconocido al desbloquear clave!</string>
@@ -991,7 +1028,7 @@
   <string name="msg_pse_key_warn">Clave para cifrado errónea: %s</string>
   <string name="msg_pse_ok">¡Operación de firmado/cifrado completada!</string>
   <string name="msg_pse_pending_nfc">Se requiere credencial NFC, solicitando su introducción al usuario...</string>
-  <string name="msg_pse_pending_passphrase">Se requiere frase-contraseña, solicitando su introducción al usuario.</string>
+  <string name="msg_pse_pending_passphrase">Contraseña requerida, solicitando su introducción al usuario...</string>
   <string name="msg_pse_signing">Firmando datos (sin cifrado)</string>
   <string name="msg_pse_signing_cleartext">Creando firma de texto sin cifrar (cleartext)</string>
   <string name="msg_pse_signing_detached">Creando firma desacoplada</string>
@@ -1011,9 +1048,9 @@
   <string name="msg_crt_error_master_not_found">¡Clave maestra no encontrada!</string>
   <string name="msg_crt_error_nothing">¡No se certificaron claves!</string>
   <string name="msg_crt_error_unlock">¡Error desbloqueando clave maestra!</string>
-  <string name="msg_crt_error_divert">¡La certificación con NFC no está soportada (aún)!</string>
   <string name="msg_crt">Certificando juegos de claves</string>
   <string name="msg_crt_master_fetch">Descargando clave maestra certificante</string>
+  <string name="msg_crt_nfc_return">Volviendo a la pantalla NFC</string>
   <string name="msg_crt_save">Guardando clave certificada %s</string>
   <string name="msg_crt_saving">Guardando juegos de claves</string>
   <string name="msg_crt_unlock">Desbloqueando clave maestra</string>
@@ -1029,13 +1066,14 @@
   <string name="msg_import_fetch_error_decode">¡Error al descifrar juego de claves descargado!</string>
   <string name="msg_import_fetch_error">¡La clave no se pudo descargar! (¿problemas con la red?)</string>
   <string name="msg_import_fetch_keybase">Descargando desde keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">¡No se pudo descargar la clave desde keybase!</string>
+  <string name="msg_import_fetch_keyserver_error">No se pudo obtener clave de los servidores de claves: %s</string>
   <string name="msg_import_fetch_keyserver">Descargando desde el servidor de claves: %s</string>
   <string name="msg_import_fetch_keyserver_ok">La clave se descargó con éxito</string>
   <string name="msg_import_keyserver">Usando el servidor de claves %s</string>
   <string name="msg_import_fingerprint_error">¡La huella de validación de la clave descargada no coincidió con la esperada!</string>
   <string name="msg_import_fingerprint_ok">Comprobación de la huella de validación correcta</string>
   <string name="msg_import_merge">Incorporando datos descargados</string>
+  <string name="msg_import_merge_error">¡Error al fusionar datos descargados!</string>
   <string name="msg_import_error">¡La operación de importación falló!</string>
   <string name="msg_import_error_io">¡Fallo en la operación de importación debido a un error de e/s!</string>
   <string name="msg_import_partial">¡Operación de importado completada, con errores!</string>
@@ -1092,11 +1130,14 @@
   <string name="msg_export_log_error_writing">¡Error de E/S al escribir al fichero!</string>
   <string name="msg_export_log_success">¡Registro (log) exportado con éxito!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Haga clic para eliminar las frases-contraseña almacenadas en caché</string>
-  <string name="passp_cache_notif_n_keys">OpenKeychain ha almacenado en caché %d frases-contraseña</string>
-  <string name="passp_cache_notif_keys">Frases-contraseña almacenadas en caché:</string>
-  <string name="passp_cache_notif_clear">Limpiar caché</string>
-  <string name="passp_cache_notif_pwd">Frase-contraseña</string>
+  <string name="passp_cache_notif_click_to_clear">Pulsar para limpiar contraseñas.</string>
+  <plurals name="passp_cache_notif_n_keys">
+    <item quantity="one">%d contraseña recordada</item>
+    <item quantity="other">%d contraseñas recordadas</item>
+  </plurals>
+  <string name="passp_cache_notif_keys">Contraseñas recordadas</string>
+  <string name="passp_cache_notif_clear">Limpiar contraseñas</string>
+  <string name="passp_cache_notif_pwd">Contraseña</string>
   <!--First Time-->
   <string name="first_time_text1">¡Recupere su privacidad con OpenKeychain!</string>
   <string name="first_time_create_key">Crear mi clave</string>
@@ -1119,8 +1160,8 @@
   <string name="error_key_not_found">¡Clave no encontrada!</string>
   <string name="error_key_processing">¡Error procesando clave!</string>
   <string name="key_stripped">desnuda, sin clave</string>
-  <string name="key_divert">desviar a tarjeta-inteligente/NFC</string>
-  <string name="key_no_passphrase">sin frase-contraseña</string>
+  <string name="key_divert">derivar a tarjeta inteligente</string>
+  <string name="key_no_passphrase">sin contraseña</string>
   <string name="key_unavailable">no disponible</string>
   <string name="secret_cannot_multiple">¡Sus claves propias sólo pueden ser borradas individualmente!</string>
   <string name="title_view_cert">Ver detalles del certificado</string>
@@ -1131,7 +1172,10 @@
   <string name="contact_show_key">Mostrar clave (%s)</string>
   <string name="swipe_to_update">Gesto de barrido hacia abajo para actualizar desde el servidor de claves</string>
   <string name="error_no_file_selected">¡Seleccione al menos un fichero a cifrar!</string>
-  <string name="error_multi_files">El guardado de múltiples ficheros no está soportado. Esto es una limitación de su Android actual.</string>
+  <string name="error_multi_files">El guardado de múltiples ficheros no está soportado. Esta es una limitación del actual Android.</string>
+  <string name="error_multi_clipboard">El cifrado de múltiples ficheros hacia el portapapeles no está soportado.</string>
+  <string name="error_detached_signature">La operación de sólo-firmado de ficheros binarios no está soportada, seleccione al menos una clave de cifrado.</string>
+  <string name="error_empty_text">¡Escriba algún texto a cifrar!</string>
   <string name="key_colon">Clave:</string>
   <string name="exchange_description">Para iniciar un intercambio de claves, en el lado derecho elija el número de participantes, y luego pulse el botón \"Iniciar intercambio\".\n\nSe le formularán dos preguntas más para asegurar que sólo están en el intercambio los participantes debidos, y que sus huellas de validación son correctas.</string>
   <string name="btn_start_exchange">Comenzar intercambio</string>
@@ -1139,20 +1183,20 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">Escoja un método de desbloqueo</string>
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
-  <string name="enter_passphrase">Introduzca frase-contraseña</string>
-  <string name="passphrase">Frase-contraseña</string>
-  <string name="noPassphrase">Sin frase-contraseña</string>
-  <string name="no_passphrase_set">No se estableció frase-contraseña</string>
-  <string name="passphrases_match">Las frases-contraseña no coinciden</string>
-  <string name="passphrase_saved">Frase-contraseña guardada</string>
-  <string name="passphrase_invalid">Frase-contraseña no válida</string>
-  <string name="missing_passphrase">Frase-contraseña ausente</string>
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Introduzca contraseña</string>
+  <string name="passphrase">Contraseña</string>
+  <string name="noPassphrase">Sin contraseña</string>
+  <string name="no_passphrase_set">No se estableció contraseña</string>
+  <string name="passphrases_match">Las contraseñas coinciden</string>
+  <string name="passphrase_saved">Contraseña guardada</string>
+  <string name="passphrase_invalid">Contraseña no válida</string>
+  <string name="missing_passphrase">Contraseña desaparecida</string>
   <string name="passphrase_again">De nuevo</string>
   <string name="lockpattern">Patrón de bloqueo</string>
   <string name="lockpatternNFC">NFC + patrón de bloqueo</string>
   <string name="unlock_method">Método de desbloqueo</string>
-  <string name="set_passphrase">Establecer frase-contraseña</string>
+  <string name="set_passphrase">Establecer contraseña</string>
   <string name="draw_lockpattern">Dibujar patrón de bloqueo</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
@@ -1162,4 +1206,51 @@
   <string name="nfc_write_succesful">Se escribió con éxito en la etiqueta NFC</string>
   <string name="unlocked">Desbloqueado</string>
   <string name="nfc_settings">Configuración</string>
+  <string name="snack_yubikey_view">Ver</string>
+  <string name="snack_yubikey_import">Importar</string>
+  <string name="button_bind_key">Ligar clave</string>
+  <string name="yubikey_serno">Nº de serie: %s</string>
+  <string name="yubikey_key_holder">Titular de la clave:</string>
+  <string name="yubikey_key_holder_not_set">Titular de la clave: &lt;no establecido&gt;</string>
+  <string name="yubikey_status_bound">La YubiKey coincide y está ligada a la clave</string>
+  <string name="yubikey_status_unbound">La YubiKey coincide, puede ligarse a la clave</string>
+  <string name="yubikey_status_partly">La YubiKey coincide, parcialmente ligada a la clave</string>
+  <string name="yubikey_create">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
+  <string name="btn_import">Importar</string>
+  <string name="snack_yubi_other">¡Clave almacenada en YubiKey distinta!</string>
+  <string name="error_nfc">Error de NFC: %s</string>
+  <string name="error_pin">NFC: PIN incorrecto; %d intentos restantes.</string>
+  <string name="error_nfc_terminated">NFC: Tarjeta inteligente caducada</string>
+  <string name="error_nfc_wrong_length">NFC: Distancia incorrecta para envío / recepción de datos</string>
+  <string name="error_nfc_conditions_not_satisfied">NFC: Condiciones de uso no satisfechas</string>
+  <string name="error_nfc_security_not_satisfied">NFC: Estado de seguridad no satisfecho</string>
+  <string name="error_nfc_authentication_blocked">NFC: PIN bloqueado tras demasiados intentos</string>
+  <string name="error_nfc_data_not_found">NFC: Clave u objeto no encontrado</string>
+  <string name="error_nfc_unknown">NFC: Error desconocido</string>
+  <string name="error_nfc_bad_data">NFC: La tarjeta informó de datos no válidos</string>
+  <string name="error_nfc_chaining_error">NFC: La tarjeta esperaba el último comando en una cadena</string>
+  <string name="error_nfc_header">NFC: La tarjeta informó de byte %s no válido</string>
+  <string name="error_pin_nodefault">¡El PIN por defecto fue rechazado!</string>
+  <string name="btn_delete_original">Borrar fichero original</string>
+  <string name="snack_encrypt_filenames_on">Los nombres de fichero <b>están</b> cifrados.</string>
+  <string name="snack_encrypt_filenames_off">Los nombres de fichero <b>no están</b> cifrados.</string>
+  <string name="snack_armor_on">Salida codificada como Texto.</string>
+  <string name="snack_armor_off">Salida codificada como Binario.</string>
+  <string name="snack_compression_on">Compresión <b>habilitada</b>.</string>
+  <string name="snack_compression_off">Compresión <b>deshabilitada</b>.</string>
+  <string name="error_loading_keys">¡Error al cargar claves!</string>
+  <string name="error_empty_log">(error, registro (log) vacío)</string>
+  <string name="error_reading_text">¡No se pudo leer entrada a descifrar!</string>
+  <string name="filename_unknown">&lt;sin nombre de fichero&gt;</string>
+  <string name="filename_unknown_text">&lt;datos en texto sin cifrar&gt;</string>
+  <string name="intent_show">Mostrar contenido firmado/cifrado</string>
+  <string name="view_internal">Ver en OpenKeychain</string>
+  <string name="error_preparing_data">¡Error al preparar datos!</string>
+  <string name="label_clip_title">Datos cifrados</string>
+  <string name="progress_processing">Procesando...</string>
+  <string name="error_saving_file">¡Error al guardar fichero!</string>
+  <string name="file_saved">¡Fichero guardado!</string>
+  <string name="file_delete_ok">Fichero original borrado.</string>
+  <string name="file_delete_none">¡No se borró ningún fichero! (¿ya se había borrado?)</string>
+  <string name="file_delete_exception">¡No se pudo borrar el fichero original!</string>
 </resources>

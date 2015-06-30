@@ -18,7 +18,7 @@
 
 ## Напредни подаци
 „Потврда кључа“ у Отвореном кључарнику се реализује прављењем сертификације по ОпенПГП стандарду.
-Ова сертификација је [„општа сертификација (0x10)“](http://tools.ietf.org/html/rfc4880#section-5.2.1) описана стандардом у:
+Ова сертификација је [„општа сертификација (0x10)“](http://tools.ietf.org/html/rfc4880#section-5.2.1) описана у стандарду:
 "The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
 
 Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.

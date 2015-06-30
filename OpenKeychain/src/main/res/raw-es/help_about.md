@@ -6,8 +6,12 @@
 
 Licencia: GPLv3+
 
-## Desarrolladores
+## Desarrolladores principales
   * Dominik Schürmann (Mantenedor)
+  * Vincent Breitmoser
+
+## Contribuidores
+  * Adithya Abraham Philip
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -15,18 +19,33 @@ Licencia: GPLv3+
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
+  * Daniel Nelz
+  * Daniel Ramos
   * Greg Witczak
+  * 'iseki'
+  * Ishan Khanna
+  * 'jellysheep'
+  * 'Jesperbk'
+  * 'jkolo'
+  * Joey Castillo
+  * Kai Jiang
+  * Kartik Arora
+  * 'Kent'
+  * 'ligi'
+  * Lukas Zorich
+  * Manoj Khanna
   * 'mar-v-in'
   * Markus Doits
   * Miroojin Bakshi
+  * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
-  * Thialfihar (APG 1.x)
+  * 'steelman'
+  * 'Thialfihar' (desarrollador APG)
   * Tim Bray
-  * Vincent Breitmoser
 
 ## Librerías
   * [SpongyCastle](http://rtyley.github.com/spongycastle/) (Licencia MIT X11)
@@ -38,9 +57,9 @@ Licencia: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licencia Apache v2)
   * [ZXing](https://github.com/zxing/zxing) (Licencia Apache v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Licencia Apache v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Diseño estilo Material)</a> (Licencia Apache v2)
-  * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Licencia Apache v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Licencia Apache v2)
   * [Snackbar](https://github.com/nispok/snackbar) (Licencia MIT)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Licencia Apache v2)
-  * [HtmlTextView](https://github.com/dschuermann/html-textview) (Licencia Apache v2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Licencia Apache v2)
   * [Markdown4J](https://github.com/jdcasey/markdown4j) (Licencia Apache v2)

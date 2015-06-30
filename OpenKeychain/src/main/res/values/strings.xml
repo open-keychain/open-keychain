@@ -63,7 +63,8 @@
     <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
-    <string name="btn_save">"Save file"</string>
+    <string name="btn_save_file">"Save file"</string>
+    <string name="btn_save">"Save"</string>
     <string name="btn_view_log">"View log"</string>
     <string name="btn_do_not_save">"Cancel"</string>
     <string name="btn_delete">"Delete"</string>
@@ -1245,8 +1246,8 @@
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_yubikey">"Use YubiKey NEO"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-    <string name="first_time_blank_smartcard_title">"Blank smart card / YubiKey detected"</string>
-    <string name="first_time_blank_smartcard_message">"Would you like to generate a smart card compatible key?"</string>
+    <string name="first_time_blank_yubikey">"Would you like to use this blank YubiKey NEO with OpenKeychain?\n\nPlease take away the YubiKey now, you will be prompted when it is needed again!"</string>
+    <string name="first_time_blank_yubikey_yes">"Use this YubiKey"</string>
 
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>
@@ -1336,7 +1337,7 @@
     <string name="error_nfc_chaining_error">"NFC: Card expected last command in a chain"</string>
     <string name="error_nfc_header">"NFC: Card reported invalid %s byte"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
-    <string name="error_bluetooth_file">Error creating temporary file. Bluetooth sharing will fail.</string>
+    <string name="error_temp_file">Error creating temporary file.</string>
     <string name="btn_delete_original">Delete original file</string>
 
     <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>
@@ -1348,8 +1349,8 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
-    <string name="filename_unknown"><![CDATA[<no filename>]]></string>
-    <string name="filename_unknown_text"><![CDATA[<plain text data>]]></string>
+    <string name="filename_unknown">"&lt;no filename&gt;"</string>
+    <string name="filename_unknown_text">"&lt;plain text data&gt;"</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
@@ -1360,5 +1361,6 @@
     <string name="file_delete_ok">"Original file deleted."</string>
     <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
+    <string name="error_clipboard_empty">"Clipboard is empty!"</string>
 
 </resources>

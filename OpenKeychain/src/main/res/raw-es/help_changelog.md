@@ -1,9 +1,17 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
+  * Primera versión con soporte para YubiKey completo disponible desde la interfaz de usuario: Editar claves, ligar YubiKey a claves...
   * Material design (estilo)
-  * Integración de QR Scanner (se requieren nuevos permisos)
+  * Integración de Escaneado de Código QR (se requieren nuevos permisos)
   * Asistente de creación de clave mejorado
   * Repara contactos perdidos después de la sincronización
   * Requiere Android 4
@@ -13,6 +21,7 @@
   * Reparación: Algunas claves válidas se mostraron revocadas o caducadas
   * No acepte algo firmado por subclaves caducadas o revocadas
   * Soporte para Keybase.io en la vista avanzada
+  * Método para actualizar todas las claves a la vez
 
 
 ## 3.1.2
@@ -35,7 +44,7 @@
   * Pantalla de descifrado rediseñada
   * Nuevo uso y colores del icono
   * Repara la importación de claves secretas (privadas) desde Symantec Encryption Desktop
-  * Las identificaciones de subclaves en Yubikeys ahora se comprueban correctamente
+  * Soporte experimental para YubiKey: Las identificaciones (IDs) de subclaves ahora se comprueban correctamente.
 
 
 ## 3.0.1
@@ -46,7 +55,6 @@
 
 ## 3.0
 
-  * ¡Soporte completo para generación de firma y descifrado de Yubikey!
   * Propone aplicaciones instalables compatibles en la lista de aplicaciones
   * Nuevo diseño para pantallas de descifrado
   * Muchas reparaciones para la importación de claves, también repara claves desnudas
@@ -55,12 +63,13 @@
   * Repara certificados de revocación de identificación de usuario
   * Nueva búsqueda en la nube (busca sobre servidores de claves tradicionales y keybase.io)
   * Soporte para desvestir claves dentro de OpenKeychain
+  * Soporte experimental para YubiKey: Soporte para generación de firma y descifrado
 
 
 ## 2.9.2
 
   * Repara claves rotas en la versión 2.9.1
-  * El descifrado de Yubikey ahora funciona vía API
+  * Soporte experimental para YubiKey: El descifrado ahora funciona vía API
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * Repara el manejo de los indicativos de claves (ahora soporta claves de Mailvelope 0.7)
   * Manejo de frase-contraseña mejorado
   * Compartición de claves vía SafeSlinger
-  * Yubikey: Preferencia para permitir otros PINs, actualmente sólo funciona firmando mediante la API de OpenPGP, no dentro de OpenKeychain
+  * Soporte experimental para YubiKey: Preferencia para permitir otros PINs, actualmente sólo funciona firmando vía API OpenPGP, no desde dentro de OpenKeychain
   * Repara el uso de claves desnudas
   * SHA256 por defecto para compatibilidad
   * La API de Intent ha cambiado, vea https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Repara caídas introducidas en la versión 2.8
   * Soporte para ECC (criptografía de curva elíptica) experimental
-  * Soporte experimental para Yubikey (sólo-firmante con claves importadas)
+  * Soporte experimental para YubiKey: Firmando sólo con claves importadas
 
 
 ## 2.8

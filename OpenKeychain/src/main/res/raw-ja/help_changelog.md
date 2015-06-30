@@ -1,9 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
+  * 完全なYubiKeyサポートがユーザーインタフェースから利用できる最初のバージョン: 鍵の編集、YubiKeyと鍵の紐付け、...
   * マテリアルデザイン
-  * QRスキャナの統合 (新しいパーミッションを必要とします)
+  * QRコードのスキャンの統合 (新しいパーミッションを必要とします)
   * 鍵生成ウィザードの改善
   * 同期後に連絡先を見失う問題の修正
   * Android 4を必要とします
@@ -13,6 +21,7 @@
   * 修正: いくつかの正しい鍵が破棄もしくは期限切れとして表示される
   * 副鍵が期限切れもしくは破棄されている場合に署名を受け入れない
   * 拡張ビューでのKeybase.ioのサポート
+  * すべての鍵を一度にアップデートするメソッド
 
 
 ## 3.1.2
@@ -35,7 +44,7 @@
   * 復号化画面の再デザイン
   * 新しいアイコン利用とカラー
   * Symantec Encryption Desktopから秘密鍵をインポート時の問題修正
-  * Yubikeyでの副鍵IDを正くチェックするようになりました
+  * 実験的なYubiKeyサポート: Yubikeyでの副鍵IDを正くチェックするようになりました
 
 
 ## 3.0.1
@@ -46,7 +55,6 @@
 
 ## 3.0
 
-  * Yubikeyでの署名生成と復号化のフルサポート
   * インストールできるAPIの互換性のあるアプリをアプリ内リストで提示します
   * 復号化画面を新しいデザインに
   * 鍵のインポートで沢山の修正、また鍵のストリップでも修正
@@ -55,12 +63,13 @@
   * ユーザーID破棄証明の修正
   * 新しいクラウド検索 (古典的な keyserverと keybase.io から検索します)
   * OpenKeychain内で鍵をストリップするのをサポートしました
+  * 実験的なYubiKeyサポート: Yubikeyでの署名生成と復号化のフルサポート
 
 
 ## 2.9.2
 
   * 2.9.1での鍵破壊問題修正
-  * API経由でYubikeyの復号処理が動くようになった
+  * 実験的なYubiKeyサポート: API経由でYubikeyの復号処理が動くようになった
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * 鍵のフラグ管理を修正 (現在Mailvelope 0.7 鍵をサポート)
   * パスフレーズの取り回しを改善
   * SafeSlingerでの鍵の共有
-  * Yubikey: 設定で他のPINを受け付け、現在OpenPGP API経由での署名しか動きません、OpenKeychainの内部ではないため
+  * 実験的なYubiKeyサポート: 設定で他のPINを受け付け、現在OpenPGP API経由での署名しか動きません、OpenKeychainの内部ではないため
   * ストリップした鍵の利用法を修正
   * 互換性のためデフォルトをSHA256に
   * インテント API を変更しました、以下参照 https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * v2.8 から発生したクラッシュ問題をFix
   * 実験的にECCをサポート
-  * 実験的にYubikeyをサポート(インポート済みの鍵での署名のみ)
+  * 実験的なYubiKeyサポート: インポート済みの鍵での署名のみ
 
 
 ## 2.8

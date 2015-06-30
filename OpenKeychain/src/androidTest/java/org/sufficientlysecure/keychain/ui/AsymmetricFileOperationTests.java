@@ -184,7 +184,7 @@ public class AsymmetricFileOperationTests {
             handleSaveDecryptedFileIntent(savedFile, file.getName());
 
             // save decrypted content
-            onView(withText(R.string.btn_save)).perform(click());
+            onView(withText(R.string.btn_save_file)).perform(click());
 
             checkSnackbar(Style.OK, R.string.file_saved);
             assertThat("decrypted file has been saved", true, is(savedFile.exists()));

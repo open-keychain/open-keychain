@@ -41,7 +41,6 @@ import org.spongycastle.bcpg.UserIDPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPSignature;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -847,7 +846,7 @@ public class PgpKeyOperationTest {
                     parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
         }
 
-        { // keytocard should return a pending NFC_KEYTOCARD result when presented with the RSA-2048
+        { // keytocard should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
             long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
             parcel.reset();
@@ -858,8 +857,8 @@ public class PgpKeyOperationTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
             Assert.assertTrue("keytocard operation should be pending", result.isPending());
-            Assert.assertEquals("required input should be RequiredInputType.NFC_KEYTOCARD",
-                    result.getRequiredInputParcel().mType, RequiredInputType.NFC_KEYTOCARD);
+            Assert.assertEquals("required input should be RequiredInputType.NFC_MOVE_KEY_TO_CARD",
+                    result.getRequiredInputParcel().mType, RequiredInputType.NFC_MOVE_KEY_TO_CARD);
 
             // Create a cryptoInputParcel that matches what the NFCOperationActivity would return.
             byte[] keyIdBytes = new byte[8];

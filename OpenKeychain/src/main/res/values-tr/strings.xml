@@ -8,7 +8,6 @@
   <string name="title_add_subkey">Alt anahtar ekle</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_api_registered_apps">Uygulamalar</string>
-  <string name="title_change_passphrase">Parolayı Değiştir</string>
   <string name="title_share_fingerprint_with">Parmak izini paylaş...</string>
   <string name="title_share_key">Anahtarı paylaş...</string>
   <string name="title_share_file">Dosyayı paylaş...</string>
@@ -23,12 +22,10 @@
   <string name="title_help">Yardım</string>
   <string name="title_log_display">Günlük</string>
   <string name="title_exchange_keys">Anahtarları Değiş Tokuş Et</string>
-  <string name="title_advanced_key_info">Gelişmiş Anahtar Bilgisi</string>
   <!--section-->
   <string name="section_user_ids">Kimlikler</string>
   <string name="section_keys">Alt anahtarlar</string>
   <string name="section_cloud_search">Bulut araması</string>
-  <string name="section_passphrase_cache">Parola Önbelleği</string>
   <string name="section_actions">Eylemler</string>
   <string name="section_share_key">Anahtar</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
@@ -36,7 +33,6 @@
   <!--button-->
   <string name="btn_decrypt_verify_file">Şifreyi çöz, doğrula ve dosyayı kaydet</string>
   <string name="btn_encrypt_share_file">Şifrele ve dosyayı paylaş</string>
-  <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
   <string name="btn_no_date">Zaman Aşımı Yok</string>
@@ -47,9 +43,6 @@
   <string name="btn_view_cert_key">Tasdikleme anahtarını görüntüle</string>
   <string name="btn_create_key">Anahtar oluştur</string>
   <string name="btn_add_files">Dosya(lar) ekle</string>
-  <string name="btn_add_share_decrypted_text">Şifresi çözülmüş metni paylaş</string>
-  <string name="btn_decrypt_and_verify">ve imzaları doğrula</string>
-  <string name="btn_decrypt_files">Dosyaların şifresini çöz</string>
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>
@@ -60,15 +53,11 @@
   <string name="menu_encrypt_to">Şuna şifrele...</string>
   <string name="menu_select_all">Hepsini seç</string>
   <string name="menu_export_all_keys">Tüm anahtarları ver</string>
-  <string name="menu_advanced">Gelişmiş bilgiyi göster</string>
   <!--label-->
   <string name="label_file">Dosya</string>
   <string name="label_files">Dosya(lar)</string>
   <string name="label_file_colon">Dosya:</string>
-  <string name="label_no_passphrase">Parola Yok</string>
-  <string name="label_passphrase">Parola</string>
   <string name="label_unlock">Kilit açılıyor...</string>
-  <string name="label_passphrase_again">Parolayı Tekrarla</string>
   <string name="label_algorithm">Algoritma</string>
   <string name="label_ascii_armor">ASCII formatında dosyalar</string>
   <string name="label_file_ascii_armor">ASCII formatında çıktıları etkinleştir</string>
@@ -82,11 +71,7 @@
   <string name="label_delete_after_decryption">Şifre çözme sonrasında sil</string>
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
   <string name="label_hash_algorithm">Özet algoritması</string>
-  <string name="label_symmetric">Parolayla şifrele</string>
-  <string name="label_passphrase_cache_ttl">Önbellek zamanı</string>
-  <string name="label_passphrase_cache_subs">Parolaları altanahtarlara göre önbellekle</string>
   <string name="label_file_compression">Dosya sıkıştırma</string>
-  <string name="label_keyservers">Anahtar Sunucuları</string>
   <string name="label_key_id">Anahtar ID</string>
   <string name="label_creation">Oluşturma</string>
   <string name="label_expiry">Bitiş</string>
@@ -141,18 +126,12 @@
   <string name="flag_encrypt">Şifreleme</string>
   <string name="flag_authenticate">Kimlik kanıtlama</string>
   <!--sentences-->
-  <string name="wrong_passphrase">Yanlış parola.</string>
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
-  <string name="passphrases_do_not_match">Parolalar eşleşmedi.</string>
-  <string name="passphrase_must_not_be_empty">Lütfen bir parola girin.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrik şifreleme.</string>
-  <string name="passphrase_for">\'%s\' için bir parola girin</string>
   <string name="nfc_text">YubiKey\'inizi cihazınızın arkasında tutun.</string>
-  <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
-  <string name="error_no_encryption_or_signature_key">En az bir şifreleme anahtarı veya imza anahtarı seçiniz.</string>
   <string name="also_export_secret_keys">Özel anahtarları da dışa aktar</string>
   <string name="reinstall_openkeychain">Android için bilinen bir hataya denk geldiniz. Eğer kişilerinizi anahtarlarla eşlemek istiyorsanız, lütfen OpenKeychain uygulamasını yeniden yükleyin.</string>
   <string name="key_exported">1 anahtar başarıyla dışa aktarıldı.</string>
@@ -178,13 +157,10 @@
   <string name="error_external_storage_not_ready">harici depolama hazır değil</string>
   <string name="error_key_size_minimum512bit">anahtar boyutu en az 512bit olmalı</string>
   <string name="error_unknown_algorithm_choice">bilinmeyen algoritma seçimi</string>
-  <string name="error_user_id_no_email">herhangi bir eposta bulunamadı</string>
   <string name="error_key_needs_a_user_id">en az bir kimlik gerekli</string>
-  <string name="error_no_signature_passphrase">parola verilmedi</string>
   <string name="error_no_signature_key">imza anahtarı verilmedi</string>
   <string name="error_invalid_data">Geçerli olan şifrelenmiş ya da imzalanmış OpenPGP içeriği yok!</string>
   <string name="error_integrity_check_failed">Bütünlük kontrolü başarısız! Veri değiştirilmiş!</string>
-  <string name="error_wrong_passphrase">yanlış parola</string>
   <string name="error_could_not_extract_private_key">özel anahtar çıkarılamadı</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Android\'in NFC Beam özelliğini kullanabilmek için Android 4.1 kullanmalısınız!</string>
@@ -194,16 +170,10 @@
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">İmzalanmadı</string>
   <string name="decrypt_result_invalid_signature">Geçersiz imza!</string>
-  <string name="decrypt_result_signature_uncertified">İmzalayan (tasdik edilmemiş!):</string>
-  <string name="decrypt_result_signature_certified">İmzalayan:</string>
-  <string name="decrypt_result_signature_expired_key">Anahtar zaman aşımına uğramış!</string>
-  <string name="decrypt_result_signature_revoked_key">Anahtar yürürlükten kaldırılmış!</string>
-  <string name="decrypt_result_signature_missing_key">Bilinmeyen açık anahtar</string>
   <string name="decrypt_result_encrypted">Şifrelendi</string>
   <string name="decrypt_result_not_encrypted">Şifrelenmedi</string>
   <string name="decrypt_result_action_show">Göster</string>
   <string name="decrypt_result_action_Lookup">Araştır</string>
-  <string name="decrypt_invalid_text">Ya imza geçersiz ya da anahtar yürürlükten kaldırılmış/zaman aşımına uğramış. Metni kimin yazdığından emin olamazsınız. Yine de görüntülemek istiyor musunuz?</string>
   <string name="decrypt_invalid_button">Tehlikelerin farkındayım, görüntüle!</string>
   <!--Add keys-->
   <string name="add_keys_my_key">Anahtarım:</string>
@@ -231,7 +201,6 @@
   <string name="progress_modify_subkeyrevoke">altanahtarlar yürürlükten kaldırılıyor...</string>
   <string name="progress_modify_subkeystrip">altanahtarlar çıkarılıyor...</string>
   <string name="progress_modify_subkeyadd">altanahtarlar ekleniyor...</string>
-  <string name="progress_modify_passphrase">parola değiştiriliyor...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">anahtar dışa aktarılıyor...</item>
     <item quantity="other">anahtarlar dışa aktarılıyor...</item>
@@ -294,8 +263,8 @@
   <string name="import_tab_qr_code">QR Kodu/NFC</string>
   <string name="import_import">Seçili anahtarları içe aktar</string>
   <string name="import_qr_code_wrong">QR Kodu hatalı! Lütfen tekrar deneyin!</string>
-  <string name="import_qr_code_too_short_fingerprint">Parmak izi çok kısa (&lt; 16 karakter)</string>
   <string name="import_qr_code_button">QR Kodu Tara</string>
+  <!--Import from URL-->
   <!--Generic result toast-->
   <string name="with_warnings">, uyarılarla</string>
   <string name="with_cancelled">, iptal edilene kadar</string>
@@ -320,10 +289,6 @@
   <string name="intent_send_encrypt">OpenKeychain ile Şifrele</string>
   <string name="intent_send_decrypt">OpenKeychain ile Çözümle</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Gelişmiş bilgiyi göster</string>
-  <string name="api_settings_hide_info">Gelişmiş bilgiyi gizle</string>
-  <string name="api_settings_show_advanced">Gelişmiş ayarları göster</string>
-  <string name="api_settings_hide_advanced">Gelişmiş ayarları gizle</string>
   <string name="api_settings_no_key">Anahtar seçilmedi</string>
   <string name="api_settings_select_key">Anahtar seç</string>
   <string name="api_settings_save">Kaydet</string>
@@ -374,7 +339,6 @@
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
-  <string name="edit_key_action_change_passphrase">Parolayı Değiştir</string>
   <string name="edit_key_action_add_identity">Kimlik Ekle</string>
   <string name="edit_key_action_add_subkey">Alt anahtar Ekle</string>
   <string name="edit_key_edit_user_id_title">Bir eylem seç!</string>
@@ -389,13 +353,13 @@
   <string name="edit_key_error_add_subkey">En az bir alt anahtar ekleyin!</string>
   <!--Create key-->
   <string name="create_key_empty">Bu alan zorunludur</string>
-  <string name="create_key_passphrases_not_equal">Parolalar eşleşmedi</string>
   <string name="create_key_final_text">Şu kimliği girdiniz:</string>
   <string name="create_key_final_robot_text">Anahtar oluşturma biraz zaman alabilir, bu sırada bir çay için...</string>
   <string name="create_key_rsa">(3 alt anahtar, RSA, 4096 bit)</string>
   <string name="create_key_custom">(özel anahtar yapılandırması)</string>
   <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="nav_apps">Uygulamalar</string>
@@ -453,8 +417,6 @@
   <string name="msg_download_success">Başarıyla indirildi!</string>
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_clear">Önbelleği Temizle</string>
-  <string name="passp_cache_notif_pwd">Parola</string>
   <!--First Time-->
   <string name="first_time_text1">Gizliliğinizi OpenKeychain ile geri alın!</string>
   <string name="first_time_skip">Kurulumu Atla</string>
@@ -468,8 +430,6 @@
   <string name="error_key_not_found">Anahtar bulunamadı!</string>
   <string name="error_key_processing">Anahtar işlenirken hata!</string>
   <string name="key_stripped">çıkartıldı</string>
-  <string name="key_divert">AkıllıKart/NFC için yönlendir</string>
-  <string name="key_no_passphrase">parola yok</string>
   <string name="key_unavailable">mevcut değil</string>
   <string name="secret_cannot_multiple">Kendi anahtarlarınız yalnızca teker teker silinebilir!</string>
   <string name="title_view_cert">Sertifika Ayrıntılarını Görüntüle</string>
@@ -480,11 +440,10 @@
   <string name="contact_show_key">Anahtarı göster (%s)</string>
   <string name="swipe_to_update">Anahtar sunucudan güncelleme almak için parmağınızı aşağıya doğru kaydırın</string>
   <string name="error_no_file_selected">Şifrelemek için en az bir dosya seçin!</string>
-  <string name="error_multi_files">Birden çok dosyanın kaydedilmesi desteklenmiyor. Bu şu anki Android\'in bir kısıtlamasıdır.</string>
   <string name="key_colon">Anahtar:</string>
   <string name="exchange_description">Anahtar değiş tokuşu başlatmak için sağ taraftan katılımcıların sayısını seçin ve \"Değiş tokuşu başlat\" tuşuna tıklayın.\n\nSadece istenilen katılımcıların değişim işleminde olduğundan ve parmak izlerinin doğruluğundan emin olmak için size iki soru daha sorulacak.</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

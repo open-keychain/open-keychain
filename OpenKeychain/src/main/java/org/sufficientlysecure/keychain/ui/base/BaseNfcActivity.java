@@ -94,7 +94,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     public void onNewIntent(Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             try {
-                handleNdefDiscoveredIntent(intent);
+                handleTagDiscoveredIntent(intent);
             } catch (CardException e) {
                 handleNfcError(e);
             } catch (IOException e) {
@@ -269,7 +269,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * This method is called by onNewIntent above upon discovery of an NFC tag.
      * It handles initialization and login to the application, subsequently
      * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
-     * finishes the activity with an appropiate result.
+     * finishes the activity with an appropriate result.
      *
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx
@@ -278,7 +278,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * on ISO SmartCard Systems specification.
      *
      */
-    protected void handleNdefDiscoveredIntent(Intent intent) throws IOException {
+    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
 
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 

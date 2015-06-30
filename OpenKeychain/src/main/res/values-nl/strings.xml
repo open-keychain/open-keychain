@@ -7,12 +7,11 @@
   <string name="title_encrypt_text">Versleutelen</string>
   <string name="title_encrypt_files">Versleutelen</string>
   <string name="title_decrypt">Ontsleutelen</string>
-  <string name="title_unlock">Ontgrendel sleutel</string>
   <string name="title_add_subkey">Voeg subsleutel toe</string>
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Apps</string>
-  <string name="title_key_server_preference">Sleutelservers</string>
+  <string name="title_key_server_preference">OpenPGP-sleutelservers</string>
   <string name="title_change_passphrase">Wachtwoord wijzigen</string>
   <string name="title_share_fingerprint_with">Vingerafdruk delen met…</string>
   <string name="title_share_key">Sleutel delen met…</string>
@@ -30,33 +29,34 @@
   <string name="title_help">Help</string>
   <string name="title_log_display">Log</string>
   <string name="title_exchange_keys">Sleutels uitwisselen</string>
-  <string name="title_advanced_key_info">Geavanceerde sleutelinfo</string>
+  <string name="title_advanced_key_info">Uitgebreide informatie</string>
   <string name="title_delete_secret_key">JOUW sleutel \'%s\' verwijderen?</string>
   <string name="title_export_log">Log exporteren</string>
   <string name="title_manage_my_keys">Beheer mijn sleutels</string>
   <!--section-->
   <string name="section_user_ids">Identiteiten</string>
+  <string name="section_yubikey">YubiKey</string>
   <string name="section_linked_system_contact">Verbonden systeemcontact</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
   <string name="section_proof_details">Bewijs van verificatie</string>
   <string name="section_cloud_evidence">Bewijzen van de cloud</string>
   <string name="section_keys">Subsleutels</string>
   <string name="section_cloud_search">Cloud zoeken</string>
-  <string name="section_passphrase_cache">Wachtwoordcache</string>
+  <string name="section_passphrase_cache">Verwerken van wachtwoorden/PINs</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
   <string name="section_key_server">Sleutelserver</string>
   <string name="section_fingerprint">Vingerafdruk</string>
   <string name="section_encrypt">Versleutelen</string>
-  <string name="section_decrypt">Ontsleutelen</string>
+  <string name="section_decrypt">Ontsleutelen / verifiëren</string>
   <string name="section_current_expiry">Huidige verloopdatum</string>
   <string name="section_new_expiry">Nieuwe verloopdatum</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Decodeer, verifiëer en sla bestand op</string>
+  <string name="btn_decrypt_verify_file">Ontsleutel, verifieer en sla bestand op</string>
   <string name="btn_encrypt_share_file">Bestand versleutelen en delen</string>
   <string name="btn_encrypt_save_file">Bestand versleutelen en opslaan</string>
-  <string name="btn_save">Opslaan</string>
+  <string name="btn_view_log">Bekijk log</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
   <string name="btn_no_date">Geen einddatum</string>
@@ -71,13 +71,17 @@
   <string name="btn_view_cert_key">Toon certificatiesleutel</string>
   <string name="btn_create_key">Sleutel aanmaken</string>
   <string name="btn_add_files">Bestand(en) toevoegen</string>
-  <string name="btn_add_share_decrypted_text">Ontcijferde tekst delen</string>
-  <string name="btn_decrypt_clipboard">Tekst van klembord ontsleutelen</string>
-  <string name="btn_decrypt_and_verify">en ondertekeningen verifiëren</string>
-  <string name="btn_decrypt_files">Bestanden ontcijferen</string>
+  <string name="btn_share_decrypted_text">Ontsleutelde tekst delen</string>
+  <string name="btn_copy_decrypted_text">Ontsleutelde tekst kopiëren</string>
+  <string name="btn_decrypt_clipboard">Lezen van klembord</string>
+  <string name="btn_decrypt_files">Kies invoerbestand</string>
   <string name="btn_encrypt_files">Bestanden versleutelen</string>
   <string name="btn_encrypt_text">Tekst versleutelen</string>
   <string name="btn_add_email">Bijkomstig e-mailadres toevoegen</string>
+  <string name="btn_unlock">Ontgrendelen</string>
+  <string name="btn_add_keyserver">Toevoegen</string>
+  <string name="btn_save_default">Opslaan als standaard</string>
+  <string name="btn_saved">Opgeslagen!</string>
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
@@ -91,7 +95,7 @@
   <string name="menu_select_all">Alles selecteren</string>
   <string name="menu_export_all_keys">Alle sleutels exporteren</string>
   <string name="menu_update_all_keys">Alle sleutels bijwerken</string>
-  <string name="menu_advanced">Geavanceerde info tonen</string>
+  <string name="menu_advanced">Uitgebreide informatie</string>
   <string name="menu_certify_fingerprint">Bevestigen door vingerafdrukken te vergelijken</string>
   <string name="menu_export_log">Log exporteren</string>
   <!--label-->
@@ -115,16 +119,17 @@
   <string name="label_asymmetric_from">Ondertekend door:</string>
   <string name="label_to">Versleutelen naar:</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
-  <string name="label_delete_after_decryption">Verwijder na ontcijfering</string>
+  <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
   <string name="label_hash_algorithm">Hashalgoritme</string>
   <string name="label_symmetric">Versleutelen met wachtwoord</string>
-  <string name="label_passphrase_cache_ttl">Cachetijd</string>
-  <string name="label_passphrase_cache_subs">Cache wachtwoorden per subsleutel</string>
+  <string name="label_passphrase_cache_ttl">Onthou tijd</string>
+  <string name="label_passphrase_cache_subs">Onthou wachtwoorden per subsleutel</string>
   <string name="label_message_compression">Tekstcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
-  <string name="label_keyservers">Sleutelservers</string>
+  <string name="label_keyservers">Kies OpenPGP-sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
+  <string name="label_key_created">Sleutel aangemaakt %s</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_expiry">Verlopen</string>
   <string name="label_usage">Gebruik</string>
@@ -142,10 +147,12 @@
   <string name="label_enable_compression">Compressie aanzetten</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
-  <string name="pref_keyserver">Zoeken op sleutelserver</string>
-  <string name="pref_keyserver_summary">Zoeken op HKP sleutelserver</string>
-  <string name="pref_keybase">Zoeken op Keybase.io</string>
-  <string name="pref_keybase_summary">Zoeken in Keybase.io-index</string>
+  <string name="label_verify_keyserver">Sleutelserver verifiëren</string>
+  <string name="label_enter_keyserver_url">Voer sleutelserver-URL in</string>
+  <string name="pref_keyserver">OpenPGP-sleutelservers</string>
+  <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
+  <string name="pref_keybase">keybase.io</string>
+  <string name="pref_keybase_summary">Zoek sleutels op keybase.io</string>
   <string name="user_id_no_name">&lt;no naam&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <plurals name="n_keys">
@@ -188,7 +195,7 @@
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
   <string name="passphrases_do_not_match">De wachtwoorden komen niet overeen.</string>
-  <string name="passphrase_must_not_be_empty">Vul een wachtwoord in.</string>
+  <string name="passphrase_must_not_be_empty">Geef een wachtwoord in.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische versleuteling.</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
@@ -197,13 +204,13 @@
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
-  <string name="no_file_selected">Selecteer eerst een bestand.</string>
+  <string name="no_file_selected">Geen bestand geselecteerd.</string>
   <string name="encrypt_sign_successful">Succesvol gesigneerd en/of gecodeerd.</string>
   <string name="encrypt_sign_clipboard_successful">Succesvol gesigneerd en/of gecodeerd naar klembord.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
-  <string name="error_no_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>
+  <string name="error_no_encryption_or_signature_key">Kies ten minste één versleutelingssleutel of een ondertekeningssleutel.</string>
   <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
-  <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontcijferd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
+  <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontsleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="specify_file_to_export_to">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="key_deletion_confirmation_multi">Ben je zeker dat je alle geselecteerde sleutels wil verwijderen?</string>
   <string name="secret_key_deletion_confirmation">Na verwijderen zal je niet langer berichten versleuteld met deze sleutel kunnen lezen, en alle sleutelbevestigingen die ermee gedaan zijn verliezen!</string>
@@ -237,7 +244,7 @@
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
   <string name="error_unknown_algorithm_choice">onbekende algoritmekeuze</string>
-  <string name="error_user_id_no_email">geen e-mail gevonden</string>
+  <string name="error_user_id_no_email">geen e-mailadres gevonden</string>
   <string name="error_key_needs_a_user_id">minstens een identiteit vereist</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
@@ -250,16 +257,18 @@
   <string name="error_nfc_needed">NFC moet aangezet zijn!</string>
   <string name="error_beam_needed">Beam moet aangezet zijn!</string>
   <string name="error_nothing_import">Geen sleutels gevonden!</string>
+  <string name="error_nothing_import_selected">Geen sleutels geselecteerd voor importeren!</string>
   <string name="error_contacts_key_id_missing">Sleutel-ID van contacten ophalen mislukt!</string>
   <string name="error_generic_report_bug">Een algemene fout is opgetreden, gelieve een nieuw bug-verslag te maken voor OpenKeychain.</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Niet ondertekend</string>
   <string name="decrypt_result_invalid_signature">Ongeldige handtekening!</string>
-  <string name="decrypt_result_signature_uncertified">Ondertekend door (niet gecertificeerd!)</string>
-  <string name="decrypt_result_signature_certified">Ondertekend door</string>
-  <string name="decrypt_result_signature_expired_key">Sleutel is verlopen!</string>
-  <string name="decrypt_result_signature_revoked_key">Sleutel is ingetrokken!</string>
-  <string name="decrypt_result_signature_missing_key">Onbekende publieke sleutel</string>
+  <string name="decrypt_result_signature_uncertified">Ondertekend door <b>niet bevestigde</b> sleutel</string>
+  <string name="decrypt_result_signature_secret">Ondertekend door jouw sleutel</string>
+  <string name="decrypt_result_signature_certified">Ondertekend door bevestigde sleutel</string>
+  <string name="decrypt_result_signature_expired_key">Ondertekend door <b>verlopen</b> sleutel!</string>
+  <string name="decrypt_result_signature_revoked_key">Ondertekend door <b>ingetrokken</b> sleutel!</string>
+  <string name="decrypt_result_signature_missing_key">Ondertekend door <b>onbekende publieke sleutel</b></string>
   <string name="decrypt_result_encrypted">Versleuteld</string>
   <string name="decrypt_result_not_encrypted">Niet versleuteld</string>
   <string name="decrypt_result_action_show">Toon</string>
@@ -299,6 +308,7 @@
     <item quantity="one">sleutel exporteren…</item>
     <item quantity="other">sleutels exporteren…</item>
   </plurals>
+  <string name="progress_start">bewerking voorbereiden…</string>
   <string name="progress_extracting_signature_key">ondertekeningssleutel uitpakken…</string>
   <string name="progress_extracting_key">sleutel uitpakken…</string>
   <string name="progress_preparing_streams">streams voorbereiden…</string>
@@ -318,6 +328,7 @@
   <string name="progress_deleting">bezig met verwijderen van sleutels…</string>
   <string name="progress_con_saving">consolidatie: bezig met opslaan naar cache…</string>
   <string name="progress_con_reimport">consolidatie: bezig met opnieuw importeren…</string>
+  <string name="progress_verifying_keyserver_url">bezig met verifiëren van sleutelserver…</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Zoeken via naam, e-mail, ...</string>
   <!--key bit length selections-->
@@ -359,9 +370,12 @@
   <string name="import_tab_qr_code">QR code/NFC</string>
   <string name="import_import">Geselecteerde sleutels importeren</string>
   <string name="import_qr_code_wrong">QR-code ongeldig. Probeer het opnieuw</string>
-  <string name="import_qr_code_too_short_fingerprint">Vingerafdruk is te kort (&lt; 16 tekens)</string>
+  <string name="import_qr_code_fp">Vingerafdruk is verkeerd of te kort!</string>
+  <string name="import_qr_code_too_short_fingerprint">Vingerafdruk is te kort!</string>
   <string name="import_qr_code_button">QR code scannen</string>
   <string name="import_qr_code_text">Plaats je camera voor de QR-code!</string>
+  <!--Import from URL-->
+  <string name="import_url_warn_no_search_parameter">Geen zoekopdracht gedefinieerd. Je kan de sleutelserver handmatig doorzoeken.</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Details</string>
   <string name="with_warnings">, met waarschuwingen</string>
@@ -426,15 +440,15 @@
     <item quantity="other">Certificatie van %d sleutels mislukt!</item>
   </plurals>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">Decodeer bestand met OpenKeychain</string>
+  <string name="intent_decrypt_file">Bestand ontsleutelen met OpenKeychain</string>
   <string name="intent_import_key">Importeer Sleutel met OpenKeychain</string>
   <string name="intent_send_encrypt">Codeer met OpenKeychain</string>
-  <string name="intent_send_decrypt">Decodeer met OpenKeychain</string>
+  <string name="intent_send_decrypt">Ontsleutelen met OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Toon geavanceerde informatie</string>
-  <string name="api_settings_hide_info">Verberg geavanceerde informatie</string>
-  <string name="api_settings_show_advanced">Toon geavanceerde instellingen</string>
-  <string name="api_settings_hide_advanced">Verberg geavanceerde instellingen</string>
+  <string name="api_settings_show_info">Uitgebreide informatie weergeven</string>
+  <string name="api_settings_hide_info">Uitgebreide informatie verbergen</string>
+  <string name="api_settings_show_advanced">Uitgebreide instellingen weergeven</string>
+  <string name="api_settings_hide_advanced">Uitgebreide instellingen verbergen</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
   <string name="api_settings_create_key">Nieuwe sleutel aanmaken</string>
@@ -446,15 +460,15 @@
   <string name="api_settings_delete_account">Verwijder account</string>
   <string name="api_settings_package_name">Pakketnaam</string>
   <string name="api_settings_package_signature">SHA-256 van Pakkethandtekening</string>
-  <string name="api_settings_accounts">Accounts (verouderde API)</string>
-  <string name="api_settings_advanced">Geavanceerde informatie</string>
+  <string name="api_settings_accounts">Accounts (oude API)</string>
+  <string name="api_settings_advanced">Uitgebreide informatie</string>
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
   <string name="api_settings_settings">Instellingen</string>
   <string name="api_settings_key">Accountsleutel:</string>
   <string name="api_settings_accounts_empty">Geen accounts verbonden aan deze app.</string>
-  <string name="api_create_account_text">Geen sleutel ingesteld voor deze account. Gelieve een van je bestaande sleutels te selecteren, of een nieuwe sleutel aan te maken.\nApps kunnen enkel ontcijferen/ondertekenen met de sleutels die je hier selecteert!</string>
-  <string name="api_update_account_text">De sleutel opgeslaan voor deze account is verwijderd. Gelieve een andere te selecteren!\nApps kunnen enkel ontcijferen/ondertekenen met de sleutels die je hier selecteert!</string>
-  <string name="api_register_text">De weergegeven app will berichten versleutelen/ontcijferen en ze in jouw naam ondertekenen.\nToegang toestaan?\n\nWAARSCHUWING: als je niet weet waarom dit scherm verscheen, sta dan geen toegang toe! Je kan later toegang weghalen via het \'Apps\' scherm.</string>
+  <string name="api_create_account_text">Geen sleutel ingesteld voor deze account. Gelieve een van je bestaande sleutels te selecteren, of een nieuwe sleutel aan te maken.\nApps kunnen enkel ontsleutelen/ondertekenen met de sleutels die je hier selecteert!</string>
+  <string name="api_update_account_text">De sleutel opgeslaan voor deze account is verwijderd. Gelieve een andere te selecteren!\nApps kunnen enkel ontsleutelen/ondertekenen met de sleutels die je hier selecteert!</string>
+  <string name="api_register_text">De weergegeven app will berichten versleutelen/ontsleutelen en ze in jouw naam ondertekenen.\nToegang toestaan?\n\nWAARSCHUWING: als je niet weet waarom dit scherm verscheen, sta dan geen toegang toe! Je kan later toegang weghalen via het \'Apps\' scherm.</string>
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
@@ -464,6 +478,7 @@
   <string name="api_select_pub_keys_text_no_user_ids">Gelieve de ontvangers te selecteren!</string>
   <string name="api_error_wrong_signature">Handtekening check mislukt! Hebt u deze app van een andere bron geïnstalleerd? Als u zeker weet dat dit geen aanval is, haal dan de registratie van deze app in OpenKeychain weg en registreer de app opnieuw.</string>
   <string name="api_select_sign_key_text">Gelieve een van je bestaande sleutels te selecteren of een nieuwe aan te maken.</string>
+  <string name="api_select_keys_text">Geen van de toegestane sleutels kan de inhoud ontsleutelen. Gelieve de toegestane sleutels te selecteren.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Delen met QR-code</string>
   <string name="share_nfc_dialog">Deel met NFC</string>
@@ -555,12 +570,15 @@
     <item>Vervaldatum veranderen</item>
     <item>Subsleutel intrekken</item>
     <item>Subsleutel strippen</item>
-    <item>"Move Subkey to Yubikey / Smart Card"</item>
+    <item>Subsleutel verplaatsen naar YubiKey / smartcard</item>
   </string-array>
   <string name="edit_key_new_subkey">nieuwe subsleutel</string>
   <string name="edit_key_select_flag">Gelieve minstens een vlag te selecteren!</string>
   <string name="edit_key_error_add_identity">Voeg minstens een identiteit toe!</string>
   <string name="edit_key_error_add_subkey">Voeg minstens een subsleutel toe!</string>
+  <string name="edit_key_error_bad_nfc_algo">Algoritme wordt niet ondersteund door smartcard!</string>
+  <string name="edit_key_error_bad_nfc_size">Sleutelgrootte wordt niet ondersteund door smartcard!</string>
+  <string name="edit_key_error_bad_nfc_stripped">Kan sleutel niet verplaatsen naar smartcard (ofwel gestript ofwel \'doorschakelen-naar-kaart\')!</string>
   <!--Create key-->
   <string name="create_key_upload">Synchroniseren met de cloud</string>
   <string name="create_key_empty">Dit veld moet ingevuld worden</string>
@@ -576,7 +594,8 @@
   <string name="create_key_edit">Sleutelconfiguratie wijzigen</string>
   <string name="create_key_add_email">E-mailadres toevoegen</string>
   <string name="create_key_add_email_text">Bijkomstige e-mailadressen zijn ook verbonden met deze sleutel en kunnen gebruikt worden voor veilige communicatie.</string>
-  <string name="create_key_email_already_exists_text">E-mail is al toegevoegd</string>
+  <string name="create_key_email_already_exists_text">E-mailadres is al toegevoegd</string>
+  <string name="create_key_email_invalid_email">E-mailadresformaat is ongeldig</string>
   <!--View key-->
   <string name="view_key_revoked">Ingetrokken: sleutel mag niet meer gebruikt worden!</string>
   <string name="view_key_expired">Verlopen: het contact moet de geldigheid van de sleutel verlengen!</string>
@@ -585,6 +604,12 @@
   <string name="view_key_verified">Bevestigde sleutel</string>
   <string name="view_key_unverified">Niet bevestigd: scan QR-code om de sleutel te bevestigen!</string>
   <string name="view_key_fragment_no_system_contact">&lt;geen&gt;</string>
+  <!--Add keyserver-->
+  <string name="add_keyserver_dialog_title">Sleutelserver toevoegen</string>
+  <string name="add_keyserver_verified">Sleutelserver geverifieerd!</string>
+  <string name="add_keyserver_without_verification">Sleutelserver toegevoegd zonder verificatie.</string>
+  <string name="add_keyserver_invalid_url">Ongeldige URL!</string>
+  <string name="add_keyserver_connection_failed">Kon niet verbinden met sleutelserver. Controleer de URL en je internetverbinding.</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Sleutels</string>
   <string name="nav_encrypt_decrypt">Versleutelen/Ontsleutelen</string>
@@ -715,7 +740,7 @@
   <string name="msg_is_subkey_empty">Geheime subsleutel %s gemarkeerd als beschikbaar, met leeg wachtwoord</string>
   <string name="msg_is_subkey_pin">Geheime subsleutel %s gemarkeerd als beschikbaar, met PIN</string>
   <string name="msg_is_subkey_stripped">Geheime subsleutel %s gemarkeerd als gestript</string>
-  <string name="msg_is_subkey_divert">Geheime subsleutel %s gemarkeerd als \'doorschakelen naar smartcard/NFC\'</string>
+  <string name="msg_is_subkey_divert">Geheime subsleutel %s gemarkeerd als \'doorschakelen-naar-kaart\'</string>
   <string name="msg_is_success_identical">Sleutelbos bevat geen nieuwe gegevens, niets te doen</string>
   <string name="msg_is_success">Geheime sleutelbos succesvol geïmporteerd</string>
   <!--Keyring Canonicalization log entries-->
@@ -742,6 +767,7 @@
   <string name="msg_kc_sub_bad_local">Bezig met verwijderen van subsleutelbindend certificaat met vlag \'lokaal\'</string>
   <string name="msg_kc_sub_bad_keyid">Subsleutelbindende uitgevers-ID komt niet overeen</string>
   <string name="msg_kc_sub_bad_time">Bezig met verwijderen van subsleutelbindend certificaat met toekomstige tijdstempel</string>
+  <string name="msg_kc_sub_bad_time_early">Subsleutelbindend certificaat heeft vroegere tijdstempel dan sleutel!</string>
   <string name="msg_kc_sub_bad_type">Onbekend subsleutelcertificaattype: %s</string>
   <string name="msg_kc_sub_dup">Bezig met verwijderen van overbodig subsleutelbindend certificaat</string>
   <string name="msg_kc_sub_primary_bad">Bezig met verwijderen van subsleutelbindend certificaat wegens ongeldig primair bindend certificaat</string>
@@ -818,7 +844,8 @@
   <string name="msg_cr_error_flags_ecdh">Slechte sleutelvlaggen geselecteerd, ECDH kan niet gebruikt worden voor versleuteling!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Bezig met wijzigen van sleutelbos %s</string>
-  <string name="msg_mf_error_divert_serial">Het serienummer van een doorschakelen-naar-kaart sleutel moet 16 bytes zijn! Dit is een programmeerfout, gelieve een verslag in te dienen!</string>
+  <string name="msg_mf_divert">Zal doorschakelen naar smartcard voor versleutelingsbewerkingen</string>
+  <string name="msg_mf_error_divert_serial">Het serienummer van een \'doorschakelen-naar-kaart\'-sleutel moet 16 bytes zijn! Dit is een programmeerfout, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_encode">Codeeruitzondering!</string>
   <string name="msg_mf_error_fingerprint">Eigenlijke vingerafdruk van sleutel komt niet overeen met verwachte vingerafdruk!</string>
   <string name="msg_mf_error_keyid">Geen sleutel-ID. Dit is een bug, gelieve een verslag in te dienen!</string>
@@ -829,9 +856,14 @@
   <string name="msg_mf_error_restricted">Geprobeerd een beperkte bewerking uit te voeren zonder wachtwoord! Dit is een programmeerfout, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_revoked_primary">Ingetrokken gebruikers-ID\'s kunnen niet primair zijn!</string>
   <string name="msg_mf_error_null_expiry">Verloopdatum kan niet hetzelfde als voordien zijn bij aanmaken van een subsleutel. Dit is een bug, gelieve een verslag in te dienen!</string>
-  <string name="msg_mf_error_passphrase_master">Fatale fout bij ontcijferen van hoofdsleutel. Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
+  <string name="msg_mf_error_noop">Niets om te doen!</string>
+  <string name="msg_mf_error_passphrase_master">Fatale fout bij ontsleutelen van hoofdsleutel. Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_mf_error_sig">Ondertekeningsuitzondering!</string>
+  <string name="msg_mf_error_subkey_missing">Geprobeerd om bewerking uit te voeren op ontbrekende subsleutel %s!</string>
+  <string name="msg_mf_error_conflicting_nfc_commands">Kan sleutel niet tegelijk verplaatsen naar smartcard en een on-card-ondertekening aanmaken.</string>
+  <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard ondersteunt slechts een slot per sleuteltype</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">Ongeldige sleutelvlaggen voor smartcardsleutel</string>
   <string name="msg_mf_master">Bezig met wijzigen van hoofdcertificaten</string>
   <string name="msg_mf_notation_empty">Bezig met toevoegen van leeg notatiepakket</string>
   <string name="msg_mf_notation_pin">Bezig met toevoegen van PIN-notatiepakket</string>
@@ -841,13 +873,17 @@
   <string name="msg_mf_passphrase_fail">Wachtwoord voor subsleutel kon niet gewijzigd worden! (Heeft het een ander wachtwoord dan de andere sleutels?)</string>
   <string name="msg_mf_primary_replace_old">Bezig met vervangen van certificaat van vorige primaire gebruikers-ID</string>
   <string name="msg_mf_primary_new">Bezig met aanmaken van nieuw certificaat voor nieuwe primaire gebruikers-ID</string>
+  <string name="msg_mf_restricted_mode">Veranderen naar beperkte bewerkingsmodus</string>
   <string name="msg_mf_subkey_change">Bezig met wijzigen van subsleutel %s</string>
-  <string name="msg_mf_error_subkey_missing">Geprobeerd om bewerking uit te voeren op ontbrekende subsleutel %s!</string>
+  <string name="msg_mf_require_divert">Doorschakelen naar smartcard voor versleutelingsbewerkingen</string>
+  <string name="msg_mf_require_passphrase">Wachtwoord vereist voor bewerkingen</string>
   <string name="msg_mf_subkey_new">Bezig met toevoegen van nieuwe subsleutel of type %s</string>
   <string name="msg_mf_subkey_new_id">Nieuwe subsleutel-ID: %s</string>
   <string name="msg_mf_error_past_expiry">Verloopdatum kan niet in het verleden zijn!</string>
   <string name="msg_mf_subkey_revoke">Bezig met intrekken van subsleutel %s</string>
   <string name="msg_mf_subkey_strip">Bezig met strippen van subsleutel %s</string>
+  <string name="msg_mf_keytocard_start">Subsleutel %s wordt verplaatst naar smartcard</string>
+  <string name="msg_mf_keytocard_finish">%1$s verplaatst naar smartcard %2$s</string>
   <string name="msg_mf_success">Sleutelbos succesvol gewijzigd</string>
   <string name="msg_mf_uid_add">Bezig met toevoegen van gebruikers-ID %s</string>
   <string name="msg_mf_uid_primary">Bezig met wijzigen van primaire gebruikers-ID naar %s</string>
@@ -899,12 +935,13 @@
   <string name="msg_ed_success">Sleutelbewerking geslaagd</string>
   <!--Promote key-->
   <string name="msg_pr">Bezig met promoveren van publieke sleutel naar geheime sleutel</string>
-  <string name="msg_pr_error_already_secret">Sleutel is al een geheime sleutel!</string>
+  <string name="msg_pr_all">Bezig met promoveren van alle subsleutels</string>
   <string name="msg_pr_error_key_not_found">Sleutel niet gevonden!</string>
   <string name="msg_pr_fetching">Bezig met ophalen van de te wijzigen sleutel (%s)</string>
+  <string name="msg_pr_subkey_match">Bezig met promoveren van subsleutel: %s</string>
+  <string name="msg_pr_subkey_nomatch">Subsleutel niet op YubiKey: %s</string>
   <string name="msg_pr_success">Sleutel succesvol gepromoveerd!</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_divert">Bewerken van NFC-sleutels wordt (nog) niet ondersteund!</string>
   <string name="msg_ek_error_dummy">Kan sleutelbos niet bewerken met gestripte hoofdsleutel!</string>
   <string name="msg_ek_error_not_found">Sleutel niet gevonden!</string>
   <!--Messages for DecryptVerify operation-->
@@ -925,23 +962,24 @@
   <string name="msg_dc_clear_signature_ok">Ondertekeningscontrole OKÉ</string>
   <string name="msg_dc_clear_signature">Bezig met opslaan van ondertekeningsgegevens voor later</string>
   <string name="msg_dc_clear">Bezig met verwerken van platte tekst-gegevens</string>
-  <string name="msg_dc_error_bad_passphrase">Fout bij ontcijferen van sleutel, slecht wachtwoord!</string>
+  <string name="msg_dc_error_bad_passphrase">Fout bij ontgrendelen van sleutel, verkeerd wachtwoord!</string>
+  <string name="msg_dc_error_corrupt_data">Gegevens zijn corrupt!</string>
   <string name="msg_dc_error_extract_key">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_dc_error_integrity_check">Fout bij integriteitscontrole!</string>
   <string name="msg_dc_error_integrity_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
-  <string name="msg_dc_error_invalid_data">Geen geldige ondertekeningsgegevens gevonden!</string>
+  <string name="msg_dc_error_invalid_data">Geen geldige OpenPGP-versleutelde of ondertekende inhoud gevonden!</string>
   <string name="msg_dc_error_io">I/O-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>
   <string name="msg_dc_error_pgp_exception">OpenPGP-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_dc_integrity_check_ok">Integriteitscontrole OKÉ!</string>
-  <string name="msg_dc_ok_meta_only">Enkel metadata opgevraagd, ontcijferen wordt overgeslaan</string>
+  <string name="msg_dc_ok_meta_only">Enkel metadata opgevraagd, ontsleutelen wordt overgeslagen</string>
   <string name="msg_dc_ok">Ontsleuteling/verificatie voltooid</string>
   <string name="msg_dc_pass_cached">Wachtwoord wordt uit cache gebruikt</string>
   <string name="msg_dc_pending_nfc">NFC token vereist, gebruikersinput wordt gevraagd…</string>
   <string name="msg_dc_pending_passphrase">Wachtwoord vereist, gebruikersinput wordt gevraagd…</string>
-  <string name="msg_dc_prep_streams">Bezig met voorbereiden van streams voor ontcijfering</string>
-  <string name="msg_dc">Ontcijfering wordt gestart…</string>
+  <string name="msg_dc_prep_streams">Bezig met voorbereiden van streams voor ontsleuteling</string>
+  <string name="msg_dc">Ontsleuteling wordt gestart…</string>
   <string name="msg_dc_sym_skip">Symmetrische gegevens niet toegestaan, bewerking wordt overgeslaan…</string>
   <string name="msg_dc_sym">Blok met symmetrisch versleutelde gegevens gevonden</string>
   <string name="msg_dc_trail_asym">Achterlopende, asymmetrisch versleutelde gegevens tegengekomen voor sleutel %s</string>
@@ -969,20 +1007,19 @@
   <string name="msg_se_error_input_uri_not_found">Fout bij openen van URI voor lezen!</string>
   <string name="msg_se_error_output_uri_not_found">Fout bij openen van URI voor schrijven!</string>
   <string name="msg_se_error_too_many_inputs">Meer inputs dan outputs opgegeven! Dit is waarschijnlijk een programmeerfout, gelieve dit te melden!</string>
-  <string name="msg_se_warn_output_left">Er blijven outputs over maar geen inputs. Dit is waarschijnlijk een programmeerfout, gelieve dit te melden!</string>
   <string name="msg_se_success">Ondertekening/versleuteling geslaagd</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Bezig met publieke sleutels voorbereiden voor versleuteling</string>
   <string name="msg_pse_clearsign_only">Ondertekenen van platte tekst-input wordt niet ondersteund!</string>
   <string name="msg_pse_compressing">Bezig met voorbereiden van comprimeren</string>
   <string name="msg_pse_encrypting">Bezig met versleutelen van gegevens</string>
-  <string name="msg_pse_error_bad_passphrase">Slecht wachtwoord!</string>
+  <string name="msg_pse_error_bad_passphrase">Wachtwoord verkeerd!</string>
   <string name="msg_pse_error_hash_algo">Het gevraagde hashing-algoritme wordt niet ondersteund door deze sleutel!</string>
   <string name="msg_pse_error_io">I/O-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_pse_error_key_sign">Geselecteerde sleutel kan geen gegevens ondertekenen!</string>
   <string name="msg_pse_error_sign_key">Fout bij ophalen van ondertekeningssleutel!</string>
   <string name="msg_pse_error_nfc">NFC-gegevensfout!</string>
-  <string name="msg_pse_error_no_passphrase">Geen wachtwoord gegeven!</string>
+  <string name="msg_pse_error_no_passphrase">Geen wachtwoord opgegeven!</string>
   <string name="msg_pse_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_pse_error_sig">OpenPGP-ondertekeningsuitzondering tegengekomen!</string>
   <string name="msg_pse_error_unlock">Onbekende fout bij ontgrendelen van sleutel!</string>
@@ -991,7 +1028,7 @@
   <string name="msg_pse_key_warn">Slechte sleutel voor versleuteling: %s</string>
   <string name="msg_pse_ok">Ondertekening/versleuteling geslaagd!</string>
   <string name="msg_pse_pending_nfc">NFC token vereist, gebruikersinput gevraagd…</string>
-  <string name="msg_pse_pending_passphrase">Wachtwoord vereist, gebruikersinput gevraagd…</string>
+  <string name="msg_pse_pending_passphrase">Wachtwoord vereist, gebruikersinput wordt gevraagd…</string>
   <string name="msg_pse_signing">Bezig met ondertekenen van gegevens (zonder versleuteling)</string>
   <string name="msg_pse_signing_cleartext">Bezig met aanmaken van platte tekst-ondertekening</string>
   <string name="msg_pse_signing_detached">Bezig met aanmaken van vrijstaande ondertekening</string>
@@ -1011,9 +1048,9 @@
   <string name="msg_crt_error_master_not_found">Hoofdsleutel niet gevonden!</string>
   <string name="msg_crt_error_nothing">Geen sleutels gecertificeerd!</string>
   <string name="msg_crt_error_unlock">Fout bij ontgrendelen van hoofdsleutel!</string>
-  <string name="msg_crt_error_divert">Certificatie met NFC wordt (nog) niet ondersteund!</string>
   <string name="msg_crt">Bezig met certificeren van sleutelbossen</string>
   <string name="msg_crt_master_fetch">Bezig met ophalen van gecertificeerde hoofdsleutel</string>
+  <string name="msg_crt_nfc_return">Terugkeren naar NFC-scherm</string>
   <string name="msg_crt_save">Bezig met opslaan van gecertificeerde sleutel %s</string>
   <string name="msg_crt_saving">Bezig met opslaan van sleutelbossen</string>
   <string name="msg_crt_unlock">Bezig met ontgrendelen van hoofdsleutel</string>
@@ -1029,13 +1066,14 @@
   <string name="msg_import_fetch_error_decode">Fout bij decoderen van opgehaalde sleutelbos!</string>
   <string name="msg_import_fetch_error">Sleutel kon niet opgehaald worden! (Netwerkproblemen?)</string>
   <string name="msg_import_fetch_keybase">Bezig met ophalen van keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">Kon sleutel niet ophalen!</string>
+  <string name="msg_import_fetch_keyserver_error">Kon sleutel niet ophalen van sleutelservers: %s</string>
   <string name="msg_import_fetch_keyserver">Bezig met ophalen van sleutelserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Ophalen van sleutel geslaagd!</string>
   <string name="msg_import_keyserver">Sleutelserver %s wordt gebruikt</string>
   <string name="msg_import_fingerprint_error">Vingerafdruk van opgehaalde sleutel komt niet overeen met verwachte vingerafdruk!</string>
   <string name="msg_import_fingerprint_ok">Vingerafdrukcontrole OKÉ</string>
   <string name="msg_import_merge">Bezig met samenvoegen van opgehaalde gegevens</string>
+  <string name="msg_import_merge_error">Fout bij samenvoegen van opgehaalde gegevens!</string>
   <string name="msg_import_error">Importeren mislukt!</string>
   <string name="msg_import_error_io">Importeren mislukt door i/o-fout!</string>
   <string name="msg_import_partial">Importeren geslaagd, met fouten!</string>
@@ -1092,10 +1130,13 @@
   <string name="msg_export_log_error_writing">I/O-fout bij schrijven naar bestand!</string>
   <string name="msg_export_log_success">Log succesvol geëxporteerd!</string>
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Klik om de gecachete wachtwoorden te wissen</string>
-  <string name="passp_cache_notif_n_keys">OpenKeychain heeft %d wachtwoorden gecachet</string>
-  <string name="passp_cache_notif_keys">Gecachete wachtwoorden:</string>
-  <string name="passp_cache_notif_clear">Wis cache</string>
+  <string name="passp_cache_notif_click_to_clear">Tik om wachtwoorden te wissen.</string>
+  <plurals name="passp_cache_notif_n_keys">
+    <item quantity="one">%d wachtwoord onthouden</item>
+    <item quantity="other">%d wachtwoorden onthouden</item>
+  </plurals>
+  <string name="passp_cache_notif_keys">Onthouden wachtwoorden</string>
+  <string name="passp_cache_notif_clear">Wachtwoorden wissen</string>
   <string name="passp_cache_notif_pwd">Wachtwoord</string>
   <!--First Time-->
   <string name="first_time_text1">Neem je privacy terug met OpenKeychain!</string>
@@ -1119,7 +1160,7 @@
   <string name="error_key_not_found">Sleutel niet gevonden!</string>
   <string name="error_key_processing">Fout bij verwerken sleutel!</string>
   <string name="key_stripped">gestript</string>
-  <string name="key_divert">doorschakelen naar smartcard/NFC</string>
+  <string name="key_divert">doorschakelen naar smartcard</string>
   <string name="key_no_passphrase">geen wachtwoord</string>
   <string name="key_unavailable">niet beschikbaar</string>
   <string name="secret_cannot_multiple">Je eigen sleutels kunnen enkel individueel verwijderd worden!</string>
@@ -1132,6 +1173,9 @@
   <string name="swipe_to_update">Veeg naar beneden om van sleutelserver te updaten</string>
   <string name="error_no_file_selected">Selecteer minstens een bestand om te versleutelen!</string>
   <string name="error_multi_files">Opslaan van meerdere bestanden wordt niet ondersteund. Dit is een beperking van Android.</string>
+  <string name="error_multi_clipboard">Versleuteling van meerdere bestanden naar klembord wordt niet ondersteund.</string>
+  <string name="error_detached_signature">Alleen-ondertekenen-bewerking van binaire bestanden wordt niet ondersteund, kies ten minste één versleutelingssleutel.</string>
+  <string name="error_empty_text">Voer tekst in om ze te versleutelen!</string>
   <string name="key_colon">Sleutel:</string>
   <string name="exchange_description">Selecteer om een sleuteluitwisseling te starten het aantal deelnemers aan de rechterkant, en klik vervolgens op de knop \'Start uitwisseling\'.\n\nJe zal twee vragne gesteld worden om zeker te zijn dat enkel de juiste deelnemers zich in de uitwisseling bevinden en dat hun vingerafdrukken correct zijn.</string>
   <string name="btn_start_exchange">Uitwisseling starten</string>
@@ -1139,15 +1183,15 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">Kies een ontgrendelingsmethode</string>
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Voer wachtwoord in</string>
   <string name="passphrase">Wachtwoord</string>
   <string name="noPassphrase">Geen wachtwoord</string>
   <string name="no_passphrase_set">Geen wachtwoord ingesteld</string>
-  <string name="passphrases_match">Wachtwoorden komen niet overeen</string>
+  <string name="passphrases_match">Wachtwoorden komen overeen</string>
   <string name="passphrase_saved">Wachtwoord opgeslagen</string>
   <string name="passphrase_invalid">Wachtwoord ongeldig</string>
-  <string name="missing_passphrase">Ontbrekend wachtwoord</string>
+  <string name="missing_passphrase">Wachtwoord ontbreekt</string>
   <string name="passphrase_again">Opnieuw</string>
   <string name="lockpattern">Vergrendelingspatroon</string>
   <string name="lockpatternNFC">NFC + vergrendelingspatroon</string>
@@ -1162,4 +1206,51 @@
   <string name="nfc_write_succesful">Succesvol geschreven op NFC-tag</string>
   <string name="unlocked">Ontgrendeld</string>
   <string name="nfc_settings">Instellingen</string>
+  <string name="snack_yubikey_view">Bekijken</string>
+  <string name="snack_yubikey_import">Importeren</string>
+  <string name="button_bind_key">Sleutel binden</string>
+  <string name="yubikey_serno">Serienummer: %s</string>
+  <string name="yubikey_key_holder">Sleutelhouder:</string>
+  <string name="yubikey_key_holder_not_set">Sleutelhouder: &lt;niet ingesteld&gt;</string>
+  <string name="yubikey_status_bound">YubiKey komt overeen en is gebonden aan sleutel</string>
+  <string name="yubikey_status_unbound">YubiKey komt overeen en kan worden gebonden aan sleutel</string>
+  <string name="yubikey_status_partly">YubiKey komt overeen en is gedeeltelijk gebonden aan sleutel</string>
+  <string name="yubikey_create">Hou de YubiKey tegen de achterkant van je toestel.</string>
+  <string name="btn_import">Importeren</string>
+  <string name="snack_yubi_other">Andere sleutel opgeslagen op YubiKey!</string>
+  <string name="error_nfc">NFC-fout: %s</string>
+  <string name="error_pin">NFC: ongeldige PIN; %d resterende pogingen.</string>
+  <string name="error_nfc_terminated">NFC: smartcard in beëindigingsstaat</string>
+  <string name="error_nfc_wrong_length">NFC: verkeerde lengte voor verzonden / ontvangen gegevens</string>
+  <string name="error_nfc_conditions_not_satisfied">NFC: gebruiksvoorwaarden niet voldaan</string>
+  <string name="error_nfc_security_not_satisfied">NFC: veiligheidsstatus niet voldaan</string>
+  <string name="error_nfc_authentication_blocked">NFC: PIN geblokkeerd na te veel pogingen</string>
+  <string name="error_nfc_data_not_found">NFC: sleutel of object niet gevonden</string>
+  <string name="error_nfc_unknown">NFC: onbekende fout</string>
+  <string name="error_nfc_bad_data">NFC: kaart gaf ongeldige gegevens weer</string>
+  <string name="error_nfc_chaining_error">NFC: kaart verwachtte laatste commando in een reeks</string>
+  <string name="error_nfc_header">NFC: kaart gaf ongeldige %s byte weer</string>
+  <string name="error_pin_nodefault">Standaard-PIN geweigerd!</string>
+  <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
+  <string name="snack_encrypt_filenames_on">Bestandsnamen <b>zijn</b> versleuteld.</string>
+  <string name="snack_encrypt_filenames_off">Bestandsnamen <b>zijn niet</b> versleuteld.</string>
+  <string name="snack_armor_on">Uitvoer geëncodeerd als tekst.</string>
+  <string name="snack_armor_off">Uitvoer geëncodeerd als binair.</string>
+  <string name="snack_compression_on">Compressie <b>ingeschakeld</b>.</string>
+  <string name="snack_compression_off">Compressie <b>uitgeschakeld</b>.</string>
+  <string name="error_loading_keys">Fout bij laden van sleutels!</string>
+  <string name="error_empty_log">(fout, leeg log)</string>
+  <string name="error_reading_text">Kon invoer niet lezen om te ontsleutelen!</string>
+  <string name="filename_unknown">&lt;geen bestandsnaam&gt;</string>
+  <string name="filename_unknown_text">&lt;platte tekstgegevens&gt;</string>
+  <string name="intent_show">Toon ondertekende/versleutelde inhoud</string>
+  <string name="view_internal">Bekijken in OpenKeychain</string>
+  <string name="error_preparing_data">Fout bij voorbereiden van gegevens!</string>
+  <string name="label_clip_title">Versleutelde gegevens</string>
+  <string name="progress_processing">Bezig met verwerken…</string>
+  <string name="error_saving_file">Fout bij opslaan van bestand!</string>
+  <string name="file_saved">Bestand opgeslagen!</string>
+  <string name="file_delete_ok">Oorspronkelijk bestand verwijderd.</string>
+  <string name="file_delete_none">Geen bestand verwijderd! (Misschien was het al verwijderd?)</string>
+  <string name="file_delete_exception">Oorspronkelijk bestand kon niet worden verwijderd!</string>
 </resources>

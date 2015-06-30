@@ -1,13 +1,17 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
 [http://www.openkeychain.org](http://www.openkeychain.org)
 
-[OpenKeychain](http://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](http://www.openkeychain.org) Android-rako OpenPGP egokitzapen bat da.
 
-License: GPLv3+
+Baimena: GPLv3+
 
-## Developers
-  * Dominik Schürmann (Maintainer)
+## Garatzaile Nagusiak
+  * Dominik Schürmann (Mantentzaileak)
+  * Vincent Breitmoser
+
+## Laguntzaileak
+  * Adithya Abraham Philip
   * Art O Cathain
   * Ash Hughes
   * Brian C. Barnes
@@ -15,32 +19,47 @@ License: GPLv3+
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
+  * Daniel Nelz
+  * Daniel Ramos
   * Greg Witczak
+  * 'iseki'
+  * Ishan Khanna
+  * 'jellysheep'
+  * 'Jesperbk'
+  * 'jkolo'
+  * Joey Castillo
+  * Kai Jiang
+  * Kartik Arora
+  * 'Kent'
+  * 'ligi'
+  * Lukas Zorich
+  * Manoj Khanna
   * 'mar-v-in'
   * Markus Doits
   * Miroojin Bakshi
+  * Morgan Gangwere
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * 'Senecaso'
   * Signe Rüsch
   * Sreeram Boyapati
-  * Thialfihar (APG 1.x)
+  * 'steelman'
+  * 'Thialfihar' (APG garatzailea)
   * Tim Bray
-  * Vincent Breitmoser
 
-## Libraries
-  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 License)
-  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT License)
-  * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Apache License v2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache License v2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Apache License v2)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache License v2)
-  * [ZXing](https://github.com/zxing/zxing) (Apache License v2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache License v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache License v2)
-  * [MaterialNavigationDrawer](https://github.com/neokree/MaterialNavigationDrawer) (Apache License v2)
-  * [Snackbar](https://github.com/nispok/snackbar) (MIT License)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
-  * [HtmlTextView](https://github.com/dschuermann/html-textview) (Apache License v2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache License v2)
+## Liburutegiak
+  * [SpongyCastle](http://rtyley.github.com/spongycastle/) (MIT X11 Baimena)
+  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT Baimena)
+  * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache Baimena v2)
+  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Apache Baimena v2)
+  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache Baimena v2)
+  * [MiniDNS](https://github.com/rtreffer/minidns) (Apache Baimena v2)
+  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache Baimena v2)
+  * [ZXing](https://github.com/zxing/zxing) (Apache Baimena v2)
+  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache Baimena v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache Baimena v2)
+  * [Snackbar](https://github.com/nispok/snackbar) (MIT Baimena)
+  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache Baimena v2)
+  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache Baimena v2)
+  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache Baimena v2)

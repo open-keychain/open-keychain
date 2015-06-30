@@ -35,7 +35,7 @@ public class CreateKeyYubiKeyWaitFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubikey_wait_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_yubi_key_wait_fragment, container, false);
 
         mBackButton = view.findViewById(R.id.create_key_back_button);
 

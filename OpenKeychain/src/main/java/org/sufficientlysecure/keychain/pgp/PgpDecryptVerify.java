@@ -70,7 +70,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
 import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
@@ -676,8 +675,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     || literalData.getFormat() == PGPLiteralData.UTF8) {
                 mimeType = "text/plain";
             } else {
-                // TODO: better would be: https://github.com/open-keychain/open-keychain/issues/753
-
                 // try to guess from file ending
                 String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
                 if (extension != null) {
@@ -685,10 +682,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     mimeType = mime.getMimeTypeFromExtension(extension);
                 }
                 if (mimeType == null) {
-                    mimeType = URLConnection.guessContentTypeFromName(originalFilename);
-                }
-                if (mimeType == null) {
-                    mimeType = "*/*";
+                    mimeType = "application/octet-stream";
                 }
             }
 
@@ -944,7 +938,14 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
         log.add(LogType.MSG_DC_OK, indent);
 
+        OpenPgpMetadata metadata = new OpenPgpMetadata(
+                "",
+                "text/plain",
+                -1,
+                clearText.length);
+
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
         return result;
     }

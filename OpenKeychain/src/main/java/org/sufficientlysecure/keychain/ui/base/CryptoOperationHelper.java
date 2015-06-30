@@ -121,7 +121,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
         switch (requiredInput.mType) {
-            case NFC_KEYTOCARD:
+            case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(activity, NfcOperationActivity.class);

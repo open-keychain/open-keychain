@@ -1,9 +1,17 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
+  * Première version avec prise en charge complète de la clef Yubi, proposée dans l'interface utilisateur : modifier les clefs, relier la clef Yubi au clefs...
   * Conception matérielle
-  * Intégration du lecteur QR (nouvelles permissions exigées)
+  * Intégration de la lecture de code QR (nouvelles permissions exigées)
   * Amélioration de l'assistant de création de clef
   * Correctif - Contacts manquants après la synchro
   * Android 4 exigé
@@ -13,6 +21,7 @@
   * Correctif - Certaines clefs valides apparaissaient comme révoquées ou expirées
   * Ne pas accepter de signatures par des sous-clefs expirées ou révoquées
   * Prise en charge de keybase.io dans la vue avancée
+  * Méthode pour mettre toutes les clefs à jour en même temps
 
 
 ## 3.1.2
@@ -35,7 +44,7 @@
   * Écran de déchiffrement redessiné
   * Nouveaux agencement et couleurs d'icônes
   * Importation des clefs secrètes corrigée de Symantec Encryption Desktop
-  * Les ID de sous-clefs des Yubikeys sont maintenant vérifiés correctement
+  * Prise en charge expérimentale des clefs Yubi : les ID de sous-clefs sont maintenant vérifiés correctement
 
 
 ## 3.0.1
@@ -46,7 +55,6 @@
 
 ## 3.0
 
-  * Prise en charge complète de la génération de signature par Yubikey et de leur déchiffrement !
   * Des applis compatibles installables sont proposées dans la liste des applis
   * Nouvelle conception pour les écrans de déchiffrement
   * Nombreux correctifs d'importation des clefs, corrigent aussi les clefs dépouillées
@@ -55,12 +63,13 @@
   * Corrigé - Certificats de révocation des ID utilisateurs
   * Nouvelle recherche nuagique (dans les serveurs traditionnels et dans keybase.io)
   * Prise en charge du dépouillement des clefs dans OpenKeychain
+  * Prise en charge expérimentale des clefs Yubi : prise en charge de la génération de signature et le déchiffrement
 
 
 ## 2.9.2
 
   * Correctif - Clefs brisées dans 2.9.1
-  * Le déchiffrement des Yukukeys par l'API fonctionne maintenant
+  * Prise en charge expérimentale des clefs Yubi : le déchiffrement fonctionne maintenant avec l'API
 
 
 ## 2.9.1
@@ -69,7 +78,7 @@
   * Correctif - Gestion des drapeaux de clefs (prend maintenant en charge les clefs Mailvelope 0.7)
   * Gestion des phrases de passe améliorée
   * Partage de clefs par SafeSlinger
-  * Yubikey : préférence pour permette d'autre NIP, seule la signature par l'API OpenPGP fonctionne présentement, mais pas à l'intérieur d'OpenKeychain
+  * Prise en charge expérimentale des clefs Yubi : préférence pour permettre d'autres NIP, seule la signature par l'API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
   * Correctif - Utilisation de clefs dépouillées
   * SHA256 par défaut pour la compatibilité
   * L'API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
@@ -80,7 +89,7 @@
 
   * Correction des plantages présents dans v2.8
   * Prise en charge expérimentale CCE
-  * Prise en charge expérimentale de Yubikey (signature seulement avec les clefs importées)
+  * Prise en charge expérimentale des clefs Yubi : signature seulement avec les clefs importées
 
 
 ## 2.8
@@ -180,7 +189,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.1.1
 
-  * Mise à jour de l'API, préparation à l'intégration à K-9 Mail
+  * Mise à jour de l'API, préparation à l'intégration à Courriel K-9 Mail
 
 
 ## 2.1
@@ -251,7 +260,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Listes de clefs filtrables
   * Présélection plus intelligente des clefs de chiffrement
   * Nouvelle gestion des intentions pour VIEW et SEND, permet le chiffrement/déchiffrement des fichiers du gestionnaires de fichiers
-  * Correctifs et fonctions additionnelles (présélection des clefs) pour K-9-Mail, nouvelle version bêta proposée
+  * Correctifs et fonctions additionnelles (présélection des clefs) pour Courriel K-9-Mail, nouvelle version bêta proposée
 
 
 ## 1.0.1
@@ -261,7 +270,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.0
 
-  * Intégration à K-9 Mail, APG prenant en charge la version bêta de K-9 Mail
+  * Intégration à K-9 Mail, APG prenant en charge la version bêta de Courriel K-9 Mail
   * Prise en charge de plus de gestionnaires de fichiers (incluant ASTRO)
   * Traduction slovène
   * Nouvelle base de données, bien plus rapide, utilisation de la mémoire moindre

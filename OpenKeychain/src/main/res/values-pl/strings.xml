@@ -4,17 +4,19 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <string name="app_name">OpenKeychain</string>
   <!--title-->
+  <string name="title_encrypt_text">Szyfruj</string>
+  <string name="title_encrypt_files">Szyfruj</string>
   <string name="title_decrypt">Odszyfruj</string>
-  <string name="title_unlock">Odblokuj klucz</string>
   <string name="title_add_subkey">Dodaj pod-klucz</string>
   <string name="title_edit_key">Edytuj klucz</string>
   <string name="title_preferences">Ustawienia</string>
   <string name="title_api_registered_apps">Aplikacje</string>
-  <string name="title_key_server_preference">Serwery kluczy</string>
+  <string name="title_key_server_preference">Serwery kluczy OpenPGP</string>
   <string name="title_change_passphrase">Zmień hasło</string>
-  <string name="title_share_fingerprint_with">Podziel się odciskiem klucza przez...</string>
-  <string name="title_share_key">Podziel się kluczem przez...</string>
-  <string name="title_share_file">Podziel się plikiem przez...</string>
+  <string name="title_share_fingerprint_with">Wyślij odcisk klucza przez...</string>
+  <string name="title_share_key">Wyślij klucz przez...</string>
+  <string name="title_share_file">Wyślij plik przez...</string>
+  <string name="title_share_message">Wyślij tekst przez...</string>
   <string name="title_encrypt_to_file">Zaszyfruj do pliku</string>
   <string name="title_decrypt_to_file">Odszyfruj do pliku</string>
   <string name="title_import_keys">Importuj klucze</string>
@@ -26,22 +28,20 @@
   <string name="title_help">Pomoc</string>
   <string name="title_log_display">Logi</string>
   <string name="title_exchange_keys">Wymień się kluczami</string>
-  <string name="title_advanced_key_info">Zaawansowane informacje o kluczu</string>
+  <string name="title_manage_my_keys">Zarządzaj kluczami</string>
   <!--section-->
   <string name="section_user_ids">Tożsamości</string>
   <string name="section_keys">Pod-klucze</string>
   <string name="section_cloud_search">Szukanie w Chmurze</string>
-  <string name="section_passphrase_cache">Pamięć cache hasła</string>
+  <string name="section_certify">Zatwierdź</string>
   <string name="section_actions">Działania</string>
   <string name="section_share_key">Klucz</string>
   <string name="section_key_server">Serwer kluczy</string>
   <string name="section_fingerprint">Odcisk klucza</string>
   <string name="section_encrypt">Zaszyfruj</string>
-  <string name="section_decrypt">Odszyfruj</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Odszyfruj, weryfikuj i zapisz plik</string>
   <string name="btn_encrypt_share_file">Szyfruj i podziel się plikiem</string>
-  <string name="btn_save">Zapisz</string>
   <string name="btn_do_not_save">Anuluj</string>
   <string name="btn_delete">Usuń</string>
   <string name="btn_no_date">Bez wygaśnięcia</string>
@@ -52,10 +52,6 @@
   <string name="btn_view_cert_key">Wyświetl klucz certyfikacji</string>
   <string name="btn_create_key">Utwórz klucz</string>
   <string name="btn_add_files">Dodaj plik(i)</string>
-  <string name="btn_add_share_decrypted_text">Podziel się odszyfrowanym tekstem</string>
-  <string name="btn_decrypt_clipboard">Odszyfruj ze schowka</string>
-  <string name="btn_decrypt_and_verify">oraz zweryfikuj podpisy</string>
-  <string name="btn_decrypt_files">Odszyfruj pliki</string>
   <string name="btn_encrypt_files">Zaszyfruj pliki</string>
   <string name="btn_encrypt_text">Zaszyfruj tekst</string>
   <!--menu-->
@@ -68,15 +64,11 @@
   <string name="menu_encrypt_to">Zaszyfruj do...</string>
   <string name="menu_select_all">Wybierz wszystko</string>
   <string name="menu_export_all_keys">Eksportuj wszystkie klucze</string>
-  <string name="menu_advanced">Pokaż zaawansowane informacje</string>
   <!--label-->
   <string name="label_file">Plik</string>
   <string name="label_files">Plik(i)</string>
   <string name="label_file_colon">Plik:</string>
-  <string name="label_no_passphrase">Brak hasła</string>
-  <string name="label_passphrase">Hasło</string>
   <string name="label_unlock">Odblokowywanie...</string>
-  <string name="label_passphrase_again">Powtórz hasło</string>
   <string name="label_algorithm">Algorytm</string>
   <string name="label_ascii_armor">Plik ASCII Armor</string>
   <string name="label_file_ascii_armor">Włącz ASCII Armor</string>
@@ -90,11 +82,7 @@
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
   <string name="label_hash_algorithm">Funkcja skrótu</string>
-  <string name="label_symmetric">Szyfruj z hasłem</string>
-  <string name="label_passphrase_cache_ttl">Czas pamięci cache</string>
-  <string name="label_passphrase_cache_subs">Pamiętaj hasła względem pod-klucza:</string>
   <string name="label_file_compression">Kompresja pliku</string>
-  <string name="label_keyservers">Serwery kluczy</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_creation">Utworzenia</string>
   <string name="label_expiry">Wygaśnięcia</string>
@@ -151,19 +139,13 @@
   <string name="flag_encrypt">Szyfruj</string>
   <string name="flag_authenticate">Uwierzytelniaj</string>
   <!--sentences-->
-  <string name="wrong_passphrase">Nieprawidłowe hasło.</string>
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
-  <string name="passphrases_do_not_match">Hasła nie pasują do siebie</string>
-  <string name="passphrase_must_not_be_empty">Podaj hasło.</string>
   <string name="passphrase_for_symmetric_encryption">Szyfrowanie symetryczne.</string>
-  <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="nfc_text">Trzymaj YubiKey z tyłu Twojego urządzenia.</string>
-  <string name="no_file_selected">Najpierw wskaż plik.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
-  <string name="error_no_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
   <string name="also_export_secret_keys">Także eksportuj tajne klucze</string>
   <string name="reinstall_openkeychain">Napotkałeś się na znany błąd w Androidzie. Proszę ponownie zainstalować OpenKeychain jeśli chcesz połączyć kontakty z kluczami.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
@@ -190,13 +172,10 @@
   <string name="error_external_storage_not_ready">zewnętrzne urządzenie jest niegotowe</string>
   <string name="error_key_size_minimum512bit">klucz musi mieć rozmiar co najmniej 512 bitów</string>
   <string name="error_unknown_algorithm_choice">wybrano nieznany algorytm</string>
-  <string name="error_user_id_no_email">nie znaleziono adresu email</string>
   <string name="error_key_needs_a_user_id">potrzeba przynajmniej jeden tożsamości</string>
-  <string name="error_no_signature_passphrase">nie podano hasła</string>
   <string name="error_no_signature_key">nie podano klucza podpisu</string>
   <string name="error_invalid_data">Brak treści szyfrowanej lub podpisanej OpenPGP!</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
-  <string name="error_wrong_passphrase">nieprawidłowe hasło</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
   <!--errors without preceeding Error:-->
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
@@ -206,11 +185,6 @@
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Nie podpisane</string>
   <string name="decrypt_result_invalid_signature">Nieprawidłowy podpis!</string>
-  <string name="decrypt_result_signature_uncertified">Podpisane przez (bez certyfikacji)</string>
-  <string name="decrypt_result_signature_certified">Podpisany przez</string>
-  <string name="decrypt_result_signature_expired_key">Klucz już wygasł!</string>
-  <string name="decrypt_result_signature_revoked_key">Klucz został unieważniony!</string>
-  <string name="decrypt_result_signature_missing_key">Nieznany klucz publiczny</string>
   <string name="decrypt_result_encrypted">Szyfrowane</string>
   <string name="decrypt_result_not_encrypted">Nie szyfrowane</string>
   <string name="decrypt_result_action_show">Pokaż</string>
@@ -242,7 +216,6 @@
   <string name="progress_modify_subkeyrevoke">unieważnianie pod-kluczy...</string>
   <string name="progress_modify_subkeystrip">usuwanie podkluczy...</string>
   <string name="progress_modify_subkeyadd">dodawanie pod-kluczy...</string>
-  <string name="progress_modify_passphrase">zmienianie hasła...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">eksportowanie klucza...</item>
     <item quantity="few">eksportowanie kluczy...</item>
@@ -304,11 +277,10 @@
   <string name="import_tab_qr_code">Kod QR/NFC</string>
   <string name="import_import">Zaimportuj wybrane klucze</string>
   <string name="import_qr_code_wrong">Kod QR zniekształcony! Spróbuj jeszcze raz!</string>
-  <string name="import_qr_code_too_short_fingerprint">Odcisk klucza jest za krótki (&lt; 16 znaków)</string>
   <string name="import_qr_code_button">Skanuj kod QR</string>
   <string name="import_qr_code_text">Umieść kod QR przed kamerą!</string>
+  <!--Import from URL-->
   <!--Generic result toast-->
-  <string name="snackbar_details">Szczegóły</string>
   <string name="with_warnings">, z ostrzeżeniami</string>
   <string name="with_cancelled">, aż anulowano</string>
   <!--Import result toast-->
@@ -389,10 +361,6 @@
   <string name="intent_send_encrypt">Zaszyfruj korzystając z OpenKeychain</string>
   <string name="intent_send_decrypt">Deszyfruj korzystając z OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Pokaż zaawansowane informacje</string>
-  <string name="api_settings_hide_info">Ukryj zaawansowane informacje</string>
-  <string name="api_settings_show_advanced">Pokaż zaawanowane ustawienia</string>
-  <string name="api_settings_hide_advanced">Ukryj zaawansowane ustawienia</string>
   <string name="api_settings_no_key">Nie wybrano klucza</string>
   <string name="api_settings_select_key">Wybierz klucz</string>
   <string name="api_settings_save">Zapisz</string>
@@ -403,7 +371,6 @@
   <string name="api_settings_delete_account">Usuń konto</string>
   <string name="api_settings_package_name">Nazwa paczki</string>
   <string name="api_settings_package_signature">Skrót SHA-256 podpisu paczki</string>
-  <string name="api_settings_accounts">Konta (przestarzłe API)</string>
   <string name="api_settings_settings">Ustawienia</string>
   <string name="api_settings_key">Klucz konta:</string>
   <string name="api_settings_accounts_empty">Brak kont połączonych z tą aplikacją.</string>
@@ -455,7 +422,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
-  <string name="edit_key_action_change_passphrase">Zmień hasło</string>
   <string name="edit_key_action_add_identity">Dodaj tożsamość</string>
   <string name="edit_key_action_add_subkey">Dodaj pod-klucz</string>
   <string name="edit_key_edit_user_id_title">Wybierz zadanie!</string>
@@ -468,25 +434,24 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Ta tożsamość została unieważniona. Tego już nie można cofnąć.</string>
   <string name="edit_key_edit_subkey_title">Wybierz zadanie!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Zmień wygaśnięcie</item>
-    <item>Unieważnij Pod-klucz</item>
-    <item>Usuń Pod-klucz</item>
-    <item>"Move Subkey to Yubikey / Smart Card"</item>
-  </string-array>
   <string name="edit_key_new_subkey">nowy pod-klucz</string>
   <string name="edit_key_select_flag">Prosimy o wybranie przynajmniej jeden flagi!</string>
   <string name="edit_key_error_add_identity">Dodaj przynajmniej jedną tożsamość!</string>
   <string name="edit_key_error_add_subkey">Dodaj przynajmniej jeden pod-klucz!</string>
   <!--Create key-->
+  <string name="create_key_upload">Synchronizuj z chmurą</string>
   <string name="create_key_empty">Dane pole jest wymagane</string>
-  <string name="create_key_passphrases_not_equal">Hasła nie zgadzają się</string>
   <string name="create_key_final_text">Wpisałeś następującą tożsamość:</string>
   <string name="create_key_final_robot_text">Tworzenie klucza może zająć trochę czasu... w międzyczasie idź się napij kawy.</string>
   <string name="create_key_rsa">(3 pod-klucze, RSA, 4096 bit)</string>
   <string name="create_key_custom">(niestandardowa konfiguracja kluczy)</string>
-  <string name="create_key_edit">Zmień klucz konfiguracji</string>
+  <string name="create_key_name_text">Wybierz imię powiązane z tym kluczem. Może to być imię i nazwisko, np: \'Jan Kowalski\', lub nick, np: \'Jaś\'.</string>
+  <string name="create_key_email_text">Wpisz twój główny adres email używany do bezpiecznej komunikacji.</string>
+  <string name="create_key_passphrase_text">Utwórz mocne hasło. W przypadku kradzieży urządzenia będzie chronić twój klucz.</string>
+  <string name="create_key_hint_full_name">Pełne imię lub przezwisko</string>
+  <string name="create_key_edit">Zmień ustawienia klucza</string>
   <!--View key-->
+  <!--Add keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
   <string name="nav_encrypt_decrypt">Zaszyfruj/Odszyfruj</string>
@@ -528,7 +493,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="msg_cr_error_internal_pgp">Błąd wewnętrzny PGP!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mf_error_pgp">Błąd wewnętrzny PGP!</string>
-  <string name="msg_mf_passphrase">Zmiana hasła dla pęku kluczy</string>
   <string name="msg_mf_error_past_expiry">Data ważności nie może być przeszła!</string>
   <string name="msg_mf_subkey_revoke">Unieważnianie pod-klucza %s</string>
   <string name="msg_mf_uid_error_empty">ID użytkownika nie może być pusty!</string>
@@ -550,8 +514,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="msg_dc_clear_signature_check">Weryfikowanie danych podpisu...</string>
   <string name="msg_dc_clear_signature_ok">Sprawdzanie podpisu jest OK</string>
   <string name="msg_dc_ok_meta_only">Tylko metadane były wymagane, pomijanie odszyfrowania</string>
-  <string name="msg_dc_pass_cached">Użycie hasła z pamięci cache</string>
-  <string name="msg_dc_pending_passphrase">Hasło wymagane, wymagana reakcja użytkownika...</string>
   <string name="msg_dc">Rozpoczynanie operacji odszyfrowania...</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
@@ -600,11 +562,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   </plurals>
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
-  <string name="passp_cache_notif_click_to_clear">Kliknij, aby wyczyścić zapamiętane hasła</string>
-  <string name="passp_cache_notif_n_keys">OpenKeychain zapamiętał %d haseł</string>
-  <string name="passp_cache_notif_keys">Zapamiętane hasła:</string>
-  <string name="passp_cache_notif_clear">Wyczyść pamięć cache</string>
-  <string name="passp_cache_notif_pwd">Hasło</string>
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
   <string name="first_time_skip">Pomiń ustawienia</string>
@@ -620,7 +577,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="error_key_not_found">Nie znaleziono klucza!</string>
   <string name="error_key_processing">Błąd przy przetwarzaniu klucza!</string>
   <string name="key_stripped">zredukowany</string>
-  <string name="key_no_passphrase">brak hasła</string>
   <string name="key_unavailable">niedostepne</string>
   <string name="secret_cannot_multiple">Twoje klucze mogą być usuwane tylko pojedynczo!</string>
   <string name="title_view_cert">Zweryfikuj szczegóły certyfikatu</string>
@@ -634,6 +590,6 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <!--<string name="enter_passphrase_twice">Enter passphrase twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
 </resources>

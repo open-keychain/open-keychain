@@ -1,16 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-## How do I activate OpenKeychain in K-9 Mail?
-To use OpenKeychain with K-9 Mail, you want to follow these steps:
-  1. Open K-9 Mail and long-tap on the account you want to use OpenKeychain with.
-  2. Select "Account settings", scroll to the very bottom and click "Cryptography".
-  3. Click on "OpenPGP Provider" and select OpenKeychain from the list.
+## Как мне активировать OpenKeychain в K-9 Mail?
+Для использования OpenKeychain с K-9 Mail, необходимо выполнить следующие шаги:
+  1. Открыть K-9 Mail и долгим нажатием выбрать учетную запись с которой будет использоваться  OpenKeychain.
+  2. Выбрать "Настойки учетной записи" и опуститься в самый конец меню до пункта "Шифрование".
+  3. Нажать на "OpenPGP Provider" и выбрать OpenKeychain из списка.
 
-## I found a bug in OpenKeychain!
-Please report the bug using the [issue tracker of OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
+## Я нашел ошибку в OpenKeychain!
+Пожалуйста, сообщайте обо всех проблемах и ошибках в разделе [Решение проблем OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
 
-## Contribute
-If you want to help us developing OpenKeychain by contributing code [follow our small guide on Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
+## Вклад в развитие
+Если Вы хотите помочь в разработке OpenKeychain, обратитесь к [инструкции на Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
 
-## Translations
-Help translating OpenKeychain! Everybody can participate at [OpenKeychain on Transifex](https://www.transifex.com/projects/p/open-keychain/).
+## Перевод
+Помогите переводить OpenKeychain! Каждый может принять участие в переводе [OpenKeychain на Transifex](https://www.transifex.com/projects/p/open-keychain/).
