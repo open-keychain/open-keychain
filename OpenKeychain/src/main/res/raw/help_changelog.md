@@ -1,5 +1,12 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+
+## 3.3
+
+  * New decryption screen
+  * Decryption of multiple files at once
+  * Better handling of YubiKey errors
+
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
