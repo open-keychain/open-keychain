@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010-2014 Thialfihar <thi@thialfihar.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,10 +18,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -32,7 +31,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
@@ -90,22 +88,6 @@ public class SettingsActivity extends PreferenceActivity {
 
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
-
-            int[] valueIds = new int[]{
-                    CompressionAlgorithmTags.UNCOMPRESSED,
-                    CompressionAlgorithmTags.ZIP,
-                    CompressionAlgorithmTags.ZLIB,
-                    CompressionAlgorithmTags.BZIP2,
-            };
-            String[] entries = new String[]{
-                    getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
-                    "ZIP (" + getString(R.string.compression_fast) + ")",
-                    "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
-            String[] values = new String[valueIds.length];
-            for (int i = 0; i < values.length; ++i) {
-                values[i] = "" + valueIds[i];
-            }
 
             initializeUseDefaultYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
@@ -168,7 +150,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /**
-     * This fragment shows the Cloud Search preferences in android 3.0+
+     * This fragment shows the Cloud Search preferences
      */
     public static class CloudSearchPrefsFragment extends PreferenceFragment {
 
@@ -226,7 +208,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     /**
-     * This fragment shows the advanced preferences in android 3.0+
+     * This fragment shows the PIN/password preferences
      */
     public static class AdvancedPrefsFragment extends PreferenceFragment {
 
@@ -243,25 +225,6 @@ public class SettingsActivity extends PreferenceActivity {
             initializePassphraseCacheTtl(
                     (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
-            int[] valueIds = new int[]{
-                    CompressionAlgorithmTags.UNCOMPRESSED,
-                    CompressionAlgorithmTags.ZIP,
-                    CompressionAlgorithmTags.ZLIB,
-                    CompressionAlgorithmTags.BZIP2,
-            };
-
-            String[] entries = new String[]{
-                    getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
-                    "ZIP (" + getString(R.string.compression_fast) + ")",
-                    "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",
-            };
-
-            String[] values = new String[valueIds.length];
-            for (int i = 0; i < values.length; ++i) {
-                values[i] = "" + valueIds[i];
-            }
-
             initializeUseDefaultYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_DEFAULT_YUBIKEY_PIN));
 
@@ -270,7 +233,6 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
