@@ -120,7 +120,14 @@ public class DecryptActivity extends BaseActivity {
 
                 case ACTION_DECRYPT_FROM_CLIPBOARD: {
                     ClipboardManager clipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    if (clipMan == null) {
+                        break;
+                    }
+
                     ClipData clip = clipMan.getPrimaryClip();
+                    if (clip == null) {
+                        break;
+                    }
 
                     // check if data is available as uri
                     Uri uri = null;
