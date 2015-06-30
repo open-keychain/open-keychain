@@ -30,7 +30,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -127,7 +126,7 @@ public class ExportTest {
 
     @Test
     public void testExportAll() throws Exception {
-        ImportExportOperation op = new ImportExportOperation(RuntimeEnvironment.application,
+        ExportOperation op = new ExportOperation(RuntimeEnvironment.application,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)

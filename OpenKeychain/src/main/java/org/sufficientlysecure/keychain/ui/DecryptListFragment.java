@@ -254,18 +254,12 @@ public class DecryptListFragment
     }
 
     @Override
-    protected boolean onCryptoSetProgress(String msg, int progress, int max) {
+    public boolean onCryptoSetProgress(String msg, int progress, int max) {
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
         return true;
     }
-
     @Override
-    protected void dismissProgress() {
-        // progress shown inline, so never mind
-    }
-
-    @Override
-    protected void onCryptoOperationError(DecryptVerifyResult result) {
+    public void onCryptoOperationError(DecryptVerifyResult result) {
         final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
@@ -275,7 +269,7 @@ public class DecryptListFragment
     }
 
     @Override
-    protected void onCryptoOperationSuccess(DecryptVerifyResult result) {
+    public void onCryptoOperationSuccess(DecryptVerifyResult result) {
         Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
@@ -439,7 +433,7 @@ public class DecryptListFragment
     }
 
     @Override
-    protected PgpDecryptVerifyInputParcel createOperationInput() {
+    public PgpDecryptVerifyInputParcel createOperationInput() {
 
         if (mCurrentInputUri == null) {
             if (mPendingInputUris.isEmpty()) {

@@ -22,11 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,18 +34,19 @@ import android.widget.TextView;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListenerFragment {
+public class CreateKeyYubiKeyImportFragment
+        extends CryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
+        implements NfcListenerFragment {
 
     private static final String ARG_FINGERPRINT = "fingerprint";
     public static final String ARG_AID = "aid";
@@ -63,6 +61,10 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
     private ImportKeysListFragment mListFragment;
     private TextView vSerNo;
     private TextView vUserId;
+
+    // for CryptoOperationFragment key import
+    private String mKeyserver;
+    private ArrayList<ParcelableKeyRing> mKeyList;
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
 
@@ -175,77 +177,20 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
 
     public void importKey() {
 
-        // Message is received after decrypting is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(getActivity()) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    ImportKeyResult result =
-                            returnData.getParcelable(DecryptVerifyResult.EXTRA_RESULT);
-
-                    long[] masterKeyIds = result.getImportedMasterKeyIds();
-
-                    // TODO handle masterKeyIds.length != 1...? sorta outlandish scenario
-
-                    if (!result.success() || masterKeyIds.length == 0) {
-                        result.createNotify(getActivity()).show();
-                        return;
-                    }
-
-                    Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
-                    // use the imported masterKeyId, not the one from the yubikey, because
-                    // that one might* just have been a subkey of the imported key
-                    intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
-                    intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-                    intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-                    startActivity(intent);
-                    getActivity().finish();
-
-                }
-
-            }
-        };
-
-        // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(getActivity(), KeychainService.class);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        intent.setAction(KeychainService.ACTION_IMPORT_KEYRING);
-
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));
-        data.putParcelableArrayList(KeychainService.IMPORT_KEY_LIST, keyList);
+        mKeyList = keyList;
 
         {
             Preferences prefs = Preferences.getPreferences(getActivity());
             Preferences.CloudSearchPrefs cloudPrefs =
                     new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            data.putString(KeychainService.IMPORT_KEY_SERVER, cloudPrefs.keyserver);
+            mKeyserver = cloudPrefs.keyserver;
         }
 
-        intent.putExtra(KeychainService.EXTRA_DATA, data);
+        super.setProgressMessageResource(R.string.progress_importing);
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        saveHandler.showProgressDialog(
-                getString(R.string.progress_importing),
-                ProgressDialog.STYLE_HORIZONTAL, false
-        );
-
-        // start service with intent
-        getActivity().startService(intent);
+        super.cryptoOperation();
 
     }
 
@@ -263,5 +208,30 @@ public class CreateKeyYubiKeyImportFragment extends Fragment implements NfcListe
         setData();
         refreshSearch();
 
+    }
+
+    @Override
+    public ImportKeyringParcel createOperationInput() {
+        return new ImportKeyringParcel(mKeyList, mKeyserver);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ImportKeyResult result) {
+        long[] masterKeyIds = result.getImportedMasterKeyIds();
+        if (masterKeyIds.length == 0) {
+            super.onCryptoOperationError(result);
+            return;
+        }
+
+        Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
+        // use the imported masterKeyId, not the one from the yubikey, because
+        // that one might* just have been a subkey of the imported key
+        intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
+        intent.putExtra(ViewKeyActivity.EXTRA_DISPLAY_RESULT, result);
+        intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+        intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+        intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

@@ -386,7 +386,7 @@ public class EncryptFilesFragment
     }
 
     @Override
-    protected void onCryptoOperationSuccess(final SignEncryptResult result) {
+    public void onCryptoOperationSuccess(final SignEncryptResult result) {
 
         if (mDeleteAfterEncrypt) {
             // TODO make behavior coherent here
@@ -485,7 +485,7 @@ public class EncryptFilesFragment
 
     }
 
-    protected SignEncryptParcel createOperationInput() {
+    public SignEncryptParcel createOperationInput() {
 
         SignEncryptParcel actionsParcel = getCachedActionsParcel();
 

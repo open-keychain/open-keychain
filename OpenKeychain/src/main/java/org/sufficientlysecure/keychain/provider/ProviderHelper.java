@@ -32,7 +32,7 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.ImportExportOperation;
+import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -1248,9 +1248,9 @@ public class ProviderHelper {
                 // 3. Re-Import secret keyrings from cache
                 if (numSecrets > 0) {
 
-                    ImportKeyResult result = new ImportExportOperation(mContext, this,
+                    ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itSecrets, numSecrets, null);
+                            .serialKeyRingImport(itSecrets, numSecrets, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1276,9 +1276,9 @@ public class ProviderHelper {
                 // 4. Re-Import public keyrings from cache
                 if (numPublics > 0) {
 
-                    ImportKeyResult result = new ImportExportOperation(mContext, this,
+                    ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .importKeyRings(itPublics, numPublics, null);
+                            .serialKeyRingImport(itPublics, numPublics, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);

@@ -202,7 +202,7 @@ public class EncryptTextFragment
 
     }
 
-    protected SignEncryptParcel createOperationInput() {
+    public SignEncryptParcel createOperationInput() {
 
         if (mMessage == null || mMessage.isEmpty()) {
             Notify.create(getActivity(), R.string.error_empty_text, Notify.Style.ERROR)
@@ -316,7 +316,7 @@ public class EncryptTextFragment
     }
 
     @Override
-    protected void onCryptoOperationSuccess(SignEncryptResult result) {
+    public void onCryptoOperationSuccess(SignEncryptResult result) {
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file

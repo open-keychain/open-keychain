@@ -27,6 +27,8 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 /** An operation which implements a high level keyring delete operation.
@@ -37,13 +39,18 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
  * a list.
  *
  */
-public class DeleteOperation extends BaseOperation {
+public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
 
     public DeleteOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
 
-    public DeleteResult execute(long[] masterKeyIds, boolean isSecret) {
+    @Override
+    public DeleteResult execute(DeleteKeyringParcel deleteKeyringParcel,
+                                CryptoInputParcel cryptoInputParcel) {
+
+        long[] masterKeyIds = deleteKeyringParcel.mMasterKeyIds;
+        boolean isSecret = deleteKeyringParcel.mIsSecret;
 
         OperationLog log = new OperationLog();
 

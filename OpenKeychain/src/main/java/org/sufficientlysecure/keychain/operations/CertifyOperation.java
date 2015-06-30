@@ -58,12 +58,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @see CertifyActionsParcel
  *
  */
-public class CertifyOperation extends BaseOperation {
+public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
     public CertifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @Override
     public CertifyResult execute(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
@@ -86,8 +87,10 @@ public class CertifyOperation extends BaseOperation {
                 case PATTERN:
                 case PASSPHRASE:
                     if (!cryptoInput.hasPassphrase()) {
-                        return new CertifyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
-                                certificationKey.getKeyId(), certificationKey.getKeyId(), null));
+                        return new CertifyResult(log,
+                                RequiredInputParcel.createRequiredSignPassphrase(
+                                certificationKey.getKeyId(), certificationKey.getKeyId(), null)
+                        );
                     }
                     // certification is always with the master key id, so use that one
                     passphrase = cryptoInput.getPassphrase();
@@ -185,10 +188,10 @@ public class CertifyOperation extends BaseOperation {
         }
 
         HkpKeyserver keyServer = null;
-        ImportExportOperation importExportOperation = null;
+        ExportOperation exportOperation = null;
         if (parcel.keyServerUri != null) {
             keyServer = new HkpKeyserver(parcel.keyServerUri);
-            importExportOperation = new ImportExportOperation(mContext, mProviderHelper, mProgressable);
+            exportOperation = new ExportOperation(mContext, mProviderHelper, mProgressable);
         }
 
         // Write all certified keys into the database
@@ -206,10 +209,10 @@ public class CertifyOperation extends BaseOperation {
             mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
-            if (importExportOperation != null) {
+            if (exportOperation != null) {
                 // TODO use subresult, get rid of try/catch!
                 try {
-                    importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
+                    exportOperation.uploadKeyRingToServer(keyServer, certifiedKey);
                     uploadOk += 1;
                 } catch (AddKeyException e) {
                     Log.e(Constants.TAG, "error uploading key", e);

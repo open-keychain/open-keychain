@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
@@ -92,8 +93,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     }
 
     /** This method returns a list of all selected entries, with public keys sorted
-     * before secret keys, see ImportExportOperation for specifics.
-     * @see org.sufficientlysecure.keychain.operations.ImportExportOperation
+     * before secret keys, see ImportOperation for specifics.
+     * @see ImportOperation
      */
     public ArrayList<ImportKeysListEntry> getSelectedEntries() {
         ArrayList<ImportKeysListEntry> result = new ArrayList<>();

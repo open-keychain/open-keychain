@@ -32,6 +32,8 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
+import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -45,11 +47,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * without secret key material, using a GNU_DUMMY s2k type.
  *
  */
-public class PromoteKeyOperation extends BaseOperation {
+public class PromoteKeyOperation extends BaseOperation<PromoteKeyringParcel> {
 
     public PromoteKeyOperation(Context context, ProviderHelper providerHelper,
                                Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
+    }
+
+    @Override
+    public PromoteKeyResult execute(PromoteKeyringParcel promoteKeyringParcel,
+                                    CryptoInputParcel cryptoInputParcel) {
+        // Input
+        long masterKeyId = promoteKeyringParcel.mKeyRingId;
+        byte[] cardAid = promoteKeyringParcel.mCardAid;
+        long[] subKeyIds = promoteKeyringParcel.mSubKeyIds;
+
+        return execute(masterKeyId, cardAid, subKeyIds);
     }
 
     public PromoteKeyResult execute(long masterKeyId, byte[] cardAid, long[] subKeyIds) {
