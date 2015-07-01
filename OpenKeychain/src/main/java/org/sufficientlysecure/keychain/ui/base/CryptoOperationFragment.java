@@ -56,7 +56,7 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
     }
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        cryptoOperation(cryptoInput);
+        cryptoOperation(cryptoInput, true);
     }
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
