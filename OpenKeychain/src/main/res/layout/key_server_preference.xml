@@ -1,94 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
-    <LinearLayout
-        android:layout_below="@id/toolbar_include"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
+    <TextView
+        android:layout_marginLeft="6sp"
+        android:layout_marginRight="6sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/label_keyservers_title"/>
 
-        <LinearLayout
-            android:id="@+id/text_layout"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:minHeight="?android:attr/listPreferredItemHeight"
-            android:orientation="horizontal">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6sp"
+        android:layout_marginRight="6sp"
+        android:layout_marginBottom="6sp"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/label_keyserver_settings_hint"/>
 
-            <LinearLayout
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6sp"
-                android:layout_marginLeft="16sp"
-                android:layout_marginRight="6sp"
-                android:layout_marginTop="6sp"
-                android:layout_weight="1"
-                android:background="@android:drawable/menuitem_background"
-                android:orientation="vertical"
-                android:focusable="true">
+    <View
+        style="@style/Divider"/>
 
-                <TextView
-                    android:id="@+id/title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="true"
-                    android:singleLine="true"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+    <FrameLayout
+        android:id="@+id/keyserver_settings_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" />
 
-                <TextView
-                    android:id="@+id/summary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/rotate"
-                android:layout_width="wrap_content"
-                android:layout_height="31dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="4dip"
-                android:layout_marginRight="6dip"
-                android:text="rotate"
-                android:textColor="#ffffffff"
-                android:textStyle="bold"
-                android:background="@drawable/button_rounded_blue" />
-
-            <ImageButton
-                android:id="@+id/add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="10dp"
-                android:src="@drawable/plus"
-                android:background="@drawable/button_rounded_green" />
-        </LinearLayout>
-
-        <View
-            android:id="@+id/separator"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
-
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/editors"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </ScrollView>
-
-    </LinearLayout>
-
-</RelativeLayout>
+</LinearLayout>

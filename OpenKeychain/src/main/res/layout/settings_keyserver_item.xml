@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?listPreferredItemHeight">
+
+    <LinearLayout
+        android:id="@+id/keyserver_layout"
+        android:padding="6sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/drag_handle"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/selected_keyserver_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_selected_keyserver_title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/keyserver_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/drag_handle"
+        android:layout_width="?listPreferredItemHeight"
+        android:layout_height="?listPreferredItemHeight"
+        android:scaleType="center"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_reorder_grey_500_24dp" />
+
+    <View
+        android:layout_alignParentBottom="true"
+        style="@style/Divider"/>
+
+</RelativeLayout>

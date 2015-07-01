@@ -11,7 +11,7 @@ dependencies {
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.1.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.1.0'
     
     // Unit tests in the local JVM with Robolectric
@@ -75,7 +75,7 @@ dependencyVerification {
             'com.android.support:support-v4:7bb6e40a18774aa2595e4d8f9fe0ae14e61670f71a1279272fb0b79b8be71180',
             'com.android.support:appcompat-v7:2d5867698410b41f75140c91d6c1e58da74ae0f97baf6e0bdd1f7cc1017ceb2c',
             'com.android.support:design:41ff5f700d1bf8c190e1d3ac33582f92ad6e1f3b1080c8b8e2ac4f7b703be76a',
-            'com.android.support:recyclerview-v7:522d323079a29bcd76173bd9bc7535223b4af3e5eefef9d9287df1f9e54d0c10',
+            'com.android.support:recyclerview-v7:3a8da14585fa1c81f06e7cef4d93a7641f0323d8f984ff9a7bd7a6e416b46888',
             'com.android.support:cardview-v7:8dc99af71fec000baa4470c3907755264f15f816920861bc015b2babdbb49807',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
             'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
@@ -93,16 +93,15 @@ dependencyVerification {
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
             'com.nispok:snackbar:80bebc8e5d8b3d728cd5f2336e2d0c1cc2a6b7dc4b55d36acd6b75a78265590a',
-//            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
-//            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
-//            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
-//            'com.madgag.spongycastle:pg:160b345b10a2c92dc731453eec87037377f66a8e14a0648d404d7b193c4e380d',
-//            'com.madgag.spongycastle:pkix:0b4f3301ea12dd9f25d71770e6ea9f75e0611bf53062543e47be5bc15340a7e4',
-//            'com.madgag.spongycastle:prov:7325942e0b39f5fb35d6380818eed4b826e7dfc7570ad35b696d778049d8c36a',
-//            'OpenKeychain.extern:minidns:77b1786d29469e3b21f9404827cab811edc857cd68bc732cd57f11307c332eae',
-//            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
-//            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
-//            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
+            //'open-keychain.extern.openpgp-api-lib:openpgp-api:cbac23f4dcfdd8cf580e6dcafaaeb8958894be9765b16058b30df173af714ce0',
+            //'open-keychain.extern.openkeychain-api-lib:openkeychain-intents:24c5403f1225597489924d31a2d3638f5800f5c06ac0adbef3b90a43c5e41b92',
+            //'open-keychain.extern.spongycastle:core:2cccd7471684eab9c3bc2d74e117d27dd2b10b9edbbf85d2718fc2dfb4c3fbe6',
+            //'open-keychain.extern.spongycastle:pg:9b333ccd06f8ec5d3857a8c516f83b0d1bff4d9b0208809c1468300ebbe2cd01',
+            //'open-keychain.extern.spongycastle:pkix:534001eca2a44ca4277a93c4293040bf4137c81f2c321f0cd92411acd7762bc4',
+            //'open-keychain.extern.spongycastle:prov:86c39b96a9604a6633ba4c47fac6f46b829d2a580dfac33514d5c2eaceda46d0',
+            //'open-keychain.extern:minidns:cad64ffcda40e2351b6a7429fbfb60e32ff167e852503fff4fa097cde134957a',
+            //'open-keychain.extern.KeybaseLib:Lib:a81380c89bb5f080d4f13cb24172a19d8f0031c32fa2ea0e346c54d215849900',
+            //'open-keychain.extern:safeslinger-exchange:5701b33044f5914ec58046183e900576c1285ad191a8a04d59c7600d31f36361',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
     ]
 }
