@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewH
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
@@ -83,7 +84,6 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
 
         String keyservers[] = getArguments().getStringArray(ARG_KEYSERVER_ARRAY);
         mKeyservers = new ArrayList<>(Arrays.asList(keyservers));
-        saveKeyserverList(); // in case user does not make any changes
 
         mAdapter = new KeyserverListAdapter(mKeyservers);
 
