@@ -45,6 +45,7 @@ public class CloudSearch {
         }
         final ImportKeysList results = new ImportKeysList(servers.size());
 
+        ArrayList<Thread> searchThreads = new ArrayList<>();
         for (final Keyserver keyserver : servers) {
             Runnable r = new Runnable() {
                 @Override
@@ -57,19 +58,25 @@ public class CloudSearch {
                     results.finishedAdding(); // notifies if all searchers done
                 }
             };
-            new Thread(r).start();
+            Thread searchThread = new Thread(r);
+            searchThreads.add(searchThread);
+            searchThread.start();
         }
 
         // wait for either all the searches to come back, or 10 seconds
-        synchronized(results) {
+        synchronized (results) {
             try {
                 results.wait(10 * SECONDS);
+                for (Thread thread : searchThreads) {
+                    // kill threads that haven't returned yet
+                    thread.interrupt();
+                }
             } catch (InterruptedException e) {
             }
         }
 
         if (results.outstandingSuppliers() > 0) {
-            String message =  "Launched " + servers.size() + " cloud searchers, but" +
+            String message = "Launched " + servers.size() + " cloud searchers, but" +
                     results.outstandingSuppliers() + "failed to complete.";
             problems.add(new Keyserver.QueryFailedException(message));
         }
