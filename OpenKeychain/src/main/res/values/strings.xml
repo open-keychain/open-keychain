@@ -654,6 +654,13 @@
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
     <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
+    <string name="create_key_yubi_key_pin_text">"Please remember these PINs. They are required to use your YubiKey later. If possible write down the Admin PIN and store it in a safe place."</string>
+    <string name="create_key_yubi_key_pin">"PIN"</string>
+    <string name="create_key_yubi_key_admin_pin">"Admin PIN"</string>
+    <string name="create_key_yubi_key_pin_repeat_text">"Please enter the PIN and Admin PIN to proceed."</string>
+    <string name="create_key_yubi_key_pin_repeat">"Repeat PIN"</string>
+    <string name="create_key_yubi_key_admin_pin_repeat">"Repeat Admin PIN"</string>
+    <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
 
     <!-- View key -->
     <string name="view_key_revoked">"Revoked: Key must not be used anymore!"</string>

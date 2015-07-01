@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class CreateKeyYubiKeyImportFragment
+public class CreateYubiKeyImportFragment
         extends CryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
 
@@ -68,7 +68,7 @@ public class CreateKeyYubiKeyImportFragment
 
     public static Fragment newInstance(byte[] scannedFingerprints, byte[] nfcAid, String userId) {
 
-        CreateKeyYubiKeyImportFragment frag = new CreateKeyYubiKeyImportFragment();
+        CreateYubiKeyImportFragment frag = new CreateYubiKeyImportFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_FINGERPRINT, scannedFingerprints);

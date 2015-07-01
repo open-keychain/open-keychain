@@ -178,7 +178,7 @@ public class CreateKeyFinalFragment extends Fragment {
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();
 
-            if (createKeyActivity.mUseSmartCardSettings) {
+            if (createKeyActivity.mCreateYubiKey) {
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                         2048, null, KeyFlags.SIGN_DATA | KeyFlags.CERTIFY_OTHER, 0L));
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
@@ -228,7 +228,7 @@ public class CreateKeyFinalFragment extends Fragment {
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
 
-                if (createKeyActivity.mUseSmartCardSettings) {
+                if (createKeyActivity.mCreateYubiKey) {
                     moveToCard(result);
                     return;
                 }

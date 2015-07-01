@@ -27,47 +27,22 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 
-public class CreateKeyYubiKeyBlankFragment extends Fragment {
+
+public class CreateYubiKeyWaitFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
-    View mNextButton;
-
-    /**
-     * Creates new instance of this fragment
-     */
-    public static CreateKeyYubiKeyBlankFragment newInstance() {
-        CreateKeyYubiKeyBlankFragment frag = new CreateKeyYubiKeyBlankFragment();
-
-        Bundle args = new Bundle();
-
-        frag.setArguments(args);
-
-        return frag;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_yubi_key_blank_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_yubi_key_wait_fragment, container, false);
 
         mBackButton = view.findViewById(R.id.create_key_back_button);
-        mNextButton = view.findViewById(R.id.create_key_next_button);
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getFragmentManager().getBackStackEntryCount() == 0) {
-                    getActivity().setResult(Activity.RESULT_CANCELED);
-                    getActivity().finish();
-                } else {
-                    mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
-                }
-            }
-        });
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextClicked();
+                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
             }
         });
 
@@ -78,13 +53,6 @@ public class CreateKeyYubiKeyBlankFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mCreateKeyActivity = (CreateKeyActivity) getActivity();
-    }
-
-    private void nextClicked() {
-        mCreateKeyActivity.mUseSmartCardSettings = true;
-
-        CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
-        mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
     }
 
 }

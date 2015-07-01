@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +30,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,9 +39,9 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +203,7 @@ public class CreateKeyEmailFragment extends Fragment {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+                if (message.what == AddEmailDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
 
                     String email = data.getString(AddEmailDialogFragment.MESSAGE_DATA_EMAIL);
@@ -232,9 +234,36 @@ public class CreateKeyEmailFragment extends Fragment {
             mCreateKeyActivity.mEmail = mEmailEdit.getText().toString();
             mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();
 
-            CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
-            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            CreateKeyActivity createKeyActivity = ((CreateKeyActivity) getActivity());
+
+            if (createKeyActivity.mCreateYubiKey) {
+                hideKeyboard();
+
+                // set empty passphrase
+                createKeyActivity.mPassphrase = new Passphrase();
+
+                CreateYubiKeyPinFragment frag = CreateYubiKeyPinFragment.newInstance();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            } else {
+                CreateKeyPassphraseFragment frag = CreateKeyPassphraseFragment.newInstance();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
+            }
         }
+    }
+
+    private void hideKeyboard() {
+        if (getActivity() == null) {
+            return;
+        }
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
     private ArrayList<String> getAdditionalEmails() {
