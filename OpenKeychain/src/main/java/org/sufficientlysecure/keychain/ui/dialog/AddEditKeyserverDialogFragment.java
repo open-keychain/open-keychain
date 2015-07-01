@@ -53,8 +53,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
-public class AddKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
-    private static final String ARG_MESSENGER = "messenger";
+public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
+    private static final String ARG_MESSENGER = "arg_messenger";
+    private static final String ARG_ACTION = "arg_dialog_action";
+    private static final String ARG_POSITION = "arg_position";
+    private static final String ARG_KEYSERVER = "arg_keyserver";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_VERIFICATION_FAILED = 2;
@@ -62,20 +65,37 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
     public static final String MESSAGE_KEYSERVER = "new_keyserver";
     public static final String MESSAGE_VERIFIED = "verified";
     public static final String MESSAGE_FAILURE_REASON = "failure_reason";
+    public static final String MESSAGE_KEYSERVER_DELETED = "keyserver_deleted";
+    public static final String MESSAGE_DIALOG_ACTION = "message_dialog_action";
+    public static final String MESSAGE_EDIT_POSITION = "keyserver_edited_position";
 
     private Messenger mMessenger;
+    private DialogAction mDialogAction;
+    private int mPosition;
+
     private EditText mKeyserverEditText;
     private CheckBox mVerifyKeyserverCheckBox;
+
+    public enum DialogAction {
+        ADD,
+        EDIT
+    }
 
     public enum FailureReason {
         INVALID_URL,
         CONNECTION_FAILED
     }
 
-    public static AddKeyserverDialogFragment newInstance(Messenger messenger) {
-        AddKeyserverDialogFragment frag = new AddKeyserverDialogFragment();
+    public static AddEditKeyserverDialogFragment newInstance(Messenger messenger,
+                                                             DialogAction action,
+                                                             String keyserver,
+                                                             int position) {
+        AddEditKeyserverDialogFragment frag = new AddEditKeyserverDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
+        args.putSerializable(ARG_ACTION, action);
+        args.putString(ARG_KEYSERVER, keyserver);
+        args.putInt(ARG_POSITION, position);
 
         frag.setArguments(args);
 
@@ -88,10 +108,10 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
         final Activity activity = getActivity();
 
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
+        mDialogAction = (DialogAction) getArguments().getSerializable(ARG_ACTION);
+        mPosition = getArguments().getInt(ARG_POSITION);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
-
-        alert.setTitle(R.string.add_keyserver_dialog_title);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.add_keyserver_dialog, null);
@@ -100,14 +120,26 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
         mKeyserverEditText = (EditText) view.findViewById(R.id.keyserver_url_edit_text);
         mVerifyKeyserverCheckBox = (CheckBox) view.findViewById(R.id.verify_keyserver_checkbox);
 
-        // we don't want dialog to be dismissed on click, thereby requiring the hack seen below
-        // and in onStart
+        switch (mDialogAction) {
+            case ADD: {
+                alert.setTitle(R.string.add_keyserver_dialog_title);
+                break;
+            }
+            case EDIT: {
+                alert.setTitle(R.string.edit_keyserver_dialog_title);
+                mKeyserverEditText.setText(getArguments().getString(ARG_KEYSERVER));
+                break;
+            }
+        }
+
+        // we don't want dialog to be dismissed on click for keyserver addition or edit,
+        // thereby requiring the hack seen below and in onStart
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // we need to have an empty listener to prevent errors on some devices as mentioned
                 // at http://stackoverflow.com/q/13746412/3000919
-                // actual listener set in onStart
+                // actual listener set in onStart for adding keyservers or editing them
             }
         });
 
@@ -118,6 +150,23 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
                 dismiss();
             }
         });
+
+        switch (mDialogAction) {
+            case EDIT: {
+                alert.setNeutralButton(R.string.label_keyserver_dialog_delete,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteKeyserver(mPosition);
+                            }
+                        });
+                break;
+            }
+            case ADD: {
+                // do nothing
+                break;
+            }
+        }
 
         // Hack to open keyboard.
         // This is the only method that I found to work across all Android versions
@@ -155,24 +204,40 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // behaviour same for edit and add
                     String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         verifyConnection(keyserverUrl);
                     } else {
                         dismiss();
                         // return unverified keyserver back to activity
-                        addKeyserver(keyserverUrl, false);
+                        keyserverEdited(keyserverUrl, false);
                     }
                 }
             });
         }
     }
 
-    public void addKeyserver(String keyserver, boolean verified) {
+    public void keyserverEdited(String keyserver, boolean verified) {
         dismiss();
         Bundle data = new Bundle();
+        data.putSerializable(MESSAGE_DIALOG_ACTION, mDialogAction);
         data.putString(MESSAGE_KEYSERVER, keyserver);
         data.putBoolean(MESSAGE_VERIFIED, verified);
+
+        if (mDialogAction == DialogAction.EDIT) {
+            data.putInt(MESSAGE_EDIT_POSITION, mPosition);
+        }
+
+        sendMessageToHandler(MESSAGE_OKAY, data);
+    }
+
+    public void deleteKeyserver(int position) {
+        dismiss();
+        Bundle data = new Bundle();
+        data.putSerializable(MESSAGE_DIALOG_ACTION, DialogAction.EDIT);
+        data.putInt(MESSAGE_EDIT_POSITION, position);
+        data.putBoolean(MESSAGE_KEYSERVER_DELETED, true);
 
         sendMessageToHandler(MESSAGE_OKAY, data);
     }
@@ -238,7 +303,7 @@ public class AddKeyserverDialogFragment extends DialogFragment implements OnEdit
             protected void onPostExecute(FailureReason failureReason) {
                 mProgressDialog.dismiss();
                 if (failureReason == null) {
-                    addKeyserver(mKeyserver, true);
+                    keyserverEdited(mKeyserver, true);
                 } else {
                     verificationFailed(failureReason);
                 }

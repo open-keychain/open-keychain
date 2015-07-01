@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
@@ -124,27 +125,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CODE_KEYSERVER_PREF: {
-                if (resultCode == RESULT_CANCELED || data == null) {
-                    return;
-                }
-                String servers[] = data
-                        .getStringArrayExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS);
-                sPreferences.setKeyServers(servers);
-                mKeyServerPreference.setSummary(keyserverSummary(this));
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
-    }
-
-    @Override
     public void onBuildHeaders(List<Header> target) {
         super.onBuildHeaders(target);
         loadHeadersFromResource(R.xml.preference_headers, target);
@@ -190,12 +170,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
                 case REQUEST_CODE_KEYSERVER_PREF: {
-                    if (resultCode == RESULT_CANCELED || data == null) {
-                        return;
-                    }
-                    String servers[] = data
-                            .getStringArrayExtra(SettingsKeyServerActivity.EXTRA_KEY_SERVERS);
-                    sPreferences.setKeyServers(servers);
+                    // update preference, in case it changed
                     mKeyServerPreference.setSummary(keyserverSummary(getActivity()));
                     break;
                 }
