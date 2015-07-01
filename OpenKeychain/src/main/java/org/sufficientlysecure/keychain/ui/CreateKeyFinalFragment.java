@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -263,7 +263,6 @@ public class CreateKeyFinalFragment extends Fragment {
 
         mCreateOpHelper = new CryptoOperationHelper<>(this, createKeyCallback,
                 R.string.progress_building_key);
-
         mCreateOpHelper.cryptoOperation();
     }
 
@@ -318,14 +317,17 @@ public class CreateKeyFinalFragment extends Fragment {
             }
 
             public void handleResult(EditKeyResult result) {
+                // merge logs of createKey with moveToCard
+                saveKeyResult.getLog().add(result, 0);
+
                 if (result.mMasterKeyId != null && mUploadCheckbox.isChecked()) {
                     // result will be displayed after upload
-                    uploadKey(result);
+                    uploadKey(saveKeyResult);
                     return;
                 }
 
                 Intent data = new Intent();
-                data.putExtra(OperationResult.EXTRA_RESULT, result);
+                data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
                 getActivity().setResult(Activity.RESULT_OK, data);
                 getActivity().finish();
             }
@@ -372,11 +374,9 @@ public class CreateKeyFinalFragment extends Fragment {
             }
 
             public void handleResult(ExportResult result) {
-                // TODO: upload operation needs a result! "result" is not currenlty used
-                // TODO: then combine these results (saveKeyResult and update op result)
-                //if (result.getResult() == OperationResultParcel.RESULT_OK) {
-                //Notify.create(getActivity(), R.string.key_send_success,
-                //Notify.Style.OK).show();
+                // TODO: ExportOperation UPLOAD_KEYSERVER needs logs!
+                // TODO: then merge logs here!
+                //saveKeyResult.getLog().add(result, 0);
 
                 Intent data = new Intent();
                 data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
