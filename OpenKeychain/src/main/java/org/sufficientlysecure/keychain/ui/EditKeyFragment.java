@@ -437,44 +437,50 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
                         }
                         break;
                     }
-                    case EditSubkeyDialogFragment.MESSAGE_KEYTOCARD: {
-                        Activity activity = EditKeyFragment.this.getActivity();
-                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
-                            secretKeyType == SecretKeyType.GNU_DUMMY) {
-                            Notify.create(activity, R.string.edit_key_error_bad_nfc_stripped, Notify.Style.ERROR)
-                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-                            break;
-                        }
-                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
-                        // these are the PGP constants for RSA_GENERAL, RSA_ENCRYPT and RSA_SIGN
-                        if (algorithm != 1 && algorithm != 2 && algorithm != 3) {
-                            Notify.create(activity, R.string.edit_key_error_bad_nfc_algo, Notify.Style.ERROR)
-                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-                            break;
-                        }
-                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
-                            Notify.create(activity, R.string.edit_key_error_bad_nfc_size, Notify.Style.ERROR)
-                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
-                            break;
-                        }
-
-
-                        SubkeyChange change;
-                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
-                        if (change == null) {
-                            mSaveKeyringParcel.mChangeSubKeys.add(
-                                    new SubkeyChange(keyId, false, true)
-                            );
-                            break;
-                        }
-                        // toggle
-                        change.mMoveKeyToCard = !change.mMoveKeyToCard;
-                        if (change.mMoveKeyToCard && change.mDummyStrip) {
-                            // User had chosen to strip key, but now wants to divert it.
-                            change.mDummyStrip = false;
-                        }
+                    case EditSubkeyDialogFragment.MESSAGE_MOVE_KEY_TO_CARD: {
+                        // TODO: enable later when Admin PIN handling is resolved
+                        Notify.create(getActivity(),
+                                "This feature will be available in an upcoming OpenKeychain version.",
+                                Notify.Style.WARN).show();
                         break;
+
+//                        Activity activity = EditKeyFragment.this.getActivity();
+//                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
+//                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+//                            secretKeyType == SecretKeyType.GNU_DUMMY) {
+//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_stripped, Notify.Style.ERROR)
+//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+//                            break;
+//                        }
+//                        int algorithm = mSubkeysAdapter.getAlgorithm(position);
+//                        // these are the PGP constants for RSA_GENERAL, RSA_ENCRYPT and RSA_SIGN
+//                        if (algorithm != 1 && algorithm != 2 && algorithm != 3) {
+//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_algo, Notify.Style.ERROR)
+//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+//                            break;
+//                        }
+//                        if (mSubkeysAdapter.getKeySize(position) != 2048) {
+//                            Notify.create(activity, R.string.edit_key_error_bad_nfc_size, Notify.Style.ERROR)
+//                                    .show((ViewGroup) activity.findViewById(R.id.import_snackbar));
+//                            break;
+//                        }
+//
+//
+//                        SubkeyChange change;
+//                        change = mSaveKeyringParcel.getSubkeyChange(keyId);
+//                        if (change == null) {
+//                            mSaveKeyringParcel.mChangeSubKeys.add(
+//                                    new SubkeyChange(keyId, false, true)
+//                            );
+//                            break;
+//                        }
+//                        // toggle
+//                        change.mMoveKeyToCard = !change.mMoveKeyToCard;
+//                        if (change.mMoveKeyToCard && change.mDummyStrip) {
+//                            // User had chosen to strip key, but now wants to divert it.
+//                            change.mDummyStrip = false;
+//                        }
+//                        break;
                     }
                 }
                 getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
