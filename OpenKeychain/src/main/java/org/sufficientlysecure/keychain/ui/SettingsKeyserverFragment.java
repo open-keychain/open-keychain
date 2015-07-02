@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewH
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
@@ -146,7 +145,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                         if (deleted) {
                             Notify.create(getActivity(),
                                     getActivity().getString(
-                                            R.string.keyserver_deleted, mKeyservers.get(position)),
+                                            R.string.keyserver_preference_deleted, mKeyservers.get(position)),
                                     Notify.Style.OK)
                                     .show();
                             deleteKeyserver(position);
@@ -222,6 +221,11 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     }
 
     private void deleteKeyserver(int position) {
+        if (mKeyservers.size() == 1) {
+            Notify.create(getActivity(), R.string.keyserver_preference_cannot_delete_last,
+                    Notify.Style.ERROR).show();
+            return;
+        }
         mKeyservers.remove(position);
         // we use this
         mAdapter.notifyItemRemoved(position);
