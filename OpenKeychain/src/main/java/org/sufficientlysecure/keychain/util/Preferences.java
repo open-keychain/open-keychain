@@ -138,6 +138,9 @@ public class Preferences {
     public String[] getKeyServers() {
         String rawData = mSharedPreferences.getString(Constants.Pref.KEY_SERVERS,
                 Constants.Defaults.KEY_SERVERS);
+        if (rawData.equals("")) {
+            return new String[0];
+        }
         Vector<String> servers = new Vector<>();
         String chunks[] = rawData.split(",");
         for (String c : chunks) {
@@ -150,7 +153,8 @@ public class Preferences {
     }
 
     public String getPreferredKeyserver() {
-        return getKeyServers()[0];
+        String[] keyservers = getKeyServers();
+        return keyservers.length == 0 ? null : keyservers[0];
     }
 
     public void setKeyServers(String[] value) {

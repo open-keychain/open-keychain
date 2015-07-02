@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -79,19 +81,10 @@ public class CreateKeyPassphraseFragment extends Fragment {
         return output;
     }
 
-    private static boolean areEditTextsEqual(Context context, EditText editText1, EditText editText2) {
+    private static boolean areEditTextsEqual(EditText editText1, EditText editText2) {
         Passphrase p1 = new Passphrase(editText1);
         Passphrase p2 = new Passphrase(editText2);
-        boolean output = (p1.equals(p2));
-
-        if (!output) {
-            editText2.setError(context.getString(R.string.create_key_passphrases_not_equal));
-            editText2.requestFocus();
-        } else {
-            editText2.setError(null);
-        }
-
-        return output;
+        return (p1.equals(p2));
     }
 
     @Override
@@ -137,6 +130,35 @@ public class CreateKeyPassphraseFragment extends Fragment {
             }
         });
 
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isEditTextNotEmpty(getActivity(), mPassphraseEdit)) {
+                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                    return;
+                }
+
+                if (areEditTextsEqual(mPassphraseEdit, mPassphraseEditAgain)) {
+                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stat_retyped_ok, 0);
+                } else {
+                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stat_retyped_bad, 0);
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+
+        mPassphraseEdit.addTextChangedListener(textWatcher);
+        mPassphraseEditAgain.addTextChangedListener(textWatcher);
 
         return view;
     }
@@ -153,9 +175,15 @@ public class CreateKeyPassphraseFragment extends Fragment {
     }
 
     private void nextClicked() {
-        if (isEditTextNotEmpty(getActivity(), mPassphraseEdit)
-                && areEditTextsEqual(getActivity(), mPassphraseEdit, mPassphraseEditAgain)) {
+        if (isEditTextNotEmpty(getActivity(), mPassphraseEdit)) {
 
+            if (!areEditTextsEqual(mPassphraseEdit, mPassphraseEditAgain)) {
+                mPassphraseEditAgain.setError(getActivity().getApplicationContext().getString(R.string.create_key_passphrases_not_equal));
+                mPassphraseEditAgain.requestFocus();
+                return;
+            }
+
+            mPassphraseEditAgain.setError(null);
             // save state
             mCreateKeyActivity.mPassphrase = new Passphrase(mPassphraseEdit);
 

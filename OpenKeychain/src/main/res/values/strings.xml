@@ -687,7 +687,8 @@
     <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
     <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
     <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your internet connection."</string>
-    <string name="keyserver_deleted">"%s deleted"</string>
+    <string name="keyserver_preference_deleted">"%s deleted"</string>
+    <string name="keyserver_preference_cannot_delete_last">"Cannot delete last keyserver. At least one is required!"</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_keys">"Keys"</string>

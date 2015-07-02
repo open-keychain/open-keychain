@@ -75,10 +75,10 @@ public class EmailEditText extends AppCompatAutoCompleteTextView {
                 Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
                 if (emailMatcher.matches()) {
                     EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                            R.drawable.uid_mail_ok, 0);
+                            R.drawable.ic_stat_retyped_ok, 0);
                 } else {
                     EmailEditText.this.setCompoundDrawablesWithIntrinsicBounds(0, 0,
-                            R.drawable.uid_mail_bad, 0);
+                            R.drawable.ic_stat_retyped_bad, 0);
                 }
             } else {
                 // remove drawable if email is empty
