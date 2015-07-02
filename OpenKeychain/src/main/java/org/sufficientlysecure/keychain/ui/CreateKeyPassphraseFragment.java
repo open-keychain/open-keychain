@@ -144,9 +144,9 @@ public class CreateKeyPassphraseFragment extends Fragment {
                 }
 
                 if (areEditTextsEqual(mPassphraseEdit, mPassphraseEditAgain)) {
-                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_done_grey_24dp, 0);
+                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stat_retyped_ok, 0);
                 } else {
-                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_close_grey_24dp, 0);
+                    mPassphraseEditAgain.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_stat_retyped_bad, 0);
                 }
 
             }
