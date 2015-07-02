@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.security.SecureRandom;
 
@@ -63,30 +64,38 @@ public class CreateYubiKeyPinFragment extends Fragment {
         mNextButton = view.findViewById(R.id.create_key_next_button);
 
         if (mCreateKeyActivity.mYubiKeyPin == null) {
-            new AsyncTask<Void, Void, Pair<String, String>>() {
+            new AsyncTask<Void, Void, Pair<Passphrase, Passphrase>>() {
                 @Override
-                protected Pair<String, String> doInBackground(Void... unused) {
+                protected Pair<Passphrase, Passphrase> doInBackground(Void... unused) {
                     SecureRandom secureRandom = new SecureRandom();
                     // min = 6, we choose 6
-                    String pin = "" + secureRandom.nextInt(999999);
+                    String pin = "" + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9);
                     // min = 8, we choose 10, but 6 are equals the PIN
-                    String adminPin = pin + secureRandom.nextInt(9999);
+                    String adminPin = pin + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9)
+                            + secureRandom.nextInt(9);
 
-                    return new Pair<>(pin, adminPin);
+                    return new Pair<>(new Passphrase(pin), new Passphrase(adminPin));
                 }
 
                 @Override
-                protected void onPostExecute(Pair<String, String> pair) {
+                protected void onPostExecute(Pair<Passphrase, Passphrase> pair) {
                     mCreateKeyActivity.mYubiKeyPin = pair.first;
                     mCreateKeyActivity.mYubiKeyAdminPin = pair.second;
 
-                    mPin.setText(mCreateKeyActivity.mYubiKeyPin);
-                    mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin);
+                    mPin.setText(mCreateKeyActivity.mYubiKeyPin.toStringUnsafe());
+                    mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
                 }
             }.execute();
         } else {
-            mPin.setText(mCreateKeyActivity.mYubiKeyPin);
-            mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin);
+            mPin.setText(mCreateKeyActivity.mYubiKeyPin.toStringUnsafe());
+            mAdminPin.setText(mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe());
         }
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -114,9 +123,6 @@ public class CreateYubiKeyPinFragment extends Fragment {
 
 
     private void nextClicked() {
-        // save state
-//            mCreateKeyActivity.mPassphrase = new Passphrase(mPassphraseEdit);
-
         CreateYubiKeyPinRepeatFragment frag = CreateYubiKeyPinRepeatFragment.newInstance();
         mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
     }

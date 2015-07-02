@@ -61,6 +61,10 @@ public class SaveKeyringParcel implements Parcelable {
     public ArrayList<String> mRevokeUserIds;
     public ArrayList<Long> mRevokeSubKeys;
 
+    // if these are non-null, PINs will be changed on the card
+    public Passphrase mCardPin;
+    public Passphrase mCardAdminPin;
+
     public SaveKeyringParcel() {
         reset();
     }
@@ -80,6 +84,8 @@ public class SaveKeyringParcel implements Parcelable {
         mChangeSubKeys = new ArrayList<>();
         mRevokeUserIds = new ArrayList<>();
         mRevokeSubKeys = new ArrayList<>();
+        mCardPin = null;
+        mCardAdminPin = null;
     }
 
     public boolean isEmpty() {
@@ -225,6 +231,9 @@ public class SaveKeyringParcel implements Parcelable {
 
         mRevokeUserIds = source.createStringArrayList();
         mRevokeSubKeys = (ArrayList<Long>) source.readSerializable();
+
+        mCardPin = source.readParcelable(Passphrase.class.getClassLoader());
+        mCardAdminPin  = source.readParcelable(Passphrase.class.getClassLoader());
     }
 
     @Override
@@ -236,7 +245,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeByteArray(mFingerprint);
 
         // yes, null values are ok for parcelables
-        destination.writeParcelable(mNewUnlock, 0);
+        destination.writeParcelable(mNewUnlock, flags);
 
         destination.writeStringList(mAddUserIds);
         destination.writeSerializable(mAddUserAttribute);
@@ -247,6 +256,9 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeStringList(mRevokeUserIds);
         destination.writeSerializable(mRevokeSubKeys);
+
+        destination.writeParcelable(mCardPin, flags);
+        destination.writeParcelable(mCardAdminPin, flags);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
@@ -274,7 +286,9 @@ public class SaveKeyringParcel implements Parcelable {
         out += "mChangeSubKeys: " + mChangeSubKeys + "\n";
         out += "mChangePrimaryUserId: " + mChangePrimaryUserId + "\n";
         out += "mRevokeUserIds: " + mRevokeUserIds + "\n";
-        out += "mRevokeSubKeys: " + mRevokeSubKeys;
+        out += "mRevokeSubKeys: " + mRevokeSubKeys + "\n";
+        out += "mCardPin: " + mCardPin + "\n";
+        out += "mCardAdminPin: " + mCardAdminPin;
 
         return out;
     }

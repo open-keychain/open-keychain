@@ -267,10 +267,11 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     private void moveToCard(final EditKeyResult saveKeyResult) {
-        CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
-                .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
+        final CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
         final SaveKeyringParcel changeKeyringParcel;
+        CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
+                .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {
@@ -278,6 +279,7 @@ public class CreateKeyFinalFragment extends Fragment {
             return;
         }
 
+        // define subkeys that should be moved to the card
         Cursor cursor = getActivity().getContentResolver().query(
                 KeychainContract.Keys.buildKeysUri(changeKeyringParcel.mMasterKeyId),
                 new String[]{KeychainContract.Keys.KEY_ID,}, null, null, null
@@ -292,6 +294,10 @@ public class CreateKeyFinalFragment extends Fragment {
                 cursor.close();
             }
         }
+
+        // define new PIN and Admin PIN for the card
+        changeKeyringParcel.mCardPin = createKeyActivity.mYubiKeyPin;
+        changeKeyringParcel.mCardAdminPin = createKeyActivity.mYubiKeyAdminPin;
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> callback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {

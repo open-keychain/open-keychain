@@ -107,8 +107,8 @@ public class CreateKeyPassphraseFragment extends Fragment {
         // initial values
         // TODO: using String here is unsafe...
         if (mCreateKeyActivity.mPassphrase != null) {
-            mPassphraseEdit.setText(new String(mCreateKeyActivity.mPassphrase.getCharArray()));
-            mPassphraseEditAgain.setText(new String(mCreateKeyActivity.mPassphrase.getCharArray()));
+            mPassphraseEdit.setText(mCreateKeyActivity.mPassphrase.toStringUnsafe());
+            mPassphraseEditAgain.setText(mCreateKeyActivity.mPassphrase.toStringUnsafe());
         }
 
         mPassphraseEdit.requestFocus();

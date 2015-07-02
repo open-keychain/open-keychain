@@ -1,12 +1,15 @@
 package org.sufficientlysecure.keychain.service.input;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.spongycastle.util.Arrays;
+import org.sufficientlysecure.keychain.util.Passphrase;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-
-import android.os.Parcel;
-import android.os.Parcelable;
 
 
 public class RequiredInputParcel implements Parcelable {
@@ -19,16 +22,16 @@ public class RequiredInputParcel implements Parcelable {
 
     public final RequiredInputType mType;
 
-    public final byte[][] mInputHashes;
+    public final byte[][] mInputData;
     public final int[] mSignAlgos;
 
     private Long mMasterKeyId;
     private Long mSubKeyId;
 
-    private RequiredInputParcel(RequiredInputType type, byte[][] inputHashes,
+    private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
             int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
         mType = type;
-        mInputHashes = inputHashes;
+        mInputData = inputData;
         mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
         mMasterKeyId = masterKeyId;
@@ -38,25 +41,25 @@ public class RequiredInputParcel implements Parcelable {
     public RequiredInputParcel(Parcel source) {
         mType = RequiredInputType.values()[source.readInt()];
 
-        // 0 = none, 1 = both, 2 = only hashes (decrypt)
-        int hashTypes = source.readInt();
-        if (hashTypes != 0) {
+        // 0 = none, 1 = signAlgos + inputData, 2 = only inputData (decrypt)
+        int inputDataType = source.readInt();
+        if (inputDataType != 0) {
             int count = source.readInt();
-            mInputHashes = new byte[count][];
-            if (hashTypes == 1) {
+            mInputData = new byte[count][];
+            if (inputDataType == 1) {
                 mSignAlgos = new int[count];
                 for (int i = 0; i < count; i++) {
-                    mInputHashes[i] = source.createByteArray();
+                    mInputData[i] = source.createByteArray();
                     mSignAlgos[i] = source.readInt();
                 }
             } else {
                 mSignAlgos = null;
                 for (int i = 0; i < count; i++) {
-                    mInputHashes[i] = source.createByteArray();
+                    mInputData[i] = source.createByteArray();
                 }
             }
         } else {
-            mInputHashes = null;
+            mInputData = null;
             mSignAlgos = null;
         }
 
@@ -83,9 +86,9 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public static RequiredInputParcel createNfcDecryptOperation(
-            long masterKeyId, long subKeyId, byte[] inputHash) {
+            long masterKeyId, long subKeyId, byte[] encryptedSessionKey) {
         return new RequiredInputParcel(RequiredInputType.NFC_DECRYPT,
-                new byte[][] { inputHash }, null, null, masterKeyId, subKeyId);
+                new byte[][] { encryptedSessionKey }, null, null, masterKeyId, subKeyId);
     }
 
     public static RequiredInputParcel createRequiredSignPassphrase(
@@ -119,11 +122,11 @@ public class RequiredInputParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mType.ordinal());
-        if (mInputHashes != null) {
+        if (mInputData != null) {
             dest.writeInt(mSignAlgos != null ? 1 : 2);
-            dest.writeInt(mInputHashes.length);
-            for (int i = 0; i < mInputHashes.length; i++) {
-                dest.writeByteArray(mInputHashes[i]);
+            dest.writeInt(mInputData.length);
+            for (int i = 0; i < mInputData.length; i++) {
+                dest.writeByteArray(mInputData[i]);
                 if (mSignAlgos != null) {
                     dest.writeInt(mSignAlgos[i]);
                 }
@@ -200,7 +203,7 @@ public class RequiredInputParcel implements Parcelable {
                 throw new AssertionError("operation types must match, this is a progrmming error!");
             }
 
-            Collections.addAll(mInputHashes, input.mInputHashes);
+            Collections.addAll(mInputHashes, input.mInputData);
             for (int signAlgo : input.mSignAlgos) {
                 mSignAlgos.add(signAlgo);
             }
@@ -215,19 +218,31 @@ public class RequiredInputParcel implements Parcelable {
     public static class NfcKeyToCardOperationsBuilder {
         ArrayList<byte[]> mSubkeysToExport = new ArrayList<>();
         Long mMasterKeyId;
+        byte[] mPin;
+        byte[] mAdminPin;
 
         public NfcKeyToCardOperationsBuilder(Long masterKeyId) {
             mMasterKeyId = masterKeyId;
         }
 
         public RequiredInputParcel build() {
-            byte[][] inputHashes = new byte[mSubkeysToExport.size()][];
-            mSubkeysToExport.toArray(inputHashes);
+            byte[][] inputData = new byte[mSubkeysToExport.size() + 2][];
+
+            // encode all subkeys into inputData
+            byte[][] subkeyData = new byte[mSubkeysToExport.size()][];
+            mSubkeysToExport.toArray(subkeyData);
+
+            // first two are PINs
+            inputData[0] = mPin;
+            inputData[1] = mAdminPin;
+            // then subkeys
+            System.arraycopy(subkeyData, 0, inputData, 2, subkeyData.length);
+
             ByteBuffer buf = ByteBuffer.wrap(mSubkeysToExport.get(0));
 
             // We need to pass in a subkey here...
             return new RequiredInputParcel(RequiredInputType.NFC_MOVE_KEY_TO_CARD,
-                    inputHashes, null, null, mMasterKeyId, buf.getLong());
+                    inputData, null, null, mMasterKeyId, buf.getLong());
         }
 
         public void addSubkey(long subkeyId) {
@@ -235,6 +250,14 @@ public class RequiredInputParcel implements Parcelable {
             ByteBuffer buf = ByteBuffer.wrap(subKeyId);
             buf.putLong(subkeyId).rewind();
             mSubkeysToExport.add(subKeyId);
+        }
+
+        public void setPin(Passphrase pin) {
+            mPin = pin.toStringUnsafe().getBytes();
+        }
+
+        public void setAdminPin(Passphrase adminPin) {
+            mAdminPin = adminPin.toStringUnsafe().getBytes();
         }
 
         public void addAll(RequiredInputParcel input) {
@@ -245,7 +268,7 @@ public class RequiredInputParcel implements Parcelable {
                 throw new AssertionError("Operation types must match, this is a programming error!");
             }
 
-            Collections.addAll(mSubkeysToExport, input.mInputHashes);
+            Collections.addAll(mSubkeysToExport, input.mInputData);
         }
 
         public boolean isEmpty() {

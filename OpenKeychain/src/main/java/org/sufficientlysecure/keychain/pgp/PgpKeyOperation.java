@@ -1039,6 +1039,26 @@ public class PgpKeyOperation {
                 indent -= 1;
             }
 
+            // 7. if requested, change PIN and/or Admin PIN on card
+            if (saveParcel.mCardPin != null) {
+                progress(R.string.progress_modify_pin, 90);
+                log.add(LogType.MSG_MF_PIN, indent);
+                indent += 1;
+
+                nfcKeyToCardOps.setPin(saveParcel.mCardPin);
+
+                indent -= 1;
+            }
+            if (saveParcel.mCardAdminPin != null) {
+                progress(R.string.progress_modify_admin_pin, 90);
+                log.add(LogType.MSG_MF_ADMIN_PIN, indent);
+                indent += 1;
+
+                nfcKeyToCardOps.setAdminPin(saveParcel.mCardAdminPin);
+
+                indent -= 1;
+            }
+
         } catch (IOException e) {
             Log.e(Constants.TAG, "encountered IOException while modifying key", e);
             log.add(LogType.MSG_MF_ERROR_ENCODE, indent+1);

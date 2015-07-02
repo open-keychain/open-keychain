@@ -117,6 +117,13 @@ public class Passphrase implements Parcelable {
         }
     }
 
+    /**
+     * Creates a new String from the char[]. This is considered unsafe!
+     */
+    public String toStringUnsafe() {
+        return new String(mPassphrase);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -127,11 +134,7 @@ public class Passphrase implements Parcelable {
         }
 
         Passphrase that = (Passphrase) o;
-        if (!Arrays.equals(mPassphrase, that.mPassphrase)) {
-            return false;
-        }
-
-        return true;
+        return Arrays.equals(mPassphrase, that.mPassphrase);
     }
 
     @Override

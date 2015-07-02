@@ -124,9 +124,9 @@ public class CreateYubiKeyPinRepeatFragment extends Fragment {
 
     private void nextClicked() {
         if (isEditTextNotEmpty(getActivity(), mPin)
-                && checkPin(getActivity(), mPin, mCreateKeyActivity.mYubiKeyPin)
+                && checkPin(getActivity(), mPin, mCreateKeyActivity.mYubiKeyPin.toStringUnsafe())
                 && isEditTextNotEmpty(getActivity(), mAdminPin)
-                && checkPin(getActivity(), mAdminPin, mCreateKeyActivity.mYubiKeyAdminPin)) {
+                && checkPin(getActivity(), mAdminPin, mCreateKeyActivity.mYubiKeyAdminPin.toStringUnsafe())) {
 
             CreateKeyFinalFragment frag = CreateKeyFinalFragment.newInstance();
             hideKeyboard();

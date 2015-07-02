@@ -80,16 +80,16 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         switch (mRequiredInput.mType) {
             case NFC_DECRYPT: {
-                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
-                    byte[] hash = mRequiredInput.mInputHashes[i];
-                    byte[] decryptedSessionKey = nfcDecryptSessionKey(hash);
-                    inputParcel.addCryptoData(hash, decryptedSessionKey);
+                for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
+                    byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
+                    byte[] decryptedSessionKey = nfcDecryptSessionKey(encryptedSessionKey);
+                    inputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
             case NFC_SIGN: {
-                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
-                    byte[] hash = mRequiredInput.mInputHashes[i];
+                for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
+                    byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
                     byte[] signedHash = nfcCalculateSignature(hash, algo);
                     inputParcel.addCryptoData(hash, signedHash);
@@ -97,6 +97,10 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 break;
             }
             case NFC_MOVE_KEY_TO_CARD: {
+                // TODO: assume PIN and Admin PIN to be default for this operation
+                mPin = new Passphrase("123456");
+                mAdminPin = new Passphrase("12345678");
+
                 ProviderHelper providerHelper = new ProviderHelper(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
@@ -107,8 +111,11 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     throw new IOException("Couldn't find subkey for key to card operation.");
                 }
 
-                for (int i = 0; i < mRequiredInput.mInputHashes.length; i++) {
-                    byte[] subkeyBytes = mRequiredInput.mInputHashes[i];
+                byte[] newPin = mRequiredInput.mInputData[0];
+                byte[] newAdminPin = mRequiredInput.mInputData[1];
+
+                for (int i = 2; i < mRequiredInput.mInputData.length; i++) {
+                    byte[] subkeyBytes = mRequiredInput.mInputData[i];
                     ByteBuffer buf = ByteBuffer.wrap(subkeyBytes);
                     long subkeyId = buf.getLong();
 
@@ -155,8 +162,18 @@ public class NfcOperationActivity extends BaseNfcActivity {
                         throw new IOException("Inappropriate key flags for smart card key.");
                     }
 
+                    // TODO: Is this really needed?
                     inputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
                 }
+
+                // change PINs afterwards
+                nfcModifyPIN(0x81, newPin);
+                nfcModifyPIN(0x83, newAdminPin);
+
+                break;
+            }
+            default: {
+                throw new AssertionError("Unhandled mRequiredInput.mType");
             }
         }
 

@@ -342,6 +342,8 @@
     <string name="progress_modify_subkeystrip">"stripping subkeys…"</string>
     <string name="progress_modify_subkeyadd">"adding subkeys…"</string>
     <string name="progress_modify_passphrase">"changing password…"</string>
+    <string name="progress_modify_pin">"changing PIN…"</string>
+    <string name="progress_modify_admin_pin">"changing Admin PIN…"</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">"exporting key…"</item>
@@ -660,7 +662,7 @@
     <string name="create_key_add_email_text">"Additional email addresses are also associated to this key and can be used for secure communication."</string>
     <string name="create_key_email_already_exists_text">"Email address has already been added"</string>
     <string name="create_key_email_invalid_email">"Email address format is invalid"</string>
-    <string name="create_key_yubi_key_pin_text">"Please remember these PINs. They are required to use your YubiKey later. If possible write down the Admin PIN and store it in a safe place."</string>
+    <string name="create_key_yubi_key_pin_text">"Please remember the PIN, it is required to use your YubiKey later. Please write down the Admin PIN and store it in a safe place."</string>
     <string name="create_key_yubi_key_pin">"PIN"</string>
     <string name="create_key_yubi_key_admin_pin">"Admin PIN"</string>
     <string name="create_key_yubi_key_pin_repeat_text">"Please enter the PIN and Admin PIN to proceed."</string>
@@ -957,6 +959,8 @@
     <string name="msg_mf_notation_empty">"Adding empty notation packet"</string>
     <string name="msg_mf_notation_pin">"Adding PIN notation packet"</string>
     <string name="msg_mf_passphrase">"Changing password for keyring"</string>
+    <string name="msg_mf_pin">"Changing PIN on card"</string>
+    <string name="msg_mf_admin_pin">"Changing Admin PIN on card"</string>
     <string name="msg_mf_passphrase_key">"Re-encrypting subkey %s with new password"</string>
     <string name="msg_mf_passphrase_empty_retry">"Setting new password failed, trying again with empty old password"</string>
     <string name="msg_mf_passphrase_fail">"Password for subkey could not be changed! (Does it have a different one from the other keys?)"</string>

@@ -58,8 +58,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
     Passphrase mPassphrase;
     boolean mFirstTime;
     boolean mCreateYubiKey;
-    String mYubiKeyPin;
-    String mYubiKeyAdminPin;
+    Passphrase mYubiKeyPin;
+    Passphrase mYubiKeyAdminPin;
 
     Fragment mCurrentFragment;
 
@@ -93,8 +93,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
             mPassphrase = savedInstanceState.getParcelable(EXTRA_PASSPHRASE);
             mFirstTime = savedInstanceState.getBoolean(EXTRA_FIRST_TIME);
             mCreateYubiKey = savedInstanceState.getBoolean(EXTRA_CREATE_YUBI_KEY);
-            mYubiKeyPin = savedInstanceState.getString(EXTRA_YUBI_KEY_PIN);
-            mYubiKeyAdminPin = savedInstanceState.getString(EXTRA_YUBI_KEY_ADMIN_PIN);
+            mYubiKeyPin = savedInstanceState.getParcelable(EXTRA_YUBI_KEY_PIN);
+            mYubiKeyAdminPin = savedInstanceState.getParcelable(EXTRA_YUBI_KEY_ADMIN_PIN);
 
             mCurrentFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         } else {
@@ -200,8 +200,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
         outState.putParcelable(EXTRA_PASSPHRASE, mPassphrase);
         outState.putBoolean(EXTRA_FIRST_TIME, mFirstTime);
         outState.putBoolean(EXTRA_CREATE_YUBI_KEY, mCreateYubiKey);
-        outState.putString(EXTRA_YUBI_KEY_PIN, mYubiKeyPin);
-        outState.putString(EXTRA_YUBI_KEY_ADMIN_PIN, mYubiKeyAdminPin);
+        outState.putParcelable(EXTRA_YUBI_KEY_PIN, mYubiKeyPin);
+        outState.putParcelable(EXTRA_YUBI_KEY_ADMIN_PIN, mYubiKeyAdminPin);
     }
 
     @Override
