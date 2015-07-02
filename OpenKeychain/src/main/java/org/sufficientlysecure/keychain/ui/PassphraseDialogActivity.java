@@ -299,10 +299,10 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
                 mPassphraseEditText.setOnEditorActionListener(this);
 
-                if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin()) {
-                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                } else if (keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
-                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin())
+                        || keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
+                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
                 } else {
                     mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 }
