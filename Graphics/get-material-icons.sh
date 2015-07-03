@@ -59,3 +59,6 @@ python copy OpenKeychain file white folder 24
 
 # multi select
 python copy OpenKeychain action white lock 24
+
+# yubikey dialog
+python copy OpenKeychain action black check_circle 48

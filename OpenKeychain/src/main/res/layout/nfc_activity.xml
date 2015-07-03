@@ -19,38 +19,36 @@
         android:paddingTop="16dp"
         custom:initialView="0">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar_include"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/nfc_activity_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/nfc_text"
                 android:textAppearance="@android:style/TextAppearance.Medium" />
 
             <ImageView
+                android:id="@+id/nfc_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/nfc_activity_text"
                 android:layout_marginTop="8dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/yubikey_phone"
-                android:id="@+id/nfc_image"
-                android:background="@android:color/transparent" />
-        </LinearLayout>
+                android:background="@android:color/transparent"
+                android:src="@drawable/yubikey_phone" />
+        </RelativeLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar_include"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/nfc_activity_text2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/nfc_wait"
@@ -60,27 +58,62 @@
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:padding="8dp" />
 
-        </LinearLayout>
+            <!-- placeholder to retain dialog size -->
+            <ImageView
+                android:id="@+id/nfc_image_placeholder1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/nfc_activity_text2"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/yubikey_phone"
+                android:visibility="invisible" />
 
-        <LinearLayout
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/toolbar_include"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/nfc_activity_text3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/nfc_finished"
                 android:textAppearance="@android:style/TextAppearance.Medium" />
 
-        </LinearLayout>
+            <!-- placeholder to retain dialog size -->
+            <ImageView
+                android:id="@+id/nfc_image_placeholder2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/nfc_activity_text3"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/yubikey_phone"
+                android:visibility="invisible" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_check_circle_black_48dp" />
+
+        </RelativeLayout>
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
 
 </LinearLayout>
