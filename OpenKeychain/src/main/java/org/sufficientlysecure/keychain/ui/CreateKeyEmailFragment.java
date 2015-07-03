@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -238,9 +237,6 @@ public class CreateKeyEmailFragment extends Fragment {
 
             if (createKeyActivity.mCreateYubiKey) {
                 hideKeyboard();
-
-                // set empty passphrase
-                createKeyActivity.mPassphrase = new Passphrase();
 
                 CreateYubiKeyPinFragment frag = CreateYubiKeyPinFragment.newInstance();
                 mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);

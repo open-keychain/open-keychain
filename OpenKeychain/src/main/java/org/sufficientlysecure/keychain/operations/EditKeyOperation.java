@@ -131,13 +131,22 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         // There is a new passphrase - cache it
         if (saveParcel.mNewUnlock != null) {
             log.add(LogType.MSG_ED_CACHING_NEW, 1);
-            PassphraseCacheService.addCachedPassphrase(mContext,
-                    ring.getMasterKeyId(),
-                    ring.getMasterKeyId(),
-                    saveParcel.mNewUnlock.mNewPassphrase != null
-                            ? saveParcel.mNewUnlock.mNewPassphrase
-                            : saveParcel.mNewUnlock.mNewPin,
-                    ring.getPublicKey().getPrimaryUserIdWithFallback());
+
+            // NOTE: Don't cache empty passphrases! Important for MOVE_KEY_TO_CARD
+            if (saveParcel.mNewUnlock.mNewPassphrase != null
+                    && ( ! saveParcel.mNewUnlock.mNewPassphrase.isEmpty())) {
+                PassphraseCacheService.addCachedPassphrase(mContext,
+                        ring.getMasterKeyId(),
+                        ring.getMasterKeyId(),
+                        saveParcel.mNewUnlock.mNewPassphrase,
+                        ring.getPublicKey().getPrimaryUserIdWithFallback());
+            } else if (saveParcel.mNewUnlock.mNewPin != null) {
+                PassphraseCacheService.addCachedPassphrase(mContext,
+                        ring.getMasterKeyId(),
+                        ring.getMasterKeyId(),
+                        saveParcel.mNewUnlock.mNewPin,
+                        ring.getPublicKey().getPrimaryUserIdWithFallback());
+            }
         }
 
         updateProgress(R.string.progress_done, 100, 100);

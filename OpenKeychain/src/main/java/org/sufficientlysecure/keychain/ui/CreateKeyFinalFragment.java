@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockPar
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.Iterator;
@@ -187,6 +188,9 @@ public class CreateKeyFinalFragment extends Fragment {
                         2048, null, KeyFlags.AUTHENTICATION, 0L));
                 mEditText.setText(R.string.create_key_custom);
                 mEditButton.setEnabled(false);
+
+                // use empty passphrase
+                mSaveKeyringParcel.mNewUnlock = new ChangeUnlockParcel(new Passphrase(), null);
             } else {
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                         4096, null, KeyFlags.CERTIFY_OTHER, 0L));
@@ -194,6 +198,10 @@ public class CreateKeyFinalFragment extends Fragment {
                         4096, null, KeyFlags.SIGN_DATA, 0L));
                 mSaveKeyringParcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(Algorithm.RSA,
                         4096, null, KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE, 0L));
+
+                mSaveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
+                        ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
+                        : null;
             }
             String userId = KeyRing.createUserId(
                     new KeyRing.UserId(createKeyActivity.mName, createKeyActivity.mEmail, null)
@@ -209,9 +217,6 @@ public class CreateKeyFinalFragment extends Fragment {
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
-            mSaveKeyringParcel.mNewUnlock = createKeyActivity.mPassphrase != null
-                    ? new ChangeUnlockParcel(createKeyActivity.mPassphrase, null)
-                    : null;
         }
     }
 
