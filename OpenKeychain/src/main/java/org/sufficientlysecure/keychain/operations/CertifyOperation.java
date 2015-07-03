@@ -19,7 +19,9 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
+import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -44,7 +46,10 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSign
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -187,11 +192,24 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             return new CertifyResult(CertifyResult.RESULT_CANCELLED, log);
         }
 
+        // these variables are used inside the following loop, but they need to be created only once
         HkpKeyserver keyServer = null;
         ExportOperation exportOperation = null;
+        Proxy proxy = null;
         if (parcel.keyServerUri != null) {
             keyServer = new HkpKeyserver(parcel.keyServerUri);
             exportOperation = new ExportOperation(mContext, mProviderHelper, mProgressable);
+            if (cryptoInput.getParcelableProxy() == null) {
+                // explicit proxy not set
+                if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                    return new CertifyResult(null,
+                            RequiredInputParcel.createOrbotRequiredOperation());
+                }
+                proxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                        .parcelableProxy.getProxy();
+            } else {
+                proxy = cryptoInput.getParcelableProxy().getProxy();
+            }
         }
 
         // Write all certified keys into the database
@@ -211,8 +229,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
             if (exportOperation != null) {
-                ExportResult uploadResult = importExportOperation.uploadKeyRingToServer(keyServer, certifiedKey,
-                        parcelableProxy.getProxy());
+                ExportResult uploadResult = exportOperation.uploadKeyRingToServer(
+                        keyServer,
+                        certifiedKey,
+                        proxy);
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {
@@ -229,12 +249,12 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             }
 
             log.add(result, 2);
-
         }
 
         if (certifyOk == 0) {
             log.add(LogType.MSG_CRT_ERROR_NOTHING, 0);
-            return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError, uploadOk, uploadError);
+            return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError,
+                    uploadOk, uploadError);
         }
 
         // since only verified keys are synced to contacts, we need to initiate a sync now

@@ -29,10 +29,7 @@ import java.net.Proxy;
 public class ParcelableProxy implements Parcelable {
     private String mProxyHost;
     private int mProxyPort;
-    private int mProxyType;
-
-    private final int TYPE_HTTP = 1;
-    private final int TYPE_SOCKS = 2;
+    private Proxy.Type mProxyType;
 
     public ParcelableProxy(String hostName, int port, Proxy.Type type) {
         mProxyHost = hostName;
@@ -41,37 +38,23 @@ public class ParcelableProxy implements Parcelable {
 
         mProxyPort = port;
 
-        switch (type) {
-            case HTTP: {
-                mProxyType = TYPE_HTTP;
-                break;
-            }
-            case SOCKS: {
-                mProxyType = TYPE_SOCKS;
-                break;
-            }
-        }
+        mProxyType = type;
+    }
+
+    public static ParcelableProxy getForNoProxy() {
+        return new ParcelableProxy(null, -1, null);
     }
 
     public Proxy getProxy() {
         if (mProxyHost == null) return null;
 
-        Proxy.Type type = null;
-        switch (mProxyType) {
-            case TYPE_HTTP:
-                type = Proxy.Type.HTTP;
-                break;
-            case TYPE_SOCKS:
-                type = Proxy.Type.SOCKS;
-                break;
-        }
-        return new Proxy(type, new InetSocketAddress(mProxyHost, mProxyPort));
+        return new Proxy(mProxyType, new InetSocketAddress(mProxyHost, mProxyPort));
     }
 
     protected ParcelableProxy(Parcel in) {
         mProxyHost = in.readString();
         mProxyPort = in.readInt();
-        mProxyType = in.readInt();
+        mProxyType = (Proxy.Type) in.readSerializable();
     }
 
     @Override
@@ -83,7 +66,7 @@ public class ParcelableProxy implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mProxyHost);
         dest.writeInt(mProxyPort);
-        dest.writeInt(mProxyType);
+        dest.writeSerializable(mProxyType);
     }
 
     @SuppressWarnings("unused")

@@ -15,7 +15,7 @@ import java.util.Date;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD, ENABLE_ORBOT
     }
 
     public Date mSignatureTime;
@@ -75,6 +75,10 @@ public class RequiredInputParcel implements Parcelable {
 
     public Long getSubKeyId() {
         return mSubKeyId;
+    }
+
+    public static RequiredInputParcel createOrbotRequiredOperation() {
+        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L);
     }
 
     public static RequiredInputParcel createNfcSignOperation(

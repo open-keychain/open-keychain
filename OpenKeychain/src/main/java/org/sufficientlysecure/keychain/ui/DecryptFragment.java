@@ -19,15 +19,11 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
-import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -52,7 +48,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -438,7 +433,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                             }
                         };
 
-                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                                 getActivity())) {
                             lookupUnknownKey(signatureKeyId, proxyPrefs.parcelableProxy);
                         }

@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
@@ -78,19 +77,7 @@ public class UploadKeyActivity extends BaseActivity
         mUploadButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(UploadKeyActivity.this)
-                        .getProxyPrefs();
-                Runnable ignoreTor = new Runnable() {
-                    @Override
-                    public void run() {
-                        uploadKey(proxyPrefs.parcelableProxy);
-                    }
-                };
-
-                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                        UploadKeyActivity.this)) {
-                    uploadKey(proxyPrefs.parcelableProxy);
-                }
+                uploadKey();
             }
         });
 
@@ -146,8 +133,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public void onCryptoOperationSuccess(ExportResult result) {
-        Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
-                Toast.LENGTH_SHORT).show();
+        result.createNotify(this).show();
     }
 
     @Override
@@ -157,7 +143,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public void onCryptoOperationError(ExportResult result) {
-        // TODO: Implement proper log for key upload then show error
+        result.createNotify(this).show();
     }
 
     @Override

@@ -364,7 +364,7 @@ public class ImportKeysActivity extends BaseNfcActivity
                     mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
                 }
             };
-            if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
+            if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
                 mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
             }
         } else if (loaderState instanceof ImportKeysListFragment.BytesLoaderState) { // must always be true
@@ -449,8 +449,6 @@ public class ImportKeysActivity extends BaseNfcActivity
         } else if (ls instanceof ImportKeysListFragment.CloudLoaderState) {
             ImportKeysListFragment.CloudLoaderState sls =
                     (ImportKeysListFragment.CloudLoaderState) ls;
-
-            data.putParcelable(KeychainService.EXTRA_PARCELABLE_PROXY, mProxyPrefs.parcelableProxy);
 
             // get selected key entries
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>();

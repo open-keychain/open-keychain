@@ -131,7 +131,7 @@ public class CreateYubiKeyImportFragment
                         }
                     };
 
-                    if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                    if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                             getActivity())) {
                         importKey(proxyPrefs.parcelableProxy);
                     }
@@ -153,7 +153,7 @@ public class CreateYubiKeyImportFragment
                     }
                 };
 
-                if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                         getActivity())) {
                     refreshSearch(proxyPrefs.parcelableProxy);
                 }
@@ -245,7 +245,7 @@ public class CreateYubiKeyImportFragment
             }
         };
 
-        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                 getActivity())) {
             refreshSearch(proxyPrefs.parcelableProxy);
         }

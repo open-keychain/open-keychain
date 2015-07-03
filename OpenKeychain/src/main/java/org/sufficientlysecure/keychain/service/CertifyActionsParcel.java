@@ -41,7 +41,6 @@ public class CertifyActionsParcel implements Parcelable {
     public ArrayList<CertifyAction> mCertifyActions = new ArrayList<>();
 
     public String keyServerUri;
-    public ParcelableProxy parcelableProxy;
 
     public CertifyActionsParcel(long masterKeyId) {
         mMasterKeyId = masterKeyId;
@@ -53,7 +52,6 @@ public class CertifyActionsParcel implements Parcelable {
         // just like parcelables, this is meant for ad-hoc IPC only and is NOT portable!
         mLevel = CertifyLevel.values()[source.readInt()];
         keyServerUri = source.readString();
-        parcelableProxy = source.readParcelable(ParcelableProxy.class.getClassLoader());
 
         mCertifyActions = (ArrayList<CertifyAction>) source.readSerializable();
     }
@@ -67,7 +65,6 @@ public class CertifyActionsParcel implements Parcelable {
         destination.writeLong(mMasterKeyId);
         destination.writeInt(mLevel.ordinal());
         destination.writeString(keyServerUri);
-        destination.writeParcelable(parcelableProxy, flags);
 
         destination.writeSerializable(mCertifyActions);
     }

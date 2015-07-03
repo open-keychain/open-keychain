@@ -54,19 +54,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.Proxy;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
@@ -220,7 +212,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                 @Override
                 public void onClick(View v) {
                     // behaviour same for edit and add
-                    String keyserverUrl = mKeyserverEditText.getText().toString();
+                    final String keyserverUrl = mKeyserverEditText.getText().toString();
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
                                 .getProxyPrefs();
@@ -231,7 +223,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                             }
                         };
 
-                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                                 getActivity())) {
                             verifyConnection(keyserverUrl, proxyPrefs.parcelableProxy.getProxy());
                         }

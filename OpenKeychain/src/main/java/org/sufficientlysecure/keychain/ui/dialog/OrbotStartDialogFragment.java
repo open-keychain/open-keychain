@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package org.sufficientlysecure.keychain.ui.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -25,6 +25,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -62,8 +63,15 @@ public class OrbotStartDialogFragment extends DialogFragment {
         int title = getArguments().getInt(ARG_TITLE);
         final int message = getArguments().getInt(ARG_MESSAGE);
         int middleButton = getArguments().getInt(ARG_MIDDLE_BUTTON);
+        final Activity activity = getActivity();
 
-        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(getActivity());
+        // if the dialog is displayed from the application class, design is missing.
+        // hack to get holo design (which is not automatically applied due to activity's
+        // Theme.NoDisplay)
+        ContextThemeWrapper theme = new ContextThemeWrapper(activity,
+                R.style.Theme_AppCompat_Light_Dialog);
+
+        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
         builder.setTitle(title).setMessage(message);
 
         builder.setNegativeButton(R.string.orbot_start_dialog_cancel, new DialogInterface.OnClickListener() {

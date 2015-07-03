@@ -59,6 +59,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.SupportInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
@@ -130,6 +131,16 @@ public class OrbotHelper {
         return intent;
     }
 
+    public static boolean isOrbotInRequiredState(Context context) {
+        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(context).getProxyPrefs();
+        if (!proxyPrefs.torEnabled) {
+            return true;
+        } else if (!OrbotHelper.isOrbotInstalled(context) || !OrbotHelper.isOrbotRunning()) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * checks if Tor is enabled and if it is, that Orbot is installed and runnign. Generates appropriate dialogs.
      *
@@ -139,8 +150,9 @@ public class OrbotHelper {
      * @param fragmentActivity
      * @return true if Tor is not enabled or Tor is enabled and Orbot is installed and running, else false
      */
-    public static boolean isOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
-                                                 Preferences.ProxyPrefs proxyPrefs, FragmentActivity fragmentActivity) {
+    public static boolean putOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
+                                                  Preferences.ProxyPrefs proxyPrefs,
+                                                  FragmentActivity fragmentActivity) {
         Handler ignoreTorHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {

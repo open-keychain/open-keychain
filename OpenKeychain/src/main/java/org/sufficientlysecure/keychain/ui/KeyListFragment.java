@@ -557,7 +557,7 @@ public class KeyListFragment extends LoaderFragment
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
-    private void updateAllKeys(ParcelableProxy parcelableProxy) {
+    private void updateAllKeys() {
         Activity activity = getActivity();
         if (activity == null) {
             return;

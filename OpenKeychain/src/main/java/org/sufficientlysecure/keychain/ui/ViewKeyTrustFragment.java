@@ -211,7 +211,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                             }
                         };
 
-                        if (OrbotHelper.isOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
                                 getActivity())) {
                             mStartSearch.setEnabled(false);
                             new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
