@@ -34,7 +34,9 @@ public class ParcelableProxy implements Parcelable {
     public ParcelableProxy(String hostName, int port, Proxy.Type type) {
         mProxyHost = hostName;
 
-        if (hostName == null) return; // represents a null proxy
+        if (hostName == null) {
+            return; // represents a null proxy
+        }
 
         mProxyPort = port;
 
@@ -46,7 +48,9 @@ public class ParcelableProxy implements Parcelable {
     }
 
     public Proxy getProxy() {
-        if (mProxyHost == null) return null;
+        if (mProxyHost == null) {
+            return null;
+        }
 
         return new Proxy(mProxyType, new InetSocketAddress(mProxyHost, mProxyPort));
     }

@@ -28,8 +28,8 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-
 import android.support.v4.app.FragmentManager;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
@@ -53,11 +53,15 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
 
-    public interface Callback <T extends Parcelable, S extends OperationResult> {
+    public interface Callback<T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
+
         void onCryptoOperationSuccess(S result);
+
         void onCryptoOperationCancelled();
+
         void onCryptoOperationError(S result);
+
         boolean onCryptoSetProgress(String msg, int progress, int max);
     }
 
@@ -124,6 +128,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
         switch (requiredInput.mType) {
+            // TODO: Verify that all started activities add to cryptoInputParcel if necessary (like OrbotRequiredDialogActivity)
             // don't forget to set mRequestedCode!
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
@@ -215,12 +220,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             }
 
             case REQUEST_CODE_ENABLE_ORBOT: {
-                Log.e("PHILIP", "request rec");
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(
                                     OrbotRequiredDialogActivity.RESULT_CRYPTO_INPUT);
-                    Log.e("PHILIP", "initiating next op");
                     cryptoOperation(cryptoInput);
                     return true;
                 }
@@ -294,7 +297,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             @Override
             protected void onSetProgress(String msg, int progress, int max) {
                 // allow handling of progress in fragment, or delegate upwards
-                if ( ! mCallback.onCryptoSetProgress(msg, progress, max)) {
+                if (!mCallback.onCryptoSetProgress(msg, progress, max)) {
                     super.onSetProgress(msg, progress, max);
                 }
             }

@@ -59,7 +59,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.SupportInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;

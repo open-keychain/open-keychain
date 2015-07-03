@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -29,7 +30,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
- * Simply encapsulates a dialog. If orbot is not installed, it shows an install dialog, else a dialog to enable orbot.
+ * Simply encapsulates a dialog. If orbot is not installed, it shows an install dialog, else a
+ * dialog to enable orbot.
  */
 public class OrbotRequiredDialogActivity extends FragmentActivity {
 
