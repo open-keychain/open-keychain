@@ -68,7 +68,15 @@ public class OrbotRequiredDialogActivity extends FragmentActivity {
                         finish();
                     }
                 };
-                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor,
+
+                Runnable dialogDismissed = new Runnable() {
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                };
+
+                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, dialogDismissed,
                         Preferences.getPreferences(OrbotRequiredDialogActivity.this)
                                 .getProxyPrefs(),
                         OrbotRequiredDialogActivity.this)) {
@@ -76,7 +84,6 @@ public class OrbotRequiredDialogActivity extends FragmentActivity {
                     Intent intent = new Intent();
                     intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
                     setResult(RESULT_OK, intent);
-                    finish();
                 }
             }
         });

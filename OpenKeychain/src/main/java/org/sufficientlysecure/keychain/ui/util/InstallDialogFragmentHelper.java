@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.view.ContextThemeWrapper;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -53,7 +55,8 @@ public class InstallDialogFragmentHelper {
     }
 
     public static AlertDialog getInstallDialogFromArgs(Bundle args, final Activity activity,
-                                                       final int messengerMiddleButtonClicked) {
+                                                       final int messengerMiddleButtonClicked,
+                                                       final int messengerDialogDimissed) {
         final Messenger messenger = args.getParcelable(ARG_MESSENGER);
 
         final int title = args.getInt(ARG_TITLE);
@@ -62,7 +65,12 @@ public class InstallDialogFragmentHelper {
         final String installPath = args.getString(ARG_INSTALL_PATH);
         final boolean useMiddleButton = args.getBoolean(ARG_USE_MIDDLE_BUTTON);
 
-        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(activity);
+        // if the dialog is displayed from the application class, design is missing.
+        // hack to get holo design (which is not automatically applied due to activity's
+        // Theme.NoDisplay)
+        ContextThemeWrapper theme = new ContextThemeWrapper(activity,
+                R.style.Theme_AppCompat_Light_Dialog);
+        CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
 
         builder.setTitle(title).setMessage(message);
 
@@ -70,7 +78,15 @@ public class InstallDialogFragmentHelper {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        Message msg = Message.obtain();
+                        msg.what = messengerDialogDimissed;
+                        try {
+                            messenger.send(msg);
+                        } catch (RemoteException e) {
+                            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                        } catch (NullPointerException e) {
+                            Log.w(Constants.TAG, "Messenger is null!", e);
+                        }
                     }
                 });
 
@@ -81,6 +97,16 @@ public class InstallDialogFragmentHelper {
                         Uri uri = Uri.parse(installPath);
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                         activity.startActivity(intent);
+
+                        Message msg = Message.obtain();
+                        msg.what = messengerDialogDimissed;
+                        try {
+                            messenger.send(msg);
+                        } catch (RemoteException e) {
+                            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                        } catch (NullPointerException e) {
+                            Log.w(Constants.TAG, "Messenger is null!", e);
+                        }
                     }
                 }
         );
@@ -90,7 +116,7 @@ public class InstallDialogFragmentHelper {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Message msg = new Message();
+                            Message msg = Message.obtain();
                             msg.what = messengerMiddleButtonClicked;
                             try {
                                 messenger.send(msg);

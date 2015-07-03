@@ -122,19 +122,7 @@ public class CreateYubiKeyImportFragment
             mNextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
-                    Runnable ignoreTor = new Runnable() {
-                        @Override
-                        public void run() {
-                            importKey(new ParcelableProxy(null, -1, null));
-                        }
-                    };
-
-                    if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                            getActivity())) {
-                        importKey(proxyPrefs.parcelableProxy);
-                    }
+                    importKey();
                 }
             });
         }
@@ -201,7 +189,7 @@ public class CreateYubiKeyImportFragment
                 Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
     }
 
-    public void importKey(ParcelableProxy parcelableProxy) {
+    public void importKey() {
 
         ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
         keyList.add(new ParcelableKeyRing(mNfcFingerprint, null, null));

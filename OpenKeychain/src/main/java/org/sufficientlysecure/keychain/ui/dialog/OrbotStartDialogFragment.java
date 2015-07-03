@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ public class OrbotStartDialogFragment extends DialogFragment {
     private static final String ARG_MIDDLE_BUTTON = "middleButton";
 
     public static final int MESSAGE_MIDDLE_BUTTON = 1;
+    public static final int MESSAGE_DIALOG_DISMISSED = 2; // for either cancel or enable pressed
 
     public static OrbotStartDialogFragment newInstance(Messenger messenger, int title, int message, int middleButton) {
         Bundle args = new Bundle();
@@ -77,6 +79,15 @@ public class OrbotStartDialogFragment extends DialogFragment {
         builder.setNegativeButton(R.string.orbot_start_dialog_cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Message msg = Message.obtain();
+                msg.what = MESSAGE_DIALOG_DISMISSED;
+                try {
+                    messenger.send(msg);
+                } catch (RemoteException e) {
+                    Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                } catch (NullPointerException e) {
+                    Log.w(Constants.TAG, "Messenger is null!", e);
+                }
 
             }
         });
@@ -85,6 +96,16 @@ public class OrbotStartDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 getActivity().startActivityForResult(OrbotHelper.getOrbotStartIntent(), 1);
+
+                Message msg = Message.obtain();
+                msg.what = MESSAGE_DIALOG_DISMISSED;
+                try {
+                    messenger.send(msg);
+                } catch (RemoteException e) {
+                    Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                } catch (NullPointerException e) {
+                    Log.w(Constants.TAG, "Messenger is null!", e);
+                }
             }
         });
 

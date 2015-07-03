@@ -133,7 +133,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         }
     }
 
-    private void lookupUnknownKey(long unknownKeyId, ParcelableProxy parcelableProxy) {
+    private void lookupUnknownKey(long unknownKeyId) {
 
         final ArrayList<ParcelableKeyRing> keyList;
         final String keyserver;
@@ -424,19 +424,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                 mSignatureLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
-                                .getProxyPrefs();
-                        Runnable ignoreTor = new Runnable() {
-                            @Override
-                            public void run() {
-                                lookupUnknownKey(signatureKeyId, new ParcelableProxy(null, -1, null));
-                            }
-                        };
-
-                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                                getActivity())) {
-                            lookupUnknownKey(signatureKeyId, proxyPrefs.parcelableProxy);
-                        }
+                        lookupUnknownKey(signatureKeyId);
                     }
                 });
 

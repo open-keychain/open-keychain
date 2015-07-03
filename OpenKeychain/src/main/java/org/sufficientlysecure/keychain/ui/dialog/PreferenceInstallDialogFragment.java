@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.ui.util.InstallDialogFragmentHelper;
 public class PreferenceInstallDialogFragment extends DialogFragment {
 
     public static final int MESSAGE_MIDDLE_CLICKED = 1;
+    public static final int MESSAGE_DIALOG_DISMISSED = 2;
 
     /**
      * Creates a dialog which prompts the user to install an application. Consists of two default buttons ("Install"
@@ -69,6 +70,6 @@ public class PreferenceInstallDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return InstallDialogFragmentHelper.getInstallDialogFromArgs(getArguments(), getActivity(),
-                MESSAGE_MIDDLE_CLICKED);
+                MESSAGE_MIDDLE_CLICKED, MESSAGE_DIALOG_DISMISSED);
     }
 }

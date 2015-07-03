@@ -149,22 +149,30 @@ public class OrbotHelper {
      * @param fragmentActivity
      * @return true if Tor is not enabled or Tor is enabled and Orbot is installed and running, else false
      */
-    public static boolean putOrbotInRequiredState(int middleButton, final Runnable middleButtonRunnable,
+    public static boolean putOrbotInRequiredState(final int middleButton,
+                                                  final Runnable middleButtonRunnable,
+                                                  final Runnable dialogDismissRunnable,
                                                   Preferences.ProxyPrefs proxyPrefs,
                                                   FragmentActivity fragmentActivity) {
-        Handler ignoreTorHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                // every message received by this handler will mean  the middle button was pressed
-                middleButtonRunnable.run();
-            }
-        };
 
         if (!proxyPrefs.torEnabled) {
             return true;
         }
 
         if (!OrbotHelper.isOrbotInstalled(fragmentActivity)) {
+            Handler ignoreTorHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what) {
+                        case SupportInstallDialogFragment.MESSAGE_MIDDLE_CLICKED:
+                            middleButtonRunnable.run();
+                            break;
+                        case SupportInstallDialogFragment.MESSAGE_DIALOG_DISMISSED:
+                            dialogDismissRunnable.run();
+                            break;
+                    }
+                }
+            };
 
             OrbotHelper.getInstallDialogFragmentWithThirdButton(
                     new Messenger(ignoreTorHandler),
@@ -174,6 +182,20 @@ public class OrbotHelper {
             return false;
         } else if (!OrbotHelper.isOrbotRunning()) {
 
+            Handler ignoreTorHandler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what) {
+                        case OrbotStartDialogFragment.MESSAGE_MIDDLE_BUTTON:
+                            middleButtonRunnable.run();
+                            break;
+                        case OrbotStartDialogFragment.MESSAGE_DIALOG_DISMISSED:
+                            dialogDismissRunnable.run();
+                            break;
+                    }
+                }
+            };
+
             OrbotHelper.getOrbotStartDialogFragment(new Messenger(ignoreTorHandler),
                     middleButton)
                     .show(fragmentActivity.getSupportFragmentManager(), "OrbotHelperOrbotStartDialog");
@@ -182,5 +204,19 @@ public class OrbotHelper {
         } else {
             return true;
         }
+    }
+
+    public static boolean putOrbotInRequiredState(final int middleButton,
+                                                  final Runnable middleButtonRunnable,
+                                                  Preferences.ProxyPrefs proxyPrefs,
+                                                  FragmentActivity fragmentActivity) {
+        Runnable emptyRunnable = new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        };
+        return putOrbotInRequiredState(middleButton, middleButtonRunnable, emptyRunnable,
+                proxyPrefs, fragmentActivity);
     }
 }
