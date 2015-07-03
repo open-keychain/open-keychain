@@ -35,4 +35,9 @@
         <!-- Layout for query suggestion rows -->
         <!--<item name="suggestionRowLayout">...</item>-->
     </style>
+
+    <style name="KeychainTheme.DialogWithoutTitle" parent="@style/Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

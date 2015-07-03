@@ -448,10 +448,8 @@ public class ImportKeysActivity extends BaseNfcActivity
     }
 
     @Override
-    protected void onNfcPerform() throws IOException {
-        // this displays the key or moves to the yubikey import dialogue.
-        super.onNfcPerform();
-        // either way, finish afterwards
+    protected void onNfcPostExecute() throws IOException {
+        // either way, finish after NFC AsyncTask
         finish();
     }
 
@@ -463,7 +461,7 @@ public class ImportKeysActivity extends BaseNfcActivity
         }
     }
 
-    public void handleResult (ImportKeyResult result) {
+    public void handleResult(ImportKeyResult result) {
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT.equals(getIntent().getAction())
                 || ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN.equals(getIntent().getAction())) {
             Intent intent = new Intent();

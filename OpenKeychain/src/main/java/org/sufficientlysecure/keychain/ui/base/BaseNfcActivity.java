@@ -30,6 +30,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -74,6 +75,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     private static final int TIMEOUT = 100000;
 
+    private byte[] mNfcFingerprints;
+    private String mNfcUserId;
+    private byte[] mNfcAid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,28 +96,59 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * All new NFC Intents which are delivered to this activity are handled here
      */
     @Override
-    public void onNewIntent(Intent intent) {
+    public void onNewIntent(final Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            try {
-                handleTagDiscoveredIntent(intent);
-            } catch (CardException e) {
-                handleNfcError(e);
-            } catch (IOException e) {
-                handleNfcError(e);
-            }
+
+            // Actual NFC operations are executed in doInBackground to not block the UI thread
+            new AsyncTask<Void, Void, Exception>() {
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                    onNfcPreExecute();
+                }
+
+                @Override
+                protected Exception doInBackground(Void... params) {
+                    try {
+                        handleTagDiscoveredIntent(intent);
+                    } catch (CardException e) {
+                        return e;
+                    } catch (IOException e) {
+                        return e;
+                    }
+
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Exception exception) {
+                    super.onPostExecute(exception);
+
+                    if (exception != null) {
+                        handleNfcError(exception);
+                        return;
+                    }
+
+                    try {
+                        onNfcPostExecute();
+                    } catch (IOException e) {
+                        handleNfcError(e);
+                    }
+                }
+            }.execute();
+
         }
     }
 
-    public void handleNfcError(IOException e) {
-
+    public void handleNfcError(Exception e) {
         Log.e(Constants.TAG, "nfc error", e);
-        Notify.create(this, getString(R.string.error_nfc, e.getMessage()), Style.WARN).show();
-    }
 
-    public void handleNfcError(CardException e) {
-        Log.e(Constants.TAG, "card error", e);
-
-        short status = e.getResponseCode();
+        short status;
+        if (e instanceof CardException) {
+            status = ((CardException) e).getResponseCode();
+        } else {
+            status = -1;
+        }
         // When entering a PIN, a status of 63CX indicates X attempts remaining.
         if ((status & (short)0xFFF0) == 0x63C0) {
             Notify.create(this, getString(R.string.error_pin, status & 0x000F), Style.WARN).show();
@@ -313,20 +349,25 @@ public abstract class BaseNfcActivity extends BaseActivity {
         mPw1ValidatedForDecrypt = false;
         mPw3Validated = false;
 
-        onNfcPerform();
+        doNfcInBackground();
 
         mIsoDep.close();
         mIsoDep = null;
 
     }
 
-    protected void onNfcPerform() throws IOException {
+    protected void onNfcPreExecute() {
+    }
 
-        final byte[] nfcFingerprints = nfcGetFingerprints();
-        final String nfcUserId = nfcGetUserId();
-        final byte[] nfcAid = nfcGetAid();
+    protected void doNfcInBackground() throws IOException {
+        mNfcFingerprints = nfcGetFingerprints();
+        mNfcUserId = nfcGetUserId();
+        mNfcAid = nfcGetAid();
+    }
 
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+    protected void onNfcPostExecute() throws IOException {
+
+        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
         try {
             CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
@@ -335,18 +376,17 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
             Intent intent = new Intent(this, ViewKeyActivity.class);
             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
             startActivity(intent);
         } catch (PgpKeyNotFoundException e) {
             Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, nfcAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mNfcAid);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
             startActivity(intent);
         }
-
     }
 
     /** Return the key id from application specific data stored on tag, or null
@@ -608,7 +648,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      *  conformance to the card's requirements for key length.
      *
      * @param pw For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
-     * @param newPinString The new PW1 or PW3.
+     * @param newPin The new PW1 or PW3.
      */
     public void nfcModifyPIN(int pw, byte[] newPin) throws IOException {
         final int MAX_PW1_LENGTH_INDEX = 1;

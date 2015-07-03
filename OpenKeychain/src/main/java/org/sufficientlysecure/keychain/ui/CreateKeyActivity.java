@@ -63,6 +63,11 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
     Fragment mCurrentFragment;
 
+
+    byte[] mScannedFingerprints;
+    byte[] mNfcAid;
+    String mNfcUserId;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +77,6 @@ public class CreateKeyActivity extends BaseNfcActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             try {
                 handleTagDiscoveredIntent(getIntent());
-            } catch (CardException e) {
-                handleNfcError(e);
             } catch (IOException e) {
                 handleNfcError(e);
             }
@@ -142,40 +145,47 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPerform() throws IOException {
+    protected void doNfcInBackground() throws IOException {
         if (mCurrentFragment instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mCurrentFragment).onNfcPerform();
+            ((NfcListenerFragment) mCurrentFragment).doNfcInBackground();
             return;
         }
 
-        byte[] scannedFingerprints = nfcGetFingerprints();
-        byte[] nfcAid = nfcGetAid();
-        String userId = nfcGetUserId();
+        mScannedFingerprints = nfcGetFingerprints();
+        mNfcAid = nfcGetAid();
+        mNfcUserId = nfcGetUserId();
+    }
 
-        if (containsKeys(scannedFingerprints)) {
+    @Override
+    protected void onNfcPostExecute() throws IOException {
+        if (mCurrentFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
+            return;
+        }
+
+        if (containsKeys(mScannedFingerprints)) {
             try {
-                long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(scannedFingerprints);
+                long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mScannedFingerprints);
                 CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(masterKeyId);
                 ring.getMasterKeyId();
 
                 Intent intent = new Intent(this, ViewKeyActivity.class);
                 intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, userId);
-                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, scannedFingerprints);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mScannedFingerprints);
                 startActivity(intent);
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
                 Fragment frag = CreateYubiKeyImportFragment.newInstance(
-                        scannedFingerprints, nfcAid, userId);
+                        mScannedFingerprints, mNfcAid, mNfcUserId);
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
             Fragment frag = CreateYubiKeyBlankFragment.newInstance();
             loadFragment(frag, FragAction.TO_RIGHT);
         }
-
     }
 
     private boolean containsKeys(byte[] scannedFingerprints) {
@@ -246,7 +256,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     interface NfcListenerFragment {
-        public void onNfcPerform() throws IOException;
+        public void doNfcInBackground() throws IOException;
+        public void onNfcPostExecute() throws IOException;
     }
 
 }

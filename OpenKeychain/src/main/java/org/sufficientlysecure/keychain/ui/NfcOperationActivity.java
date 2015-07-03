@@ -7,8 +7,10 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -44,10 +46,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     public static final String RESULT_DATA = "result_data";
 
+    public ViewAnimator vAnimator;
+
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
 
     private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+    private CryptoInputParcel mInputParcel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,11 @@ public class NfcOperationActivity extends BaseNfcActivity {
         Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        setTitle(R.string.nfc_text);
+
+        vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
+        vAnimator.setDisplayedChild(0);
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -74,16 +85,22 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPerform() throws IOException {
+    public void onNfcPreExecute() {
+        // start with indeterminate progress
+        vAnimator.setDisplayedChild(1);
+    }
 
-        CryptoInputParcel inputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
+    @Override
+    protected void doNfcInBackground() throws IOException {
+
+        mInputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
 
         switch (mRequiredInput.mType) {
             case NFC_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
                     byte[] decryptedSessionKey = nfcDecryptSessionKey(encryptedSessionKey);
-                    inputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
+                    mInputParcel.addCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
@@ -92,7 +109,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
                     byte[] signedHash = nfcCalculateSignature(hash, algo);
-                    inputParcel.addCryptoData(hash, signedHash);
+                    mInputParcel.addCryptoData(hash, signedHash);
                 }
                 break;
             }
@@ -163,7 +180,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     }
 
                     // TODO: Is this really needed?
-                    inputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
+                    mInputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
                 }
 
                 // change PINs afterwards
@@ -177,16 +194,39 @@ public class NfcOperationActivity extends BaseNfcActivity {
             }
         }
 
+    }
+
+    @Override
+    protected void onNfcPostExecute() throws IOException {
         if (mServiceIntent != null) {
-            CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, inputParcel);
+            CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, mInputParcel);
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
-            result.putExtra(NfcOperationActivity.RESULT_DATA, inputParcel);
+            result.putExtra(NfcOperationActivity.RESULT_DATA, mInputParcel);
             setResult(RESULT_OK, result);
         }
 
-        finish();
+        // show finish
+        vAnimator.setDisplayedChild(2);
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                // wait some 1000ms here, give the user time to appreciate the displayed finish
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // never mind
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+                finish();
+            }
+        }.execute();
     }
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {

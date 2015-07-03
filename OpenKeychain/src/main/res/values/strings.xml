@@ -225,7 +225,9 @@
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
-    <string name="nfc_text">"Hold YubiKey against the back of your device."</string>
+    <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
+    <string name="nfc_wait">"Don't release the YubiKey yet!"</string>
+    <string name="nfc_finished">"Success"</string>
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>

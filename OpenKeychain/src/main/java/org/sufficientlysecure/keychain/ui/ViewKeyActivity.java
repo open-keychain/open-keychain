@@ -148,6 +148,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     private String mFingerprint;
     private long mMasterKeyId;
 
+    private byte[] mNfcFingerprints;
+    private String mNfcUserId;
+    private byte[] mNfcAid;
+
     @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -540,13 +544,17 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     @Override
-    protected void onNfcPerform() throws IOException {
+    protected void doNfcInBackground() throws IOException {
 
-        final byte[] nfcFingerprints = nfcGetFingerprints();
-        final String nfcUserId = nfcGetUserId();
-        final byte[] nfcAid = nfcGetAid();
+        mNfcFingerprints = nfcGetFingerprints();
+        mNfcUserId = nfcGetUserId();
+        mNfcAid = nfcGetAid();
+    }
 
-        long yubiKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(nfcFingerprints);
+    @Override
+    protected void onNfcPostExecute() throws IOException {
+
+        long yubiKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
         try {
 
@@ -557,7 +565,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
             // if the master key of that key matches this one, just show the yubikey dialog
             if (KeyFormattingUtils.convertFingerprintToHex(candidateFp).equals(mFingerprint)) {
-                showYubiKeyFragment(nfcFingerprints, nfcUserId, nfcAid);
+                showYubiKeyFragment(mNfcFingerprints, mNfcUserId, mNfcAid);
                 return;
             }
 
@@ -570,9 +578,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
                             startActivity(intent);
                             finish();
                         }
@@ -586,15 +594,14 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         public void onAction() {
                             Intent intent = new Intent(
                                     ViewKeyActivity.this, CreateKeyActivity.class);
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, nfcAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, nfcUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, nfcFingerprints);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+                            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
                             startActivity(intent);
                             finish();
                         }
                     }, R.string.snack_yubikey_import).show();
         }
-
     }
 
     public void showYubiKeyFragment(
