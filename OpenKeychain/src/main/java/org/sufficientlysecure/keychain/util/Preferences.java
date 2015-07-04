@@ -356,7 +356,7 @@ public class Preferences {
         }
     }
 
-    public void updatePreferences() {
+    public void upgradePreferences() {
         if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.PREF_VERSION) {
             switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
