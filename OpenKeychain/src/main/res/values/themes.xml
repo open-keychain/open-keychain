@@ -59,6 +59,8 @@
         <item name="colorHeaderText">#d0d0d0</item>
         <item name="colorTertiaryText">#808080</item>
 
+        <item name="material_drawer_selected_text">#268bd2</item>
+
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
