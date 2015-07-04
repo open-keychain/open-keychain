@@ -32,6 +32,7 @@ import de.measite.minidns.record.TXT;
 import org.json.JSONObject;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -41,9 +42,13 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +62,18 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
     @Override
     public KeybaseVerificationResult execute(KeybaseVerificationParcel keybaseInput,
                                              CryptoInputParcel cryptoInput) {
+        Proxy proxy;
+        if (cryptoInput.getParcelableProxy() == null) {
+            // explicit proxy not set
+            if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                return new KeybaseVerificationResult(null,
+                        RequiredInputParcel.createOrbotRequiredOperation());
+            }
+            proxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                    .parcelableProxy.getProxy();
+        } else {
+            proxy = cryptoInput.getParcelableProxy().getProxy();
+        }
 
         String requiredFingerprint = keybaseInput.mRequiredFingerprint;
 
@@ -76,7 +93,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
 
-            if (!prover.fetchProofData()) {
+            if (!prover.fetchProofData(proxy)) {
                 log.add(OperationResult.LogType.MSG_KEYBASE_ERROR_FETCH_PROOF, 1);
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }

@@ -26,6 +26,8 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.BuildConfig;
 
 import java.io.File;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 public final class Constants {
 
@@ -93,6 +95,21 @@ public final class Constants {
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
         public static final String TEXT_USE_COMPRESSION = "useTextCompression";
         public static final String USE_ARMOR = "useArmor";
+        // proxy settings
+        public static final String USE_NORMAL_PROXY = "useNormalProxy";
+        public static final String USE_TOR_PROXY = "useTorProxy";
+        public static final String PROXY_HOST = "proxyHost";
+        public static final String PROXY_PORT = "proxyPort";
+        public static final String PROXY_TYPE = "proxyType";
+    }
+
+    /**
+     * information to connect to Orbot's localhost HTTP proxy
+     */
+    public static final class Orbot {
+        public static final String PROXY_HOST = "127.0.0.1";
+        public static final int PROXY_PORT = 8118;
+        public static final Proxy.Type PROXY_TYPE = Proxy.Type.HTTP;
     }
 
     public static final class Defaults {

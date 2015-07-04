@@ -96,7 +96,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                Log.e(Constants.TAG, "File not found at " + input.getInputUri(), e);
                 return null;
             }
         }

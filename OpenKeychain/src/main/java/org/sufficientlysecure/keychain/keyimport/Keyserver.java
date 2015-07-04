@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.keyimport;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Proxy;
 import java.util.List;
 
 public abstract class Keyserver {
@@ -31,6 +32,7 @@ public abstract class Keyserver {
         public CloudSearchFailureException(String message) {
             super(message);
         }
+
         public CloudSearchFailureException() {
             super();
         }
@@ -67,12 +69,12 @@ public abstract class Keyserver {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    public abstract List<ImportKeysListEntry> search(String query) throws QueryFailedException,
+    public abstract List<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
             QueryNeedsRepairException;
 
-    public abstract String get(String keyIdHex) throws QueryFailedException;
+    public abstract String get(String keyIdHex, Proxy proxy) throws QueryFailedException;
 
-    public abstract void add(String armoredKey) throws AddKeyException;
+    public abstract void add(String armoredKey, Proxy proxy) throws AddKeyException;
 
     public static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();

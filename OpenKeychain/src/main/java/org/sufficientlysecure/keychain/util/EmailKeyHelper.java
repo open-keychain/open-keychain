@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.Locale;
 import java.util.Set;
 
 public class EmailKeyHelper {
+    // TODO: Make this not require a proxy in it's constructor, redesign when it is to be used
     // to import keys, simply use CryptoOperationHelper with this callback
     public abstract class ImportContactKeysCallback
             implements CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -41,14 +43,15 @@ public class EmailKeyHelper {
         private ArrayList<ParcelableKeyRing> mKeyList;
         private String mKeyserver;
 
-        public ImportContactKeysCallback(Context context, String keyserver) {
-            this(context, ContactHelper.getContactMails(context), keyserver);
+        public ImportContactKeysCallback(Context context, String keyserver, Proxy proxy) {
+            this(context, ContactHelper.getContactMails(context), keyserver, proxy);
         }
 
-        public ImportContactKeysCallback(Context context, List<String> mails, String keyserver) {
+        public ImportContactKeysCallback(Context context, List<String> mails, String keyserver,
+                                         Proxy proxy) {
             Set<ImportKeysListEntry> entries = new HashSet<>();
             for (String mail : mails) {
-                entries.addAll(getEmailKeys(context, mail));
+                entries.addAll(getEmailKeys(context, mail, proxy));
             }
 
             // Put them in a list and import
@@ -65,7 +68,7 @@ public class EmailKeyHelper {
         }
     }
 
-    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail) {
+    public static Set<ImportKeysListEntry> getEmailKeys(Context context, String mail, Proxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
 
         // Try _hkp._tcp SRV record first
@@ -73,7 +76,7 @@ public class EmailKeyHelper {
         if (mailparts.length == 2) {
             HkpKeyserver hkp = HkpKeyserver.resolve(mailparts[1]);
             if (hkp != null) {
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
         }
 
@@ -82,16 +85,17 @@ public class EmailKeyHelper {
             String server = Preferences.getPreferences(context).getPreferredKeyserver();
             if (server != null) {
                 HkpKeyserver hkp = new HkpKeyserver(server);
-                keys.addAll(getEmailKeys(mail, hkp));
+                keys.addAll(getEmailKeys(mail, hkp, proxy));
             }
         }
         return keys;
     }
 
-    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer) {
+    public static List<ImportKeysListEntry> getEmailKeys(String mail, Keyserver keyServer,
+                                                         Proxy proxy) {
         Set<ImportKeysListEntry> keys = new HashSet<>();
         try {
-            for (ImportKeysListEntry key : keyServer.search(mail)) {
+            for (ImportKeysListEntry key : keyServer.search(mail, proxy)) {
                 if (key.isRevoked() || key.isExpired()) continue;
                 for (String userId : key.getUserIds()) {
                     if (userId.toLowerCase().contains(mail.toLowerCase(Locale.ENGLISH))) {

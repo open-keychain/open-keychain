@@ -83,11 +83,11 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
     }
 
     /**
-     *
      * To be overriden by subclasses, if desired. Provides a way to access the method by the
      * same name in CryptoOperationHelper, if super.onCryptoOperationSuccess and
      * super.onCryptoOperationError are called at the start of the respective functions in the
      * subclass overriding them
+     *
      * @param result
      */
     protected void onCryptoOperationResult(S result) {

@@ -44,7 +44,9 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -157,8 +159,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
             returnResult(intent);
             return;
         }
-
-        String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
+        final String fingerprint = uri.getEncodedSchemeSpecificPart().toLowerCase(Locale.ENGLISH);
         if (!fingerprint.matches("[a-fA-F0-9]{40}")) {
             SingletonResult result = new SingletonResult(
                     SingletonResult.RESULT_ERROR, LogType.MSG_WRONG_QR_CODE_FP);
@@ -273,7 +274,8 @@ public class ImportKeysProxyActivity extends FragmentActivity
         // only one message sent during the beam
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         // record 0 contains the MIME type, record 1 is the AAR, if present
-        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+        final byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+
         importKeys(receivedKeyringBytes);
     }
 

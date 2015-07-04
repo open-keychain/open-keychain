@@ -28,8 +28,8 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-
 import android.support.v4.app.FragmentManager;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
+import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -52,16 +53,21 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
 
-    public interface Callback <T extends Parcelable, S extends OperationResult> {
+    public interface Callback<T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
+
         void onCryptoOperationSuccess(S result);
+
         void onCryptoOperationCancelled();
+
         void onCryptoOperationError(S result);
+
         boolean onCryptoSetProgress(String msg, int progress, int max);
     }
 
     public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
     public static final int REQUEST_CODE_NFC = 0x00008002;
+    public static final int REQUEST_CODE_ENABLE_ORBOT = 0x00008004;
 
     // keeps track of request code used to start an activity from this CryptoOperationHelper.
     // this is necessary when multiple CryptoOperationHelpers are used in the same fragment/activity
@@ -116,11 +122,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         mProgressMessageResource = id;
     }
 
-    private void initiateInputActivity(RequiredInputParcel requiredInput) {
+    private void initiateInputActivity(RequiredInputParcel requiredInput,
+                                       CryptoInputParcel cryptoInputParcel) {
 
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
         switch (requiredInput.mType) {
+            // TODO: Verify that all started activities add to cryptoInputParcel if necessary (like OrbotRequiredDialogActivity)
+            // don't forget to set mRequestedCode!
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
@@ -130,7 +139,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 if (mUseFragment) {
                     mFragment.startActivityForResult(intent, mRequestedCode);
                 } else {
-                    mActivity.startActivityForResult(intent, mRequestedCode);
+                    activity.startActivityForResult(intent, mRequestedCode);
                 }
                 return;
             }
@@ -143,18 +152,32 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 if (mUseFragment) {
                     mFragment.startActivityForResult(intent, mRequestedCode);
                 } else {
-                    mActivity.startActivityForResult(intent, mRequestedCode);
+                    activity.startActivityForResult(intent, mRequestedCode);
                 }
                 return;
             }
-        }
 
-        throw new RuntimeException("Unhandled pending result!");
+            case ENABLE_ORBOT: {
+                Intent intent = new Intent(activity, OrbotRequiredDialogActivity.class);
+                intent.putExtra(OrbotRequiredDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
+                mRequestedCode = REQUEST_CODE_ENABLE_ORBOT;
+                if (mUseFragment) {
+                    mFragment.startActivityForResult(intent, mRequestedCode);
+                } else {
+                    activity.startActivityForResult(intent, mRequestedCode);
+                }
+                return;
+            }
+
+            default: {
+                throw new RuntimeException("Unhandled pending result!");
+            }
+        }
     }
 
     /**
-     * Attempts the result of an activity started by this helper. Returns true if requestCode is recognized,
-     * false otherwise.
+     * Attempts the result of an activity started by this helper. Returns true if requestCode is
+     * recognized, false otherwise.
      *
      * @param requestCode
      * @param resultCode
@@ -196,6 +219,16 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 break;
             }
 
+            case REQUEST_CODE_ENABLE_ORBOT: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(
+                                    OrbotRequiredDialogActivity.RESULT_CRYPTO_INPUT);
+                    cryptoOperation(cryptoInput);
+                    return true;
+                }
+            }
+
             default: {
                 return false;
             }
@@ -225,7 +258,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     }
 
-    public void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
+    public void cryptoOperation(final CryptoInputParcel cryptoInput, boolean showProgress) {
 
         FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
@@ -257,14 +290,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     final OperationResult result =
                             returnData.getParcelable(OperationResult.EXTRA_RESULT);
 
-                    onHandleResult(result);
+                    onHandleResult(result, cryptoInput);
                 }
             }
 
             @Override
             protected void onSetProgress(String msg, int progress, int max) {
                 // allow handling of progress in fragment, or delegate upwards
-                if ( ! mCallback.onCryptoSetProgress(msg, progress, max)) {
+                if (!mCallback.onCryptoSetProgress(msg, progress, max)) {
                     super.onSetProgress(msg, progress, max);
                 }
             }
@@ -299,7 +332,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         }
     }
 
-    public void onHandleResult(OperationResult result) {
+    public void onHandleResult(OperationResult result, CryptoInputParcel oldCryptoInput) {
         Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
 
         if (result instanceof InputPendingResult) {
@@ -307,7 +340,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             if (pendingResult.isPending()) {
 
                 RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
-                initiateInputActivity(requiredInput);
+                initiateInputActivity(requiredInput, oldCryptoInput);
                 return;
             }
         }

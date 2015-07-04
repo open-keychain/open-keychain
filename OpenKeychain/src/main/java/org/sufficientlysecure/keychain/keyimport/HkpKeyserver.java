@@ -18,18 +18,20 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -39,6 +41,7 @@ import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -190,36 +193,47 @@ public class HkpKeyserver extends Keyserver {
         return mSecure ? "https://" : "http://";
     }
 
-    private HttpURLConnection openConnection(URL url) throws IOException {
-        HttpURLConnection conn = null;
+    /**
+     * returns a client with pinned certificate if necessary
+     *
+     * @param url
+     * @param proxy
+     * @return
+     */
+    public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+
         try {
-            conn = (HttpURLConnection) TlsHelper.openConnection(url);
+            TlsHelper.pinCertificateIfNecessary(client, url);
         } catch (TlsHelper.TlsHelperException e) {
             Log.w(Constants.TAG, e);
         }
-        if (conn == null) {
-            conn = (HttpURLConnection) url.openConnection();
-        }
-        conn.setConnectTimeout(5000);
-        conn.setReadTimeout(25000);
-        return conn;
+
+        client.setProxy(proxy);
+        client.setConnectTimeout(proxy != null ? 30000 : 5000, TimeUnit.MILLISECONDS);
+        client.setReadTimeout(45000, TimeUnit.MILLISECONDS);
+
+        return client;
     }
 
-    private String query(String request) throws QueryFailedException, HttpError {
+    private String query(String request, Proxy proxy) throws QueryFailedException, HttpError {
         try {
             URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
-            Log.d(Constants.TAG, "hkp keyserver query: " + url);
-            HttpURLConnection conn = openConnection(url);
-            conn.connect();
-            int response = conn.getResponseCode();
-            if (response >= 200 && response < 300) {
-                return readAll(conn.getInputStream(), conn.getContentEncoding());
+            Log.d(Constants.TAG, "hkp keyserver query: " + url + " Proxy: " + proxy);
+            OkHttpClient client = getClient(url, proxy);
+            Response response = client.newCall(new Request.Builder().url(url).build()).execute();
+
+            String responseBody = response.body().string();// contains body both in case of success or failure
+
+            if (response.isSuccessful()) {
+                return responseBody;
             } else {
-                String data = readAll(conn.getErrorStream(), conn.getContentEncoding());
-                throw new HttpError(response, data);
+                throw new HttpError(response.code(), responseBody);
             }
         } catch (IOException e) {
-            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!");
+            Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
+            throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
+            proxy == null?"":" Using proxy " + proxy);
         }
     }
 
@@ -232,7 +246,7 @@ public class HkpKeyserver extends Keyserver {
      * @throws QueryNeedsRepairException
      */
     @Override
-    public ArrayList<ImportKeysListEntry> search(String query) throws QueryFailedException,
+    public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
             QueryNeedsRepairException {
         ArrayList<ImportKeysListEntry> results = new ArrayList<>();
 
@@ -250,7 +264,7 @@ public class HkpKeyserver extends Keyserver {
 
         String data;
         try {
-            data = query(request);
+            data = query(request, proxy);
         } catch (HttpError e) {
             if (e.getData() != null) {
                 Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
@@ -334,13 +348,14 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public String get(String keyIdHex) throws QueryFailedException {
+    public String get(String keyIdHex, Proxy proxy) throws QueryFailedException {
         String request = "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
-        Log.d(Constants.TAG, "hkp keyserver get: " + request);
+        Log.d(Constants.TAG, "hkp keyserver get: " + request + " using Proxy: " + proxy);
         String data;
         try {
-            data = query(request);
+            data = query(request, proxy);
         } catch (HttpError httpError) {
+            Log.e(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
         }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
@@ -351,38 +366,34 @@ public class HkpKeyserver extends Keyserver {
     }
 
     @Override
-    public void add(String armoredKey) throws AddKeyException {
+    public void add(String armoredKey, Proxy proxy) throws AddKeyException {
         try {
-            String request = "/pks/add";
+            String path = "/pks/add";
             String params;
             try {
                 params = "keytext=" + URLEncoder.encode(armoredKey, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 throw new AddKeyException();
             }
-            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + request);
+            URL url = new URL(getUrlPrefix() + mHost + ":" + mPort + path);
 
             Log.d(Constants.TAG, "hkp keyserver add: " + url.toString());
             Log.d(Constants.TAG, "params: " + params);
 
-            HttpURLConnection conn = openConnection(url);
-            conn.setRequestMethod("POST");
-            conn.addRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
+            RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"), params);
 
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(params);
-            writer.flush();
-            writer.close();
-            os.close();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("Content-Length", Integer.toString(params.getBytes().length))
+                    .post(body)
+                    .build();
 
-            conn.connect();
+            Response response = getClient(url, proxy).newCall(request).execute();
 
-            Log.d(Constants.TAG, "response code: " + conn.getResponseCode());
-            Log.d(Constants.TAG, "answer: " + readAll(conn.getInputStream(), conn.getContentEncoding()));
+            Log.d(Constants.TAG, "response code: " + response.code());
+            Log.d(Constants.TAG, "answer: " + response.body().string());
+
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();
@@ -398,6 +409,7 @@ public class HkpKeyserver extends Keyserver {
      * Tries to find a server responsible for a given domain
      *
      * @return A responsible Keyserver or null if not found.
+     * TODO: PHILIP Add proxy functionality
      */
     public static HkpKeyserver resolve(String domain) {
         try {

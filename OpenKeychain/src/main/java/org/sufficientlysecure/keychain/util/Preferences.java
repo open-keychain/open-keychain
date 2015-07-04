@@ -21,9 +21,13 @@ package org.sufficientlysecure.keychain.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.R;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ListIterator;
@@ -35,6 +39,10 @@ import java.util.Vector;
 public class Preferences {
     private static Preferences sPreferences;
     private SharedPreferences mSharedPreferences;
+    private Resources mResources;
+
+    private static String PREF_FILE_NAME = "APG.main";
+    private static int PREF_FILE_MODE = Context.MODE_MULTI_PROCESS;
 
     public static synchronized Preferences getPreferences(Context context) {
         return getPreferences(context, false);
@@ -51,12 +59,18 @@ public class Preferences {
     }
 
     private Preferences(Context context) {
+        mResources = context.getResources();
         updateSharedPreferences(context);
+    }
+
+    public static void setPreferenceManagerFileAndMode(PreferenceManager manager) {
+        manager.setSharedPreferencesName(PREF_FILE_NAME);
+        manager.setSharedPreferencesMode(PREF_FILE_MODE);
     }
 
     public void updateSharedPreferences(Context context) {
         // multi-process safe preferences
-        mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_MULTI_PROCESS);
+        mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, PREF_FILE_MODE);
     }
 
     public String getLanguage() {
@@ -207,7 +221,6 @@ public class Preferences {
     }
 
 
-
     public void setUseArmor(boolean useArmor) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.USE_ARMOR, useArmor);
@@ -227,6 +240,89 @@ public class Preferences {
     public boolean getEncryptFilenames() {
         return mSharedPreferences.getBoolean(Pref.ENCRYPT_FILENAMES, true);
     }
+
+    // proxy preference functions start here
+
+    public boolean getUseNormalProxy() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USE_NORMAL_PROXY, false);
+    }
+
+    public boolean getUseTorProxy() {
+        return mSharedPreferences.getBoolean(Constants.Pref.USE_TOR_PROXY, false);
+    }
+
+    public String getProxyHost() {
+        return mSharedPreferences.getString(Constants.Pref.PROXY_HOST, null);
+    }
+
+    /**
+     * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     *
+     * @return port number of proxy
+     */
+    public int getProxyPort() {
+        return Integer.parseInt(mSharedPreferences.getString(Pref.PROXY_PORT, "-1"));
+    }
+
+    /**
+     * we store port as String for easy interfacing with EditTextPreference, but return it as an integer
+     *
+     * @param port proxy port
+     */
+    public void setProxyPort(String port) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Pref.PROXY_PORT, port);
+        editor.commit();
+    }
+
+    public Proxy.Type getProxyType() {
+        final String typeHttp = mResources.getString(R.string.pref_proxy_type_value_http);
+        final String typeSocks = mResources.getString(R.string.pref_proxy_type_value_socks);
+
+        String type = mSharedPreferences.getString(Pref.PROXY_TYPE, typeHttp);
+
+        if (type.equals(typeHttp)) return Proxy.Type.HTTP;
+        else if (type.equals(typeSocks)) return Proxy.Type.SOCKS;
+        else { // shouldn't happen
+            Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
+            return null;
+        }
+    }
+
+    public ProxyPrefs getProxyPrefs() {
+        boolean useTor = getUseTorProxy();
+        boolean useNormalProxy = getUseNormalProxy();
+
+        if (useTor) {
+            return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
+                    Constants.Orbot.PROXY_TYPE);
+        } else if (useNormalProxy) {
+            return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
+        } else {
+            return new ProxyPrefs(false, false, null, -1, null);
+        }
+    }
+
+    public static class ProxyPrefs {
+        public final ParcelableProxy parcelableProxy;
+        public final boolean torEnabled;
+        public final boolean normalPorxyEnabled;
+
+        /**
+         * torEnabled and normalProxyEnabled are not expected to both be true
+         *
+         * @param torEnabled         if Tor is to be used
+         * @param normalPorxyEnabled if user-specified proxy is to be used
+         */
+        public ProxyPrefs(boolean torEnabled, boolean normalPorxyEnabled, String hostName, int port, Proxy.Type type) {
+            this.torEnabled = torEnabled;
+            this.normalPorxyEnabled = normalPorxyEnabled;
+            if (!torEnabled && !normalPorxyEnabled) this.parcelableProxy = new ParcelableProxy(null, -1, null);
+            else this.parcelableProxy = new ParcelableProxy(hostName, port, type);
+        }
+    }
+
+    // proxy preference functions ends here
 
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),

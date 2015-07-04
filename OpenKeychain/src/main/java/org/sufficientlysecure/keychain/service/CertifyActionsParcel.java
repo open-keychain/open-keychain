@@ -22,13 +22,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
 
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
 
 /**
@@ -54,6 +51,7 @@ public class CertifyActionsParcel implements Parcelable {
         mMasterKeyId = source.readLong();
         // just like parcelables, this is meant for ad-hoc IPC only and is NOT portable!
         mLevel = CertifyLevel.values()[source.readInt()];
+        keyServerUri = source.readString();
 
         mCertifyActions = (ArrayList<CertifyAction>) source.readSerializable();
     }
@@ -66,6 +64,7 @@ public class CertifyActionsParcel implements Parcelable {
     public void writeToParcel(Parcel destination, int flags) {
         destination.writeLong(mMasterKeyId);
         destination.writeInt(mLevel.ordinal());
+        destination.writeString(keyServerUri);
 
         destination.writeSerializable(mCertifyActions);
     }
@@ -94,7 +93,7 @@ public class CertifyActionsParcel implements Parcelable {
         }
 
         public CertifyAction(long masterKeyId, ArrayList<String> userIds,
-                ArrayList<WrappedUserAttribute> attributes) {
+                             ArrayList<WrappedUserAttribute> attributes) {
             mMasterKeyId = masterKeyId;
             mUserIds = userIds;
             mUserAttributes = attributes;

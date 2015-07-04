@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -38,6 +37,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Sends the selected public key to a keyserver
@@ -132,8 +132,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public void onCryptoOperationSuccess(ExportResult result) {
-        Toast.makeText(UploadKeyActivity.this, R.string.msg_crt_upload_success,
-                Toast.LENGTH_SHORT).show();
+        result.createNotify(this).show();
     }
 
     @Override
@@ -143,7 +142,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public void onCryptoOperationError(ExportResult result) {
-        // TODO: Implement proper log for key upload then show error
+        result.createNotify(this).show();
     }
 
     @Override

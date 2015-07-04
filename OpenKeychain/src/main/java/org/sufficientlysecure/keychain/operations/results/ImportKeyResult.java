@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -30,7 +32,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-public class ImportKeyResult extends OperationResult {
+public class ImportKeyResult extends InputPendingResult {
 
     public final int mNewKeys, mUpdatedKeys, mBadKeys, mSecret;
     public final long[] mImportedMasterKeyIds;
@@ -80,7 +82,7 @@ public class ImportKeyResult extends OperationResult {
     }
 
     public ImportKeyResult(int result, OperationLog log) {
-        this(result, log, 0, 0, 0, 0, new long[] { });
+        this(result, log, 0, 0, 0, 0, new long[]{});
     }
 
     public ImportKeyResult(int result, OperationLog log,
@@ -92,6 +94,16 @@ public class ImportKeyResult extends OperationResult {
         mBadKeys = badKeys;
         mSecret = secret;
         mImportedMasterKeyIds = importedMasterKeyIds;
+    }
+
+    public ImportKeyResult(OperationLog log, RequiredInputParcel requiredInputParcel) {
+        super(log, requiredInputParcel);
+        // just assign default values, we won't use them anyway
+        mNewKeys = 0;
+        mUpdatedKeys = 0;
+        mBadKeys = 0;
+        mSecret = 0;
+        mImportedMasterKeyIds = new long[]{};
     }
 
     @Override

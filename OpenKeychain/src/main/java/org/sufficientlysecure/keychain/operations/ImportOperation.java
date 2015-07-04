@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -39,12 +40,16 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -89,39 +94,39 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     // Overloaded functions for using progressable supplied in constructor during import
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri) {
-        return serialKeyRingImport(entries, num, keyServerUri, mProgressable);
+                                               String keyServerUri, Proxy proxy) {
+        return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy);
     }
 
     public ImportKeyResult serialKeyRingImport(List<ParcelableKeyRing> entries,
-                                               String keyServerUri) {
+                                               String keyServerUri, Proxy proxy) {
 
         Iterator<ParcelableKeyRing> it = entries.iterator();
         int numEntries = entries.size();
 
-        return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable);
+        return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
 
     }
 
     public ImportKeyResult serialKeyRingImport(List<ParcelableKeyRing> entries, String keyServerUri,
-                                               Progressable progressable) {
+                                               Progressable progressable, Proxy proxy) {
 
         Iterator<ParcelableKeyRing> it = entries.iterator();
         int numEntries = entries.size();
 
-        return serialKeyRingImport(it, numEntries, keyServerUri, progressable);
+        return serialKeyRingImport(it, numEntries, keyServerUri, progressable, proxy);
 
     }
 
     public ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                               String keyServerUri) {
+                                               String keyServerUri, Proxy proxy) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable);
+            return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -146,7 +151,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
      * @return
      */
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri, Progressable progressable) {
+                                               String keyServerUri, Progressable progressable,
+                                               Proxy proxy) {
         updateProgress(R.string.progress_importing, 0, 100);
 
         OperationLog log = new OperationLog();
@@ -208,10 +214,11 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             if (entry.mExpectedFingerprint != null) {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, "0x" +
                                         entry.mExpectedFingerprint.substring(24));
-                                data = keyServer.get("0x" + entry.mExpectedFingerprint).getBytes();
+                                data = keyServer.get("0x" + entry.mExpectedFingerprint, proxy)
+                                        .getBytes();
                             } else {
                                 log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER, 2, entry.mKeyIdHex);
-                                data = keyServer.get(entry.mKeyIdHex).getBytes();
+                                data = keyServer.get(entry.mKeyIdHex, proxy).getBytes();
                             }
                             key = UncachedKeyRing.decodeFromData(data);
                             if (key != null) {
@@ -234,7 +241,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
                         try {
                             log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.mKeybaseName);
-                            byte[] data = keybaseServer.get(entry.mKeybaseName).getBytes();
+                            byte[] data = keybaseServer.get(entry.mKeybaseName, proxy).getBytes();
                             UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
 
                             // If there already is a key, merge the two
@@ -374,11 +381,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     }
 
     @Override
-    public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
-        return importKeys(importInput.mKeyList, importInput.mKeyserver);
-    }
-
-    public ImportKeyResult importKeys(ArrayList<ParcelableKeyRing> keyList, String keyServer) {
+    public OperationResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
+        ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
+        String keyServer = importInput.mKeyserver;
 
         ImportKeyResult result;
 
@@ -386,8 +391,21 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             ParcelableFileCache<ParcelableKeyRing> cache = new ParcelableFileCache<>(mContext,
                     "key_import.pcl");
 
-            result = serialKeyRingImport(cache, keyServer);
+            result = serialKeyRingImport(cache, null, null);
         } else {
+            Proxy proxy;
+            if (cryptoInput.getParcelableProxy() == null) {
+                // explicit proxy not set
+                if(!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                    // show dialog to enable/install dialog
+                    return new ImportKeyResult(null,
+                            RequiredInputParcel.createOrbotRequiredOperation());
+                }
+                proxy = Preferences.getPreferences(mContext).getProxyPrefs().parcelableProxy
+                        .getProxy();
+            } else {
+                proxy = cryptoInput.getParcelableProxy().getProxy();
+            }
             // if there is more than one key with the same fingerprint, we do a serial import to
             // prevent
             // https://github.com/open-keychain/open-keychain/issues/1221
@@ -397,9 +415,10 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
             if (keyFingerprintSet.size() == keyList.size()) {
                 // all keys have unique fingerprints
-                result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer);
+                result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer,
+                        proxy);
             } else {
-                result = serialKeyRingImport(keyList, keyServer);
+                result = serialKeyRingImport(keyList, keyServer, proxy);
             }
         }
 
@@ -408,7 +427,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     }
 
     private ImportKeyResult multiThreadedKeyImport(Iterator<ParcelableKeyRing> keyListIterator,
-                                                   int totKeys, final String keyServer) {
+                                                   int totKeys, final String keyServer,
+                                                   final Proxy proxy) {
         Log.d(Constants.TAG, "Multi-threaded key import starting");
         if (keyListIterator != null) {
             KeyImportAccumulator accumulator = new KeyImportAccumulator(totKeys, mProgressable);
@@ -436,7 +456,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                         list.add(pkRing);
 
-                        return serialKeyRingImport(list, keyServer, ignoreProgressable);
+                        return serialKeyRingImport(list, keyServer, ignoreProgressable, proxy);
                     }
                 };
 
