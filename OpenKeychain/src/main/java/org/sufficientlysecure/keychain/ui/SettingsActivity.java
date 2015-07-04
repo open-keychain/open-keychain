@@ -33,7 +33,6 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -42,6 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -60,13 +60,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private PreferenceScreen mKeyServerPreference = null;
     private static Preferences sPreferences;
-    private String mCurrentTheme = null;
+    private ThemeChanger mThemeChanger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sPreferences = Preferences.getPreferences(this);
 
-        changeTheme();
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.changeTheme();
         super.onCreate(savedInstanceState);
 
         setupToolbar();
@@ -122,29 +123,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onResume() {
         super.onResume();
 
-        if (changeTheme()) {
+        if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
             finish();
             startActivity(intent);
         }
-    }
-
-    protected boolean changeTheme() {
-        String newTheme = sPreferences.getTheme();
-        if (mCurrentTheme != null && mCurrentTheme.equals(newTheme)) {
-            return false;
-        }
-
-        int themeId = R.style.LightTheme;
-        if (Constants.Pref.Theme.DARK.equals(newTheme)) {
-            themeId = R.style.DarkTheme;
-        }
-
-        ContextThemeWrapper w = new ContextThemeWrapper(this, themeId);
-        getTheme().setTo(w.getTheme());
-        mCurrentTheme = newTheme;
-
-        return true;
     }
 
     /**

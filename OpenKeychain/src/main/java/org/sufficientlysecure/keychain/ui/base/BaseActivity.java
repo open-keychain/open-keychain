@@ -23,16 +23,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
  * Setups Toolbar
@@ -40,14 +38,12 @@ import org.sufficientlysecure.keychain.util.Preferences;
 public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     protected View mStatusBar;
-    private static Preferences sPreferences;
-    private String mCurrentTheme = null;
+    protected ThemeChanger mThemeChanger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        sPreferences = Preferences.getPreferences(this);
-
-        changeTheme();
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.changeTheme();
         super.onCreate(savedInstanceState);
         initLayout();
         initToolbar();
@@ -57,35 +53,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (changeTheme()) {
+        if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
             finish();
             startActivity(intent);
         }
-    }
-
-    /**
-     * Apply the theme set in preferences if it isn't equal to mCurrentTheme
-     * anymore or mCurrentTheme hasn't been set yet.
-     * If a new theme is applied in this method, then return true, so
-     * the caller can re-create the activity, if need be.
-     */
-    protected boolean changeTheme() {
-        String newTheme = sPreferences.getTheme();
-        if (mCurrentTheme != null && mCurrentTheme.equals(newTheme)) {
-            return false;
-        }
-
-        int themeId = R.style.LightTheme;
-        if (Constants.Pref.Theme.DARK.equals(newTheme)) {
-            themeId = R.style.DarkTheme;
-        }
-
-        ContextThemeWrapper w = new ContextThemeWrapper(this, themeId);
-        getTheme().setTo(w.getTheme());
-        mCurrentTheme = newTheme;
-
-        return true;
     }
 
     protected void initLayout() {
