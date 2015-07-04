@@ -221,7 +221,7 @@ public class Preferences {
     }
 
     public String getTheme() {
-        return mSharedPreferences.getString(Pref.THEME, "light");
+        return mSharedPreferences.getString(Pref.THEME, Pref.Theme.LIGHT);
     }
 
     public void setTheme(String value) {
@@ -390,6 +390,10 @@ public class Preferences {
                 }
                 // fall through
                 case 4: {
+                    // fall through
+                }
+                case 5: {
+                    setTheme(Constants.Pref.Theme.LIGHT);
                 }
             }
 

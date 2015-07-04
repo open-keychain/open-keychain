@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -76,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         int themeId = R.style.LightTheme;
-        if ("dark".equals(newTheme)) {
+        if (Constants.Pref.Theme.DARK.equals(newTheme)) {
             themeId = R.style.DarkTheme;
         }
 

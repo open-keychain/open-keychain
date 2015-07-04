@@ -104,6 +104,11 @@ public final class Constants {
         public static final String PROXY_PORT = "proxyPort";
         public static final String PROXY_TYPE = "proxyType";
         public static final String THEME = "theme";
+
+        public static final class Theme {
+            public static final String LIGHT = "light";
+            public static final String DARK = "dark";
+        }
     }
 
     /**
@@ -117,7 +122,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 4;
+        public static final int PREF_VERSION = 5;
     }
 
     public static final class key {

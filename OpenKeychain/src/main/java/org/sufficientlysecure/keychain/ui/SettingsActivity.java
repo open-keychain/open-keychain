@@ -136,7 +136,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         int themeId = R.style.LightTheme;
-        if ("dark".equals(newTheme)) {
+        if (Constants.Pref.Theme.DARK.equals(newTheme)) {
             themeId = R.style.DarkTheme;
         }
 
