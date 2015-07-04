@@ -390,10 +390,10 @@ public class Preferences {
                 }
                 // fall through
                 case 4: {
-                    // fall through
-                }
-                case 5: {
                     setTheme(Constants.Pref.Theme.DEFAULT);
+                }
+                // fall through
+                case 5: {
                 }
             }
 
