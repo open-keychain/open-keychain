@@ -786,7 +786,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
-                        color = getResources().getColor(R.color.primary);
+                        color = FormattingUtils.getColorFromAttr(this, R.attr.colorPrimary);
                         // reload qr code only if the fingerprint changed
                         if (!mFingerprint.equals(mQrCodeLoaded)) {
                             loadQrCode(mFingerprint);
@@ -837,7 +837,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.VERIFIED, R.color.icons, true);
-                            color = getResources().getColor(R.color.primary);
+                            color = FormattingUtils.getColorFromAttr(this, R.attr.colorPrimary);
                             photoTask.execute(mMasterKeyId);
 
                             mFab.setVisibility(View.GONE);
