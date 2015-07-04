@@ -393,7 +393,7 @@ public class Preferences {
                     // fall through
                 }
                 case 5: {
-                    setTheme(Constants.Pref.Theme.LIGHT);
+                    setTheme(Constants.Pref.Theme.DEFAULT);
                 }
             }
 

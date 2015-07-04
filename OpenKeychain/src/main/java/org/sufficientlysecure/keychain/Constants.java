@@ -108,6 +108,7 @@ public final class Constants {
         public static final class Theme {
             public static final String LIGHT = "light";
             public static final String DARK = "dark";
+            public static final String DEFAULT = Constants.Pref.Theme.LIGHT;
         }
     }
 
