@@ -96,9 +96,9 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "URI could not be opened: " + input.getInputUri(), e);
+                Log.e(Constants.TAG, "Input URI could not be opened: " + input.getInputUri(), e);
                 OperationLog log = new OperationLog();
-                log.add(LogType.MSG_DC_ERROR_IO, 1);
+                log.add(LogType.MSG_DC_ERROR_INPUT, 1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }
@@ -109,7 +109,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             try {
                 outputStream = mContext.getContentResolver().openOutputStream(input.getOutputUri());
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "URI could not be opened: " + input.getOutputUri(), e);
+                Log.e(Constants.TAG, "Output URI could not be opened: " + input.getOutputUri(), e);
                 OperationLog log = new OperationLog();
                 log.add(LogType.MSG_DC_ERROR_IO, 1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
