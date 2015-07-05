@@ -46,6 +46,8 @@ public final class Constants {
     public static final String PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
     public static final String TEMPSTORAGE_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
+    public static final String CLIPBOARD_LABEL = "Keychain";
+
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 

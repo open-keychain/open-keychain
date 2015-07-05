@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,9 +33,9 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
 public class DisplayTextFragment extends DecryptFragment {
@@ -80,8 +84,19 @@ public class DisplayTextFragment extends DecryptFragment {
     }
 
     private void copyToClipboard(String text) {
-        ClipboardReflection.copyToClipboard(getActivity(), text);
-        Notify.create(getActivity(), R.string.text_copied_to_clipboard, Notify.Style.OK).show();
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipMan == null) {
+            Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
+            return;
+        }
+
+        clipMan.setPrimaryClip(ClipData.newPlainText(Constants.CLIPBOARD_LABEL, text));
+        Notify.create(activity, R.string.text_copied_to_clipboard, Style.OK).show();
     }
 
     @Override

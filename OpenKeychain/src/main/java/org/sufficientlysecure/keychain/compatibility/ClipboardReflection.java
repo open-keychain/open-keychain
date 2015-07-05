@@ -17,28 +17,22 @@
 
 package org.sufficientlysecure.keychain.compatibility;
 
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.lang.reflect.Method;
-
 public class ClipboardReflection {
 
-    private static final String clipboardLabel = "Keychain";
-
-    public static void copyToClipboard(Context context, String text) {
-        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-
-        ClipData clip = ClipData.newPlainText(clipboardLabel, text);
-        clipboard.setPrimaryClip(clip);
-
-    }
-
-    public static String getClipboardText(Context context) {
+    @Nullable
+    public static String getClipboardText(@Nullable Context context) {
+        if (context == null) {
+            return null;
+        }
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 
         ClipData clip = clipboard.getPrimaryClip();
