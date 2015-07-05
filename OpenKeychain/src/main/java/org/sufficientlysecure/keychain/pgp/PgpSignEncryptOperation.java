@@ -20,6 +20,8 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
@@ -36,6 +38,7 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -97,6 +100,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
     public PgpSignEncryptOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
+    }
+
+    @NonNull
+    @Override
+    // TODO this is horrible, refactor ASAP!!
+    public OperationResult execute(Parcelable input, CryptoInputParcel cryptoInput) {
+        return null;
     }
 
     /**
