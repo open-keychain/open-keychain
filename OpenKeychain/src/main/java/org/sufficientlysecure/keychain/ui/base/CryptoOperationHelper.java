@@ -84,8 +84,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     /**
      * If OperationHelper is being integrated into an activity
-     *
-     * @param activity
      */
     public CryptoOperationHelper(FragmentActivity activity, Callback<T, S> callback, int progressMessageString) {
         mActivity = activity;
@@ -96,8 +94,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     /**
      * if OperationHelper is being integrated into a fragment
-     *
-     * @param fragment
      */
     public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback, int progressMessageString) {
         mFragment = fragment;
@@ -108,8 +104,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     /**
      * if OperationHelper is being integrated into a fragment with default message for the progress dialog
-     *
-     * @param fragment
      */
     public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback) {
         mFragment = fragment;
@@ -178,10 +172,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * Attempts the result of an activity started by this helper. Returns true if requestCode is
      * recognized, false otherwise.
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {

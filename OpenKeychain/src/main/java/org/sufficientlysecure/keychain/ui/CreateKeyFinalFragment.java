@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -385,14 +386,18 @@ public class CreateKeyFinalFragment extends Fragment {
             }
 
             public void handleResult(ExportResult result) {
-                // TODO: ExportOperation UPLOAD_KEYSERVER needs logs!
-                // TODO: then merge logs here!
-                //saveKeyResult.getLog().add(result, 0);
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+
+                saveKeyResult.getLog().add(result, 0);
 
                 Intent data = new Intent();
                 data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                activity.setResult(Activity.RESULT_OK, data);
+                activity.finish();
+
             }
 
             @Override

@@ -26,6 +26,7 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -725,7 +726,7 @@ public class ProviderHelper {
         LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<>();
 
         @Override
-        public int compareTo(UserPacketItem o) {
+        public int compareTo(@NonNull UserPacketItem o) {
             // revoked keys always come last!
             //noinspection DoubleNegation
             if ((selfRevocation != null) != (o.selfRevocation != null)) {
@@ -1126,6 +1127,7 @@ public class ProviderHelper {
                 }
 
             });
+            cursor.close();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
@@ -1187,6 +1189,7 @@ public class ProviderHelper {
                 }
 
             });
+            cursor.close();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);

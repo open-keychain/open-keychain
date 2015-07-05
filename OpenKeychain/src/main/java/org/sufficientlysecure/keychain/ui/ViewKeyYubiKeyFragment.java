@@ -210,7 +210,7 @@ public class ViewKeyYubiKeyFragment
     }
 
     @Override
-    protected void onCryptoOperationResult(PromoteKeyResult result) {
+    public void onCryptoOperationSuccess(PromoteKeyResult result) {
         result.createNotify(getActivity()).show();
     }
 }
