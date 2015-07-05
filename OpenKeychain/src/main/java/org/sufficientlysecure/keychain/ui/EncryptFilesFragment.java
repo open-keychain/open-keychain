@@ -35,6 +35,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -388,6 +389,12 @@ public class EncryptFilesFragment
     @Override
     public void onCryptoOperationSuccess(final SignEncryptResult result) {
 
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            // it's gone, there's nothing we can do here
+            return;
+        }
+
         if (mDeleteAfterEncrypt) {
             // TODO make behavior coherent here
             DeleteFileDialogFragment deleteFileDialog =
@@ -400,13 +407,18 @@ public class EncryptFilesFragment
                         // Share encrypted message/file
                         startActivity(sendWithChooserExcludingEncrypt());
                     } else {
+                        Activity activity = getActivity();
+                        if (activity == null) {
+                            // it's gone, there's nothing we can do here
+                            return;
+                        }
                         // Save encrypted file
-                        result.createNotify(getActivity()).show();
+                        result.createNotify(activity).show();
                     }
                 }
 
             });
-            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+            deleteFileDialog.show(activity.getSupportFragmentManager(), "deleteDialog");
         } else {
 
             switch (mAfterEncryptAction) {
@@ -417,25 +429,24 @@ public class EncryptFilesFragment
                     break;
 
                 case COPY:
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        // it's gone, there's nothing we can do here
-                        return;
-                    }
 
                     ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                    if (clipMan == null) {
+                        Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
+                        break;
+                    }
                     ClipData clip = new ClipData(getString(R.string.label_clip_title),
                             // make available as application/pgp-encrypted
                             new String[] { "text/plain" },
                             new ClipData.Item(mOutputUris.get(0))
                     );
                     clipMan.setPrimaryClip(clip);
-                    result.createNotify(getActivity()).show();
+                    result.createNotify(activity).show();
                     break;
 
                 case SAVE:
                     // Encrypted file was saved already, just show notification
-                    result.createNotify(getActivity()).show();
+                    result.createNotify(activity).show();
                     break;
             }
         }

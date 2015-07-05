@@ -1424,5 +1424,6 @@
     <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
+    <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
 
 </resources>
