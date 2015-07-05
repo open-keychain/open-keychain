@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
@@ -76,9 +77,8 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
         mCancelled = cancelled;
     }
 
-    public OperationResult execute(T input, CryptoInputParcel cryptoInput) {
-        return null;
-    }
+    @NonNull
+    public abstract OperationResult execute(T input, CryptoInputParcel cryptoInput);
 
     public void updateProgress(int message, int current, int total) {
         if (mProgressable != null) {

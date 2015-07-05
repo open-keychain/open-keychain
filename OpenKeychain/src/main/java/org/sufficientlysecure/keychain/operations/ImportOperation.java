@@ -18,7 +18,24 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.IOException;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -28,7 +45,6 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -47,21 +63,6 @@ import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.io.IOException;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation class which implements high level import
@@ -118,6 +119,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     }
 
+    @NonNull
     public ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
                                                String keyServerUri, Proxy proxy) {
 
@@ -148,8 +150,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
      * @param keyServerUri contains uri of keyserver to import from, if it is an import from cloud
      * @param progressable Allows multi-threaded import to supply a progressable that ignores the
      *                     progress of a single key being imported
-     * @return
      */
+    @NonNull
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                String keyServerUri, Progressable progressable,
                                                Proxy proxy) {
@@ -380,6 +382,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 importedMasterKeyIdsArray);
     }
 
+    @NonNull
     @Override
     public OperationResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
         ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
@@ -426,6 +429,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         return result;
     }
 
+    @NonNull
     private ImportKeyResult multiThreadedKeyImport(Iterator<ParcelableKeyRing> keyListIterator,
                                                    int totKeys, final String keyServer,
                                                    final Proxy proxy) {
@@ -441,7 +445,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     new SynchronousQueue<Runnable>());
 
             ExecutorCompletionService<ImportKeyResult> importCompletionService =
-                    new ExecutorCompletionService(importExecutor);
+                    new ExecutorCompletionService<>(importExecutor);
 
             while (keyListIterator.hasNext()) { // submit all key rings to be imported
 

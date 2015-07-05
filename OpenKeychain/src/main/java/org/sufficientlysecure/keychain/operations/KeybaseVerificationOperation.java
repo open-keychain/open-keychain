@@ -19,7 +19,15 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
@@ -32,7 +40,6 @@ import de.measite.minidns.record.TXT;
 import org.json.JSONObject;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -46,12 +53,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
     public KeybaseVerificationOperation(Context context, ProviderHelper providerHelper,
@@ -59,6 +60,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
         super(context, providerHelper, progressable);
     }
 
+    @NonNull
     @Override
     public KeybaseVerificationResult execute(KeybaseVerificationParcel keybaseInput,
                                              CryptoInputParcel cryptoInput) {
@@ -113,7 +115,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                     return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
                 }
                 Record[] records = dnsQuery.getAnswers();
-                List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                List<List<byte[]>> extents = new ArrayList<>();
                 for (Record r : records) {
                     Data d = r.getPayload();
                     if (d instanceof TXT) {

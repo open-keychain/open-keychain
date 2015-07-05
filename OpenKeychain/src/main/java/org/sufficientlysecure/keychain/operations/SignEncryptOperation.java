@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -62,6 +63,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @NonNull
     public SignEncryptResult execute(SignEncryptParcel input, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();

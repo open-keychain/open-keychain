@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
@@ -45,6 +46,7 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
         super(context, providerHelper, progressable);
     }
 
+    @NonNull
     @Override
     public DeleteResult execute(DeleteKeyringParcel deleteKeyringParcel,
                                 CryptoInputParcel cryptoInputParcel) {

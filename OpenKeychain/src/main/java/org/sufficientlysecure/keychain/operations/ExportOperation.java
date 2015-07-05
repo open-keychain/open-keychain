@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
@@ -329,6 +330,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
     }
 
+    @NonNull
     public ExportResult execute(ExportKeyringParcel exportInput, CryptoInputParcel cryptoInput) {
         switch (exportInput.mExportType) {
             case UPLOAD_KEYSERVER: {
@@ -364,8 +366,8 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                 return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret,
                         exportInput.mOutputUri);
             }
-            default: { // can't happen
-                return null;
+            default: { // can never happen, all enum types must be handled above
+                throw new AssertionError("must not happen, this is a bug!");
             }
         }
     }

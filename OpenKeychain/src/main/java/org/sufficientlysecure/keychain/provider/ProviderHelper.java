@@ -1060,6 +1060,7 @@ public class ProviderHelper {
 
     }
 
+    @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
 
         OperationLog log = new OperationLog();
@@ -1205,12 +1206,14 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
+    @NonNull
     public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
         return consolidateDatabaseStep2(new OperationLog(), 0, progress, true);
     }
 
     private static boolean mConsolidateCritical = false;
 
+    @NonNull
     private ConsolidateResult consolidateDatabaseStep2(
             OperationLog log, int indent, Progressable progress, boolean recovery) {
 

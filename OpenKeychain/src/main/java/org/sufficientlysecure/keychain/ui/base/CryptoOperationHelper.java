@@ -314,14 +314,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         cryptoOperation(new CryptoInputParcel());
     }
 
-    protected void onCryptoOperationResult(S result) {
-        if (result.success()) {
-            mCallback.onCryptoOperationSuccess(result);
-        } else {
-            mCallback.onCryptoOperationError(result);
-        }
-    }
-
     public void onHandleResult(OperationResult result, CryptoInputParcel oldCryptoInput) {
         Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
 
@@ -338,8 +330,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         dismissProgress();
 
         try {
-            // noinspection unchecked, because type erasure :(
-            onCryptoOperationResult((S) result);
+            if (result.success()) {
+                // noinspection unchecked, because type erasure :(
+                mCallback.onCryptoOperationSuccess((S) result);
+            } else {
+                // noinspection unchecked, because type erasure :(
+                mCallback.onCryptoOperationError((S) result);
+            }
         } catch (ClassCastException e) {
             throw new AssertionError("bad return class ("
                     + result.getClass().getSimpleName() + "), this is a programming error!");

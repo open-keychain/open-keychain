@@ -18,10 +18,9 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
-import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -44,7 +43,6 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -69,6 +67,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @NonNull
     @Override
     public CertifyResult execute(CertifyActionsParcel parcel, CryptoInputParcel cryptoInput) {
 
