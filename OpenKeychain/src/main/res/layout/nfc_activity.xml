@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -17,7 +18,7 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
         android:paddingTop="16dp"
-        custom:initialView="0">
+        custom:initialView="3">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -111,6 +112,44 @@
                 android:adjustViewBounds="true"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_check_circle_black_48dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/nfc_activity_text_placeholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+
+            <!-- placeholder to retain dialog size -->
+            <ImageView
+                android:id="@+id/nfc_image_placeholder3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/nfc_activity_text_placeholder"
+                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:src="@drawable/yubikey_phone"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/nfc_activity_error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@color/android_red_dark"
+                tools:text="Error text" />
+
 
         </RelativeLayout>
 

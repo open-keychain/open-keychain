@@ -79,6 +79,95 @@ public abstract class BaseNfcActivity extends BaseActivity {
     private String mNfcUserId;
     private byte[] mNfcAid;
 
+    /**
+     * Override to change UI before NFC handling (UI thread)
+     */
+    protected void onNfcPreExecute() {
+    }
+
+    /**
+     * Override to implement NFC operations (background thread)
+     */
+    protected void doNfcInBackground() throws IOException {
+        mNfcFingerprints = nfcGetFingerprints();
+        mNfcUserId = nfcGetUserId();
+        mNfcAid = nfcGetAid();
+    }
+
+    /**
+     * Override to handle result of NFC operations (UI thread)
+     */
+    protected void onNfcPostExecute() throws IOException {
+
+        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
+
+        try {
+            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
+                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+            long masterKeyId = ring.getMasterKeyId();
+
+            Intent intent = new Intent(this, ViewKeyActivity.class);
+            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+            startActivity(intent);
+        } catch (PgpKeyNotFoundException e) {
+            Intent intent = new Intent(this, CreateKeyActivity.class);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mNfcAid);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * Override to use something different than Notify (UI thread)
+     */
+    protected void onNfcError(String error) {
+        Notify.create(this, error, Style.WARN).show();
+    }
+
+    public void handleIntentInBackground(final Intent intent) {
+        // Actual NFC operations are executed in doInBackground to not block the UI thread
+        new AsyncTask<Void, Void, Exception>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                onNfcPreExecute();
+            }
+
+            @Override
+            protected Exception doInBackground(Void... params) {
+                try {
+                    handleTagDiscoveredIntent(intent);
+                } catch (CardException e) {
+                    return e;
+                } catch (IOException e) {
+                    return e;
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Exception exception) {
+                super.onPostExecute(exception);
+
+                if (exception != null) {
+                    handleNfcError(exception);
+                    return;
+                }
+
+                try {
+                    onNfcPostExecute();
+                } catch (IOException e) {
+                    handleNfcError(e);
+                }
+            }
+        }.execute();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,49 +187,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
     @Override
     public void onNewIntent(final Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-
-            // Actual NFC operations are executed in doInBackground to not block the UI thread
-            new AsyncTask<Void, Void, Exception>() {
-                @Override
-                protected void onPreExecute() {
-                    super.onPreExecute();
-                    onNfcPreExecute();
-                }
-
-                @Override
-                protected Exception doInBackground(Void... params) {
-                    try {
-                        handleTagDiscoveredIntent(intent);
-                    } catch (CardException e) {
-                        return e;
-                    } catch (IOException e) {
-                        return e;
-                    }
-
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Exception exception) {
-                    super.onPostExecute(exception);
-
-                    if (exception != null) {
-                        handleNfcError(exception);
-                        return;
-                    }
-
-                    try {
-                        onNfcPostExecute();
-                    } catch (IOException e) {
-                        handleNfcError(e);
-                    }
-                }
-            }.execute();
-
+            handleIntentInBackground(intent);
         }
     }
 
-    public void handleNfcError(Exception e) {
+    private void handleNfcError(Exception e) {
         Log.e(Constants.TAG, "nfc error", e);
 
         short status;
@@ -151,7 +202,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
         // When entering a PIN, a status of 63CX indicates X attempts remaining.
         if ((status & (short)0xFFF0) == 0x63C0) {
-            Notify.create(this, getString(R.string.error_pin, status & 0x000F), Style.WARN).show();
+            onNfcError(getString(R.string.error_pin, status & 0x000F));
             return;
         }
 
@@ -160,63 +211,60 @@ public abstract class BaseNfcActivity extends BaseActivity {
             // These errors should not occur in everyday use; if they are returned, it means we
             // made a mistake sending data to the card, or the card is misbehaving.
             case 0x6A80: {
-                Notify.create(this, getString(R.string.error_nfc_bad_data), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_bad_data));
                 break;
             }
             case 0x6883: {
-                Notify.create(this, getString(R.string.error_nfc_chaining_error), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_chaining_error));
                 break;
             }
             case 0x6B00: {
-                Notify.create(this, getString(R.string.error_nfc_header, "P1/P2"), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_header, "P1/P2"));
                 break;
             }
             case 0x6D00: {
-                Notify.create(this, getString(R.string.error_nfc_header, "INS"), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_header, "INS"));
                 break;
             }
             case 0x6E00: {
-                Notify.create(this, getString(R.string.error_nfc_header, "CLA"), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_header, "CLA"));
                 break;
             }
             // These error conditions are more likely to be experienced by an end user.
             case 0x6285: {
-                Notify.create(this, getString(R.string.error_nfc_terminated), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_terminated));
                 break;
             }
             case 0x6700: {
-                Notify.create(this, getString(R.string.error_nfc_wrong_length), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_wrong_length));
                 break;
             }
             case 0x6982: {
-                Notify.create(this, getString(R.string.error_nfc_security_not_satisfied),
-                        Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_security_not_satisfied));
                 break;
             }
             case 0x6983: {
-                Notify.create(this, getString(R.string.error_nfc_authentication_blocked),
-                        Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_authentication_blocked));
                 break;
             }
             case 0x6985: {
-                Notify.create(this, getString(R.string.error_nfc_conditions_not_satisfied),
-                        Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_conditions_not_satisfied));
                 break;
             }
             // 6A88 is "Not Found" in the spec, but Yubikey also returns 6A83 for this in some cases.
             case 0x6A88:
             case 0x6A83: {
-                Notify.create(this, getString(R.string.error_nfc_data_not_found), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_data_not_found));
                 break;
             }
             // 6F00 is a JavaCard proprietary status code, SW_UNKNOWN, and usually represents an
             // unhandled exception on the smart card.
             case 0x6F00: {
-                Notify.create(this, getString(R.string.error_nfc_unknown), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc_unknown));
                 break;
             }
             default: {
-                Notify.create(this, getString(R.string.error_nfc, e.getMessage()), Style.WARN).show();
+                onNfcError(getString(R.string.error_nfc, e.getMessage()));
                 break;
             }
         }
@@ -354,39 +402,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
         mIsoDep.close();
         mIsoDep = null;
 
-    }
-
-    protected void onNfcPreExecute() {
-    }
-
-    protected void doNfcInBackground() throws IOException {
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
-    }
-
-    protected void onNfcPostExecute() throws IOException {
-
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
-
-        try {
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-            long masterKeyId = ring.getMasterKeyId();
-
-            Intent intent = new Intent(this, ViewKeyActivity.class);
-            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-            startActivity(intent);
-        } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-            startActivity(intent);
-        }
     }
 
     /** Return the key id from application specific data stored on tag, or null

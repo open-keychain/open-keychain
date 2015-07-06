@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -23,6 +24,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -47,6 +49,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     public static final String RESULT_DATA = "result_data";
 
     public ViewAnimator vAnimator;
+    public TextView vErrorText;
 
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
@@ -66,6 +69,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
         vAnimator.setDisplayedChild(0);
+        vErrorText = (TextView) findViewById(R.id.nfc_activity_error_text);
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -227,6 +231,12 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 finish();
             }
         }.execute();
+    }
+
+    @Override
+    protected void onNfcError(String error) {
+        vErrorText.setText(error);
+        vAnimator.setDisplayedChild(3);
     }
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
