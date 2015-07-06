@@ -130,7 +130,7 @@
     <string name="label_use_default_yubikey_pin">"Use default YubiKey PIN"</string>
     <string name="label_use_num_keypad_for_yubikey_pin">Use number keypad for YubiKey PIN</string>
     <string name="label_label_use_default_yubikey_pin_summary">"Uses default PIN (123456) to access YubiKeys over NFC"</string>
-    <string name="label_asymmetric_from">"Signed by:"</string>
+    <string name="label_asymmetric_from">"Sign with:"</string>
     <string name="label_to">"Encrypt to:"</string>
     <string name="label_delete_after_encryption">"Delete files after encryption"</string>
     <string name="label_delete_after_decryption">"Delete after decryption"</string>
