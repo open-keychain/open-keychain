@@ -84,7 +84,8 @@ public abstract class KeySpinner extends AppCompatSpinner implements
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (mListener != null) {
-                    mListener.onKeyChanged(id);
+                    long keyId = getSelectedKeyId(getItemAtPosition(position));
+                    mListener.onKeyChanged(keyId);
                 }
             }
 
@@ -137,6 +138,10 @@ public abstract class KeySpinner extends AppCompatSpinner implements
 
     public long getSelectedKeyId() {
         Object item = getSelectedItem();
+        return getSelectedKeyId(item);
+    }
+
+    public long getSelectedKeyId(Object item) {
         if (item instanceof KeyItem) {
             return ((KeyItem) item).mKeyId;
         }
