@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -120,13 +119,9 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
                     setTitle(R.string.title_import_keys);
                 } else {
-//                    Fragment frag = CreateYubiKeyBlankFragment.newInstance();
-//                    loadFragment(frag, FragAction.START);
-//                    setTitle(R.string.title_manage_my_keys);
-                    Notify.create(this,
-                            "YubiKey key creation is currently not supported. Please follow our FAQ.",
-                            Notify.Style.ERROR
-                    ).show();
+                    Fragment frag = CreateYubiKeyBlankFragment.newInstance();
+                    loadFragment(frag, FragAction.START);
+                    setTitle(R.string.title_manage_my_keys);
                 }
 
                 // done
@@ -186,12 +181,8 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-//            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
-//            loadFragment(frag, FragAction.TO_RIGHT);
-            Notify.create(this,
-                    "YubiKey key creation is currently not supported. Please follow our FAQ.",
-                    Notify.Style.ERROR
-            ).show();
+            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
+            loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
 
