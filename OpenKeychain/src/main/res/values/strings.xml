@@ -1393,16 +1393,16 @@
         <item quantity="one">"Incorrect PIN!\n%d try remaining."</item>
         <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
     </plurals>
-    <string name="error_nfc_terminated">"YubiKey in termination state"</string>
-    <string name="error_nfc_wrong_length">"Wrong length for sent / received data"</string>
-    <string name="error_nfc_conditions_not_satisfied">"Conditions of use not satisfied"</string>
-    <string name="error_nfc_security_not_satisfied">"Security status not satisfied"</string>
-    <string name="error_nfc_authentication_blocked">"PIN blocked after too many attempts"</string>
-    <string name="error_nfc_data_not_found">"Key or object not found"</string>
+    <string name="error_nfc_terminated">"YubiKey in termination state."</string>
+    <string name="error_nfc_wrong_length">"Entered PIN is too short. PINs are at least 6 numbers long."</string>
+    <string name="error_nfc_conditions_not_satisfied">"Conditions of use not satisfied."</string>
+    <string name="error_nfc_security_not_satisfied">"Security status not satisfied."</string>
+    <string name="error_nfc_authentication_blocked">"PIN blocked after too many attempts."</string>
+    <string name="error_nfc_data_not_found">"Key or object not found."</string>
     <string name="error_nfc_unknown">"Unknown Error"</string>
-    <string name="error_nfc_bad_data">"YubiKey reported invalid data"</string>
-    <string name="error_nfc_chaining_error">"YubiKey expected last command in a chain"</string>
-    <string name="error_nfc_header">"YubiKey reported invalid %s byte"</string>
+    <string name="error_nfc_bad_data">"YubiKey reported invalid data."</string>
+    <string name="error_nfc_chaining_error">"YubiKey expected last command in a chain."</string>
+    <string name="error_nfc_header">"YubiKey reported invalid %s byte."</string>
     <string name="error_nfc_tag_lost">"YubiKey has been taken off too early. Keep the YubiKey at the back until the operation finishes."</string>
     <string name="error_nfc_try_again">"Try again"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
