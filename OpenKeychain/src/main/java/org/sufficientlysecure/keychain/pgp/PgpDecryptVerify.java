@@ -167,6 +167,13 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // these can happen if assumptions in JcaPGPObjectFactory.nextObject() aren't
+            // fulfilled, so we need to catch them here to handle this gracefully
+            Log.d(Constants.TAG, "array index out of bounds", e);
+            OperationLog log = new OperationLog();
+            log.add(LogType.MSG_DC_ERROR_IO, 1);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (IOException e) {
             Log.d(Constants.TAG, "IOException", e);
             OperationLog log = new OperationLog();

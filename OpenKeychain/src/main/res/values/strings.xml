@@ -1105,7 +1105,7 @@
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_dc_error_integrity_missing">"Missing integrity check! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
     <string name="msg_dc_error_invalid_data">"No valid OpenPGP encrypted or signed data found!"</string>
-    <string name="msg_dc_error_io">"Encountered IO Exception during operation!"</string>
+    <string name="msg_dc_error_io">"Encountered an error reading input data!"</string>
     <string name="msg_dc_error_input">"Error opening input data stream!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
