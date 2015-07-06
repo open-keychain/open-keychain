@@ -109,14 +109,18 @@ public class CertifyKeySpinner extends KeySpinner {
 
     @Override
     boolean isItemEnabled(Cursor cursor) {
+        // "none" entry is always enabled!
+        if (cursor.getPosition() == 0) {
+            return true;
+        }
+
         if (cursor.getInt(KeyAdapter.INDEX_IS_REVOKED) != 0) {
             return false;
         }
         if (cursor.getInt(KeyAdapter.INDEX_IS_EXPIRED) != 0) {
             return false;
         }
-        // don't invalidate the "None" entry, which is also null!
-        if (cursor.getPosition() != 0 && cursor.isNull(mIndexHasCertify)) {
+        if (cursor.isNull(mIndexHasCertify)) {
             return false;
         }
 
