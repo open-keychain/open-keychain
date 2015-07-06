@@ -66,6 +66,7 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -273,15 +274,19 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     try {
                         CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
-                        CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
-                        cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
-                        log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(id));
-                    } catch (PgpKeyNotFoundException e) {
-                        log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(id));
-                        if (input.isFailOnMissingEncryptionKeyIds()) {
-                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                        Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
+                        for (Long subKeyId : encryptSubKeyIds) {
+                            CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
+                            cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
+                            log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(id));
+                        }
+                        if (encryptSubKeyIds.isEmpty()) {
+                            log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(id));
+                            if (input.isFailOnMissingEncryptionKeyIds()) {
+                                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                            }
                         }
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,

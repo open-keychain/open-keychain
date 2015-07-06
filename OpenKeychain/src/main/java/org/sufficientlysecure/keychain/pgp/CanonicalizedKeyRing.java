@@ -27,6 +27,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 
 /** A generic wrapped PGPKeyRing object.
  *
@@ -89,6 +92,16 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public boolean canCertify() throws PgpKeyNotFoundException {
         return getRing().getPublicKey().isEncryptionKey();
+    }
+
+    public Set<Long> getEncryptIds() {
+        HashSet<Long> result = new HashSet<>();
+        for(CanonicalizedPublicKey key : publicKeyIterator()) {
+            if (key.canEncrypt() && key.isValid()) {
+                result.add(key.getKeyId());
+            }
+        }
+        return result;
     }
 
     public long getEncryptId() throws PgpKeyNotFoundException {

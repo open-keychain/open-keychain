@@ -62,19 +62,6 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
         return mRing;
     }
 
-    /** Getter that returns the subkey that should be used for signing. */
-    CanonicalizedPublicKey getEncryptionSubKey() throws PgpKeyNotFoundException {
-        PGPPublicKey key = getRing().getPublicKey(getEncryptId());
-        if(key != null) {
-            CanonicalizedPublicKey cKey = new CanonicalizedPublicKey(this, key);
-            if(!cKey.canEncrypt()) {
-                throw new PgpKeyNotFoundException("key error");
-            }
-            return cKey;
-        }
-        throw new PgpKeyNotFoundException("no encryption key available");
-    }
-
     public IterableIterator<CanonicalizedPublicKey> publicKeyIterator() {
         @SuppressWarnings("unchecked")
         final Iterator<PGPPublicKey> it = getRing().getPublicKeys();
