@@ -65,6 +65,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PIN = 1;
 
+    public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
+
     protected Passphrase mPin;
     protected Passphrase mAdminPin;
     protected boolean mPw1ValidForMultipleSignatures;
@@ -182,7 +184,13 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTagHandlingEnabled = true;
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            mTagHandlingEnabled = savedInstanceState.getBoolean(EXTRA_TAG_HANDLING_ENABLED);
+        } else {
+            mTagHandlingEnabled = true;
+        }
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -190,6 +198,13 @@ public abstract class BaseNfcActivity extends BaseActivity {
             throw new AssertionError("should not happen: NfcOperationActivity.onCreate is called instead of onNewIntent!");
         }
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(EXTRA_TAG_HANDLING_ENABLED, mTagHandlingEnabled);
     }
 
     /**
