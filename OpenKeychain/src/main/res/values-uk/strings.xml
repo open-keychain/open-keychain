@@ -66,7 +66,6 @@
   <string name="label_use_default_yubikey_pin">Вживати типовий YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Вживати цифрову клавіатуру для YubiKey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Вживається типовий PIN (123456) для доступу до YubiKey чреез NFC</string>
-  <string name="label_asymmetric_from">Підписано:</string>
   <string name="label_to">Зашифрувати до:</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
@@ -85,8 +84,12 @@
   <string name="label_send_key">Синхронізувати із хмарою</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
-  <string name="label_first_keyserver_is_used">(Перший наведений сервер ключів є бажаний)</string>
   <string name="label_preferred">бажаний</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;без імені&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <plurals name="n_keys">
@@ -361,7 +364,7 @@
   <string name="create_key_empty">Це поле - обов\'язкове</string>
   <string name="create_key_final_text">Ви ввели наступну сутність:</string>
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ключі</string>
   <string name="nav_apps">Програми</string>
@@ -504,6 +507,7 @@
     <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
     <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
   </plurals>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

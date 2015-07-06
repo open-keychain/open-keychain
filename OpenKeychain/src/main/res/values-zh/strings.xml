@@ -106,9 +106,13 @@
   <string name="label_email">电子邮件</string>
   <string name="label_fingerprint">指纹</string>
   <string name="expiry_date_dialog_title">有效期</string>
-  <string name="label_first_keyserver_is_used">首选服务器</string>
   <string name="label_encrypt_filenames">加密文件名</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <plurals name="n_keys">
     <item quantity="other">其他</item>
   </plurals>
@@ -234,7 +238,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -253,6 +257,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

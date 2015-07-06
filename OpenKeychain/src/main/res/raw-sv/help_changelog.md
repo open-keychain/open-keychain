@@ -1,5 +1,10 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 3.4
+
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 ## 3.3
 

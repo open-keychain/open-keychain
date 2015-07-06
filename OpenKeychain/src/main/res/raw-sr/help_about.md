@@ -57,7 +57,7 @@
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Апачи лиценца в2)
   * [ZXing](https://github.com/zxing/zxing) (Апачи лиценца в2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Апачи лиценца в2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Материјал дизајн) (Апачи лиценца в2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Апачи лиценца в2)
   * [Snackbar](https://github.com/nispok/snackbar) (МИТ лиценца)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Апачи лиценца в2)

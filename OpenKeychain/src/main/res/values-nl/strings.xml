@@ -43,6 +43,7 @@
   <string name="section_keys">Subsleutels</string>
   <string name="section_cloud_search">Cloud zoeken</string>
   <string name="section_passphrase_cache">Verwerken van wachtwoorden/PINs</string>
+  <string name="section_proxy_settings">Proxy-instellingen</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
@@ -56,6 +57,8 @@
   <string name="btn_decrypt_verify_file">Ontsleutel, verifieer en sla bestand op</string>
   <string name="btn_encrypt_share_file">Bestand versleutelen en delen</string>
   <string name="btn_encrypt_save_file">Bestand versleutelen en opslaan</string>
+  <string name="btn_save_file">Bestand opslaan</string>
+  <string name="btn_save">Opslaa</string>
   <string name="btn_view_log">Bekijk log</string>
   <string name="btn_do_not_save">Annuleren</string>
   <string name="btn_delete">Verwijderen</string>
@@ -98,6 +101,7 @@
   <string name="menu_advanced">Uitgebreide informatie</string>
   <string name="menu_certify_fingerprint">Bevestigen door vingerafdrukken te vergelijken</string>
   <string name="menu_export_log">Log exporteren</string>
+  <string name="menu_keyserver_add">Toevoegen</string>
   <!--label-->
   <string name="label_message">Tekst</string>
   <string name="label_file">Bestand</string>
@@ -116,7 +120,6 @@
   <string name="label_use_default_yubikey_pin">Gebruik standaard YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Gebruik numeriek toetsenbord voor YubiKey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Gebruikt standaard PIN (123456) om YubiKeys over NFC te bereiken</string>
-  <string name="label_asymmetric_from">Ondertekend door:</string>
   <string name="label_to">Versleutelen naar:</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
@@ -142,17 +145,49 @@
   <string name="label_send_key">Synchroniseren met de cloud</string>
   <string name="label_fingerprint">Vingerafdruk</string>
   <string name="expiry_date_dialog_title">Bepaal verloopdatum</string>
-  <string name="label_first_keyserver_is_used">(Voorkeur gaat uit naar de eerste keyserver in de lijst)</string>
+  <string name="label_keyservers_title">Sleutelservers</string>
+  <string name="label_keyserver_settings_hint">Sleep om de volgorde te wijzigen, tik om te bewerken/verwijderen</string>
+  <string name="label_selected_keyserver_title">Gekozen sleutelserver</string>
   <string name="label_preferred">voorkeur</string>
   <string name="label_enable_compression">Compressie aanzetten</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
   <string name="label_verify_keyserver">Sleutelserver verifiëren</string>
   <string name="label_enter_keyserver_url">Voer sleutelserver-URL in</string>
+  <string name="label_keyserver_dialog_delete">Sleutelserver verwijderen</string>
   <string name="pref_keyserver">OpenPGP-sleutelservers</string>
   <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Zoek sleutels op keybase.io</string>
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Tor aanzetten</string>
+  <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
+  <string name="pref_proxy_normal_title">Andere proxy aanzetten</string>
+  <string name="pref_proxy_host_title">Proxy-host</string>
+  <string name="pref_proxy_host_err_invalid">Proxy-host kan niet leeg zijn</string>
+  <string name="pref_proxy_port_title">Proxy-poort</string>
+  <string name="pref_proxy_port_err_invalid">Ongeldig poortnummer opgegeven</string>
+  <string name="pref_proxy_type_title">Proxy-type</string>
+  <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <string name="pref_proxy_type_value_http">proxyHttp</string>
+  <string name="pref_proxy_type_value_socks">proxySocks</string>
+  <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Gebruik Tor niet</string>
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Orbot installeren om Tor te gebruiken?</string>
+  <string name="orbot_install_dialog_install">Installeren</string>
+  <string name="orbot_install_dialog_content">Orbot moet geïnstalleerd en ingesteld zijn om verkeer erdoor te proxyen. Wil je het installeren?</string>
+  <string name="orbot_install_dialog_cancel">Annuleren?</string>
+  <string name="orbot_install_dialog_ignore_tor">Gebruik Tor niet</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">Orbot starten?</string>
+  <string name="orbot_start_dialog_content">Orbot wordt niet uitgevoerd. Wil je het opstarten en verbinden met Tor?</string>
+  <string name="orbot_start_btn">Orbot starten</string>
+  <string name="orbot_start_dialog_start">Orbot starten</string>
+  <string name="orbot_start_dialog_cancel">Annuleren</string>
+  <string name="orbot_start_dialog_ignore_tor">Gebruik Tor niet</string>
   <string name="user_id_no_name">&lt;no naam&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <plurals name="n_keys">
@@ -200,7 +235,8 @@
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="pin_for">Voer PIN in voor \'%s\'</string>
   <string name="yubikey_pin_for">Voer PIN in om toegang te verkrijgen tot YubiKey voor \'%s\'</string>
-  <string name="nfc_text">Hou YubiKey tegen de achterkant van je toestel</string>
+  <string name="nfc_text">Hou de YubiKey tegen de NFC-aanduiding aan de achterkant van je toestel.</string>
+  <string name="nfc_wait">Hou de YubiKey tegen de achterkant!</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
@@ -304,6 +340,8 @@
   <string name="progress_modify_subkeystrip">bezig met strippen van subsleutels…</string>
   <string name="progress_modify_subkeyadd">bezig met toevoegen van subsleutels…</string>
   <string name="progress_modify_passphrase">bezig met veranderen van wachtwoord…</string>
+  <string name="progress_modify_pin">bezig met veranderen van PIN…</string>
+  <string name="progress_modify_admin_pin">bezig met veranderen van administrator-PIN…</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">sleutel exporteren…</item>
     <item quantity="other">sleutels exporteren…</item>
@@ -596,6 +634,13 @@
   <string name="create_key_add_email_text">Bijkomstige e-mailadressen zijn ook verbonden met deze sleutel en kunnen gebruikt worden voor veilige communicatie.</string>
   <string name="create_key_email_already_exists_text">E-mailadres is al toegevoegd</string>
   <string name="create_key_email_invalid_email">E-mailadresformaat is ongeldig</string>
+  <string name="create_key_yubi_key_pin_text">Onthou deze PIN, ze is nodig om je YubiKey later te gebruiken. Schrijf indien mogelijk de administrator-PIN ergens op en bewaar deze op een veilige plek.</string>
+  <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_admin_pin">Administrator-PIN</string>
+  <string name="create_key_yubi_key_pin_repeat_text">Voer de PIN en administrator-PIN in om door te gaan.</string>
+  <string name="create_key_yubi_key_pin_repeat">Herhaal PIN</string>
+  <string name="create_key_yubi_key_admin_pin_repeat">Herhaal administrator-PIN</string>
+  <string name="create_key_yubi_key_pin_not_correct">PIN is niet correct!</string>
   <!--View key-->
   <string name="view_key_revoked">Ingetrokken: sleutel mag niet meer gebruikt worden!</string>
   <string name="view_key_expired">Verlopen: het contact moet de geldigheid van de sleutel verlengen!</string>
@@ -604,12 +649,15 @@
   <string name="view_key_verified">Bevestigde sleutel</string>
   <string name="view_key_unverified">Niet bevestigd: scan QR-code om de sleutel te bevestigen!</string>
   <string name="view_key_fragment_no_system_contact">&lt;geen&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Sleutelserver toevoegen</string>
+  <string name="edit_keyserver_dialog_title">Sleutelserver bewerken</string>
   <string name="add_keyserver_verified">Sleutelserver geverifieerd!</string>
   <string name="add_keyserver_without_verification">Sleutelserver toegevoegd zonder verificatie.</string>
   <string name="add_keyserver_invalid_url">Ongeldige URL!</string>
   <string name="add_keyserver_connection_failed">Kon niet verbinden met sleutelserver. Controleer de URL en je internetverbinding.</string>
+  <string name="keyserver_preference_deleted">%s verwijderd</string>
+  <string name="keyserver_preference_cannot_delete_last">Kan laatste sleutelserver niet verwijderen, er is er minstens één nodig!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Sleutels</string>
   <string name="nav_encrypt_decrypt">Versleutelen/Ontsleutelen</string>
@@ -868,6 +916,8 @@
   <string name="msg_mf_notation_empty">Bezig met toevoegen van leeg notatiepakket</string>
   <string name="msg_mf_notation_pin">Bezig met toevoegen van PIN-notatiepakket</string>
   <string name="msg_mf_passphrase">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
+  <string name="msg_mf_pin">Bezig met veranderen van PIN op kaart</string>
+  <string name="msg_mf_admin_pin">Bezig met veranderen van administrator-PIN op kaart</string>
   <string name="msg_mf_passphrase_key">Bezig met opnieuw versleutelen van subsleutel %s met nieuw wachtwoord</string>
   <string name="msg_mf_passphrase_empty_retry">Instellen van nieuw wachtwoord mislukt, opnieuw proberen met leeg oud wachtwoord</string>
   <string name="msg_mf_passphrase_fail">Wachtwoord voor subsleutel kon niet gewijzigd worden! (Heeft het een ander wachtwoord dan de andere sleutels?)</string>
@@ -968,7 +1018,6 @@
   <string name="msg_dc_error_integrity_check">Fout bij integriteitscontrole!</string>
   <string name="msg_dc_error_integrity_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
   <string name="msg_dc_error_invalid_data">Geen geldige OpenPGP-versleutelde of ondertekende inhoud gevonden!</string>
-  <string name="msg_dc_error_io">I/O-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>
   <string name="msg_dc_error_pgp_exception">OpenPGP-uitzondering tegengekomen tijdens bewerking!</string>
@@ -1058,6 +1107,7 @@
   <string name="msg_crt_warn_not_found">Sleutel niet gevonden!</string>
   <string name="msg_crt_warn_cert_failed">Aanmaken van certificaat mislukt!</string>
   <string name="msg_crt_warn_save_failed">Opslaan mislukt!</string>
+  <string name="msg_crt_warn_upload_failed">Uploaden mislukt!</string>
   <string name="msg_crt_upload_success">Sleutel succesvol geüpload naar server</string>
   <plurals name="msg_import">
     <item quantity="one">Bezig met importeren van sleutel</item>
@@ -1084,6 +1134,7 @@
   </plurals>
   <string name="msg_export_all">Bezig met exporteren van alle sleutels</string>
   <string name="msg_export_public">Bezig met exporteren van publieke sleutel %s</string>
+  <string name="msg_export_upload_public">Bezig met uploaden van publieke sleutel %s</string>
   <string name="msg_export_secret">Bezig met exporteren van geheime sleutel %s</string>
   <string name="msg_export_error_no_file">Geen bestandsnaam opgegeven!</string>
   <string name="msg_export_error_fopen">Fout bij openen van bestand!</string>
@@ -1093,7 +1144,9 @@
   <string name="msg_export_error_db">Databasefout!</string>
   <string name="msg_export_error_io">Input/output-fout!</string>
   <string name="msg_export_error_key">Fout bij voorwerken van sleutelgegevens!</string>
+  <string name="msg_export_error_upload">Fout bij uploaden van sleutel naar server! Controleer je internetverbinding</string>
   <string name="msg_export_success">Exporteren geslaagd</string>
+  <string name="msg_export_upload_success">Uploaden naar sleutelserver geslaagd</string>
   <string name="msg_del_error_empty">Niets om te verwijderen!</string>
   <string name="msg_del_error_multi_secret">Geheime sleutels kunnen enkel individueel verwijderd worden!</string>
   <plurals name="msg_del">
@@ -1123,6 +1176,14 @@
   <string name="msg_download_too_many_responses">Zoekopdracht gaf te veel kandidaten. Gelieve je zoekopdracht te verfijnen!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">Geen of te veel sleutels werden gevonden. Gelieve je zoekopdracht te verfijnen!</string>
   <string name="msg_download_query_failed">Er trad een fout op bij het zoeken naar sleutels.</string>
+  <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_verification">Keybaseverificatie voor %s wordt geprobeerd</string>
+  <string name="msg_keybase_error_no_prover">Geen bewijschecker gevonden voor %s</string>
+  <string name="msg_keybase_error_fetching_evidence">Probleem bij ophalen van bewijs</string>
+  <string name="msg_keybase_error_key_mismatch">Sleutelvingerafdruk komt niet overeen met die in bewijspost</string>
+  <string name="msg_keybase_error_dns_fail">DNS TXT record ophalen mislukt</string>
+  <string name="msg_keybase_error_specific">%s</string>
+  <string name="msg_keybase_error_msg_payload_mismatch">Ontsleuteld bewijs komt niet overeen met verwachte waarde</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Bezig met exporteren van log</string>
   <string name="msg_export_log_error_fopen">Fout bij openen van bestand</string>
@@ -1144,6 +1205,8 @@
   <string name="first_time_import_key">Sleutel importeren uit bestand</string>
   <string name="first_time_yubikey">Gebruik YubiKey NEO</string>
   <string name="first_time_skip">Setup overslaan</string>
+  <string name="first_time_blank_yubikey">Wil je deze lege YubiKey NEO gebruiken met OpenKeychain?\n\nNeem de YubiKey nu weg, je zal gevraagd worden deze terug boven te halen wanneer nodig!</string>
+  <string name="first_time_blank_yubikey_yes">Gebruik deze YubiKey</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
   <string name="section_cert">Certificaat Details</string>
@@ -1219,18 +1282,8 @@
   <string name="btn_import">Importeren</string>
   <string name="snack_yubi_other">Andere sleutel opgeslagen op YubiKey!</string>
   <string name="error_nfc">NFC-fout: %s</string>
-  <string name="error_pin">NFC: ongeldige PIN; %d resterende pogingen.</string>
-  <string name="error_nfc_terminated">NFC: smartcard in beëindigingsstaat</string>
-  <string name="error_nfc_wrong_length">NFC: verkeerde lengte voor verzonden / ontvangen gegevens</string>
-  <string name="error_nfc_conditions_not_satisfied">NFC: gebruiksvoorwaarden niet voldaan</string>
-  <string name="error_nfc_security_not_satisfied">NFC: veiligheidsstatus niet voldaan</string>
-  <string name="error_nfc_authentication_blocked">NFC: PIN geblokkeerd na te veel pogingen</string>
-  <string name="error_nfc_data_not_found">NFC: sleutel of object niet gevonden</string>
-  <string name="error_nfc_unknown">NFC: onbekende fout</string>
-  <string name="error_nfc_bad_data">NFC: kaart gaf ongeldige gegevens weer</string>
-  <string name="error_nfc_chaining_error">NFC: kaart verwachtte laatste commando in een reeks</string>
-  <string name="error_nfc_header">NFC: kaart gaf ongeldige %s byte weer</string>
   <string name="error_pin_nodefault">Standaard-PIN geweigerd!</string>
+  <string name="error_temp_file">Fout bij aanmaken van tijdelijk bestand.</string>
   <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
   <string name="snack_encrypt_filenames_on">Bestandsnamen <b>zijn</b> versleuteld.</string>
   <string name="snack_encrypt_filenames_off">Bestandsnamen <b>zijn niet</b> versleuteld.</string>
@@ -1253,4 +1306,5 @@
   <string name="file_delete_ok">Oorspronkelijk bestand verwijderd.</string>
   <string name="file_delete_none">Geen bestand verwijderd! (Misschien was het al verwijderd?)</string>
   <string name="file_delete_exception">Oorspronkelijk bestand kon niet worden verwijderd!</string>
+  <string name="error_clipboard_empty">Klembord is leeg!</string>
 </resources>

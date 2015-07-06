@@ -1,11 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.4
+
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Nieuw ontsleutelingsscherm
+  * Ontsleuteling van meerdere bestanden tegelijk
+  * Beter verwerken van YubiKey-fouten
 
 ## 3.2
 

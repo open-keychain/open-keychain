@@ -48,12 +48,16 @@
   <string name="section_key_server">Schlüsselserver</string>
   <string name="section_fingerprint">Fingerabdruck</string>
   <string name="section_encrypt">Verschlüsseln</string>
+  <string name="section_decrypt">Entschlüsseln / Verifizieren</string>
   <string name="section_current_expiry">Aktuelles Ablaufdatum</string>
   <string name="section_new_expiry">Neues Ablaufdatum</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Datei entschlüsseln, verifizieren und speichern</string>
   <string name="btn_encrypt_share_file">Datei verschlüsseln und teilen</string>
   <string name="btn_encrypt_save_file">Datei verschlüsseln und speichern</string>
+  <string name="btn_save_file">Datei speichern</string>
+  <string name="btn_save">Speichern</string>
+  <string name="btn_view_log">Log ansehen</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
   <string name="btn_no_date">Kein Ablaufdatum</string>
@@ -70,6 +74,8 @@
   <string name="btn_add_files">Datei(en) hinzufügen</string>
   <string name="btn_share_decrypted_text">Entschlüsselten Text teilen</string>
   <string name="btn_copy_decrypted_text">Entschlüsselten Text kopieren</string>
+  <string name="btn_decrypt_clipboard">Aus Zwischenablage lesen</string>
+  <string name="btn_decrypt_files">Input Datei auswählen.</string>
   <string name="btn_encrypt_files">Dateien verschlüsseln</string>
   <string name="btn_encrypt_text">Text verschlüsseln</string>
   <string name="btn_add_email">Weitere E-Mail-Adresse hinzufügen</string>
@@ -111,7 +117,6 @@
   <string name="label_use_default_yubikey_pin">Standard-YubiKey-PIN verwenden</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Zifferntastatur für YubiKey PIN verwenden</string>
   <string name="label_label_use_default_yubikey_pin_summary">Verwendet zum Zugriff auf YubiKeys über NFC die Standard-PIN (123456)</string>
-  <string name="label_asymmetric_from">Signiert von:</string>
   <string name="label_to">Verschlüsselt an:</string>
   <string name="label_delete_after_encryption">Dateien nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
@@ -135,7 +140,6 @@
   <string name="label_send_key">Mit der Cloud synchronisieren</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="expiry_date_dialog_title">Ablaufdatum festsetzen</string>
-  <string name="label_first_keyserver_is_used">(Oberster Schlüsselserver wird bevorzugt)</string>
   <string name="label_preferred">bevorzugt</string>
   <string name="label_enable_compression">Komprimierung aktivieren</string>
   <string name="label_encrypt_filenames">Dateinamen verschlüsseln</string>
@@ -146,6 +150,11 @@
   <string name="pref_keyserver_summary">Schlüssel auf ausgewählten OpenPGP-Schlüsselservern suchen (HKP-Protokoll)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Schlüssel auf keybase.io suchen</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;kein Name&gt;</string>
   <string name="none">&lt;keine&gt;</string>
   <plurals name="n_keys">
@@ -193,10 +202,10 @@
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
   <string name="pin_for">PIN für \'%s\' eingeben</string>
   <string name="yubikey_pin_for">PIN für Zugriff auf Yubikey für \'%s\' eingeben</string>
-  <string name="nfc_text">Halte YubiKey gegen die Rückseite Deines Geräts.</string>
   <string name="file_delete_confirmation_title">Originaldateien löschen?</string>
   <string name="file_delete_confirmation">Die folgenden Dateien werden gelöscht: %s</string>
   <string name="file_delete_successful">%1$d von %2$d Dateien wurden gelöscht.%3$s</string>
+  <string name="no_file_selected">Keine Datei ausgewählt.</string>
   <string name="encrypt_sign_successful">Erfolgreich signiert und/oder verschlüsselt.</string>
   <string name="encrypt_sign_clipboard_successful">Erfolgreich  in die Zwischenablage signiert und/oder verschlüsselt.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
@@ -368,6 +377,7 @@
   <!--Import from URL-->
   <string name="import_url_warn_no_search_parameter">Kein Suchbegriff angegeben. Sie können trotzdem manuell auf dem Keyserver suchen.</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Details</string>
   <string name="with_warnings">, mit Warnungen</string>
   <string name="with_cancelled">. bis abgebrochen wurde</string>
   <!--Import result toast-->
@@ -594,7 +604,7 @@
   <string name="view_key_verified">Bestätigter Schlüssel</string>
   <string name="view_key_unverified">Unbestätigt: QR-Code scannen, um den Schlüssel zu bestätigen!</string>
   <string name="view_key_fragment_no_system_contact">&lt;keine&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Schlüsselserver hinzufügen</string>
   <string name="add_keyserver_verified">Schlüsselserver bestätigt!</string>
   <string name="add_keyserver_without_verification">Schlüsselserver ohne Überprüfung hinzugefügt.</string>
@@ -954,7 +964,6 @@
   <string name="msg_dc_error_integrity_check">Integritätsprüfungsfehler!</string>
   <string name="msg_dc_error_integrity_missing">Fehlende Integritätsprüfung Dies kann passieren, wenn die Verschlüsselungsanwendung veraltet ist oder durch einen Downgrade-Angriff.</string>
   <string name="msg_dc_error_invalid_data">Kein gültiger OpenPGP-verschlüsselter oder -signierter Inhalt!</string>
-  <string name="msg_dc_error_io">Ein-/Ausgabefehler während Vorgang aufgetreten!</string>
   <string name="msg_dc_error_no_data">Keine verschlüsselten Daten in Datenstrom gefunden!</string>
   <string name="msg_dc_error_no_key">Keine verschlüsselten Daten mit bekanntem geheimen Schlüssel in Datenstrom gefunden!</string>
   <string name="msg_dc_error_pgp_exception">Es ist ein OpenPGP-Ausnahmefehler während des Vorgangs aufgetreten!</string>
@@ -1109,6 +1118,10 @@
   <string name="msg_download_too_many_responses">Schlüsselsuchanfrage lieferte zu viele Kandidaten, bitte die Suchanfrage verfeinern!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">Entweder keine oder zu viele Schlüssel wurden gefunden, bitte die Suchanfrage prä­zi­sie­ren!</string>
   <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
+  <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_no_prover">Kein Nachweis-Prüfer gefunden für %s</string>
+  <string name="msg_keybase_error_fetching_evidence">Problem beim Holen des Nachweises</string>
+  <string name="msg_keybase_error_key_mismatch">Schlüssel-Fingerabdruck stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Exportiere Protokoll</string>
   <string name="msg_export_log_error_fopen">Fehler beim Öffnen der Datei</string>
@@ -1123,6 +1136,7 @@
   <string name="first_time_import_key">Schlüssel aus Datei importieren</string>
   <string name="first_time_yubikey">YubiKey NEO verwenden</string>
   <string name="first_time_skip">Setup überspringen</string>
+  <string name="first_time_blank_yubikey_yes">Diesen YubiKey verwenden</string>
   <!--unsorted-->
   <string name="section_certifier_id">Beglaubiger</string>
   <string name="section_cert">Beglaubigungsdetails</string>
@@ -1195,15 +1209,9 @@
   <string name="btn_import">Import</string>
   <string name="snack_yubi_other">Anderer Schlüssel auf YubiKey gespeichert!</string>
   <string name="error_nfc">NFC-Fehler: %s</string>
-  <string name="error_pin">NFC: Falsche PIN, %d Versuche verbleibend</string>
-  <string name="error_nfc_wrong_length">NFC: Falsche Länge für gesendete/empfangene Daten</string>
-  <string name="error_nfc_security_not_satisfied">NFC: Sicherheitsstatus nicht zufriedenstellend</string>
-  <string name="error_nfc_authentication_blocked">NFC: PIN nach zu vielen Versuchen gesperrt</string>
-  <string name="error_nfc_data_not_found">NFC: Schlüssel oder Objekt nicht gefunden</string>
-  <string name="error_nfc_unknown">NFC: Unbekannter Fehler</string>
-  <string name="error_nfc_bad_data">NFC: Karte meldete ungültige Daten</string>
-  <string name="error_nfc_header">NFC: Karte meldete ungültige %s Byte</string>
   <string name="error_pin_nodefault">Standard-PIN abgelehnt</string>
+  <string name="error_temp_file">Erstellen der temporären Datei fehlgeschlagen.</string>
+  <string name="btn_delete_original">Original Datei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
   <string name="snack_encrypt_filenames_off">Dateinamen <b>sind nicht</b> verschlüsselt.</string>
   <string name="snack_armor_on">Ausgabe als Text kodiert.</string>
@@ -1212,4 +1220,14 @@
   <string name="snack_compression_off">Komprimierung <b>deaktiviert</b>.</string>
   <string name="error_loading_keys">Fehler beim Laden der Schlüssel!</string>
   <string name="error_empty_log">(Fehler, leeres Protokoll)</string>
+  <string name="view_internal">In OpenKeychain ansehen</string>
+  <string name="error_preparing_data">Fehler beim Vorbereiten der Daten!</string>
+  <string name="label_clip_title">Verschlüsselte Daten</string>
+  <string name="progress_processing">Verarbeiten...</string>
+  <string name="error_saving_file">Fehler beim Speichern der Datei!</string>
+  <string name="file_saved">Datei gespeichert!</string>
+  <string name="file_delete_ok">Original Datei gelöscht</string>
+  <string name="file_delete_none">Keine Datei gelöscht! (bereits gelöscht?)</string>
+  <string name="file_delete_exception">Original Datei konnte nicht gelöscht werden!</string>
+  <string name="error_clipboard_empty">Zwischenablage ist leer!</string>
 </resources>

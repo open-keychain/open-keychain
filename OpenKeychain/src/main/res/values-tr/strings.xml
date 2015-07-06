@@ -66,7 +66,6 @@
   <string name="label_use_default_yubikey_pin">Varsayılan YubiKey PIN\'ini kullan</string>
   <string name="label_use_num_keypad_for_yubikey_pin">YubiKey PIN\'i için sayısal klavyeyi kullan</string>
   <string name="label_label_use_default_yubikey_pin_summary">NFC üzerinden YubiKey\'e ulaşmak için varsayılan PIN\'i (123456) kullanır</string>
-  <string name="label_asymmetric_from">İmzalayan:</string>
   <string name="label_to">Şuna şifrele:</string>
   <string name="label_delete_after_decryption">Şifre çözme sonrasında sil</string>
   <string name="label_encryption_algorithm">Şifreleme algoritması</string>
@@ -85,8 +84,12 @@
   <string name="label_send_key">Bulut ile eşitle</string>
   <string name="label_fingerprint">Parmak izi</string>
   <string name="expiry_date_dialog_title">Zaman aşımı tarihini ayarla</string>
-  <string name="label_first_keyserver_is_used">(Listelenen ilk anahtar sunucu tercih edilecektir)</string>
   <string name="label_preferred">tercih edilen</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;isimsiz&gt;</string>
   <string name="none">&lt;hiçbiri&gt;</string>
   <plurals name="n_keys">
@@ -128,7 +131,6 @@
   <!--sentences-->
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
   <string name="passphrase_for_symmetric_encryption">Simetrik şifreleme.</string>
-  <string name="nfc_text">YubiKey\'inizi cihazınızın arkasında tutun.</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
@@ -359,7 +361,7 @@
   <string name="create_key_custom">(özel anahtar yapılandırması)</string>
   <string name="create_key_edit">Anahtar yapılandırmasını değiştir.</string>
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="nav_apps">Uygulamalar</string>
@@ -415,6 +417,7 @@
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <string name="msg_acc_saved">Hesap kaydedildi</string>
   <string name="msg_download_success">Başarıyla indirildi!</string>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

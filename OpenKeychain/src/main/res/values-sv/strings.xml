@@ -111,7 +111,6 @@
   <string name="label_use_default_yubikey_pin">Använd förvald YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Använd numeriska tangentbordet för YubiKey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Använder förvald PIN (123456) för att få åtkomst till YubiKeys via NFC</string>
-  <string name="label_asymmetric_from">Signerat av:</string>
   <string name="label_to">Kryptera till:</string>
   <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
   <string name="label_delete_after_decryption">Radera efter dekryptering</string>
@@ -135,7 +134,6 @@
   <string name="label_send_key">Synkronisera med molnet</string>
   <string name="label_fingerprint">Fingeravtryck</string>
   <string name="expiry_date_dialog_title">Ställ in utgångsdatum</string>
-  <string name="label_first_keyserver_is_used">(Nyckelservern först i listan är den som föredras)</string>
   <string name="label_preferred">föredraget</string>
   <string name="label_enable_compression">Aktivera kompression</string>
   <string name="label_encrypt_filenames">Kryptera filnamn</string>
@@ -146,6 +144,11 @@
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;inget namn&gt;</string>
   <string name="none">&lt;ingen&gt;</string>
   <plurals name="n_keys">
@@ -193,7 +196,6 @@
   <string name="passphrase_for">Ange lösenord för \'%s\'</string>
   <string name="pin_for">Ange PIN för \'%s\'</string>
   <string name="yubikey_pin_for">Ange PIN för att få åtkomst till YubiKey för \'%s\'</string>
-  <string name="nfc_text">Håll YubiKey mot baksidan av din enhet.</string>
   <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
   <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
@@ -570,7 +572,7 @@
   <string name="view_key_verified">Bekräftad nyckel</string>
   <string name="view_key_unverified">Obekräftad: Skanna QR-kod för att bekräfta nyckeln!</string>
   <string name="view_key_fragment_no_system_contact">&lt;ingen&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Lägg till nyckelserver</string>
   <string name="add_keyserver_verified">Nyckelserver verifierad!</string>
   <string name="add_keyserver_without_verification">Nyckelserver tillagd utan verifiering.</string>
@@ -879,6 +881,7 @@
     <item quantity="one">en del av den inlästa filen är ett giltigt OpenPGP-objekt men inte en OpenPGP-nyckel</item>
     <item quantity="other">delar av den inlästa filen är giltiga OpenPGP-objekt men inte OpenPGP-nycklar</item>
   </plurals>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

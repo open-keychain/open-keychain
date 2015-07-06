@@ -77,7 +77,6 @@
   <string name="label_use_default_yubikey_pin">Użyj domyślnego PIN-u YubiKey</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Użyj klawiatury numerycznej dla PIN-u YubiKey</string>
   <string name="label_label_use_default_yubikey_pin_summary">Używa domyślnego PIN-u (123456) do dostępu do YubiKeys przez NFC</string>
-  <string name="label_asymmetric_from">Podpisane przez:</string>
   <string name="label_to">Szyfruj do:</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
@@ -96,8 +95,12 @@
   <string name="label_send_key">Synchronizuj z chmurą</string>
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
-  <string name="label_first_keyserver_is_used">(Pierwszy serwer kluczy jest preferowany)</string>
   <string name="label_preferred">preferowany</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;bez nazwy&gt;</string>
   <string name="none">&lt;żaden&gt;</string>
   <plurals name="n_keys">
@@ -142,7 +145,6 @@
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
   <string name="passphrase_for_symmetric_encryption">Szyfrowanie symetryczne.</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
-  <string name="nfc_text">Trzymaj YubiKey z tyłu Twojego urządzenia.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
@@ -451,7 +453,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="create_key_hint_full_name">Pełne imię lub przezwisko</string>
   <string name="create_key_edit">Zmień ustawienia klucza</string>
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
   <string name="nav_encrypt_decrypt">Zaszyfruj/Odszyfruj</string>
@@ -560,6 +562,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
     <item quantity="few">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>
     <item quantity="other">Część wczytanego pliku to poprawne obiekty OpenPGP, ale nie są kluczami OpenPGP</item>
   </plurals>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

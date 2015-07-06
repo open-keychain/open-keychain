@@ -57,7 +57,7 @@ Licence : GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licence Apache v2)
   * [ZXing](https://github.com/zxing/zxing) (Licence Apache v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Licence Apache v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Conception matérielle)</a> (Licence Apache v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Licence Apache v2)
   * [Snackbar](https://github.com/nispok/snackbar) (Licence MIT)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Licence Apache v2)

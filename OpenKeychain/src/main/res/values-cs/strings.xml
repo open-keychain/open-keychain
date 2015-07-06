@@ -111,7 +111,6 @@
   <string name="label_use_default_yubikey_pin">Použít výchozí YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Použít numerickou klávesnici pro YubiKey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Používá základní PIN (123456) pro přístup k YubiKey přes NFC</string>
-  <string name="label_asymmetric_from">Podepsáno:</string>
   <string name="label_to">Zašifrovat pro:</string>
   <string name="label_delete_after_encryption">Smazat soubory po zašifrování</string>
   <string name="label_delete_after_decryption">Smazat po rozšifrování</string>
@@ -135,7 +134,6 @@
   <string name="label_send_key">Synchronizovat s cloudem</string>
   <string name="label_fingerprint">Otisk</string>
   <string name="expiry_date_dialog_title">Nastavit datum expirace</string>
-  <string name="label_first_keyserver_is_used">(Výchozí je první keyserver)</string>
   <string name="label_preferred">upřednostněno</string>
   <string name="label_enable_compression">Zapnout kompresi</string>
   <string name="label_encrypt_filenames">Zašifrovat jména souborů</string>
@@ -146,6 +144,11 @@
   <string name="pref_keyserver_summary">Vyhledat klíče na vybraném OpenPGP keyserveru (protokol HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Hledat klíče na keybase.io</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;beze jména&gt;</string>
   <string name="none">&lt;žádný&gt;</string>
   <plurals name="n_keys">
@@ -195,7 +198,6 @@
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
   <string name="pin_for">Zadejte PIN pro \'%s\'</string>
   <string name="yubikey_pin_for">Zadejte PIN pro přístup k YubiKey pro \'%s\'</string>
-  <string name="nfc_text">Přidržte YubiKey u zadní strany vašeho přístroje.</string>
   <string name="file_delete_confirmation_title">Smazat původní soubory?</string>
   <string name="file_delete_confirmation">Následjící soubory budou vymazány:%s</string>
   <string name="file_delete_successful">%1$d z %2$d souborů bylo vymazáno.%3$s</string>
@@ -502,7 +504,7 @@
   <string name="view_key_verified">Potvrzený klíč</string>
   <string name="view_key_unverified">Nepotvrzen: Naskenujte QR kód abyste ho potvrdili!</string>
   <string name="view_key_fragment_no_system_contact">&lt;žádný&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Přidat keyserver</string>
   <string name="add_keyserver_verified">Keyserver ověřen!</string>
   <string name="add_keyserver_without_verification">Keyserver přidán bez verifikace.</string>
@@ -656,6 +658,7 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_acc_saved">Účet uložen</string>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

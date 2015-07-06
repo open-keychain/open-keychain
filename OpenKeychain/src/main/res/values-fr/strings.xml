@@ -35,7 +35,7 @@
   <string name="title_manage_my_keys">Gérer mes clefs</string>
   <!--section-->
   <string name="section_user_ids">identités</string>
-  <string name="section_yubikey">Clef Yubi</string>
+  <string name="section_yubikey">ClefYubi</string>
   <string name="section_linked_system_contact">Contact système relié</string>
   <string name="section_should_you_trust">Devriez-vous faire confiance à cette clef ?</string>
   <string name="section_proof_details">Vérification de preuve</string>
@@ -56,6 +56,8 @@
   <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
   <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
   <string name="btn_encrypt_save_file">Chiffrer et enregistrer un fichier</string>
+  <string name="btn_save_file">Enregistrer le fichier</string>
+  <string name="btn_save">Enregistrer</string>
   <string name="btn_view_log">Visualiser le journal</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
@@ -98,6 +100,7 @@
   <string name="menu_advanced">Informations détaillées</string>
   <string name="menu_certify_fingerprint">Confirmer par une comparaison d\'empreinte</string>
   <string name="menu_export_log">Exporter le journal</string>
+  <string name="menu_keyserver_add">Ajouter</string>
   <!--label-->
   <string name="label_message">Texte</string>
   <string name="label_file">Fichier</string>
@@ -113,10 +116,9 @@
   <string name="label_file_ascii_armor">Activer l\'armure ASCII</string>
   <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
   <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clefs exportées</string>
-  <string name="label_use_default_yubikey_pin">Utiliser le NIP par défaut de la clef Yubi</string>
-  <string name="label_use_num_keypad_for_yubikey_pin">Utiliser le pavé numérique pour le NIP de la clef Yubi</string>
-  <string name="label_label_use_default_yubikey_pin_summary">Utilise le NIP par défaut (123456) pour accéder aux clefs Yubi par la NFC</string>
-  <string name="label_asymmetric_from">Signé par :</string>
+  <string name="label_use_default_yubikey_pin">Utiliser le NIP par défaut de la ClefYubi</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">Utiliser le pavé numérique pour le NIP de la ClefYubi</string>
+  <string name="label_label_use_default_yubikey_pin_summary">Utilise le NIP par défaut (123456) pour accéder aux ClefsYubi par la NFC</string>
   <string name="label_to">Chiffrer pour :</string>
   <string name="label_delete_after_encryption">Supprimer les fichiers après chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer le fichier après le déchiffrement</string>
@@ -142,17 +144,25 @@
   <string name="label_send_key">Synchroniser avec le nuage</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
-  <string name="label_first_keyserver_is_used">(Le premier serveur de clefs listé est préféré)</string>
+  <string name="label_keyservers_title">Serveurs de clefs</string>
+  <string name="label_keyserver_settings_hint">Glisser pour changer l\'ordre, toquer pour éditer/supprimer</string>
+  <string name="label_selected_keyserver_title">Serveurs de clefs sélectionnés</string>
   <string name="label_preferred">préféré</string>
   <string name="label_enable_compression">Activer la compression</string>
   <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
   <string name="label_hidden_recipients">Cacher les destinataires</string>
   <string name="label_verify_keyserver">Vérifier le serveur de clefs</string>
   <string name="label_enter_keyserver_url">Saisir l\'URL du serveur de clefs</string>
+  <string name="label_keyserver_dialog_delete">Supprimer le serveur de clefs</string>
   <string name="pref_keyserver">Serveurs de clefs OpenPGP</string>
   <string name="pref_keyserver_summary">Rechercher les clefs dans les serveurs de clefs OpenPGP choisis (protocole HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Rechercher les clefs sur keybase.io</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <plurals name="n_keys">
@@ -199,8 +209,8 @@
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir le mot de passe pour « %s »</string>
   <string name="pin_for">Saisir le NIP pour « %s »</string>
-  <string name="yubikey_pin_for">Saisir le NIP pour accéder à la clef Yubi pour « %s »</string>
-  <string name="nfc_text">Tenez la clef Yubi contre le dos de votre appareil.</string>
+  <string name="yubikey_pin_for">Saisir le NIP pour accéder à la ClefYubi pour « %s »</string>
+  <string name="nfc_text">Tenez la ClefYubi contre le logo NFC au dos de votre appareil.</string>
   <string name="file_delete_confirmation_title">Supprimer les fichiers originaux ?</string>
   <string name="file_delete_confirmation">Les fichiers suivants seront détruits : %s</string>
   <string name="file_delete_successful">%1$d fichiers sur %2$d ont déjà été supprimés. %3$s</string>
@@ -258,7 +268,7 @@
   <string name="error_beam_needed">Beam doit être activé !</string>
   <string name="error_nothing_import">Aucune clef trouvée !</string>
   <string name="error_nothing_import_selected">Aucune clef sélectionnée pour l\'importation !</string>
-  <string name="error_contacts_key_id_missing">Échec lors de la récupération de l\'ID de clef à partir des contacts !</string>
+  <string name="error_contacts_key_id_missing">Échec de récupération de l\'ID de clef des contacts !</string>
   <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Non signé</string>
@@ -304,6 +314,8 @@
   <string name="progress_modify_subkeystrip">dépouillement des sous-clefs...</string>
   <string name="progress_modify_subkeyadd">ajout des sous-clefs...</string>
   <string name="progress_modify_passphrase">modification du mot passe...</string>
+  <string name="progress_modify_pin">changement du NIP...</string>
+  <string name="progress_modify_admin_pin">changement du NIP d\'admin....</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">exportation de la clef...</item>
     <item quantity="other">exportation des clefs...</item>
@@ -413,8 +425,8 @@
     <item quantity="other">%1$d clefs ont été supprimées avec succès</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
-    <item quantity="one">, mais échec lors de la suppression d\'une key%2$s.</item>
-    <item quantity="other">, mais échec lors de la suppression de %1$d key%2$s.</item>
+    <item quantity="one">, mais échec de suppression d\'une key%2$s.</item>
+    <item quantity="other">, mais échec de suppression de %1$d key%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Une key%2$s supprimée avec succès.</item>
@@ -536,7 +548,7 @@
   <string name="keybase_unknown_proof_failure">Problème inconnu avec le vérificateur de preuve</string>
   <string name="keybase_problem_fetching_evidence">Problème avec la preuve</string>
   <string name="keybase_key_mismatch">L\'empreinte de clef ne correspondant pas à celle du billet de preuve</string>
-  <string name="keybase_dns_query_failure">Échec lors de la récupération de l\'enregistrement DNS TXT</string>
+  <string name="keybase_dns_query_failure">Échec de récupération de l\'enregistrement DNS TXT</string>
   <string name="keybase_no_prover_found">Aucun vérificateur de preuve trouvé pour</string>
   <string name="keybase_message_payload_mismatch">Le billet de preuve déchiffré ne correspond pas à la valeur attendue</string>
   <string name="keybase_message_fetching_data">Récupération de la preuve</string>
@@ -570,7 +582,7 @@
     <item>Changer l\'expiration</item>
     <item>Révoquer la sous-clef</item>
     <item>Dépouiller la sous-clef</item>
-    <item>Déplacer la sous-clef vers la clef Yubi / carte à puce</item>
+    <item>Déplacer la sous-clef vers la ClefYubi / carte à puce</item>
   </string-array>
   <string name="edit_key_new_subkey">nouvelle sous-clef</string>
   <string name="edit_key_select_flag">Veuillez sélectionner au moins un drapeau !</string>
@@ -596,6 +608,13 @@
   <string name="create_key_add_email_text">Des adresses courriel supplémentaires sont aussi associées à cette clef et peuvent être utilisées pour des communications sécurisées.</string>
   <string name="create_key_email_already_exists_text">L\'adresse courriel a déjà été ajoutée</string>
   <string name="create_key_email_invalid_email">Le format de l\'adresse courriel est invalide</string>
+  <string name="create_key_yubi_key_pin_text">Veuillez mémoriser le NIP. Il sera exigé pour une utilisation ultérieure de votre ClefYubi. Prenez si possible le NIP d\'admin. en note et stockez-le dans un endroit sûr</string>
+  <string name="create_key_yubi_key_pin">NIP</string>
+  <string name="create_key_yubi_key_admin_pin">NIP d\'admin.</string>
+  <string name="create_key_yubi_key_pin_repeat_text">Veuillez saisir le NIP et le NIP d\'admin. pour continuer.</string>
+  <string name="create_key_yubi_key_pin_repeat">Répéter le NIP</string>
+  <string name="create_key_yubi_key_admin_pin_repeat">Répéter le NIP d\'admin.</string>
+  <string name="create_key_yubi_key_pin_not_correct">NIP erroné !</string>
   <!--View key-->
   <string name="view_key_revoked">Révoquée : la clef ne doit plus être utilisée !</string>
   <string name="view_key_expired">Expirée : le contact doit prolonger la validité de la clef !</string>
@@ -604,12 +623,15 @@
   <string name="view_key_verified">Clef confirmée</string>
   <string name="view_key_unverified">Non confirmée : lisez le code QR pour confirmer la clef !</string>
   <string name="view_key_fragment_no_system_contact">&lt;aucun&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Ajouter un serveur de clefs</string>
+  <string name="edit_keyserver_dialog_title">Modifier le serveur de clefs</string>
   <string name="add_keyserver_verified">Le serveur de clefs a été vérifié !</string>
   <string name="add_keyserver_without_verification">Le serveur de clefs a été ajouté sans vérification.</string>
   <string name="add_keyserver_invalid_url">URL invalide !</string>
   <string name="add_keyserver_connection_failed">Échec de connexion au serveur de clefs. Veuillez vérifier l\'URL et votre connexion Internet.</string>
+  <string name="keyserver_preference_deleted">%s supprimé</string>
+  <string name="keyserver_preference_cannot_delete_last">Impossible de supprimer le dernier serveur de clefs. Il en faut au moins un !</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Clefs</string>
   <string name="nav_encrypt_decrypt">Chiffrer/déchiffrer</string>
@@ -868,8 +890,10 @@
   <string name="msg_mf_notation_empty">Ajout d\'un paquet de notation vide</string>
   <string name="msg_mf_notation_pin">Ajout d\'un paquet de notation NIP</string>
   <string name="msg_mf_passphrase">Changement de mot de passe pour le trousseau</string>
+  <string name="msg_mf_pin">Changement du NIP sur la carte</string>
+  <string name="msg_mf_admin_pin">Changement du NIP d\'admin. sur la carte</string>
   <string name="msg_mf_passphrase_key">Rechiffrement de la sous-clef %s avec un nouveau mot de passe</string>
-  <string name="msg_mf_passphrase_empty_retry">Échec lors de la définition du nouveau mot de passe, nouvel essai avec un ancien mot de passe vide</string>
+  <string name="msg_mf_passphrase_empty_retry">Échec de définition du nouveau mot de passe, nouvel essai avec un ancien mot de passe vide</string>
   <string name="msg_mf_passphrase_fail">Le mot de passe de la sous-clef n\'a pas pu être changé ! (Est-il différent des autres clefs ?)</string>
   <string name="msg_mf_primary_replace_old">Remplacement du certificat de l\'ID utilisateur principal précédent</string>
   <string name="msg_mf_primary_new">Génération d\'un nouveau certificat pour le nouvel ID utilisateur principal</string>
@@ -924,8 +948,8 @@
     <item quantity="other">Réimportation de %d clefs secrètes</item>
   </plurals>
   <string name="msg_con_reimport_secret_skip">Aucune clef secrète à réimporter, étape ignorée...</string>
-  <string name="msg_con_warn_delete_public">Une exception a eu lieu lors de la suppression du fichier de cache public</string>
-  <string name="msg_con_warn_delete_secret">Une exception a eu lieu lors de la suppression du fichier de cache secret</string>
+  <string name="msg_con_warn_delete_public">Exception de suppression du fichier de cache public</string>
+  <string name="msg_con_warn_delete_secret">Exception de suppression du fichier de cache secret</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Exécution de l\'opération sur la clef</string>
   <string name="msg_ed_caching_new">Mise en cache du nouveau mot de passe</string>
@@ -939,7 +963,7 @@
   <string name="msg_pr_error_key_not_found">Clef introuvable !</string>
   <string name="msg_pr_fetching">Obtention de la clef à modifier (%s)</string>
   <string name="msg_pr_subkey_match">Promotion de la sous-clef : %s</string>
-  <string name="msg_pr_subkey_nomatch">La sous-clef n\'est pas sur la clef Yubi : %s</string>
+  <string name="msg_pr_subkey_nomatch">La sous-clef n\'est pas sur la ClefYubi : %s</string>
   <string name="msg_pr_success">Clef promue avec succès</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_dummy">Impossible de modifier un trousseau avec une clef maîtresse dépouillée !</string>
@@ -968,7 +992,6 @@
   <string name="msg_dc_error_integrity_check">Erreur de vérification de l\'intégrité !</string>
   <string name="msg_dc_error_integrity_missing">Vérification de l\'intégrité absente ! Ceci peut arriver car l\'application n\'est pas à jour, ou à cause d\'une attaque par mise à niveau inférieur.</string>
   <string name="msg_dc_error_invalid_data">Aucune donnée OpenPGP valide chiffrée ou signée n\'a été trouvée !</string>
-  <string name="msg_dc_error_io">Une exception E/S a été rencontrée durant l\'opération !</string>
   <string name="msg_dc_error_no_data">Aucune donnée chiffrée n\'a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clef secrète connue n\'a été trouvée dans le flux !</string>
   <string name="msg_dc_error_pgp_exception">Une exception OpenPGP a été rencontrée durant l\'opération !</string>
@@ -1056,8 +1079,8 @@
   <string name="msg_crt_unlock">Déverrouillage de la clef maîtresse</string>
   <string name="msg_crt_success">Identités certifiées avec succès</string>
   <string name="msg_crt_warn_not_found">Clef introuvable !</string>
-  <string name="msg_crt_warn_cert_failed">Échec lors de la génération du certificat !</string>
-  <string name="msg_crt_warn_save_failed">Échec lors de l\'opération d\'enregistrement !</string>
+  <string name="msg_crt_warn_cert_failed">Échec de génération du certificat !</string>
+  <string name="msg_crt_warn_save_failed">Échec de l\'opération d\'enregistrement !</string>
   <string name="msg_crt_upload_success">Clef téléversée vers le serveur avec succès</string>
   <plurals name="msg_import">
     <item quantity="one">Importation de la clef</item>
@@ -1074,7 +1097,7 @@
   <string name="msg_import_fingerprint_ok">Vérification de l\'empreinte OK !</string>
   <string name="msg_import_merge">Fusion des données récupérées</string>
   <string name="msg_import_merge_error">Erreur de fusion des données récupérées !</string>
-  <string name="msg_import_error">Échec lors de l\'opération d\'importation !</string>
+  <string name="msg_import_error">Échec de l\'opération d\'importation !</string>
   <string name="msg_import_error_io">Échec de l\'opération causé par une erreur d\'E/S !</string>
   <string name="msg_import_partial">Opération d\'importation réussie, avec des erreurs !</string>
   <string name="msg_import_success">Opération d\'importation réussie !</string>
@@ -1101,15 +1124,15 @@
     <item quantity="other">Suppression de %d clefs</item>
   </plurals>
   <string name="msg_del_key">Suppression de la clef %s</string>
-  <string name="msg_del_key_fail">Échec lors de la suppression de la clef %s</string>
+  <string name="msg_del_key_fail">Échec de suppression de la clef %s</string>
   <string name="msg_del_consolidate">Consolidation de la base de données après la suppression de la clef secrète</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Suppression de la clef réussie</item>
     <item quantity="other">Suppression de %d clefs réussie</item>
   </plurals>
   <plurals name="msg_del_fail">
-    <item quantity="one">Échec lors de la suppression d\'une clef</item>
-    <item quantity="other">Échec lors de la suppression de %d clefs</item>
+    <item quantity="one">Échec de suppression d\'une clef</item>
+    <item quantity="other">Échec de suppression de %d clefs</item>
   </plurals>
   <string name="msg_acc_saved">Compte enregistré</string>
   <string name="msg_download_success">Téléchargement réussi !</string>
@@ -1123,6 +1146,14 @@
   <string name="msg_download_too_many_responses">La requête de recherche de clef a retourné trop de candidats. Veuillez raffiner votre requête !</string>
   <string name="msg_download_query_too_short_or_too_many_responses">Soit aucune clef ou trop de clefs ont été trouvées. Veuillez améliorer votre requête !</string>
   <string name="msg_download_query_failed">Une erreur est survenue lors de la recherche de clefs.</string>
+  <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_verification">Tentative de vérification « keybase » pour %s</string>
+  <string name="msg_keybase_error_no_prover">Aucun vérificateur de preuve trouvé pour %s</string>
+  <string name="msg_keybase_error_fetching_evidence">Problème de récupération de la preuve</string>
+  <string name="msg_keybase_error_key_mismatch">L\'empreinte de la clef ne correspond pas à celle du billet de preuve</string>
+  <string name="msg_keybase_error_dns_fail">Échec de récupération de l\'enregistrement DNS TXT</string>
+  <string name="msg_keybase_error_specific">%s</string>
+  <string name="msg_keybase_error_msg_payload_mismatch">Le billet de preuve déchiffré ne correspond pas à la valeur attendue</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Exportation du journal</string>
   <string name="msg_export_log_error_fopen">Erreur d\'ouverture du fichier !</string>
@@ -1142,8 +1173,10 @@
   <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
   <string name="first_time_create_key">Créer ma clef</string>
   <string name="first_time_import_key">Importer la clef d\'un fichier</string>
-  <string name="first_time_yubikey">Utiliser le NEO de la clef Yubi</string>
+  <string name="first_time_yubikey">Utiliser le NEO de la ClefYubi</string>
   <string name="first_time_skip">Ignorer le paramétrage</string>
+  <string name="first_time_blank_yubikey">Voulez-vous utiliser cette ClefYubi NEO vide avec OpenKeychain ?\n\nVeuillez retirer la ClefYubi maintenant, vous serez informé quand elle sera requise de nouveau !</string>
+  <string name="first_time_blank_yubikey_yes">Utiliser cette ClefYubi</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificateur</string>
   <string name="section_cert">Détails du certificat</string>
@@ -1212,25 +1245,15 @@
   <string name="yubikey_serno">No de série : %s</string>
   <string name="yubikey_key_holder">Détenteur de la clef :</string>
   <string name="yubikey_key_holder_not_set">Détenteur de la clef : &lt;not set&gt;</string>
-  <string name="yubikey_status_bound">La clef Yubi correspond et est reliée à la clef</string>
-  <string name="yubikey_status_unbound">La clef Yubi correspond et peut être reliée à la clef</string>
-  <string name="yubikey_status_partly">La clef Yubi correspond et est partiellement reliée à la clef</string>
-  <string name="yubikey_create">Tenez la clef Yubi contre le dos de votre appareil.</string>
+  <string name="yubikey_status_bound">La ClefYubi correspond et est reliée à la clef</string>
+  <string name="yubikey_status_unbound">La ClefYubi correspond et peut être reliée à la clef</string>
+  <string name="yubikey_status_partly">La ClefYubi correspond et est partiellement reliée à la clef</string>
+  <string name="yubikey_create">Tenez la ClefYubi contre le dos de votre appareil.</string>
   <string name="btn_import">Importer</string>
-  <string name="snack_yubi_other">Une clef différente est stockée sur la clef Yubi !</string>
+  <string name="snack_yubi_other">Une clef différente est stockée sur la ClefYubi !</string>
   <string name="error_nfc">Erreur NFC ; %s</string>
-  <string name="error_pin">NFC : NIP erroné ; il reste %d essais.</string>
-  <string name="error_nfc_terminated">NFC : carte à puce en état de fin d\'opération</string>
-  <string name="error_nfc_wrong_length">NFC : longueur erronée de données envoyées / reçues</string>
-  <string name="error_nfc_conditions_not_satisfied">NFC : les conditions d\'utilisation ne sont pas satisfaites</string>
-  <string name="error_nfc_security_not_satisfied">NFC : l\'état de sécurité n\'est pas satisfait</string>
-  <string name="error_nfc_authentication_blocked">NFC : NIP bloqué après trop d\'essais</string>
-  <string name="error_nfc_data_not_found">NFC : clef ou objet introuvable</string>
-  <string name="error_nfc_unknown">NFC : erreur inconnue</string>
-  <string name="error_nfc_bad_data">NFC : la carte a signalé des données invalides</string>
-  <string name="error_nfc_chaining_error">NFC : la carte attendait la dernière commande dans une chaîne</string>
-  <string name="error_nfc_header">NFC : la carte a signalé %s bytes invalides</string>
   <string name="error_pin_nodefault">Le NIP par défaut a été rejeté !</string>
+  <string name="error_temp_file">Erreur de création du fichier temporaire.</string>
   <string name="btn_delete_original">Supprimer le fichier original</string>
   <string name="snack_encrypt_filenames_on">Les noms de fichiers <b>sont</b> chiffrés.</string>
   <string name="snack_encrypt_filenames_off">Les noms de fichiers <b>ne sont pas</b> chiffrés.</string>
@@ -1253,4 +1276,5 @@
   <string name="file_delete_ok">Fichier original supprimé.</string>
   <string name="file_delete_none">Aucun fichier supprimé (déjà supprimé ?)</string>
   <string name="file_delete_exception">Impossible de supprimer le fichier original !</string>
+  <string name="error_clipboard_empty">Le presse-papiers est vide !</string>
 </resources>

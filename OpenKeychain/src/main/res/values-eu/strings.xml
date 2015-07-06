@@ -42,18 +42,24 @@
   <string name="section_cloud_evidence">Hodeiko probak</string>
   <string name="section_keys">Azpigiltzak</string>
   <string name="section_cloud_search">Hodei bilaketa</string>
+  <string name="section_passphrase_cache">Sarhitz/PIN Kudeaketa</string>
+  <string name="section_proxy_settings">Proxy Ezarpenak</string>
   <string name="section_certify">Baieztatu</string>
   <string name="section_actions">Ekintzak</string>
   <string name="section_share_key">Giltza</string>
   <string name="section_key_server">Giltza-zerbitzaria</string>
   <string name="section_fingerprint">Hatz-aztarna</string>
   <string name="section_encrypt">Enkriptatu</string>
+  <string name="section_decrypt">Dekriptatu / Egiaztatu</string>
   <string name="section_current_expiry">Oraingo epemuga</string>
   <string name="section_new_expiry">Epemuga berria</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">Dekriptatu, egiaztatu eta gorde agiria</string>
   <string name="btn_encrypt_share_file">Enkriptatu eta elkarbanatu agiria</string>
   <string name="btn_encrypt_save_file">Enkriptatu eta gorde agiria</string>
+  <string name="btn_save_file">Gorde agiria</string>
+  <string name="btn_save">Gorde</string>
+  <string name="btn_view_log">Ikusi oharra</string>
   <string name="btn_do_not_save">Ezeztatu</string>
   <string name="btn_delete">Ezabatu</string>
   <string name="btn_no_date">Epemuga gabe</string>
@@ -70,6 +76,8 @@
   <string name="btn_add_files">Gehitu agiria(k)</string>
   <string name="btn_share_decrypted_text">Elkarbanatu dekriptaturiko idazkia</string>
   <string name="btn_copy_decrypted_text">Kopiatu dekriptaturiko idazkia</string>
+  <string name="btn_decrypt_clipboard">Irakurri gakotik</string>
+  <string name="btn_decrypt_files">Hautatu sarrera agiria</string>
   <string name="btn_encrypt_files">Enkriptatu agiriak</string>
   <string name="btn_encrypt_text">Enkriptatu idazkia</string>
   <string name="btn_add_email">Gehitu post@ helbide gehigarriak</string>
@@ -93,6 +101,7 @@
   <string name="menu_advanced">Argibide Hedatuak</string>
   <string name="menu_certify_fingerprint">Baieztatu hatz-aztarna alderaketa bidez</string>
   <string name="menu_export_log">Esportatu Oharra</string>
+  <string name="menu_keyserver_add">Gehitu</string>
   <!--label-->
   <string name="label_message">Idazkia</string>
   <string name="label_file">Agiria</string>
@@ -107,16 +116,17 @@
   <string name="label_ascii_armor">ASCII Armor agiria</string>
   <string name="label_file_ascii_armor">Gaitu ASCII Armor</string>
   <string name="label_write_version_header">Jakinarazi besteei OpenKeychain erabiltzen ari zarela</string>
+  <string name="label_write_version_header_summary">\'OpenKeychain v2.7\' idazten du OpenPGP sinadura, idazkia zifratzen du eta giltzak esportatzen ditu</string>
   <string name="label_use_default_yubikey_pin">Erabili berezko YubiKey PIN-a</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Erabili zenbaki teklatua YubiKey PIN-erako</string>
   <string name="label_label_use_default_yubikey_pin_summary">Berezko PIN (123456) erabiltzen du NFC bidezko YubiKeys sarbiderako </string>
-  <string name="label_asymmetric_from">Sinatzailea:</string>
   <string name="label_to">Enkriptatu hona:</string>
   <string name="label_delete_after_encryption">Ezabatu agiriak enkriptatu ondoren</string>
   <string name="label_delete_after_decryption">Ezabatu dekriptatu ondoren</string>
   <string name="label_encryption_algorithm">Enkriptaketa algoritmoa</string>
   <string name="label_hash_algorithm">Hash algoritmoa</string>
   <string name="label_symmetric">Enkriptatu sarhitzarekin</string>
+  <string name="label_passphrase_cache_subs">Gogoratu sarhitzak azpigiltzaz</string>
   <string name="label_message_compression">Idazki konpresioa</string>
   <string name="label_file_compression">Agiri konpresioa</string>
   <string name="label_keyservers">Hautatu OpenPGP giltza-zerbitzariak</string>
@@ -134,17 +144,49 @@
   <string name="label_send_key">Aldiberetu hodeiarekin</string>
   <string name="label_fingerprint">Hatz-aztarna</string>
   <string name="expiry_date_dialog_title">Ezarri epemuga eguna</string>
-  <string name="label_first_keyserver_is_used">(Zerrendako lehen giltza-zerbitzaria da hobetsia)</string>
+  <string name="label_keyservers_title">Giltza-zerbitzariak</string>
+  <string name="label_keyserver_settings_hint">Arrastatu hurrenkera aldatzeko, ikutu editatu/ezabatzeko</string>
+  <string name="label_selected_keyserver_title">Giltza-zerbitzaria hautatuta</string>
   <string name="label_preferred">hobetsia</string>
   <string name="label_enable_compression">Gaitu konpresioa</string>
   <string name="label_encrypt_filenames">Enkriptatu agirizenak</string>
   <string name="label_hidden_recipients">Ezkutatu jasotzaileak</string>
   <string name="label_verify_keyserver">Egiaztatu giltza-zerbitzaria</string>
   <string name="label_enter_keyserver_url">Sartu giltza-zerbitzariaren URL-a</string>
+  <string name="label_keyserver_dialog_delete">Ezabatu giltza-zerbitzaria</string>
   <string name="pref_keyserver">OpenPGP giltza-zerbitzariak</string>
   <string name="pref_keyserver_summary">Bilatu giltzak hautaturiko OpenPGP giltza-zerbitzarietan (HKP protokoloa)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Bilatu giltzak keybase.io-an</string>
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Gaitu Tor</string>
+  <string name="pref_proxy_tor_summary">Orbot ezarrita egotea behar du</string>
+  <string name="pref_proxy_normal_title">Gaitu beste proxy bat</string>
+  <string name="pref_proxy_host_title">Proxy Hostalaria</string>
+  <string name="pref_proxy_host_err_invalid">Proxy hostalaria ezin da hutsik egon</string>
+  <string name="pref_proxy_port_title">Proxy Ataka</string>
+  <string name="pref_proxy_port_err_invalid">Ataka zenbaki baliogabea sartu da</string>
+  <string name="pref_proxy_type_title">Proxy Mota</string>
+  <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <string name="pref_proxy_type_value_http">proxyHttp</string>
+  <string name="pref_proxy_type_value_socks">proxySocks</string>
+  <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Ez erabili Tor</string>
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Ezarri Orbot edo erabili Tor?</string>
+  <string name="orbot_install_dialog_install">Ezarri</string>
+  <string name="orbot_install_dialog_content">Orbot ezarrita eta proxy trafiko igaropena gaituta eduki behar duzu. Nahi duzu ezartzea?</string>
+  <string name="orbot_install_dialog_cancel">Ezeztatu</string>
+  <string name="orbot_install_dialog_ignore_tor">Ez erabili Tor</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">Abiarazi Orbot?</string>
+  <string name="orbot_start_dialog_content">Ez dirudi Orbot ekinean dagoenik. Nahi duzu abiaraztea eta Tor-era elkartzea?</string>
+  <string name="orbot_start_btn">Abiarazi Orbot</string>
+  <string name="orbot_start_dialog_start">Abiarazi Orbot</string>
+  <string name="orbot_start_dialog_cancel">Ezeztatu</string>
+  <string name="orbot_start_dialog_ignore_tor">Ez erabili Tor</string>
   <string name="user_id_no_name">&lt;izen gabe&gt;</string>
   <string name="none">&lt;ezer ez&gt;</string>
   <plurals name="n_keys">
@@ -192,13 +234,15 @@
   <string name="passphrase_for">Sartu \'%s\'-rako sarhitza</string>
   <string name="pin_for">Sartu PIN-a \'%s\'-rako</string>
   <string name="yubikey_pin_for">Sartu PIN-a YubKey-ra sartzeko \'%s\'-rentzat</string>
-  <string name="nfc_text">Jarri YubiKey zure gailuaren atzealdean.</string>
+  <string name="nfc_wait">Eduki YubiKey atzealdean!</string>
   <string name="file_delete_confirmation_title">Ezabatu jatorrizko agiriak?</string>
   <string name="file_delete_confirmation">Hurrengo agiriak ezabatu egingo dira: %s</string>
   <string name="file_delete_successful">%1$d -&gt; %2$d-tik agiri ezbatu dira.%3$s</string>
+  <string name="no_file_selected">Ez da agiririk hautatu</string>
   <string name="encrypt_sign_successful">Ongi sinatu eta/edo enkriptatu da.</string>
   <string name="encrypt_sign_clipboard_successful">Ongi sinatu eta/edo enkriptatu da gakora.</string>
   <string name="select_encryption_key">Hautatu enkriptaketa giltza bat gutxienez.</string>
+  <string name="error_no_encryption_or_signature_key">Hautatu gutxienez enkriptaketa giltza bat edo sinadura giltza bat.</string>
   <string name="specify_file_to_encrypt_to">Mesedez adierazi zein agirira enkriptatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
   <string name="specify_file_to_decrypt_to">Mesedez adierazi zein agirira dekriptatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
   <string name="specify_file_to_export_to">Mesedez adierazi zein agirira esportatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
@@ -206,6 +250,7 @@
   <string name="secret_key_deletion_confirmation">Ezabatu ondoren ezingo dituzu giltza honekin enkriptatutako mezuak irakurri eta berarekin egindako giltza baieztapen guztiak galduko dira!</string>
   <string name="public_key_deletetion_confirmation">Ezabatu \'%s\' giltza?</string>
   <string name="also_export_secret_keys">Esportatu giltza sekretuak ere</string>
+  <string name="reinstall_openkeychain">Akats ezagun bat aurkitu duzu Android-rekin. Mesedez ezarri berriro OpenKeychain zure harremanak giltzekin lotzea nahi badituzu.</string>
   <string name="key_exported">Ongi esportatu da 1 giltza</string>
   <string name="keys_exported">Ongi esportatu dira %d giltza</string>
   <string name="no_keys_exported">Ez da giltzarik esportatu.</string>
@@ -286,6 +331,8 @@
   <string name="progress_modify_subkeyrevoke">azpigiltzak ukatzen...</string>
   <string name="progress_modify_subkeyadd">azpigiltzak gehitzen...</string>
   <string name="progress_modify_passphrase">sarhitza aldatzen...</string>
+  <string name="progress_modify_pin">PIN-a aldatzen...</string>
+  <string name="progress_modify_admin_pin">Administrari PIN-a aldatzen...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">giltza esportatzen</item>
     <item quantity="other">giltzak esportatzen</item>
@@ -359,7 +406,9 @@
   <!--Import from URL-->
   <string name="import_url_warn_no_search_parameter">Ez da bilaketa eskaerarik zehaztu. Oraindik eskuz bilatu dezakezu giltza-zerbitzari honetan.</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Xehetasunak</string>
   <string name="with_warnings">, kontuz oharrekin</string>
+  <string name="with_cancelled">, ezeztatu arte</string>
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Ongi inportatuta 1 giltza</item>
@@ -380,6 +429,10 @@
   <plurals name="import_keys_with_errors">
     <item quantity="one">Inportatze hutsegitea 1 giltzarentzat!</item>
     <item quantity="other">Inportatze hutsegitea %d giltzentzat!</item>
+  </plurals>
+  <plurals name="import_error">
+    <item quantity="one">Inportazio hutsegitea!</item>
+    <item quantity="other">Hutsegitea %d giltza inportatzerakoan!</item>
   </plurals>
   <string name="import_error_nothing">Ez dago ezer inportatzeko.</string>
   <string name="import_error_nothing_cancelled">Inportazioa ezeztatuta.</string>
@@ -435,6 +488,7 @@
   <string name="api_select_pub_keys_dublicates_text">Giltza bat baino gehiago dago nortasun hauentzat:</string>
   <string name="api_select_pub_keys_text">Mesedz berrikusi jasotzaile zerrenda!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Mesedez hautatu jasotzaileak!</string>
+  <string name="api_error_wrong_signature">Sinadura egiaztapen hutsegitea! Aplikazio hau beste iturubur batetik duzu ezarrita? Zihur bazaude hau ez dela eraso bat, ukatu aplikazio honen erregistrazioa OpenKeychain eta orduan erregistratu aplikazioa berriro.</string>
   <string name="api_select_sign_key_text">Mesedez hautatu zure giltzetako bat edo sortu berri bat.</string>
   <string name="api_select_keys_text">Ahalbidetutako giltza batek ere ezin du edukia dekriptatu. Mesedez hautatu ahalbidetutako giltzak.</string>
   <!--Share-->
@@ -549,6 +603,13 @@
   <string name="create_key_add_email_text">Post@ helbide gehigarriak ere giltza honekin elkartzen dira eta komunikazio segururako erabili daitezke.</string>
   <string name="create_key_email_already_exists_text">Post@ helbidea jadanik gehituta dago</string>
   <string name="create_key_email_invalid_email">Post@ heuskarria baliogabea da</string>
+  <string name="create_key_yubi_key_pin_text">Mesedez gogoratu PIN-a, beharrezkoa da gero zure YubiKey erabiltzeko. Mesedez idatzi behean Administrari PIN-a eta biltegiratu toki seguru batean.</string>
+  <string name="create_key_yubi_key_pin">PIN-a</string>
+  <string name="create_key_yubi_key_admin_pin">Administrari PIN-a</string>
+  <string name="create_key_yubi_key_pin_repeat_text">Mesedez sartu PIN-a eta Administrari PIN-a jarraitzeko.</string>
+  <string name="create_key_yubi_key_pin_repeat">Berridatzi PIN-a</string>
+  <string name="create_key_yubi_key_admin_pin_repeat">Berridatzi Administrari PIN-a</string>
+  <string name="create_key_yubi_key_pin_not_correct">PIN-a ez da zuzena!</string>
   <!--View key-->
   <string name="view_key_revoked">Ukatuta: Giltza ezin da gehiago erabili!</string>
   <string name="view_key_expired">Iraungitua: Harremanak giltzaren baliotasuna luzatu behar du!</string>
@@ -557,12 +618,15 @@
   <string name="view_key_verified">Baieztatutako Giltza</string>
   <string name="view_key_unverified">Baieztatugabe: Eskaneatu QR Kodea giltza baieztatzeko!</string>
   <string name="view_key_fragment_no_system_contact">&lt;ezer ez&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Gehitu giltza-zerbitzaria</string>
+  <string name="edit_keyserver_dialog_title">Editatu giltza-zerbitzaria</string>
   <string name="add_keyserver_verified">Giltza-zerbitzaria egiaztatuta!</string>
   <string name="add_keyserver_without_verification">Giltza-zerbitzaria gehituta egiaztapen gabe.</string>
   <string name="add_keyserver_invalid_url">URL baliogabea!</string>
   <string name="add_keyserver_connection_failed">Hutsegitea giltza-zerbitzariarekin elkartzerakoan. Mesedez egiaztatu URL-a eta zure internet elkarketa.</string>
+  <string name="keyserver_preference_deleted">%s ezabatuta</string>
+  <string name="keyserver_preference_cannot_delete_last">Ezin da azken giltza-zerbitzaria ezabatu. Gutxienez bat behar da!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Giltzak</string>
   <string name="nav_encrypt_decrypt">Enkriptatu/Dekriptatu</string>
@@ -652,6 +716,7 @@
   <string name="msg_ip_uid_revoked">Erabiltzaile ID-a ukatua dago</string>
   <string name="msg_ip_uat_cert_bad">Egiaztagiri gaitza aurkitu da!</string>
   <string name="msg_ip_uat_cert_error">Akatsa egiaztagiria prozesatzerakoan!</string>
+  <string name="msg_ip_uat_cert_nonrevoke">Jadanik badu ez-ukatu egiaztagiri bat, jauzi egiten.</string>
   <string name="msg_ip_uat_cert_old">Egiaztagiria aurrekoa baino zaharragoa da, jauzi egiten.</string>
   <string name="msg_ip_uat_cert_new">Egiaztagiria berriagoa da, aurrekoa ordezten.</string>
   <string name="msg_ip_uat_cert_good">Egiaztagiri ona aurkitu da %1$s-rako</string>
@@ -716,6 +781,8 @@
   <string name="msg_mf_master">Maisu egiaztagiriak aldatzen</string>
   <string name="msg_mf_notation_pin">PIN jakinarazpen paketea gehitzen</string>
   <string name="msg_mf_passphrase">Giltza-uztaiaren sarhitza aldatzen</string>
+  <string name="msg_mf_pin">PIN-a aldatzen txartelean</string>
+  <string name="msg_mf_admin_pin">Administrari PIN-a aldatzen txartelean</string>
   <string name="msg_mf_passphrase_key">%s azpigiltza ber-enkriptatzen sarhitz berriarekin</string>
   <string name="msg_mf_passphrase_empty_retry">Hutsegitea sarhitz berria ezartzerakoan, berriro saiatzen sarhitz zahar huts batekin</string>
   <string name="msg_mf_restricted_mode">Eragiketa modu murriztura aldatzen</string>
@@ -784,7 +851,6 @@
   <string name="msg_dc_error_extract_key">Akats ezezaguna giltza desblokeatzerakoan!</string>
   <string name="msg_dc_error_integrity_check">Osotasun egiaztapen akatsa!</string>
   <string name="msg_dc_error_invalid_data">OpenPGP eduki enkriptatu edo sinatu baliogabea!</string>
-  <string name="msg_dc_error_io">SI Salbuespen bat aurkitu da eragiketan zehar!</string>
   <string name="msg_dc_error_no_data">Ez da datu enkriptaturik aurkitu jarioan!</string>
   <string name="msg_dc_error_no_key">Ez da enkriptatutako daturik giltza sekretu ezagunarekin aurkitu jarioan!</string>
   <string name="msg_dc_error_pgp_exception">OpenPGP Salbuespen bat aurkitu da eragiketan zehar!</string>
@@ -798,6 +864,7 @@
   <string name="msg_dc">Dekriptaketa eragiketa abiatzen...</string>
   <string name="msg_dc_sym_skip">Datu simetrikoak ez daude ahalbidetuta, jauzi egiten...</string>
   <string name="msg_dc_unlocking">Giltza sekretua desblokeatzen</string>
+  <string name="msg_dc_old_symmetric_encryption_algo">Potentzialki segurtasun gabea den enkriptaketa algoritmoa erabili da!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Sinadura egiaztapena abiatzen</string>
   <string name="msg_vl_error_wrong_key">Mezua ez dago giltza zuzenarekin sinatuta</string>
@@ -814,18 +881,24 @@
   <string name="msg_se_error_no_input">Ez da sarrerarik eman!</string>
   <string name="msg_se_error_input_uri_not_found">Akatsa URI-a irakurtzeko irekitzerakoan!</string>
   <string name="msg_se_error_output_uri_not_found">Akatsa URI-a idazteko irekitzerakoan!</string>
+  <string name="msg_se_error_too_many_inputs">Irteera baino sarrera gehiago adierazi dira! Hau zihurrenik programazio akats bat da, mesedez jakinarazi!</string>
   <string name="msg_se_success">Sinadura/enkriptaketa eragiketa ongi</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Giltza publikoak gertatzen enkriptaketarako</string>
   <string name="msg_pse_compressing">Konpresioa gertatzen</string>
   <string name="msg_pse_encrypting">Datuak enkriptatzen</string>
   <string name="msg_pse_error_bad_passphrase">Sarhitz gaitza!</string>
+  <string name="msg_pse_error_hash_algo">Eskatutako hash algoritmoa ez dago sostengatuta giltza honetan!</string>
+  <string name="msg_pse_error_io">SI Salbuespen bat aurkitu da eragiketan zehar!</string>
+  <string name="msg_pse_error_key_sign">Hautaturiko sinatze giltzak ezin du daturik sinatu!</string>
   <string name="msg_pse_error_sign_key">Akatsa giltza sinatua lortzerakoan!</string>
   <string name="msg_pse_error_nfc">NFC datu akatsa!</string>
   <string name="msg_pse_error_no_passphrase">Ez da sarhitzik eman!</string>
   <string name="msg_pse_error_pgp">Barneko OpenPGP akatsa!</string>
   <string name="msg_pse_error_sig">OpenPGP sinadura salbuespena aurkitu da!</string>
   <string name="msg_pse_error_unlock">Akats ezezaguna giltza desblokeatzerakoan!</string>
+  <string name="msg_pse_key_ok">Enkriptatzen giltzarako: %s</string>
+  <string name="msg_pse_key_unknown">Ez dago enkriptaketarako giltza: %s</string>
   <string name="msg_pse_key_warn">Giltza gaitza enkriptaketarako: %s</string>
   <string name="msg_pse_ok">Sinadura/enkriptaketa eragiketa ongi</string>
   <string name="msg_pse_pending_nfc">NFC ezagutarazlea beharrezkoa, erabiltzaile sarrera eskatzen...</string>
@@ -843,14 +916,23 @@
   <string name="msg_crt">Giltza-uztaiak egiaztagiritzen</string>
   <string name="msg_crt_master_fetch">Maisu giltza egiaztagiritua lortzen</string>
   <string name="msg_crt_nfc_return">NFC ikusleihora itzultzen</string>
+  <string name="msg_crt_save">%s giltza egiaztagiritua gordetzen</string>
   <string name="msg_crt_saving">Giltza-uztaiak gordetzen</string>
   <string name="msg_crt_unlock">Maisu giltza desblokeatzen</string>
   <string name="msg_crt_success">Nortasunak ongi egiaztagiritu dira</string>
   <string name="msg_crt_warn_not_found">Giltza ez da aurkitu!</string>
   <string name="msg_crt_warn_cert_failed">Egiaztagiri sortze hutsegitea!</string>
   <string name="msg_crt_warn_save_failed">Gordetze eragiketa hutsegitea!</string>
+  <string name="msg_crt_warn_upload_failed">Igoera eragiketa hutsegitea!</string>
   <string name="msg_crt_upload_success">Giltza ongi igo da zerbitzarira</string>
+  <plurals name="msg_import">
+    <item quantity="one">Giltza inportatzen</item>
+    <item quantity="other">%d giltza inportatzen</item>
+  </plurals>
   <string name="msg_import_fetch_error_decode">Akatsa berreskuratutako giltza-uztai dekodeatzerakoan!</string>
+  <string name="msg_import_fetch_error">Giltza ezin da berreskuratu! (Sare arazoak?)</string>
+  <string name="msg_import_fetch_keybase">keybase.io-tik berreskuratzen: %s</string>
+  <string name="msg_import_fetch_keyserver_error">Ezin da giltza giltza-zerbitzarietatik berreskuratu: %s</string>
   <string name="msg_import_fetch_keyserver">Giltza-zerbitzaritik berreskuratzen: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Giltza ongi berreskuratu da</string>
   <string name="msg_import_keyserver">%s giltza-zerbitzaria erabiltzen</string>
@@ -862,8 +944,14 @@
   <string name="msg_import_error_io">Eragiketa hutsegitea s/i akats bategaitik!</string>
   <string name="msg_import_partial">Inportatze eragiketa ongi burutu da, akatsekin!</string>
   <string name="msg_import_success">Inportatze eragiketa ongi burutu da!</string>
+  <plurals name="msg_export">
+    <item quantity="one">Giltza bat esportatzen</item>
+    <item quantity="other">%d giltza esportatzen</item>
+  </plurals>
   <string name="msg_export_all">Giltza guztiak esportatzen</string>
   <string name="msg_export_public">Giltza publikoa esportatzen %s</string>
+  <string name="msg_export_upload_public">%s giltza publikoa igotzen</string>
+  <string name="msg_export_secret">%s giltza sekretua esportatzen</string>
   <string name="msg_export_error_no_file">Ez da agirizenik adierazi!</string>
   <string name="msg_export_error_fopen">Akatsa agiria irekitzen!</string>
   <string name="msg_export_error_no_uri">Ez da URI-rik adierazi!</string>
@@ -872,9 +960,15 @@
   <string name="msg_export_error_db">Datubase akatsa!</string>
   <string name="msg_export_error_io">Sarrera/irteera akatsa!</string>
   <string name="msg_export_error_key">Akatsa giltza datuak aurre-prozesatzerakoan!</string>
+  <string name="msg_export_error_upload">Hutsegitea giltza zerbitzara igotzean! Mesedez egiaztatu zure internet elkarketa.</string>
   <string name="msg_export_success">Esportatze eragiketa ongi burutu da!</string>
+  <string name="msg_export_upload_success">Giltza-zerbitzarira igotzea ongi!</string>
   <string name="msg_del_error_empty">Ez dago ezer ezabatzeko!</string>
   <string name="msg_del_error_multi_secret">Giltza sekretuak banaka bakarrik ezabatu daitezke!</string>
+  <plurals name="msg_del">
+    <item quantity="one">Giltza bat ezabatzen</item>
+    <item quantity="other">%d giltza ezabatzen</item>
+  </plurals>
   <string name="msg_del_key">%s giltza ezabatzen</string>
   <string name="msg_del_key_fail">Hutsegitea %s giltza ezabatzerakoan</string>
   <string name="msg_del_consolidate">Datubasea sendotzen giltza sekretua ezabatu ondoren</string>
@@ -882,10 +976,17 @@
     <item quantity="one">Ongi ezabatuta giltza</item>
     <item quantity="other">Ongi ezabatuta %d giltza</item>
   </plurals>
+  <plurals name="msg_del_fail">
+    <item quantity="one">Hutsegitea giltza bat ezabatzerakoan</item>
+    <item quantity="other">Hutsegitea %d giltza ezabatzerakoan</item>
+  </plurals>
   <string name="msg_acc_saved">Kontua gordeta</string>
   <string name="msg_download_success">Ongi jeitsi da!</string>
   <string name="msg_download_no_valid_keys">Ez da baliozko giltzarik aurkitu agiri/gakoan!</string>
   <string name="msg_download_query_failed">Akats bat gertatu da giltzak bilatzerakoan.</string>
+  <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_dns_fail">DNS TXT Grabaketa berreskurapen hutsegitea</string>
+  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Esportatze oharra</string>
   <string name="msg_export_log_error_fopen">Akatsa agiria irekitzerakoan</string>
@@ -893,6 +994,13 @@
   <string name="msg_export_log_error_writing">S/I akatsa agirira idazterakoan!</string>
   <string name="msg_export_log_success">Oharra ongi esportatu da!</string>
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_click_to_clear">Ikutu sarhitzak garbitzeko</string>
+  <plurals name="passp_cache_notif_n_keys">
+    <item quantity="one">%d sarhitz gogoratuta</item>
+    <item quantity="other">%d sarhitz gogoratuta</item>
+  </plurals>
+  <string name="passp_cache_notif_keys">Gogoratutako sarhitzak</string>
+  <string name="passp_cache_notif_clear">Garbitu Sarhitzak</string>
   <string name="passp_cache_notif_pwd">Sarhitza</string>
   <!--First Time-->
   <string name="first_time_text1">Berreskuratu zure pribatutasuna OpenKeychain-ekin!</string>
@@ -900,11 +1008,19 @@
   <string name="first_time_import_key">Inportatu giltza agiritik</string>
   <string name="first_time_yubikey">Erabili YubiKey NEO</string>
   <string name="first_time_skip">Jauzi Ezarpena</string>
+  <string name="first_time_blank_yubikey">YubiKey huts hau erabiltzea nahi duzu OpenKeychain-ekin?\n\nMesedez irten Yubikey-tik orain, berriro galdetuko zaizu beharrezkoa denean!</string>
+  <string name="first_time_blank_yubikey_yes">Erabili YubiKey hau</string>
   <!--unsorted-->
   <string name="section_certifier_id">Egiaztatzailea</string>
   <string name="section_cert">Egiaztagiriaren Xehetasunak</string>
   <string name="label_user_id">Nortasuna</string>
+  <string name="unknown_uid">&lt;ezezaguna&gt;</string>
   <string name="empty_certs">Ez dago egiaztagiririk giltza honentzat</string>
+  <string name="certs_text">Hemen balioztatutako berez-egiaztagiriak eta zeure giltzekin sortutako egiaztagiri balioztatuak bakarrik erakusten dira.</string>
+  <string name="section_uids_to_certify">Nortasunak honako</string>
+  <string name="certify_text">Inportatzen ari zaren giltzek \"nortasunak\":izenak eta posta helbideak dituzte. Hautatu zehatz-mehatz hauek itxaroten duzunarekin bat datozela baieztatzeko.</string>
+  <string name="certify_fingerprint_text">Alderatu erakutsitako hatz-aztarnak, hizkiz-hizki, zure gailuko ereduek erakusten duten batekin.</string>
+  <string name="certify_fingerprint_text2">Erakutsitako hatz-aztarnak bat datoz?</string>
   <string name="label_revocation">Ukatze Zergaitia</string>
   <string name="label_cert_type">Mota</string>
   <string name="error_key_not_found">Giltza ez da aurkitu!</string>
@@ -916,9 +1032,13 @@
   <string name="unknown_algorithm">ezezaguna</string>
   <string name="can_sign_not">ezin da sinatu</string>
   <string name="error_no_encrypt_subkey">Ez dago enkriptaketa azpigiltzarik eskuragarri!</string>
+  <string name="info_no_manual_account_creation">Ez sortu OpenKeychain-Kontuak eskuz.\n.Argibide gehiagorako, ikusi Laguntza.</string>
   <string name="contact_show_key">Erakutsi (%s) giltza</string>
   <string name="swipe_to_update">Irristatu behera giltza-zerbitzaritik eguneratzeko</string>
   <string name="error_no_file_selected">Hautatu agiri bat gutxienez enkriptatzeko!</string>
+  <string name="error_multi_files">Agiri ugari gordetzea ez dago sostengatuta. Hau oraingo Androiden muga bat da.</string>
+  <string name="error_multi_clipboard">Agiri anitz gakora enkriptatzea ez dago sostengatuta.</string>
+  <string name="error_detached_signature">Agiri binarioen sinatzea-bakarrik eragiketa ez dago sostengatuta, hautatu gutxienez enkriptaketa giltza bat.</string>
   <string name="error_empty_text">Idatzi idazkiren bat enkriptatzeko!</string>
   <string name="key_colon">Giltza:</string>
   <string name="exchange_description">Giltza trukatzea bat hasteko, hautatu eskuinaldean kide zenbatekoa, orduan sakatu \"Hasi trukatzea\" botoia.\n\nBeste bi galdera egingo zaizkizu kide zuzenek besterik ez dutela eskuhartzen eta beren hatz-aztarnak zuzenak direla zihurtatzeko.</string>
@@ -953,19 +1073,11 @@
   <string name="yubikey_serno">Serie Zbk: %s</string>
   <string name="yubikey_create">Jarri YubiKey zure gailuaren atzealdean.</string>
   <string name="btn_import">Inportatu</string>
+  <string name="snack_yubi_other">Giltza ezberdina biltegiratuta YubiKey-n!</string>
   <string name="error_nfc">NFC Akatsa: %s</string>
-  <string name="error_pin">NFC: PIN okerra; %d saiakera gelditzen dira.</string>
-  <string name="error_nfc_terminated">NFC: Txartel adimentsua amaiera egoeran</string>
-  <string name="error_nfc_wrong_length">NFC: Luzer okerra datuak bidaltzeko / jasotzeko</string>
-  <string name="error_nfc_conditions_not_satisfied">NFC: Ez dira erabilpen baldaintzak betetzen</string>
-  <string name="error_nfc_security_not_satisfied">NFC: Ez da segurtasun egoera betetzen</string>
-  <string name="error_nfc_authentication_blocked">NFC: PIN-a blokeatuta saiakera gehiegiren ondoren</string>
-  <string name="error_nfc_data_not_found">NFC: Gailtza edo objetua ez da aurkitu</string>
-  <string name="error_nfc_unknown">NFC: Akats Ezezaguna</string>
-  <string name="error_nfc_bad_data">NFC: Txartelak datu baliogabeak jakinarazi ditu</string>
-  <string name="error_nfc_chaining_error">NFC: Txartelak itxaroten azken agindua kate batean</string>
-  <string name="error_nfc_header">NFC: Txartelak %s byte baliogabea jakinarazi du</string>
   <string name="error_pin_nodefault">Berezko PIN-a baztertua izan da!</string>
+  <string name="error_temp_file">Akatsa aldibaterako agiria sortzerakoan.</string>
+  <string name="btn_delete_original">Ezabatu jatorrizko agiria</string>
   <string name="snack_encrypt_filenames_on">Agirizenak enkriptatuta <b>daude</b>.</string>
   <string name="snack_encrypt_filenames_off">Agirizenak <b>ez daude</b> enkriptatuta.</string>
   <string name="snack_armor_on">Irteera kodeaketa Idazki bezala.</string>
@@ -974,4 +1086,18 @@
   <string name="snack_compression_off">Konpresioa <b>ezgaituta</b>.</string>
   <string name="error_loading_keys">Akatsa giltzak gertatzerakoan!</string>
   <string name="error_empty_log">(akatsa, oharra hutsik)</string>
+  <string name="error_reading_text">Ezin da irakurri sarrera dekriptatzeko!</string>
+  <string name="filename_unknown">&lt;agirizenik ez&gt;</string>
+  <string name="filename_unknown_text">&lt;idazki lau datuak&gt;</string>
+  <string name="intent_show">Erakutsi Sinatutako/Enkriptatutako Edukia</string>
+  <string name="view_internal">Ikusi OpenKeychain-en</string>
+  <string name="error_preparing_data">Akatsa datuak gertatzerakoan!</string>
+  <string name="label_clip_title">Enkriptatutatako Datuak</string>
+  <string name="progress_processing">Prozesatzen...</string>
+  <string name="error_saving_file">Akatsa agiria gordetzerakoan!</string>
+  <string name="file_saved">Agiria gordeta!</string>
+  <string name="file_delete_ok">Jatorrizko agiria ezabatuta.</string>
+  <string name="file_delete_none">Ez da agiria ezabatu! (Jadanik ezabatuta?)</string>
+  <string name="file_delete_exception">Jatorrizko agiria ezin da ezabatu!</string>
+  <string name="error_clipboard_empty">Gakoa hutsik dago!</string>
 </resources>

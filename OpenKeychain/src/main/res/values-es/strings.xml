@@ -43,6 +43,7 @@
   <string name="section_keys">Subclaves</string>
   <string name="section_cloud_search">Búsqueda en la nube</string>
   <string name="section_passphrase_cache">Manejo de contraseña/PIN</string>
+  <string name="section_proxy_settings">Configuración para proxy</string>
   <string name="section_certify">Confirmar</string>
   <string name="section_actions">Acciones</string>
   <string name="section_share_key">Clave</string>
@@ -56,6 +57,8 @@
   <string name="btn_decrypt_verify_file">Desencriptar, verificar, y guardar fichero</string>
   <string name="btn_encrypt_share_file">Encriptar y compartir fichero</string>
   <string name="btn_encrypt_save_file">Encriptar y guardar fichero</string>
+  <string name="btn_save_file">Guardar fichero</string>
+  <string name="btn_save">Guardar</string>
   <string name="btn_view_log">Ver registro (log)</string>
   <string name="btn_do_not_save">Cancelar</string>
   <string name="btn_delete">Eliminar</string>
@@ -98,6 +101,7 @@
   <string name="menu_advanced">Información extendida</string>
   <string name="menu_certify_fingerprint">Confirmar mediante comparación de la huella digital</string>
   <string name="menu_export_log">Exportar registro</string>
+  <string name="menu_keyserver_add">Añadir</string>
   <!--label-->
   <string name="label_message">Texto</string>
   <string name="label_file">Archivo</string>
@@ -116,7 +120,6 @@
   <string name="label_use_default_yubikey_pin">Utilizar PIN predeterminado de la YubiKey</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Utilizar teclado numérico para el PIN de la YubiKey</string>
   <string name="label_label_use_default_yubikey_pin_summary">Utiliza el PIN predeterminado (123456) para acceder a las YubiKeys sobre NFC</string>
-  <string name="label_asymmetric_from">Firmado por:</string>
   <string name="label_to">Cifrar hacia:</string>
   <string name="label_delete_after_encryption">Borrar ficheros después del cifrado</string>
   <string name="label_delete_after_decryption">Eliminar fichero después del descifrado</string>
@@ -142,17 +145,49 @@
   <string name="label_send_key">Sincronizar con la nube</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="expiry_date_dialog_title">Establer la fecha de vencimiento</string>
-  <string name="label_first_keyserver_is_used">(Se prefiere el primer servidor de claves listado)</string>
+  <string name="label_keyservers_title">Servidores de claves</string>
+  <string name="label_keyserver_settings_hint">Arrastrar para cambiar orden, pulsar para editar/borrar</string>
+  <string name="label_selected_keyserver_title">Servidor de claves seleccionado</string>
   <string name="label_preferred">preferido</string>
   <string name="label_enable_compression">Habilitar compresión</string>
   <string name="label_encrypt_filenames">Cifrar nombres de ficheros</string>
   <string name="label_hidden_recipients">Ocultar receptores</string>
   <string name="label_verify_keyserver">Verificar servidor de claves</string>
   <string name="label_enter_keyserver_url">Introduzca URL de servidor de claves</string>
+  <string name="label_keyserver_dialog_delete">Borrar servidor de claves</string>
   <string name="pref_keyserver">Servidores de claves OpenPGP</string>
   <string name="pref_keyserver_summary">Busca claves en los servidores de claves OpenPGP seleccionados (protocolo HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Busca claves en keybase.io</string>
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Habilitar Tor</string>
+  <string name="pref_proxy_tor_summary">Requiere que Orbot esté instalado</string>
+  <string name="pref_proxy_normal_title">Habilitar otro proxy</string>
+  <string name="pref_proxy_host_title">Servidor proxy</string>
+  <string name="pref_proxy_host_err_invalid">El servidor proxy (interpuesto) no puede estar vacío</string>
+  <string name="pref_proxy_port_title">Puerto de proxy</string>
+  <string name="pref_proxy_port_err_invalid">Número de puerto introducido no válido</string>
+  <string name="pref_proxy_type_title">Tipo de proxy</string>
+  <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <string name="pref_proxy_type_value_http">proxyHttp</string>
+  <string name="pref_proxy_type_value_socks">proxySocks</string>
+  <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">No usar Tor</string>
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">¿Instalar Orbot para usar Tor?</string>
+  <string name="orbot_install_dialog_install">Instalar</string>
+  <string name="orbot_install_dialog_content">Tiene que tener Orbot instalado y activado para proxyficar el tráfico a través de él. ¿Desea instalarlo?</string>
+  <string name="orbot_install_dialog_cancel">Cancelar</string>
+  <string name="orbot_install_dialog_ignore_tor">No usar Tor</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">¿Iniciar Orbot?</string>
+  <string name="orbot_start_dialog_content">Orbot no parece estar corriendo. ¿Desea iniciarlo y conectar a Tor?</string>
+  <string name="orbot_start_btn">Iniciar Orbot</string>
+  <string name="orbot_start_dialog_start">Iniciar Orbot</string>
+  <string name="orbot_start_dialog_cancel">Cancelar</string>
+  <string name="orbot_start_dialog_ignore_tor">No usar Tor</string>
   <string name="user_id_no_name">&lt;sin nombre&gt;</string>
   <string name="none">&lt;ninguna&gt;</string>
   <plurals name="n_keys">
@@ -200,7 +235,8 @@
   <string name="passphrase_for">Introduzca contraseña para \'%s\'</string>
   <string name="pin_for">Introduzca el PIN para \'%s\'</string>
   <string name="yubikey_pin_for">Introduzca el PIN para acceder a la YubiKey para \'%s\'</string>
-  <string name="nfc_text">Sostenga la YubiKey contra el reverso de su dispositivo.</string>
+  <string name="nfc_text">Sostenga la YubiKey contra el marcador NFC en el reverso de su dispositivo.</string>
+  <string name="nfc_wait">¡Mantenga la YubiKey en el reverso!</string>
   <string name="file_delete_confirmation_title">¿Borrar ficheros originales?</string>
   <string name="file_delete_confirmation">Los siguientes ficheros se borrarán:%s</string>
   <string name="file_delete_successful">%1$d de %2$d ficheros han sido borrados.%3$s</string>
@@ -304,6 +340,8 @@
   <string name="progress_modify_subkeystrip">desnudando claves...</string>
   <string name="progress_modify_subkeyadd">añadiendo subclaves...</string>
   <string name="progress_modify_passphrase">cambiando contraseña...</string>
+  <string name="progress_modify_pin">cambiando PIN...</string>
+  <string name="progress_modify_admin_pin">cambiando el PIN de Admin...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">exportando clave...</item>
     <item quantity="other">exportando claves...</item>
@@ -596,6 +634,13 @@
   <string name="create_key_add_email_text">Las direcciones adicionales de correo electrónico también están asociadas a esta clave y pueden utilizarse para asegurar la comunicación.</string>
   <string name="create_key_email_already_exists_text">Esta dirección de correo electrónico ya fue añadida</string>
   <string name="create_key_email_invalid_email">El formato de la dirección de correo no es válido</string>
+  <string name="create_key_yubi_key_pin_text">Por favor, recuerde el PIN, se requiere para usar su YubiKey más tarde. Por favor, escriba el PIN de Admin y guárdelo en un lugar seguro.</string>
+  <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_admin_pin">PIN de Admin</string>
+  <string name="create_key_yubi_key_pin_repeat_text">Por favor, introduzca el PIN y el PIN de Admin para proceder.</string>
+  <string name="create_key_yubi_key_pin_repeat">Repita el PIN</string>
+  <string name="create_key_yubi_key_admin_pin_repeat">Repita el PIN de Admin</string>
+  <string name="create_key_yubi_key_pin_not_correct">¡El PIN no es correcto!</string>
   <!--View key-->
   <string name="view_key_revoked">Revocada: ¡La clave no debe volver a ser usada!</string>
   <string name="view_key_expired">Caducada: ¡El contacto necesita extender la vigencia de la clave!</string>
@@ -604,12 +649,15 @@
   <string name="view_key_verified">Clave confirmada</string>
   <string name="view_key_unverified">No confirmada: ¡Escanee el código QR para confirmar clave!</string>
   <string name="view_key_fragment_no_system_contact">&lt;ninguno&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Añadir servidor de claves</string>
+  <string name="edit_keyserver_dialog_title">Editar servidor de claves</string>
   <string name="add_keyserver_verified">¡Servidor de claves verificado!</string>
   <string name="add_keyserver_without_verification">Servidor de claves añadido sin verificación</string>
   <string name="add_keyserver_invalid_url">¡URL no válida!</string>
   <string name="add_keyserver_connection_failed">Fallo al conectar al servidor de claves. Por favor, compuebe la URL y su conexión a Internet.</string>
+  <string name="keyserver_preference_deleted">%s borrado</string>
+  <string name="keyserver_preference_cannot_delete_last">No se puede borrar el último servidor de claves. ¡Se requiere al menos uno!</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Claves</string>
   <string name="nav_encrypt_decrypt">Cifrar/Descifrar</string>
@@ -868,6 +916,8 @@
   <string name="msg_mf_notation_empty">Añadiendo paquete de notación vacío</string>
   <string name="msg_mf_notation_pin">Añadiendo paquete de notación de PIN</string>
   <string name="msg_mf_passphrase">Cambiando contraseña para el juego de claves</string>
+  <string name="msg_mf_pin">Cambiando el PIN en la tarjeta</string>
+  <string name="msg_mf_admin_pin">Cambiando el PIN de Admin en la tarjeta</string>
   <string name="msg_mf_passphrase_key">Re-cifrando subclave %s con la nueva contraseña</string>
   <string name="msg_mf_passphrase_empty_retry">El establecimiento de la nueva contraseña falló, volviéndolo a intentar con una contraseña antigua vacía.</string>
   <string name="msg_mf_passphrase_fail">¡La contraseña para la subclave no se pudo cambiar! (¿Tiene una contraseña diferente a la del resto de las claves?)</string>
@@ -968,7 +1018,8 @@
   <string name="msg_dc_error_integrity_check">¡Error de comprobación de integridad!</string>
   <string name="msg_dc_error_integrity_missing">¡Verificación de integridad ausente! Esto puede ocurrir porque la aplicación de cifrado no está actualizada, o debido a un ataque desactualización.</string>
   <string name="msg_dc_error_invalid_data">¡No se encontraron datos firmados o cifrados con OpenPGP válidos!</string>
-  <string name="msg_dc_error_io">¡Se encontró Excepción de E/S durante la operación!</string>
+  <string name="msg_dc_error_io">¡Se encontró un error al leer los datos de entrada!</string>
+  <string name="msg_dc_error_input">¡Error al abrir el flujo de datos de entrada!</string>
   <string name="msg_dc_error_no_data">¡No se encontraron datos cifrados en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_key">¡No se encontraron datos cifrados con clave secreta (privada) conocida en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_pgp_exception">¡Se encontró una excepción OpenPGP durante la operación!</string>
@@ -1058,6 +1109,7 @@
   <string name="msg_crt_warn_not_found">¡Clave no encontrada!</string>
   <string name="msg_crt_warn_cert_failed">¡La generación de certificado falló!</string>
   <string name="msg_crt_warn_save_failed">¡La operación de guardado falló!</string>
+  <string name="msg_crt_warn_upload_failed">¡Fallo en la operación de subida!</string>
   <string name="msg_crt_upload_success">Clave subida al servidor con éxito</string>
   <plurals name="msg_import">
     <item quantity="one">Importando clave</item>
@@ -1084,6 +1136,7 @@
   </plurals>
   <string name="msg_export_all">Exportando todas las claves</string>
   <string name="msg_export_public">Exportando clave pública %s</string>
+  <string name="msg_export_upload_public">Subiendo clave pública %s</string>
   <string name="msg_export_secret">Exportando clave secreta (privada) %s</string>
   <string name="msg_export_error_no_file">¡No se especificó nombre de fichero!</string>
   <string name="msg_export_error_fopen">¡Error al abrir el fichero!</string>
@@ -1093,7 +1146,9 @@
   <string name="msg_export_error_db">¡Error de base de datos!</string>
   <string name="msg_export_error_io">¡Error de entrada/salida!</string>
   <string name="msg_export_error_key">¡Error al preprocesar los datos de la clave!</string>
+  <string name="msg_export_error_upload">¡Error al subir clave al servidor! Por favor, compruebe su conexión a Internet</string>
   <string name="msg_export_success">Operación de exportado exitosa</string>
+  <string name="msg_export_upload_success">Subida al servidor de claves completada</string>
   <string name="msg_del_error_empty">¡No hay nada que borrar!</string>
   <string name="msg_del_error_multi_secret">¡Las claves secretas (privadas) sólo se pueden borrar individualmente!</string>
   <plurals name="msg_del">
@@ -1123,6 +1178,14 @@
   <string name="msg_download_too_many_responses">La solicitud de búsqueda de clave devolvió demasiados candidatos. ¡Por favor refine su petición!</string>
   <string name="msg_download_query_too_short_or_too_many_responses">O bien no hay claves o se han encontrado demasiadas. ¡Por favor mejore su petición!</string>
   <string name="msg_download_query_failed">Ocurrió un error al buscar claves.</string>
+  <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_verification">Intentando la verificación con Keybase para %s</string>
+  <string name="msg_keybase_error_no_prover">No se encontró prueba verificadora para %s</string>
+  <string name="msg_keybase_error_fetching_evidence">Problema al descargar prueba</string>
+  <string name="msg_keybase_error_key_mismatch">La huella de validación (fingerprint) de la clave no coincide con la prueba publicada</string>
+  <string name="msg_keybase_error_dns_fail">Fallo al obtener Registro DNS TXT</string>
+  <string name="msg_keybase_error_specific">%s</string>
+  <string name="msg_keybase_error_msg_payload_mismatch">La prueba descifrada publicada no coincide con el valor esperado</string>
   <!--Messages for Export Log operation-->
   <string name="msg_export_log_start">Exportando registro (log)</string>
   <string name="msg_export_log_error_fopen">Error abriendo fichero</string>
@@ -1144,6 +1207,8 @@
   <string name="first_time_import_key">Importar clave desde fichero</string>
   <string name="first_time_yubikey">Usar Yubikey NEO</string>
   <string name="first_time_skip">Omitir configuración</string>
+  <string name="first_time_blank_yubikey">¿Desea usar esta YubiKey NEO en blanco con OpenKeychain?\n\n¡Por favor, retire ahora la YubiKey, se le solicitará cuando sea necesaria de nuevo!</string>
+  <string name="first_time_blank_yubikey_yes">Usar esta YubiKey</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificador</string>
   <string name="section_cert">Detalles del certificado</string>
@@ -1219,18 +1284,8 @@
   <string name="btn_import">Importar</string>
   <string name="snack_yubi_other">¡Clave almacenada en YubiKey distinta!</string>
   <string name="error_nfc">Error de NFC: %s</string>
-  <string name="error_pin">NFC: PIN incorrecto; %d intentos restantes.</string>
-  <string name="error_nfc_terminated">NFC: Tarjeta inteligente caducada</string>
-  <string name="error_nfc_wrong_length">NFC: Distancia incorrecta para envío / recepción de datos</string>
-  <string name="error_nfc_conditions_not_satisfied">NFC: Condiciones de uso no satisfechas</string>
-  <string name="error_nfc_security_not_satisfied">NFC: Estado de seguridad no satisfecho</string>
-  <string name="error_nfc_authentication_blocked">NFC: PIN bloqueado tras demasiados intentos</string>
-  <string name="error_nfc_data_not_found">NFC: Clave u objeto no encontrado</string>
-  <string name="error_nfc_unknown">NFC: Error desconocido</string>
-  <string name="error_nfc_bad_data">NFC: La tarjeta informó de datos no válidos</string>
-  <string name="error_nfc_chaining_error">NFC: La tarjeta esperaba el último comando en una cadena</string>
-  <string name="error_nfc_header">NFC: La tarjeta informó de byte %s no válido</string>
   <string name="error_pin_nodefault">¡El PIN por defecto fue rechazado!</string>
+  <string name="error_temp_file">Error al crear fichero temporal.</string>
   <string name="btn_delete_original">Borrar fichero original</string>
   <string name="snack_encrypt_filenames_on">Los nombres de fichero <b>están</b> cifrados.</string>
   <string name="snack_encrypt_filenames_off">Los nombres de fichero <b>no están</b> cifrados.</string>
@@ -1253,4 +1308,6 @@
   <string name="file_delete_ok">Fichero original borrado.</string>
   <string name="file_delete_none">¡No se borró ningún fichero! (¿ya se había borrado?)</string>
   <string name="file_delete_exception">¡No se pudo borrar el fichero original!</string>
+  <string name="error_clipboard_empty">¡Portapapeles vacío!</string>
+  <string name="error_clipboard_copy">¡Error al copiar datos al portapapeles!</string>
 </resources>

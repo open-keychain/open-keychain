@@ -97,7 +97,6 @@
   <string name="label_use_default_yubikey_pin">使用預設的 Yubikey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">輸入 YubiKey PIN 時使用數字鍵盤</string>
   <string name="label_label_use_default_yubikey_pin_summary">使用預設的 PIN (123456) 來使用 NFC 存取 Yubikeys</string>
-  <string name="label_asymmetric_from">簽名自:</string>
   <string name="label_to">加密給:</string>
   <string name="label_delete_after_encryption">加密後刪除檔案</string>
   <string name="label_delete_after_decryption">解密後刪除檔案</string>
@@ -118,11 +117,15 @@
   <string name="label_send_key">與雲端同步</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">設定效期</string>
-  <string name="label_first_keyserver_is_used">(先列出的金鑰伺服器爲優先)</string>
   <string name="label_preferred">優先</string>
   <string name="label_enable_compression">啓用壓縮</string>
   <string name="label_encrypt_filenames">加密檔名</string>
   <string name="label_hidden_recipients">隱藏收件人</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;無名&gt;</string>
   <string name="none">&lt;無&gt;</string>
   <plurals name="n_keys">
@@ -499,7 +502,7 @@
   <string name="view_key_verified">已確認金鑰</string>
   <string name="view_key_unverified">未確認：掃描QR條碼來確認該金鑰！</string>
   <string name="view_key_fragment_no_system_contact">&lt;無&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_invalid_url">URL無效！</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">金鑰</string>
@@ -609,6 +612,7 @@
   <string name="msg_download_success">下載成功！</string>
   <string name="msg_download_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

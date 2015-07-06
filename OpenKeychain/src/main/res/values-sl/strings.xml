@@ -96,7 +96,6 @@
   <string name="label_use_default_yubikey_pin">Uporabi privzeto YubiKey PIN kodo</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Uporabi numerično tipkovnico za YubiKey PIN kodo</string>
   <string name="label_label_use_default_yubikey_pin_summary">Uporablja privzeto PIN kodo (123456) za dostop do ključev YubiKey preko NFC</string>
-  <string name="label_asymmetric_from">Podpisal:</string>
   <string name="label_to">Šifriraj za:</string>
   <string name="label_delete_after_encryption">Po dešifriranju izbriši datoteke</string>
   <string name="label_delete_after_decryption">Izbriši po dešifriranju</string>
@@ -117,11 +116,15 @@
   <string name="label_send_key">Sinhroniziraj z oblakom</string>
   <string name="label_fingerprint">Prstni odtis</string>
   <string name="expiry_date_dialog_title">Določi datum poteka veljavnosti</string>
-  <string name="label_first_keyserver_is_used">(Prednost ima prvi strežnik na seznamu)</string>
   <string name="label_preferred">prednostni</string>
   <string name="label_enable_compression">Omogoči kompresijo</string>
   <string name="label_encrypt_filenames">Šifriraj imena datotek</string>
   <string name="label_hidden_recipients">Skrij prejemnike</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;brez imena&gt;</string>
   <string name="none">&lt;nič&gt;</string>
   <plurals name="n_keys">
@@ -169,7 +172,6 @@
   <string name="passphrase_for_symmetric_encryption">Simetrično šifriranje.</string>
   <string name="pin_for">Vnesite PIN kodo za \'%s\'</string>
   <string name="yubikey_pin_for">Vnesite PIN kodo za dostop YubiKey za \'%s\'</string>
-  <string name="nfc_text">Prislonite YubiKey k hrbtišču mobilne naprave.</string>
   <string name="file_delete_confirmation_title">Izbrišem izvirne datoteke?</string>
   <string name="file_delete_confirmation">Izbrisane bodo naslednje datoteke:%s</string>
   <string name="file_delete_successful">Izbrisanih je bilo %1$d od %2$d datotek.%3$s</string>
@@ -560,7 +562,7 @@
   <string name="view_key_verified">Potrjen ključ</string>
   <string name="view_key_unverified">Ključ ni potrjen: za potrditev skenirajte kodo QR!</string>
   <string name="view_key_fragment_no_system_contact">&lt;brez&gt;</string>
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Ključi</string>
   <string name="nav_encrypt_decrypt">Šifriraj/Dešifriraj</string>
@@ -813,6 +815,7 @@
     <item quantity="few">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
     <item quantity="other">Deli naložene datoteke so veljavni objekti OpenPGP a niso ključi.</item>
   </plurals>
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->
