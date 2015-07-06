@@ -45,6 +45,7 @@ import org.spongycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
+import org.spongycastle.util.encoders.DecoderException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -167,10 +168,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (DecoderException | ArrayIndexOutOfBoundsException e) {
             // these can happen if assumptions in JcaPGPObjectFactory.nextObject() aren't
             // fulfilled, so we need to catch them here to handle this gracefully
-            Log.d(Constants.TAG, "array index out of bounds", e);
+            Log.d(Constants.TAG, "data error", e);
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
