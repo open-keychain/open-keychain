@@ -84,9 +84,7 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,7 +103,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_EXPORT = 3;
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
-    ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
 
     protected Uri mDataUri;
@@ -159,7 +156,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mExportHelper = new ExportHelper(this);
         mProviderHelper = new ProviderHelper(this);
 
         setTitle(null);
@@ -333,14 +329,14 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             case R.id.menu_key_view_export_file: {
                 try {
                     if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
-                        exportToFile(mDataUri, mExportHelper, mProviderHelper);
+                        exportToFile(mDataUri, mProviderHelper);
                         return true;
                     }
 
                     startPassphraseActivity(REQUEST_EXPORT);
                 } catch (PassphraseCacheService.KeyNotFoundException e) {
                     // This happens when the master key is stripped
-                    exportToFile(mDataUri, mExportHelper, mProviderHelper);
+                    exportToFile(mDataUri, mProviderHelper);
                 }
                 return true;
             }
@@ -460,7 +456,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         startActivityForResult(intent, requestCode);
     }
 
-    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper) {
+    private void exportToFile(Uri dataUri, ProviderHelper providerHelper) {
         try {
             Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
 
@@ -469,7 +465,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
                     new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
 
-            exportHelper.showExportKeysDialog(
+            new ExportHelper(this).showExportKeysDialog(
                     new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                     Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
             );
@@ -534,7 +530,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         }
 
         if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK) {
-            exportToFile(mDataUri, mExportHelper, mProviderHelper);
+            exportToFile(mDataUri, mProviderHelper);
         }
 
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
