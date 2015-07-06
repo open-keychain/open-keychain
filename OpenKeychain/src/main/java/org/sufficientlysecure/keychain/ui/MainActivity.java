@@ -128,6 +128,11 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
+        // all further initialization steps are saved as instance state
+        if (savedInstanceState != null) {
+            return;
+        }
+
         Intent data = getIntent();
         // If we got an EXTRA_RESULT in the intent, show the notification
         if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
@@ -135,20 +140,18 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
             result.createNotify(this).show();
         }
 
-        if (savedInstanceState == null) {
-            // always initialize keys fragment to the bottom of the backstack
-            onKeysSelected();
+        // always initialize keys fragment to the bottom of the backstack
+        onKeysSelected();
 
-            if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
-                // initialize FragmentLayout with KeyListFragment at first
-                switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
-                    case ID_ENCRYPT_DECRYPT:
-                        onEnDecryptSelected();
-                        break;
-                    case ID_APPS:
-                        onAppsSelected();
-                        break;
-                }
+        if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
+            // initialize FragmentLayout with KeyListFragment at first
+            switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
+                case ID_ENCRYPT_DECRYPT:
+                    onEnDecryptSelected();
+                    break;
+                case ID_APPS:
+                    onAppsSelected();
+                    break;
             }
         }
 

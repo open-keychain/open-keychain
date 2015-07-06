@@ -43,7 +43,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -207,7 +209,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
 //                        transaction.replace(R.id.fragmentContainer, lpf).addToBackStack(null).commit();
                     }
                 } catch (IOException | FormatException e) {
-                    e.printStackTrace();
+                    Log.e(Constants.TAG, "Failed to write on NFC tag", e);
                 }
 
             } else if (readNFC && AUTHENTICATION.equals(selectedAction)) {
@@ -232,7 +234,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
                         }
                     }
                 } catch (IOException | FormatException e) {
-                    e.printStackTrace();
+                    Log.e(Constants.TAG, "Failed to read NFC tag", e);
                 }
             }
         }
@@ -263,7 +265,7 @@ public class PassphraseWizardActivity extends FragmentActivity {
                 try {
                     password = readText(ndefRecord);
                 } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                    Log.e(Constants.TAG, "Failed to read password from tag", e);
                 }
             }
         }

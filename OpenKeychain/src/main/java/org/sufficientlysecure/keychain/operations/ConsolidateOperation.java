@@ -20,6 +20,7 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -34,6 +35,7 @@ public class ConsolidateOperation extends BaseOperation<ConsolidateInputParcel> 
         super(context, providerHelper, progressable);
     }
 
+    @NonNull
     @Override
     public ConsolidateResult execute(ConsolidateInputParcel consolidateInputParcel,
                                      CryptoInputParcel cryptoInputParcel) {

@@ -25,6 +25,9 @@ import java.io.OutputStreamWriter;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -49,7 +52,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -58,6 +60,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
@@ -197,7 +200,15 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             }
 
             if (toClipboard) {
-                ClipboardReflection.copyToClipboard(activity, content);
+                ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipMan == null) {
+                    Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR);
+                    return;
+                }
+
+                ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, content);
+                clipMan.setPrimaryClip(clip);
+
                 Notify.create(activity, fingerprintOnly ? R.string.fingerprint_copied_to_clipboard
                         : R.string.key_copied_to_clipboard, Notify.Style.OK).show();
                 return;

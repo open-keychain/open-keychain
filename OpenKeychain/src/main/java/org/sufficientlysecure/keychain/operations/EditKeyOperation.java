@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.operations;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -57,6 +58,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @NonNull
     public OperationResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();

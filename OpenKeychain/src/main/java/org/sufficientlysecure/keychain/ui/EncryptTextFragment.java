@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -33,7 +36,6 @@ import android.widget.TextView;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
@@ -265,8 +267,21 @@ public class EncryptTextFragment
         return data;
     }
 
-    private void copyToClipboard(byte[] resultBytes) {
-        ClipboardReflection.copyToClipboard(getActivity(), new String(resultBytes));
+    private void copyToClipboard(SignEncryptResult result) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipMan == null) {
+            Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
+            return;
+        }
+
+        ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, new String(result.getResultBytes()));
+        clipMan.setPrimaryClip(clip);
+        result.createNotify(activity).show();
     }
 
     /**
@@ -323,11 +338,7 @@ public class EncryptTextFragment
             startActivity(sendWithChooserExcludingEncrypt(result.getResultBytes()));
         } else {
             // Copy to clipboard
-            copyToClipboard(result.getResultBytes());
-            result.createNotify(getActivity()).show();
-            // Notify.create(EncryptTextActivity.this,
-            // R.string.encrypt_sign_clipboard_successful, Notify.Style.OK)
-            // .show(getSupportFragmentManager().findFragmentById(R.id.encrypt_text_fragment));
+            copyToClipboard(result);
         }
 
     }

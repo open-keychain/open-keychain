@@ -19,7 +19,9 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-public class ExportResult extends OperationResult {
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+
+public class ExportResult extends InputPendingResult {
 
     final int mOkPublic, mOkSecret;
 
@@ -31,6 +33,14 @@ public class ExportResult extends OperationResult {
         super(result, log);
         mOkPublic = okPublic;
         mOkSecret = okSecret;
+    }
+
+
+    public ExportResult(OperationLog log, RequiredInputParcel requiredInputParcel) {
+        super(log, requiredInputParcel);
+        // we won't use these values
+        mOkPublic = -1;
+        mOkSecret = -1;
     }
 
     /** Construct from a parcel - trivial because we have no extra data. */

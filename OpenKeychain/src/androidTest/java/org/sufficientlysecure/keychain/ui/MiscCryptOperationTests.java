@@ -29,8 +29,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -41,9 +39,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.TestHelpers;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -162,8 +160,9 @@ public class MiscCryptOperationTests {
     public void testDecryptNonPgpClipboard() throws Exception {
 
         // decrypt any non-pgp file
-        ClipboardReflection.copyToClipboard(mActivity, randomString(0, 50));
-
+        ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, randomString(0, 50));
+        clipboard.setPrimaryClip(clip);
         onView(withId(R.id.decrypt_from_clipboard)).perform(click());
 
         { // decrypt

@@ -304,7 +304,7 @@ public class DecryptListFragment
                 }
 
                 final Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setType(type);
+                intent.setDataAndType(outputUri, type);
 
                 final List<ResolveInfo> matches =
                         context.getPackageManager().queryIntentActivities(intent, 0);

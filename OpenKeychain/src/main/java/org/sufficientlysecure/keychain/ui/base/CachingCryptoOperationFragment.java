@@ -31,8 +31,12 @@ public abstract class CachingCryptoOperationFragment <T extends Parcelable, S ex
     }
 
     @Override
-    protected void onCryptoOperationResult(S result) {
-        super.onCryptoOperationResult(result);
+    public void onCryptoOperationSuccess(S result) {
+        mCachedActionsParcel = null;
+    }
+
+    @Override
+    public void onCryptoOperationError(S result) {
         mCachedActionsParcel = null;
     }
 

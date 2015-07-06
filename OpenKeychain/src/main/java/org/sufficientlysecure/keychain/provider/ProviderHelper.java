@@ -26,6 +26,7 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -725,7 +726,7 @@ public class ProviderHelper {
         LongSparseArray<WrappedSignature> trustedCerts = new LongSparseArray<>();
 
         @Override
-        public int compareTo(UserPacketItem o) {
+        public int compareTo(@NonNull UserPacketItem o) {
             // revoked keys always come last!
             //noinspection DoubleNegation
             if ((selfRevocation != null) != (o.selfRevocation != null)) {
@@ -906,7 +907,8 @@ public class ProviderHelper {
             // If there is a secret key, merge new data (if any) and save the key for later
             CanonicalizedSecretKeyRing canSecretRing;
             try {
-                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId()).getUncachedKeyRing();
+                UncachedKeyRing secretRing = getCanonicalizedSecretKeyRing(publicRing.getMasterKeyId())
+                        .getUncachedKeyRing();
 
                 // Merge data from new public ring into secret one
                 log(LogType.MSG_IP_MERGE_SECRET);
@@ -1031,7 +1033,8 @@ public class ProviderHelper {
                 publicRing = secretRing.extractPublicKeyRing();
             }
 
-            CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog, mIndent);
+            CanonicalizedPublicKeyRing canPublicRing = (CanonicalizedPublicKeyRing) publicRing.canonicalize(mLog,
+                    mIndent);
             if (canPublicRing == null) {
                 return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
             }
@@ -1057,6 +1060,7 @@ public class ProviderHelper {
 
     }
 
+    @NonNull
     public ConsolidateResult consolidateDatabaseStep1(Progressable progress) {
 
         OperationLog log = new OperationLog();
@@ -1082,7 +1086,7 @@ public class ProviderHelper {
             indent += 1;
 
             final Cursor cursor = mContentResolver.query(KeyRingData.buildSecretKeyRingUri(),
-                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
+                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1124,6 +1128,7 @@ public class ProviderHelper {
                 }
 
             });
+            cursor.close();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving secret", e);
@@ -1143,7 +1148,7 @@ public class ProviderHelper {
 
             final Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
-                    new String[]{ KeyRingData.KEY_RING_DATA }, null, null, null);
+                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1185,6 +1190,7 @@ public class ProviderHelper {
                 }
 
             });
+            cursor.close();
 
         } catch (IOException e) {
             Log.e(Constants.TAG, "error saving public", e);
@@ -1200,12 +1206,14 @@ public class ProviderHelper {
         return consolidateDatabaseStep2(log, indent, progress, false);
     }
 
+    @NonNull
     public ConsolidateResult consolidateDatabaseStep2(Progressable progress) {
         return consolidateDatabaseStep2(new OperationLog(), 0, progress, true);
     }
 
     private static boolean mConsolidateCritical = false;
 
+    @NonNull
     private ConsolidateResult consolidateDatabaseStep2(
             OperationLog log, int indent, Progressable progress, boolean recovery) {
 
@@ -1250,7 +1258,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 10, 25, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itSecrets, numSecrets, null);
+                            .serialKeyRingImport(itSecrets, numSecrets, null, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_SECRET_SKIP, indent);
@@ -1278,7 +1286,7 @@ public class ProviderHelper {
 
                     ImportKeyResult result = new ImportOperation(mContext, this,
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
-                            .serialKeyRingImport(itPublics, numPublics, null);
+                            .serialKeyRingImport(itPublics, numPublics, null, null);
                     log.add(result, indent);
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);

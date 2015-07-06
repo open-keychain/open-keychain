@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.util;
 
 import android.content.res.AssetManager;
 
+import com.squareup.okhttp.OkHttpClient;
 import org.sufficientlysecure.keychain.Constants;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -61,7 +61,7 @@ public class TlsHelper {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             int reads = is.read();
 
-            while(reads != -1){
+            while (reads != -1) {
                 baos.write(reads);
                 reads = is.read();
             }
@@ -74,15 +74,56 @@ public class TlsHelper {
         }
     }
 
-    public static URLConnection openConnection(URL url) throws IOException, TlsHelperException {
+    public static void pinCertificateIfNecessary(OkHttpClient client, URL url) throws TlsHelperException, IOException {
         if (url.getProtocol().equals("https")) {
             for (String domain : sStaticCA.keySet()) {
                 if (url.getHost().endsWith(domain)) {
-                    return openCAConnection(sStaticCA.get(domain), url);
+                    pinCertificate(sStaticCA.get(domain), client);
                 }
             }
         }
-        return url.openConnection();
+    }
+
+    /**
+     * Modifies the client to accept only requests with a given certificate. Applies to all URLs requested by the
+     * client.
+     * Therefore a client that is pinned this way should be used to only make requests to URLs with passed certificate.
+     * TODO: Refactor - More like SSH StrictHostKeyChecking than pinning?
+     *
+     * @param certificate certificate to pin
+     * @param client      OkHttpClient to enforce pinning on
+     * @throws TlsHelperException
+     * @throws IOException
+     */
+    private static void pinCertificate(byte[] certificate, OkHttpClient client)
+            throws TlsHelperException, IOException {
+        // We don't use OkHttp's CertificatePinner since it depends on a TrustManager to verify it too. Refer to
+        // note at end of description: http://square.github.io/okhttp/javadoc/com/squareup/okhttp/CertificatePinner.html
+        // Creating our own TrustManager that trusts only our certificate eliminates the need for certificate pinning
+        try {
+            // Load CA
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate ca = cf.generateCertificate(new ByteArrayInputStream(certificate));
+
+            // Create a KeyStore containing our trusted CAs
+            String keyStoreType = KeyStore.getDefaultType();
+            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry("ca", ca);
+
+            // Create a TrustManager that trusts the CAs in our KeyStore
+            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
+            tmf.init(keyStore);
+
+            // Create an SSLContext that uses our TrustManager
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, tmf.getTrustManagers(), null);
+
+            client.setSslSocketFactory(context.getSocketFactory());
+        } catch (CertificateException | KeyStoreException | KeyManagementException | NoSuchAlgorithmException e) {
+            throw new TlsHelperException(e);
+        }
     }
 
     /**

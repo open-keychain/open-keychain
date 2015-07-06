@@ -20,6 +20,8 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
@@ -36,6 +38,7 @@ import org.spongycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -63,6 +66,7 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -97,6 +101,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
     public PgpSignEncryptOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
+    }
+
+    @NonNull
+    @Override
+    // TODO this is horrible, refactor ASAP!!
+    public OperationResult execute(Parcelable input, CryptoInputParcel cryptoInput) {
+        return null;
     }
 
     /**
@@ -263,15 +274,19 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     try {
                         CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
-                        CanonicalizedPublicKey key = keyRing.getEncryptionSubKey();
-                        cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
-                        log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(id));
-                    } catch (PgpKeyNotFoundException e) {
-                        log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
-                                KeyFormattingUtils.convertKeyIdToHex(id));
-                        if (input.isFailOnMissingEncryptionKeyIds()) {
-                            return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                        Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
+                        for (Long subKeyId : encryptSubKeyIds) {
+                            CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
+                            cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
+                            log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(id));
+                        }
+                        if (encryptSubKeyIds.isEmpty()) {
+                            log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
+                                    KeyFormattingUtils.convertKeyIdToHex(id));
+                            if (input.isFailOnMissingEncryptionKeyIds()) {
+                                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+                            }
                         }
                     } catch (ProviderHelper.NotFoundException e) {
                         log.add(LogType.MSG_PSE_KEY_UNKNOWN, indent + 1,

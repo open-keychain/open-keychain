@@ -21,12 +21,14 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
+import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -40,9 +42,12 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +56,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Proxy;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -62,7 +68,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @see org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter#getSelectedEntries()
  * For the export operation, the input consists of a set of key ids and
  * either the name of a file or an output uri to write to.
- * TODO rework uploadKeyRingToServer
  */
 public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
@@ -76,25 +81,39 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring)
-            throws AddKeyException {
-        uploadKeyRingToServer(server, keyring.getUncachedKeyRing());
+    public ExportResult uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring,
+                                      Proxy proxy) {
+        return uploadKeyRingToServer(server, keyring.getUncachedKeyRing(), proxy);
     }
 
-    public void uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring) throws
-            AddKeyException {
+    public ExportResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
+        OperationLog log = new OperationLog();
+        log.add(LogType.MSG_EXPORT_UPLOAD_PUBLIC, 0, KeyFormattingUtils.convertKeyIdToHex(
+                keyring.getPublicKey().getKeyId()
+        ));
+
         try {
             aos = new ArmoredOutputStream(bos);
             keyring.encode(aos);
             aos.close();
 
             String armoredKey = bos.toString("UTF-8");
-            server.add(armoredKey);
+            server.add(armoredKey, proxy);
+
+            log.add(LogType.MSG_EXPORT_UPLOAD_SUCCESS, 1);
+            return new ExportResult(ExportResult.RESULT_OK, log);
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
-            throw new AddKeyException();
+
+            log.add(LogType.MSG_EXPORT_ERROR_KEY, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
+        } catch (AddKeyException e) {
+            Log.e(Constants.TAG, "AddKeyException", e);
+
+            log.add(LogType.MSG_EXPORT_ERROR_UPLOAD, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log);
         } finally {
             try {
                 if (aos != null) {
@@ -311,20 +330,32 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
     }
 
+    @NonNull
     public ExportResult execute(ExportKeyringParcel exportInput, CryptoInputParcel cryptoInput) {
         switch (exportInput.mExportType) {
             case UPLOAD_KEYSERVER: {
+                Proxy proxy;
+                if (cryptoInput.getParcelableProxy() == null) {
+                    // explicit proxy not set
+                    if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                        return new ExportResult(null,
+                                RequiredInputParcel.createOrbotRequiredOperation());
+                    }
+                    proxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                            .parcelableProxy.getProxy();
+                } else {
+                    proxy = cryptoInput.getParcelableProxy().getProxy();
+                }
+
                 HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
                 try {
                     CanonicalizedPublicKeyRing keyring
                             = mProviderHelper.getCanonicalizedPublicKeyRing(
                             exportInput.mCanonicalizedPublicKeyringUri);
-                    uploadKeyRingToServer(hkpKeyserver, keyring);
-                    // TODO: replace with proper log
-                    return new ExportResult(ExportResult.RESULT_OK, new OperationLog());
-                } catch (Exception e) {
+                    return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "error uploading key", e);
                     return new ExportResult(ExportResult.RESULT_ERROR, new OperationLog());
-                    // TODO: Implement better exception handling, replace with log
                 }
             }
             case EXPORT_FILE: {
@@ -335,8 +366,8 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                 return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret,
                         exportInput.mOutputUri);
             }
-            default: { // can't happen
-                return null;
+            default: { // can never happen, all enum types must be handled above
+                throw new AssertionError("must not happen, this is a bug!");
             }
         }
     }

@@ -19,7 +19,15 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
@@ -41,11 +49,9 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
@@ -54,9 +60,22 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
         super(context, providerHelper, progressable);
     }
 
+    @NonNull
     @Override
     public KeybaseVerificationResult execute(KeybaseVerificationParcel keybaseInput,
                                              CryptoInputParcel cryptoInput) {
+        Proxy proxy;
+        if (cryptoInput.getParcelableProxy() == null) {
+            // explicit proxy not set
+            if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                return new KeybaseVerificationResult(null,
+                        RequiredInputParcel.createOrbotRequiredOperation());
+            }
+            proxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                    .parcelableProxy.getProxy();
+        } else {
+            proxy = cryptoInput.getParcelableProxy().getProxy();
+        }
 
         String requiredFingerprint = keybaseInput.mRequiredFingerprint;
 
@@ -76,7 +95,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
 
-            if (!prover.fetchProofData()) {
+            if (!prover.fetchProofData(proxy)) {
                 log.add(OperationResult.LogType.MSG_KEYBASE_ERROR_FETCH_PROOF, 1);
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
@@ -96,7 +115,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                     return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
                 }
                 Record[] records = dnsQuery.getAnswers();
-                List<List<byte[]>> extents = new ArrayList<List<byte[]>>();
+                List<List<byte[]>> extents = new ArrayList<>();
                 for (Record r : records) {
                     Data d = r.getPayload();
                     if (d instanceof TXT) {

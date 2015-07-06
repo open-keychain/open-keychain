@@ -49,6 +49,7 @@
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_passphrase_cache">"Password/PIN Handling"</string>
+    <string name="section_proxy_settings">"Proxy Settings"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -171,6 +172,41 @@
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
+
+    <!-- Proxy Preferences -->
+    <string name="pref_proxy_tor_title">"Enable Tor"</string>
+    <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
+    <string name="pref_proxy_normal_title">"Enable other proxy"</string>
+    <string name="pref_proxy_host_title">"Proxy Host"</string>
+    <string name="pref_proxy_host_err_invalid">"Proxy host cannot be empty"</string>
+    <string name="pref_proxy_port_title">"Proxy Port"</string>
+    <string name="pref_proxy_port_err_invalid">"Invalid port number entered"</string>
+    <string name="pref_proxy_type_title">"Proxy Type"</string>
+
+    <!-- proxy type choices and values -->
+    <string name="pref_proxy_type_choice_http">"HTTP"</string>
+    <string name="pref_proxy_type_choice_socks">"SOCKS"</string>
+    <string name="pref_proxy_type_value_http">"proxyHttp"</string>
+    <string name="pref_proxy_type_value_socks">"proxySocks"</string>
+
+    <!-- OrbotHelper strings -->
+    <string name="orbot_ignore_tor">"Don\'t use Tor"</string>
+
+    <!-- InstallDialogFragment strings -->
+    <string name="orbot_install_dialog_title">Install Orbot to use Tor?</string>
+    <string name="orbot_install_dialog_install">"Install"</string>
+    <string name="orbot_install_dialog_content">You must have Orbot installed and activated to proxy traffic through it. Would you like to install it?</string>
+    <string name="orbot_install_dialog_cancel">"Cancel"</string>
+    <string name="orbot_install_dialog_ignore_tor">"Don\'t use Tor"</string>
+
+    <!-- StartOrbotDialogFragment strings -->
+    <string name="orbot_start_dialog_title">Start Orbot?</string>
+    <string name="orbot_start_dialog_content">"Orbot doesn\'t appear to be running. Would you like to start it up and connect to Tor?"</string>
+    <string name="orbot_start_btn">"Start Orbot"</string>
+    <string name="orbot_start_dialog_start">"Start Orbot"</string>
+    <string name="orbot_start_dialog_cancel">"Cancel"</string>
+    <string name="orbot_start_dialog_ignore_tor">"Don\'t use Tor"</string>
+
 
     <string name="user_id_no_name">"&lt;no name&gt;"</string>
     <string name="none">"&lt;none&gt;"</string>
@@ -1069,7 +1105,8 @@
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_dc_error_integrity_missing">"Missing integrity check! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
     <string name="msg_dc_error_invalid_data">"No valid OpenPGP encrypted or signed data found!"</string>
-    <string name="msg_dc_error_io">"Encountered IO Exception during operation!"</string>
+    <string name="msg_dc_error_io">"Encountered an error reading input data!"</string>
+    <string name="msg_dc_error_input">"Error opening input data stream!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
     <string name="msg_dc_error_pgp_exception">"Encountered OpenPGP Exception during operation!"</string>
@@ -1163,6 +1200,7 @@
     <string name="msg_crt_warn_not_found">"Key not found!"</string>
     <string name="msg_crt_warn_cert_failed">"Certificate generation failed!"</string>
     <string name="msg_crt_warn_save_failed">"Save operation failed!"</string>
+    <string name="msg_crt_warn_upload_failed">"Upload operation failed!"</string>
 
     <string name="msg_crt_upload_success">"Successfully uploaded key to server"</string>
 
@@ -1192,6 +1230,7 @@
     </plurals>
     <string name="msg_export_all">"Exporting all keys"</string>
     <string name="msg_export_public">"Exporting public key %s"</string>
+    <string name="msg_export_upload_public">"Uploading public key %s"</string>
     <string name="msg_export_secret">"Exporting secret key %s"</string>
     <string name="msg_export_error_no_file">"No filename specified!"</string>
     <string name="msg_export_error_fopen">"Error opening file!"</string>
@@ -1201,7 +1240,9 @@
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
     <string name="msg_export_error_key">"Error preprocessing key data!"</string>
+    <string name="msg_export_error_upload">"Error uploading key to server! Please check your internet connection"</string>
     <string name="msg_export_success">"Export operation successful"</string>
+    <string name="msg_export_upload_success">"Upload to keyserver successful"</string>
 
     <string name="msg_del_error_empty">"Nothing to delete!"</string>
     <string name="msg_del_error_multi_secret">"Secret keys can only be deleted individually!"</string>
@@ -1384,5 +1425,6 @@
     <string name="file_delete_none">"No file deleted! (Already deleted?)"</string>
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
+    <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
 
 </resources>

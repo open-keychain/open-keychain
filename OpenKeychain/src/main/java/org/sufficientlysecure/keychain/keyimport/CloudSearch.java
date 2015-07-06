@@ -20,6 +20,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -30,7 +31,8 @@ public class CloudSearch {
 
     private final static long SECONDS = 1000;
 
-    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs)
+    public static ArrayList<ImportKeysListEntry> search(final String query, Preferences.CloudSearchPrefs cloudPrefs,
+                                                        final Proxy proxy)
             throws Keyserver.CloudSearchFailureException {
         final ArrayList<Keyserver> servers = new ArrayList<>();
 
@@ -51,7 +53,7 @@ public class CloudSearch {
                 @Override
                 public void run() {
                     try {
-                        results.addAll(keyserver.search(query));
+                        results.addAll(keyserver.search(query, proxy));
                     } catch (Keyserver.CloudSearchFailureException e) {
                         problems.add(e);
                     }
@@ -63,20 +65,24 @@ public class CloudSearch {
             searchThread.start();
         }
 
-        // wait for either all the searches to come back, or 10 seconds
+        // wait for either all the searches to come back, or 10 seconds. If using proxy, wait 30 seconds.
         synchronized (results) {
             try {
-                results.wait(10 * SECONDS);
+                if (proxy != null) {
+                    results.wait(30 * SECONDS);
+                } else {
+                    results.wait(10 * SECONDS);
+                }
                 for (Thread thread : searchThreads) {
                     // kill threads that haven't returned yet
                     thread.interrupt();
-                }
+		}
             } catch (InterruptedException e) {
             }
         }
 
         if (results.outstandingSuppliers() > 0) {
-            String message = "Launched " + servers.size() + " cloud searchers, but" +
+            String message = "Launched " + servers.size() + " cloud searchers, but " +
                     results.outstandingSuppliers() + "failed to complete.";
             problems.add(new Keyserver.QueryFailedException(message));
         }

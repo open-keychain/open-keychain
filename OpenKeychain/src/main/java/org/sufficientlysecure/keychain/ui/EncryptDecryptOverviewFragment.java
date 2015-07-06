@@ -124,8 +124,7 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         super.onResume();
 
         // get text from clipboard
-        final CharSequence clipboardText =
-                ClipboardReflection.getClipboardText(getActivity());
+        final CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
         // if it's null, nothing to do here /o/
         if (clipboardText == null) {

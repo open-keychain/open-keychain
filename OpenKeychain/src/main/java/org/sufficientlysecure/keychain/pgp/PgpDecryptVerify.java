@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpMetadata;
@@ -80,9 +81,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         super(context, providerHelper, progressable);
     }
 
-    /**
-     * Decrypts and/or verifies data based on parameters of class
-     */
+    /** Decrypts and/or verifies data based on parameters of PgpDecryptVerifyInputParcel. */
+    @NonNull
     public DecryptVerifyResult execute(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput) {
         InputData inputData;
         OutputStream outputStream;
@@ -96,8 +96,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
+                Log.e(Constants.TAG, "Input URI could not be opened: " + input.getInputUri(), e);
+                OperationLog log = new OperationLog();
+                log.add(LogType.MSG_DC_ERROR_INPUT, 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }
 
@@ -107,8 +109,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             try {
                 outputStream = mContext.getContentResolver().openOutputStream(input.getOutputUri());
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
+                Log.e(Constants.TAG, "Output URI could not be opened: " + input.getOutputUri(), e);
+                OperationLog log = new OperationLog();
+                log.add(LogType.MSG_DC_ERROR_IO, 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }
 
@@ -122,11 +126,13 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
     }
 
+    @NonNull
     public DecryptVerifyResult execute(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
             InputData inputData, OutputStream outputStream) {
         return executeInternal(input, cryptoInput, inputData, outputStream);
     }
 
+    @NonNull
     private DecryptVerifyResult executeInternal(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
             InputData inputData, OutputStream outputStream) {
         try {
@@ -161,6 +167,13 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // these can happen if assumptions in JcaPGPObjectFactory.nextObject() aren't
+            // fulfilled, so we need to catch them here to handle this gracefully
+            Log.d(Constants.TAG, "array index out of bounds", e);
+            OperationLog log = new OperationLog();
+            log.add(LogType.MSG_DC_ERROR_IO, 1);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (IOException e) {
             Log.d(Constants.TAG, "IOException", e);
             OperationLog log = new OperationLog();
@@ -169,9 +182,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         }
     }
 
-    /**
-     * Verify Keybase.io style signed literal data
-     */
+    /**Verify signed plaintext data (PGP/INLINE). */
+    @NonNull
     private DecryptVerifyResult verifySignedLiteralData(
             PgpDecryptVerifyInputParcel input, InputStream in, OutputStream out, int indent)
             throws IOException, PGPException {
@@ -301,9 +313,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
     }
 
 
-    /**
-     * Decrypt and/or verifies binary or ascii armored pgp
-     */
+    /** Decrypt and/or verify binary or ascii armored pgp data. */
+    @NonNull
     private DecryptVerifyResult decryptVerify(
             PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
             InputStream in, OutputStream out, int indent) throws IOException, PGPException {
@@ -843,6 +854,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
      * The method is heavily based on
      * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
      */
+    @NonNull
     private DecryptVerifyResult verifyCleartextSignature(
             ArmoredInputStream aIn, OutputStream outputStream, int indent) throws IOException, PGPException {
 
@@ -950,6 +962,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         return result;
     }
 
+    @NonNull
     private DecryptVerifyResult verifyDetachedSignature(
             PgpDecryptVerifyInputParcel input, InputData inputData, OutputStream out, int indent)
             throws IOException, PGPException {
@@ -1042,7 +1055,9 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         return result;
     }
 
-    private PGPSignature processPGPSignatureList(PGPSignatureList sigList, OpenPgpSignatureResultBuilder signatureResultBuilder) throws PGPException {
+    private PGPSignature processPGPSignatureList(
+            PGPSignatureList sigList, OpenPgpSignatureResultBuilder signatureResultBuilder)
+            throws PGPException {
         CanonicalizedPublicKeyRing signingRing = null;
         CanonicalizedPublicKey signingKey = null;
         int signatureIndex = -1;

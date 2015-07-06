@@ -41,7 +41,9 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateYubiKeyImportFragment
@@ -131,7 +133,18 @@ public class CreateYubiKeyImportFragment
         view.findViewById(R.id.button_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshSearch();
+                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+                Runnable ignoreTor = new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshSearch(new ParcelableProxy(null, -1, null));
+                    }
+                };
+
+                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                        getActivity())) {
+                    refreshSearch(proxyPrefs.parcelableProxy);
+                }
             }
         });
 
@@ -170,9 +183,10 @@ public class CreateYubiKeyImportFragment
         }
     }
 
-    public void refreshSearch() {
+    public void refreshSearch(ParcelableProxy parcelableProxy) {
+        // TODO: PHILIP verify proxy implementation in YubiKey parts
         mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
-                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
+                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
     }
 
     public void importKey() {
@@ -210,7 +224,20 @@ public class CreateYubiKeyImportFragment
     public void onNfcPostExecute() throws IOException {
 
         setData();
-        refreshSearch();
+
+        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
+        Runnable ignoreTor = new Runnable() {
+            @Override
+            public void run() {
+                refreshSearch(new ParcelableProxy(null, -1, null));
+            }
+        };
+
+        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
+                getActivity())) {
+            refreshSearch(proxyPrefs.parcelableProxy);
+        }
+
     }
 
     @Override

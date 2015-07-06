@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
 
@@ -310,6 +311,11 @@ public class CertifyKeyFragment
         // fill values for this action
         CertifyActionsParcel actionsParcel = new CertifyActionsParcel(selectedKeyId);
         actionsParcel.mCertifyActions.addAll(certifyActions);
+
+        if (mUploadKeyCheckbox.isChecked()) {
+            actionsParcel.keyServerUri = Preferences.getPreferences(getActivity())
+                    .getPreferredKeyserver();
+        }
 
         // cached for next cryptoOperation loop
         cacheActionsParcel(actionsParcel);
