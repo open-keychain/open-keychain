@@ -9,7 +9,9 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
@@ -49,6 +51,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     public ViewAnimator vAnimator;
     public TextView vErrorText;
+    public Button vErrorTryAgainButton;
 
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
@@ -68,7 +71,20 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
         vAnimator.setDisplayedChild(0);
-        vErrorText = (TextView) findViewById(R.id.nfc_activity_error_text);
+        vErrorText = (TextView) findViewById(R.id.nfc_activity_3_error_text);
+        vErrorTryAgainButton = (Button) findViewById(R.id.nfc_activity_3_error_try_again);
+        vErrorTryAgainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resumeTagHandling();
+
+                // obtain passphrase for this subkey
+                if (mRequiredInput.mType != RequiredInputParcel.RequiredInputType.NFC_MOVE_KEY_TO_CARD) {
+                    obtainYubiKeyPin(mRequiredInput);
+                }
+                vAnimator.setDisplayedChild(0);
+            }
+        });
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
@@ -84,7 +100,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     @Override
     protected void initLayout() {
-        setContentView(R.layout.nfc_activity);
+        setContentView(R.layout.nfc_operation_activity);
     }
 
     @Override
@@ -221,8 +237,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     if (isNfcConnected()) {
                         try {
                             Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            // never mind
+                        } catch (InterruptedException ignored) {
                         }
                     } else {
                         return null;
@@ -239,7 +254,9 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     @Override
     protected void onNfcError(String error) {
-        vErrorText.setText(error);
+        pauseTagHandling();
+
+        vErrorText.setText(error + "\n\n" + getString(R.string.nfc_try_again_text));
         vAnimator.setDisplayedChild(3);
     }
 
@@ -270,8 +287,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
         // clear (invalid) passphrase
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
-
-        obtainYubiKeyPin(mRequiredInput);
     }
 
 }
