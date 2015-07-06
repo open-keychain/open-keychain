@@ -24,7 +24,6 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -217,13 +216,18 @@ public class NfcOperationActivity extends BaseNfcActivity {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                // wait some 1000ms here, give the user time to appreciate the displayed finish
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // never mind
+                // check all 200ms if YubiKey has been taken away
+                while (true) {
+                    if (isNfcConnected()) {
+                        try {
+                            Thread.sleep(200);
+                        } catch (InterruptedException e) {
+                            // never mind
+                        }
+                    } else {
+                        return null;
+                    }
                 }
-                return null;
             }
             @Override
             protected void onPostExecute(Void result) {

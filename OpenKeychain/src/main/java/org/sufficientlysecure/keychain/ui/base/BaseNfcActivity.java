@@ -399,9 +399,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         doNfcInBackground();
 
-        mIsoDep.close();
-        mIsoDep = null;
+    }
 
+    public boolean isNfcConnected() {
+        return mIsoDep.isConnected();
     }
 
     /** Return the key id from application specific data stored on tag, or null
