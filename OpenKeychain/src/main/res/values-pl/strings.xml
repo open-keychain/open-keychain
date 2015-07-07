@@ -372,7 +372,7 @@
   <string name="api_settings_start">Uruchom aplikację</string>
   <string name="api_settings_delete_account">Usuń konto</string>
   <string name="api_settings_package_name">Nazwa paczki</string>
-  <string name="api_settings_package_signature">Skrót SHA-256 podpisu paczki</string>
+  <string name="api_settings_package_certificate">Skrót SHA-256 podpisu paczki</string>
   <string name="api_settings_settings">Ustawienia</string>
   <string name="api_settings_key">Klucz konta:</string>
   <string name="api_settings_accounts_empty">Brak kont połączonych z tą aplikacją.</string>

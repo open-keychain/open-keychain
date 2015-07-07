@@ -53,11 +53,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/api_settings_package_signature"
+            android:text="@string/api_settings_package_certificate"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
-            android:id="@+id/api_app_settings_package_signature"
+            android:id="@+id/api_app_settings_package_certificate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Base64 encoded hash of signature"

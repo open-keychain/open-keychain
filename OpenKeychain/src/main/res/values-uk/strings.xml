@@ -308,7 +308,7 @@
   <string name="api_settings_start">Запустити програму</string>
   <string name="api_settings_delete_account">Видалити профіль</string>
   <string name="api_settings_package_name">Назва пакунку</string>
-  <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
+  <string name="api_settings_package_certificate">SHA-256 підписку пакунку</string>
   <string name="api_settings_settings">Параметри</string>
   <string name="api_settings_accounts_empty">Немає облікового запису приєднаного до цієї програми.</string>
   <string name="api_register_allow">Дозволити доступ</string>

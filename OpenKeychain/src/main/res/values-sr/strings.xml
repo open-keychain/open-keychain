@@ -465,7 +465,7 @@
   <string name="api_settings_start">Покрени апликацију</string>
   <string name="api_settings_delete_account">Обриши налог</string>
   <string name="api_settings_package_name">Име пакета</string>
-  <string name="api_settings_package_signature">СХА-256 потписа пакета</string>
+  <string name="api_settings_package_certificate">СХА-256 потписа пакета</string>
   <string name="api_settings_accounts">Налози (застарели АПИ)</string>
   <string name="api_settings_advanced">Напредни подаци</string>
   <string name="api_settings_allowed_keys">Дозвољени кључеви</string>

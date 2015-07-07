@@ -27,7 +27,7 @@ import org.sufficientlysecure.keychain.R;
 
 public class AdvancedAppSettingsDialogFragment extends DialogFragment {
     private static final String ARG_PACKAGE_NAME = "package_name";
-    private static final String ARG_SIGNATURE = "signature";
+    private static final String ARG_CERTIFICATE = "certificate";
 
     /**
      * Creates new instance of this fragment
@@ -36,7 +36,7 @@ public class AdvancedAppSettingsDialogFragment extends DialogFragment {
         AdvancedAppSettingsDialogFragment frag = new AdvancedAppSettingsDialogFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PACKAGE_NAME, packageName);
-        args.putString(ARG_SIGNATURE, digest);
+        args.putString(ARG_CERTIFICATE, digest);
 
         frag.setArguments(args);
         return frag;
@@ -62,10 +62,10 @@ public class AdvancedAppSettingsDialogFragment extends DialogFragment {
         });
 
         String packageName = getArguments().getString(ARG_PACKAGE_NAME);
-        String signature = getArguments().getString(ARG_SIGNATURE);
+        String certificate = getArguments().getString(ARG_CERTIFICATE);
 
         alert.setMessage(getString(R.string.api_settings_package_name) + ": " + packageName + "\n\n"
-                + getString(R.string.api_settings_package_signature) + ": " + signature);
+                + getString(R.string.api_settings_package_certificate) + ": " + certificate);
 
         return alert.show();
     }

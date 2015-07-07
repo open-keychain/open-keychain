@@ -394,7 +394,7 @@
   <string name="api_settings_start">開啟應用程式</string>
   <string name="api_settings_delete_account">移除帳戶</string>
   <string name="api_settings_package_name">打包名稱</string>
-  <string name="api_settings_package_signature">SHA-256 所打包的簽章</string>
+  <string name="api_settings_package_certificate">SHA-256 所打包的簽章</string>
   <string name="api_settings_accounts">帳戶(舊版API)</string>
   <string name="api_settings_advanced">延伸資訊</string>
   <string name="api_settings_allowed_keys">允許的金鑰</string>

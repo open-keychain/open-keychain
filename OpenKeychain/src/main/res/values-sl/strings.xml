@@ -436,7 +436,7 @@
   <string name="api_settings_start">Zaženi aplikacijo</string>
   <string name="api_settings_delete_account">Izbriši račun</string>
   <string name="api_settings_package_name">Ime paketa</string>
-  <string name="api_settings_package_signature">SHA-256 podpisa paketa</string>
+  <string name="api_settings_package_certificate">SHA-256 podpisa paketa</string>
   <string name="api_settings_allowed_keys">Dovoljeni ključi</string>
   <string name="api_settings_settings">Nastavitve</string>
   <string name="api_settings_key">Ključ računa:</string>

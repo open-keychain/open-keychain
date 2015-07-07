@@ -472,7 +472,7 @@
   <string name="api_settings_start">Abiarazi aplikazioa</string>
   <string name="api_settings_delete_account">Ezabatu kontua</string>
   <string name="api_settings_package_name">Pakete Izena</string>
-  <string name="api_settings_package_signature">Sinadura Paketearen SHA-256</string>
+  <string name="api_settings_package_certificate">Sinadura Paketearen SHA-256</string>
   <string name="api_settings_accounts">Kontuak (API zaharra)</string>
   <string name="api_settings_advanced">Argibide Hedatuak</string>
   <string name="api_settings_allowed_keys">Ahalbidetutako Giltzak</string>

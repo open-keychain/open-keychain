@@ -556,7 +556,7 @@
     <string name="api_settings_start">"Start application"</string>
     <string name="api_settings_delete_account">"Delete account"</string>
     <string name="api_settings_package_name">"Package Name"</string>
-    <string name="api_settings_package_signature">"SHA-256 of Package Signature"</string>
+    <string name="api_settings_package_certificate">"SHA-256 of Package Certificate"</string>
     <string name="api_settings_accounts">"Accounts (old API)"</string>
     <string name="api_settings_advanced">"Extended Information"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>

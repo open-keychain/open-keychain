@@ -389,7 +389,7 @@
   <string name="api_settings_start">Spustit aplikaci</string>
   <string name="api_settings_delete_account">Smazat účet</string>
   <string name="api_settings_package_name">Jméno balíčku</string>
-  <string name="api_settings_package_signature">SHA-256 z podpisu balíčku</string>
+  <string name="api_settings_package_certificate">SHA-256 z podpisu balíčku</string>
   <string name="api_settings_settings">Nastavení</string>
   <string name="api_settings_key">Klíč účtu:</string>
   <string name="api_settings_accounts_empty">Žádné účty nejsou specifikovány pro tuto appku.</string>

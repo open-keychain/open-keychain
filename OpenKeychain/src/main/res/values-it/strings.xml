@@ -420,7 +420,7 @@
   <string name="api_settings_start">Avvia applicazione</string>
   <string name="api_settings_delete_account">Cancella account</string>
   <string name="api_settings_package_name">Nome Pacchetto</string>
-  <string name="api_settings_package_signature">SHA-256 della Firma del Pacchetto</string>
+  <string name="api_settings_package_certificate">SHA-256 della Firma del Pacchetto</string>
   <string name="api_settings_settings">Impostazioni</string>
   <string name="api_settings_key">Chiave account:</string>
   <string name="api_settings_accounts_empty">Nessun account collegato a questa applicazione</string>

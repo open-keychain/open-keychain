@@ -75,7 +75,7 @@ public class AppSettingsActivity extends BaseActivity {
         mAppNameView = (TextView) findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) findViewById(R.id.api_app_settings_app_icon);
         mPackageName = (TextView) findViewById(R.id.api_app_settings_package_name);
-        mPackageSignature = (TextView) findViewById(R.id.api_app_settings_package_signature);
+        mPackageSignature = (TextView) findViewById(R.id.api_app_settings_package_certificate);
         mStartFab = (FloatingActionButton) findViewById(R.id.fab);
 
         mStartFab.setOnClickListener(new View.OnClickListener() {
@@ -148,19 +148,19 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void showAdvancedInfo() {
-        String signature = null;
-        // advanced info: package signature SHA-256
+        String certificate = null;
+        // advanced info: package certificate SHA-256
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(mAppSettings.getPackageSignature());
+            md.update(mAppSettings.getPackageCertificate());
             byte[] digest = md.digest();
-            signature = new String(Hex.encode(digest));
+            certificate = new String(Hex.encode(digest));
         } catch (NoSuchAlgorithmException e) {
             Log.e(Constants.TAG, "Should not happen!", e);
         }
 
         AdvancedAppSettingsDialogFragment dialogFragment =
-                AdvancedAppSettingsDialogFragment.newInstance(mAppSettings.getPackageName(), signature);
+                AdvancedAppSettingsDialogFragment.newInstance(mAppSettings.getPackageName(), certificate);
 
         dialogFragment.show(getSupportFragmentManager(), "advancedDialog");
     }

@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.remote;
 
 public class AppSettings {
     private String mPackageName;
-    private byte[] mPackageSignature;
+    private byte[] mPackageCertificate;
 
     public AppSettings() {
 
@@ -28,7 +28,7 @@ public class AppSettings {
     public AppSettings(String packageName, byte[] packageSignature) {
         super();
         this.mPackageName = packageName;
-        this.mPackageSignature = packageSignature;
+        this.mPackageCertificate = packageSignature;
     }
 
     public String getPackageName() {
@@ -39,12 +39,12 @@ public class AppSettings {
         this.mPackageName = packageName;
     }
 
-    public byte[] getPackageSignature() {
-        return mPackageSignature;
+    public byte[] getPackageCertificate() {
+        return mPackageCertificate;
     }
 
-    public void setPackageSignature(byte[] packageSignature) {
-        this.mPackageSignature = packageSignature;
+    public void setPackageCertificate(byte[] packageCertificate) {
+        this.mPackageCertificate = packageCertificate;
     }
 
 }

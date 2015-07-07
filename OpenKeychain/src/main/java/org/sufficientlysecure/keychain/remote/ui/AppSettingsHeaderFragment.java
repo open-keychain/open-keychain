@@ -47,7 +47,7 @@ public class AppSettingsHeaderFragment extends Fragment {
     private TextView mAppNameView;
     private ImageView mAppIconView;
     private TextView mPackageName;
-    private TextView mPackageSignature;
+    private TextView mPackageCertificate;
 
     public AppSettings getAppSettings() {
         return mAppSettings;
@@ -67,7 +67,7 @@ public class AppSettingsHeaderFragment extends Fragment {
         mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
         mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
-        mPackageSignature = (TextView) view.findViewById(R.id.api_app_settings_package_signature);
+        mPackageCertificate = (TextView) view.findViewById(R.id.api_app_settings_package_certificate);
         return view;
     }
 
@@ -94,11 +94,11 @@ public class AppSettingsHeaderFragment extends Fragment {
         // advanced info: package signature SHA-256
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(appSettings.getPackageSignature());
+            md.update(appSettings.getPackageCertificate());
             byte[] digest = md.digest();
             String signature = new String(Hex.encode(digest));
 
-            mPackageSignature.setText(signature);
+            mPackageCertificate.setText(signature);
         } catch (NoSuchAlgorithmException e) {
             Log.e(Constants.TAG, "Should not happen!", e);
         }
