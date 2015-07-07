@@ -69,8 +69,8 @@ public class RemoteServiceActivity extends BaseActivity {
     public static final String EXTRA_ACC_NAME = "acc_name";
     // select pub keys action
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
-    public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
-    public static final String EXTRA_DUPLICATE_USER_IDS = "dublicate_user_ids";
+    public static final String EXTRA_MISSING_EMAILS = "missing_emails";
+    public static final String EXTRA_DUPLICATE_EMAILS = "dublicate_emails";
     public static final String EXTRA_NO_USER_IDS_CHECK = "no_user_ids";
     // error message
     public static final String EXTRA_ERROR_MESSAGE = "error_message";
@@ -222,10 +222,10 @@ public class RemoteServiceActivity extends BaseActivity {
             case ACTION_SELECT_PUB_KEYS: {
                 long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
                 boolean noUserIdsCheck = intent.getBooleanExtra(EXTRA_NO_USER_IDS_CHECK, true);
-                ArrayList<String> missingUserIds = intent
-                        .getStringArrayListExtra(EXTRA_MISSING_USER_IDS);
-                ArrayList<String> dublicateUserIds = intent
-                        .getStringArrayListExtra(EXTRA_DUPLICATE_USER_IDS);
+                ArrayList<String> missingEmails = intent
+                        .getStringArrayListExtra(EXTRA_MISSING_EMAILS);
+                ArrayList<String> duplicateEmails = intent
+                        .getStringArrayListExtra(EXTRA_DUPLICATE_EMAILS);
 
                 SpannableStringBuilder ssb = new SpannableStringBuilder();
                 final SpannableString textIntro = new SpannableString(
@@ -235,23 +235,23 @@ public class RemoteServiceActivity extends BaseActivity {
                 textIntro.setSpan(new StyleSpan(Typeface.BOLD), 0, textIntro.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ssb.append(textIntro);
 
-                if (missingUserIds != null && missingUserIds.size() > 0) {
+                if (missingEmails != null && missingEmails.size() > 0) {
                     ssb.append("\n\n");
                     ssb.append(getString(R.string.api_select_pub_keys_missing_text));
                     ssb.append("\n");
-                    for (String userId : missingUserIds) {
-                        SpannableString ss = new SpannableString(userId + "\n");
+                    for (String emails : missingEmails) {
+                        SpannableString ss = new SpannableString(emails + "\n");
                         ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
                                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         ssb.append(ss);
                     }
                 }
-                if (dublicateUserIds != null && dublicateUserIds.size() > 0) {
+                if (duplicateEmails != null && duplicateEmails.size() > 0) {
                     ssb.append("\n\n");
                     ssb.append(getString(R.string.api_select_pub_keys_dublicates_text));
                     ssb.append("\n");
-                    for (String userId : dublicateUserIds) {
-                        SpannableString ss = new SpannableString(userId + "\n");
+                    for (String email : duplicateEmails) {
+                        SpannableString ss = new SpannableString(email + "\n");
                         ss.setSpan(new BulletSpan(15, Color.BLACK), 0, ss.length(),
                                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         ssb.append(ss);
