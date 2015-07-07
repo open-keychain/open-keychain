@@ -74,7 +74,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     // otherwise all CryptoOperationHandlers may respond to the same onActivityResult
     private int mRequestedCode = -1;
 
-    private int mProgressMessageResource;
+    private Integer mProgressMessageResource;
 
     private FragmentActivity mActivity;
     private Fragment mFragment;
@@ -85,7 +85,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * If OperationHelper is being integrated into an activity
      */
-    public CryptoOperationHelper(FragmentActivity activity, Callback<T, S> callback, int progressMessageString) {
+    public CryptoOperationHelper(FragmentActivity activity, Callback<T, S> callback, Integer progressMessageString) {
         mActivity = activity;
         mUseFragment = false;
         mCallback = callback;
@@ -95,20 +95,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * if OperationHelper is being integrated into a fragment
      */
-    public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback, int progressMessageString) {
+    public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback, Integer progressMessageString) {
         mFragment = fragment;
         mUseFragment = true;
         mProgressMessageResource = progressMessageString;
-        mCallback = callback;
-    }
-
-    /**
-     * if OperationHelper is being integrated into a fragment with default message for the progress dialog
-     */
-    public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback) {
-        mFragment = fragment;
-        mUseFragment = true;
-        mProgressMessageResource = R.string.progress_building_key;
         mCallback = callback;
     }
 
@@ -248,7 +238,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     }
 
-    public void cryptoOperation(final CryptoInputParcel cryptoInput, boolean showProgress) {
+    public void cryptoOperation(final CryptoInputParcel cryptoInput) {
 
         FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
@@ -297,17 +287,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
 
-        if (showProgress) {
+        if (mProgressMessageResource != null) {
             saveHandler.showProgressDialog(
                     activity.getString(mProgressMessageResource),
                     ProgressDialog.STYLE_HORIZONTAL, false);
         }
 
         activity.startService(intent);
-    }
-
-    public void cryptoOperation(CryptoInputParcel cryptoInputParcel) {
-        cryptoOperation(cryptoInputParcel, true);
     }
 
     public void cryptoOperation() {
