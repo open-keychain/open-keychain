@@ -65,7 +65,6 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
@@ -109,6 +108,10 @@ public class DecryptListFragment
         frag.setArguments(args);
 
         return frag;
+    }
+
+    public DecryptListFragment() {
+        super(null);
     }
 
     /**
@@ -246,11 +249,6 @@ public class DecryptListFragment
             Log.e(Constants.TAG, "error saving file", e);
             Notify.create(activity, R.string.error_saving_file, Style.ERROR).show();
         }
-    }
-
-    @Override
-    protected void cryptoOperation(CryptoInputParcel cryptoInput) {
-        super.cryptoOperation(cryptoInput, false);
     }
 
     @Override

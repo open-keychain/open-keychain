@@ -75,6 +75,10 @@ public class ViewKeyYubiKeyFragment
         return frag;
     }
 
+    public ViewKeyYubiKeyFragment() {
+        super(R.string.progress_processing);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

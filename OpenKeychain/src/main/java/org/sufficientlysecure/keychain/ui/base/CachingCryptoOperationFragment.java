@@ -4,6 +4,7 @@ package org.sufficientlysecure.keychain.ui.base;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 
 

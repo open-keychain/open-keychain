@@ -1240,14 +1240,14 @@ public class PgpKeyOperationTest {
         Assert.assertFalse("non-restricted operations should fail without passphrase", result.success());
     }
 
-    private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
+    public static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB) {
         return applyModificationWithChecks(parcel, ring, onlyA, onlyB, cryptoInput, true, true);
     }
 
-    private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
+    public static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,
@@ -1256,7 +1256,7 @@ public class PgpKeyOperationTest {
     }
 
     // applies a parcel modification while running some integrity checks
-    private static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
+    public static UncachedKeyRing applyModificationWithChecks(SaveKeyringParcel parcel,
                                                                UncachedKeyRing ring,
                                                                ArrayList<RawPacket> onlyA,
                                                                ArrayList<RawPacket> onlyB,

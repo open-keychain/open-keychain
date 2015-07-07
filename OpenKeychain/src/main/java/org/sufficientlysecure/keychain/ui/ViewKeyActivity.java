@@ -652,38 +652,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         }
     }
 
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-
-        mIsRefreshing = true;
-        mRefreshItem.setEnabled(false);
-        mRefreshItem.setActionView(mRefresh);
-        mRefresh.startAnimation(mRotate);
-
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
-        entries.add(keyEntry);
-        mKeyList = entries;
-
-        // search config
-        {
-            Preferences prefs = Preferences.getPreferences(this);
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
-
-        mOperationHelper = new CryptoOperationHelper<>(
-                this, this, R.string.progress_importing);
-
-        mOperationHelper.cryptoOperation();
-    }
-
     private void editKey(Uri dataUri) {
         Intent editIntent = new Intent(this, EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(dataUri));
@@ -971,6 +939,37 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     // CryptoOperationHelper.Callback functions
 
+
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+
+        mIsRefreshing = true;
+        mRefreshItem.setEnabled(false);
+        mRefreshItem.setActionView(mRefresh);
+        mRefresh.startAnimation(mRotate);
+
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
+        entries.add(keyEntry);
+        mKeyList = entries;
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(this);
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            mKeyserver = cloudPrefs.keyserver;
+        }
+
+        mOperationHelper = new CryptoOperationHelper<>(this, this, null);
+        mOperationHelper.cryptoOperation();
+    }
+
     @Override
     public ImportKeyringParcel createOperationInput() {
         return new ImportKeyringParcel(mKeyList, mKeyserver);
@@ -995,6 +994,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     @Override
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
-        return false;
+        return true;
     }
 }
