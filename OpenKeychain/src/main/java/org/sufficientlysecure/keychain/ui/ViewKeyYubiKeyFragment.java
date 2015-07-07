@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -39,7 +40,6 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
