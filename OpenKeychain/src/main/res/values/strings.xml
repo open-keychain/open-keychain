@@ -1394,7 +1394,7 @@
         <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
     </plurals>
     <string name="error_nfc_terminated">"YubiKey in termination state."</string>
-    <string name="error_nfc_wrong_length">"Entered PIN is too short. PINs are at least 6 numbers long."</string>
+    <string name="error_nfc_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
     <string name="error_nfc_conditions_not_satisfied">"Conditions of use not satisfied."</string>
     <string name="error_nfc_security_not_satisfied">"Security status not satisfied."</string>
     <string name="error_nfc_authentication_blocked">"PIN blocked after too many attempts."</string>
