@@ -1194,12 +1194,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
     private static byte[] getLineSeparator() {
         String nl = System.getProperty("line.separator");
-        byte[] nlBytes = new byte[nl.length()];
-
-        for (int i = 0; i != nlBytes.length; i++) {
-            nlBytes[i] = (byte) nl.charAt(i);
-        }
-
-        return nlBytes;
+        return nl.getBytes();
     }
 }
