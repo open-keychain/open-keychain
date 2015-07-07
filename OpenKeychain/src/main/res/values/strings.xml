@@ -976,6 +976,7 @@
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
     <string name="msg_mf_divert">"Will divert to smart card for crypto operations"</string>
+    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>

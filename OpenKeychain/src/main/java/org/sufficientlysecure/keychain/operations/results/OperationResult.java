@@ -482,6 +482,7 @@ public abstract class OperationResult implements Parcelable {
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
         MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
+        MSG_MF_ERROR_DIVERT_NEWSUB (LogLevel.ERROR, R.string.msg_mf_error_divert_newsub),
         MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (LogLevel.ERROR, R.string.msg_mf_error_fingerprint),

@@ -976,6 +976,11 @@ public class PgpKeyOperation {
                 log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
                         KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
+                if (isDivertToCard(masterSecretKey)) {
+                    log.add(LogType.MSG_MF_ERROR_DIVERT_NEWSUB, indent +1);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
+                }
+
                 if (add.mExpiry == null) {
                     log.add(LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
@@ -1020,8 +1025,7 @@ public class PgpKeyOperation {
                             PgpConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
                             PgpConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.hasPassphrase()
-                                            ? cryptoInput.getPassphrase().getCharArray() : new char[]{} );
+                                    cryptoInput.getPassphrase().getCharArray());
 
                     PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
