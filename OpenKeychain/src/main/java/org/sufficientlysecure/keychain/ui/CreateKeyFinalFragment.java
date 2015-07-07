@@ -17,13 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Iterator;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,8 +53,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.util.Iterator;
-
 public class CreateKeyFinalFragment extends Fragment {
 
     public static final int REQUEST_EDIT_KEY = 0x00008007;
@@ -71,8 +71,14 @@ public class CreateKeyFinalFragment extends Fragment {
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mCreateOpHelper;
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mMoveToCardOpHelper;
 
+    // queued results which may trigger delayed actions
+    private EditKeyResult mQueuedSaveKeyResult;
+    private OperationResult mQueuedFinishResult;
+    private EditKeyResult mQueuedDisplayResult;
+
     public static CreateKeyFinalFragment newInstance() {
         CreateKeyFinalFragment frag = new CreateKeyFinalFragment();
+        frag.setRetainInstance(true);
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -222,7 +228,13 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     private void createKey() {
-        final CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+        CreateKeyActivity activity = (CreateKeyActivity) getActivity();
+        if (activity == null) {
+            // this is a ui-triggered action, nvm if it fails while detached!
+            return;
+        }
+
+        final boolean createYubiKey = activity.mCreateYubiKey;
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> createKeyCallback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
@@ -234,7 +246,7 @@ public class CreateKeyFinalFragment extends Fragment {
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
 
-                if (createKeyActivity.mCreateYubiKey) {
+                if (createYubiKey) {
                     moveToCard(result);
                     return;
                 }
@@ -245,10 +257,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     return;
                 }
 
-                Intent data = new Intent();
-                data.putExtra(OperationResult.EXTRA_RESULT, result);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                finishWithResult(result);
             }
 
             @Override
@@ -258,7 +267,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
             @Override
             public void onCryptoOperationError(EditKeyResult result) {
-                result.createNotify(getActivity()).show();
+                displayResult(result);
             }
 
             @Override
@@ -267,16 +276,24 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         };
 
-        mCreateOpHelper = new CryptoOperationHelper<>(this, createKeyCallback,
-                R.string.progress_building_key);
+        mCreateOpHelper = new CryptoOperationHelper<>(this, createKeyCallback, R.string.progress_building_key);
         mCreateOpHelper.cryptoOperation();
     }
 
+    private void displayResult(EditKeyResult result) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            mQueuedDisplayResult = result;
+            return;
+        }
+        result.createNotify(activity).show();
+    }
+
     private void moveToCard(final EditKeyResult saveKeyResult) {
-        final CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
+        CreateKeyActivity activity = (CreateKeyActivity) getActivity();
 
         final SaveKeyringParcel changeKeyringParcel;
-        CachedPublicKeyRing key = (new ProviderHelper(getActivity()))
+        CachedPublicKeyRing key = (new ProviderHelper(activity))
                 .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             changeKeyringParcel = new SaveKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
@@ -286,9 +303,9 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // define subkeys that should be moved to the card
-        Cursor cursor = getActivity().getContentResolver().query(
+        Cursor cursor = activity.getContentResolver().query(
                 KeychainContract.Keys.buildKeysUri(changeKeyringParcel.mMasterKeyId),
-                new String[]{KeychainContract.Keys.KEY_ID,}, null, null, null
+                new String[] { KeychainContract.Keys.KEY_ID, }, null, null, null
         );
         try {
             while (cursor != null && cursor.moveToNext()) {
@@ -302,8 +319,8 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // define new PIN and Admin PIN for the card
-        changeKeyringParcel.mCardPin = createKeyActivity.mYubiKeyPin;
-        changeKeyringParcel.mCardAdminPin = createKeyActivity.mYubiKeyAdminPin;
+        changeKeyringParcel.mCardPin = activity.mYubiKeyPin;
+        changeKeyringParcel.mCardAdminPin = activity.mYubiKeyAdminPin;
 
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> callback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
@@ -338,10 +355,7 @@ public class CreateKeyFinalFragment extends Fragment {
                     return;
                 }
 
-                Intent data = new Intent();
-                data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
-                getActivity().setResult(Activity.RESULT_OK, data);
-                getActivity().finish();
+                finishWithResult(saveKeyResult);
             }
 
             @Override
@@ -356,11 +370,17 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     private void uploadKey(final EditKeyResult saveKeyResult) {
+        Activity activity = getActivity();
+        // if the activity is gone at this point, there is nothing we can do!
+        if (activity == null) {
+            mQueuedSaveKeyResult = saveKeyResult;
+            return;
+        }
+
         // set data uri as path to keyring
-        final Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(
-                saveKeyResult.mMasterKeyId);
+        final Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(saveKeyResult.mMasterKeyId);
         // upload to favorite keyserver
-        final String keyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
+        final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
         CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult> callback
                 = new CryptoOperationHelper.Callback<ExportKeyringParcel, ExportResult>() {
@@ -386,18 +406,8 @@ public class CreateKeyFinalFragment extends Fragment {
             }
 
             public void handleResult(ExportResult result) {
-                Activity activity = getActivity();
-                if (activity == null) {
-                    return;
-                }
-
                 saveKeyResult.getLog().add(result, 0);
-
-                Intent data = new Intent();
-                data.putExtra(OperationResult.EXTRA_RESULT, saveKeyResult);
-                activity.setResult(Activity.RESULT_OK, data);
-                activity.finish();
-
+                finishWithResult(saveKeyResult);
             }
 
             @Override
@@ -406,9 +416,52 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         };
 
-
         mUploadOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
+    }
+
+    public void finishWithResult(OperationResult result) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            mQueuedFinishResult = result;
+            return;
+        }
+
+        Intent data = new Intent();
+        data.putExtra(OperationResult.EXTRA_RESULT, result);
+        activity.setResult(Activity.RESULT_OK, data);
+        activity.finish();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // there may be queued actions from when we weren't attached to an activity!
+
+        if (mQueuedFinishResult != null) {
+            finishWithResult(mQueuedFinishResult);
+            return;
+        }
+
+        if (mQueuedDisplayResult != null) {
+            try {
+                displayResult(mQueuedDisplayResult);
+            } finally {
+                // clear after operation, note that this may drop the operation if it didn't
+                // work when called from here!
+                mQueuedDisplayResult = null;
+            }
+        }
+
+        if (mQueuedSaveKeyResult != null) {
+            try {
+                uploadKey(mQueuedSaveKeyResult);
+            } finally {
+                // see above
+                mQueuedSaveKeyResult = null;
+            }
+        }
     }
 
 }
