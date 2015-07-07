@@ -7,11 +7,31 @@ import android.os.Parcelable;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 
 
+/** CryptoOperationFragment which calls crypto operation results only while
+ * attached to Activity.
+ *
+ * This subclass of CryptoOperationFragment substitutes the onCryptoOperation*
+ * methods for onQueuedOperation* ones, which are ensured to be called while
+ * the fragment is attached to an Activity, possibly delaying the call until
+ * the Fragment is re-attached.
+ *
+ * TODO merge this functionality into CryptoOperationFragment?
+ *
+ * @see CryptoOperationFragment
+ */
 public abstract class QueueingCryptoOperationFragment<T extends Parcelable, S extends OperationResult>
         extends CryptoOperationFragment<T,S> {
 
     public static final String ARG_QUEUED_RESULT = "queued_result";
     private S mQueuedResult;
+
+    public QueueingCryptoOperationFragment() {
+        super();
+    }
+
+    public QueueingCryptoOperationFragment(Integer initialProgressMsg) {
+        super(initialProgressMsg);
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
