@@ -31,6 +31,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
@@ -327,31 +328,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_export_file: {
-                try {
-                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
-                        exportToFile(mDataUri, mProviderHelper);
-                        return true;
-                    }
-
-                    startPassphraseActivity(REQUEST_EXPORT);
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // This happens when the master key is stripped
-                    exportToFile(mDataUri, mProviderHelper);
-                }
+                startPassphraseActivity(REQUEST_EXPORT);
                 return true;
             }
             case R.id.menu_key_view_delete: {
-                try {
-                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
-                        deleteKey();
-                        return true;
-                    }
-
-                    startPassphraseActivity(REQUEST_DELETE);
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // This happens when the master key is stripped
-                    deleteKey();
-                }
+                startPassphraseActivity(REQUEST_DELETE);
                 return true;
             }
             case R.id.menu_key_view_advanced: {
@@ -476,22 +457,27 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void deleteKey() {
-        // Message is received after key is deleted
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    setResult(RESULT_CANCELED);
-                    finish();
-                }
-            }
-        };
+        new Handler().post(new Runnable() {
+           @Override
+           public void run() {
+               // Message is received after key is deleted
+               Handler returnHandler = new Handler() {
+                   @Override
+                   public void handleMessage(Message message) {
+                       if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                           setResult(RESULT_CANCELED);
+                           finish();
+                       }
+                   }
+               };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{mMasterKeyId});
-        deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
+               // Create a new Messenger for the communication back
+               Messenger messenger = new Messenger(returnHandler);
+               DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                       new long[]{ mMasterKeyId });
+               deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
+           }
+       });
     }
 
     @Override
