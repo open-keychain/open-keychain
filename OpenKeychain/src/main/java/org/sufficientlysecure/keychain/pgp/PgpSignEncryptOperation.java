@@ -279,7 +279,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                             CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
                             cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
                             log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
-                                    KeyFormattingUtils.convertKeyIdToHex(id));
+                                    KeyFormattingUtils.convertKeyIdToHex(subKeyId));
                         }
                         if (encryptSubKeyIds.isEmpty()) {
                             log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,

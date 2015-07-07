@@ -17,6 +17,15 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,14 +33,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.robolectric.*;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.Packet;
+import org.spongycastle.bcpg.PacketTags;
+import org.spongycastle.bcpg.PublicKeyEncSessionPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPEncryptedData;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -39,21 +53,19 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
+import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 import org.sufficientlysecure.keychain.util.TestingUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.security.Security;
-import java.util.HashSet;
+import static org.hamcrest.core.AnyOf.anyOf;
+import static org.hamcrest.core.Is.is;
+
 
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
@@ -83,6 +95,8 @@ public class PgpEncryptDecryptTest {
                     Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                     Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
@@ -322,6 +336,101 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption with no passphrase should return pending", result.isPending());
             Assert.assertEquals("decryption with no passphrase should return pending passphrase",
                     RequiredInputType.PASSPHRASE, result.getRequiredInputParcel().mType);
+        }
+
+    }
+
+    @Test
+    public void testAsymmetricMultiSubkeyEncrypt() throws Exception {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+
+        { // encrypt data with key
+            byte[] ciphertext;
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
+            Assert.assertTrue("encryption must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+
+            Iterator<RawPacket> packets = KeyringTestingHelper.parseKeyring(ciphertext);
+
+            RawPacket enc1 = packets.next(), enc2 = packets.next();
+            Assert.assertEquals("last packet must be encrypted data packet",
+                    PacketTags.SYM_ENC_INTEGRITY_PRO, packets.next().tag);
+            Assert.assertFalse("no further packets", packets.hasNext());
+
+            Packet p;
+            p = new BCPGInputStream(new ByteArrayInputStream(enc1.buf)).readPacket();
+            Assert.assertTrue("first packet must be session packet", p instanceof PublicKeyEncSessionPacket);
+            long encKeyId1 = ((PublicKeyEncSessionPacket) p).getKeyID();
+
+            p = new BCPGInputStream(new ByteArrayInputStream(enc2.buf)).readPacket();
+            Assert.assertTrue("second packet must be session packet", p instanceof PublicKeyEncSessionPacket);
+            long encKeyId2 = ((PublicKeyEncSessionPacket) p).getKeyID();
+
+            Assert.assertNotEquals("encrypted-to subkey ids must not be equal",
+                    encKeyId1, encKeyId2);
+            Assert.assertThat("first packet must be encrypted to one of the subkeys",
+                    KeyringTestingHelper.getSubkeyId(mStaticRing1, 2), anyOf(is(encKeyId1), is(encKeyId2)));
+            Assert.assertThat("second packet must be encrypted to one of the subkeys",
+                    KeyringTestingHelper.getSubkeyId(mStaticRing1, 3), anyOf(is(encKeyId1), is(encKeyId2)));
+
+        }
+
+        { // revoke first encryption subkey of keyring in database
+            SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
+                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(), new CryptoInputParcel(mKeyPhrase1));
+
+            ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
+            providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
+        }
+
+        { // encrypt to this keyring, make sure it's not encrypted to the revoked subkey
+            byte[] ciphertext;
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
+            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
+            Assert.assertTrue("encryption must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+
+            Iterator<RawPacket> packets = KeyringTestingHelper.parseKeyring(ciphertext);
+
+            RawPacket enc1 = packets.next();
+            Assert.assertEquals("last packet must be encrypted data packet",
+                    PacketTags.SYM_ENC_INTEGRITY_PRO, packets.next().tag);
+            Assert.assertFalse("no further packets", packets.hasNext());
+
+            Packet p;
+            p = new BCPGInputStream(new ByteArrayInputStream(enc1.buf)).readPacket();
+            Assert.assertTrue("first packet must be session packet", p instanceof PublicKeyEncSessionPacket);
+            Assert.assertEquals("first packet must be encrypted to second enc subkey",
+                    KeyringTestingHelper.getSubkeyId(mStaticRing1, 3), ((PublicKeyEncSessionPacket) p).getKeyID());
+
         }
 
     }
