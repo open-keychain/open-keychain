@@ -94,11 +94,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.DSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -821,6 +821,15 @@ public class PgpKeyOperationTest {
             Assert.assertEquals("new packet should have GNU_DUMMY protection mode stripped",
                     S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY, ((SecretKeyPacket) p).getS2K().getProtectionMode());
         }
+
+        { // trying to edit a subkey with signing capability should fail
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+
+            assertModifyFailure("subkey modification for signing-enabled but stripped subkey should fail",
+                    modified, parcel, LogType.MSG_MF_ERROR_SUB_STRIPPED);
+        }
+
     }
 
     @Test
@@ -829,7 +838,7 @@ public class PgpKeyOperationTest {
         UncachedKeyRing modified;
 
         { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-1024 key
-            long keyId = KeyringTestingHelper.getSubkeyId(ring, 0);
+            long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
@@ -838,7 +847,7 @@ public class PgpKeyOperationTest {
         }
 
         { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
-            long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+            long keyId = KeyringTestingHelper.getSubkeyId(ring, 0);
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
@@ -846,9 +855,10 @@ public class PgpKeyOperationTest {
                     parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_ALGO);
         }
 
+        long keyId = KeyringTestingHelper.getSubkeyId(ring, 1);
+
         { // keytocard should return a pending NFC_MOVE_KEY_TO_CARD result when presented with the RSA-2048
           // key, and then make key divert-to-card when it gets a serial in the cryptoInputParcel.
-            long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
 
@@ -880,7 +890,19 @@ public class PgpKeyOperationTest {
                     S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
             Assert.assertArrayEquals("new packet should have correct serial number as iv",
                     serial, ((SecretKeyPacket) p).getIV());
+        }
 
+        { // editing a signing subkey requires a primary key binding sig -> pendinginput
+            parcel.reset();
+            parcel.mChangeSubKeys.add(new SubkeyChange(keyId, true));
+
+            CanonicalizedSecretKeyRing secretRing =
+                    new CanonicalizedSecretKeyRing(modified.getEncoded(), false, 0);
+            PgpKeyOperation op = new PgpKeyOperation(null);
+            PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
+            Assert.assertTrue("keytocard operation should be pending", result.isPending());
+            Assert.assertEquals("required input should be RequiredInputType.NFC_SIGN",
+                    RequiredInputType.NFC_SIGN, result.getRequiredInputParcel().mType);
         }
 
     }

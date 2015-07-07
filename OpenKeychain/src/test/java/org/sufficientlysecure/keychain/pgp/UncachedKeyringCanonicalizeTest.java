@@ -558,8 +558,9 @@ public class UncachedKeyringCanonicalizeTest {
             PGPSignature cert = PgpKeyOperation.generateSubkeyBindingSignature(
                     PgpKeyOperation.getSignatureGenerator(masterSecretKey.getSecretKey(), cryptoInput),
                     cryptoInput.getSignatureTime(),
-                    masterPublicKey, masterSecretKey.getPrivateKey(), masterSecretKey.getPrivateKey(),
-                    masterPublicKey, masterSecretKey.getKeyUsage(), 0);
+                    masterPublicKey, masterSecretKey.getPrivateKey(),
+                    PgpKeyOperation.getSignatureGenerator(masterSecretKey.getSecretKey(), null),
+                    masterSecretKey.getPrivateKey(), masterPublicKey, masterSecretKey.getKeyUsage(), 0);
             PGPPublicKey subPubKey = PGPPublicKey.addSubkeyBindingCertification(masterPublicKey, cert);
 
             PGPSecretKey sKey;
