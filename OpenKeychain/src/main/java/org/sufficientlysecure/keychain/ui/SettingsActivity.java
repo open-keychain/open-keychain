@@ -277,8 +277,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 initializeEditTextPreferences();
                 initializeProxyTypePreference();
 
-                if (mUseTor.isChecked()) disableNormalProxyPrefs();
-                else if (mUseNormalProxy.isChecked()) disableUseTorPrefs();
+                if (mUseTor.isChecked()) {
+                    disableNormalProxyPrefs();
+                }
+                else if (mUseNormalProxy.isChecked()) {
+                    disableUseTorPrefs();
+                } else {
+                    disableNormalProxySettings();
+                }
             }
 
             private void initializeUseTorPref() {
@@ -301,7 +307,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             }
                         } else {
                             // we're unchecking Tor, so enable other proxy
-                            enableNormalProxyPrefs();
+                            enableNormalProxyCheckbox();
                             return true;
                         }
                     }
@@ -314,8 +320,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         if ((Boolean) newValue) {
                             disableUseTorPrefs();
+                            enableNormalProxySettings();
                         } else {
                             enableUseTorPrefs();
+                            disableNormalProxySettings();
                         }
                         return true;
                     }
@@ -389,16 +397,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             private void disableNormalProxyPrefs() {
                 mUseNormalProxy.setChecked(false);
                 mUseNormalProxy.setEnabled(false);
-                mProxyHost.setEnabled(false);
-                mProxyPort.setEnabled(false);
-                mProxyType.setEnabled(false);
+                disableNormalProxySettings();
             }
 
-            private void enableNormalProxyPrefs() {
+            private void enableNormalProxyCheckbox() {
                 mUseNormalProxy.setEnabled(true);
+            }
+
+            private void enableNormalProxySettings() {
                 mProxyHost.setEnabled(true);
                 mProxyPort.setEnabled(true);
                 mProxyType.setEnabled(true);
+            }
+
+            private void disableNormalProxySettings() {
+                mProxyHost.setEnabled(false);
+                mProxyPort.setEnabled(false);
+                mProxyType.setEnabled(false);
             }
 
             private void disableUseTorPrefs() {
