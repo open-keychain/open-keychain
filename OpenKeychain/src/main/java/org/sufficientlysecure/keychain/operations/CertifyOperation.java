@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
+import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -90,14 +91,21 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 case PIN:
                 case PATTERN:
                 case PASSPHRASE:
-                    if (!cryptoInput.hasPassphrase()) {
+                    passphrase = cryptoInput.getPassphrase();
+                    if (passphrase == null) {
+                        try {
+                            passphrase = getCachedPassphrase(certificationKey.getKeyId(), certificationKey.getKeyId());
+                        } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
+                            // treat as a cache miss for error handling purposes
+                        }
+                    }
+
+                    if (passphrase == null) {
                         return new CertifyResult(log,
                                 RequiredInputParcel.createRequiredSignPassphrase(
                                 certificationKey.getKeyId(), certificationKey.getKeyId(), null)
                         );
                     }
-                    // certification is always with the master key id, so use that one
-                    passphrase = cryptoInput.getPassphrase();
                     break;
 
                 case PASSPHRASE_EMPTY:
@@ -105,6 +113,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     break;
 
                 case DIVERT_TO_CARD:
+                    // the unlock operation will succeed for passphrase == null in a divertToCard key
                     passphrase = null;
                     break;
 

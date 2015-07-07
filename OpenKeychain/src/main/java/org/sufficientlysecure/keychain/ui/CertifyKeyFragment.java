@@ -331,9 +331,4 @@ public class CertifyKeyFragment
         getActivity().finish();
     }
 
-    @Override
-    public void onCryptoOperationCancelled() {
-        super.onCryptoOperationCancelled();
-    }
-
 }
