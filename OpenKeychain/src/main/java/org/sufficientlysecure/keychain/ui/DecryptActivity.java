@@ -152,7 +152,6 @@ public class DecryptActivity extends BaseActivity {
 
             }
 
-
         } catch (IOException e) {
             Toast.makeText(this, R.string.error_reading_text, Toast.LENGTH_LONG).show();
             finish();

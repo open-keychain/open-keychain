@@ -18,6 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -51,10 +56,6 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -68,21 +69,17 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -93,10 +90,7 @@ public class KeyListFragment extends LoaderFragment
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    static final int REQUEST_REPEAT_PASSPHRASE = 1;
-    static final int REQUEST_ACTION = 2;
-
-    ExportHelper mExportHelper;
+    static final int REQUEST_ACTION = 1;
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -115,13 +109,6 @@ public class KeyListFragment extends LoaderFragment
 
     // for ConsolidateOperation
     private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mExportHelper = new ExportHelper(getActivity());
-    }
 
     /**
      * Load custom layout with StickyListView from library
@@ -453,10 +440,6 @@ public class KeyListFragment extends LoaderFragment
                 createKey();
                 return true;
 
-            case R.id.menu_key_list_export:
-                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
-                return true;
-
             case R.id.menu_key_list_update_all_keys:
                 updateAllKeys();
                 return true;
@@ -489,6 +472,10 @@ public class KeyListFragment extends LoaderFragment
                 intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
                 startActivity(intent);
                 getActivity().finish();
+                return true;
+
+            case R.id.menu_key_list_debug_cons:
+                consolidate();
                 return true;
 
             default:
