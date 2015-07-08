@@ -978,7 +978,7 @@ public class PgpKeyOperation {
 
                 if (isDivertToCard(masterSecretKey)) {
                     log.add(LogType.MSG_MF_ERROR_DIVERT_NEWSUB, indent +1);
-                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
                 if (add.mExpiry == null) {
