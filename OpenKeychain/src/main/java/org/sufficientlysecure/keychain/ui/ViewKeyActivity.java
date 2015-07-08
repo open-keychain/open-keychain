@@ -95,9 +95,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_DELETE = 2;
-    static final int REQUEST_EXPORT = 3;
-    static final int REQUEST_CERTIFY = 4;
+    static final int REQUEST_EXPORT = 2;
+    static final int REQUEST_CERTIFY = 3;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
@@ -330,7 +329,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_delete: {
-                startPassphraseActivity(REQUEST_DELETE);
+                deleteKey();
                 return true;
             }
             case R.id.menu_key_view_advanced: {
@@ -487,11 +486,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 } else {
                     Notify.create(this, R.string.error_scan_match, Notify.LENGTH_LONG, Style.ERROR).show();
                 }
-                return;
-            }
-
-            case REQUEST_DELETE: {
-                deleteKey();
                 return;
             }
 
