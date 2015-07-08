@@ -44,7 +44,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,16 +89,12 @@ public class ImportKeysActivity extends BaseNfcActivity
     private ArrayList<ParcelableKeyRing> mKeyList;
 
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
-    private Preferences.ProxyPrefs mProxyPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
-
-        mProxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
-
         mImportButton = findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -233,8 +228,8 @@ public class ImportKeysActivity extends BaseNfcActivity
                     // we just set the keyserver
                     startCloudFragment(savedInstanceState, null, false, keyserver);
                     // we don't set the keyserver for ImportKeysListFragment since
-                    // it'll be taken care of by ImportKeysCloudFragment when the user clicks
-                    // the search button
+                    // it'll be set in the cloudSearchPrefs of ImportKeysCloudFragment
+                    // which is used when the user clicks on the search button
                     startListFragment(savedInstanceState, null, null, null, null);
                 } else {
                     // we allow our users to edit the query if they wish
@@ -356,23 +351,7 @@ public class ImportKeysActivity extends BaseNfcActivity
     }
 
     public void loadCallback(final ImportKeysListFragment.LoaderState loaderState) {
-        if (loaderState instanceof ImportKeysListFragment.CloudLoaderState) {
-            // do the tor check
-            // this handle will set tor to be ignored whenever a message is received
-            Runnable ignoreTor = new Runnable() {
-                @Override
-                public void run() {
-                    // disables Tor until Activity is recreated
-                    mProxyPrefs = new Preferences.ProxyPrefs(false, false, null, -1, null);
-                    mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
-                }
-            };
-            if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, mProxyPrefs, this)) {
-                mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
-            }
-        } else if (loaderState instanceof ImportKeysListFragment.BytesLoaderState) { // must always be true
-            mListFragment.loadNew(loaderState, mProxyPrefs.parcelableProxy);
-        }
+        mListFragment.loadNew(loaderState);
     }
 
     private void handleMessage(Message message) {

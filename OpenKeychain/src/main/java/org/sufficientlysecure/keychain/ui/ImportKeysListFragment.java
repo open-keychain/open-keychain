@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListCloudLoader;
@@ -43,6 +45,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -63,15 +66,17 @@ public class ImportKeysListFragment extends ListFragment implements
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
+    private ParcelableProxy mParcelableProxy;
 
     private LoaderState mLoaderState;
-    private ParcelableProxy mProxy;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_CLOUD = 1;
 
     private LongSparseArray<ParcelableKeyRing> mCachedKeyData;
     private boolean mNonInteractive;
+
+    private boolean mShowingOrbotDialog;
 
     public LoaderState getLoaderState() {
         return mLoaderState;
@@ -261,8 +266,7 @@ public class ImportKeysListFragment extends ListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(LoaderState loaderState, ParcelableProxy proxy) {
-        mProxy = proxy;
+    public void loadNew(LoaderState loaderState) {
 
         mLoaderState = loaderState;
 
@@ -306,7 +310,8 @@ public class ImportKeysListFragment extends ListFragment implements
             }
             case LOADER_ID_CLOUD: {
                 CloudLoaderState ls = (CloudLoaderState) mLoaderState;
-                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs, mProxy);
+                return new ImportKeysListCloudLoader(getActivity(), ls.mServerQuery, ls.mCloudPrefs,
+                        mParcelableProxy);
             }
 
             default:
@@ -354,6 +359,46 @@ public class ImportKeysListFragment extends ListFragment implements
 
                 if (getKeyResult.success()) {
                     // No error
+                } else if (getKeyResult.isPending()) {
+                    if (getKeyResult.getRequiredInputParcel().mType ==
+                            RequiredInputParcel.RequiredInputType.ENABLE_ORBOT) {
+                        if (mShowingOrbotDialog) {
+                            // to prevent dialogs stacking
+                            return;
+                        }
+
+                        // this is because we can't commit fragment dialogs in onLoadFinished
+                        Runnable showOrbotDialog = new Runnable() {
+                            @Override
+                            public void run() {
+                                final Runnable ignoreTor = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mParcelableProxy = ParcelableProxy
+                                                .getForNoProxy();
+                                        mShowingOrbotDialog = false;
+                                        restartLoaders();
+                                    }
+                                };
+
+                                final Runnable dialogDismiss = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mShowingOrbotDialog = false;
+                                    }
+                                };
+
+                                if (OrbotHelper.putOrbotInRequiredState(
+                                        ignoreTor, dialogDismiss, getActivity())) {
+                                    // looks like we didn't have to show the
+                                    // dialog after all
+                                    restartLoaders();
+                                }
+                            }
+                        };
+                        new Handler().post(showOrbotDialog );
+                        mShowingOrbotDialog = true;
+                    }
                 } else {
                     getKeyResult.createNotify(getActivity()).show();
                 }
