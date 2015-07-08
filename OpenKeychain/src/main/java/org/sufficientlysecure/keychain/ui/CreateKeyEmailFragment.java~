@@ -311,7 +311,6 @@ public class CreateKeyEmailFragment extends Fragment {
                 super(itemView);
                 mTextView = (TextView) itemView.findViewById(R.id.create_key_email_item_email);
                 mDeleteButton = (ImageButton) itemView.findViewById(R.id.create_key_email_item_delete_button);
-                CheatSheet.setup(mDeleteButton,getContentDescription(mDeleteButton));
             }
         }
 
@@ -321,7 +320,6 @@ public class CreateKeyEmailFragment extends Fragment {
             public FooterHolder(View itemView) {
                 super(itemView);
                 mAddButton = (Button) itemView.findViewById(R.id.create_key_add_email);
-               CheatSheet.setup(mAddButton,getContentDescription(mAddButton));
             }
         }
 
