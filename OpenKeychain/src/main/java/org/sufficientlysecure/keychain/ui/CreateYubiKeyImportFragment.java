@@ -42,9 +42,7 @@ import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateYubiKeyImportFragment
@@ -134,18 +132,7 @@ public class CreateYubiKeyImportFragment
         view.findViewById(R.id.button_search).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
-                Runnable ignoreTor = new Runnable() {
-                    @Override
-                    public void run() {
-                        refreshSearch(new ParcelableProxy(null, -1, null));
-                    }
-                };
-
-                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                        getActivity())) {
-                    refreshSearch(proxyPrefs.parcelableProxy);
-                }
+                refreshSearch();
             }
         });
 
@@ -184,10 +171,9 @@ public class CreateYubiKeyImportFragment
         }
     }
 
-    public void refreshSearch(ParcelableProxy parcelableProxy) {
-        // TODO: PHILIP verify proxy implementation in YubiKey parts
+    public void refreshSearch() {
         mListFragment.loadNew(new ImportKeysListFragment.CloudLoaderState("0x" + mNfcFingerprint,
-                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
+                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
     }
 
     public void importKey() {
@@ -226,19 +212,7 @@ public class CreateYubiKeyImportFragment
 
         setData();
 
-        Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity()).getProxyPrefs();
-        Runnable ignoreTor = new Runnable() {
-            @Override
-            public void run() {
-                refreshSearch(new ParcelableProxy(null, -1, null));
-            }
-        };
-
-        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                getActivity())) {
-            refreshSearch(proxyPrefs.parcelableProxy);
-        }
-
+        refreshSearch();
     }
 
     @Override
