@@ -85,6 +85,7 @@ public class DecryptListFragment
 
     public static final String ARG_INPUT_URIS = "input_uris";
     public static final String ARG_OUTPUT_URIS = "output_uris";
+    public static final String ARG_CANCELLED_URIS = "cancelled_uris";
     public static final String ARG_RESULTS = "results";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
@@ -92,6 +93,7 @@ public class DecryptListFragment
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, Uri> mOutputUris;
     private ArrayList<Uri> mPendingInputUris;
+    private ArrayList<Uri> mCancelledInputUris;
 
     private Uri mCurrentInputUri;
 
@@ -155,6 +157,7 @@ public class DecryptListFragment
 
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mOutputUris));
+        outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
 
     }
 
@@ -165,25 +168,34 @@ public class DecryptListFragment
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
 
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
+        ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,Uri> outputUris = args.getParcelable(ARG_OUTPUT_URIS);
         ParcelableHashMap<Uri,DecryptVerifyResult> results = args.getParcelable(ARG_RESULTS);
 
-        displayInputUris(inputUris,
+        displayInputUris(inputUris, cancelledUris,
                 outputUris != null ? outputUris.getMap() : null,
                 results != null ? results.getMap() : null
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, HashMap<Uri,Uri> outputUris,
+    private void displayInputUris(ArrayList<Uri> inputUris, ArrayList<Uri> cancelledUris,
+            HashMap<Uri,Uri> outputUris,
             HashMap<Uri,DecryptVerifyResult> results) {
 
         mInputUris = inputUris;
         mOutputUris = outputUris != null ? outputUris : new HashMap<Uri,Uri>(inputUris.size());
+        mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
         mPendingInputUris = new ArrayList<>();
 
         for (Uri uri : inputUris) {
             mAdapter.add(uri);
+
+            if (mCancelledInputUris.contains(uri)) {
+                mAdapter.setCancelled(uri);
+                continue;
+            }
+
             if (results != null && results.containsKey(uri)) {
                 processResult(uri, results.get(uri));
             } else {
@@ -247,6 +259,7 @@ public class DecryptListFragment
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
         return true;
     }
+
     @Override
     public void onQueuedOperationError(DecryptVerifyResult result) {
         final Uri uri = mCurrentInputUri;
@@ -265,6 +278,20 @@ public class DecryptListFragment
         processResult(uri, result);
 
         cryptoOperation();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        super.onCryptoOperationCancelled();
+
+        Uri uri = mCurrentInputUri;
+        mCurrentInputUri = null;
+
+        mCancelledInputUris.add(uri);
+        mAdapter.setCancelled(uri);
+
+        cryptoOperation();
+
     }
 
     private void processResult(final Uri uri, final DecryptVerifyResult result) {
@@ -528,12 +555,14 @@ public class DecryptListFragment
 
             int mProgress, mMax;
             String mProgressMsg;
+            boolean mCancelled;
 
             ViewModel(Context context, Uri uri) {
                 mContext = context;
                 mInputUri = uri;
                 mProgress = 0;
                 mMax = 100;
+                mCancelled = false;
             }
 
             void addResult(DecryptVerifyResult result) {
@@ -551,6 +580,10 @@ public class DecryptListFragment
 
             boolean hasResult() {
                 return mResult != null;
+            }
+
+            void setCancelled(boolean cancelled) {
+                mCancelled = cancelled;
             }
 
             void setProgress(int progress, int max, String msg) {
@@ -609,6 +642,13 @@ public class DecryptListFragment
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
+
+            if (model.mCancelled) {
+                if (holder.vAnimator.getDisplayedChild() != 3) {
+                    holder.vAnimator.setDisplayedChild(3);
+                }
+                return;
+            }
 
             if (!model.hasResult()) {
                 bindItemProgress(holder, model);
@@ -735,6 +775,13 @@ public class DecryptListFragment
             ViewModel newModel = new ViewModel(mContext, uri);
             int pos = mDataset.indexOf(newModel);
             mDataset.get(pos).setProgress(progress, max, msg);
+            notifyItemChanged(pos);
+        }
+
+        public void setCancelled(Uri uri) {
+            ViewModel newModel = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).setCancelled(true);
             notifyItemChanged(pos);
         }
 
