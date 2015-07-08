@@ -1434,7 +1434,8 @@
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
     <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
-    <string name="error_scan_fp">Error scanning fingerprint!</string>
-    <string name="error_scan_match">Fingerprints did not match!</string>
+    <string name="error_scan_fp">"Error scanning fingerprint!"</string>
+    <string name="error_scan_match">"Fingerprints did not match!"</string>
+    <string name="error_expiry_past">"Expiry date is in the past!"</string>
 
 </resources>
