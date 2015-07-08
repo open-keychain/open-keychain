@@ -32,6 +32,11 @@
   <string name="label_name">Nimi</string>
   <string name="label_comment">Kommentaar</string>
   <string name="label_email">E-mail</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="secret_key">Salajane võti:</string>
   <!--choice-->
   <string name="choice_15secs">15 sekundit</string>
@@ -86,7 +91,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -105,6 +110,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

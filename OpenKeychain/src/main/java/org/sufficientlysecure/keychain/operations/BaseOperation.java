@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -111,8 +112,11 @@ public abstract class BaseOperation <T extends Parcelable> implements Passphrase
     @Override
     public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
         try {
-            long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
-            return getCachedPassphrase(masterKeyId, subKeyId);
+            if (subKeyId != key.symmetric) {
+                long masterKeyId = mProviderHelper.getMasterKeyId(subKeyId);
+                return getCachedPassphrase(masterKeyId, subKeyId);
+            }
+            return getCachedPassphrase(key.symmetric, key.symmetric);
         } catch (NotFoundException e) {
             throw new PassphraseCacheInterface.NoSecretKeyException();
         }

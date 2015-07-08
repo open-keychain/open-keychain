@@ -482,6 +482,7 @@ public abstract class OperationResult implements Parcelable {
         // secret key modify
         MSG_MF (LogLevel.START, R.string.msg_mr),
         MSG_MF_DIVERT (LogLevel.DEBUG, R.string.msg_mf_divert),
+        MSG_MF_ERROR_DIVERT_NEWSUB (LogLevel.ERROR, R.string.msg_mf_error_divert_newsub),
         MSG_MF_ERROR_DIVERT_SERIAL (LogLevel.ERROR, R.string.msg_mf_error_divert_serial),
         MSG_MF_ERROR_ENCODE (LogLevel.ERROR, R.string.msg_mf_error_encode),
         MSG_MF_ERROR_FINGERPRINT (LogLevel.ERROR, R.string.msg_mf_error_fingerprint),
@@ -499,6 +500,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_MF_ERROR_RESTRICTED(LogLevel.ERROR, R.string.msg_mf_error_restricted),
         MSG_MF_ERROR_REVOKED_PRIMARY (LogLevel.ERROR, R.string.msg_mf_error_revoked_primary),
         MSG_MF_ERROR_SIG (LogLevel.ERROR, R.string.msg_mf_error_sig),
+        MSG_MF_ERROR_SUB_STRIPPED(LogLevel.ERROR, R.string.msg_mf_error_sub_stripped),
         MSG_MF_ERROR_SUBKEY_MISSING(LogLevel.ERROR, R.string.msg_mf_error_subkey_missing),
         MSG_MF_ERROR_CONFLICTING_NFC_COMMANDS(LogLevel.ERROR, R.string.msg_mf_error_conflicting_nfc_commands),
         MSG_MF_ERROR_DUPLICATE_KEYTOCARD_FOR_SLOT(LogLevel.ERROR, R.string.msg_mf_error_duplicate_keytocard_for_slot),
@@ -603,6 +605,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_CLEAR_SIGNATURE_OK (LogLevel.OK, R.string.msg_dc_clear_signature_ok),
         MSG_DC_CLEAR_SIGNATURE (LogLevel.DEBUG, R.string.msg_dc_clear_signature),
         MSG_DC_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_dc_error_bad_passphrase),
+        MSG_DC_ERROR_SYM_PASSPHRASE (LogLevel.ERROR, R.string.msg_dc_error_sym_passphrase),
         MSG_DC_ERROR_CORRUPT_DATA (LogLevel.ERROR, R.string.msg_dc_error_corrupt_data),
         MSG_DC_ERROR_EXTRACT_KEY (LogLevel.ERROR, R.string.msg_dc_error_extract_key),
         MSG_DC_ERROR_INTEGRITY_CHECK (LogLevel.ERROR, R.string.msg_dc_error_integrity_check),

@@ -1,15 +1,20 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 3.4
+
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Azalpen ikusleiho berria
+  * Agiri ugariren azalpena aldiberean
+  * YubiKey akatsen kudeaketa hobea
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
+  * Lehen bertsioa YubiKey sostengu osoarekin eskuragarri erabiltzaile interfazetik: Editatu giltzak, lotu YubiKey giltzekin,...
   Material diseinua
   * QR Kode eskaneatzea baterapena (Baimen berriak beharrezkoak)
   * Hobetuta giltza sortze laguntzailea
@@ -55,10 +60,10 @@
 
 ## 3.0
 
-  * Propose installable compatible apps in apps list
+  * Eskaini bateragarritasun ezegonkorreko aplikazioak aplikazio zerrendan
   * Diseinu berria dekriptaketa ikusleihoentzat
   * Zuzenketa ugari giltza inportatzean, zuzenduta baita ere giltzen zuriketa
-  * Honor and display key authenticate flags
+  * Ohoretu eta erakutsi giltza egiaztapen ikurrak
   * Erabiltzaile interfazea norbere giltzak sortzeko
   * Zuzenduta erabiltzaile id ukatze egiaztagiriak
   * Hodei bilaketa berria (ohiko giltza-zerbitzari eta keybase.io gain bilatzen da)
@@ -68,8 +73,8 @@
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Experimental YubiKey support: Decryption now working via API
+  * Zuzenduta 2.9.1-ko giltza haustea
+  * YubiKey sostengu esperimentala. Dekriptaketak orain API bidez egiten du lan
 
 
 ## 2.9.1

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.NfcListenerFragment;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -47,7 +48,7 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 
 public class CreateYubiKeyImportFragment
-        extends CryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
+        extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
 
     private static final String ARG_FINGERPRINT = "fingerprint";
@@ -246,14 +247,17 @@ public class CreateYubiKeyImportFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(ImportKeyResult result) {
+    public void onQueuedOperationSuccess(ImportKeyResult result) {
         long[] masterKeyIds = result.getImportedMasterKeyIds();
         if (masterKeyIds.length == 0) {
             super.onCryptoOperationError(result);
             return;
         }
 
-        Intent intent = new Intent(getActivity(), ViewKeyActivity.class);
+        // null-protected from Queueing*Fragment
+        Activity activity = getActivity();
+
+        Intent intent = new Intent(activity, ViewKeyActivity.class);
         // use the imported masterKeyId, not the one from the yubikey, because
         // that one might* just have been a subkey of the imported key
         intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyIds[0]));
@@ -262,6 +266,6 @@ public class CreateYubiKeyImportFragment
         intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
         intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
         startActivity(intent);
-        getActivity().finish();
+        activity.finish();
     }
 }

@@ -56,7 +56,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -66,10 +65,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -84,9 +80,7 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,9 +99,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_DELETE = 2;
     static final int REQUEST_EXPORT = 3;
+    static final int REQUEST_CERTIFY = 4;
+
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
-    ExportHelper mExportHelper;
     ProviderHelper mProviderHelper;
 
     protected Uri mDataUri;
@@ -161,8 +156,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mExportHelper = new ExportHelper(this);
         mProviderHelper = new ProviderHelper(this);
+        mOperationHelper = new CryptoOperationHelper<>(this, this, null);
 
         setTitle(null);
 
@@ -336,31 +331,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_export_file: {
-                try {
-                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
-                        exportToFile(mDataUri, mExportHelper, mProviderHelper);
-                        return true;
-                    }
-
-                    startPassphraseActivity(REQUEST_EXPORT);
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // This happens when the master key is stripped
-                    exportToFile(mDataUri, mExportHelper, mProviderHelper);
-                }
+                startPassphraseActivity(REQUEST_EXPORT);
                 return true;
             }
             case R.id.menu_key_view_delete: {
-                try {
-                    if (PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId, mMasterKeyId) != null) {
-                        deleteKey();
-                        return true;
-                    }
-
-                    startPassphraseActivity(REQUEST_DELETE);
-                } catch (PassphraseCacheService.KeyNotFoundException e) {
-                    // This happens when the master key is stripped
-                    deleteKey();
-                }
+                startPassphraseActivity(REQUEST_DELETE);
                 return true;
             }
             case R.id.menu_key_view_advanced: {
@@ -410,37 +385,14 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
         intent.setData(dataUri);
 
-        startCertifyIntent(intent);
+        startActivityForResult(intent, REQUEST_CERTIFY);
     }
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
         intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
 
-        startCertifyIntent(intent);
-    }
-
-    private void startCertifyIntent(Intent intent) {
-        // Message is received after signing is done in KeychainService
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(this) {
-            @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    Bundle data = message.getData();
-                    CertifyResult result = data.getParcelable(CertifyResult.EXTRA_RESULT);
-
-                    result.createNotify(ViewKeyActivity.this).show();
-                }
-            }
-        };
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
-
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_CERTIFY);
     }
 
     private void showQrCodeDialog() {
@@ -465,7 +417,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         startActivityForResult(intent, requestCode);
     }
 
-    private void exportToFile(Uri dataUri, ExportHelper exportHelper, ProviderHelper providerHelper) {
+    private void exportToFile(Uri dataUri, ProviderHelper providerHelper) {
         try {
             Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
 
@@ -474,7 +426,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
                     new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
 
-            exportHelper.showExportKeysDialog(
+            new ExportHelper(this).showExportKeysDialog(
                     new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
                     Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
             );
@@ -485,69 +437,83 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void deleteKey() {
-        // Message is received after key is deleted
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                    setResult(RESULT_CANCELED);
-                    finish();
-                }
-            }
-        };
+        new Handler().post(new Runnable() {
+           @Override
+           public void run() {
+               // Message is received after key is deleted
+               Handler returnHandler = new Handler() {
+                   @Override
+                   public void handleMessage(Message message) {
+                       if (message.arg1 == MessageStatus.OKAY.ordinal()) {
+                           setResult(RESULT_CANCELED);
+                           finish();
+                       }
+                   }
+               };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                new long[]{mMasterKeyId});
-        deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
+               // Create a new Messenger for the communication back
+               Messenger messenger = new Messenger(returnHandler);
+               DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                       new long[]{ mMasterKeyId });
+               deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
+           }
+       });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mOperationHelper != null) {
-            mOperationHelper.handleActivityResult(requestCode, resultCode, data);
-        }
-
-        if (requestCode == REQUEST_QR_FINGERPRINT && resultCode == Activity.RESULT_OK) {
-
-            // If there is an EXTRA_RESULT, that's an error. Just show it.
-            if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
-                OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-                result.createNotify(this).show();
-                return;
-            }
-
-            String fp = data.getStringExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
-            if (fp == null) {
-                Notify.create(this, "Error scanning fingerprint!",
-                        Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-                return;
-            }
-            if (mFingerprint.equalsIgnoreCase(fp)) {
-                certifyImmediate();
-            } else {
-                Notify.create(this, "Fingerprints did not match!",
-                        Notify.LENGTH_LONG, Notify.Style.ERROR).show();
-            }
-
+        if (mOperationHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
 
-        if (requestCode == REQUEST_DELETE && resultCode == Activity.RESULT_OK) {
-            deleteKey();
+        if (resultCode != Activity.RESULT_OK) {
+            return;
         }
 
-        if (requestCode == REQUEST_EXPORT && resultCode == Activity.RESULT_OK) {
-            exportToFile(mDataUri, mExportHelper, mProviderHelper);
+        switch (requestCode) {
+            case REQUEST_QR_FINGERPRINT: {
+
+                // If there is an EXTRA_RESULT, that's an error. Just show it.
+                if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(this).show();
+                    return;
+                }
+
+                String fp = data.getStringExtra(ImportKeysProxyActivity.EXTRA_FINGERPRINT);
+                if (fp == null) {
+                    Notify.create(this, R.string.error_scan_fp, Notify.LENGTH_LONG, Style.ERROR).show();
+                    return;
+                }
+                if (mFingerprint.equalsIgnoreCase(fp)) {
+                    certifyImmediate();
+                } else {
+                    Notify.create(this, R.string.error_scan_match, Notify.LENGTH_LONG, Style.ERROR).show();
+                }
+                return;
+            }
+
+            case REQUEST_DELETE: {
+                deleteKey();
+                return;
+            }
+
+            case REQUEST_EXPORT: {
+                exportToFile(mDataUri, mProviderHelper);
+                return;
+            }
+
+            case REQUEST_CERTIFY: {
+                if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(this).show();
+                }
+                return;
+            }
         }
 
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-            result.createNotify(this).show();
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+        super.onActivityResult(requestCode, resultCode, data);
+
     }
 
     @Override
@@ -659,38 +625,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
-    }
-
-    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
-            throws ProviderHelper.NotFoundException {
-
-        mIsRefreshing = true;
-        mRefreshItem.setEnabled(false);
-        mRefreshItem.setActionView(mRefresh);
-        mRefresh.startAnimation(mRotate);
-
-        byte[] blob = (byte[]) providerHelper.getGenericData(
-                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
-
-        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
-        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
-        entries.add(keyEntry);
-        mKeyList = entries;
-
-        // search config
-        {
-            Preferences prefs = Preferences.getPreferences(this);
-            Preferences.CloudSearchPrefs cloudPrefs =
-                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
-            mKeyserver = cloudPrefs.keyserver;
-        }
-
-        mOperationHelper = new CryptoOperationHelper<>(
-                this, this, R.string.progress_importing);
-
-        mOperationHelper.cryptoOperation();
     }
 
     private void editKey(Uri dataUri) {
@@ -918,6 +852,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mActionNfc.setVisibility(View.GONE);
                         }
                         mFab.setVisibility(View.VISIBLE);
+                        // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
                         mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
@@ -980,6 +915,36 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     // CryptoOperationHelper.Callback functions
 
+
+    private void updateFromKeyserver(Uri dataUri, ProviderHelper providerHelper)
+            throws ProviderHelper.NotFoundException {
+
+        mIsRefreshing = true;
+        mRefreshItem.setEnabled(false);
+        mRefreshItem.setActionView(mRefresh);
+        mRefresh.startAnimation(mRotate);
+
+        byte[] blob = (byte[]) providerHelper.getGenericData(
+                KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(blob);
+
+        ParcelableKeyRing keyEntry = new ParcelableKeyRing(fingerprint, null, null);
+        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
+        entries.add(keyEntry);
+        mKeyList = entries;
+
+        // search config
+        {
+            Preferences prefs = Preferences.getPreferences(this);
+            Preferences.CloudSearchPrefs cloudPrefs =
+                    new Preferences.CloudSearchPrefs(true, true, prefs.getPreferredKeyserver());
+            mKeyserver = cloudPrefs.keyserver;
+        }
+
+        mOperationHelper.cryptoOperation();
+    }
+
     @Override
     public ImportKeyringParcel createOperationInput() {
         return new ImportKeyringParcel(mKeyList, mKeyserver);
@@ -1004,6 +969,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     @Override
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
-        return false;
+        return true;
     }
 }

@@ -209,8 +209,13 @@ public class HkpKeyserver extends Keyserver {
             Log.w(Constants.TAG, e);
         }
 
-        client.setProxy(proxy);
-        client.setConnectTimeout(proxy != null ? 30000 : 5000, TimeUnit.MILLISECONDS);
+        if (proxy != null) {
+            client.setProxy(proxy);
+            client.setConnectTimeout(30000, TimeUnit.MILLISECONDS);
+        } else {
+            client.setProxy(Proxy.NO_PROXY);
+            client.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
+        }
         client.setReadTimeout(45000, TimeUnit.MILLISECONDS);
 
         return client;

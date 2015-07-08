@@ -331,7 +331,7 @@ public class EncryptTextFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(SignEncryptResult result) {
+    public void onQueuedOperationSuccess(SignEncryptResult result) {
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file

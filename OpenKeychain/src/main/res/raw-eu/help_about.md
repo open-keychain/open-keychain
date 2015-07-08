@@ -57,7 +57,7 @@ Baimena: GPLv3+
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache Baimena v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache Baimena v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache Baimena v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Diseinua) (Apache Baimena 2 bertsioa)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache Baimena v2)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT Baimena)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache Baimena v2)

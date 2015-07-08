@@ -191,7 +191,7 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         }
 
         @Override
-        public Object getItem(int position) {
+        public KeyItem getItem(int position) {
             if (position == 0) {
                 return null;
             }

@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.TagLostException;
 import android.nfc.tech.IsoDep;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -64,6 +65,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     public static final int REQUEST_CODE_PIN = 1;
 
+    public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
+
     protected Passphrase mPin;
     protected Passphrase mAdminPin;
     protected boolean mPw1ValidForMultipleSignatures;
@@ -72,6 +75,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected boolean mPw3Validated;
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
+    private boolean mTagHandlingEnabled;
 
     private static final int TIMEOUT = 100000;
 
@@ -168,9 +172,25 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }.execute();
     }
 
+    protected void pauseTagHandling() {
+        mTagHandlingEnabled = false;
+    }
+
+    protected void resumeTagHandling() {
+        mTagHandlingEnabled = true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check whether we're recreating a previously destroyed instance
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            mTagHandlingEnabled = savedInstanceState.getBoolean(EXTRA_TAG_HANDLING_ENABLED);
+        } else {
+            mTagHandlingEnabled = true;
+        }
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -180,19 +200,32 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean(EXTRA_TAG_HANDLING_ENABLED, mTagHandlingEnabled);
+    }
+
     /**
      * This activity is started as a singleTop activity.
      * All new NFC Intents which are delivered to this activity are handled here
      */
     @Override
     public void onNewIntent(final Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())
+                && mTagHandlingEnabled) {
             handleIntentInBackground(intent);
         }
     }
 
     private void handleNfcError(Exception e) {
         Log.e(Constants.TAG, "nfc error", e);
+
+        if (e instanceof TagLostException) {
+            onNfcError(getString(R.string.error_nfc_tag_lost));
+            return;
+        }
 
         short status;
         if (e instanceof CardException) {
@@ -202,7 +235,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
         // When entering a PIN, a status of 63CX indicates X attempts remaining.
         if ((status & (short)0xFFF0) == 0x63C0) {
-            onNfcError(getString(R.string.error_pin, status & 0x000F));
+            int tries = status & 0x000F;
+            onNfcError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
             return;
         }
 

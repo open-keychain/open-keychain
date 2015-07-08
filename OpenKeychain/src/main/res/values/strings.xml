@@ -263,7 +263,8 @@
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
     <string name="nfc_wait">"Keep the YubiKey at the back!"</string>
-    <string name="nfc_finished">"Please take away the YubiKey now."</string>
+    <string name="nfc_finished">"Take away the YubiKey now."</string>
+    <string name="nfc_try_again_text">"Take away the YubiKey now and press TRY AGAIN."</string>
     <string name="file_delete_confirmation_title">"Delete original files?"</string>
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
@@ -555,7 +556,7 @@
     <string name="api_settings_start">"Start application"</string>
     <string name="api_settings_delete_account">"Delete account"</string>
     <string name="api_settings_package_name">"Package Name"</string>
-    <string name="api_settings_package_signature">"SHA-256 of Package Signature"</string>
+    <string name="api_settings_package_certificate">"SHA-256 of Package Certificate"</string>
     <string name="api_settings_accounts">"Accounts (old API)"</string>
     <string name="api_settings_advanced">"Extended Information"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
@@ -568,8 +569,8 @@
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>
-    <string name="api_select_pub_keys_missing_text">"No keys were found for these identities:"</string>
-    <string name="api_select_pub_keys_dublicates_text">"More than one key exist for these identities:"</string>
+    <string name="api_select_pub_keys_missing_text">"No keys were found for these emails:"</string>
+    <string name="api_select_pub_keys_dublicates_text">"More than one key exist for these emails:"</string>
     <string name="api_select_pub_keys_text">"Please review the list of recipients!"</string>
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
@@ -975,6 +976,7 @@
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
     <string name="msg_mf_divert">"Will divert to smart card for crypto operations"</string>
+    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
@@ -990,6 +992,7 @@
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
+    <string name="msg_mf_error_sub_stripped">"Cannot modify stripped subkey %s!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to smart card in same operation that creates an on-card signature."</string>
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
@@ -1100,6 +1103,7 @@
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
+    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad passphrase?)"</string>
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
@@ -1388,17 +1392,22 @@
     <string name="btn_import">"Import"</string>
     <string name="snack_yubi_other">Different key stored on YubiKey!</string>
     <string name="error_nfc">"NFC Error: %s"</string>
-    <string name="error_pin">"NFC: Incorrect PIN; %d tries remaining."</string>
-    <string name="error_nfc_terminated">"NFC: Smart card in termination state"</string>
-    <string name="error_nfc_wrong_length">"NFC: Wrong length for sent / received data"</string>
-    <string name="error_nfc_conditions_not_satisfied">"NFC: Conditions of use not satisfied"</string>
-    <string name="error_nfc_security_not_satisfied">"NFC: Security status not satisfied"</string>
-    <string name="error_nfc_authentication_blocked">"NFC: PIN blocked after too many attempts"</string>
-    <string name="error_nfc_data_not_found">"NFC: Key or object not found"</string>
-    <string name="error_nfc_unknown">"NFC: Unknown Error"</string>
-    <string name="error_nfc_bad_data">"NFC: Card reported invalid data"</string>
-    <string name="error_nfc_chaining_error">"NFC: Card expected last command in a chain"</string>
-    <string name="error_nfc_header">"NFC: Card reported invalid %s byte"</string>
+    <plurals name="error_pin">
+        <item quantity="one">"Incorrect PIN!\n%d try remaining."</item>
+        <item quantity="other">"Incorrect PIN!\n%d tries remaining."</item>
+    </plurals>
+    <string name="error_nfc_terminated">"YubiKey in termination state."</string>
+    <string name="error_nfc_wrong_length">"Entered PIN is too short. PINs are at least 6 digits long."</string>
+    <string name="error_nfc_conditions_not_satisfied">"Conditions of use not satisfied."</string>
+    <string name="error_nfc_security_not_satisfied">"Security status not satisfied."</string>
+    <string name="error_nfc_authentication_blocked">"PIN blocked after too many attempts."</string>
+    <string name="error_nfc_data_not_found">"Key or object not found."</string>
+    <string name="error_nfc_unknown">"Unknown Error"</string>
+    <string name="error_nfc_bad_data">"YubiKey reported invalid data."</string>
+    <string name="error_nfc_chaining_error">"YubiKey expected last command in a chain."</string>
+    <string name="error_nfc_header">"YubiKey reported invalid %s byte."</string>
+    <string name="error_nfc_tag_lost">"YubiKey has been taken off too early. Keep the YubiKey at the back until the operation finishes."</string>
+    <string name="error_nfc_try_again">"Try again"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
     <string name="error_temp_file">Error creating temporary file.</string>
     <string name="btn_delete_original">Delete original file</string>
@@ -1426,5 +1435,8 @@
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
     <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
+    <string name="error_scan_fp">"Error scanning fingerprint!"</string>
+    <string name="error_scan_match">"Fingerprints did not match!"</string>
+    <string name="error_expiry_past">"Expiry date is in the past!"</string>
 
 </resources>

@@ -1,5 +1,10 @@
 [//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
+## 3.4
+
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 ## 3.3
 

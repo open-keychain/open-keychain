@@ -433,7 +433,7 @@
   <string name="api_settings_start">アプリケーションを開始</string>
   <string name="api_settings_delete_account">アカウントを削除</string>
   <string name="api_settings_package_name">パッケージ名</string>
-  <string name="api_settings_package_signature">パッケージの署名 SHA-256</string>
+  <string name="api_settings_package_certificate">パッケージの署名 SHA-256</string>
   <string name="api_settings_accounts">アカウント(deprecated API)</string>
   <string name="api_settings_advanced">詳細情報</string>
   <string name="api_settings_allowed_keys">受け入れる鍵</string>

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -94,6 +95,8 @@ public class ImportKeysActivity extends BaseNfcActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setFullScreenDialogClose(Activity.RESULT_CANCELED, true);
 
         mProxyPrefs = Preferences.getPreferences(this).getProxyPrefs();
 

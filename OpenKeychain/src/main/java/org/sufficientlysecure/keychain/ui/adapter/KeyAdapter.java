@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -114,7 +113,7 @@ public class KeyAdapter extends CursorAdapter {
             CheatSheet.setup(mCreationDate,getContentDescription(mCreationDate));
         }
 
-        public void setData(Context context, KeyItem item, Highlighter highlighter) {
+        public void setData(Context context, KeyItem item, Highlighter highlighter, boolean enabled) {
 
             mDisplayedItem = item;
 
@@ -133,9 +132,15 @@ public class KeyAdapter extends CursorAdapter {
                 }
             }
 
+            // sort of a hack: if this item isn't enabled, we make it clickable
+            // to intercept its click events
+            mView.setClickable(!enabled);
+
             { // set edit button and status, specific by key type
 
                 mMasterKeyId = item.mKeyId;
+
+                int textColor;
 
                 // Note: order is important!
                 if (item.mIsRevoked) {
@@ -143,14 +148,12 @@ public class KeyAdapter extends CursorAdapter {
                             .setStatusImage(context, mStatus, null, State.REVOKED, R.color.bg_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                    mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                    textColor = R.color.bg_gray;
                 } else if (item.mIsExpired) {
                     KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.bg_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    mMainUserId.setTextColor(context.getResources().getColor(R.color.bg_gray));
-                    mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.bg_gray));
+                    textColor = R.color.bg_gray;
                 } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
@@ -161,8 +164,7 @@ public class KeyAdapter extends CursorAdapter {
                     } else {
                         mSlinger.setVisibility(View.GONE);
                     }
-                    mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
-                    mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
+                    textColor = R.color.black;
                 } else {
                     // this is a public key - show if it's verified
                     if (item.mIsVerified) {
@@ -173,9 +175,15 @@ public class KeyAdapter extends CursorAdapter {
                         mStatus.setVisibility(View.VISIBLE);
                     }
                     mSlinger.setVisibility(View.GONE);
-                    mMainUserId.setTextColor(context.getResources().getColor(R.color.black));
-                    mMainUserIdRest.setTextColor(context.getResources().getColor(R.color.black));
+                    textColor = R.color.black;
                 }
+
+                if (!enabled) {
+                    textColor = R.color.bg_gray;
+                }
+
+                mMainUserId.setTextColor(context.getResources().getColor(textColor));
+                mMainUserIdRest.setTextColor(context.getResources().getColor(textColor));
 
                 if (item.mHasDuplicate) {
                     String dateTime = DateUtils.formatDateTime(context,
@@ -212,9 +220,11 @@ public class KeyAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         Highlighter highlighter = new Highlighter(context, mQuery);
-        KeyItemViewHolder h = (KeyItemViewHolder) view.getTag();
         KeyItem item = new KeyItem(cursor);
-        h.setData(context, item, highlighter);
+        boolean isEnabled = isEnabled(cursor);
+
+        KeyItemViewHolder h = (KeyItemViewHolder) view.getTag();
+        h.setData(context, item, highlighter, isEnabled);
     }
 
     public boolean isSecretAvailable(int id) {

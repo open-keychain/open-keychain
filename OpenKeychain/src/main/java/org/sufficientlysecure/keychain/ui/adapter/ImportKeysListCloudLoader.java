@@ -103,7 +103,7 @@ public class ImportKeysListCloudLoader
             ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(
                     mServerQuery,
                     mCloudPrefs,
-                    mParcelableProxy.getProxy()
+                    mParcelableProxy != null ? mParcelableProxy.getProxy() : null
             );
 
             mEntryList.clear();

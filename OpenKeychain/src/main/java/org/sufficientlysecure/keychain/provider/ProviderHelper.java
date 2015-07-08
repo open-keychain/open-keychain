@@ -1422,7 +1422,7 @@ public class ProviderHelper {
     private ContentValues contentValueForApiApps(AppSettings appSettings) {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
-        values.put(ApiApps.PACKAGE_CERTIFICATE, appSettings.getPackageSignature());
+        values.put(ApiApps.PACKAGE_CERTIFICATE, appSettings.getPackageCertificate());
         return values;
     }
 
@@ -1468,7 +1468,7 @@ public class ProviderHelper {
                 settings = new AppSettings();
                 settings.setPackageName(cursor.getString(
                         cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
-                settings.setPackageSignature(cursor.getBlob(
+                settings.setPackageCertificate(cursor.getBlob(
                         cursor.getColumnIndex(KeychainContract.ApiApps.PACKAGE_CERTIFICATE)));
             }
         } finally {

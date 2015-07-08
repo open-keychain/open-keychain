@@ -118,6 +118,7 @@ public class KeyListFragment extends LoaderFragment
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;
+    private ArrayList<Long> mIdsForExport;
     // This index for remembering the number of master key.
     private int mIndex;
 
@@ -642,6 +643,7 @@ public class KeyListFragment extends LoaderFragment
 
     private void showMultiExportDialog(long[] masterKeyIds) {
         mIdsForRepeatAskPassphrase = new ArrayList<>();
+        mIdsForExport = new ArrayList<>();
         for (long id : masterKeyIds) {
             try {
                 if (PassphraseCacheService.getCachedPassphrase(
@@ -651,6 +653,7 @@ public class KeyListFragment extends LoaderFragment
             } catch (PassphraseCacheService.KeyNotFoundException e) {
                 // This happens when the master key is stripped
                 // and ignore this key.
+                mIdsForExport.add(id);
             }
         }
         mIndex = 0;
@@ -658,13 +661,9 @@ public class KeyListFragment extends LoaderFragment
             startPassphraseActivity();
             return;
         }
-        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-        for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
-            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
-        }
-        mExportHelper.showExportKeysDialog(idsForMultiExport,
-                Constants.Path.APP_DIR_FILE,
-                mAdapter.isAnySecretSelected());
+
+        mIdsForExport.addAll(mIdsForRepeatAskPassphrase);
+        finishExport();
     }
 
     private void startPassphraseActivity() {
@@ -672,6 +671,16 @@ public class KeyListFragment extends LoaderFragment
         long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
+    }
+
+    private void finishExport() {
+        long[] idsForMultiExport = new long[mIdsForExport.size()];
+        for (int i = 0; i < mIdsForExport.size(); i++) {
+            idsForMultiExport[i] = mIdsForExport.get(i);
+        }
+        mExportHelper.showExportKeysDialog(idsForMultiExport,
+                Constants.Path.APP_DIR_FILE,
+                mAdapter.isAnySecretSelected());
     }
 
     @Override
@@ -692,13 +701,9 @@ public class KeyListFragment extends LoaderFragment
                 startPassphraseActivity();
                 return;
             }
-            long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-            for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
-                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
-            }
-            mExportHelper.showExportKeysDialog(idsForMultiExport,
-                    Constants.Path.APP_DIR_FILE,
-                    mAdapter.isAnySecretSelected());
+
+            mIdsForExport.addAll(mIdsForRepeatAskPassphrase);
+            finishExport();
         }
 
         if (requestCode == REQUEST_ACTION) {

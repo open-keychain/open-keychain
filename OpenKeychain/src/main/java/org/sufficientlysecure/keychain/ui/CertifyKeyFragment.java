@@ -324,16 +324,15 @@ public class CertifyKeyFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(CertifyResult result) {
+    public void onQueuedOperationSuccess(CertifyResult result) {
+        // protected by Queueing*Fragment
+        Activity activity = getActivity();
+
         Intent intent = new Intent();
         intent.putExtra(CertifyResult.EXTRA_RESULT, result);
-        getActivity().setResult(Activity.RESULT_OK, intent);
-        getActivity().finish();
-    }
+        activity.setResult(Activity.RESULT_OK, intent);
+        activity.finish();
 
-    @Override
-    public void onCryptoOperationCancelled() {
-        super.onCryptoOperationCancelled();
     }
 
 }

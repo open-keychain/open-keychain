@@ -41,13 +41,7 @@ public class DisplayTextActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogClose(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(Activity.RESULT_CANCELED);
-                finish();
-            }
-        }, false);
+        setFullScreenDialogClose(Activity.RESULT_CANCELED, false);
 
         // Handle intent actions
         handleActions(savedInstanceState, getIntent());

@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -39,12 +40,12 @@ import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import snippet;
 public class ViewKeyYubiKeyFragment
-        extends CryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>
+        extends QueueingCryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>
         implements LoaderCallbacks<Cursor> {
 
     public static final String ARG_MASTER_KEY_ID = "master_key_id";
@@ -73,6 +74,10 @@ public class ViewKeyYubiKeyFragment
         frag.setArguments(args);
 
         return frag;
+    }
+
+    public ViewKeyYubiKeyFragment() {
+        super(null);
     }
 
     @Override
@@ -211,7 +216,8 @@ public class ViewKeyYubiKeyFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(PromoteKeyResult result) {
+    public void onQueuedOperationSuccess(PromoteKeyResult result) {
         result.createNotify(getActivity()).show();
     }
+
 }

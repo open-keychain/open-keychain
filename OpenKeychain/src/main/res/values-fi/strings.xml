@@ -66,7 +66,6 @@
   <string name="label_use_default_yubikey_pin">Käytä vakiota YubiKey PIN:iä</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Käytä numeerista näppäimistöä YuniKey PIN:iin</string>
   <string name="label_label_use_default_yubikey_pin_summary">Käyttää vakio-PIN:iä (123456) käyttääkseen YubiKeyssejä NFC kautta</string>
-  <string name="label_asymmetric_from">Allekirjoittaja:</string>
   <string name="label_to">Salaa:</string>
   <string name="label_delete_after_decryption">Poista salauksen purkamisen jälkeen</string>
   <string name="label_encryption_algorithm">Salausalgoritmi</string>
@@ -85,8 +84,12 @@
   <string name="label_send_key">Synkronoi pilveen</string>
   <string name="label_fingerprint">Sormenjälki</string>
   <string name="expiry_date_dialog_title">Aseta umpeutumispäivämäärä</string>
-  <string name="label_first_keyserver_is_used">(Ensimmäinen avainpalvelin listalla on ensisijainen)</string>
   <string name="label_preferred">ensisijainen</string>
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="user_id_no_name">&lt;ei nimeä&gt;</string>
   <string name="none">&lt;ei mitään&gt;</string>
   <plurals name="n_keys">
@@ -161,7 +164,7 @@
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
-  <!--Add keyserver-->
+  <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
@@ -180,6 +183,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
   <!--First Time-->

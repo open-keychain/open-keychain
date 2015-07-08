@@ -23,6 +23,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -45,14 +46,17 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  * @see KeychainService
  *
  */
-public abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
+abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
         extends Fragment implements CryptoOperationHelper.Callback<T, S> {
 
     final private CryptoOperationHelper<T, S> mOperationHelper;
 
-    public CryptoOperationFragment() {
+    public CryptoOperationFragment(Integer initialProgressMsg) {
+        mOperationHelper = new CryptoOperationHelper<>(this, this, initialProgressMsg);
+    }
 
-        mOperationHelper = new CryptoOperationHelper<>(this, this);
+    public CryptoOperationFragment() {
+        mOperationHelper = new CryptoOperationHelper<>(this, this, R.string.progress_processing);
     }
 
     @Override
@@ -74,10 +78,6 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
 
     protected void cryptoOperation(CryptoInputParcel cryptoInput) {
         mOperationHelper.cryptoOperation(cryptoInput);
-    }
-
-    protected void cryptoOperation(CryptoInputParcel cryptoInput, boolean showProgress) {
-        mOperationHelper.cryptoOperation(cryptoInput, showProgress);
     }
 
     @Override @Nullable

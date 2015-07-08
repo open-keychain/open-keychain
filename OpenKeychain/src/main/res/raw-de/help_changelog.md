@@ -1,11 +1,16 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.4
+
+  * Anonymous key download over Tor
+  * Proxy support
+  * Better YubiKey error handling
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Neuer Entschlüsselungsbildschirm
+  * Entschlüsselung mehrerer Dateien gleichzeitig
+  * Bessere Behandlung von YubiKey-Fehlern
 
 ## 3.2
 
@@ -81,37 +86,37 @@
   * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
   * Nutzung gekürzter Schlüssel repariert
   * Standardmäßig SHA256 aufgrund von Kompatibilität
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * Intent-API hat sich geändert, siehe https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * OpenPGP-API bearbeitet ab jetzt widerrufene/abgelaufene Schlüssel und gibt alle Benutzer-IDs zurück
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
+  * Behebt Abstürze aus v2.8
   * Experimentelle ECC-Unterstützung
-  * Experimental YubiKey support: Only signing with imported keys
+  * Experimentelle YubiKey-Unterstützung (nur Unterschreiben mit importierten Schlüsseln)
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
+  * In diesem Release wurden so viele Fehler behoben, dass wir uns lieber auf die neuen Funktionen konzentrieren
+  * Schlüsselbearbeitung: Fantastisches neues Design, Schlüsselwiderruf
+  * Schlüsselimport: Fantastisches neues Design, sichere Verbindungen zu Keyservern über hkps, Namensauflösung der Schlüsselserver über DNS SRV-Einträge
   * Neuer Bildschirm bei der ersten Öffnung
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * Neuer Schlüsselerstellungsbildschirm: Autovervollständigung von Name und E-Mail basierend auf Deinen persönlichen Android-Konten
+  * Dateiverschlüsselung: fantastisches neues Design, Unterstützung für die Verschlüsselung mehrerer Dateien
+  * Neue Symbile zum Anzeigen des Schlüsselstatus (von Brennan Novak)
+  * Wichtiger Fehler behoben: Import großer Schlüsselsammlungen aus einer Datei ist nun möglich
+  * Benachrichtigung, die zwischengespeicherte Passwörter anzeigt
+  * Schlüssel sind mit den Kontakten verbunden
 
-This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+Dieser Release wäre ohne die Arbeit von Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray und Thialfihar nicht möglich gewesen
 
 ## 2.7
 
   * Lila! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
+  * Neues Schlüsselansichtsdesign (Dominik, Vincent)
+  * Neue flache Android-Knöpfe (Dominik, Vincent)
   * API-Korrekturen (Dominik)
   * Import aus keybase.io (Tim Bray)
 
@@ -123,28 +128,28 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
+  * Schlüsselbeglaubigungen (dank Vincent Breitmoser)
+  * Unterstützung für GnuPG-Teilschlüssel (danke an Vincent Breitmoser)
+  * Neues Design für Signaturprüfung
   * Benutzerdefinierte Schlüssellänge (Dank an Greg Witczak)
-  * Fix share-functionality from other apps
+  * Fehler bei der Teilen-Funktionalität aus anderen Apps behoben
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * Fehler bei der Entschlüsselung symmetrischer OpenPGP-Nachrichten/Dateien behoben
+  * Umgestaltung des Schlüsselbearbeitungsbildschirms (Dank an Ash Hughes)
+  * Neues modernes Design für Verschlüsselungs-/Entschlüsselungsbildschirme
+  * OpenPGP-API Version 3 (mehrere API-Konten, interne Fehlerbehebungen, Schlüsselsuche)
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+Dank an alle Bewerber bei Google Summer of Code 2014, welche diesen Release funktionsreich und fehlerfrei gemacht haben!
+Neben einigen kleinen Fehlerbehebungen wurden bemerkenswert viele Patches durch die folgenden Personen beigesteuert (alphabetisch sortiert):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
+  * Neue einheitliche Schlüsselliste
+  * Eingefärbter Schlüsselfingerabdruck
   * Support for keyserver ports
   * Deactivate possibility to generate weak keys
   * Much more internal work on the API
