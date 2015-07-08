@@ -125,7 +125,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mFlagSign = (CheckBox) view.findViewById(R.id.add_subkey_flag_sign);
         mFlagEncrypt = (CheckBox) view.findViewById(R.id.add_subkey_flag_encrypt);
         mFlagAuthenticate = (CheckBox) view.findViewById(R.id.add_subkey_flag_authenticate);
-        CheatSheet.setup(mCustomKeyEditText,getContentDescription(mCustomKeyEditText));
+
         mNoExpiryCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -266,8 +266,6 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         if (d != null) {
             Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
             Button negativeButton = d.getButton(Dialog.BUTTON_NEGATIVE);
-            CheatSheet.setup(positiveButton,getContentDescription(positiveButton));
-            CheatSheet.setup(negativeButton,getContentDescription(negativeButton));
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

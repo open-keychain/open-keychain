@@ -60,8 +60,6 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.net.Proxy;
 
-import snippet;
-
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
     private static final String ARG_ACTION = "arg_dialog_action";
@@ -210,7 +208,6 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         AlertDialog addKeyserverDialog = (AlertDialog) getDialog();
         if (addKeyserverDialog != null) {
             Button positiveButton = addKeyserverDialog.getButton(Dialog.BUTTON_POSITIVE);
-        CheatSheet.setup(positiveButton,getContentDescription(positiveButton));
             positiveButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -365,7 +362,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             AlertDialog dialog = ((AlertDialog) getDialog());
             Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            CheatSheet.setup(bt,getContentDescription(bt));
+
             bt.performClick();
             return true;
         }

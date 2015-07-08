@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.compatibility;
 import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
-import snippet;
 
 /**
  * Bug on Android >= 4.1
@@ -33,7 +32,6 @@ public class ListFragmentWorkaround extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-	CheatSheet.setup(l,getContentDescription(l));        
-	l.setItemChecked(position, l.isItemChecked(position));
+        l.setItemChecked(position, l.isItemChecked(position));
     }
 }

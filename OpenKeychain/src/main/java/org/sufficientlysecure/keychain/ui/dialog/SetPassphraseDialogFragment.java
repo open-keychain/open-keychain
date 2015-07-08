@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import snippet;
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
@@ -214,7 +215,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             AlertDialog dialog = ((AlertDialog) getDialog());
             Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
+            CheatSheet.setup(bt,getContentDescription(bt));
             bt.performClick();
             return true;
         }
