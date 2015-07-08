@@ -110,7 +110,16 @@ public class ImportKeysProxyActivity extends FragmentActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper != null) {
-            mImportOpHelper.cryptoOperation();
+            if (!mImportOpHelper.handleActivityResult(requestCode, resultCode, data)) {
+                // if a result has been returned, and it does not belong to mImportOpHelper,
+                // return it down to other activity
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    returnResult(data);
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    finish();
+                }
+            }
         }
 
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
@@ -127,13 +136,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
             processScannedContent(scannedContent);
 
             return;
-        }
-        // if a result has been returned, return it down to other activity
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            returnResult(data);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-            finish();
         }
     }
 

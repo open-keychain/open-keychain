@@ -171,6 +171,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             // this wasn't meant for us to handle
             return false;
         } else {
+            // reset mRequestedCode because we have finished what we started
             mRequestedCode = -1;
         }
         if (resultCode == Activity.RESULT_CANCELED) {
