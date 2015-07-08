@@ -87,9 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(cancelOnClickListener);
     }
 
-    /**
-     * Close button only
-     */
+    /** Close button only */
     protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener, boolean white) {
         if (white) {
             setActionBarIcon(R.drawable.ic_close_white_24dp);
@@ -102,6 +100,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void setFullScreenDialogClose(View.OnClickListener cancelOnClickListener) {
         setFullScreenDialogClose(cancelOnClickListener, true);
+    }
+
+    /** Close button only, with finish-action and given return status, white. */
+    protected void setFullScreenDialogClose(final int result, boolean white) {
+        setFullScreenDialogClose(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(result);
+                finish();
+            }
+        }, white);
     }
 
     /**

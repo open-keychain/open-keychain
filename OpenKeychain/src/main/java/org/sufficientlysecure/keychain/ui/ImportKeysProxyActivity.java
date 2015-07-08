@@ -257,7 +257,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
         Intent data = new Intent();
         data.putExtras(returnData);
         returnResult(data);
-        return;
     }
 
     @Override
