@@ -166,11 +166,13 @@ public class EncryptTextFragment
 //                break;
 //            }
             case R.id.encrypt_copy: {
+                hideKeyboard();
                 mShareAfterEncrypt = false;
                 cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
+                hideKeyboard();
                 mShareAfterEncrypt = true;
                 cryptoOperation();
                 break;
