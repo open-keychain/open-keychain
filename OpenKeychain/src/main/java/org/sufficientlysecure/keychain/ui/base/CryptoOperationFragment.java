@@ -18,10 +18,13 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -101,12 +104,25 @@ abstract class CryptoOperationFragment<T extends Parcelable, S extends Operation
     abstract public void onCryptoOperationSuccess(S result);
 
     @Override
-    public void onCryptoOperationError(S result) {
-        result.createNotify(getActivity()).show();
-    }
+    abstract public void onCryptoOperationError(S result);
 
     @Override
     public void onCryptoOperationCancelled() {
+    }
+
+    public void hideKeyboard() {
+        if (getActivity() == null) {
+            return;
+        }
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus
+        View v = getActivity().getCurrentFocus();
+        if (v == null)
+            return;
+
+        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
 }

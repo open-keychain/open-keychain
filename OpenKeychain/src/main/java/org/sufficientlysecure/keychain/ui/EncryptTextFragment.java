@@ -332,6 +332,9 @@ public class EncryptTextFragment
 
     @Override
     public void onQueuedOperationSuccess(SignEncryptResult result) {
+        super.onQueuedOperationSuccess(result);
+
+        hideKeyboard();
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file

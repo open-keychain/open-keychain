@@ -388,6 +388,9 @@ public class EncryptFilesFragment
 
     @Override
     public void onQueuedOperationSuccess(final SignEncryptResult result) {
+        super.onQueuedOperationSuccess(result);
+
+        hideKeyboard();
 
         // protected by Queueing*Fragment
         FragmentActivity activity = getActivity();
