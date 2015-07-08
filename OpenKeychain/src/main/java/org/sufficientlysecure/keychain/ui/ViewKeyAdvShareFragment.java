@@ -22,6 +22,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -62,6 +63,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
@@ -104,6 +106,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
+        View vKeySafeButton = view.findViewById(R.id.view_key_action_key_export);
         View vKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
@@ -127,6 +130,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 share(false, false);
+            }
+        });
+        vKeySafeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exportToFile(mDataUri, new ProviderHelper(getActivity()));
             }
         });
         vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +171,25 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         });
 
         return root;
+    }
+
+    private void exportToFile(Uri dataUri, ProviderHelper providerHelper) {
+        try {
+            Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
+
+            HashMap<String, Object> data = providerHelper.getGenericData(
+                    baseUri,
+                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
+                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
+
+            new ExportHelper(getActivity()).showExportKeysDialog(
+                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
+                    Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
+            );
+        } catch (ProviderHelper.NotFoundException e) {
+            Notify.create(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR).show();
+            Log.e(Constants.TAG, "Key not found", e);
+        }
     }
 
     private void startSafeSlinger(Uri dataUri) {

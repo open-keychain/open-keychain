@@ -48,8 +48,9 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
     static final int ID_KEYS = 1;
     static final int ID_ENCRYPT_DECRYPT = 2;
     static final int ID_APPS = 3;
-    static final int ID_SETTINGS = 4;
-    static final int ID_HELP = 5;
+    static final int ID_BACKUP = 4;
+    static final int ID_SETTINGS = 5;
+    static final int ID_HELP = 6;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -77,7 +78,9 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
                                 .withIdentifier(ID_ENCRYPT_DECRYPT).withCheckable(false),
                         new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
-                                .withIdentifier(ID_APPS).withCheckable(false)
+                                .withIdentifier(ID_APPS).withCheckable(false),
+                        new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
+                                .withIdentifier(ID_BACKUP).withCheckable(false)
                 )
                 .addStickyDrawerItems(
                         // display and stick on bottom of drawer
@@ -98,6 +101,9 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                                     break;
                                 case ID_APPS:
                                     onAppsSelected();
+                                    break;
+                                case ID_BACKUP:
+                                    onBackupSelected();
                                     break;
                                 case ID_SETTINGS:
                                     intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -192,6 +198,13 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         setFragment(frag, true);
     }
 
+    private void onBackupSelected() {
+        mToolbar.setTitle(R.string.nav_backup);
+        mDrawerResult.setSelectionByIdentifier(ID_APPS, false);
+        Fragment frag = new BackupFragment();
+        setFragment(frag, true);
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         // add the values which need to be saved from the drawer to the bundle
@@ -246,6 +259,8 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
         } else if (frag instanceof AppsListFragment) {
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_APPS), false);
+        } else if (frag instanceof BackupFragment) {
+            mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_BACKUP), false);
         }
     }
 

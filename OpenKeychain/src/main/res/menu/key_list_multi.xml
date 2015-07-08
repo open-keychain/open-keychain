@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/menu_key_list_multi_encrypt"
@@ -8,21 +8,9 @@
         android:title="@string/menu_encrypt_to" />
 
     <item
-        android:id="@+id/menu_key_list_multi_export"
-        android:showAsAction="never"
-        tools:ignore="AppCompatResource"
-        android:title="@string/menu_export_key" />
-
-    <item
         android:id="@+id/menu_key_list_multi_delete"
         android:showAsAction="never"
-        tools:ignore="AppCompatResource"
-        android:title="@string/menu_delete_key" />
-
-    <item
-        android:id="@+id/menu_key_list_multi_select_all"
-        android:showAsAction="never"
-        tools:ignore="AppCompatResource"
-        android:title="@string/menu_select_all" />
+        android:title="@string/menu_delete_key"
+        tools:ignore="AppCompatResource" />
 
 </menu>

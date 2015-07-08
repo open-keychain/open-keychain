@@ -116,12 +116,6 @@ public class KeyListFragment extends LoaderFragment
     // for ConsolidateOperation
     private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
 
-    // This ids for multiple key export.
-    private ArrayList<Long> mIdsForRepeatAskPassphrase;
-    private ArrayList<Long> mIdsForExport;
-    // This index for remembering the number of master key.
-    private int mIndex;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -240,18 +234,6 @@ public class KeyListFragment extends LoaderFragment
                     case R.id.menu_key_list_multi_delete: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
                         showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
-                        break;
-                    }
-                    case R.id.menu_key_list_multi_export: {
-                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        showMultiExportDialog(ids);
-                        break;
-                    }
-                    case R.id.menu_key_list_multi_select_all: {
-                        // select all
-                        for (int i = 0; i < mAdapter.getCount(); i++) {
-                            mStickyList.setItemChecked(i, true);
-                        }
                         break;
                     }
                 }
@@ -641,48 +623,6 @@ public class KeyListFragment extends LoaderFragment
         mConsolidateOpHelper.cryptoOperation();
     }
 
-    private void showMultiExportDialog(long[] masterKeyIds) {
-        mIdsForRepeatAskPassphrase = new ArrayList<>();
-        mIdsForExport = new ArrayList<>();
-        for (long id : masterKeyIds) {
-            try {
-                if (PassphraseCacheService.getCachedPassphrase(
-                        getActivity(), id, id) == null) {
-                    mIdsForRepeatAskPassphrase.add(id);
-                }
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                // This happens when the master key is stripped
-                // and ignore this key.
-                mIdsForExport.add(id);
-            }
-        }
-        mIndex = 0;
-        if (mIdsForRepeatAskPassphrase.size() != 0) {
-            startPassphraseActivity();
-            return;
-        }
-
-        mIdsForExport.addAll(mIdsForRepeatAskPassphrase);
-        finishExport();
-    }
-
-    private void startPassphraseActivity() {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
-    }
-
-    private void finishExport() {
-        long[] idsForMultiExport = new long[mIdsForExport.size()];
-        for (int i = 0; i < mIdsForExport.size(); i++) {
-            idsForMultiExport[i] = mIdsForExport.get(i);
-        }
-        mExportHelper.showExportKeysDialog(idsForMultiExport,
-                Constants.Path.APP_DIR_FILE,
-                mAdapter.isAnySecretSelected());
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper != null) {
@@ -691,19 +631,6 @@ public class KeyListFragment extends LoaderFragment
 
         if (mConsolidateOpHelper != null) {
             mConsolidateOpHelper.handleActivityResult(requestCode, resultCode, data);
-        }
-
-        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if (resultCode != Activity.RESULT_OK) {
-                return;
-            }
-            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
-                startPassphraseActivity();
-                return;
-            }
-
-            mIdsForExport.addAll(mIdsForRepeatAskPassphrase);
-            finishExport();
         }
 
         if (requestCode == REQUEST_ACTION) {

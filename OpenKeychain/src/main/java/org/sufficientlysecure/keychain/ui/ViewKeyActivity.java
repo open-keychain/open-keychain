@@ -363,6 +363,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
+        MenuItem exportKey = menu.findItem(R.id.menu_key_view_export_file);
+        exportKey.setVisible(mIsSecret);
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
 

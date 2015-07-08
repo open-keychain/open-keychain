@@ -49,7 +49,7 @@ public class ExportHelper
                                      final boolean showSecretCheckbox) {
         mExportFile = exportFile;
 
-        String title = null;
+        String title;
         if (masterKeyIds == null) {
             // export all keys
             title = mActivity.getString(R.string.title_export_keys);
@@ -68,7 +68,7 @@ public class ExportHelper
                 mExportFile = file;
                 exportKeys(masterKeyIds, checked);
             }
-        }, mActivity.getSupportFragmentManager() ,title, message, exportFile, checkMsg);
+        }, mActivity.getSupportFragmentManager(), title, message, exportFile, checkMsg);
     }
 
     // TODO: If ExportHelper requires pending data (see CryptoOPerationHelper), activities using
