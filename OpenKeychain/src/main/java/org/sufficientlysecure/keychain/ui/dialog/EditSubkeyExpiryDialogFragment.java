@@ -85,9 +85,9 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         long expiry = getArguments().getLong(ARG_EXPIRY);
 
         final Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        creationCal.setTime(new Date(creation * 1000));
+        creationCal.setTimeInMillis(creation * 1000);
         Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiryCal.setTime(new Date(expiry * 1000));
+        expiryCal.setTimeInMillis(expiry * 1000);
 
         // date picker works with default time zone, we need to convert from UTC to default timezone
         creationCal.setTimeZone(TimeZone.getDefault());
@@ -128,11 +128,8 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
             noExpiry.setChecked(false);
             expiryLayout.setVisibility(View.VISIBLE);
 
-            // convert from UTC to time zone of device
-            Calendar expiryCalTimeZone = (Calendar) expiryCal.clone();
-            expiryCalTimeZone.setTimeZone(TimeZone.getDefault());
             currentExpiry.setText(DateFormat.getDateFormat(
-                    getActivity()).format(expiryCalTimeZone.getTime()));
+                    getActivity()).format(expiryCal.getTime()));
         }
 
         // date picker works based on default time zone
