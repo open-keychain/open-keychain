@@ -110,7 +110,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper != null) {
-            mImportOpHelper.cryptoOperation();
+            mImportOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
