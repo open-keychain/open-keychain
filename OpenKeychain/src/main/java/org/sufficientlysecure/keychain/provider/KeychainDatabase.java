@@ -275,6 +275,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 10:
                 // do nothing here, just consolidate
             case 11:
+                // fix problems in database, see #1402 for details
+                // https://github.com/open-keychain/open-keychain/issues/1402
                 db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
                 if (oldVersion == 10) {
                     // no consolidate if we are updating from 10, we're just here for the api_accounts fix
