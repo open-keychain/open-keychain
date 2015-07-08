@@ -25,8 +25,8 @@
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
-    <string name="title_export_key">"Export Key"</string>
-    <string name="title_export_keys">"Export Keys"</string>
+    <string name="title_export_key">"Backup Key"</string>
+    <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
     <string name="title_certify_key">"Confirm Key"</string>
@@ -275,7 +275,10 @@
     <string name="error_no_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest">"A backup excluding your keys will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_single">"This key will be shared, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_secret_single">"A full backup of your key will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_secret">"A full backup of all keys including yours will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
     <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and lose all key confirmations done with it!"</string>
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>

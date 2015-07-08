@@ -22,7 +22,6 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -84,6 +83,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private Uri mDataUri;
 
     private byte[] mFingerprint;
+    private long mMasterKeyId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -135,7 +135,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         vKeySafeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exportToFile(mDataUri, new ProviderHelper(getActivity()));
+                exportToFile();
             }
         });
         vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
@@ -173,23 +173,9 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         return root;
     }
 
-    private void exportToFile(Uri dataUri, ProviderHelper providerHelper) {
-        try {
-            Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
-
-            HashMap<String, Object> data = providerHelper.getGenericData(
-                    baseUri,
-                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
-                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
-
-            new ExportHelper(getActivity()).showExportKeysDialog(
-                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                    Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
-            );
-        } catch (ProviderHelper.NotFoundException e) {
-            Notify.create(getActivity(), R.string.error_key_not_found, Notify.Style.ERROR).show();
-            Log.e(Constants.TAG, "Key not found", e);
-        }
+    private void exportToFile() {
+        new ExportHelper(getActivity()).showExportKeysDialog(
+                mMasterKeyId, Constants.Path.APP_DIR_FILE, false);
     }
 
     private void startSafeSlinger(Uri dataUri) {
@@ -383,6 +369,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     /** Load QR Code asynchronously and with a fade in animation */
     private void setFingerprint(byte[] fingerprintBlob) {
         mFingerprint = fingerprintBlob;
+        mMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprintBlob);
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
         mFingerprintView.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));

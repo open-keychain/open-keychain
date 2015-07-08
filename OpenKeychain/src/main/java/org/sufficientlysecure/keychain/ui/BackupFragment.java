@@ -39,7 +39,6 @@ public class BackupFragment extends Fragment {
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;
-    private ArrayList<Long> mIdsForExport;
     // This index for remembering the number of master key.
     private int mIndex;
 

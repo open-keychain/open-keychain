@@ -95,7 +95,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public static final String EXTRA_NFC_FINGERPRINTS = "nfc_fingerprints";
 
     static final int REQUEST_QR_FINGERPRINT = 1;
-    static final int REQUEST_EXPORT = 2;
+    static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
@@ -325,7 +325,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_export_file: {
-                startPassphraseActivity(REQUEST_EXPORT);
+                startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
             case R.id.menu_key_view_delete: {
@@ -413,23 +413,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         startActivityForResult(intent, requestCode);
     }
 
-    private void exportToFile(Uri dataUri, ProviderHelper providerHelper) {
-        try {
-            Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
-
-            HashMap<String, Object> data = providerHelper.getGenericData(
-                    baseUri,
-                    new String[]{KeychainContract.Keys.MASTER_KEY_ID, KeychainContract.KeyRings.HAS_SECRET},
-                    new int[]{ProviderHelper.FIELD_TYPE_INTEGER, ProviderHelper.FIELD_TYPE_INTEGER});
-
-            new ExportHelper(this).showExportKeysDialog(
-                    new long[]{(Long) data.get(KeychainContract.KeyRings.MASTER_KEY_ID)},
-                    Constants.Path.APP_DIR_FILE, ((Long) data.get(KeychainContract.KeyRings.HAS_SECRET) != 0)
-            );
-        } catch (ProviderHelper.NotFoundException e) {
-            Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
-            Log.e(Constants.TAG, "Key not found", e);
-        }
+    private void backupToFile() {
+        new ExportHelper(this).showExportKeysDialog(
+                mMasterKeyId, Constants.Path.APP_DIR_FILE, true);
     }
 
     private void deleteKey() {
@@ -489,8 +475,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return;
             }
 
-            case REQUEST_EXPORT: {
-                exportToFile(mDataUri, mProviderHelper);
+            case REQUEST_BACKUP: {
+                backupToFile();
                 return;
             }
 

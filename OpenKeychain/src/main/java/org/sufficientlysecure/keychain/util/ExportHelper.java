@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.io.File;
+
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -25,15 +28,12 @@ import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 
-import java.io.File;
-
 public class ExportHelper
         implements CryptoOperationHelper.Callback <ExportKeyringParcel, ExportResult> {
     protected File mExportFile;
 
     FragmentActivity mActivity;
 
-    private CryptoOperationHelper<ExportKeyringParcel, ExportResult> mExportOpHelper;
     private boolean mExportSecret;
     private long[] mMasterKeyIds;
 
@@ -42,15 +42,13 @@ public class ExportHelper
         this.mActivity = activity;
     }
 
-    /**
-     * Show dialog where to export keys
-     */
-    public void showExportKeysDialog(final long[] masterKeyIds, final File exportFile,
-                                     final boolean showSecretCheckbox) {
+    /** Show dialog where to export keys */
+    public void showExportKeysDialog(final Long masterKeyId, final File exportFile,
+                                     final boolean exportSecret) {
         mExportFile = exportFile;
 
         String title;
-        if (masterKeyIds == null) {
+        if (masterKeyId == null) {
             // export all keys
             title = mActivity.getString(R.string.title_export_keys);
         } else {
@@ -58,17 +56,24 @@ public class ExportHelper
             title = mActivity.getString(R.string.title_export_key);
         }
 
-        String message = mActivity.getString(R.string.specify_file_to_export_to);
-        String checkMsg = showSecretCheckbox ?
-                mActivity.getString(R.string.also_export_secret_keys) : null;
+        String message;
+        if (exportSecret) {
+            message = mActivity.getString(masterKeyId == null
+                    ? R.string.specify_backup_dest_secret
+                    : R.string.specify_backup_dest_secret_single);
+        } else {
+            message = mActivity.getString(masterKeyId == null
+                    ? R.string.specify_backup_dest
+                    : R.string.specify_backup_dest_single);
+        }
 
         FileHelper.saveFile(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
                 mExportFile = file;
-                exportKeys(masterKeyIds, checked);
+                exportKeys(masterKeyId == null ? null : new long[] { masterKeyId }, exportSecret);
             }
-        }, mActivity.getSupportFragmentManager(), title, message, exportFile, checkMsg);
+        }, mActivity.getSupportFragmentManager(), title, message, exportFile, null);
     }
 
     // TODO: If ExportHelper requires pending data (see CryptoOPerationHelper), activities using
@@ -82,8 +87,9 @@ public class ExportHelper
         mExportSecret = exportSecret;
         mMasterKeyIds = masterKeyIds; // if masterKeyIds is null it means export all
 
-        mExportOpHelper = new CryptoOperationHelper(mActivity, this, R.string.progress_exporting);
-        mExportOpHelper.cryptoOperation();
+        CryptoOperationHelper<ExportKeyringParcel, ExportResult> exportOpHelper =
+                new CryptoOperationHelper<>(mActivity, this, R.string.progress_exporting);
+        exportOpHelper.cryptoOperation();
     }
 
     @Override

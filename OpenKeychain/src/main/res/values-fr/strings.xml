@@ -221,7 +221,7 @@
   <string name="error_no_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou une clef de signature.</string>
   <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
-  <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
+  <string name="specify_backup_dest">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT : le fichier sera écrasé s\'il existe !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs sélectionnées ?</string>
   <string name="secret_key_deletion_confirmation">Après suppression vous ne pourrez plus lire les messages chiffrés avec cette clef et vous perdrez toutes les confirmations de clefs faites avec elle !</string>
   <string name="public_key_deletetion_confirmation">Supprimer la clef \'%s\' ?</string>

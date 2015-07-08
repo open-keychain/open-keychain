@@ -247,7 +247,7 @@
   <string name="error_no_encryption_or_signature_key">Kies ten minste één versleutelingssleutel of een ondertekeningssleutel.</string>
   <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontsleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
-  <string name="specify_file_to_export_to">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
+  <string name="specify_backup_dest">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="key_deletion_confirmation_multi">Ben je zeker dat je alle geselecteerde sleutels wil verwijderen?</string>
   <string name="secret_key_deletion_confirmation">Na verwijderen zal je niet langer berichten versleuteld met deze sleutel kunnen lezen, en alle sleutelbevestigingen die ermee gedaan zijn verliezen!</string>
   <string name="public_key_deletetion_confirmation">Sleutel \'%s\' verwijderen?</string>

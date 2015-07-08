@@ -175,7 +175,7 @@
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
   <string name="specify_file_to_encrypt_to">請指定欲加密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_decrypt_to">請指定欲解密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
-  <string name="specify_file_to_export_to">請指定欲輸出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
+  <string name="specify_backup_dest">請指定欲輸出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="key_deletion_confirmation_multi">您真的想要刪除所有已選金鑰嗎？</string>
   <string name="secret_key_deletion_confirmation">刪除之後您將無法閱讀以這把金鑰加密的訊息，而且所有用這把金鑰做的認證都會失效！</string>
   <string name="public_key_deletetion_confirmation">刪除金鑰 \'%s\' ？</string>

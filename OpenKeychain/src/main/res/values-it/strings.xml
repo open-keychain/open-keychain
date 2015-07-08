@@ -219,7 +219,7 @@
   <string name="error_no_encryption_or_signature_key">Selezionare almeno una chiave per la cifratura o una chiave per la firma.</string>
   <string name="specify_file_to_encrypt_to">Per favore specifica il file da codificare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
   <string name="specify_file_to_decrypt_to">Per favore specifica il file da decifrare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
-  <string name="specify_file_to_export_to">Per favore specifica il file da esportare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
+  <string name="specify_backup_dest">Per favore specifica il file da esportare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi selezionate?</string>
   <string name="secret_key_deletion_confirmation">Dopo la cancellazione non sarai in grado di leggere i messaggi cifrati con questa chiave e perderai tutte le conferme principali fatti con essa!</string>
   <string name="public_key_deletetion_confirmation">Elimnina chiave \'%s\'?</string>
