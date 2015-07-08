@@ -1103,6 +1103,7 @@
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
+    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad passphrase?)"</string>
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
