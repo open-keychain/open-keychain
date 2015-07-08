@@ -180,17 +180,17 @@ public class CreateKeyActivity extends BaseNfcActivity {
                 finish();
 
             } catch (PgpKeyNotFoundException e) {
-//                Fragment frag = CreateYubiKeyImportFragment.newInstance(
-//                        mScannedFingerprints, mNfcAid, mNfcUserId);
-//                loadFragment(frag, FragAction.TO_RIGHT);
-                Notify.create(this,
-                        "YubiKey key creation is currently not supported. Please follow our FAQ.",
-                        Notify.Style.ERROR
-                ).show();
+                Fragment frag = CreateYubiKeyImportFragment.newInstance(
+                        mScannedFingerprints, mNfcAid, mNfcUserId);
+                loadFragment(frag, FragAction.TO_RIGHT);
             }
         } else {
-            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
-            loadFragment(frag, FragAction.TO_RIGHT);
+//            Fragment frag = CreateYubiKeyBlankFragment.newInstance();
+//            loadFragment(frag, FragAction.TO_RIGHT);
+            Notify.create(this,
+                    "YubiKey key creation is currently not supported. Please follow our FAQ.",
+                    Notify.Style.ERROR
+            ).show();
         }
     }
 
