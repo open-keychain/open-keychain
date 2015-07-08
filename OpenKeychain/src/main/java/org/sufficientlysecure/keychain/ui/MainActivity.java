@@ -254,12 +254,16 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
 
         // make sure the selected icon is the one shown at this point
         if (frag instanceof KeyListFragment) {
+            mToolbar.setTitle(R.string.app_name);
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_KEYS), false);
         } else if (frag instanceof EncryptDecryptOverviewFragment) {
+            mToolbar.setTitle(R.string.nav_encrypt_decrypt);
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_ENCRYPT_DECRYPT), false);
         } else if (frag instanceof AppsListFragment) {
+            mToolbar.setTitle(R.string.nav_apps);
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_APPS), false);
         } else if (frag instanceof BackupFragment) {
+            mToolbar.setTitle(R.string.nav_backup);
             mDrawerResult.setSelection(mDrawerResult.getPositionFromIdentifier(ID_BACKUP), false);
         }
     }
