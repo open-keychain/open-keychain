@@ -9,8 +9,7 @@
 
     <item
         android:id="@+id/menu_key_list_multi_delete"
-        android:showAsAction="never"
-        android:title="@string/menu_delete_key"
-        tools:ignore="AppCompatResource" />
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/menu_delete_key" />
 
 </menu>
