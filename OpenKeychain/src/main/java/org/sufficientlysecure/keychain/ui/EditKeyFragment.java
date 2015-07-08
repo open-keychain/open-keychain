@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
@@ -68,7 +68,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, OperationResult>
+public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyringParcel, OperationResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
@@ -192,7 +192,7 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
 
         // load the secret key ring. we do verify here that the passphrase is correct, so cached won't do
         try {
@@ -618,13 +618,16 @@ public class EditKeyFragment extends CryptoOperationFragment<SaveKeyringParcel, 
     }
 
     @Override
-    public void onCryptoOperationSuccess(OperationResult result) {
+    public void onQueuedOperationSuccess(OperationResult result) {
+
+        // null-protected from Queueing*Fragment
+        Activity activity = getActivity();
 
         // if good -> finish, return result to showkey and display there!
         Intent intent = new Intent();
         intent.putExtra(OperationResult.EXTRA_RESULT, result);
-        getActivity().setResult(EditKeyActivity.RESULT_OK, intent);
-        getActivity().finish();
+        activity.setResult(EditKeyActivity.RESULT_OK, intent);
+        activity.finish();
 
     }
 

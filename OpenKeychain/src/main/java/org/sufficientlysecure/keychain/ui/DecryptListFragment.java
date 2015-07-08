@@ -66,10 +66,10 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -80,7 +80,7 @@ import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 
 
 public class DecryptListFragment
-        extends CryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
+        extends QueueingCryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
         implements OnMenuItemClickListener {
 
     public static final String ARG_INPUT_URIS = "input_uris";
@@ -195,15 +195,6 @@ public class DecryptListFragment
         cryptoOperation();
     }
 
-    private String removeEncryptedAppend(String name) {
-        if (name.endsWith(Constants.FILE_EXTENSION_ASC)
-                || name.endsWith(Constants.FILE_EXTENSION_PGP_MAIN)
-                || name.endsWith(Constants.FILE_EXTENSION_PGP_ALTERNATE)) {
-            return name.substring(0, name.length() - 4);
-        }
-        return name;
-    }
-
     private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             File file = new File(inputUri.getPath());
@@ -257,7 +248,7 @@ public class DecryptListFragment
         return true;
     }
     @Override
-    public void onCryptoOperationError(DecryptVerifyResult result) {
+    public void onQueuedOperationError(DecryptVerifyResult result) {
         final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
@@ -267,7 +258,7 @@ public class DecryptListFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(DecryptVerifyResult result) {
+    public void onQueuedOperationSuccess(DecryptVerifyResult result) {
         Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 

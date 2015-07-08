@@ -53,7 +53,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -274,6 +274,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL(CREATE_CERTS);
             case 10:
                 // do nothing here, just consolidate
+            case 11:
+                db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
+                if (oldVersion == 10) {
+                    // no consolidate if we are updating from 10, we're just here for the api_accounts fix
+                    return;
+                }
 
         }
 
@@ -297,10 +303,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             // It's the Java way =(
             String[] dbs = context.databaseList();
             for (String db : dbs) {
-                if (db.equals("apg.db")) {
+                if ("apg.db".equals(db)) {
                     hasApgDb = true;
-                } else if (db.equals("apg_old.db")) {
+                } else if ("apg_old.db".equals(db)) {
                     Log.d(Constants.TAG, "Found apg_old.db, delete it!");
+                    // noinspection ResultOfMethodCallIgnored - if it doesn't happen, it doesn't happen.
                     context.getDatabasePath("apg_old.db").delete();
                 }
             }
@@ -384,7 +391,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             }
         }
 
-        // delete old database
+        // noinspection ResultOfMethodCallIgnored - not much we can do if this doesn't work
         context.getDatabasePath("apg.db").delete();
     }
 
@@ -416,6 +423,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         } else {
             in = context.getDatabasePath(DATABASE_NAME);
             out = context.getDatabasePath("debug_backup.db");
+            // noinspection ResultOfMethodCallIgnored - this is a pure debug feature, anyways
             out.createNewFile();
         }
         if (!in.canRead()) {

@@ -208,12 +208,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     return true;
                 }
             }
-
-            default: {
-                return false;
-            }
         }
-        return true;
+
+        return false;
     }
 
     protected void dismissProgress() {

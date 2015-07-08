@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -39,12 +40,7 @@ public class EncryptTextActivity extends EncryptActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogClose(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        }, false);
+        setFullScreenDialogClose(Activity.RESULT_OK, false);
 
         Intent intent = getIntent();
         String action = intent.getAction();

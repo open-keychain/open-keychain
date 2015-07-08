@@ -225,6 +225,33 @@ public class CreateKeyFinalFragment extends Fragment {
                 }
             }
         }
+
+        // handle queued actions
+
+        if (mQueuedFinishResult != null) {
+            finishWithResult(mQueuedFinishResult);
+            return;
+        }
+
+        if (mQueuedDisplayResult != null) {
+            try {
+                displayResult(mQueuedDisplayResult);
+            } finally {
+                // clear after operation, note that this may drop the operation if it didn't
+                // work when called from here!
+                mQueuedDisplayResult = null;
+            }
+        }
+
+        if (mQueuedSaveKeyResult != null) {
+            try {
+                uploadKey(mQueuedSaveKeyResult);
+            } finally {
+                // see above
+                mQueuedSaveKeyResult = null;
+            }
+        }
+
     }
 
     private void createKey() {
@@ -431,37 +458,6 @@ public class CreateKeyFinalFragment extends Fragment {
         data.putExtra(OperationResult.EXTRA_RESULT, result);
         activity.setResult(Activity.RESULT_OK, data);
         activity.finish();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // there may be queued actions from when we weren't attached to an activity!
-
-        if (mQueuedFinishResult != null) {
-            finishWithResult(mQueuedFinishResult);
-            return;
-        }
-
-        if (mQueuedDisplayResult != null) {
-            try {
-                displayResult(mQueuedDisplayResult);
-            } finally {
-                // clear after operation, note that this may drop the operation if it didn't
-                // work when called from here!
-                mQueuedDisplayResult = null;
-            }
-        }
-
-        if (mQueuedSaveKeyResult != null) {
-            try {
-                uploadKey(mQueuedSaveKeyResult);
-            } finally {
-                // see above
-                mQueuedSaveKeyResult = null;
-            }
-        }
     }
 
 }

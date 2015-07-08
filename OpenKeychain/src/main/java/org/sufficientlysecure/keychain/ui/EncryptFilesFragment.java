@@ -387,13 +387,10 @@ public class EncryptFilesFragment
     }
 
     @Override
-    public void onCryptoOperationSuccess(final SignEncryptResult result) {
+    public void onQueuedOperationSuccess(final SignEncryptResult result) {
 
+        // protected by Queueing*Fragment
         FragmentActivity activity = getActivity();
-        if (activity == null) {
-            // it's gone, there's nothing we can do here
-            return;
-        }
 
         if (mDeleteAfterEncrypt) {
             // TODO make behavior coherent here

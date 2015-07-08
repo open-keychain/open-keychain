@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -36,6 +37,8 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Calendar;
@@ -72,16 +75,18 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
     /**
      * Creates dialog
      */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Activity activity = getActivity();
+        Activity activity = getActivity();
+
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
         long creation = getArguments().getLong(ARG_CREATION);
         long expiry = getArguments().getLong(ARG_EXPIRY);
 
-        Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        final Calendar creationCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         creationCal.setTime(new Date(creation * 1000));
-        final Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiryCal.setTime(new Date(expiry * 1000));
 
         // date picker works with default time zone, we need to convert from UTC to default timezone
@@ -175,10 +180,13 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
                     selectedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
                     long numDays = (selectedCal.getTimeInMillis() / 86400000)
-                            - (expiryCal.getTimeInMillis() / 86400000);
+                            - (creationCal.getTimeInMillis() / 86400000);
                     if (numDays <= 0) {
-                        Log.e(Constants.TAG, "Should not happen! Expiry num of days <= 0!");
-                        throw new RuntimeException();
+                        Activity activity = getActivity();
+                        if (activity != null) {
+                            Notify.create(activity, R.string.error_expiry_past, Style.ERROR).show();
+                        }
+                        return;
                     }
                     expiry = selectedCal.getTime().getTime() / 1000;
                 }

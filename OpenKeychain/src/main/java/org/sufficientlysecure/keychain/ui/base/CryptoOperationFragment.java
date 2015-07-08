@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  * @see KeychainService
  *
  */
-public abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
+abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
         extends Fragment implements CryptoOperationHelper.Callback<T, S> {
 
     final private CryptoOperationHelper<T, S> mOperationHelper;

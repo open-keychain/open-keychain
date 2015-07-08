@@ -976,6 +976,7 @@
     <!-- modifySecretKeyRing -->
     <string name="msg_mr">"Modifying keyring %s"</string>
     <string name="msg_mf_divert">"Will divert to smart card for crypto operations"</string>
+    <string name="msg_mf_error_divert_newsub">"Creation of new subkeys is not supported for 'divert-to-card' primary keys!"</string>
     <string name="msg_mf_error_divert_serial">"The serial number of a 'divert-to-card' key must be 16 bytes! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_encode">"Encoding exception!"</string>
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
@@ -991,6 +992,7 @@
     <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
+    <string name="msg_mf_error_sub_stripped">"Cannot modify stripped subkey %s!"</string>
     <string name="msg_mf_error_subkey_missing">"Tried to operate on missing subkey %s!"</string>
     <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to smart card in same operation that creates an on-card signature."</string>
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Smart card supports only one slot per key type."</string>
@@ -1432,5 +1434,8 @@
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
     <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
+    <string name="error_scan_fp">"Error scanning fingerprint!"</string>
+    <string name="error_scan_match">"Fingerprints did not match!"</string>
+    <string name="error_expiry_past">"Expiry date is in the past!"</string>
 
 </resources>
