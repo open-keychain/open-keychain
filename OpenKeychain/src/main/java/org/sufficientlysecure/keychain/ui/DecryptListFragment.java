@@ -188,11 +188,16 @@ public class DecryptListFragment
 
         mPendingInputUris = new ArrayList<>();
 
-        for (Uri uri : inputUris) {
+        for (final Uri uri : inputUris) {
             mAdapter.add(uri);
 
             if (mCancelledInputUris.contains(uri)) {
-                mAdapter.setCancelled(uri);
+                mAdapter.setCancelled(uri, new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        retryUri(uri);
+                    }
+                });
                 continue;
             }
 
@@ -284,11 +289,16 @@ public class DecryptListFragment
     public void onCryptoOperationCancelled() {
         super.onCryptoOperationCancelled();
 
-        Uri uri = mCurrentInputUri;
+        final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
         mCancelledInputUris.add(uri);
-        mAdapter.setCancelled(uri);
+        mAdapter.setCancelled(uri, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                retryUri(uri);
+            }
+        });
 
         cryptoOperation();
 
@@ -374,6 +384,22 @@ public class DecryptListFragment
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+
+    }
+
+    public void retryUri(Uri uri) {
+
+        // never interrupt running operations!
+        if (mCurrentInputUri != null) {
+            return;
+        }
+
+        // un-cancel this one
+        mCancelledInputUris.remove(uri);
+        mPendingInputUris.add(uri);
+        mAdapter.setCancelled(uri, null);
+
+        cryptoOperation();
 
     }
 
@@ -555,14 +581,14 @@ public class DecryptListFragment
 
             int mProgress, mMax;
             String mProgressMsg;
-            boolean mCancelled;
+            OnClickListener mCancelled;
 
             ViewModel(Context context, Uri uri) {
                 mContext = context;
                 mInputUri = uri;
                 mProgress = 0;
                 mMax = 100;
-                mCancelled = false;
+                mCancelled = null;
             }
 
             void addResult(DecryptVerifyResult result) {
@@ -582,8 +608,8 @@ public class DecryptListFragment
                 return mResult != null;
             }
 
-            void setCancelled(boolean cancelled) {
-                mCancelled = cancelled;
+            void setCancelled(OnClickListener retryListener) {
+                mCancelled = retryListener;
             }
 
             void setProgress(int progress, int max, String msg) {
@@ -643,10 +669,8 @@ public class DecryptListFragment
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
 
-            if (model.mCancelled) {
-                if (holder.vAnimator.getDisplayedChild() != 3) {
-                    holder.vAnimator.setDisplayedChild(3);
-                }
+            if (model.mCancelled != null) {
+                bindItemCancelled(holder, model);
                 return;
             }
 
@@ -661,6 +685,14 @@ public class DecryptListFragment
                 bindItemFailure(holder, model);
             }
 
+        }
+
+        private void bindItemCancelled(ViewHolder holder, ViewModel model) {
+            if (holder.vAnimator.getDisplayedChild() != 3) {
+                holder.vAnimator.setDisplayedChild(3);
+            }
+
+            holder.vCancelledRetry.setOnClickListener(model.mCancelled);
         }
 
         private void bindItemProgress(ViewHolder holder, ViewModel model) {
@@ -778,10 +810,10 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void setCancelled(Uri uri) {
+        public void setCancelled(Uri uri, OnClickListener retryListener) {
             ViewModel newModel = new ViewModel(mContext, uri);
             int pos = mDataset.indexOf(newModel);
-            mDataset.get(pos).setCancelled(true);
+            mDataset.get(pos).setCancelled(retryListener);
             notifyItemChanged(pos);
         }
 
@@ -832,6 +864,8 @@ public class DecryptListFragment
         public TextView vErrorMsg;
         public ImageView vErrorViewLog;
 
+        public ImageView vCancelledRetry;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -859,6 +893,8 @@ public class DecryptListFragment
 
             vErrorMsg = (TextView) itemView.findViewById(R.id.result_error_msg);
             vErrorViewLog = (ImageView) itemView.findViewById(R.id.result_error_log);
+
+            vCancelledRetry = (ImageView) itemView.findViewById(R.id.cancel_retry);
 
         }
 

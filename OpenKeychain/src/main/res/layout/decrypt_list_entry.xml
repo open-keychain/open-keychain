@@ -293,8 +293,9 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_gravity="center_vertical"
@@ -303,6 +304,17 @@
                 android:drawableLeft="@drawable/status_signature_invalid_cutout_24dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 />
+
+            <ImageView
+                android:id="@+id/cancel_retry"
+                android:scaleType="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:padding="6dp"
+                android:background="?android:selectableItemBackground"
+                android:src="@drawable/ic_repeat_grey_24dp"
+                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
 
