@@ -34,6 +34,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
@@ -126,6 +128,18 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                 // this is just a finally thing, no matter if it doesn't work out.
             }
         }
+    }
+
+    /**
+     * returns null if no user input required for upload, an InputPendingResult otherwise
+     */
+    @Nullable
+    public InputPendingResult getUploadPendingInput() {
+        if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+            return new ExportResult(null,
+                    RequiredInputParcel.createOrbotRequiredOperation());
+        }
+        return null;
     }
 
     public ExportResult exportToFile(long[] masterKeyIds, boolean exportSecret, String outputFile) {
@@ -351,10 +365,15 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
                 HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
                 try {
-                    CanonicalizedPublicKeyRing keyring
-                            = mProviderHelper.getCanonicalizedPublicKeyRing(
-                            exportInput.mCanonicalizedPublicKeyringUri);
-                    return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
+                    if (exportInput.mCanonicalizedPublicKeyringUri != null) {
+                        CanonicalizedPublicKeyRing keyring
+                                = mProviderHelper.getCanonicalizedPublicKeyRing(
+                                exportInput.mCanonicalizedPublicKeyringUri);
+                        return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
+                    } else {
+                        return uploadKeyRingToServer(hkpKeyserver, exportInput.mUncachedKeyRing,
+                                proxy);
+                    }
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.e(Constants.TAG, "error uploading key", e);
                     return new ExportResult(ExportResult.RESULT_ERROR, new OperationLog());

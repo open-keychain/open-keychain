@@ -36,6 +36,8 @@ public class CryptoInputParcel implements Parcelable {
     final Date mSignatureTime;
     final Passphrase mPassphrase;
     // used to supply an explicit proxy to operations that require it
+    // this is not final so it can be added to an existing CryptoInputParcel
+    // (e.g) CertifyOperation with upload might require both passphrase and orbot to be enabled
     private ParcelableProxy mParcelableProxy;
 
     // this map contains both decrypted session keys and signed hashes to be
@@ -45,30 +47,25 @@ public class CryptoInputParcel implements Parcelable {
     public CryptoInputParcel() {
         mSignatureTime = new Date();
         mPassphrase = null;
-        mParcelableProxy =  null;
     }
 
     public CryptoInputParcel(Date signatureTime, Passphrase passphrase) {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = passphrase;
-        mParcelableProxy =  null;
     }
 
     public CryptoInputParcel(Passphrase passphrase) {
         mSignatureTime = new Date();
         mPassphrase = passphrase;
-        mParcelableProxy =  null;
     }
 
     public CryptoInputParcel(Date signatureTime) {
         mSignatureTime = signatureTime == null ? new Date() : signatureTime;
         mPassphrase = null;
-        mParcelableProxy =  null;
     }
 
     public CryptoInputParcel(ParcelableProxy parcelableProxy) {
-        mSignatureTime = new Date(); // just for compatibility with parcel-ing
-        mPassphrase = null;
+        this();
         mParcelableProxy =  parcelableProxy;
     }
 

@@ -65,6 +65,11 @@ public class SaveKeyringParcel implements Parcelable {
     public Passphrase mCardPin;
     public Passphrase mCardAdminPin;
 
+    // private because they have to be set together with setUpdateOptions
+    private boolean mUpload;
+    private boolean mUploadAtomic;
+    private String mKeyserver;
+
     public SaveKeyringParcel() {
         reset();
     }
@@ -86,6 +91,27 @@ public class SaveKeyringParcel implements Parcelable {
         mRevokeSubKeys = new ArrayList<>();
         mCardPin = null;
         mCardAdminPin = null;
+        mUpload = false;
+        mUploadAtomic = false;
+        mKeyserver = null;
+    }
+
+    public void setUpdateOptions(boolean upload, boolean uploadAtomic, String keysever) {
+        mUpload = upload;
+        mUploadAtomic = uploadAtomic;
+        mKeyserver = keysever;
+    }
+
+    public boolean isUpload() {
+        return mUpload;
+    }
+
+    public boolean isUploadAtomic() {
+        return mUploadAtomic;
+    }
+
+    public String getUploadKeyserver() {
+        return mKeyserver;
     }
 
     public boolean isEmpty() {
@@ -234,6 +260,10 @@ public class SaveKeyringParcel implements Parcelable {
 
         mCardPin = source.readParcelable(Passphrase.class.getClassLoader());
         mCardAdminPin  = source.readParcelable(Passphrase.class.getClassLoader());
+
+        mUpload = source.readByte() != 0;
+        mUploadAtomic = source.readByte() != 0;
+        mKeyserver = source.readString();
     }
 
     @Override
@@ -259,6 +289,10 @@ public class SaveKeyringParcel implements Parcelable {
 
         destination.writeParcelable(mCardPin, flags);
         destination.writeParcelable(mCardAdminPin, flags);
+
+        destination.writeByte((byte) (mUpload ? 1 : 0));
+        destination.writeByte((byte) (mUploadAtomic ? 1 : 0));
+        destination.writeString(mKeyserver);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {

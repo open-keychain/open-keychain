@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.operations.ExportOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
+import org.sufficientlysecure.keychain.operations.RevokeOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -114,6 +115,8 @@ public class KeychainService extends Service implements Progressable {
                 } else if (inputParcel instanceof SaveKeyringParcel) {
                     op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
+                } else if (inputParcel instanceof RevokeKeyringParcel) {
+                    op = new RevokeOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof CertifyActionsParcel) {
                     op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
                             mActionCanceled);
@@ -135,7 +138,7 @@ public class KeychainService extends Service implements Progressable {
                     op = new KeybaseVerificationOperation(outerThis, new ProviderHelper(outerThis),
                             outerThis);
                 } else {
-                    return;
+                    throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }
 
                 @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!

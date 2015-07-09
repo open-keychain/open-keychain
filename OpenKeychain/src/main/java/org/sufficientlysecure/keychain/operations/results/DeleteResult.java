@@ -21,8 +21,10 @@ package org.sufficientlysecure.keychain.operations.results;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
+import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -30,7 +32,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-public class DeleteResult extends OperationResult {
+public class DeleteResult extends InputPendingResult {
 
     final public int mOk, mFail;
 
@@ -38,6 +40,18 @@ public class DeleteResult extends OperationResult {
         super(result, log);
         mOk = ok;
         mFail = fail;
+    }
+
+    /**
+     * used when more input is required
+     * @param log operation log upto point of required input, if any
+     * @param requiredInput represents input required
+     */
+    public DeleteResult(@Nullable OperationLog log, RequiredInputParcel requiredInput) {
+        super(log, requiredInput);
+        // values are not to be used
+        mOk = -1;
+        mFail = -1;
     }
 
     /** Construct from a parcel - trivial because we have no extra data. */

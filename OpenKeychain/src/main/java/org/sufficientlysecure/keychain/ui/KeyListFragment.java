@@ -69,9 +69,9 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -91,6 +91,8 @@ public class KeyListFragment extends LoaderFragment
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
     static final int REQUEST_ACTION = 1;
+    private static final int REQUEST_DELETE = 2;
+    private static final int REQUEST_VIEW_KEY = 3;
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -336,7 +338,7 @@ public class KeyListFragment extends LoaderFragment
         Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
         viewIntent.setData(
                 KeyRings.buildGenericKeyRingUri(mAdapter.getMasterKeyId(position)));
-        startActivity(viewIntent);
+        startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
     }
 
     protected void encrypt(ActionMode mode, long[] masterKeyIds) {
@@ -362,30 +364,9 @@ public class KeyListFragment extends LoaderFragment
             return;
         }
 
-        // Message is received after key is deleted
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.arg1 == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    if (data != null) {
-                        DeleteResult result = data.getParcelable(DeleteResult.EXTRA_RESULT);
-                        if (result != null) {
-                            result.createNotify(getActivity()).show();
-                        }
-                    }
-                    mode.finish();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                masterKeyIds);
-
-        deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
+        Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
+        intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, masterKeyIds);
+        startActivityForResult(intent, REQUEST_DELETE);
     }
 
 
@@ -620,14 +601,35 @@ public class KeyListFragment extends LoaderFragment
             mConsolidateOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
-        if (requestCode == REQUEST_ACTION) {
-            // if a result has been returned, display a notify
-            if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-                OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
-                result.createNotify(getActivity()).show();
-            } else {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
+        switch (requestCode) {
+            case REQUEST_DELETE:
+                mActionMode.finish();
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(getActivity()).show();
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+
+            case REQUEST_ACTION:
+                // if a result has been returned, display a notify
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(getActivity()).show();
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+
+            case REQUEST_VIEW_KEY:
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
+                    result.createNotify(getActivity()).show();
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
         }
     }
 

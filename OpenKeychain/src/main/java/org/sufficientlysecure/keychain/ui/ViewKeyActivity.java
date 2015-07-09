@@ -68,7 +68,6 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -85,7 +84,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -97,6 +95,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_QR_FINGERPRINT = 1;
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
+    static final int REQUEST_DELETE = 4;
+    static final int REQUEST_REVOKE_DELETE = 5;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
@@ -419,27 +419,24 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void deleteKey() {
-        new Handler().post(new Runnable() {
-           @Override
-           public void run() {
-               // Message is received after key is deleted
-               Handler returnHandler = new Handler() {
-                   @Override
-                   public void handleMessage(Message message) {
-                       if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-                           setResult(RESULT_CANCELED);
-                           finish();
-                       }
-                   }
-               };
+        if (mIsSecret && !mIsRevoked) {
+            Intent revokeDeleteIntent = new Intent(this, RevokeDeleteDialogActivity.class);
 
-               // Create a new Messenger for the communication back
-               Messenger messenger = new Messenger(returnHandler);
-               DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                       new long[]{ mMasterKeyId });
-               deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
-           }
-       });
+            revokeDeleteIntent.putExtra(RevokeDeleteDialogActivity.EXTRA_MASTER_KEY_ID,
+                    mMasterKeyId);
+            revokeDeleteIntent.putExtra(RevokeDeleteDialogActivity.EXTRA_KEYSERVER,
+                    Preferences.getPreferences(this).getPreferredKeyserver());
+
+            startActivityForResult(revokeDeleteIntent, REQUEST_REVOKE_DELETE);
+
+        } else {
+            Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
+
+            deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
+                    new long[]{mMasterKeyId});
+
+            startActivityForResult(deleteIntent, REQUEST_DELETE);
+        }
     }
 
     @Override
@@ -485,6 +482,13 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(this).show();
                 }
+                return;
+            }
+
+            case REQUEST_REVOKE_DELETE:
+            case REQUEST_DELETE: {
+                setResult(RESULT_OK, data);
+                finish();
                 return;
             }
         }

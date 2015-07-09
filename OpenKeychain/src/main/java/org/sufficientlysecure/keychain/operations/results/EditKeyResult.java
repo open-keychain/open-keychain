@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-public class EditKeyResult extends OperationResult {
+public class EditKeyResult extends InputPendingResult {
 
     public final Long mMasterKeyId;
 

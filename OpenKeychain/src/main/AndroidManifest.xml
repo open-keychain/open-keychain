@@ -683,6 +683,12 @@
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
+            android:name=".ui.DeleteKeyDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
+            android:name=".ui.RevokeDeleteDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
             android:name=".ui.OrbotRequiredDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity android:name=".ui.PassphraseWizardActivity" />

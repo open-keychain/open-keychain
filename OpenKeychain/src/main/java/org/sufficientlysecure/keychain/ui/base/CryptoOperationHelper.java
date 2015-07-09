@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.RevokeDeleteDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -119,17 +120,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         switch (requiredInput.mType) {
             // TODO: Verify that all started activities add to cryptoInputParcel if necessary (like OrbotRequiredDialogActivity)
-            // don't forget to set mRequestedCode!
+            // always use CryptoOperationHelper.startActivityForResult!
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(activity, NfcOperationActivity.class);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_NFC);
-                } else {
-                    activity.startActivityForResult(intent, mId + REQUEST_CODE_NFC);
-                }
+                startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
             }
 
@@ -137,22 +134,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case PASSPHRASE_SYMMETRIC: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_PASSPHRASE);
-                } else {
-                    activity.startActivityForResult(intent, mId + REQUEST_CODE_PASSPHRASE);
-                }
+                startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
                 return;
             }
 
             case ENABLE_ORBOT: {
                 Intent intent = new Intent(activity, OrbotRequiredDialogActivity.class);
                 intent.putExtra(OrbotRequiredDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
-                if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_ENABLE_ORBOT);
-                } else {
-                    activity.startActivityForResult(intent, mId + REQUEST_CODE_ENABLE_ORBOT);
-                }
+                startActivityForResult(intent, REQUEST_CODE_ENABLE_ORBOT);
                 return;
             }
 
@@ -162,13 +151,24 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         }
     }
 
+    protected void startActivityForResult(Intent intent, int requestCode) {
+        mRequestedCode = requestCode;
+        if (mUseFragment) {
+            mFragment.startActivityForResult(intent, mRequestedCode);
+        } else {
+            mActivity.startActivityForResult(intent, mRequestedCode);
+        }
+        Log.e("PHILIP", "mRequestedCode: " + mRequestedCode);
+    }
+
     /**
      * Attempts the result of an activity started by this helper. Returns true if requestCode is
      * recognized, false otherwise.
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "received activity result in OperationHelper");
+        Log.d(Constants.TAG, "received activity result in OperationHelper with code: "
+                + requestCode + " while waiting for: " + mRequestedCode);
 
         if ((requestCode & mId) != mId) {
             // this wasn't meant for us to handle

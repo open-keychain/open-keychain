@@ -18,6 +18,8 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.os.Parcelable;
+
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
@@ -48,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -78,7 +81,7 @@ import java.util.TreeSet;
  *
  */
 @SuppressWarnings("unchecked")
-public class UncachedKeyRing {
+public class UncachedKeyRing implements Serializable {
 
     final PGPKeyRing mRing;
     final boolean mIsSecret;
