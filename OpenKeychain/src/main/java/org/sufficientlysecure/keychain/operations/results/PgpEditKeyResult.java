@@ -22,6 +22,7 @@ import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 
@@ -37,8 +38,9 @@ public class PgpEditKeyResult extends InputPendingResult {
         mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
     }
 
-    public PgpEditKeyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public PgpEditKeyResult(OperationLog log, RequiredInputParcel requiredInput,
+                            CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
         mRingMasterKeyId = Constants.key.none;
     }
 

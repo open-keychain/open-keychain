@@ -269,7 +269,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     final OperationResult result =
                             returnData.getParcelable(OperationResult.EXTRA_RESULT);
 
-                    onHandleResult(result, cryptoInput);
+                    onHandleResult(result);
                 }
             }
 
@@ -299,15 +299,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         cryptoOperation(new CryptoInputParcel());
     }
 
-    public void onHandleResult(OperationResult result, CryptoInputParcel oldCryptoInput) {
+    public void onHandleResult(OperationResult result) {
         Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;
             if (pendingResult.isPending()) {
-
                 RequiredInputParcel requiredInput = pendingResult.getRequiredInputParcel();
-                initiateInputActivity(requiredInput, oldCryptoInput);
+                initiateInputActivity(requiredInput, pendingResult.mCryptoInputParcel);
                 return;
             }
         }

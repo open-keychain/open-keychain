@@ -96,8 +96,9 @@ public class ImportKeyResult extends InputPendingResult {
         mImportedMasterKeyIds = importedMasterKeyIds;
     }
 
-    public ImportKeyResult(OperationLog log, RequiredInputParcel requiredInputParcel) {
-        super(log, requiredInputParcel);
+    public ImportKeyResult(OperationLog log, RequiredInputParcel requiredInputParcel,
+                           CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInputParcel, cryptoInputParcel);
         // just assign default values, we won't use them anyway
         mNewKeys = 0;
         mUpdatedKeys = 0;

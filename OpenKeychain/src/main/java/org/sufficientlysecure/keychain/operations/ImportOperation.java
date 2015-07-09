@@ -404,7 +404,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 if(!OrbotHelper.isOrbotInRequiredState(mContext)) {
                     // show dialog to enable/install dialog
                     return new ImportKeyResult(null,
-                            RequiredInputParcel.createOrbotRequiredOperation());
+                            RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                 }
                 proxy = Preferences.getPreferences(mContext).getProxyPrefs().parcelableProxy
                         .getProxy();

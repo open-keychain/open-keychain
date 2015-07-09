@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class ExportResult extends InputPendingResult {
@@ -36,8 +37,9 @@ public class ExportResult extends InputPendingResult {
     }
 
 
-    public ExportResult(OperationLog log, RequiredInputParcel requiredInputParcel) {
-        super(log, requiredInputParcel);
+    public ExportResult(OperationLog log, RequiredInputParcel requiredInputParcel,
+                        CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInputParcel, cryptoInputParcel);
         // we won't use these values
         mOkPublic = -1;
         mOkSecret = -1;

@@ -469,7 +469,7 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                     masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
-                    cryptoInput.getSignatureTime()));
+                    cryptoInput.getSignatureTime()), cryptoInput);
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -1105,12 +1105,12 @@ public class PgpKeyOperation {
 
         if (!nfcSignOps.isEmpty()) {
             log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
-            return new PgpEditKeyResult(log, nfcSignOps.build());
+            return new PgpEditKeyResult(log, nfcSignOps.build(), cryptoInput);
         }
 
         if (!nfcKeyToCardOps.isEmpty()) {
             log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
-            return new PgpEditKeyResult(log, nfcKeyToCardOps.build());
+            return new PgpEditKeyResult(log, nfcKeyToCardOps.build(), cryptoInput);
         }
 
         log.add(LogType.MSG_MF_SUCCESS, indent);

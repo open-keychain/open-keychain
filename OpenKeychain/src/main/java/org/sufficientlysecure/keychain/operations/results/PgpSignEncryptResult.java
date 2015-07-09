@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 
@@ -38,8 +39,9 @@ public class PgpSignEncryptResult extends InputPendingResult {
         super(result, log);
     }
 
-    public PgpSignEncryptResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public PgpSignEncryptResult(OperationLog log, RequiredInputParcel requiredInput,
+                                CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
     }
 
     public PgpSignEncryptResult(Parcel source) {

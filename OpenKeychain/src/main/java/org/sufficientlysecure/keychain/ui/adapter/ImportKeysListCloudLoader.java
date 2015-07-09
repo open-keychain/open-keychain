@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -121,7 +122,8 @@ public class ImportKeysListCloudLoader
                 // user needs to enable/install orbot
                 mEntryList.clear();
                 GetKeyResult pendingResult = new GetKeyResult(null,
-                        RequiredInputParcel.createOrbotRequiredOperation());
+                        RequiredInputParcel.createOrbotRequiredOperation(),
+                        new CryptoInputParcel());
                 mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, pendingResult);
                 return;
             }

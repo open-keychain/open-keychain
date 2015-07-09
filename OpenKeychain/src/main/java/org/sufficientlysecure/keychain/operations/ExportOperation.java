@@ -130,18 +130,6 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         }
     }
 
-    /**
-     * returns null if no user input required for upload, an InputPendingResult otherwise
-     */
-    @Nullable
-    public InputPendingResult getUploadPendingInput() {
-        if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
-            return new ExportResult(null,
-                    RequiredInputParcel.createOrbotRequiredOperation());
-        }
-        return null;
-    }
-
     public ExportResult exportToFile(long[] masterKeyIds, boolean exportSecret, String outputFile) {
 
         OperationLog log = new OperationLog();
@@ -355,7 +343,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                     // explicit proxy not set
                     if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
                         return new ExportResult(null,
-                                RequiredInputParcel.createOrbotRequiredOperation());
+                                RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                     }
                     proxy = Preferences.getPreferences(mContext).getProxyPrefs()
                             .parcelableProxy.getProxy();

@@ -32,7 +32,7 @@ public class InputPendingResult extends OperationResult {
 
     final RequiredInputParcel mRequiredInput;
     // in case operation needs to add to/changes the cryptoInputParcel sent to it
-    final CryptoInputParcel mCryptoInputParcel;
+    public final CryptoInputParcel mCryptoInputParcel;
 
     public InputPendingResult(int result, OperationLog log) {
         super(result, log);

@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -26,8 +27,9 @@ public class RevokeResult extends InputPendingResult {
      * @param log operation log upto point of required input, if any
      * @param requiredInput represents input required
      */
-    public RevokeResult(@Nullable OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public RevokeResult(@Nullable OperationLog log, RequiredInputParcel requiredInput,
+                        CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
         // we won't use these values
         mMasterKeyId = -1;
     }

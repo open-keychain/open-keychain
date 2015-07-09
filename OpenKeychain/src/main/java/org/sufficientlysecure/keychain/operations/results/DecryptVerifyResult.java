@@ -45,8 +45,9 @@ public class DecryptVerifyResult extends InputPendingResult {
         super(result, log);
     }
 
-    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput,
+                               CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
     }
 
     public DecryptVerifyResult(Parcel source) {

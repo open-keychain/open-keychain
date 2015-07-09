@@ -24,6 +24,7 @@ import android.os.Parcel;
 import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -47,8 +48,9 @@ public class DeleteResult extends InputPendingResult {
      * @param log operation log upto point of required input, if any
      * @param requiredInput represents input required
      */
-    public DeleteResult(@Nullable OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public DeleteResult(@Nullable OperationLog log, RequiredInputParcel requiredInput,
+                        CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
         // values are not to be used
         mOk = -1;
         mFail = -1;
