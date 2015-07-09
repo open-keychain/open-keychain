@@ -118,7 +118,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
         switch (requiredInput.mType) {
-            // TODO: Verify that all started activities add to cryptoInputParcel if necessary (like OrbotRequiredDialogActivity)
+            // TODO: make NfcOperationActivity add to cryptoInputParcel
             // always use CryptoOperationHelper.startActivityForResult!
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
@@ -133,6 +133,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case PASSPHRASE_SYMMETRIC: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(PassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
                 startActivityForResult(intent, REQUEST_CODE_PASSPHRASE);
                 return;
             }

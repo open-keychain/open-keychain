@@ -161,7 +161,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // There is a new passphrase - cache it
-        if (saveParcel.mNewUnlock != null) {
+        if (saveParcel.mNewUnlock != null && cryptoInput.mCachePassphrase) {
             log.add(LogType.MSG_ED_CACHING_NEW, 1);
 
             // NOTE: Don't cache empty passphrases! Important for MOVE_KEY_TO_CARD

@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
@@ -111,7 +112,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     }
 
     private void startRevocationOperation() {
-        mRevokeOpHelper.cryptoOperation();
+        mRevokeOpHelper.cryptoOperation(new CryptoInputParcel(false));
     }
 
     private void startDeletionOperation() {

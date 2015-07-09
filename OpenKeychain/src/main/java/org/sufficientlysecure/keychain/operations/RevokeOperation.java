@@ -32,6 +32,9 @@ public class RevokeOperation extends  BaseOperation<RevokeKeyringParcel> {
     public OperationResult execute(RevokeKeyringParcel revokeKeyringParcel,
                                    CryptoInputParcel cryptoInputParcel) {
 
+        // we don't cache passphrases during revocation
+        cryptoInputParcel.mCachePassphrase = false;
+
         long masterKeyId = revokeKeyringParcel.mMasterKeyId;
 
         OperationResult.OperationLog log = new OperationResult.OperationLog();
