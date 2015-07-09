@@ -151,7 +151,7 @@ public class DeleteKeyDialogFragment extends DialogFragment
                 mHasSecret = hasSecret;
 
                 mDeleteOpHelper = new CryptoOperationHelper<>
-                        (DeleteKeyDialogFragment.this, DeleteKeyDialogFragment.this,
+                        (1, DeleteKeyDialogFragment.this, DeleteKeyDialogFragment.this,
                                 R.string.progress_deleting);
                 mDeleteOpHelper.cryptoOperation();
                 // do NOT dismiss here, it'll give

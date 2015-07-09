@@ -223,7 +223,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
         mKeyList = keyRings;
 
-        mImportOpHelper = new CryptoOperationHelper<>(this, this, R.string.progress_importing);
+        mImportOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_importing);
 
         mImportOpHelper.cryptoOperation();
     }

@@ -184,7 +184,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             }
         };
 
-        mImportOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_importing);
+        mImportOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_importing);
 
         mImportOpHelper.cryptoOperation();
     }

@@ -84,7 +84,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -154,7 +154,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         super.onCreate(savedInstanceState);
 
         mProviderHelper = new ProviderHelper(this);
-        mOperationHelper = new CryptoOperationHelper<>(this, this, null);
+        mOperationHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
 

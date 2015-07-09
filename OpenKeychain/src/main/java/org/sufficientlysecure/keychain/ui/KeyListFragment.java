@@ -568,7 +568,7 @@ public class KeyListFragment extends LoaderFragment
             mKeyserver = cloudPrefs.keyserver;
         }
 
-        mImportOpHelper = new CryptoOperationHelper<>(this,
+        mImportOpHelper = new CryptoOperationHelper<>(1, this,
                 this, R.string.progress_updating);
         mImportOpHelper.cryptoOperation();
     }
@@ -605,7 +605,7 @@ public class KeyListFragment extends LoaderFragment
         };
 
         mConsolidateOpHelper =
-                new CryptoOperationHelper<>(this, callback, R.string.progress_importing);
+                new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
 
         mConsolidateOpHelper.cryptoOperation();
     }

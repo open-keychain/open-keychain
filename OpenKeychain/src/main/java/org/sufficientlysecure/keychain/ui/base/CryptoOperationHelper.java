@@ -26,13 +26,11 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
@@ -54,8 +52,6 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
 
-    public static final String ARG_REQUESTED_CODE = "requested_code";
-
     public interface Callback<T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
 
@@ -68,14 +64,18 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         boolean onCryptoSetProgress(String msg, int progress, int max);
     }
 
-    public static final int REQUEST_CODE_PASSPHRASE = 0x00008001;
-    public static final int REQUEST_CODE_NFC = 0x00008002;
-    public static final int REQUEST_CODE_ENABLE_ORBOT = 0x00008004;
+    // request codes from CryptoOperationHelper are created essentially
+    // a static property, used to identify requestCodes meant for this
+    // particular helper. a request code looks as follows:
+    // (id << 9) + (1<<8) + REQUEST_CODE_X
+    // that is, starting from LSB, there are 8 bits request code, 1
+    // fixed bit set, then 7 bit operator-id code. the first two
+    // summands are stored in the mId for easy operation.
+    private final int mId;
 
-    // keeps track of request code used to start an activity from this CryptoOperationHelper.
-    // this is necessary when multiple CryptoOperationHelpers are used in the same fragment/activity
-    // otherwise all CryptoOperationHandlers may respond to the same onActivityResult
-    private int mRequestedCode = -1;
+    public static final int REQUEST_CODE_PASSPHRASE = 1;
+    public static final int REQUEST_CODE_NFC = 2;
+    public static final int REQUEST_CODE_ENABLE_ORBOT = 3;
 
     private Integer mProgressMessageResource;
 
@@ -88,7 +88,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * If OperationHelper is being integrated into an activity
      */
-    public CryptoOperationHelper(FragmentActivity activity, Callback<T, S> callback, Integer progressMessageString) {
+    public CryptoOperationHelper(int id, FragmentActivity activity, Callback<T, S> callback,
+            Integer progressMessageString) {
+        mId = (id << 9) + (1<<8);
         mActivity = activity;
         mUseFragment = false;
         mCallback = callback;
@@ -98,22 +100,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * if OperationHelper is being integrated into a fragment
      */
-    public CryptoOperationHelper(Fragment fragment, Callback<T, S> callback, Integer progressMessageString) {
+    public CryptoOperationHelper(int id, Fragment fragment, Callback<T, S> callback, Integer progressMessageString) {
+        mId = (id << 9) + (1<<8);
         mFragment = fragment;
         mUseFragment = true;
         mProgressMessageResource = progressMessageString;
         mCallback = callback;
-    }
-
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(ARG_REQUESTED_CODE, mRequestedCode);
-    }
-
-    public void onRestoreInstanceState(@Nullable Bundle state) {
-        if (state == null) {
-            return;
-        }
-        mRequestedCode = state.getInt(ARG_REQUESTED_CODE, -1);
     }
 
     public void setProgressMessageResource(int id) {
@@ -133,11 +125,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case NFC_SIGN: {
                 Intent intent = new Intent(activity, NfcOperationActivity.class);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                mRequestedCode = REQUEST_CODE_NFC;
                 if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mRequestedCode);
+                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_NFC);
                 } else {
-                    activity.startActivityForResult(intent, mRequestedCode);
+                    activity.startActivityForResult(intent, mId + REQUEST_CODE_NFC);
                 }
                 return;
             }
@@ -146,11 +137,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case PASSPHRASE_SYMMETRIC: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
-                mRequestedCode = REQUEST_CODE_PASSPHRASE;
                 if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mRequestedCode);
+                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_PASSPHRASE);
                 } else {
-                    activity.startActivityForResult(intent, mRequestedCode);
+                    activity.startActivityForResult(intent, mId + REQUEST_CODE_PASSPHRASE);
                 }
                 return;
             }
@@ -158,11 +148,10 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case ENABLE_ORBOT: {
                 Intent intent = new Intent(activity, OrbotRequiredDialogActivity.class);
                 intent.putExtra(OrbotRequiredDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
-                mRequestedCode = REQUEST_CODE_ENABLE_ORBOT;
                 if (mUseFragment) {
-                    mFragment.startActivityForResult(intent, mRequestedCode);
+                    mFragment.startActivityForResult(intent, mId + REQUEST_CODE_ENABLE_ORBOT);
                 } else {
-                    activity.startActivityForResult(intent, mRequestedCode);
+                    activity.startActivityForResult(intent, mId + REQUEST_CODE_ENABLE_ORBOT);
                 }
                 return;
             }
@@ -181,13 +170,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(Constants.TAG, "received activity result in OperationHelper");
 
-        if (mRequestedCode != requestCode) {
+        if ((requestCode & mId) != mId) {
             // this wasn't meant for us to handle
             return false;
-        } else {
-            // reset mRequestedCode because we have finished what we started
-            mRequestedCode = -1;
         }
+        // filter out mId from requestCode
+        requestCode ^= mId;
+
         if (resultCode == Activity.RESULT_CANCELED) {
             mCallback.onCryptoOperationCancelled();
             return true;

@@ -56,23 +56,11 @@ abstract class CryptoOperationFragment<T extends Parcelable, S extends Operation
     final private CryptoOperationHelper<T, S> mOperationHelper;
 
     public CryptoOperationFragment(Integer initialProgressMsg) {
-        mOperationHelper = new CryptoOperationHelper<>(this, this, initialProgressMsg);
+        mOperationHelper = new CryptoOperationHelper<>(1, this, this, initialProgressMsg);
     }
 
     public CryptoOperationFragment() {
-        mOperationHelper = new CryptoOperationHelper<>(this, this, R.string.progress_processing);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mOperationHelper.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mOperationHelper.onSaveInstanceState(outState);
+        mOperationHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_processing);
     }
 
     @Override

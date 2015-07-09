@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -399,7 +398,7 @@ public class ImportKeysActivity extends BaseNfcActivity
         }
 
         mOperationHelper = new CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult>(
-                this, this, R.string.progress_importing
+                1, this, this, R.string.progress_importing
         );
 
         ImportKeysListFragment.LoaderState ls = mListFragment.getLoaderState();

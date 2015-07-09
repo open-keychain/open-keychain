@@ -303,7 +303,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         };
 
-        mCreateOpHelper = new CryptoOperationHelper<>(this, createKeyCallback, R.string.progress_building_key);
+        mCreateOpHelper = new CryptoOperationHelper<>(1, this, createKeyCallback, R.string.progress_building_key);
         mCreateOpHelper.cryptoOperation();
     }
 
@@ -392,7 +392,7 @@ public class CreateKeyFinalFragment extends Fragment {
         };
 
 
-        mMoveToCardOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_modify);
+        mMoveToCardOpHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_modify);
         mMoveToCardOpHelper.cryptoOperation();
     }
 
@@ -443,7 +443,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         };
 
-        mUploadOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_uploading);
+        mUploadOpHelper = new CryptoOperationHelper<>(3, this, callback, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
     }
 

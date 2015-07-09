@@ -107,7 +107,7 @@ public class UploadKeyActivity extends BaseActivity
         String server = (String) mKeyServerSpinner.getSelectedItem();
         mKeyserver = server;
 
-        mUploadOpHelper = new CryptoOperationHelper(this, this, R.string.progress_uploading);
+        mUploadOpHelper = new CryptoOperationHelper(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
     }
 

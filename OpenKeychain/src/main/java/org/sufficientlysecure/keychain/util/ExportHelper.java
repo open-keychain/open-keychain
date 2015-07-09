@@ -88,7 +88,7 @@ public class ExportHelper
         mMasterKeyIds = masterKeyIds; // if masterKeyIds is null it means export all
 
         CryptoOperationHelper<ExportKeyringParcel, ExportResult> exportOpHelper =
-                new CryptoOperationHelper<>(mActivity, this, R.string.progress_exporting);
+                new CryptoOperationHelper<>(1, mActivity, this, R.string.progress_exporting);
         exportOpHelper.cryptoOperation();
     }
 
