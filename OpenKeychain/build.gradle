@@ -16,10 +16,10 @@ dependencies {
     
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
-    // https://github.com/nenick/AndroidStudioAndRobolectric
+    // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0-rc3'
+    testCompile 'org.robolectric:robolectric:3.0'
 
     // UI testing with Espresso
     androidTestCompile 'com.android.support.test:runner:0.3'
