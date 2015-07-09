@@ -40,7 +40,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.RevokeDeleteDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -152,13 +151,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     protected void startActivityForResult(Intent intent, int requestCode) {
-        mRequestedCode = requestCode;
         if (mUseFragment) {
-            mFragment.startActivityForResult(intent, mRequestedCode);
+            mFragment.startActivityForResult(intent, mId + requestCode);
         } else {
-            mActivity.startActivityForResult(intent, mRequestedCode);
+            mActivity.startActivityForResult(intent, mId + requestCode);
         }
-        Log.e("PHILIP", "mRequestedCode: " + mRequestedCode);
     }
 
     /**
@@ -167,13 +164,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "received activity result in OperationHelper with code: "
-                + requestCode + " while waiting for: " + mRequestedCode);
+        Log.d(Constants.TAG, "received activity result in OperationHelper");
 
         if ((requestCode & mId) != mId) {
             // this wasn't meant for us to handle
             return false;
         }
+        Log.d(Constants.TAG, "handling activity result in OperationHelper");
         // filter out mId from requestCode
         requestCode ^= mId;
 

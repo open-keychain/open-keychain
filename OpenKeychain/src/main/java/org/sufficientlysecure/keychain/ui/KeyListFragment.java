@@ -366,6 +366,11 @@ public class KeyListFragment extends LoaderFragment
 
         Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
         intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, masterKeyIds);
+        intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);
+        if (hasSecret) {
+            intent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
+                    Preferences.getPreferences(getActivity()).getPreferredKeyserver());
+        }
         startActivityForResult(intent, REQUEST_DELETE);
     }
 
@@ -603,7 +608,9 @@ public class KeyListFragment extends LoaderFragment
 
         switch (requestCode) {
             case REQUEST_DELETE:
-                mActionMode.finish();
+                if (mActionMode != null) {
+                    mActionMode.finish();
+                }
                 if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(getActivity()).show();

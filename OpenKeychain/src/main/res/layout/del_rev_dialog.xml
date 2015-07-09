@@ -11,7 +11,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/del_rev_dialog_message"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginBottom="16dp"/>
 
     <Spinner
         android:id="@+id/spinner"
@@ -19,6 +20,6 @@
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="true"
         android:entries="@array/rev_del_dialog_entries"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+        android:textAppearance="?android:textAppearanceLarge"/>
 
 </LinearLayout>

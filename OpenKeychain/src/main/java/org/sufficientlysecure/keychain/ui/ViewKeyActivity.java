@@ -96,7 +96,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_BACKUP = 2;
     static final int REQUEST_CERTIFY = 3;
     static final int REQUEST_DELETE = 4;
-    static final int REQUEST_REVOKE_DELETE = 5;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
 
@@ -419,24 +418,18 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void deleteKey() {
-        if (mIsSecret && !mIsRevoked) {
-            Intent revokeDeleteIntent = new Intent(this, RevokeDeleteDialogActivity.class);
+        Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
 
-            revokeDeleteIntent.putExtra(RevokeDeleteDialogActivity.EXTRA_MASTER_KEY_ID,
-                    mMasterKeyId);
-            revokeDeleteIntent.putExtra(RevokeDeleteDialogActivity.EXTRA_KEYSERVER,
+        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
+                new long[]{mMasterKeyId});
+        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, mIsSecret);
+        if (mIsSecret) {
+            // for upload in case key is secret
+            deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
                     Preferences.getPreferences(this).getPreferredKeyserver());
-
-            startActivityForResult(revokeDeleteIntent, REQUEST_REVOKE_DELETE);
-
-        } else {
-            Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
-
-            deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
-                    new long[]{mMasterKeyId});
-
-            startActivityForResult(deleteIntent, REQUEST_DELETE);
         }
+
+        startActivityForResult(deleteIntent, REQUEST_DELETE);
     }
 
     @Override
@@ -485,7 +478,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return;
             }
 
-            case REQUEST_REVOKE_DELETE:
             case REQUEST_DELETE: {
                 setResult(RESULT_OK, data);
                 finish();

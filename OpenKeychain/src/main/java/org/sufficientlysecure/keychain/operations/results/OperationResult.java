@@ -764,7 +764,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_REVOKE_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
         MSG_REVOKE_ERROR_NOT_FOUND (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
         MSG_REVOKE (LogLevel.DEBUG, R.string.msg_revoke_key),
-        MSG_REVOKE_KEY_FAIL (LogLevel.WARN, R.string.msg_revoke_key_fail),
+        MSG_REVOKE_KEY_FAIL (LogLevel.ERROR, R.string.msg_revoke_key_fail),
         MSG_REVOKE_OK (LogLevel.OK, R.string.msg_revoke_ok),
 
         // keybase verification
