@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.UploadRetryDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -76,6 +77,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public static final int REQUEST_CODE_PASSPHRASE = 1;
     public static final int REQUEST_CODE_NFC = 2;
     public static final int REQUEST_CODE_ENABLE_ORBOT = 3;
+    public static final int REQUEST_CODE_RETRY_UPLOAD = 4;
 
     private Integer mProgressMessageResource;
 
@@ -145,6 +147,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
+            case UPLOAD_FAIL_RETRY: {
+                Intent intent = new Intent(activity, UploadRetryDialogActivity.class);
+                intent.putExtra(UploadRetryDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
+                startActivityForResult(intent, REQUEST_CODE_RETRY_UPLOAD);
+                return;
+            }
+
             default: {
                 throw new RuntimeException("Unhandled pending result!");
             }
@@ -186,7 +195,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
-                    return true;
                 }
                 break;
             }
@@ -196,7 +204,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(NfcOperationActivity.RESULT_DATA);
                     cryptoOperation(cryptoInput);
-                    return true;
                 }
                 break;
             }
@@ -207,12 +214,22 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                             data.getParcelableExtra(
                                     OrbotRequiredDialogActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
-                    return true;
                 }
+                break;
+            }
+
+            case REQUEST_CODE_RETRY_UPLOAD: {
+                if (resultCode == Activity.RESULT_OK) {
+                    CryptoInputParcel cryptoInput =
+                            data.getParcelableExtra(
+                                    UploadRetryDialogActivity.RESULT_CRYPTO_INPUT);
+                    cryptoOperation(cryptoInput);
+                }
+                break;
             }
         }
 
-        return false;
+        return true;
     }
 
     protected void dismissProgress() {

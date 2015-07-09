@@ -591,6 +591,12 @@
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>
     <string name="share_nfc_dialog">"Share with NFC"</string>
 
+    <!-- retry upload dialog -->
+    <string name="retry_up_dialog_title">"Upload failed"</string>
+    <string name="retry_up_dialog_message">"Upload failed. Would you like to retry the operation?"</string>
+    <string name="retry_up_dialog_btn_reupload">"Retry Operation"</string>
+    <string name="retry_up_dialog_btn_cancel">"Cancel Operation"</string>
+
     <!-- Delete or revoke private key dialog -->
     <string name="del_rev_dialog_message">"If you would no longer like to use this key, it should be revoked and uploaded. Select delete only if you wish to remove the key from OpenKeychain but continue to use it from somewhere else."</string>
     <string name="del_rev_dialog_title">"Revoke/Delete key"</string>

@@ -91,6 +91,8 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
     }
 
     public ExportResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
+        mProgressable.setProgress(R.string.progress_uploading, 0, 1);
+
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = null;
         OperationLog log = new OperationLog();
@@ -119,6 +121,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             log.add(LogType.MSG_EXPORT_ERROR_UPLOAD, 1);
             return new ExportResult(ExportResult.RESULT_ERROR, log);
         } finally {
+            mProgressable.setProgress(R.string.progress_uploading, 1, 1);
             try {
                 if (aos != null) {
                     aos.close();

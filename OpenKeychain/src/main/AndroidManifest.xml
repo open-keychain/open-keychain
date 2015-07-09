@@ -683,6 +683,9 @@
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
+            android:name=".ui.UploadRetryDialogActivity"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
             android:name=".ui.DeleteKeyDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity

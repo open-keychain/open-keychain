@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
@@ -137,13 +138,14 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                     new ExportKeyringParcel(saveParcel.getUploadKeyserver(), ring);
             ExportResult uploadResult =
                     new  ExportOperation(mContext, mProviderHelper, mProgressable)
-                    .execute(exportKeyringParcel, cryptoInput);
+                        .execute(exportKeyringParcel, cryptoInput);
             if (uploadResult.isPending()) {
                 return uploadResult;
             } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {
                 // if atomic, update fail implies edit operation should also fail and not save
                 log.add(uploadResult, 2);
-                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, saveParcel.mMasterKeyId);
+                return new EditKeyResult(log, RequiredInputParcel.createRetryUploadOperation(),
+                        cryptoInput);
             } else {
                 // upload succeeded or not atomic so we continue
                 log.add(uploadResult, 2);
