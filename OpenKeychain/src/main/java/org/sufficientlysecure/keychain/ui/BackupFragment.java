@@ -17,23 +17,27 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.ExportHelper;
-
-import java.util.ArrayList;
 
 public class BackupFragment extends Fragment {
 
@@ -49,17 +53,17 @@ public class BackupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.backup_fragment, container, false);
 
-        View mBackupAll = view.findViewById(R.id.backup_all);
-        View mBackupPublicKeys = view.findViewById(R.id.backup_public_keys);
+        View backupAll = view.findViewById(R.id.backup_all);
+        View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
 
-        mBackupAll.setOnClickListener(new View.OnClickListener() {
+        backupAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 exportToFile(true);
             }
         });
 
-        mBackupPublicKeys.setOnClickListener(new View.OnClickListener() {
+        backupPublicKeys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 exportToFile(false);
@@ -70,49 +74,83 @@ public class BackupFragment extends Fragment {
     }
 
     private void exportToFile(boolean includeSecretKeys) {
-        if (includeSecretKeys) {
-            mIdsForRepeatAskPassphrase = new ArrayList<>();
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
 
-            Cursor cursor = getActivity().getContentResolver().query(
-                    KeychainContract.KeyRingData.buildSecretKeyRingUri(), null, null, null, null);
-            try {
-                if (cursor != null) {
-                    int keyIdColumn = cursor.getColumnIndex(KeychainContract.KeyRingData.MASTER_KEY_ID);
-                    while (cursor.moveToNext()) {
-                        long keyId = cursor.getLong(keyIdColumn);
-                        try {
-                            if (PassphraseCacheService.getCachedPassphrase(
-                                    getActivity(), keyId, keyId) == null) {
-                                mIdsForRepeatAskPassphrase.add(keyId);
+        if (!includeSecretKeys) {
+            ExportHelper exportHelper = new ExportHelper(activity);
+            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
+            return;
+        }
+
+        new AsyncTask<ContentResolver,Void,ArrayList<Long>>() {
+            @Override
+            protected ArrayList<Long> doInBackground(ContentResolver... resolver) {
+                ArrayList<Long> askPassphraseIds = new ArrayList<>();
+                Cursor cursor = resolver[0].query(
+                        KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+                                KeyRings.MASTER_KEY_ID,
+                                KeyRings.HAS_SECRET,
+                        }, KeyRings.HAS_SECRET + " != 0", null, null);
+                try {
+                    if (cursor != null) {
+                        while (cursor.moveToNext()) {
+                            SecretKeyType secretKeyType = SecretKeyType.fromNum(cursor.getInt(1));
+                            switch (secretKeyType) {
+                                // all of these make no sense to ask
+                                case PASSPHRASE_EMPTY:
+                                case GNU_DUMMY:
+                                case DIVERT_TO_CARD:
+                                case UNAVAILABLE:
+                                    continue;
+                                default: {
+                                    long keyId = cursor.getLong(0);
+                                    askPassphraseIds.add(keyId);
+                                }
                             }
-                        } catch (PassphraseCacheService.KeyNotFoundException e) {
-                            // This happens when the master key is stripped
-                            // and ignore this key.
                         }
                     }
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
                 }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+                return askPassphraseIds;
             }
 
-            mIndex = 0;
-            if (mIdsForRepeatAskPassphrase.size() != 0) {
-                startPassphraseActivity();
-                return;
+            @Override
+            protected void onPostExecute(ArrayList<Long> askPassphraseIds) {
+                super.onPostExecute(askPassphraseIds);
+                FragmentActivity activity = getActivity();
+                if (activity == null) {
+                    return;
+                }
+
+                mIdsForRepeatAskPassphrase = askPassphraseIds;
+                mIndex = 0;
+
+                if (mIdsForRepeatAskPassphrase.size() != 0) {
+                    startPassphraseActivity();
+                    return;
+                }
+
+                ExportHelper exportHelper = new ExportHelper(activity);
+                exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
             }
 
-            ExportHelper exportHelper = new ExportHelper(getActivity());
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
-        } else {
-            ExportHelper exportHelper = new ExportHelper(getActivity());
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
-        }
+        }.execute(activity.getContentResolver());
+
     }
 
     private void startPassphraseActivity() {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Intent intent = new Intent(activity, PassphraseDialogActivity.class);
         long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
         intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
