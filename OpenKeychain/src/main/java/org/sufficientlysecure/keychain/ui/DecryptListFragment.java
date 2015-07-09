@@ -89,6 +89,7 @@ public class DecryptListFragment
     public static final String ARG_RESULTS = "results";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+    public static final String ARG_CURRENT_URI = "current_uri";
 
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, Uri> mOutputUris;
@@ -158,6 +159,7 @@ public class DecryptListFragment
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mOutputUris));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
+        outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
 
     }
 
@@ -171,18 +173,20 @@ public class DecryptListFragment
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,Uri> outputUris = args.getParcelable(ARG_OUTPUT_URIS);
         ParcelableHashMap<Uri,DecryptVerifyResult> results = args.getParcelable(ARG_RESULTS);
+        Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
 
-        displayInputUris(inputUris, cancelledUris,
+        displayInputUris(inputUris, currentInputUri, cancelledUris,
                 outputUris != null ? outputUris.getMap() : null,
                 results != null ? results.getMap() : null
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, ArrayList<Uri> cancelledUris,
-            HashMap<Uri,Uri> outputUris,
+    private void displayInputUris(ArrayList<Uri> inputUris, Uri currentInputUri,
+            ArrayList<Uri> cancelledUris, HashMap<Uri,Uri> outputUris,
             HashMap<Uri,DecryptVerifyResult> results) {
 
         mInputUris = inputUris;
+        mCurrentInputUri = currentInputUri;
         mOutputUris = outputUris != null ? outputUris : new HashMap<Uri,Uri>(inputUris.size());
         mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
@@ -190,6 +194,10 @@ public class DecryptListFragment
 
         for (final Uri uri : inputUris) {
             mAdapter.add(uri);
+
+            if (uri.equals(mCurrentInputUri)) {
+                continue;
+            }
 
             if (mCancelledInputUris.contains(uri)) {
                 mAdapter.setCancelled(uri, new OnClickListener() {
@@ -209,7 +217,9 @@ public class DecryptListFragment
             }
         }
 
-        cryptoOperation();
+        if (mCurrentInputUri == null) {
+            cryptoOperation();
+        }
     }
 
     private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
