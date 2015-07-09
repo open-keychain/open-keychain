@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -52,6 +53,8 @@ import org.sufficientlysecure.keychain.util.Log;
  * @param <S> The type of result returned by the operation
  */
 public class CryptoOperationHelper<T extends Parcelable, S extends OperationResult> {
+
+    public static final String ARG_REQUESTED_CODE = "requested_code";
 
     public interface Callback<T extends Parcelable, S extends OperationResult> {
         T createOperationInput();
@@ -100,6 +103,17 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         mUseFragment = true;
         mProgressMessageResource = progressMessageString;
         mCallback = callback;
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(ARG_REQUESTED_CODE, mRequestedCode);
+    }
+
+    public void onRestoreInstanceState(@Nullable Bundle state) {
+        if (state == null) {
+            return;
+        }
+        mRequestedCode = state.getInt(ARG_REQUESTED_CODE, -1);
     }
 
     public void setProgressMessageResource(int id) {
@@ -325,6 +339,5 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             throw new AssertionError("bad return class ("
                     + result.getClass().getSimpleName() + "), this is a programming error!");
         }
-
     }
 }

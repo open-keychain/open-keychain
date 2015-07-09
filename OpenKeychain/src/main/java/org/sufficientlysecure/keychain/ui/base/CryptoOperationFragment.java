@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -60,6 +61,18 @@ abstract class CryptoOperationFragment<T extends Parcelable, S extends Operation
 
     public CryptoOperationFragment() {
         mOperationHelper = new CryptoOperationHelper<>(this, this, R.string.progress_processing);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mOperationHelper.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mOperationHelper.onSaveInstanceState(outState);
     }
 
     @Override
