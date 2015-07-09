@@ -34,8 +34,8 @@ public abstract class QueueingCryptoOperationFragment<T extends Parcelable, S ex
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
 
         if (mQueuedResult != null) {
             try {
