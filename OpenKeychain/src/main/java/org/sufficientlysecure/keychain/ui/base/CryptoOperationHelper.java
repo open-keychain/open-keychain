@@ -38,9 +38,9 @@ import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.KeyUnlockActivityWrapper;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -130,8 +130,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC: {
-                Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                Intent intent = new Intent(activity, KeyUnlockActivityWrapper.class);
+                intent.putExtra(KeyUnlockActivityWrapper.EXTRA_REQUIRED_INPUT, requiredInput);
                 mRequestedCode = REQUEST_CODE_PASSPHRASE;
                 if (mUseFragment) {
                     mFragment.startActivityForResult(intent, mRequestedCode);
@@ -182,7 +182,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case REQUEST_CODE_PASSPHRASE: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                            data.getParcelableExtra(KeyUnlockActivityWrapper.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
                     return true;
                 }

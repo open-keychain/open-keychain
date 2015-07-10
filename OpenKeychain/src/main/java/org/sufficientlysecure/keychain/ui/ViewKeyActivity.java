@@ -407,8 +407,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void startPassphraseActivity(int requestCode) {
-        Intent intent = new Intent(this, PassphraseDialogActivity.class);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+        Intent intent = new Intent(this, KeyUnlockActivityWrapper.class);
+        intent.putExtra(KeyUnlockActivityWrapper.EXTRA_SUBKEY_ID, mMasterKeyId);
         startActivityForResult(intent, requestCode);
     }
 
@@ -561,7 +561,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         @Override
                         public void onAction() {
                             Intent intent = new Intent(
-                                    ViewKeyActivity.this, CreateKeyActivity.class);
+                                    ViewKeyActivity.this, CreateKeyWizardActivity.class);
                             intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
                             intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
                             intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
