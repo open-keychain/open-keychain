@@ -310,11 +310,18 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
 
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
-                    getActivity().finish();
+                    dialog.cancel();
                 }
             });
 
             return builder.show();
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            super.onCancel(dialog);
+            getActivity().setResult(RESULT_CANCELED);
+            getActivity().finish();
         }
     }
 
@@ -343,27 +350,25 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             ContextThemeWrapper theme = new ContextThemeWrapper(activity,
                     R.style.Theme_AppCompat_Light_Dialog);
 
-            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
-            alert.setTitle(getString(R.string.del_rev_dialog_title,
+            CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
+            builder.setTitle(getString(R.string.del_rev_dialog_title,
                     getArguments().get(ARG_KEY_NAME)));
 
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.del_rev_dialog, null);
-            alert.setView(view);
+            builder.setView(view);
 
             final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
 
-            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
-                    activity.setResult(RESULT_CANCELED);
-                    activity.finish();
                 }
             });
 
-            alert.setPositiveButton(R.string.del_rev_dialog_btn_revoke,
+            builder.setPositiveButton(R.string.del_rev_dialog_btn_revoke,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -382,7 +387,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                         }
                     });
 
-            final AlertDialog alertDialog = alert.show();
+            final AlertDialog alertDialog = builder.show();
 
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -406,6 +411,13 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             });
 
             return alertDialog;
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            super.onCancel(dialog);
+            getActivity().setResult(RESULT_CANCELED);
+            getActivity().finish();
         }
     }
 
