@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -133,11 +134,22 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         UncachedKeyRing ring = modifyResult.getRing();
 
         if (saveParcel.isUpload()) {
+            UncachedKeyRing publicKeyRing;
+            try {
+                publicKeyRing = ring.extractPublicKeyRing();
+            } catch (IOException e) {
+                log.add(LogType.MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD, 1);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+
             ExportKeyringParcel exportKeyringParcel =
-                    new ExportKeyringParcel(saveParcel.getUploadKeyserver(), ring);
+                    new ExportKeyringParcel(saveParcel.getUploadKeyserver(),
+                            publicKeyRing);
+
             ExportResult uploadResult =
                     new ExportOperation(mContext, mProviderHelper, mProgressable)
                             .execute(exportKeyringParcel, cryptoInput);
+
             if (uploadResult.isPending()) {
                 return uploadResult;
             } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {
