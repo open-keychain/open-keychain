@@ -981,10 +981,10 @@ public class PgpKeyOperation {
 				log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
 						KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve));
 
-				if (isDivertToCard(masterSecretKey)) {
-					log.add(LogType.MSG_MF_ERROR_DIVERT_NEWSUB, indent + 1);
-					return new PgpEditKeyResult(PgpEditKeyResult.RESULT_CANCELLED, log, null);
-				}
+                if (isDivertToCard(masterSecretKey)) {
+                    log.add(LogType.MSG_MF_ERROR_DIVERT_NEWSUB, indent +1);
+                    return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
+                }
 
 				if (add.mExpiry == null) {
 					log.add(LogType.MSG_MF_ERROR_NULL_EXPIRY, indent + 1);

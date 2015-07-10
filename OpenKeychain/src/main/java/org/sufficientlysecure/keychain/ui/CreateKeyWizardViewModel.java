@@ -389,8 +389,9 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
 				mOnViewModelEventBind.onShowNotification("YubiKey key creation is currently not supported. Please follow our FAQ.");
 			}
 		} else {
-			mWizardStep = WizardStep.WIZARD_STEP_YUBI_KEY_BLANK;
-			mOnViewModelEventBind.onYubiBlankState();
+			//mWizardStep = WizardStep.WIZARD_STEP_YUBI_KEY_BLANK;
+			//mOnViewModelEventBind.onYubiBlankState();
+			mOnViewModelEventBind.onShowNotification("YubiKey key creation is currently not supported. Please follow our FAQ.");
 		}
 	}
 

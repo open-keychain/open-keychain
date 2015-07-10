@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Sends the selected public key to a keyserver
@@ -108,7 +107,7 @@ public class UploadKeyActivity extends BaseActivity
         String server = (String) mKeyServerSpinner.getSelectedItem();
         mKeyserver = server;
 
-        mUploadOpHelper = new CryptoOperationHelper(this, this, R.string.progress_uploading);
+        mUploadOpHelper = new CryptoOperationHelper(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
     }
 

@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
+import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
@@ -82,6 +83,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private Uri mDataUri;
 
     private byte[] mFingerprint;
+    private long mMasterKeyId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -104,6 +106,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
+        View vKeySafeButton = view.findViewById(R.id.view_key_action_key_export);
         View vKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
@@ -127,6 +130,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 share(false, false);
+            }
+        });
+        vKeySafeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exportToFile();
             }
         });
         vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
@@ -162,6 +171,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         });
 
         return root;
+    }
+
+    private void exportToFile() {
+        new ExportHelper(getActivity()).showExportKeysDialog(
+                mMasterKeyId, Constants.Path.APP_DIR_FILE, false);
     }
 
     private void startSafeSlinger(Uri dataUri) {
@@ -355,6 +369,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     /** Load QR Code asynchronously and with a fade in animation */
     private void setFingerprint(byte[] fingerprintBlob) {
         mFingerprint = fingerprintBlob;
+        mMasterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprintBlob);
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
         mFingerprintView.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));

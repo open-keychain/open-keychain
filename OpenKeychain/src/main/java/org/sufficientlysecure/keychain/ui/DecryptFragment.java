@@ -53,9 +53,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -186,7 +184,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             }
         };
 
-        mImportOpHelper = new CryptoOperationHelper<>(this, callback, R.string.progress_importing);
+        mImportOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_importing);
 
         mImportOpHelper.cryptoOperation();
     }

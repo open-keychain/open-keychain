@@ -27,12 +27,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
@@ -211,21 +213,21 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         Cursor cursor = null;
         try {
 
-            String selection = null, ids[] = null;
+            String selection = null, selectionArgs[] = null;
 
             if (masterKeyIds != null) {
-                // generate placeholders and string selection args
-                ids = new String[masterKeyIds.length];
-                StringBuilder placeholders = new StringBuilder("?");
+                // convert long[] to String[]
+                selectionArgs = new String[masterKeyIds.length];
                 for (int i = 0; i < masterKeyIds.length; i++) {
-                    ids[i] = Long.toString(masterKeyIds[i]);
-                    if (i != 0) {
-                        placeholders.append(",?");
-                    }
+                    selectionArgs[i] = Long.toString(masterKeyIds[i]);
                 }
 
+                // generates ?,?,? as placeholders for selectionArgs
+                String placeholders = TextUtils.join(",",
+                        Collections.nCopies(masterKeyIds.length, "?"));
+
                 // put together selection string
-                selection = Tables.KEY_RINGS_PUBLIC + "." + KeyRings.MASTER_KEY_ID
+                selection = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
                         + " IN (" + placeholders + ")";
             }
 
@@ -233,7 +235,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                     KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                             KeyRings.MASTER_KEY_ID, KeyRings.PUBKEY_DATA,
                             KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET
-                    }, selection, ids, Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
+                    }, selection, selectionArgs, Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
             );
 
             if (cursor == null || !cursor.moveToFirst()) {

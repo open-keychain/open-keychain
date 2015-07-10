@@ -180,7 +180,7 @@
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
   <string name="specify_file_to_encrypt_to">Določite datoteko, v katero želite šifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
   <string name="specify_file_to_decrypt_to">Določite datoteko, v katero želite dešifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
-  <string name="specify_file_to_export_to">Določite datoteko, v katero želite izvoziti vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
+  <string name="specify_backup_dest">Določite datoteko, v katero želite izvoziti vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
   <string name="key_deletion_confirmation_multi">Ali zares želite izbrisati vse izbrane ključe?</string>
   <string name="secret_key_deletion_confirmation">Po izbrisu ne bo več mogoče prebirati sporočil šifriranih s tem ključem! Izgubljene bodo tudi vse z njim narejene potrditve.</string>
   <string name="public_key_deletetion_confirmation">Izbrišem ključ \'%s\'?</string>

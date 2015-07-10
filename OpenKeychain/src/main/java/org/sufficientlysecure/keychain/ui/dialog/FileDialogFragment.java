@@ -136,6 +136,7 @@ public class FileDialogFragment extends DialogFragment {
             mCheckBox.setEnabled(true);
             mCheckBox.setVisibility(View.VISIBLE);
             mCheckBox.setText(checkboxText);
+            mCheckBox.setChecked(true);
         }
 
         alert.setView(view);

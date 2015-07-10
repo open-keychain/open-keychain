@@ -21,7 +21,7 @@ import android.os.Build;
 import android.os.Handler;
 
 /**
- * Bug on Android >= 4.2
+ * Bug on Android >= 4.2. Fixed in 4.2.2 ?
  * 
  * http://code.google.com/p/android/issues/detail?id=41901
  * 

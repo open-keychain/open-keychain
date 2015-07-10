@@ -65,7 +65,7 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 		view.findViewById(R.id.button_search).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				refreshSearch(new ParcelableProxy(null, -1, null));
+				refreshSearch();
 			}
 		});
 
@@ -79,13 +79,13 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 				Runnable ignoreTor = new Runnable() {
 					@Override
 					public void run() {
-						refreshSearch(new ParcelableProxy(null, -1, null));
+						refreshSearch();
 					}
 				};
 
 				if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
 						getActivity())) {
-					refreshSearch(proxyPrefs.parcelableProxy);
+					refreshSearch();
 				}
 			}
 		});
@@ -116,11 +116,10 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 		return false;
 	}
 
-	public void refreshSearch(ParcelableProxy parcelableProxy) {
-		// TODO: PHILIP verify proxy implementation in YubiKey parts
+	public void refreshSearch() {
 		mListFragment.loadNew(ImportKeysListFragment.
 				newCloudLoaderStateInstance("0x" + mYubiKeyImportWizardFragmentViewModel.getNfcFingerprint(),
-						Preferences.getPreferences(getActivity()).getCloudSearchPrefs()), parcelableProxy);
+						Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
 	}
 
 	public void importKey() {
@@ -169,13 +168,13 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 		Runnable ignoreTor = new Runnable() {
 			@Override
 			public void run() {
-				refreshSearch(new ParcelableProxy(null, -1, null));
+				refreshSearch();
 			}
 		};
 
 		if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
 				getActivity())) {
-			refreshSearch(proxyPrefs.parcelableProxy);
+			refreshSearch();
 		}
 	}
 

@@ -385,7 +385,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
 
         mProofVerifyDetail.setVisibility(View.GONE);
 
-        mKeybaseOpHelper = new CryptoOperationHelper<>(this, this,
+        mKeybaseOpHelper = new CryptoOperationHelper<>(1, this, this,
                 R.string.progress_verifying_signature);
         mKeybaseOpHelper.cryptoOperation();
     }

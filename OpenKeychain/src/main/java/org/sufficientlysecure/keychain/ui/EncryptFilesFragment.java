@@ -277,16 +277,19 @@ public class EncryptFilesFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.encrypt_save: {
+                hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SAVE;
                 cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
+                hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SHARE;
                 cryptoOperation();
                 break;
             }
             case R.id.encrypt_copy: {
+                hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.COPY;
                 cryptoOperation();
                 break;
@@ -388,6 +391,9 @@ public class EncryptFilesFragment
 
     @Override
     public void onQueuedOperationSuccess(final SignEncryptResult result) {
+        super.onQueuedOperationSuccess(result);
+
+        hideKeyboard();
 
         // protected by Queueing*Fragment
         FragmentActivity activity = getActivity();

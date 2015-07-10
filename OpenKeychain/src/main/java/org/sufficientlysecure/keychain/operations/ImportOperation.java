@@ -155,7 +155,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
                                                String keyServerUri, Progressable progressable,
                                                Proxy proxy) {
-        updateProgress(R.string.progress_importing, 0, 100);
+        if (progressable != null) {
+            progressable.setProgress(R.string.progress_importing, 0, 100);
+        }
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_IMPORT, 0, num);

@@ -202,7 +202,7 @@
   <string name="error_no_encryption_or_signature_key">少なくとも1つの暗号化鍵か署名鍵を選択して下さい。</string>
   <string name="specify_file_to_encrypt_to">どれのファイルを暗号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
   <string name="specify_file_to_decrypt_to">どれのファイルを暗号するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
-  <string name="specify_file_to_export_to">どれのファイルを復号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
+  <string name="specify_backup_dest">どれのファイルを復号化するのを入力してください。\n注意：ファイルが存在しているなら上書きされる！</string>
   <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?</string>
   <string name="secret_key_deletion_confirmation">削除後はこの鍵で暗号化されたメッセージが読めなくなります、またその鍵で行われたすべての鍵確認を失います!</string>
   <string name="public_key_deletetion_confirmation">鍵 \'%s\' を削除しますか?</string>

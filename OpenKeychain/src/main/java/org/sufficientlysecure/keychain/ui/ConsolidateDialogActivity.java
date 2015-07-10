@@ -53,7 +53,7 @@ public class ConsolidateDialogActivity extends FragmentActivity
 
         mRecovery = recovery;
 
-        mConsolidateOpHelper = new CryptoOperationHelper<>(this, this, R.string.progress_importing);
+        mConsolidateOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_importing);
         mConsolidateOpHelper.cryptoOperation();
     }
 

@@ -211,7 +211,7 @@
   <string name="select_encryption_key">Mindestens einen Schlüssel zum Verschlüsseln auswählen.</string>
   <string name="specify_file_to_encrypt_to">Bitte angeben in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="specify_file_to_decrypt_to">Bitte angeben in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
-  <string name="specify_file_to_export_to">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
+  <string name="specify_backup_dest">Bitte angeben in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert.</string>
   <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?</string>
   <string name="secret_key_deletion_confirmation">Nach dem Löschen wird es dir nicht mehr möglich sein mit diesem Schlüssel verschlüsselte Nachrichten zu lesen und zudem wirst du alle damit getätigten Bestätigungen verlieren!</string>
   <string name="public_key_deletetion_confirmation">Schlüssel \'%s\' löschen?</string>

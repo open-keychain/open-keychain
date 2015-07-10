@@ -247,7 +247,7 @@
   <string name="error_no_encryption_or_signature_key">Seleccionar al menos una clave de cifrado o una clave de firma.</string>
   <string name="specify_file_to_encrypt_to">Por favor especifique hacia qué fichero cifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="specify_file_to_decrypt_to">Por favor especifique hacia qué fichero descifrar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
-  <string name="specify_file_to_export_to">Por favor especifique hacia qué fichero exportar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
+  <string name="specify_backup_dest">Por favor especifique hacia qué fichero exportar.\nADVERTENCIA: ¡El fichero se sobreescribirá si existe!</string>
   <string name="key_deletion_confirmation_multi">¿De verdad quiere borrar todas las claves seleccionadas?</string>
   <string name="secret_key_deletion_confirmation">¡Después del borrado no podrá leer mensajes cifrados con esta clave y perderá todas las confirmaciones de clave hechas con ella!</string>
   <string name="public_key_deletetion_confirmation">¿Borrar clave \'%s\'?</string>
