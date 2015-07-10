@@ -410,7 +410,6 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         editSubkeyExpiry(position);
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
-                        Log.e("PHILIP", "rev subkey " + keyId + " from " + mSaveKeyringParcel.mMasterKeyId);
                         // toggle
                         if (mSaveKeyringParcel.mRevokeSubKeys.contains(keyId)) {
                             mSaveKeyringParcel.mRevokeSubKeys.remove(keyId);

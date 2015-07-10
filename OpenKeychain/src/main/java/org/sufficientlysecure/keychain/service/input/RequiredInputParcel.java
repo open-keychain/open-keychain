@@ -3,7 +3,6 @@ package org.sufficientlysecure.keychain.service.input;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.nio.ByteBuffer;

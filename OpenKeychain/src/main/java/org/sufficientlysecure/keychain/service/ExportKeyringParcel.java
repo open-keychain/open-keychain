@@ -61,6 +61,7 @@ public class ExportKeyringParcel implements Parcelable {
         mOutputFile = outputFile;
     }
 
+    @SuppressWarnings("unused") // TODO: is it used?
     public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
         mExportType = ExportType.EXPORT_URI;
         mMasterKeyIds = masterKeyIds;

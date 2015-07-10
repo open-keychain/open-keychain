@@ -21,11 +21,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -47,8 +45,9 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** An operation which implements a high level key edit operation.
- *
+/**
+ * An operation which implements a high level key edit operation.
+ * <p/>
  * This operation provides a higher level interface to the edit and
  * create key operations in PgpKeyOperation. It takes care of fetching
  * and saving the key before and after the operation.
@@ -67,7 +66,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
      * Saves an edited key, and uploads it to a server atomically or otherwise as
      * specified in saveParcel
      *
-     * @param saveParcel primary input to the operation
+     * @param saveParcel  primary input to the operation
      * @param cryptoInput input that changes if user interaction is required
      * @return the result of the operation
      */
@@ -137,8 +136,8 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
             ExportKeyringParcel exportKeyringParcel =
                     new ExportKeyringParcel(saveParcel.getUploadKeyserver(), ring);
             ExportResult uploadResult =
-                    new  ExportOperation(mContext, mProviderHelper, mProgressable)
-                        .execute(exportKeyringParcel, cryptoInput);
+                    new ExportOperation(mContext, mProviderHelper, mProgressable)
+                            .execute(exportKeyringParcel, cryptoInput);
             if (uploadResult.isPending()) {
                 return uploadResult;
             } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {

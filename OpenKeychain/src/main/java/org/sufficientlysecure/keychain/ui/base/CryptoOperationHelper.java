@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.UploadRetryDialogActivity;
+import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -148,8 +148,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             }
 
             case UPLOAD_FAIL_RETRY: {
-                Intent intent = new Intent(activity, UploadRetryDialogActivity.class);
-                intent.putExtra(UploadRetryDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
+                Intent intent = new Intent(activity, RetryUploadDialogActivity.class);
+                intent.putExtra(RetryUploadDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
                 startActivityForResult(intent, REQUEST_CODE_RETRY_UPLOAD);
                 return;
             }
@@ -222,7 +222,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 if (resultCode == Activity.RESULT_OK) {
                     CryptoInputParcel cryptoInput =
                             data.getParcelableExtra(
-                                    UploadRetryDialogActivity.RESULT_CRYPTO_INPUT);
+                                    RetryUploadDialogActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
                 }
                 break;

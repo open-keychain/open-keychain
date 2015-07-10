@@ -18,8 +18,6 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;

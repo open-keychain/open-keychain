@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2015 Adithya Abraham Philip <adithyaphilip@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
@@ -6,12 +25,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
@@ -47,7 +61,6 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     private CryptoOperationHelper<RevokeKeyringParcel, RevokeResult> mRevokeOpHelper;
 
     private long[] mMasterKeyIds;
-    private boolean mHasSecret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +73,14 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 getRevocationCallback(), R.string.progress_revoking_uploading);
 
         mMasterKeyIds = getIntent().getLongArrayExtra(EXTRA_DELETE_MASTER_KEY_IDS);
-        mHasSecret = getIntent().getBooleanExtra(EXTRA_HAS_SECRET, false);
+        boolean hasSecret = getIntent().getBooleanExtra(EXTRA_HAS_SECRET, false);
 
-        if (mMasterKeyIds.length > 1 && mHasSecret) {
+        if (mMasterKeyIds.length > 1 && hasSecret) {
             throw new AssertionError("Secret keys can be deleted only one at a time!" +
                     " Should be checked before reaching DeleteKeyDialogActivity.");
         }
 
-        if (mMasterKeyIds.length == 1 && mHasSecret) {
+        if (mMasterKeyIds.length == 1 && hasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
                 HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
@@ -89,7 +102,6 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                         "Secret key to delete not found at DeleteKeyDialogActivity for "
                                 + mMasterKeyIds[0], e);
                 finish();
-                return;
             }
         } else {
             showNormalDeleteDialog();
@@ -121,8 +133,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
 
     private CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult> getRevocationCallback() {
 
-        CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult> callback
-                = new CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult>() {
+        return new CryptoOperationHelper.Callback<RevokeKeyringParcel, RevokeResult>() {
             @Override
             public RevokeKeyringParcel createOperationInput() {
                 return new RevokeKeyringParcel(mMasterKeyIds[0], true,
@@ -150,14 +161,11 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 return false;
             }
         };
-
-        return callback;
     }
 
     private CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult> getDeletionCallback() {
 
-        CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult> callback
-                = new CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult>() {
+        return new CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult>() {
             @Override
             public DeleteKeyringParcel createOperationInput() {
                 return new DeleteKeyringParcel(mMasterKeyIds, true);
@@ -184,8 +192,6 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 return false;
             }
         };
-
-        return callback;
     }
 
     private void returnResult(OperationResult result) {
@@ -305,10 +311,10 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     public static class RevokeDeleteDialogFragment extends DialogFragment {
 
         public static RevokeDeleteDialogFragment newInstance() {
-            RevokeDeleteDialogFragment frag = new RevokeDeleteDialogFragment();
-            return frag;
+            return new RevokeDeleteDialogFragment();
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();

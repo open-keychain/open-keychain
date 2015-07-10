@@ -242,6 +242,7 @@ public class SaveKeyringParcel implements Parcelable {
         }
     }
 
+    @SuppressWarnings("unchecked") // we verify the reads against writes in writeToParcel
     public SaveKeyringParcel(Parcel source) {
         mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
         mFingerprint = source.createByteArray();

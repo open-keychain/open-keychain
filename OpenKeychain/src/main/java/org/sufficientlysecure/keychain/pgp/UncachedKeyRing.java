@@ -18,8 +18,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.os.Parcelable;
-
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SignatureSubpacketTags;

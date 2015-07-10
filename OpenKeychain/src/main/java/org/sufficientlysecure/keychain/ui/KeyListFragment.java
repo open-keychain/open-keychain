@@ -33,9 +33,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -60,7 +57,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
-import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -69,7 +65,6 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -222,7 +217,7 @@ public class KeyListFragment extends LoaderFragment
                     }
                     case R.id.menu_key_list_multi_delete: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
+                        showDeleteKeyDialog(ids, mAdapter.isAnySecretSelected());
                         break;
                     }
                 }
@@ -356,7 +351,7 @@ public class KeyListFragment extends LoaderFragment
      *
      * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
-    public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds, boolean hasSecret) {
+    public void showDeleteKeyDialog(long[] masterKeyIds, boolean hasSecret) {
         // Can only work on singular secret keys
         if (hasSecret && masterKeyIds.length > 1) {
             Notify.create(getActivity(), R.string.secret_cannot_multiple,

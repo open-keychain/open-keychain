@@ -49,12 +49,13 @@ public class ImportKeysListCloudLoader
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     /**
-     * Pass a parcelableProxy to specify an explicit proxy, otherwise will fetch from preferences
+     * Searches a keyserver as specified in cloudPrefs, using an explicit proxy if passed
      *
-     * @param context
-     * @param serverQuery
-     * @param cloudPrefs
-     * @param parcelableProxy
+     * @param serverQuery     string to search on servers for. If is a fingerprint,
+     *                        will enforce fingerprint check
+     * @param cloudPrefs      contains keyserver to search on, whether to search on the keyserver,
+     *                        and whether to search keybase.io
+     * @param parcelableProxy explicit proxy to use. If null, will retrieve from preferences
      */
     public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs,
                                      @Nullable ParcelableProxy parcelableProxy) {

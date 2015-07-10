@@ -19,11 +19,10 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-import java.util.ArrayList;
-
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
+import java.util.ArrayList;
 
 public class SignEncryptResult extends InputPendingResult {
 
