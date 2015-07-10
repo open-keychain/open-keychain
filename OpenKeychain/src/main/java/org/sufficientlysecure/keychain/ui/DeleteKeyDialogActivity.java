@@ -357,7 +357,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                                         .startRevocationOperation();
                             } else if (choice.equals(CHOICE_DELETE)) {
                                 ((DeleteKeyDialogActivity) activity)
-                                        .startDeletionOperation();
+                                        .showNormalDeleteDialog();
                             } else {
                                 throw new AssertionError(
                                         "Unsupported delete type in RevokeDeleteDialogFragment");
