@@ -599,7 +599,7 @@
 
     <!-- Delete or revoke private key dialog -->
     <string name="del_rev_dialog_message">"If you would no longer like to use this key, it should be revoked and uploaded. Select delete only if you wish to remove the key from OpenKeychain but continue to use it from somewhere else."</string>
-    <string name="del_rev_dialog_title">"Revoke/Delete key"</string>
+    <string name="del_rev_dialog_title">"Revoke/Delete key \"%s\""</string>
     <string name="del_rev_dialog_btn_revoke">"Revoke and upload"</string>
     <string name="del_rev_dialog_btn_delete">"Delete only"</string>
 

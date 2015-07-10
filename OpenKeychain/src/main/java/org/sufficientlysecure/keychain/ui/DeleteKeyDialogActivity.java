@@ -92,10 +92,20 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                                 ProviderHelper.FIELD_TYPE_INTEGER
                         }
                 );
+
+                String name;
+                KeyRing.UserId mainUserId = KeyRing.splitUserId(
+                        (String) data.get(KeychainContract.KeyRings.USER_ID));
+                if (mainUserId.name != null) {
+                    name = mainUserId.name;
+                } else {
+                    name = getString(R.string.user_id_no_name);
+                }
+
                 if ((long) data.get(KeychainContract.KeyRings.IS_REVOKED) > 0) {
                     showNormalDeleteDialog();
                 } else {
-                    showRevokeDeleteDialog();
+                    showRevokeDeleteDialog(name);
                 }
             } catch (ProviderHelper.NotFoundException e) {
                 Log.e(Constants.TAG,
@@ -117,9 +127,9 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
 
     }
 
-    private void showRevokeDeleteDialog() {
+    private void showRevokeDeleteDialog(String keyname) {
 
-        RevokeDeleteDialogFragment fragment = RevokeDeleteDialogFragment.newInstance();
+        RevokeDeleteDialogFragment fragment = RevokeDeleteDialogFragment.newInstance(keyname);
         fragment.show(getSupportFragmentManager(), "deleteRevokeDialog");
     }
 
@@ -310,8 +320,14 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
 
     public static class RevokeDeleteDialogFragment extends DialogFragment {
 
-        public static RevokeDeleteDialogFragment newInstance() {
-            return new RevokeDeleteDialogFragment();
+        public static final String ARG_KEY_NAME = "arg_key_name";
+
+        public static RevokeDeleteDialogFragment newInstance(String keyName) {
+            Bundle args = new Bundle();
+            args.putString(ARG_KEY_NAME, keyName);
+            RevokeDeleteDialogFragment frag = new RevokeDeleteDialogFragment();
+            frag.setArguments(args);
+            return frag;
         }
 
         @NonNull
@@ -328,7 +344,8 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     R.style.Theme_AppCompat_Light_Dialog);
 
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
-            alert.setTitle(R.string.del_rev_dialog_title);
+            alert.setTitle(getString(R.string.del_rev_dialog_title,
+                    getArguments().get(ARG_KEY_NAME)));
 
             LayoutInflater inflater = LayoutInflater.from(theme);
             View view = inflater.inflate(R.layout.del_rev_dialog, null);
