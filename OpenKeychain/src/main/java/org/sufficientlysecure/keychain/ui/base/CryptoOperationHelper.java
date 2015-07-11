@@ -120,13 +120,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         Activity activity = mUseFragment ? mFragment.getActivity() : mActivity;
 
         switch (requiredInput.mType) {
-            // TODO: make NfcOperationActivity add to cryptoInputParcel
             // always use CryptoOperationHelper.startActivityForResult!
             case NFC_MOVE_KEY_TO_CARD:
             case NFC_DECRYPT:
             case NFC_SIGN: {
                 Intent intent = new Intent(activity, NfcOperationActivity.class);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(NfcOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
                 startActivityForResult(intent, REQUEST_CODE_NFC);
                 return;
             }
@@ -202,7 +202,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             case REQUEST_CODE_NFC: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     CryptoInputParcel cryptoInput =
-                            data.getParcelableExtra(NfcOperationActivity.RESULT_DATA);
+                            data.getParcelableExtra(NfcOperationActivity.RESULT_CRYPTO_INPUT);
                     cryptoOperation(cryptoInput);
                 }
                 break;

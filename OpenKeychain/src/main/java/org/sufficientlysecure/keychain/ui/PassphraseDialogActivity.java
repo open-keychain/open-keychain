@@ -95,6 +95,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         mCryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
 
+        if (mCryptoInputParcel == null) {
+            // not all usages of PassphraseActivity are from CryptoInputOperation
+            mCryptoInputParcel = new CryptoInputParcel();
+        }
+
         // this activity itself has no content view (see manifest)
 
         if (getIntent().hasExtra(EXTRA_SUBKEY_ID)) {

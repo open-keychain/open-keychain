@@ -43,11 +43,12 @@ import java.util.Arrays;
 public class NfcOperationActivity extends BaseNfcActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // passthrough for OpenPgpService
     public static final String EXTRA_SERVICE_INTENT = "data";
 
-    public static final String RESULT_DATA = "result_data";
+    public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public ViewAnimator vAnimator;
     public TextView vErrorText;
@@ -66,6 +67,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
         Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
+
+        if (mInputParcel == null) {
+            // for compatibility when used from OpenPgpService
+            // (or any place other than CryptoOperationHelper)
+            mInputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
+        }
 
         setTitle(R.string.nfc_text);
 
@@ -111,8 +120,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     @Override
     protected void doNfcInBackground() throws IOException {
-
-        mInputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
 
         switch (mRequiredInput.mType) {
             case NFC_DECRYPT: {
@@ -218,11 +225,16 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void onNfcPostExecute() throws IOException {
         if (mServiceIntent != null) {
+            // if we're triggered by OpenPgpService
             CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, mInputParcel);
+            mServiceIntent.putExtra(EXTRA_CRYPTO_INPUT,
+                    getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT));
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
-            result.putExtra(NfcOperationActivity.RESULT_DATA, mInputParcel);
+            result.putExtra(RESULT_CRYPTO_INPUT, mInputParcel);
+            // send back the CryptoInputParcel we receive, to conform with the pattern in
+            // CryptoOperationHelper
             setResult(RESULT_OK, result);
         }
 
