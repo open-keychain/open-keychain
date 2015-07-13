@@ -86,7 +86,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.CreateKeyActivity"
+            android:name=".ui.CreateKeyWizardActivity"
             android:allowTaskReparenting="true"
             android:label="@string/title_manage_my_keys"
             android:launchMode="singleTop"
@@ -680,12 +680,11 @@
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
-            android:name=".ui.PassphraseDialogActivity"
+            android:name=".ui.KeyUnlockActivityWrapper"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".ui.OrbotRequiredDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!

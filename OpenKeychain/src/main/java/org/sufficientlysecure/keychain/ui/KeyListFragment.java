@@ -56,6 +56,7 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -78,6 +79,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
@@ -468,8 +470,8 @@ public class KeyListFragment extends LoaderFragment
             case R.id.menu_key_list_debug_first_time:
                 Preferences prefs = Preferences.getPreferences(getActivity());
                 prefs.setFirstTime(true);
-                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-                intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+                Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
+                intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
                 startActivity(intent);
                 getActivity().finish();
                 return true;
@@ -524,7 +526,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
         startActivityForResult(intent, REQUEST_ACTION);
     }
 

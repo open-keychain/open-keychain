@@ -32,23 +32,23 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
-/** This is a base class for fragments which implement a cryptoOperation.
- *
+/**
+ * This is a base class for fragments which implement a cryptoOperation.
+ * <p>
  * Subclasses of this class can call the cryptoOperation method to execute an
  * operation in KeychainService which takes a parcelable of type T as its input
  * and returns an OperationResult of type S as a result.
- *
+ * <p>
  * The input (of type T) is not given directly to the cryptoOperation method,
  * but must be provided by the overriden createOperationInput method to be
  * available upon request during execution of the cryptoOperation.
- *
+ * <p>
  * After running cryptoOperation, one of the onCryptoOperation*() methods will
  * be called, depending on the success status of the operation. The subclass
  * must override at least onCryptoOperationSuccess to proceed after a
  * successful operation.
  *
  * @see KeychainService
- *
  */
 abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>
         extends Fragment implements CryptoOperationHelper.Callback<T, S> {
@@ -68,8 +68,9 @@ abstract class CryptoOperationFragment<T extends Parcelable, S extends Operation
         mOperationHelper.handleActivityResult(requestCode, resultCode, data);
     }
 
-    /** Starts execution of the cryptographic operation.
-     *
+    /**
+     * Starts execution of the cryptographic operation.
+     * <p>
      * During this process, the createOperationInput() method will be called,
      * this input will be handed to KeychainService, where it is executed in
      * the appropriate *Operation class. If the result is a PendingInputResult,
@@ -84,13 +85,16 @@ abstract class CryptoOperationFragment<T extends Parcelable, S extends Operation
         mOperationHelper.cryptoOperation(cryptoInput);
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     /** Creates input for the crypto operation. Called internally after the
      * crypto operation is started by a call to cryptoOperation(). Silently
      * cancels operation if this method returns null. */
     public abstract T createOperationInput();
 
-    /** Returns false, indicating that we did not handle progress ourselves. */
+    /**
+     * Returns false, indicating that we did not handle progress ourselves.
+     */
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return false;
     }

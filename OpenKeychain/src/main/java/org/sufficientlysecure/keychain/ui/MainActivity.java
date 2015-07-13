@@ -125,8 +125,8 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
         // if this is the first time show first time activity
         Preferences prefs = Preferences.getPreferences(this);
         if (!getIntent().getBooleanExtra(EXTRA_SKIP_FIRST_TIME, false) && prefs.isFirstTime()) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
             startActivity(intent);
             finish();
             return;

@@ -175,6 +175,18 @@ public class ImportKeysListFragment extends ListFragment implements
         return frag;
     }
 
+    /**
+     * Returns a new instance of CloudLoaderState
+     *
+     * @param serverQuery
+     * @param cloudPrefs
+     * @return
+     */
+    public static CloudLoaderState newCloudLoaderStateInstance(String serverQuery,
+                                                               Preferences.CloudSearchPrefs cloudPrefs) {
+        return new CloudLoaderState(serverQuery, cloudPrefs);
+    }
+
     static public class LoaderState {
     }
 
@@ -396,7 +408,7 @@ public class ImportKeysListFragment extends ListFragment implements
                                 }
                             }
                         };
-                        new Handler().post(showOrbotDialog );
+                        new Handler().post(showOrbotDialog);
                         mShowingOrbotDialog = true;
                     }
                 } else {
