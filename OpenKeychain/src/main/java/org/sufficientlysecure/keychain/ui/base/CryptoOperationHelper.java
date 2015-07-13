@@ -89,8 +89,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * If OperationHelper is being integrated into an activity
      */
     public CryptoOperationHelper(int id, FragmentActivity activity, Callback<T, S> callback,
-            Integer progressMessageString) {
-        mId = (id << 9) + (1<<8);
+                                 Integer progressMessageString) {
+        mId = (id << 9) + (1 << 8);
         mActivity = activity;
         mUseFragment = false;
         mCallback = callback;
@@ -101,7 +101,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * if OperationHelper is being integrated into a fragment
      */
     public CryptoOperationHelper(int id, Fragment fragment, Callback<T, S> callback, Integer progressMessageString) {
-        mId = (id << 9) + (1<<8);
+        mId = (id << 9) + (1 << 8);
         mFragment = fragment;
         mUseFragment = true;
         mProgressMessageResource = progressMessageString;
@@ -135,8 +135,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC: {
-                Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                Intent intent = new Intent(activity, KeyUnlockActivityWrapper.class);
+                intent.putExtra(KeyUnlockActivityWrapper.EXTRA_REQUIRED_INPUT, requiredInput);
                 if (mUseFragment) {
                     mFragment.startActivityForResult(intent, mId + REQUEST_CODE_PASSPHRASE);
                 } else {
@@ -165,6 +165,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     /**
      * Attempts the result of an activity started by this helper. Returns true if requestCode is
      * recognized, false otherwise.
+     *
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {

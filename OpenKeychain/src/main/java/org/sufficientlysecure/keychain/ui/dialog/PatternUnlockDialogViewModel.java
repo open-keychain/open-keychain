@@ -6,18 +6,18 @@ import android.os.Bundle;
 import org.sufficientlysecure.keychain.ui.base.BaseViewModel;
 
 public class PatternUnlockDialogViewModel implements BaseViewModel {
-	@Override
-	public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Context context) {
+    @Override
+    public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Context context) {
 
-	}
+    }
 
-	@Override
-	public void saveViewModelState(Bundle outState) {
+    @Override
+    public void saveViewModelState(Bundle outState) {
 
-	}
+    }
 
-	@Override
-	public void restoreViewModelState(Bundle savedInstanceState) {
+    @Override
+    public void restoreViewModelState(Bundle savedInstanceState) {
 
-	}
+    }
 }

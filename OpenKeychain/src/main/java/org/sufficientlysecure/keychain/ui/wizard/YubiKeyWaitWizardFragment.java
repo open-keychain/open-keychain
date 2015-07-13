@@ -16,25 +16,25 @@ import org.sufficientlysecure.keychain.ui.base.WizardFragment;
  */
 public class YubiKeyWaitWizardFragment extends WizardFragment {
 
-	public static YubiKeyWaitWizardFragment newInstance() {
-		return new YubiKeyWaitWizardFragment();
-	}
+    public static YubiKeyWaitWizardFragment newInstance() {
+        return new YubiKeyWaitWizardFragment();
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	}
+    }
 
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-		if (mWizardFragmentListener != null) {
-			mWizardFragmentListener.onHideNavigationButtons(false, true);
+        if (mWizardFragmentListener != null) {
+            mWizardFragmentListener.onHideNavigationButtons(false, true);
 
-		}
-		return inflater.inflate(R.layout.wizard_yubi_wait_fragment, container, false);
-	}
+        }
+        return inflater.inflate(R.layout.wizard_yubi_wait_fragment, container, false);
+    }
 }
