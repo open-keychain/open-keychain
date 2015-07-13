@@ -54,7 +54,6 @@ dependencies {
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
-    compile 'com.nispok:snackbar:2.10.8'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     // libs as submodules
@@ -67,6 +66,7 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange')
+    compile project(':extern:snackbar:lib')
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -93,17 +93,17 @@ dependencyVerification {
             'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
-            'com.nispok:snackbar:80bebc8e5d8b3d728cd5f2336e2d0c1cc2a6b7dc4b55d36acd6b75a78265590a',
-            //'open-keychain.extern.openpgp-api-lib:openpgp-api:cbac23f4dcfdd8cf580e6dcafaaeb8958894be9765b16058b30df173af714ce0',
-            //'open-keychain.extern.openkeychain-api-lib:openkeychain-intents:24c5403f1225597489924d31a2d3638f5800f5c06ac0adbef3b90a43c5e41b92',
-            //'open-keychain.extern.spongycastle:core:2cccd7471684eab9c3bc2d74e117d27dd2b10b9edbbf85d2718fc2dfb4c3fbe6',
-            //'open-keychain.extern.spongycastle:pg:9b333ccd06f8ec5d3857a8c516f83b0d1bff4d9b0208809c1468300ebbe2cd01',
-            //'open-keychain.extern.spongycastle:pkix:534001eca2a44ca4277a93c4293040bf4137c81f2c321f0cd92411acd7762bc4',
-            //'open-keychain.extern.spongycastle:prov:86c39b96a9604a6633ba4c47fac6f46b829d2a580dfac33514d5c2eaceda46d0',
-            //'open-keychain.extern:minidns:cad64ffcda40e2351b6a7429fbfb60e32ff167e852503fff4fa097cde134957a',
-            //'open-keychain.extern.KeybaseLib:Lib:a81380c89bb5f080d4f13cb24172a19d8f0031c32fa2ea0e346c54d215849900',
-            //'open-keychain.extern:safeslinger-exchange:5701b33044f5914ec58046183e900576c1285ad191a8a04d59c7600d31f36361',
-            'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
+//            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
+//            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
+//            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
+//            'com.madgag.spongycastle:pg:160b345b10a2c92dc731453eec87037377f66a8e14a0648d404d7b193c4e380d',
+//            'com.madgag.spongycastle:pkix:0b4f3301ea12dd9f25d71770e6ea9f75e0611bf53062543e47be5bc15340a7e4',
+//            'com.madgag.spongycastle:prov:7325942e0b39f5fb35d6380818eed4b826e7dfc7570ad35b696d778049d8c36a',
+//            'OpenKeychain.extern:minidns:77b1786d29469e3b21f9404827cab811edc857cd68bc732cd57f11307c332eae',
+//            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
+//            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
+//            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
+//            'com.android.support:support-annotations:7bc07519aa613b186001160403bcfd68260fa82c61cc7e83adeedc9b862b94ae',
     ]
 }
 
