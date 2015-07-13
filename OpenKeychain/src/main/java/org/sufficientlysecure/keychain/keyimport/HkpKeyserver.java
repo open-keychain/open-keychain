@@ -399,6 +399,10 @@ public class HkpKeyserver extends Keyserver {
             Log.d(Constants.TAG, "response code: " + response.code());
             Log.d(Constants.TAG, "answer: " + response.body().string());
 
+            if (response.code() != 200) {
+                throw new AddKeyException();
+            }
+
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
             throw new AddKeyException();
