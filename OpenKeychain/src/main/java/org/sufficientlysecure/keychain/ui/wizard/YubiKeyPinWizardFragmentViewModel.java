@@ -75,11 +75,20 @@ public class YubiKeyPinWizardFragmentViewModel implements BaseViewModel,
      */
     public void launchYubiKeyTask() {
         if (mYubiKeyPinAsyncTask != null) {
+            mYubiKeyPinAsyncTask.setOnYubiKeyPinAsyncTaskListener(null);
             mYubiKeyPinAsyncTask.cancel(true);
             mYubiKeyPinAsyncTask = null;
         }
 
         mYubiKeyPinAsyncTask = new YubiKeyPinAsyncTask(this);
         mYubiKeyPinAsyncTask.execute();
+    }
+
+    public void onDetachFromActivity() {
+        if (mYubiKeyPinAsyncTask != null) {
+            mYubiKeyPinAsyncTask.setOnYubiKeyPinAsyncTaskListener(null);
+            mYubiKeyPinAsyncTask.cancel(true);
+            mYubiKeyPinAsyncTask = null;
+        }
     }
 }

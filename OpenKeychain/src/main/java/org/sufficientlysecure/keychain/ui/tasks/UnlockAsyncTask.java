@@ -95,4 +95,8 @@ public class UnlockAsyncTask extends AsyncTask<Void, Void, Boolean> {
             mOnUnlockAsyncTaskListener.onUnlockOperationSuccess();
         }
     }
+
+    public void setOnUnlockAsyncTaskListener(OnUnlockAsyncTaskListener onUnlockAsyncTaskListener) {
+        mOnUnlockAsyncTaskListener = onUnlockAsyncTaskListener;
+    }
 }

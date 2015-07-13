@@ -34,6 +34,12 @@ public abstract class WizardFragment extends QueueingCryptoOperationFragment<Imp
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mWizardFragmentListener = null;
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         if (mWizardFragmentListener != null) {

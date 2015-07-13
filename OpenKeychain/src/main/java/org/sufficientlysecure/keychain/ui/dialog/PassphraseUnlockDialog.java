@@ -112,6 +112,12 @@ public class PassphraseUnlockDialog extends UnlockDialog implements
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mPassphraseUnlockDialogViewModel.onDetachFromActivity();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPassphraseUnlockDialogViewModel.saveViewModelState(outState);

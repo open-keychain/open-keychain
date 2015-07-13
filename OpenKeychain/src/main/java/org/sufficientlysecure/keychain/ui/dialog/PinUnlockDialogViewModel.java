@@ -183,6 +183,7 @@ public class PinUnlockDialogViewModel implements BaseViewModel,
      */
     public void startAsyncUnlockOperationForPin(Passphrase passphrase) {
         if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
         }
 
@@ -265,7 +266,9 @@ public class PinUnlockDialogViewModel implements BaseViewModel,
      */
     public void onOperationCancel() {
         if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
+            mUnlockAsyncTask = null;
         }
         mOperationCompleted = true;
         mOperationState = DialogUnlockOperationState.DIALOG_UNLOCK_OPERATION_STATE_FINISHED;
@@ -304,5 +307,13 @@ public class PinUnlockDialogViewModel implements BaseViewModel,
         finishCaching(mPassphrase);
         mOperationCompleted = true;
         mOperationState = DialogUnlockOperationState.DIALOG_UNLOCK_OPERATION_STATE_FINISHED;
+    }
+
+    public void onDetachFromActivity() {
+        if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
+            mUnlockAsyncTask.cancel(true);
+            mUnlockAsyncTask = null;
+        }
     }
 }

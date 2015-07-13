@@ -118,6 +118,12 @@ public class PinUnlockDialog extends UnlockDialog
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mPinUnlockDialogViewModel.onDetachFromActivity();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPinUnlockDialogViewModel.saveViewModelState(outState);

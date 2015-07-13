@@ -208,6 +208,7 @@ public class PassphraseUnlockDialogViewModel implements BaseViewModel,
      */
     public void onOperationCancel() {
         if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
         }
         mOperationCompleted = true;
@@ -219,6 +220,7 @@ public class PassphraseUnlockDialogViewModel implements BaseViewModel,
      */
     public void startAsyncUnlockOperation(Passphrase passphrase) {
         if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
         }
 
@@ -272,6 +274,13 @@ public class PassphraseUnlockDialogViewModel implements BaseViewModel,
         finishCaching(mPassphrase);
         mOperationCompleted = true;
         mOperationState = DialogUnlockOperationState.DIALOG_UNLOCK_OPERATION_STATE_FINISHED;
+    }
 
+    public void onDetachFromActivity() {
+        if (mUnlockAsyncTask != null) {
+            mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
+            mUnlockAsyncTask.cancel(true);
+            mUnlockAsyncTask = null;
+        }
     }
 }

@@ -51,6 +51,12 @@ public class YubiKeyPinWizardFragment extends WizardFragment implements
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mYubiKeyPinWizardFragmentViewModel.onDetachFromActivity();
+    }
+
+    @Override
     public void updatePinText(CharSequence text) {
         mCreateYubiKeyPin.setText(text);
     }

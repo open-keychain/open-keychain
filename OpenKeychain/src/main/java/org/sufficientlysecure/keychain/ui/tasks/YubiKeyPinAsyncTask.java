@@ -19,7 +19,6 @@ public class YubiKeyPinAsyncTask extends AsyncTask<Void, Void, Pair<Passphrase, 
         mOnYubiKeyPinAsyncTaskListener = onYubiKeyPinAsyncTaskListener;
     }
 
-
     @Override
     protected Pair<Passphrase, Passphrase> doInBackground(Void... unused) {
         SecureRandom secureRandom = new SecureRandom();
@@ -44,5 +43,9 @@ public class YubiKeyPinAsyncTask extends AsyncTask<Void, Void, Pair<Passphrase, 
         if (mOnYubiKeyPinAsyncTaskListener != null) {
             mOnYubiKeyPinAsyncTaskListener.onYubiKeyPinTaskResult(pair.first, pair.second);
         }
+    }
+
+    public void setOnYubiKeyPinAsyncTaskListener(OnYubiKeyPinAsyncTaskListener onYubiKeyPinAsyncTaskListener) {
+        mOnYubiKeyPinAsyncTaskListener = onYubiKeyPinAsyncTaskListener;
     }
 }
