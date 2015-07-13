@@ -70,7 +70,7 @@ public class WizardConfirmationFragmentViewModel implements BaseViewModel {
                     mSaveKeyringParcel.mAddUserIds.add(thisUserId);
                 }
             }
-            mSaveKeyringParcel.mNewUnlock =  new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase);
+            mSaveKeyringParcel.mNewUnlock = new SaveKeyringParcel.ChangeUnlockParcel(mPassphrase);
         }
     }
 

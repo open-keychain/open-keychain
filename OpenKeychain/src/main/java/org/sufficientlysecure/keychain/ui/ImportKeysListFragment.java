@@ -177,6 +177,7 @@ public class ImportKeysListFragment extends ListFragment implements
 
     /**
      * Returns a new instance of CloudLoaderState
+     *
      * @param serverQuery
      * @param cloudPrefs
      * @return
@@ -407,7 +408,7 @@ public class ImportKeysListFragment extends ListFragment implements
                                 }
                             }
                         };
-                        new Handler().post(showOrbotDialog );
+                        new Handler().post(showOrbotDialog);
                         mShowingOrbotDialog = true;
                     }
                 } else {

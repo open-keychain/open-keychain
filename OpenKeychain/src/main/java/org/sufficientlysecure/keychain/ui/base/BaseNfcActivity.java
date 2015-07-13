@@ -234,7 +234,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             status = -1;
         }
         // When entering a PIN, a status of 63CX indicates X attempts remaining.
-        if ((status & (short)0xFFF0) == 0x63C0) {
+        if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
             onNfcError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
             return;
@@ -384,19 +384,19 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
     }
 
-    /** Handle NFC communication and return a result.
-     *
+    /**
+     * Handle NFC communication and return a result.
+     * <p>
      * This method is called by onNewIntent above upon discovery of an NFC tag.
      * It handles initialization and login to the application, subsequently
      * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
      * finishes the activity with an appropriate result.
-     *
+     * <p>
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx
-     *
+     * <p>
      * References to pages are generally related to the OpenPGP Application
      * on ISO SmartCard Systems specification.
-     *
      */
     protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
 
@@ -421,7 +421,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + "D27600012401" // Data (6 bytes)
                         + "00"; // Le
         String response = nfcCommunicate(opening);  // activate connection
-        if ( ! response.endsWith(accepted) ) {
+        if (!response.endsWith(accepted)) {
             throw new CardException("Initialization failed!", parseCardStatus(response));
         }
 
@@ -439,7 +439,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return mIsoDep.isConnected();
     }
 
-    /** Return the key id from application specific data stored on tag, or null
+    /**
+     * Return the key id from application specific data stored on tag, or null
      * if it doesn't exist.
      *
      * @param idx Index of the key to return the fingerprint from.
@@ -457,7 +458,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return buf.getLong();
     }
 
-    /** Return fingerprints of all keys from application specific data stored
+    /**
+     * Return fingerprints of all keys from application specific data stored
      * on tag, or null if data not available.
      *
      * @return The fingerprints of all subkeys in a contiguous byte array.
@@ -477,7 +479,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return fptlv.mV;
     }
 
-    /** Return the PW Status Bytes from the card. This is a simple DO; no TLV decoding needed.
+    /**
+     * Return the PW Status Bytes from the card. This is a simple DO; no TLV decoding needed.
      *
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
@@ -486,7 +489,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return mIsoDep.transceive(Hex.decode(data));
     }
 
-    /** Return the fingerprint from application specific data stored on tag, or
+    /**
+     * Return the fingerprint from application specific data stored on tag, or
      * null if it doesn't exist.
      *
      * @param idx Index of the key to return the fingerprint from.
@@ -579,7 +583,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        String apdu  =
+        String apdu =
                 "002A9E9A" // CLA, INS, P1, P2
                         + dsi // digital signature input
                         + "00"; // Le
@@ -587,7 +591,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         String response = nfcCommunicate(apdu);
 
         // split up response into signature and status
-        String status = response.substring(response.length()-4);
+        String status = response.substring(response.length() - 4);
         String signature = response.substring(0, response.length() - 4);
 
         // while we are getting 0x61 status codes, retrieve more data
@@ -595,8 +599,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
             Log.d(Constants.TAG, "requesting more data, status " + status);
             // Send GET RESPONSE command
             response = nfcCommunicate("00C00000" + status.substring(2));
-            status = response.substring(response.length()-4);
-            signature += response.substring(0, response.length()-4);
+            status = response.substring(response.length() - 4);
+            signature += response.substring(0, response.length() - 4);
         }
 
         Log.d(Constants.TAG, "final response:" + status);
@@ -605,7 +609,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             mPw1ValidatedForSignature = false;
         }
 
-        if ( ! "9000".equals(status)) {
+        if (!"9000".equals(status)) {
             throw new CardException("Bad NFC response code: " + status, parseCardStatus(response));
         }
 
@@ -651,7 +655,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
         return Hex.decode(decryptedSessionKey);
     }
 
-    /** Verifies the user's PW1 or PW3 with the appropriate mode.
+    /**
+     * Verifies the user's PW1 or PW3 with the appropriate mode.
      *
      * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
      *             For PW3 (Admin PIN), mode is 0x83.
@@ -673,11 +678,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
             // Command APDU for VERIFY command (page 32)
             String login =
                     "00" // CLA
-                        + "20" // INS
-                        + "00" // P1
-                        + String.format("%02x", mode) // P2
-                        + String.format("%02x", pin.length) // Lc
-                        + Hex.toHexString(pin);
+                            + "20" // INS
+                            + "00" // P1
+                            + String.format("%02x", mode) // P2
+                            + String.format("%02x", pin.length) // Lc
+                            + Hex.toHexString(pin);
             String response = nfcCommunicate(login); // login
             if (!response.equals(accepted)) {
                 handlePinError();
@@ -694,10 +699,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
     }
 
-    /** Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
-     *  conformance to the card's requirements for key length.
+    /**
+     * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
+     * conformance to the card's requirements for key length.
      *
-     * @param pw For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
+     * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
      * @param newPin The new PW1 or PW3.
      */
     public void nfcModifyPIN(int pw, byte[] newPin) throws IOException {
@@ -746,7 +752,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * (0x7F21) can exceed this length.
      *
      * @param dataObject The data object to be stored.
-     * @param data The data to store in the object
+     * @param data       The data to store in the object
      */
     public void nfcPutData(int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
@@ -809,18 +815,18 @@ public abstract class BaseNfcActivity extends BaseActivity {
             nfcVerifyPIN(0x83); // (Verify PW3 with mode 83)
         }
 
-        byte[] header= Hex.decode(
+        byte[] header = Hex.decode(
                 "4D82" + "03A2"      // Extended header list 4D82, length of 930 bytes. (page 23)
-                + String.format("%02x", slot) + "00" // CRT to indicate targeted key, no length
-                + "7F48" + "15"      // Private key template 0x7F48, length 21 (decimal, 0x15 hex)
-                + "9103"             // Public modulus, length 3
-                + "928180"           // Prime P, length 128
-                + "938180"           // Prime Q, length 128
-                + "948180"           // Coefficient (1/q mod p), length 128
-                + "958180"           // Prime exponent P (d mod (p - 1)), length 128
-                + "968180"           // Prime exponent Q (d mod (1 - 1)), length 128
-                + "97820100"         // Modulus, length 256, last item in private key template
-                + "5F48" + "820383");// DO 5F48; 899 bytes of concatenated key data will follow
+                        + String.format("%02x", slot) + "00" // CRT to indicate targeted key, no length
+                        + "7F48" + "15"      // Private key template 0x7F48, length 21 (decimal, 0x15 hex)
+                        + "9103"             // Public modulus, length 3
+                        + "928180"           // Prime P, length 128
+                        + "938180"           // Prime Q, length 128
+                        + "948180"           // Coefficient (1/q mod p), length 128
+                        + "958180"           // Prime exponent P (d mod (p - 1)), length 128
+                        + "968180"           // Prime exponent Q (d mod (1 - 1)), length 128
+                        + "97820100"         // Modulus, length 256, last item in private key template
+                        + "5F48" + "820383");// DO 5F48; 899 bytes of concatenated key data will follow
         byte[] dataToSend = new byte[934];
         byte[] currentKeyObject;
         int offset = 0;
@@ -834,23 +840,23 @@ public abstract class BaseNfcActivity extends BaseActivity {
         // in the array to represent sign, so we take care to set the offset to 1 if necessary.
         currentKeyObject = crtSecretKey.getPrimeP().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
+        Arrays.fill(currentKeyObject, (byte) 0);
         offset += 128;
         currentKeyObject = crtSecretKey.getPrimeQ().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
+        Arrays.fill(currentKeyObject, (byte) 0);
         offset += 128;
         currentKeyObject = crtSecretKey.getCrtCoefficient().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
+        Arrays.fill(currentKeyObject, (byte) 0);
         offset += 128;
         currentKeyObject = crtSecretKey.getPrimeExponentP().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
+        Arrays.fill(currentKeyObject, (byte) 0);
         offset += 128;
         currentKeyObject = crtSecretKey.getPrimeExponentQ().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 128, dataToSend, offset, 128);
-        Arrays.fill(currentKeyObject, (byte)0);
+        Arrays.fill(currentKeyObject, (byte) 0);
         offset += 128;
         currentKeyObject = crtSecretKey.getModulus().toByteArray();
         System.arraycopy(currentKeyObject, currentKeyObject.length - 256, dataToSend, offset, 256);
@@ -861,7 +867,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         // Now we're ready to communicate with the card.
         offset = 0;
         String response;
-        while(offset < dataToSend.length) {
+        while (offset < dataToSend.length) {
             int dataRemaining = dataToSend.length - offset;
             if (dataRemaining > 254) {
                 response = nfcCommunicate(
@@ -872,7 +878,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 int length = dataToSend.length - offset;
                 response = nfcCommunicate(
                         lastPutKeyCommand + String.format("%02x", length)
-                        + Hex.toHexString(dataToSend, offset, length));
+                                + Hex.toHexString(dataToSend, offset, length));
                 offset += length;
             }
 
