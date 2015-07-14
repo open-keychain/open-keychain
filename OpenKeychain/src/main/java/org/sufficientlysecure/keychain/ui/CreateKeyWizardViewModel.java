@@ -52,6 +52,8 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
     public interface OnViewModelEventBind {
         void onInstantiatePinUnlockMethod();
 
+        void onInstantiateNFCUnlockMethod();
+
         void onWelcomeState();
 
         void onUnlockChoiceState();
@@ -308,6 +310,9 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
             case PIN:
                 mOnViewModelEventBind.onInstantiatePinUnlockMethod();
                 break;
+            case NFC: {
+                mOnViewModelEventBind.onInstantiateNFCUnlockMethod();
+            }
         }
     }
 
@@ -372,7 +377,7 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
     }
 
     public void onNfcPostExecute() {
-        if (containsKeys(mNfcFingerprints)) {
+        if (mNfcFingerprints != null && containsKeys(mNfcFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
                 CachedPublicKeyRing ring = new ProviderHelper(mContext).getCachedPublicKeyRing(masterKeyId);
@@ -406,10 +411,12 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
         mNfcFingerprints = nfcFingerprints;
         mNfcAid = nfcAid;
         mNfcUserId = nfcUserId;
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
+        if (mNfcFingerprint != null) {
+            mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
 
-        byte[] fp = new byte[20];
-        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+            byte[] fp = new byte[20];
+            ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
+            mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        }
     }
 }

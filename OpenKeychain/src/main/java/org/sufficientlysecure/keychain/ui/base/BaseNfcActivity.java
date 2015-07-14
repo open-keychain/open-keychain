@@ -31,6 +31,8 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.nfc.tech.IsoDep;
+import android.nfc.tech.NfcA;
+import android.nfc.tech.TagTechnology;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -75,8 +77,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected boolean mPw3Validated;
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
+    private NfcA mNfcA;
     private boolean mTagHandlingEnabled;
-
     private static final int TIMEOUT = 100000;
 
     protected byte[] mNfcFingerprints;
@@ -93,9 +95,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * Override to implement NFC operations (background thread)
      */
     protected void doNfcInBackground() throws IOException {
-        mNfcFingerprints = nfcGetFingerprints();
-        mNfcUserId = nfcGetUserId();
-        mNfcAid = nfcGetAid();
+        if(mIsoDep != null) {
+            mNfcFingerprints = nfcGetFingerprints();
+            mNfcUserId = nfcGetUserId();
+            mNfcAid = nfcGetAid();
+        }
     }
 
     /**
@@ -197,7 +201,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
             throw new AssertionError("should not happen: NfcOperationActivity.onCreate is called instead of onNewIntent!");
         }
-
     }
 
     @Override
@@ -404,34 +407,42 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Connect to the detected tag, setting a couple of settings
         mIsoDep = IsoDep.get(detectedTag);
-        mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
-        mIsoDep.connect();
+        mNfcA = NfcA.get(detectedTag);
+        if(mIsoDep != null) {
+            mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
+            mIsoDep.connect();
 
-        // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
-        // See specification, page 51
-        String accepted = "9000";
+            // SW1/2 0x9000 is the generic "ok" response, which we expect most of the time.
+            // See specification, page 51
+            String accepted = "9000";
 
-        // Command APDU (page 51) for SELECT FILE command (page 29)
-        String opening =
-                "00" // CLA
-                        + "A4" // INS
-                        + "04" // P1
-                        + "00" // P2
-                        + "06" // Lc (number of bytes)
-                        + "D27600012401" // Data (6 bytes)
-                        + "00"; // Le
-        String response = nfcCommunicate(opening);  // activate connection
-        if (!response.endsWith(accepted)) {
-            throw new CardException("Initialization failed!", parseCardStatus(response));
+            // Command APDU (page 51) for SELECT FILE command (page 29)
+            String opening =
+                    "00" // CLA
+                            + "A4" // INS
+                            + "04" // P1
+                            + "00" // P2
+                            + "06" // Lc (number of bytes)
+                            + "D27600012401" // Data (6 bytes)
+                            + "00"; // Le
+            String response = nfcCommunicate(opening);  // activate connection
+            if (!response.endsWith(accepted)) {
+                throw new CardException("Initialization failed!", parseCardStatus(response));
+            }
+
+            byte[] pwStatusBytes = nfcGetPwStatusBytes();
+            mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
+            mPw1ValidatedForSignature = false;
+            mPw1ValidatedForDecrypt = false;
+            mPw3Validated = false;
         }
+        else if(mNfcA != null) {
 
-        byte[] pwStatusBytes = nfcGetPwStatusBytes();
-        mPw1ValidForMultipleSignatures = (pwStatusBytes[0] == 1);
-        mPw1ValidatedForSignature = false;
-        mPw1ValidatedForDecrypt = false;
-        mPw3Validated = false;
-
+        }
         doNfcInBackground();
+    }
+
+    protected void handleIsoDepDiscover(Intent intent) throws IOException {
 
     }
 

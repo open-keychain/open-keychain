@@ -81,7 +81,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     public enum SecretKeyType {
         UNAVAILABLE(0), GNU_DUMMY(1), PASSPHRASE(2), PASSPHRASE_EMPTY(3), DIVERT_TO_CARD(4), PIN(5),
-        PATTERN(6);
+        PATTERN(6), NFC(7);
 
         final int mNum;
 
