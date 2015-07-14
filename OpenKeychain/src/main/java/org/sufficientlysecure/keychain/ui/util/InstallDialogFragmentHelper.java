@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +25,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants;

@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.TargetApi;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
