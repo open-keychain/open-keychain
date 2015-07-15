@@ -23,9 +23,12 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+
 public class ExportKeyringParcel implements Parcelable {
     public String mKeyserver;
     public Uri mCanonicalizedPublicKeyringUri;
+    public UncachedKeyRing mUncachedKeyRing;
 
     public boolean mExportSecret;
     public long mMasterKeyIds[];
@@ -45,6 +48,12 @@ public class ExportKeyringParcel implements Parcelable {
         mCanonicalizedPublicKeyringUri = keyringUri;
     }
 
+    public ExportKeyringParcel(String keyserver, UncachedKeyRing uncachedKeyRing) {
+        mExportType = ExportType.UPLOAD_KEYSERVER;
+        mKeyserver = keyserver;
+        mUncachedKeyRing = uncachedKeyRing;
+    }
+
     public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, String outputFile) {
         mExportType = ExportType.EXPORT_FILE;
         mMasterKeyIds = masterKeyIds;
@@ -52,6 +61,7 @@ public class ExportKeyringParcel implements Parcelable {
         mOutputFile = outputFile;
     }
 
+    @SuppressWarnings("unused") // TODO: is it used?
     public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
         mExportType = ExportType.EXPORT_URI;
         mMasterKeyIds = masterKeyIds;
@@ -62,6 +72,7 @@ public class ExportKeyringParcel implements Parcelable {
     protected ExportKeyringParcel(Parcel in) {
         mKeyserver = in.readString();
         mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
+        mUncachedKeyRing = (UncachedKeyRing) in.readValue(UncachedKeyRing.class.getClassLoader());
         mExportSecret = in.readByte() != 0x00;
         mOutputFile = in.readString();
         mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
@@ -78,6 +89,7 @@ public class ExportKeyringParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mKeyserver);
         dest.writeValue(mCanonicalizedPublicKeyringUri);
+        dest.writeValue(mUncachedKeyRing);
         dest.writeByte((byte) (mExportSecret ? 0x01 : 0x00));
         dest.writeString(mOutputFile);
         dest.writeValue(mOutputUri);

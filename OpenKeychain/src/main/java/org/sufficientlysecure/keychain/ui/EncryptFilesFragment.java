@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +58,7 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
@@ -279,19 +281,19 @@ public class EncryptFilesFragment
             case R.id.encrypt_save: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SAVE;
-                cryptoOperation();
+                cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.SHARE;
-                cryptoOperation();
+                cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mAfterEncryptAction = AfterEncryptAction.COPY;
-                cryptoOperation();
+                cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
             case R.id.check_use_armor: {
@@ -666,7 +668,7 @@ public class EncryptFilesFragment
                     mOutputUris.add(data.getData());
                     // make sure this is correct at this point
                     mAfterEncryptAction = AfterEncryptAction.SAVE;
-                    cryptoOperation();
+                    cryptoOperation(new CryptoInputParcel(new Date()));
                 }
                 return;
             }

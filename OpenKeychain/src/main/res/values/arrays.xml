@@ -37,6 +37,10 @@
         <item>@string/pref_proxy_type_value_http</item>
         <item>@string/pref_proxy_type_value_socks</item>
     </string-array>
+    <string-array name="rev_del_dialog_entries" translatable="true">
+        <item>@string/del_rev_dialog_choice_rev_upload</item>
+        <item>@string/del_rev_dialog_choice_delete</item>
+    </string-array>
     <string-array name="rsa_key_size_spinner_values" translatable="false">
         <item>@string/key_size_2048</item>
         <item>@string/key_size_4096</item>

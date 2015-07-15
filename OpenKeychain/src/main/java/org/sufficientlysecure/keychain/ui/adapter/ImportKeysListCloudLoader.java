@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -48,12 +49,13 @@ public class ImportKeysListCloudLoader
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     /**
-     * Pass a parcelableProxy to specify an explicit proxy, otherwise will fetch from preferences
+     * Searches a keyserver as specified in cloudPrefs, using an explicit proxy if passed
      *
-     * @param context
-     * @param serverQuery
-     * @param cloudPrefs
-     * @param parcelableProxy
+     * @param serverQuery     string to search on servers for. If is a fingerprint,
+     *                        will enforce fingerprint check
+     * @param cloudPrefs      contains keyserver to search on, whether to search on the keyserver,
+     *                        and whether to search keybase.io
+     * @param parcelableProxy explicit proxy to use. If null, will retrieve from preferences
      */
     public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs,
                                      @Nullable ParcelableProxy parcelableProxy) {
@@ -121,7 +123,8 @@ public class ImportKeysListCloudLoader
                 // user needs to enable/install orbot
                 mEntryList.clear();
                 GetKeyResult pendingResult = new GetKeyResult(null,
-                        RequiredInputParcel.createOrbotRequiredOperation());
+                        RequiredInputParcel.createOrbotRequiredOperation(),
+                        new CryptoInputParcel());
                 mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, pendingResult);
                 return;
             }

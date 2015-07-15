@@ -66,16 +66,21 @@ import org.sufficientlysecure.keychain.util.Preferences;
 /**
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
+ * NOTE: If no CryptoInputParcel is passed via EXTRA_CRYPTO_INPUT, the CryptoInputParcel is created
+ * internally and is NOT meant to be used by signing operations before adding a signature time
  */
 public class PassphraseDialogActivity extends FragmentActivity {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // special extra for OpenPgpService
     public static final String EXTRA_SERVICE_INTENT = "data";
     private long mSubKeyId;
+
+    private CryptoInputParcel mCryptoInputParcel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +93,15 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     WindowManager.LayoutParams.FLAG_SECURE,
                     WindowManager.LayoutParams.FLAG_SECURE
             );
+        }
+
+        mCryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
+
+        if (mCryptoInputParcel == null) {
+            // not all usages of PassphraseActivity are from CryptoInputOperation
+            // NOTE: This CryptoInputParcel cannot be used for signing operations without setting
+            // signature time
+            mCryptoInputParcel = new CryptoInputParcel();
         }
 
         // this activity itself has no content view (see manifest)
@@ -113,7 +127,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 SecretKeyType.PASSPHRASE_EMPTY) {
                             // also return passphrase back to activity
                             Intent returnIntent = new Intent();
-                            returnIntent.putExtra(RESULT_CRYPTO_INPUT, new CryptoInputParcel(new Passphrase("")));
+                            mCryptoInputParcel.mPassphrase = new Passphrase("");
+                            returnIntent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
                             setResult(RESULT_OK, returnIntent);
                             finish();
                             return;
@@ -330,11 +345,16 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 public void onClick(View v) {
                     final Passphrase passphrase = new Passphrase(mPassphraseEditText);
 
+                    CryptoInputParcel cryptoInputParcel =
+                            ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
+
                     // Early breakout if we are dealing with a symmetric key
                     if (mSecretRing == null) {
-                        PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                Constants.key.symmetric, Constants.key.symmetric, passphrase,
-                                getString(R.string.passp_cache_notif_pwd));
+                        if (cryptoInputParcel.mCachePassphrase) {
+                            PassphraseCacheService.addCachedPassphrase(getActivity(),
+                                    Constants.key.symmetric, Constants.key.symmetric, passphrase,
+                                    getString(R.string.passp_cache_notif_pwd));
+                        }
 
                         finishCaching(passphrase);
                         return;
@@ -387,15 +407,24 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 return;
                             }
 
-                            // cache the new passphrase
-                            Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
+                            // cache the new passphrase as specified in CryptoInputParcel
+                            Log.d(Constants.TAG, "Everything okay!");
 
-                            try {
-                                PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                        mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
-                                        mSecretRing.getPrimaryUserIdWithFallback());
-                            } catch (PgpKeyNotFoundException e) {
-                                Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                            CryptoInputParcel cryptoInputParcel
+                                    = ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
+
+                            if (cryptoInputParcel.mCachePassphrase) {
+                                Log.d(Constants.TAG, "Caching entered passphrase");
+
+                                try {
+                                    PassphraseCacheService.addCachedPassphrase(getActivity(),
+                                            mSecretRing.getMasterKeyId(), mSubKeyId, passphrase,
+                                            mSecretRing.getPrimaryUserIdWithFallback());
+                                } catch (PgpKeyNotFoundException e) {
+                                    Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                                }
+                            } else {
+                                Log.d(Constants.TAG, "Not caching entered passphrase!");
                             }
 
                             finishCaching(passphrase);
@@ -411,9 +440,12 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return;
             }
 
-            CryptoInputParcel inputParcel = new CryptoInputParcel(null, passphrase);
+            CryptoInputParcel inputParcel =
+                    ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
+            inputParcel.mPassphrase = passphrase;
             if (mServiceIntent != null) {
-                CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), mServiceIntent, inputParcel);
+                CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), mServiceIntent,
+                        inputParcel);
                 getActivity().setResult(RESULT_OK, mServiceIntent);
             } else {
                 // also return passphrase back to activity

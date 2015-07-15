@@ -22,7 +22,8 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -34,16 +35,20 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** An operation which implements a high level key edit operation.
- *
+/**
+ * An operation which implements a high level key edit operation.
+ * <p/>
  * This operation provides a higher level interface to the edit and
  * create key operations in PgpKeyOperation. It takes care of fetching
  * and saving the key before and after the operation.
@@ -58,8 +63,16 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    /**
+     * Saves an edited key, and uploads it to a server atomically or otherwise as
+     * specified in saveParcel
+     *
+     * @param saveParcel  primary input to the operation
+     * @param cryptoInput input that changes if user interaction is required
+     * @return the result of the operation
+     */
     @NonNull
-    public OperationResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
+    public InputPendingResult execute(SaveKeyringParcel saveParcel, CryptoInputParcel cryptoInput) {
 
         OperationLog log = new OperationLog();
         log.add(LogType.MSG_ED, 0);
@@ -120,6 +133,36 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
+        if (saveParcel.isUpload()) {
+            UncachedKeyRing publicKeyRing;
+            try {
+                publicKeyRing = ring.extractPublicKeyRing();
+            } catch (IOException e) {
+                log.add(LogType.MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD, 1);
+                return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+            }
+
+            ExportKeyringParcel exportKeyringParcel =
+                    new ExportKeyringParcel(saveParcel.getUploadKeyserver(),
+                            publicKeyRing);
+
+            ExportResult uploadResult =
+                    new ExportOperation(mContext, mProviderHelper, mProgressable)
+                            .execute(exportKeyringParcel, cryptoInput);
+
+            if (uploadResult.isPending()) {
+                return uploadResult;
+            } else if (!uploadResult.success() && saveParcel.isUploadAtomic()) {
+                // if atomic, update fail implies edit operation should also fail and not save
+                log.add(uploadResult, 2);
+                return new EditKeyResult(log, RequiredInputParcel.createRetryUploadOperation(),
+                        cryptoInput);
+            } else {
+                // upload succeeded or not atomic so we continue
+                log.add(uploadResult, 2);
+            }
+        }
+
         // Save the new keyring.
         SaveKeyringResult saveResult = mProviderHelper
                 .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
@@ -131,7 +174,7 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         }
 
         // There is a new passphrase - cache it
-        if (saveParcel.mNewUnlock != null) {
+        if (saveParcel.mNewUnlock != null && cryptoInput.mCachePassphrase) {
             log.add(LogType.MSG_ED_CACHING_NEW, 1);
 
             // NOTE: Don't cache empty passphrases! Important for MOVE_KEY_TO_CARD
@@ -160,5 +203,4 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         return new EditKeyResult(EditKeyResult.RESULT_OK, log, ring.getMasterKeyId());
 
     }
-
 }

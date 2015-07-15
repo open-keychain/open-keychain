@@ -571,6 +571,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_ED_CACHING_NEW (LogLevel.DEBUG, R.string.msg_ed_caching_new),
         MSG_ED_ERROR_NO_PARCEL (LogLevel.ERROR, R.string.msg_ed_error_no_parcel),
         MSG_ED_ERROR_KEY_NOT_FOUND (LogLevel.ERROR, R.string.msg_ed_error_key_not_found),
+        MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD (LogLevel.ERROR,
+                R.string.msg_ed_error_extract_public_upload),
         MSG_ED_FETCHING (LogLevel.DEBUG, R.string.msg_ed_fetching),
         MSG_ED_SUCCESS (LogLevel.OK, R.string.msg_ed_success),
 
@@ -752,13 +754,20 @@ public abstract class OperationResult implements Parcelable {
         MSG_GET_QUERY_FAILED(LogLevel.ERROR, R.string.msg_download_query_failed),
 
         MSG_DEL_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_del_error_empty),
-        MSG_DEL_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_del_error_multi_secret),
+        MSG_DEL_ERROR_MULTI_SECRET (LogLevel.ERROR, R.string.msg_del_error_multi_secret),
         MSG_DEL (LogLevel.START, R.plurals.msg_del),
         MSG_DEL_KEY (LogLevel.DEBUG, R.string.msg_del_key),
         MSG_DEL_KEY_FAIL (LogLevel.WARN, R.string.msg_del_key_fail),
         MSG_DEL_CONSOLIDATE (LogLevel.DEBUG, R.string.msg_del_consolidate),
         MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
+
+        MSG_REVOKE_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_revoke_error_empty),
+        MSG_REVOKE_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
+        MSG_REVOKE_ERROR_NOT_FOUND (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
+        MSG_REVOKE (LogLevel.DEBUG, R.string.msg_revoke_key),
+        MSG_REVOKE_KEY_FAIL (LogLevel.ERROR, R.string.msg_revoke_key_fail),
+        MSG_REVOKE_OK (LogLevel.OK, R.string.msg_revoke_ok),
 
         // keybase verification
         MSG_KEYBASE_VERIFICATION(LogLevel.START, R.string.msg_keybase_verification),

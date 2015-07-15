@@ -103,7 +103,10 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                     if (passphrase == null) {
                         return new CertifyResult(log,
                                 RequiredInputParcel.createRequiredSignPassphrase(
-                                certificationKey.getKeyId(), certificationKey.getKeyId(), null)
+                                        certificationKey.getKeyId(),
+                                        certificationKey.getKeyId(),
+                                        null),
+                                cryptoInput
                         );
                     }
                     break;
@@ -189,7 +192,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         if (!allRequiredInput.isEmpty()) {
             log.add(LogType.MSG_CRT_NFC_RETURN, 1);
-            return new CertifyResult(log, allRequiredInput.build());
+            return new CertifyResult(log, allRequiredInput.build(), cryptoInput);
         }
 
         log.add(LogType.MSG_CRT_SAVING, 1);
@@ -211,7 +214,7 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
                 // explicit proxy not set
                 if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
                     return new CertifyResult(null,
-                            RequiredInputParcel.createOrbotRequiredOperation());
+                            RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
                 }
                 proxy = Preferences.getPreferences(mContext).getProxyPrefs()
                         .parcelableProxy.getProxy();

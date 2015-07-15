@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -200,7 +199,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);
                             return new PgpSignEncryptResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                                     signingKeyRing.getMasterKeyId(), signingKey.getKeyId(),
-                                    cryptoInput.getSignatureTime()));
+                                    cryptoInput.getSignatureTime()), cryptoInput);
                         }
                         if (!signingKey.unlock(localPassphrase)) {
                             log.add(LogType.MSG_PSE_ERROR_BAD_PASSPHRASE, indent);
@@ -513,7 +512,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     log.add(LogType.MSG_PSE_PENDING_NFC, indent);
                     return new PgpSignEncryptResult(log, RequiredInputParcel.createNfcSignOperation(
                             signingKey.getRing().getMasterKeyId(), signingKey.getKeyId(),
-                            e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()));
+                            e.hashToSign, e.hashAlgo, cryptoInput.getSignatureTime()), cryptoInput);
                 }
             }
 

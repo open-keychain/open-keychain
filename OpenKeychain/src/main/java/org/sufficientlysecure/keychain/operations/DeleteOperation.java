@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -48,11 +49,16 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
 
     @NonNull
     @Override
-    public DeleteResult execute(DeleteKeyringParcel deleteKeyringParcel,
+    public OperationResult execute(DeleteKeyringParcel deleteKeyringParcel,
                                 CryptoInputParcel cryptoInputParcel) {
 
         long[] masterKeyIds = deleteKeyringParcel.mMasterKeyIds;
         boolean isSecret = deleteKeyringParcel.mIsSecret;
+
+        return onlyDeleteKey(masterKeyIds, isSecret);
+    }
+
+    private DeleteResult onlyDeleteKey(long[] masterKeyIds, boolean isSecret) {
 
         OperationLog log = new OperationLog();
 
@@ -113,7 +119,6 @@ public class DeleteOperation extends BaseOperation<DeleteKeyringParcel> {
         }
 
         return new DeleteResult(result, log, success, fail);
-
     }
 
 }

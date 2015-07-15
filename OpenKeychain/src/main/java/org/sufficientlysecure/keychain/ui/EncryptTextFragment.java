@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
@@ -48,6 +49,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -168,13 +170,13 @@ public class EncryptTextFragment
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
-                cryptoOperation();
+                cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
             case R.id.encrypt_share: {
                 hideKeyboard();
                 mShareAfterEncrypt = true;
-                cryptoOperation();
+                cryptoOperation(new CryptoInputParcel(new Date()));
                 break;
             }
             default: {

@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.Date;
 import java.util.Iterator;
 
 import android.app.Activity;
@@ -47,6 +48,7 @@ import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.ChangeUnlockParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.Log;
@@ -393,7 +395,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
 
         mMoveToCardOpHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_modify);
-        mMoveToCardOpHelper.cryptoOperation();
+        mMoveToCardOpHelper.cryptoOperation(new CryptoInputParcel(new Date()));
     }
 
     private void uploadKey(final EditKeyResult saveKeyResult) {

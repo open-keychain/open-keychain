@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 
 public class OpenPgpService extends RemoteService {
@@ -164,7 +165,9 @@ public class OpenPgpService extends RemoteService {
     }
 
     private static PendingIntent getRequiredInputPendingIntent(Context context,
-                                                               Intent data, RequiredInputParcel requiredInput) {
+                                                               Intent data,
+                                                               RequiredInputParcel requiredInput,
+                                                               CryptoInputParcel cryptoInput) {
 
         switch (requiredInput.mType) {
             case NFC_MOVE_KEY_TO_CARD:
@@ -175,6 +178,7 @@ public class OpenPgpService extends RemoteService {
                 // pass params through to activity that it can be returned again later to repeat pgp operation
                 intent.putExtra(NfcOperationActivity.EXTRA_SERVICE_INTENT, data);
                 intent.putExtra(NfcOperationActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(NfcOperationActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
                 return PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
             }
@@ -185,6 +189,7 @@ public class OpenPgpService extends RemoteService {
                 // pass params through to activity that it can be returned again later to repeat pgp operation
                 intent.putExtra(PassphraseDialogActivity.EXTRA_SERVICE_INTENT, data);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(PassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInput);
                 return PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
             }
@@ -279,12 +284,12 @@ public class OpenPgpService extends RemoteService {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel();
+                inputParcel = new CryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                inputParcel.mPassphrase =
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
             // execute PGP operation!
@@ -294,7 +299,8 @@ public class OpenPgpService extends RemoteService {
             if (pgpResult.isPending()) {
 
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data, requiredInput);
+                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -434,12 +440,12 @@ public class OpenPgpService extends RemoteService {
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
             if (inputParcel == null) {
-                inputParcel = new CryptoInputParcel();
+                inputParcel = new CryptoInputParcel(new Date());
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                inputParcel = new CryptoInputParcel(inputParcel.getSignatureTime(),
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                inputParcel.mPassphrase =
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
             PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, new ProviderHelper(getContext()), null);
@@ -449,7 +455,8 @@ public class OpenPgpService extends RemoteService {
 
             if (pgpResult.isPending()) {
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data, requiredInput);
+                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -519,8 +526,8 @@ public class OpenPgpService extends RemoteService {
             }
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
-                cryptoInput = new CryptoInputParcel(cryptoInput.getSignatureTime(),
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                cryptoInput.mPassphrase =
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE));
             }
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
@@ -543,7 +550,8 @@ public class OpenPgpService extends RemoteService {
             if (pgpResult.isPending()) {
                 // prepare and return PendingIntent to be executed by client
                 RequiredInputParcel requiredInput = pgpResult.getRequiredInputParcel();
-                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data, requiredInput);
+                PendingIntent pIntent = getRequiredInputPendingIntent(getBaseContext(), data,
+                        requiredInput, pgpResult.mCryptoInputParcel);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_INTENT, pIntent);

@@ -459,7 +459,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                         return new DecryptVerifyResult(log,
                                 RequiredInputParcel.createRequiredDecryptPassphrase(
-                                    secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()));
+                                    secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()),
+                                cryptoInput);
                     }
                 }
 
@@ -498,7 +499,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     if (passphrase == null) {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                         return new DecryptVerifyResult(log,
-                                RequiredInputParcel.createRequiredSymmetricPassphrase());
+                                RequiredInputParcel.createRequiredSymmetricPassphrase(),
+                                cryptoInput);
                     }
 
                 } else {
@@ -544,7 +546,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             } catch (PGPDataValidationException e) {
                 log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent +1);
                 return new DecryptVerifyResult(log,
-                        RequiredInputParcel.createRequiredSymmetricPassphrase());
+                        RequiredInputParcel.createRequiredSymmetricPassphrase(), cryptoInput);
             }
 
             encryptedData = encryptedDataSymmetric;
@@ -580,7 +582,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 return new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
                         secretEncryptionKey.getRing().getMasterKeyId(),
                         secretEncryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
-                ));
+                ),
+                        cryptoInput);
 
             }
 

@@ -33,21 +33,25 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * NFC devices.
  * <p/>
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
+ * NOTE: If no CryptoInputParcel is passed via EXTRA_CRYPTO_INPUT, the CryptoInputParcel is created
+ * internally and is NOT meant to be used by signing operations before adding signature time
  */
 public class NfcOperationActivity extends BaseNfcActivity {
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
+    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
 
     // passthrough for OpenPgpService
     public static final String EXTRA_SERVICE_INTENT = "data";
 
-    public static final String RESULT_DATA = "result_data";
+    public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public ViewAnimator vAnimator;
     public TextView vErrorText;
@@ -66,6 +70,15 @@ public class NfcOperationActivity extends BaseNfcActivity {
         Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
+
+        if (mInputParcel == null) {
+            // for compatibility when used from OpenPgpService
+            // (or any place other than CryptoOperationHelper)
+            // NOTE: This CryptoInputParcel cannot be used for signing without adding signature time
+            mInputParcel = new CryptoInputParcel();
+        }
 
         setTitle(R.string.nfc_text);
 
@@ -112,8 +125,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void doNfcInBackground() throws IOException {
 
-        mInputParcel = new CryptoInputParcel(mRequiredInput.mSignatureTime);
-
         switch (mRequiredInput.mType) {
             case NFC_DECRYPT: {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
@@ -124,6 +135,9 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 break;
             }
             case NFC_SIGN: {
+                if (mInputParcel.getSignatureTime() == null) {
+                    mInputParcel.addSignatureTime(new Date());
+                }
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
@@ -218,11 +232,16 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void onNfcPostExecute() throws IOException {
         if (mServiceIntent != null) {
+            // if we're triggered by OpenPgpService
             CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, mInputParcel);
+            mServiceIntent.putExtra(EXTRA_CRYPTO_INPUT,
+                    getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT));
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
-            result.putExtra(NfcOperationActivity.RESULT_DATA, mInputParcel);
+            result.putExtra(RESULT_CRYPTO_INPUT, mInputParcel);
+            // send back the CryptoInputParcel we receive, to conform with the pattern in
+            // CryptoOperationHelper
             setResult(RESULT_OK, result);
         }
 

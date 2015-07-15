@@ -68,6 +68,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+import java.util.Date;
+
 public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyringParcel, OperationResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -151,7 +153,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         if (mDataUri == null) {
                             returnKeyringParcel();
                         } else {
-                            cryptoOperation(new CryptoInputParcel());
+                            cryptoOperation(new CryptoInputParcel(new Date()));
                         }
                     }
                 }, new OnClickListener() {

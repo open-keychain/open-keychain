@@ -69,7 +69,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
             // explicit proxy not set
             if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
                 return new KeybaseVerificationResult(null,
-                        RequiredInputParcel.createOrbotRequiredOperation());
+                        RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
             }
             proxy = Preferences.getPreferences(mContext).getProxyPrefs()
                     .parcelableProxy.getProxy();
