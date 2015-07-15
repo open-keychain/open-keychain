@@ -3,7 +3,6 @@ package org.sufficientlysecure.keychain.service.input;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.nio.ByteBuffer;
@@ -15,7 +14,8 @@ import java.util.Date;
 public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
-        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD, ENABLE_ORBOT
+        PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD, ENABLE_ORBOT,
+        UPLOAD_FAIL_RETRY
     }
 
     public Date mSignatureTime;
@@ -75,6 +75,11 @@ public class RequiredInputParcel implements Parcelable {
 
     public Long getSubKeyId() {
         return mSubKeyId;
+    }
+
+    public static RequiredInputParcel createRetryUploadOperation() {
+        return new RequiredInputParcel(RequiredInputType.UPLOAD_FAIL_RETRY,
+                null, null, null, 0L, 0L);
     }
 
     public static RequiredInputParcel createOrbotRequiredOperation() {

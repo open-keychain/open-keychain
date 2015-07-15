@@ -18,10 +18,9 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class InputPendingResult extends OperationResult {
@@ -30,26 +29,33 @@ public class InputPendingResult extends OperationResult {
     public static final int RESULT_PENDING = RESULT_ERROR + 8;
 
     final RequiredInputParcel mRequiredInput;
+    // in case operation needs to add to/changes the cryptoInputParcel sent to it
+    public final CryptoInputParcel mCryptoInputParcel;
 
     public InputPendingResult(int result, OperationLog log) {
         super(result, log);
         mRequiredInput = null;
+        mCryptoInputParcel = null;
     }
 
-    public InputPendingResult(OperationLog log, RequiredInputParcel requiredInput) {
+    public InputPendingResult(OperationLog log, RequiredInputParcel requiredInput,
+                              CryptoInputParcel cryptoInputParcel) {
         super(RESULT_PENDING, log);
         mRequiredInput = requiredInput;
+        mCryptoInputParcel = cryptoInputParcel;
     }
 
     public InputPendingResult(Parcel source) {
         super(source);
         mRequiredInput = source.readParcelable(getClass().getClassLoader());
+        mCryptoInputParcel = source.readParcelable(getClass().getClassLoader());
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeParcelable(mRequiredInput, 0);
+        dest.writeParcelable(mCryptoInputParcel, 0);
     }
 
     public boolean isPending() {

@@ -554,7 +554,7 @@ public class UncachedKeyringCanonicalizeTest {
             CanonicalizedSecretKey masterSecretKey = canonicalized.getSecretKey();
             masterSecretKey.unlock(new Passphrase());
             PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
-            CryptoInputParcel cryptoInput = new CryptoInputParcel();
+            CryptoInputParcel cryptoInput = new CryptoInputParcel(new Date());
             PGPSignature cert = PgpKeyOperation.generateSubkeyBindingSignature(
                     PgpKeyOperation.getSignatureGenerator(masterSecretKey.getSecretKey(), cryptoInput),
                     cryptoInput.getSignatureTime(),

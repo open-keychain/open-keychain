@@ -361,6 +361,7 @@
     <string name="progress_cancelling">"cancelling…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
+    <string name="progress_revoking_uploading">"Revoking and uploading key…"</string>
     <string name="progress_updating">"Updating keys…"</string>
     <string name="progress_exporting">"exporting…"</string>
     <string name="progress_uploading">"uploading…"</string>
@@ -524,6 +525,12 @@
     <string name="delete_nothing">"Nothing to delete."</string>
     <string name="delete_cancelled">"Delete operation cancelled."</string>
 
+    <!-- Revoke result toast (snackbar) -->
+    <string name="revoke_ok">"Successfully revoked key."</string>
+    <string name="revoke_fail">"Error revoking key!"</string>
+    <string name="revoke_nothing">"Nothing to revoke."</string>
+    <string name="revoke_cancelled">"Revoke operation cancelled."</string>
+
     <!-- Certify result toast -->
     <plurals name="certify_keys_ok">
         <item quantity="one">"Successfully certified key%2$s."</item>
@@ -583,6 +590,23 @@
     <!-- Share -->
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>
     <string name="share_nfc_dialog">"Share with NFC"</string>
+
+    <!-- retry upload dialog -->
+    <string name="retry_up_dialog_title">"Upload failed"</string>
+    <string name="retry_up_dialog_message">"Upload failed. Would you like to retry the operation?"</string>
+    <string name="retry_up_dialog_btn_reupload">"Retry Operation"</string>
+    <string name="retry_up_dialog_btn_cancel">"Cancel Operation"</string>
+
+    <!-- Delete or revoke private key dialog -->
+    <string name="del_rev_dialog_message">"If you would no longer like to use this key, it should be revoked and uploaded. Select delete only if you wish to remove the key from OpenKeychain but continue to use it from somewhere else."</string>
+    <string name="del_rev_dialog_title">"Revoke/Delete key \"%s\""</string>
+    <string name="del_rev_dialog_btn_revoke">"Revoke and upload"</string>
+    <string name="del_rev_dialog_btn_delete">"Delete only"</string>
+
+    <!-- Delete Or Revoke Dialog spinner -->
+    <string name="del_rev_dialog_choice_delete">"Delete only"</string>
+    <string name="del_rev_dialog_choice_rev_upload">"Revoke and Upload"</string>
+
 
     <!-- Key list -->
     <plurals name="key_list_selected_keys">
@@ -1072,6 +1096,7 @@
     <string name="msg_ed_caching_new">"Caching new password"</string>
     <string name="msg_ed_error_no_parcel">"Missing SaveKeyringParcel! (this is a bug, please report)"</string>
     <string name="msg_ed_error_key_not_found">"Key not found!"</string>
+    <string name="msg_ed_error_extract_public_upload">"Error extracting public key for upload!"</string>
     <string name="msg_ed_fetching">"Fetching key to modify (%s)"</string>
     <string name="msg_ed_success">"Key operation successful"</string>
 
@@ -1269,6 +1294,13 @@
         <item quantity="one">"Failed to delete one key"</item>
         <item quantity="other">"Failed to delete %d keys"</item>
     </plurals>
+
+    <string name="msg_revoke_error_empty">"Nothing to revoke!"</string>
+    <string name="msg_revoke_error_multi_secret">"Secret keys can only be revoked individually!"</string>
+    <string name="msg_revoke_error_not_found">"Cannot find key to revoke!"</string>
+    <string name="msg_revoke_key">"Revoking key %s"</string>
+    <string name="msg_revoke_key_fail">"Failed revoking key"</string>
+    <string name="msg_revoke_ok">"Successfully revoked key"</string>
 
     <string name="msg_acc_saved">"Account saved"</string>
 

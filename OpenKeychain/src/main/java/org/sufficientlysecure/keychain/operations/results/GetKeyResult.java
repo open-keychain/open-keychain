@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class GetKeyResult extends InputPendingResult {
@@ -38,8 +39,9 @@ public class GetKeyResult extends InputPendingResult {
         super(result, log);
     }
 
-    public GetKeyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public GetKeyResult(OperationLog log, RequiredInputParcel requiredInput,
+                        CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
     }
 
     public static final int RESULT_ERROR_NO_VALID_KEYS = RESULT_ERROR + 8;

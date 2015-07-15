@@ -22,6 +22,7 @@ import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.sig.Features;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.bcpg.sig.RevocationReasonTags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyFlags;
@@ -469,7 +470,7 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                     masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
-                    cryptoInput.getSignatureTime()));
+                    cryptoInput.getSignatureTime()), cryptoInput);
         }
 
         // read masterKeyFlags, and use the same as before.
@@ -1105,12 +1106,12 @@ public class PgpKeyOperation {
 
         if (!nfcSignOps.isEmpty()) {
             log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
-            return new PgpEditKeyResult(log, nfcSignOps.build());
+            return new PgpEditKeyResult(log, nfcSignOps.build(), cryptoInput);
         }
 
         if (!nfcKeyToCardOps.isEmpty()) {
             log.add(LogType.MSG_MF_REQUIRE_DIVERT, indent);
-            return new PgpEditKeyResult(log, nfcKeyToCardOps.build());
+            return new PgpEditKeyResult(log, nfcKeyToCardOps.build(), cryptoInput);
         }
 
         log.add(LogType.MSG_MF_SUCCESS, indent);
@@ -1525,6 +1526,9 @@ public class PgpKeyOperation {
 
         throws IOException, PGPException, SignatureException {
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        // we use the tag NO_REASON since gnupg does not care about the tag while verifying
+        // signatures with a revoked key, the warning is the same
+        subHashedPacketsGen.setRevocationReason(true, RevocationReasonTags.NO_REASON, "");
         subHashedPacketsGen.setSignatureCreationTime(true, creationTime);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         sGen.init(PGPSignature.CERTIFICATION_REVOCATION, masterPrivateKey);
@@ -1537,6 +1541,9 @@ public class PgpKeyOperation {
             throws IOException, PGPException, SignatureException {
 
         PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+        // we use the tag NO_REASON since gnupg does not care about the tag while verifying
+        // signatures with a revoked key, the warning is the same
+        subHashedPacketsGen.setRevocationReason(true, RevocationReasonTags.NO_REASON, "");
         subHashedPacketsGen.setSignatureCreationTime(true, creationTime);
         sGen.setHashedSubpackets(subHashedPacketsGen.generate());
         // Generate key revocation or subkey revocation, depending on master/subkey-ness

@@ -25,6 +25,7 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -160,7 +161,8 @@ public class PgpEncryptDecryptTest {
             b.setSymmetricPassphrase(mPassphrase);
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
 
-            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
+                    data, out);
 
             Assert.assertTrue("encryption must succeed", result.success());
 
@@ -269,7 +271,8 @@ public class PgpEncryptDecryptTest {
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
             input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+                    data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -359,7 +362,8 @@ public class PgpEncryptDecryptTest {
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
             input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+                    data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -393,7 +397,8 @@ public class PgpEncryptDecryptTest {
             SaveKeyringParcel parcel = new SaveKeyringParcel(mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
             parcel.mRevokeSubKeys.add(KeyringTestingHelper.getSubkeyId(mStaticRing1, 2));
             UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(parcel, mStaticRing1,
-                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(), new CryptoInputParcel(mKeyPhrase1));
+                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
+                    new CryptoInputParcel(new Date(), mKeyPhrase1));
 
             ProviderHelper providerHelper = new ProviderHelper(RuntimeEnvironment.application);
             providerHelper.saveSecretKeyRing(modified, new ProgressScaler());
@@ -413,7 +418,8 @@ public class PgpEncryptDecryptTest {
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
             input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
-            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+                    data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -457,7 +463,8 @@ public class PgpEncryptDecryptTest {
             });
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
 
-            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
+                    data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -575,7 +582,8 @@ public class PgpEncryptDecryptTest {
             b.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
             b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
 
-            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(mKeyPhrase1), data, out);
+            PgpSignEncryptResult result = op.execute(b,
+                    new CryptoInputParcel(new Date(), mKeyPhrase1), data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();
@@ -655,7 +663,8 @@ public class PgpEncryptDecryptTest {
             // this only works with ascii armored output!
             b.setEnableAsciiArmorOutput(true);
             b.setCharset("iso-2022-jp");
-            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(), data, out);
+            PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
+                    data, out);
             Assert.assertTrue("encryption must succeed", result.success());
 
             ciphertext = out.toByteArray();

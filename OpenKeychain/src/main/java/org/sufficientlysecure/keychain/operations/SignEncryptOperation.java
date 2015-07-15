@@ -155,7 +155,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                 RequiredInputParcel requiredInput = result.getRequiredInputParcel();
                 // Passphrase returns immediately, nfc are aggregated
                 if (requiredInput.mType == RequiredInputType.PASSPHRASE) {
-                    return new SignEncryptResult(log, requiredInput, results);
+                    return new SignEncryptResult(log, requiredInput, results, cryptoInput);
                 }
                 if (pendingInputBuilder == null) {
                     pendingInputBuilder = new NfcSignOperationsBuilder(requiredInput.mSignatureTime,
@@ -173,7 +173,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         } while (!inputUris.isEmpty());
 
         if (pendingInputBuilder != null && !pendingInputBuilder.isEmpty()) {
-            return new SignEncryptResult(log, pendingInputBuilder.build(), results);
+            return new SignEncryptResult(log, pendingInputBuilder.build(), results, cryptoInput);
         }
 
         if (!outputUris.isEmpty()) {

@@ -24,7 +24,6 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class DecryptVerifyResult extends InputPendingResult {
 
@@ -45,8 +44,9 @@ public class DecryptVerifyResult extends InputPendingResult {
         super(result, log);
     }
 
-    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public DecryptVerifyResult(OperationLog log, RequiredInputParcel requiredInput,
+                               CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
     }
 
     public DecryptVerifyResult(Parcel source) {

@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Parcel;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -38,8 +39,9 @@ public class CertifyResult extends InputPendingResult {
         super(result, log);
     }
 
-    public CertifyResult(OperationLog log, RequiredInputParcel requiredInput) {
-        super(log, requiredInput);
+    public CertifyResult(OperationLog log, RequiredInputParcel requiredInput,
+                         CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
     }
 
     public CertifyResult(int result, OperationLog log, int certifyOk, int certifyError, int uploadOk, int uploadError) {

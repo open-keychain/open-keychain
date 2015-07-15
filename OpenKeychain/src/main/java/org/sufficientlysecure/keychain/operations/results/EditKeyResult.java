@@ -20,13 +20,22 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
-public class EditKeyResult extends OperationResult {
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+
+public class EditKeyResult extends InputPendingResult {
 
     public final Long mMasterKeyId;
 
     public EditKeyResult(int result, OperationLog log, Long masterKeyId) {
         super(result, log);
         mMasterKeyId = masterKeyId;
+    }
+
+    public EditKeyResult(OperationLog log, RequiredInputParcel requiredInput,
+                         CryptoInputParcel cryptoInputParcel) {
+        super(log, requiredInput, cryptoInputParcel);
+        mMasterKeyId = null;
     }
 
     public EditKeyResult(Parcel source) {
