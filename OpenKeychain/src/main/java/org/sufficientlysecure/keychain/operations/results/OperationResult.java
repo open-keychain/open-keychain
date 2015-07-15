@@ -754,7 +754,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_GET_QUERY_FAILED(LogLevel.ERROR, R.string.msg_download_query_failed),
 
         MSG_DEL_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_del_error_empty),
-        MSG_DEL_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_del_error_multi_secret),
+        MSG_DEL_ERROR_MULTI_SECRET (LogLevel.ERROR, R.string.msg_del_error_multi_secret),
         MSG_DEL (LogLevel.START, R.plurals.msg_del),
         MSG_DEL_KEY (LogLevel.DEBUG, R.string.msg_del_key),
         MSG_DEL_KEY_FAIL (LogLevel.WARN, R.string.msg_del_key_fail),

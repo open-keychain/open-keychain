@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -62,6 +63,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     private CryptoOperationHelper<RevokeKeyringParcel, RevokeResult> mRevokeOpHelper;
 
     private long[] mMasterKeyIds;
+    private boolean mHasSecret;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +76,17 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 getRevocationCallback(), R.string.progress_revoking_uploading);
 
         mMasterKeyIds = getIntent().getLongArrayExtra(EXTRA_DELETE_MASTER_KEY_IDS);
-        boolean hasSecret = getIntent().getBooleanExtra(EXTRA_HAS_SECRET, false);
+        mHasSecret = getIntent().getBooleanExtra(EXTRA_HAS_SECRET, false);
 
-        if (mMasterKeyIds.length > 1 && hasSecret) {
-            throw new AssertionError("Secret keys can be deleted only one at a time!" +
-                    " Should be checked before reaching DeleteKeyDialogActivity.");
+        if (mMasterKeyIds.length > 1 && mHasSecret) {
+            // secret keys can only be deleted individually
+            OperationResult.OperationLog log = new OperationResult.OperationLog();
+            log.add(OperationResult.LogType.MSG_DEL_ERROR_MULTI_SECRET, 0);
+            returnResult(new DeleteResult(OperationResult.RESULT_ERROR, log, 0,
+                    mMasterKeyIds.length));
         }
 
-        if (mMasterKeyIds.length == 1 && hasSecret) {
+        if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
                 HashMap<String, Object> data = new ProviderHelper(this).getUnifiedData(
@@ -122,7 +127,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     private void showNormalDeleteDialog() {
 
         DeleteKeyDialogFragment deleteKeyDialogFragment
-                = DeleteKeyDialogFragment.newInstance(mMasterKeyIds);
+                = DeleteKeyDialogFragment.newInstance(mMasterKeyIds, mHasSecret);
 
         deleteKeyDialogFragment.show(getSupportFragmentManager(), "deleteKeyDialog");
 
@@ -179,7 +184,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         return new CryptoOperationHelper.Callback<DeleteKeyringParcel, DeleteResult>() {
             @Override
             public DeleteKeyringParcel createOperationInput() {
-                return new DeleteKeyringParcel(mMasterKeyIds, true);
+                return new DeleteKeyringParcel(mMasterKeyIds, mHasSecret);
             }
 
             @Override
@@ -221,6 +226,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     public static class DeleteKeyDialogFragment extends DialogFragment {
 
         private static final String ARG_DELETE_MASTER_KEY_IDS = "delete_master_key_ids";
+        private static final String ARG_HAS_SECRET = "has_secret";
 
         private TextView mMainMessage;
         private View mInflateView;
@@ -228,11 +234,12 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         /**
          * Creates new instance of this delete file dialog fragment
          */
-        public static DeleteKeyDialogFragment newInstance(long[] masterKeyIds) {
+        public static DeleteKeyDialogFragment newInstance(long[] masterKeyIds, boolean hasSecret) {
             DeleteKeyDialogFragment frag = new DeleteKeyDialogFragment();
             Bundle args = new Bundle();
 
             args.putLongArray(ARG_DELETE_MASTER_KEY_IDS, masterKeyIds);
+            args.putBoolean(ARG_HAS_SECRET, hasSecret);
 
             frag.setArguments(args);
 
@@ -245,6 +252,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             final FragmentActivity activity = getActivity();
 
             final long[] masterKeyIds = getArguments().getLongArray(ARG_DELETE_MASTER_KEY_IDS);
+            final boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
 
             ContextThemeWrapper theme = new ContextThemeWrapper(activity,
                     R.style.Theme_AppCompat_Light_Dialog);
@@ -257,8 +265,6 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             builder.setView(mInflateView);
 
             mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
-
-            final boolean hasSecret;
 
             // If only a single key has been selected
             if (masterKeyIds.length == 1) {
@@ -281,7 +287,6 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     } else {
                         name = getString(R.string.user_id_no_name);
                     }
-                    hasSecret = ((Long) data.get(KeychainContract.KeyRings.HAS_ANY_SECRET)) == 1;
 
                     if (hasSecret) {
                         // show title only for secret key deletions,

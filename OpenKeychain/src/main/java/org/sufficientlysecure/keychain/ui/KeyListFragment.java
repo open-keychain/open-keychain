@@ -352,13 +352,6 @@ public class KeyListFragment extends LoaderFragment
      * @param hasSecret must contain whether the list of masterKeyIds contains a secret key or not
      */
     public void showDeleteKeyDialog(long[] masterKeyIds, boolean hasSecret) {
-        // Can only work on singular secret keys
-        if (hasSecret && masterKeyIds.length > 1) {
-            Notify.create(getActivity(), R.string.secret_cannot_multiple,
-                    Notify.Style.ERROR).show();
-            return;
-        }
-
         Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
         intent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS, masterKeyIds);
         intent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, hasSecret);

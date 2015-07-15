@@ -125,7 +125,10 @@ public class DeleteResult extends InputPendingResult {
         } else {
             duration = 0;
             style = Style.ERROR;
-            if (mFail == 0) {
+            if (mLog.getLast().mType == LogType.MSG_DEL_ERROR_MULTI_SECRET) {
+                str = activity.getString(R.string.secret_cannot_multiple);
+            }
+            else if (mFail == 0) {
                 str = activity.getString(R.string.delete_nothing);
             } else {
                 str = activity.getResources().getQuantityString(R.plurals.delete_fail, mFail);
