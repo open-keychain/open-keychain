@@ -1389,6 +1389,9 @@
     <string name="pin_tip2">Choose a strong pin. It protects your key when your device gets stolen.</string>
     <string name="error_wrong_pin">Wrong pin, please re-input your pin</string>
 
+    <string name="nfc_move_card">"Hold your NFC Card against the NFC marker at the back of your device."</string>
+    <string name="nfc_configuring_card">Please wait while OpenKeyChain configures your NFC Card</string>
+
 
 
     <!-- Passphrase wizard -->

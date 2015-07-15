@@ -32,4 +32,10 @@ public class NFCUnlockWizardFragment extends WizardFragment {
         mNFCUnlockWizardFragmentViewModel.prepareViewModel(savedInstanceState, getArguments(),
                 getActivity());
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mNFCUnlockWizardFragmentViewModel.saveViewModelState(outState);
+    }
 }

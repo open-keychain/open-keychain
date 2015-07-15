@@ -4,33 +4,50 @@
     android:layout_height="match_parent"
     android:persistentDrawingCache="all">
 
-    <TextView
-        android:id="@+id/unlockTip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:text="@string/nfc_text" />
 
-    <org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView
-        android:id="@+id/unlockUserFeedback"
+    <RelativeLayout
+        android:id="@+id/nfcFeedbackLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp">
-    </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/unlockTip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:text="@string/nfc_move_card" />
+
+        <org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView
+            android:id="@+id/unlockUserFeedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unlockTip"
+            android:layout_margin="24dp">
+
+        </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unlockTip"
+            android:layout_margin="24dp"
+            android:scrollbarStyle="outsideInset" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/unlockInputLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/unlockUserFeedback"
-        android:layout_below="@id/unlockTip">
+        android:layout_margin="24dp"
+        android:layout_above="@id/nfcFeedbackLayout">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:src="@drawable/nfc" />
-
     </RelativeLayout>
+
 </RelativeLayout>
