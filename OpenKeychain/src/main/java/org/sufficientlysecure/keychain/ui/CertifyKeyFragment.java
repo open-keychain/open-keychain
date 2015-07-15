@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -57,6 +58,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CertifyKeyFragment
         extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult>
@@ -165,7 +167,7 @@ public class CertifyKeyFragment
                     Notify.create(getActivity(), getString(R.string.select_key_to_certify),
                             Notify.Style.ERROR).show();
                 } else {
-                    cryptoOperation();
+                    cryptoOperation(new CryptoInputParcel(new Date()));
                 }
             }
         });

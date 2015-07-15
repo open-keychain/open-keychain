@@ -66,6 +66,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 /**
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
+ * NOTE: If no CryptoInputParcel is passed via EXTRA_CRYPTO_INPUT, the CryptoInputParcel is created
+ * internally and is NOT meant to be used by signing operations before adding a signature time
  */
 public class PassphraseDialogActivity extends FragmentActivity {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
@@ -97,6 +99,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         if (mCryptoInputParcel == null) {
             // not all usages of PassphraseActivity are from CryptoInputOperation
+            // NOTE: This CryptoInputParcel cannot be used for signing operations without setting
+            // signature time
             mCryptoInputParcel = new CryptoInputParcel();
         }
 
@@ -123,7 +127,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 SecretKeyType.PASSPHRASE_EMPTY) {
                             // also return passphrase back to activity
                             Intent returnIntent = new Intent();
-                            returnIntent.putExtra(RESULT_CRYPTO_INPUT, new CryptoInputParcel(new Passphrase("")));
+                            mCryptoInputParcel.mPassphrase = new Passphrase("");
+                            returnIntent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
                             setResult(RESULT_OK, returnIntent);
                             finish();
                             return;

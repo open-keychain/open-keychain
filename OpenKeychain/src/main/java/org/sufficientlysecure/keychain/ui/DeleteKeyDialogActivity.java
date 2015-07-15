@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.util.Date;
 import java.util.HashMap;
 
 public class DeleteKeyDialogActivity extends FragmentActivity {
@@ -134,7 +135,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
     }
 
     private void startRevocationOperation() {
-        mRevokeOpHelper.cryptoOperation(new CryptoInputParcel(false));
+        mRevokeOpHelper.cryptoOperation(new CryptoInputParcel(new Date(), false));
     }
 
     private void startDeletionOperation() {
