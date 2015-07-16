@@ -62,7 +62,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
         void onNfcPostExecute() throws IOException;
 
-        void onNfcTagDiscovery(Intent intent);
+        void onNfcTagDiscovery(Intent intent) throws IOException;
     }
 
     /**
@@ -450,6 +450,13 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         super.doNfcInBackground();
         if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentVisibleFragment).doNfcInBackground();
+        }
+    }
+
+    @Override
+    protected void onNfcPreExecute() throws IOException {
+        if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentVisibleFragment).onNfcPreExecute();
         }
     }
 

@@ -121,26 +121,33 @@ public class NFCUnlockWizardFragment extends WizardFragment
      */
     @Override
     public void onNfcError(Exception exception) {
-
+        mNFCUnlockWizardFragmentViewModel.onNfcError(exception);
     }
 
     @Override
     public void onNfcPreExecute() throws IOException {
-
+        mNFCUnlockWizardFragmentViewModel.onNfcPreExecute();
     }
 
     @Override
     public void doNfcInBackground() throws IOException {
-
+        mNFCUnlockWizardFragmentViewModel.doNfcInBackground();
     }
 
     @Override
     public void onNfcPostExecute() throws IOException {
+        mNFCUnlockWizardFragmentViewModel.onNfcPostExecute();
+    }
+
+    @Override
+    public void onNfcTagDiscovery(Intent intent) throws IOException {
+        mNFCUnlockWizardFragmentViewModel.onNfcTagDiscovery(intent);
 
     }
 
     @Override
-    public void onNfcTagDiscovery(Intent intent) {
-
+    public void onDetach() {
+        super.onDetach();
+        mNFCUnlockWizardFragmentViewModel.onDetachFromView();
     }
 }
