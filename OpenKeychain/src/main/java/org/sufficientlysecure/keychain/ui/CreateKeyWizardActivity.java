@@ -2,6 +2,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -53,9 +54,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     private WizardFragment mCurrentVisibleFragment;
 
     public interface NfcListenerFragment {
+        void onNfcError(Exception exception);
+
+        void onNfcPreExecute() throws IOException;
+
         void doNfcInBackground() throws IOException;
 
         void onNfcPostExecute() throws IOException;
+
+        void onNfcTagDiscovery(Intent intent);
     }
 
     /**
@@ -454,6 +461,22 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         }
         mCreateKeyWizardViewModel.updateNFCData(mNfcFingerprints, mNfcAid, mNfcUserId);
         mCreateKeyWizardViewModel.onNfcPostExecute();
+    }
+
+    @Override
+    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
+        super.handleTagDiscoveredIntent(intent);
+        if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentVisibleFragment).onNfcTagDiscovery(intent);
+        }
+    }
+
+    @Override
+    protected void handleNfcError(Exception e) {
+        super.handleNfcError(e);
+        if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentVisibleFragment).onNfcError(e);
+        }
     }
 
     @Override

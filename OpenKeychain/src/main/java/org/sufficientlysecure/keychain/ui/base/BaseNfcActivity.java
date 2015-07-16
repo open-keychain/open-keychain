@@ -222,7 +222,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
     }
 
-    private void handleNfcError(Exception e) {
+    protected void handleNfcError(Exception e) {
         Log.e(Constants.TAG, "nfc error", e);
 
         if (e instanceof TagLostException) {

@@ -1,14 +1,13 @@
 package org.sufficientlysecure.keychain.ui.wizard;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -20,14 +19,12 @@ import java.io.IOException;
 
 public class NFCUnlockWizardFragment extends WizardFragment
         implements NFCUnlockWizardFragmentViewModel.OnViewModelEventBind,
-        CreateKeyWizardActivity.NfcListenerFragment{
+        CreateKeyWizardActivity.NfcListenerFragment {
+
     private NFCUnlockWizardFragmentViewModel mNFCUnlockWizardFragmentViewModel;
-    private RelativeLayout mNfcFeedbackLayout;
-    private LinearLayout mUnlockTipLayout;
     private TextView mUnlockTip;
     private FeedbackIndicatorView mUnlockUserFeedback;
     private ProgressBar mProgressBar;
-    private RelativeLayout mUnlockInputLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,12 +36,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.unlock_nfc_fragment, container, false);
-        mNfcFeedbackLayout = (RelativeLayout) view.findViewById(R.id.nfcFeedbackLayout);
-        mUnlockTipLayout = (LinearLayout) view.findViewById(R.id.unlockTipLayout);
         mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
         mUnlockUserFeedback = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mUnlockInputLayout = (RelativeLayout) view.findViewById(R.id.unlockInputLayout);
 
         if (mWizardFragmentListener != null) {
             mWizardFragmentListener.onHideNavigationButtons(false, true);
@@ -81,7 +75,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
     @Override
     public boolean onNextClicked() {
-        return super.onNextClicked();
+        return mNFCUnlockWizardFragmentViewModel.updateOperationState();
     }
 
     @Override
@@ -98,12 +92,47 @@ public class NFCUnlockWizardFragment extends WizardFragment
     }
 
     @Override
+    public void onTipTextUpdate(CharSequence text) {
+        mUnlockTip.setText(text);
+    }
+
+    @Override
+    public void onShowProgressBar(boolean show) {
+        mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
+    public void onUpdateProgress(int progress) {
+        mProgressBar.setProgress(progress);
+    }
+
+    /**
+     * NFC handling
+     *
+     * @param exception
+     */
+    @Override
+    public void onNfcError(Exception exception) {
+
+    }
+
+    @Override
+    public void onNfcPreExecute() throws IOException {
+
+    }
+
+    @Override
     public void doNfcInBackground() throws IOException {
 
     }
 
     @Override
     public void onNfcPostExecute() throws IOException {
+
+    }
+
+    @Override
+    public void onNfcTagDiscovery(Intent intent) {
 
     }
 }

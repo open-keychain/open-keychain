@@ -39,6 +39,12 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel {
         void onOperationStateOK(String showText);
 
         void onOperationStateCompleted(String showText);
+
+        void onTipTextUpdate(CharSequence text);
+
+        void onShowProgressBar(boolean show);
+
+        void onUpdateProgress(int progress);
     }
 
     public NFCUnlockWizardFragmentViewModel(OnViewModelEventBind onViewModelEventBind) {
@@ -51,8 +57,11 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Context context) {
+        mContext = context;
         if (savedInstanceState != null) {
             restoreViewModelState(savedInstanceState);
+        } else {
+            initializeUnlockOperation();
         }
     }
 
@@ -84,6 +93,8 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel {
     public boolean updateOperationState() {
         switch (mOperationState) {
             case OPERATION_STATE_WAITING_FOR_NFC_TAG:
+
+
                 break;
             case OPERATION_STATE_NFC_PIN_UPLOAD:
                 break;
@@ -107,6 +118,7 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel {
 
     /**
      * Generates a random 128 bit key.
+     *
      * @throws NoSuchAlgorithmException
      */
     public void generateSecureRoomPin() throws NoSuchAlgorithmException {
@@ -117,7 +129,7 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel {
     }
 
 
-    public static class NfcATechnology{
+    public static class NfcATechnology {
         protected NfcA mNfcA;
 
         public NfcATechnology() {

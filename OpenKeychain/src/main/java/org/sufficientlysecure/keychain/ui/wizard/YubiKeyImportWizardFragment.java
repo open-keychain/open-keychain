@@ -154,6 +154,15 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
     }
 
     @Override
+    public void onNfcError(Exception exception) {
+    }
+
+    @Override
+    public void onNfcPreExecute() throws IOException {
+
+    }
+
+    @Override
     public void doNfcInBackground() throws IOException {
         mYubiKeyImportWizardFragmentViewModel.updateNFCData(mWizardFragmentListener.nfcGetFingerprints(),
                 mWizardFragmentListener.nfcGetAid(),
@@ -176,6 +185,11 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
                 getActivity())) {
             refreshSearch();
         }
+    }
+
+    @Override
+    public void onNfcTagDiscovery(Intent intent) {
+
     }
 
     @Override
