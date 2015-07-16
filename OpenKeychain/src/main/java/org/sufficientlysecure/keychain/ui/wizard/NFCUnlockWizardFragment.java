@@ -4,6 +4,7 @@ package org.sufficientlysecure.keychain.ui.wizard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,13 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Override
     public void onUpdateProgress(int progress) {
         mProgressBar.setProgress(progress);
+    }
+
+    @Override
+    public void onProgressBarUpdateStyle(boolean indeterminate, int tint) {
+        mProgressBar.setIndeterminate(indeterminate);
+        DrawableCompat.setTint(mProgressBar.getIndeterminateDrawable(), tint);
+        DrawableCompat.setTint(mProgressBar.getProgressDrawable(), tint);
     }
 
     /**

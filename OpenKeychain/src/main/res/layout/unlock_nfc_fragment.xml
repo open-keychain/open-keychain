@@ -44,13 +44,14 @@
         </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
         <ProgressBar
+            style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/unlockTipLayout"
+            android:layout_above="@id/unlockUserFeedback"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
-            android:visibility="invisible" />
+            />
     </RelativeLayout>
 
     <RelativeLayout
