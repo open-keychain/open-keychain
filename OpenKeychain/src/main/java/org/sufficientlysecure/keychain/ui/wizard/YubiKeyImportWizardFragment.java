@@ -18,7 +18,6 @@ import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.ImportKeysListFragment;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
@@ -163,10 +162,11 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
     }
 
     @Override
-    public void doNfcInBackground() throws IOException {
+    public Throwable doNfcInBackground() throws IOException {
         mYubiKeyImportWizardFragmentViewModel.updateNFCData(mWizardFragmentListener.nfcGetFingerprints(),
                 mWizardFragmentListener.nfcGetAid(),
                 mWizardFragmentListener.nfcGetUserId(), false);
+        return null;
     }
 
     @Override

@@ -130,8 +130,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
     }
 
     @Override
-    public void doNfcInBackground() throws IOException {
+    public Throwable doNfcInBackground() throws IOException {
         mNFCUnlockWizardFragmentViewModel.doNfcInBackground();
+        return null;
     }
 
     @Override
