@@ -223,8 +223,7 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel,
      * @param operationSequence
      */
     private void postProgressToMainThread(int operationSequence) {
-        Message message = mProgressHandler.obtainMessage();
-        message.arg1 = operationSequence;
+        Message message = mProgressHandler.obtainMessage(MESSAGE_PROGRESS_UPDATE, operationSequence);
         message.sendToTarget();
     }
 
@@ -247,12 +246,14 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel,
 
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
             switch (msg.what) {
                 case MESSAGE_PROGRESS_UPDATE: {
-                    mOnViewModelEventBind.onUpdateProgress(calculateProgress(msg.arg1));
+                    mOnViewModelEventBind.onUpdateProgress(calculateProgress((Integer) msg.obj));
                 }
                 break;
+                default:
+                    super.handleMessage(msg);
+
             }
         }
     }
