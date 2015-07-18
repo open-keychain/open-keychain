@@ -15,6 +15,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mNFCUnlockWizardFragmentViewModel = new NFCUnlockWizardFragmentViewModel(this);
+        mNFCUnlockWizardFragmentViewModel = new NFCUnlockWizardFragmentViewModel(this, mWizardFragmentListener);
     }
 
     @Nullable
@@ -136,8 +137,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
     @Override
     public Throwable doNfcInBackground() throws IOException {
-        mNFCUnlockWizardFragmentViewModel.doNfcInBackground();
-        return null;
+        return mNFCUnlockWizardFragmentViewModel.doNfcInBackground();
     }
 
     @Override
@@ -148,7 +148,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Override
     public void onNfcTagDiscovery(Intent intent) throws IOException {
         mNFCUnlockWizardFragmentViewModel.onNfcTagDiscovery(intent);
-
     }
 
     @Override

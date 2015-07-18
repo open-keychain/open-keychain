@@ -114,7 +114,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
      * Signs and/or encrypts data based on parameters of class
      */
     public PgpSignEncryptResult execute(PgpSignEncryptInputParcel input, CryptoInputParcel cryptoInput,
-                                     InputData inputData, OutputStream outputStream) {
+                                        InputData inputData, OutputStream outputStream) {
 
         int indent = 0;
         OperationLog log = new OperationLog();
@@ -187,6 +187,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     }
 
                     case PIN:
+                    case NFC:
                     case PATTERN:
                     case PASSPHRASE: {
                         Passphrase localPassphrase = cryptoInput.getPassphrase();

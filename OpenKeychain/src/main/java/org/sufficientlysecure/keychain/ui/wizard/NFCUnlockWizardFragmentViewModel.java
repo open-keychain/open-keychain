@@ -22,6 +22,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseViewModel;
+import org.sufficientlysecure.keychain.ui.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel,
     public static final int MESSAGE_PROGRESS_UPDATE = 1;
     private Context mContext;
     private OnViewModelEventBind mOnViewModelEventBind;
+    private WizardFragmentListener mWizardFragmentListener;
     private OperationState mOperationState;
     private Passphrase mNfcPin;
     private NfcTechnology mNfcTechnology;
@@ -92,8 +94,9 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel,
         void onUpdateNavigationState(boolean hideBack, boolean hideNext);
     }
 
-    public NFCUnlockWizardFragmentViewModel(OnViewModelEventBind onViewModelEventBind) {
+    public NFCUnlockWizardFragmentViewModel(OnViewModelEventBind onViewModelEventBind, WizardFragmentListener activityCallback) {
         mOnViewModelEventBind = onViewModelEventBind;
+        mWizardFragmentListener = activityCallback;
         mProgressHandler = new ProgressHandler(Looper.getMainLooper());
 
         if (mOnViewModelEventBind == null) {
@@ -180,6 +183,12 @@ public class NFCUnlockWizardFragmentViewModel implements BaseViewModel,
         mOnViewModelEventBind.onTipTextUpdate(mContext.getString(R.string.nfc_pin_moved_to_card));
         mOnViewModelEventBind.onOperationStateCompleted(null);
         mOnViewModelEventBind.onUpdateNavigationState(false, false);
+
+        //update the results back to the activity holding the data
+        if (mWizardFragmentListener != null) {
+            mWizardFragmentListener.setPassphrase(mNfcPin);
+        }
+
         mOperationState = OperationState.OPERATION_STATE_FINALIZED;
         return false;
     }

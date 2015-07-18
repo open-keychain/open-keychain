@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/nfcFeedbackLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:layout_alignParentBottom="true">
 
         <LinearLayout
@@ -22,8 +22,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="8dp"
-                android:tint="@color/primary"
-                android:src="@android:drawable/ic_dialog_alert" />
+                android:src="@android:drawable/ic_dialog_alert"
+                android:tint="@color/primary" />
 
             <TextView
                 android:id="@+id/unlockTip"
@@ -39,19 +39,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/unlockTipLayout"
-            android:layout_margin="24dp">
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp">
 
         </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
         <ProgressBar
-            style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
             android:id="@+id/progressBar"
+            style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/unlockUserFeedback"
             android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            />
+            android:layout_marginRight="24dp" />
     </RelativeLayout>
 
     <RelativeLayout

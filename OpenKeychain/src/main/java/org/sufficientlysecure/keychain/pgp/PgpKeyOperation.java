@@ -89,9 +89,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
  * key take place.
- * <p>
+ * <p/>
  * Note that no android specific stuff should be done here, ie no imports from com.android.
- * <p>
+ * <p/>
  * All operations support progress reporting to a Progressable passed on initialization.
  * This indicator may be null.
  */
@@ -353,18 +353,18 @@ public class PgpKeyOperation {
     /**
      * This method introduces a list of modifications specified by a SaveKeyringParcel to a
      * WrappedSecretKeyRing.
-     * <p>
+     * <p/>
      * This method relies on WrappedSecretKeyRing's canonicalization property!
-     * <p>
+     * <p/>
      * Note that PGPPublicKeyRings can not be directly modified. Instead, the corresponding
      * PGPSecretKeyRing must be modified and consequently consolidated with its public counterpart.
      * This is a natural workflow since pgp keyrings are immutable data structures: Old semantics
      * are changed by adding new certificates, which implicitly override older certificates.
-     * <p>
+     * <p/>
      * Note that this method does not care about any "special" type of master key. If unlocking
      * with a passphrase fails, the operation will fail with an unlocking error. More specific
      * handling of errors should be done in UI code!
-     * <p>
+     * <p/>
      * If the passphrase is null, only a restricted subset of operations will be available,
      * namely stripping of subkeys and changing the protection mode of dummy keys.
      */
@@ -1259,6 +1259,32 @@ public class PgpKeyOperation {
 
                     return sKR;
                 }
+                case NFC: {
+                    sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
+
+                    log.add(LogType.MSG_MF_NOTATION_PIN, indent);
+
+                    // add packet with "pin" notation data
+                    PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                            masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
+                            PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                    { // set subpackets
+                        PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                        hashedPacketsGen.setExportable(false, false);
+                        hashedPacketsGen.setNotationData(false, true, "unlock.nfc@sufficientlysecure.org", "1");
+                        sGen.setHashedSubpackets(hashedPacketsGen.generate());
+                    }
+                    sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+                    PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+
+                    masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
+
+                    return sKR;
+                }
                 default: {
                     throw new UnsupportedOperationException("Passphrase type not yet implemented!");
 
@@ -1607,7 +1633,7 @@ public class PgpKeyOperation {
 
     /**
      * Returns all flags valid for this key.
-     * <p>
+     * <p/>
      * This method does not do any validity checks on the signature, so it should not be used on
      * a non-canonicalized key!
      */
