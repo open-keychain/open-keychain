@@ -83,6 +83,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import snippet;
+
 public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
@@ -168,7 +170,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mPhoto = (ImageView) findViewById(R.id.view_key_photo);
         mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
-
+            CheatSheet.setup(mActionEncryptFile,getContentDescription(mActionEncryptFile));
+            CheatSheet.setup(mActionEncryptText,getContentDescription(mActionEncryptText));
+            CheatSheet.setup(mActionNfc,getContentDescription(mActionNfc));
+            CheatSheet.setup(mFab,getContentDescription(mFab));
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
         mRotateSpin.setAnimationListener(new AnimationListener() {
             @Override

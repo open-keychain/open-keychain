@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import snippet;
 
 
 /**
@@ -174,11 +173,6 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         holder.creation = (TextView) view.findViewById(R.id.select_key_item_creation);
         holder.statusIcon = (ImageView) view.findViewById(R.id.select_key_item_status_icon);
         holder.selected = (CheckBox) view.findViewById(R.id.selected);
-        CheatSheet.setup(holder.mainUserId,getContentDescription(holder.mainUserId));
-        CheatSheet.setup(holder.mainUserIdRest,getContentDescription(holder.mainUserIdRest));
-        CheatSheet.setup(holder.creation,getContentDescription(holder.creation));
-        CheatSheet.setup(holder.statusIcon,getContentDescription(holder.statusIcon));
-        CheatSheet.setup(holder.selected,getContentDescription(holder.selected));
         view.setTag(holder);
         return view;
     }

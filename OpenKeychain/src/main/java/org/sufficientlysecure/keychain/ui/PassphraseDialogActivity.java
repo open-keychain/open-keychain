@@ -63,6 +63,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import snippet;
+
 /**
  * We can not directly create a dialog on the application context.
  * This activity encapsulates a DialogFragment to emulate a dialog.
@@ -340,6 +342,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             // Override the default behavior so the dialog is NOT dismissed on click
             final Button positive = ((AlertDialog) getDialog()).getButton(DialogInterface.BUTTON_POSITIVE);
+            CheatSheet.setup(positive,getContentDescription(positive));
             positive.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -493,7 +496,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             if (EditorInfo.IME_ACTION_DONE == actionId) {
                 AlertDialog dialog = ((AlertDialog) getDialog());
                 Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
+            CheatSheet.setup(bt,getContentDescription(bt));
                 bt.performClick();
                 return true;
             }

@@ -72,6 +72,8 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareHelper;
 
+import snippet;
+
 public class EncryptFilesFragment
         extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
 
@@ -742,6 +744,7 @@ public class EncryptFilesFragment
                 filename = (TextView) itemView.findViewById(R.id.filename);
                 fileSize = (TextView) itemView.findViewById(R.id.filesize);
                 removeButton = itemView.findViewById(R.id.action_remove_file_from_list);
+                CheatSheet.setup(removeButton,getContentDescription(removeButton));
                 thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
             }
         }
@@ -752,6 +755,7 @@ public class EncryptFilesFragment
             public FooterHolder(View itemView) {
                 super(itemView);
                 mAddButton = (Button) itemView.findViewById(R.id.file_list_entry_add);
+                CheatSheet.setup(mAddButton,getContentDescription(mAddButton));
             }
         }
 

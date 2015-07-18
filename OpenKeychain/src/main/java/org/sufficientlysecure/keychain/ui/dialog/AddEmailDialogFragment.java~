@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,39 +34,30 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
-import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 import org.sufficientlysecure.keychain.util.Log;
 
-import snippet;
-
-public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
+public class AddEmailDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_NAME = "name";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_CANCEL = 2;
 
-    public static final String MESSAGE_DATA_USER_ID = "user_id";
+    public static final String MESSAGE_DATA_EMAIL = "email";
 
     private Messenger mMessenger;
-    private NameEditText  mName;
     private EmailEditText mEmail;
-    private EditText mComment;
 
-    public static AddUserIdDialogFragment newInstance(Messenger messenger, String predefinedName) {
+    public static AddEmailDialogFragment newInstance(Messenger messenger) {
 
-        AddUserIdDialogFragment frag = new AddUserIdDialogFragment();
+        AddEmailDialogFragment frag = new AddEmailDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
-        args.putString(ARG_NAME, predefinedName);
         frag.setArguments(args);
 
         return frag;
@@ -79,21 +70,16 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
-        String predefinedName = getArguments().getString(ARG_NAME);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
 
-        alert.setTitle(R.string.edit_key_action_add_identity);
+        alert.setTitle(R.string.create_key_add_email);
 
         LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_user_id_dialog, null);
+        View view = inflater.inflate(R.layout.add_email_dialog, null);
         alert.setView(view);
 
-        mName = (NameEditText) view.findViewById(R.id.add_user_id_name);
-        mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
-        mComment = (EditText) view.findViewById(R.id.add_user_id_comment);
-
-        mName.setText(predefinedName);
+        mEmail = (EmailEditText) view.findViewById(R.id.add_email_address);
 
         alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
             @Override
@@ -102,9 +88,8 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
 
                 // return new user id back to activity
                 Bundle data = new Bundle();
-                String userId = KeyRing.createUserId(new KeyRing.UserId(mName.getText().toString(),
-                        mEmail.getText().toString(), mComment.getText().toString()));
-                data.putString(MESSAGE_DATA_USER_ID, userId);
+                String email = mEmail.getText().toString();
+                data.putString(MESSAGE_DATA_EMAIL, email);
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }
         });
@@ -127,17 +112,19 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
                 mEmail.post(new Runnable() {
                     @Override
                     public void run() {
-                        InputMethodManager imm = (InputMethodManager) getActivity()
-                                .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(mEmail, InputMethodManager.SHOW_IMPLICIT);
+                        if(getActivity() != null) {
+                            InputMethodManager imm = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(mEmail, InputMethodManager.SHOW_IMPLICIT);
+                        }
                     }
                 });
             }
         });
         mEmail.requestFocus();
 
-        mComment.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
-        mComment.setOnEditorActionListener(this);
+        mEmail.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+        mEmail.setOnEditorActionListener(this);
 
         return alert.show();
     }
@@ -181,7 +168,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             AlertDialog dialog = ((AlertDialog) getDialog());
             Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            CheatSheet.setup(bt,getContentDescription(bt));
+
             bt.performClick();
             return true;
         }

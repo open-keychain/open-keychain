@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import snippet;
+
 public class CreateKeyEmailFragment extends Fragment {
     private CreateKeyActivity mCreateKeyActivity;
     private EmailEditText mEmailEdit;
@@ -95,6 +97,8 @@ public class CreateKeyEmailFragment extends Fragment {
         mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
         View backButton = view.findViewById(R.id.create_key_back_button);
         View nextButton = view.findViewById(R.id.create_key_next_button);
+	CheatSheet.setup(backButton,getContentDescription(backButton));
+        CheatSheet.setup(nextButton,getContentDescription(nextButton));
         RecyclerView emailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
 
         // initial values
@@ -307,6 +311,7 @@ public class CreateKeyEmailFragment extends Fragment {
                 super(itemView);
                 mTextView = (TextView) itemView.findViewById(R.id.create_key_email_item_email);
                 mDeleteButton = (ImageButton) itemView.findViewById(R.id.create_key_email_item_delete_button);
+                CheatSheet.setup(mDeleteButton,getContentDescription(mDeleteButton));
             }
         }
 
@@ -316,6 +321,7 @@ public class CreateKeyEmailFragment extends Fragment {
             public FooterHolder(View itemView) {
                 super(itemView);
                 mAddButton = (Button) itemView.findViewById(R.id.create_key_add_email);
+               CheatSheet.setup(mAddButton,getContentDescription(mAddButton));
             }
         }
 

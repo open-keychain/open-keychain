@@ -42,6 +42,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.util.Log;
 
+import snippet;
+
 public class AddEmailDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
 
@@ -168,7 +170,7 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             AlertDialog dialog = ((AlertDialog) getDialog());
             Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-
+            CheatSheet.setup(bt,getContentDescription(bt));
             bt.performClick();
             return true;
         }

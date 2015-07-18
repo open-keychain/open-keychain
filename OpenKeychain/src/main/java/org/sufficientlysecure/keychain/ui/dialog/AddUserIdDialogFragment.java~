@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,8 +44,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 import org.sufficientlysecure.keychain.util.Log;
-
-import snippet;
 
 public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -181,7 +179,7 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         if (EditorInfo.IME_ACTION_DONE == actionId) {
             AlertDialog dialog = ((AlertDialog) getDialog());
             Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            CheatSheet.setup(bt,getContentDescription(bt));
+
             bt.performClick();
             return true;
         }

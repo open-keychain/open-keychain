@@ -66,6 +66,8 @@ import org.sufficientlysecure.keychain.util.ExportHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 
+import snippet;
+
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -113,6 +115,13 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
         vKeySafeSlingerButton.setColorFilter(getResources().getColor(R.color.tertiary_text_light),
                 PorterDuff.Mode.SRC_IN);
+            CheatSheet.setup(vFingerprintShareButton,getContentDescription(vFingerprintShareButton));
+            CheatSheet.setup(vFingerprintClipboardButton,getContentDescription(vFingerprintClipboardButton));
+            CheatSheet.setup(vKeyShareButton,getContentDescription(vKeyShareButton));
+            CheatSheet.setup(vKeyNfcButton,getContentDescription(vKeyNfcButton));
+            CheatSheet.setup(vKeyClipboardButton,getContentDescription(vKeyClipboardButton));
+            CheatSheet.setup(vKeySafeSlingerButton,getContentDescription(vKeySafeSlingerButton));
+            CheatSheet.setup(vKeyUploadButton,getContentDescription(vKeyUploadButton));
 
         vFingerprintShareButton.setOnClickListener(new View.OnClickListener() {
             @Override

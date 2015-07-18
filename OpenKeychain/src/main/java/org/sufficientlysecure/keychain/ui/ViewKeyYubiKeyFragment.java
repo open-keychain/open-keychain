@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-
+import snippet;
 public class ViewKeyYubiKeyFragment
         extends QueueingCryptoOperationFragment<PromoteKeyringParcel, PromoteKeyResult>
         implements LoaderCallbacks<Cursor> {
@@ -117,6 +117,7 @@ public class ViewKeyYubiKeyFragment
         }
 
         vButton = (Button) view.findViewById(R.id.button_bind);
+        CheatSheet.setup(vButton);
         vButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

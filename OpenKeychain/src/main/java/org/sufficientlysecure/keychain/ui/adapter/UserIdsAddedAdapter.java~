@@ -33,8 +33,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 
 import java.util.List;
 
-import snippet;
-
 public class UserIdsAddedAdapter extends ArrayAdapter<String> {
     private LayoutInflater mInflater;
     private boolean mNewKeyring;
@@ -72,10 +70,7 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
             holder.vComment = (TextView) convertView.findViewById(R.id.user_id_item_comment);
             holder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_item_delete_button);
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
-            CheatSheet.setup(holder.vName,getContentDescription(holder.vName));
-            CheatSheet.setup(holder.vAddress,getContentDescription(holder.vAddress));
-            CheatSheet.setup(holder.vComment,getContentDescription(holder.vComment));
-            CheatSheet.setup(holder.vDelete,getContentDescription(holder.vDelete));
+
             // not used:
             View certifiedLayout = convertView.findViewById(R.id.user_id_item_certified_layout);
             ImageView editImage = (ImageView) convertView.findViewById(R.id.user_id_item_edit_image);

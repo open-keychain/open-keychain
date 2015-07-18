@@ -42,7 +42,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
-import snippet;
+
 /**
  * This is a file chooser dialog no longer used with KitKat
  */
@@ -137,7 +137,6 @@ public class FileDialogFragment extends DialogFragment {
             mCheckBox.setEnabled(true);
             mCheckBox.setVisibility(View.VISIBLE);
             mCheckBox.setText(checkboxText);
-            mCheckBox.setChecked(true);
         }
 
         alert.setView(view);

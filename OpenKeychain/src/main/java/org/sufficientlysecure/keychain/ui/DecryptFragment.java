@@ -55,6 +55,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import snippet;
+
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final int LOADER_ID_UNIFIED = 0;
@@ -95,6 +97,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         // Overlay
         mOverlayAnimator = (ViewAnimator) view;
         Button vErrorOverlayButton = (Button) view.findViewById(R.id.decrypt_error_overlay_button);
+        CheatSheet.setup(vErrorOverlayButton,getContentDescription(vErrorOverlayButton));
         vErrorOverlayButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

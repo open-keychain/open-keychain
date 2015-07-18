@@ -36,8 +36,6 @@ import android.widget.Button;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainService;
 
-import snippet;
-
 /**
  * meant to be used
  */
