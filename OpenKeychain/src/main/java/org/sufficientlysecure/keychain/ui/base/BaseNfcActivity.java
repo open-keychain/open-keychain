@@ -154,6 +154,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             protected Exception doInBackground(Void... params) {
                 try {
                     handleTagDiscoveredIntent(intent);
+                    doNfcInBackground();
                 } catch (CardException e) {
                     return e;
                 } catch (IOException e) {
@@ -441,8 +442,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
             mPw1ValidatedForDecrypt = false;
             mPw3Validated = false;
         }
-
-        doNfcInBackground();
     }
 
     protected void handleIsoDepDiscover(Intent intent) throws IOException {

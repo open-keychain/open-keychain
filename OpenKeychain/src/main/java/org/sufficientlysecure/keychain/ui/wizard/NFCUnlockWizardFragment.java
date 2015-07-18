@@ -114,6 +114,11 @@ public class NFCUnlockWizardFragment extends WizardFragment
         DrawableCompat.setTint(mProgressBar.getProgressDrawable(), tint);
     }
 
+    @Override
+    public void onUpdateNavigationState(boolean hideBack, boolean hideNext) {
+        mWizardFragmentListener.onHideNavigationButtons(hideBack, hideNext);
+    }
+
     /**
      * NFC handling
      *
