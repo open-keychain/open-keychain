@@ -691,6 +691,25 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     int mPreviousColor = 0;
 
+    /**
+     * Calculate a reasonable color for the status bar based on the given toolbar color.
+     * Style guides want the toolbar color to be a "700" on the Android scale and the status
+     * bar should be the same color at "500", this is roughly 17 / 20th of the value in each
+     * channel.
+     * http://www.google.com/design/spec/style/color.html#color-color-palette
+     */
+    static public int getStatusBarBackgroundColor(int color) {
+        int r = (color >> 16) & 0xff;
+        int g = (color >> 8) & 0xff;
+        int b = color & 0xff;
+
+        r = r * 17 / 20;
+        g = g * 17 / 20;
+        b = b * 17 / 20;
+
+        return (0xff << 24) | (r << 16) | (g << 8) | b;
+    }
+
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         /* TODO better error handling? May cause problems when a key is deleted,
@@ -786,7 +805,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     } else if (mIsSecret) {
                         mStatusText.setText(R.string.view_key_my_key);
                         mStatusImage.setVisibility(View.GONE);
-                        color = FormattingUtils.getColorFromAttr(this, R.attr.colorPrimary);
+                        color = getResources().getColor(R.color.key_flag_green);
                         // reload qr code only if the fingerprint changed
                         if (!mFingerprint.equals(mQrCodeLoaded)) {
                             loadQrCode(mFingerprint);
@@ -837,7 +856,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             mStatusImage.setVisibility(View.VISIBLE);
                             KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
                                     State.VERIFIED, R.color.icons, true);
-                            color = FormattingUtils.getColorFromAttr(this, R.attr.colorPrimary);
+                            color = getResources().getColor(R.color.key_flag_green);
                             photoTask.execute(mMasterKeyId);
 
                             mFab.setVisibility(View.GONE);
@@ -853,13 +872,14 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     }
 
                     if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mStatusBar.setBackgroundColor(color);
+                        mStatusBar.setBackgroundColor(getStatusBarBackgroundColor(color));
                         mBigToolbar.setBackgroundColor(color);
                         mPreviousColor = color;
                     } else {
                         ObjectAnimator colorFade1 =
                                 ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
+                                        new ArgbEvaluator(), mPreviousColor,
+                                        getStatusBarBackgroundColor(color));
                         ObjectAnimator colorFade2 =
                                 ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);

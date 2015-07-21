@@ -222,7 +222,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                         }
                     }
                     mToolbar.setBackgroundColor(color);
-                    mStatusBar.setBackgroundColor(color);
+                    mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
                     mSlidingTabLayout.setBackgroundColor(color);
 
                     break;
