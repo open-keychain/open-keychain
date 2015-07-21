@@ -35,6 +35,7 @@ import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
  * meant to be used
@@ -98,10 +99,7 @@ public class ProgressDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        // if the progress dialog is displayed from the application class, design is missing
-        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-        ContextThemeWrapper context = new ContextThemeWrapper(activity,
-                R.style.Theme_AppCompat_Light);
+        ContextThemeWrapper context = ThemeChanger.getDialogThemeWrapper(activity);
 
         ProgressDialog dialog = new ProgressDialog(context);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

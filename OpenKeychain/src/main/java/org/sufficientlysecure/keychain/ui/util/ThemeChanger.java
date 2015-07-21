@@ -29,6 +29,19 @@ public class ThemeChanger {
     private Preferences mPreferences;
     private String mCurrentTheme = null;
 
+    static public ContextThemeWrapper getDialogThemeWrapper(Context context) {
+        Preferences preferences = Preferences.getPreferences(context);
+
+        // if the dialog is displayed from the application class, design is missing.
+        // hack to get holo design (which is not automatically applied due to activity's
+        // Theme.NoDisplay)
+        if (Constants.Pref.Theme.DARK.equals(preferences.getTheme())) {
+            return new ContextThemeWrapper(context, R.style.Theme_AppCompat_Dialog);
+        } else {
+            return new ContextThemeWrapper(context, R.style.Theme_AppCompat_Light_Dialog);
+        }
+    }
+
     public ThemeChanger(Context context) {
         mContext = context;
         mPreferences = Preferences.getPreferences(mContext);

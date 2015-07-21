@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -196,10 +197,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();
 
-            // if the dialog is displayed from the application class, design is missing
-            // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-            ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                    R.style.Theme_AppCompat_Light_Dialog);
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
 
             mSubKeyId = getArguments().getLong(EXTRA_SUBKEY_ID);
             mServiceIntent = getArguments().getParcelable(EXTRA_SERVICE_INTENT);

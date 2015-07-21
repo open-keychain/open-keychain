@@ -31,6 +31,7 @@ import android.view.ContextThemeWrapper;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class InstallDialogFragmentHelper {
@@ -65,11 +66,7 @@ public class InstallDialogFragmentHelper {
         final String installPath = args.getString(ARG_INSTALL_PATH);
         final boolean useMiddleButton = args.getBoolean(ARG_USE_MIDDLE_BUTTON);
 
-        // if the dialog is displayed from the application class, design is missing.
-        // hack to get holo design (which is not automatically applied due to activity's
-        // Theme.NoDisplay)
-        ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                R.style.Theme_AppCompat_Light_Dialog);
+        ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
         CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
 
         builder.setTitle(title).setMessage(message);

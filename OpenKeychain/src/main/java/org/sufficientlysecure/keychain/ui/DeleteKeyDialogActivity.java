@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.Date;
@@ -254,8 +255,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             final long[] masterKeyIds = getArguments().getLongArray(ARG_DELETE_MASTER_KEY_IDS);
             final boolean hasSecret = getArguments().getBoolean(ARG_HAS_SECRET);
 
-            ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                    R.style.Theme_AppCompat_Light_Dialog);
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
 
             CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
 
@@ -351,10 +351,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             final String CHOICE_REVOKE = getString(R.string.del_rev_dialog_choice_rev_upload);
             final String CHOICE_DELETE = getString(R.string.del_rev_dialog_choice_delete);
 
-            // if the dialog is displayed from the application class, design is missing
-            // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-            ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                    R.style.Theme_AppCompat_Light_Dialog);
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
 
             CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
             builder.setTitle(getString(R.string.del_rev_dialog_title,
