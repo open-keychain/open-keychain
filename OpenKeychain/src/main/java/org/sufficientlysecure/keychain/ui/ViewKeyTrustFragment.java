@@ -269,8 +269,12 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         private SpannableStringBuilder insertLinks(SpannableStringBuilder proofLinks,String proofType){
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             ssb.append(proofType);
-            int i = proofType.indexOf("%s");
-            ssb.replace(i,i+2,proofLinks);
+            if(proofType.contains("%s")){
+                int i = proofType.indexOf("%s");
+                ssb.replace(i,i+2,proofLinks);
+            }
+            else ssb.append(proofLinks);
+
             return ssb;
         }
 
