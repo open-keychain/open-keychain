@@ -5,12 +5,17 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * NFC Dispatcher class
@@ -18,12 +23,15 @@ import java.io.IOException;
 public final class NfcDispatcher {
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
     public static final String TAG = "NfcDispatcher";
+    public static final short EXCEPTION_STATUS_GENERIC = -1;
 
     private Activity mActivity;
     private NfcAdapter mNfcAdapter;
     private boolean mTagHandlingEnabled;
     private NfcDispatcherCallback mNfcDispatcherCallback;
     private NfcDispatchTask mNfcDispatchTask;
+    private RegisteredTechHandler mRegisteredTechHandler;
+    private NfcTagTechnology mNfcTagTechnology;
 
     /**
      * NFC Exception
@@ -54,13 +62,16 @@ public final class NfcDispatcher {
         void onNfcError(CardException exception);
 
         void handleTagDiscoveredIntent(Intent intent) throws CardException;
+
+        void onNfcTechnologyInitialized(NfcTagTechnology nfcTagTechnology);
     }
 
     /**
      * Generic dispatch implementation
      */
 
-    public NfcDispatcher(NfcDispatcherCallback callback, Activity activity) {
+    public NfcDispatcher(NfcDispatcherCallback callback, Activity activity, RegisteredTechHandler registeredTechHandler) {
+        mRegisteredTechHandler = registeredTechHandler;
         mActivity = activity;
         mNfcDispatcherCallback = callback;
         if (callback == null) {
@@ -122,13 +133,17 @@ public final class NfcDispatcher {
         }
     }
 
+    /**
+     * Handle the intent in the background. Only one task may be active per tag detection.
+     *
+     * @param intent
+     * @throws CardException
+     */
     void handleIntentInBackground(final Intent intent) throws CardException {
-        if (mNfcDispatchTask != null) {
-            mNfcDispatchTask.cancel(true);
-            mNfcDispatchTask = null;
+        if (mNfcDispatchTask == null) {
+            mNfcDispatchTask = new NfcDispatchTask(intent);
+            mNfcDispatchTask.execute();
         }
-
-        mNfcDispatchTask = new NfcDispatchTask(intent);
     }
 
     public void pauseTagHandling() {
@@ -178,12 +193,40 @@ public final class NfcDispatcher {
         Log.d(TAG, "NfcForegroundDispatch has been enabled!");
     }
 
+
+    void handleTagDiscoveredIntent(Intent intent) throws CardException {
+        Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        if (mRegisteredTechHandler == null || mRegisteredTechHandler.getNumNfcTechnologies() == 0) {
+            throw new CardException("No NFC technologies were registered for dispatch", EXCEPTION_STATUS_GENERIC);
+        }
+
+        //attempt at initializing a nfc tag technology
+        if (mRegisteredTechHandler.has(MifareUltralight.class)) {
+            android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.MifareUltralight.get(detectedTag);
+            if (mifareUltralight != null) {
+                Log.v(TAG, "Using Mifare UltraLight nfc technology");
+                mNfcTagTechnology = new MifareUltralight(mifareUltralight);
+                mNfcDispatcherCallback.onNfcTechnologyInitialized(mNfcTagTechnology);
+                return;
+            }
+        }
+        //other technologies
+
+    }
+
+
     // Actual NFC operations are executed in doInBackground to not block the UI thread
     private class NfcDispatchTask extends AsyncTask<Void, Void, CardException> {
         private Intent mIntent;
 
         public NfcDispatchTask(Intent intent) {
             mIntent = intent;
+        }
+
+        @Override
+        protected void onCancelled(CardException e) {
+            super.onCancelled(e);
+            mNfcDispatchTask = null;
         }
 
         @Override
@@ -199,7 +242,7 @@ public final class NfcDispatcher {
         @Override
         protected CardException doInBackground(Void... params) {
             try {
-                mNfcDispatcherCallback.handleTagDiscoveredIntent(mIntent);
+                handleTagDiscoveredIntent(mIntent);
                 mNfcDispatcherCallback.doNfcInBackground();
             } catch (CardException e) {
                 return e;
@@ -219,10 +262,61 @@ public final class NfcDispatcher {
 
             try {
                 mNfcDispatcherCallback.onNfcPostExecute();
+                mNfcDispatchTask = null;
             } catch (CardException e) {
                 handleNfcError(e);
             }
         }
+    }
+
+    public static class RegisteredTechHandler implements Parcelable {
+        private ArrayList<Class> mRegisterTechArray;
+
+        public RegisteredTechHandler() {
+            mRegisterTechArray = new ArrayList<>();
+        }
+
+        public int getNumNfcTechnologies() {
+            return mRegisterTechArray.size();
+        }
+
+        public void put(Class NfcTech) {
+            mRegisterTechArray.add(NfcTech);
+        }
+
+        public boolean has(Class nfcTech) {
+            for (Class nfcTechItem : mRegisterTechArray) {
+                if (nfcTechItem.equals(nfcTech)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeList(this.mRegisterTechArray);
+        }
+
+        protected RegisteredTechHandler(Parcel in) {
+            this.mRegisterTechArray = new ArrayList<Class>();
+            in.readList(this.mRegisterTechArray, List.class.getClassLoader());
+        }
+
+        public final Parcelable.Creator<RegisteredTechHandler> CREATOR = new Parcelable.Creator<RegisteredTechHandler>() {
+            public RegisteredTechHandler createFromParcel(Parcel source) {
+                return new RegisteredTechHandler(source);
+            }
+
+            public RegisteredTechHandler[] newArray(int size) {
+                return new RegisteredTechHandler[size];
+            }
+        };
     }
 }
 
