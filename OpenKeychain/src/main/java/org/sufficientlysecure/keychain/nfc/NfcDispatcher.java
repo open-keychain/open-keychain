@@ -96,7 +96,7 @@ public final class NfcDispatcher {
     }
 
     public void onResume() {
-        Log.d(TAG, "BaseNfcActivity.onResume");
+        Log.d(TAG, "onResume");
         enableNfcForegroundDispatch();
     }
 
@@ -104,7 +104,18 @@ public final class NfcDispatcher {
         cancelDispatchTask();
     }
 
+    private void disconnectFromCard() {
+        if (mBaseNfcTagTechnology != null && mBaseNfcTagTechnology.isConnected()) {
+            try {
+                mBaseNfcTagTechnology.close();
+            } catch (CardException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void cancelDispatchTask() {
+        disconnectFromCard();
         if (mNfcDispatchTask != null) {
             mNfcDispatchTask.cancel(true);
             mNfcDispatchTask = null;
@@ -140,6 +151,10 @@ public final class NfcDispatcher {
      * @throws CardException
      */
     void handleIntentInBackground(final Intent intent) throws CardException {
+        //card still connected, keep the current task running
+        if (mBaseNfcTagTechnology != null && mBaseNfcTagTechnology.isConnected()) {
+            return;
+        }
         if (mNfcDispatchTask == null) {
             mNfcDispatchTask = new NfcDispatchTask(intent);
             mNfcDispatchTask.execute();
@@ -192,7 +207,6 @@ public final class NfcDispatcher {
         }
         Log.d(TAG, "NfcForegroundDispatch has been enabled!");
     }
-
 
     void handleTagDiscoveredIntent(Intent intent) throws CardException {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

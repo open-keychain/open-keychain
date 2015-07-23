@@ -102,6 +102,11 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        mNfcDispatcher.onNewIntent(intent);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         mNfcDispatcher.onPause();
@@ -116,7 +121,7 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mNfcDispatcher.onResume();
+        mNfcDispatcher.onDestroy();
     }
 
     //NFC STUFF
