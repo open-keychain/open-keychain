@@ -15,6 +15,8 @@ import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
+import org.sufficientlysecure.keychain.nfc.NfcDispatcher;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
@@ -24,16 +26,15 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseViewModel;
 import org.sufficientlysecure.keychain.ui.tasks.UnlockAsyncTask;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
 
 public class NFCUnlockDialogViewModel implements BaseViewModel,
-        CreateKeyWizardActivity.NfcListenerFragment,
+        NfcDispatcher.NfcDispatcherCallback,
         UnlockAsyncTask.OnUnlockAsyncTaskListener {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
     public static final String EXTRA_PARAM_OPERATION_TYPE = "EXTRA_PARAM_OPERATION_TYPE";
@@ -45,29 +46,13 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
     private CanonicalizedSecretKeyRing mSecretRing = null;
     private Intent mServiceIntent;
     private OnViewModelEventBind mOnViewModelEventBind;
-    private NfcTechnology mNfcTechnology;
+    private BaseNfcTagTechnology mNfcTechnology;
     private Context mContext;
     private long mSubKeyId;
     private ProgressHandler mProgressHandler;
     private OperationState mOperationState;
     private UnlockAsyncTask mUnlockAsyncTask;
     private Passphrase mPassphrase;
-
-
-    /**
-     * NFC Technology interface
-     */
-    public interface NfcTechnology {
-        void connect() throws IOException;
-
-        void upload(byte[] data) throws IOException;
-
-        byte[] read() throws IOException;
-
-        boolean verify(byte[] original, byte[] fromNFC) throws IOException;
-
-        void close() throws IOException;
-    }
 
     /**
      * Operation state
@@ -186,7 +171,6 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
 
     public boolean handleOperationStateReadingNfcTag() {
         return false;
-
     }
 
     public boolean handleOperationStateWaitForNFCTag() {
@@ -302,13 +286,7 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
     }
 
     @Override
-    public void onNfcError(Exception exception) {
-        mOperationState = OperationState.OPERATION_STATE_WAITING_FOR_NFC_TAG;
-        updateOperationState();
-    }
-
-    @Override
-    public void onNfcPreExecute() throws IOException {
+    public void onNfcPreExecute() throws NfcDispatcher.CardException {
         if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
             return;
         }
@@ -321,15 +299,20 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
     }
 
     @Override
-    public Throwable doNfcInBackground() throws IOException {
+    public void doNfcInBackground() throws NfcDispatcher.CardException {
         if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
-            return null;
+            return;
         }
 
         if (mNfcTechnology != null) {
-            mNfcTechnology.connect();
+            try {
+                mNfcTechnology.connect();
+            } catch (IOException e) {
+                throw new NfcDispatcher.CardException(e.getMessage(), NfcDispatcher.EXCEPTION_STATUS_GENERIC);
+            }
         } else {
-            throw new IOException("Unsupported Technology -> no data was present");
+            throw new NfcDispatcher.CardException("No technology was present, forgot to register the nfc technologies?",
+                    NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
 
         postProgressToMainThread(1);
@@ -340,15 +323,18 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
         //verify step
         mNfcTechnology.close();
         postProgressToMainThread(2);
-        String sPin = new String(nfcPin, "ISO-8859-1");
+        String sPin;
+        try {
+            sPin = new String(nfcPin, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            throw new NfcDispatcher.CardException("Error while attempeting to encode the nfc passphrase", NfcDispatcher.EXCEPTION_STATUS_GENERIC);
+        }
         mPassphrase = new Passphrase(sPin.toCharArray());
         mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC);
-
-        return null;
     }
 
     @Override
-    public void onNfcPostExecute() throws IOException {
+    public void onNfcPostExecute() throws NfcDispatcher.CardException {
         if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
             return;
         }
@@ -366,34 +352,26 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
         updateOperationState();
     }
 
+    @Override
+    public void onNfcError(NfcDispatcher.CardException exception) {
+        mOnViewModelEventBind.onOperationStateError(exception.getMessage());
+        mOperationState = OperationState.OPERATION_STATE_WAITING_FOR_NFC_TAG;
+        updateOperationState();
+    }
+
+    @Override
+    public void handleTagDiscoveredIntent(Intent intent) throws NfcDispatcher.CardException {
+
+    }
+
     /**
      * Method that handles NFC Tag discovery.
      * Done in background. Don't do UI manipulations here!
-     *
-     * @param intent
+     * @param baseNfcTagTechnology
      */
     @Override
-    public void onNfcTagDiscovery(Intent intent) throws IOException {
-        if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
-            return;
-        }
-        //extract the supported technologies
-        Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        MifareUltralight mifareUltralight = MifareUltralight.get(detectedTag);
-        if (mifareUltralight != null) {
-            if (Constants.DEBUG) {
-                Log.v(Constants.TAG, "Using Mifare Ultra Light tech");
-            }
-            mNfcTechnology = new MifareUltralightTechnology(mifareUltralight);
-            postProgressToMainThread(1);
-        }
-
-        //get device NDEF records
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-        if (rawMsgs != null) {
-            NdefMessage msg = (NdefMessage) rawMsgs[0];
-        }
+    public void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology) {
+        mNfcTechnology = baseNfcTagTechnology;
     }
 
     /**
@@ -450,84 +428,6 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
                 default:
                     super.handleMessage(msg);
             }
-        }
-    }
-
-    /**
-     * Mifare UltraLight NFC communication
-     * Specification: http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf
-     */
-    public static class MifareUltralightTechnology implements NfcTechnology {
-        public static final byte COMMAND_WRITE = (byte) 0xA2;
-        public static final byte MEMORY_START_BLOCK = 0x04;
-        public static final byte MEMORY_END_BLOCK = 0x15;
-
-        private static final int sTimeout = 100000;
-        protected MifareUltralight mMifareUltralight;
-
-        public MifareUltralightTechnology(MifareUltralight mifareUltralight) {
-            mMifareUltralight = mifareUltralight;
-        }
-
-        @Override
-        public void connect() throws IOException {
-            //timeout is set to 100 seconds to avoid cancellation during calculation
-            mMifareUltralight.setTimeout(sTimeout);
-            if (!mMifareUltralight.isConnected()) {
-                mMifareUltralight.connect();
-            }
-        }
-
-        @Override
-        public void upload(byte[] data) throws IOException {
-            int totalBytes = data.length;
-            int page = MEMORY_START_BLOCK;
-            byte[] dataToSend;
-            try {
-                while (totalBytes > 0) {
-                    dataToSend = Arrays.copyOfRange(data, (page - MEMORY_START_BLOCK) * 4,
-                            (page - MEMORY_START_BLOCK) * 4 + 4);
-                    mMifareUltralight.writePage(page, dataToSend);
-                    totalBytes -= 4;
-                    page += 1;
-                }
-            } catch (ArrayIndexOutOfBoundsException | IllegalStateException e) {
-                close();
-                throw new IOException(e.getCause());
-            }
-        }
-
-        @Override
-        public byte[] read() throws IOException {
-            byte[] payload = new byte[16];
-
-            int totalBytes = 16;
-            int page = MEMORY_START_BLOCK;
-
-            try {
-                while (totalBytes > 0) {
-                    System.arraycopy(mMifareUltralight.readPages(page), 0, payload,
-                            (page - MEMORY_START_BLOCK) * 4, 4);
-                    totalBytes -= 4;
-                    page += 1;
-                }
-            } catch (ArrayIndexOutOfBoundsException | IllegalStateException e) {
-                close();
-                throw new IOException(e.getCause());
-            }
-
-            return payload;
-        }
-
-        @Override
-        public boolean verify(byte[] original, byte[] fromNFC) throws IOException {
-            return Arrays.equals(original, fromNFC);
-        }
-
-
-        @Override
-        public void close() throws IOException {
-            mMifareUltralight.close();
         }
     }
 }

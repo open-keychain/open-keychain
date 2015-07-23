@@ -16,13 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
+import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
+import org.sufficientlysecure.keychain.nfc.NfcDispatcher;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 
-import java.io.IOException;
-
 public class NFCUnlockDialog extends UnlockDialog implements NFCUnlockDialogViewModel.OnViewModelEventBind,
-        CreateKeyWizardActivity.NfcListenerFragment {
+        NfcDispatcher.NfcDispatcherCallback {
     private NFCUnlockDialogViewModel mNfcUnlockDialogViewModel;
     private TextView mUnlockTip;
     private FeedbackIndicatorView mUnlockUserFeedback;
@@ -75,7 +74,6 @@ public class NFCUnlockDialog extends UnlockDialog implements NFCUnlockDialogView
         mNfcUnlockDialogViewModel.saveViewModelState(outState);
     }
 
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -127,27 +125,32 @@ public class NFCUnlockDialog extends UnlockDialog implements NFCUnlockDialogView
     }
 
     @Override
-    public void onNfcError(Exception exception) {
-        mNfcUnlockDialogViewModel.onNfcError(exception);
-    }
-
-    @Override
-    public void onNfcPreExecute() throws IOException {
+    public void onNfcPreExecute() throws NfcDispatcher.CardException {
         mNfcUnlockDialogViewModel.onNfcPreExecute();
     }
 
     @Override
-    public Throwable doNfcInBackground() throws IOException {
-        return mNfcUnlockDialogViewModel.doNfcInBackground();
+    public void doNfcInBackground() throws NfcDispatcher.CardException {
+        mNfcUnlockDialogViewModel.doNfcInBackground();
     }
 
     @Override
-    public void onNfcPostExecute() throws IOException {
+    public void onNfcPostExecute() throws NfcDispatcher.CardException {
         mNfcUnlockDialogViewModel.onNfcPostExecute();
     }
 
     @Override
-    public void onNfcTagDiscovery(Intent intent) throws IOException {
-        mNfcUnlockDialogViewModel.onNfcTagDiscovery(intent);
+    public void onNfcError(NfcDispatcher.CardException exception) {
+        mNfcUnlockDialogViewModel.onNfcError(exception);
+    }
+
+    @Override
+    public void handleTagDiscoveredIntent(Intent intent) throws NfcDispatcher.CardException {
+        mNfcUnlockDialogViewModel.handleTagDiscoveredIntent(intent);
+    }
+
+    @Override
+    public void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology) {
+        mNfcUnlockDialogViewModel.onNfcTechnologyInitialized(baseNfcTagTechnology);
     }
 }
