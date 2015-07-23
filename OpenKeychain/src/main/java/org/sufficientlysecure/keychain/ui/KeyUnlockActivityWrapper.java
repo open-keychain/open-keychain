@@ -1,6 +1,5 @@
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,19 +7,19 @@ import android.support.v4.app.FragmentActivity;
 import android.view.WindowManager;
 
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
+import org.sufficientlysecure.keychain.nfc.MifareUltralight;
+import org.sufficientlysecure.keychain.nfc.NfcDispatcher;
 import org.sufficientlysecure.keychain.ui.dialog.PinUnlockDialogViewModel;
 import org.sufficientlysecure.keychain.ui.dialog.UnlockDialog;
 import org.sufficientlysecure.keychain.ui.util.KeyboardUtils;
-import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity.NfcListenerFragment;
-
-import java.io.IOException;
 
 /**
  * Activity wrapper for the key unlock dialogs
  */
-public class KeyUnlockActivityWrapper extends BaseNfcActivity
-        implements KeyUnlockActivityWrapperViewModel.OnViewModelEventBind {
+public class KeyUnlockActivityWrapper extends FragmentActivity
+        implements KeyUnlockActivityWrapperViewModel.OnViewModelEventBind,
+        NfcDispatcher.NfcDispatcherCallback {
     private KeyUnlockActivityWrapperViewModel mKeyUnlockActivityWrapperViewModel;
     public static final String RESULT_CRYPTO_INPUT = "result_data";
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
@@ -31,10 +30,18 @@ public class KeyUnlockActivityWrapper extends BaseNfcActivity
     public static final String EXTRA_SERVICE_INTENT = "data";
 
     private UnlockDialog mUnlockDialog;
+    private NfcDispatcher mNfcDispatcher;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        NfcDispatcher.RegisteredTechHandler registeredTechHandler = new NfcDispatcher.RegisteredTechHandler();
+        registeredTechHandler.put(MifareUltralight.class);
+
+        mNfcDispatcher = new NfcDispatcher(this, this, registeredTechHandler);
+        mNfcDispatcher.initialize(savedInstanceState);
 
         mKeyUnlockActivityWrapperViewModel = new KeyUnlockActivityWrapperViewModel(this);
         mKeyUnlockActivityWrapperViewModel.prepareViewModel(savedInstanceState,
@@ -94,42 +101,63 @@ public class KeyUnlockActivityWrapper extends BaseNfcActivity
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mNfcDispatcher.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mNfcDispatcher.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mNfcDispatcher.onResume();
+    }
+
     //NFC STUFF
     @Override
-    protected void doNfcInBackground() throws IOException {
-        super.doNfcInBackground();
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mUnlockDialog).doNfcInBackground();
+    public void doNfcInBackground() throws NfcDispatcher.CardException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).doNfcInBackground();
         }
     }
 
     @Override
-    protected void onNfcPreExecute() throws IOException {
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mUnlockDialog).onNfcPreExecute();
+    public void onNfcPreExecute() throws NfcDispatcher.CardException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).onNfcPreExecute();
         }
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mUnlockDialog).onNfcPostExecute();
+    public void onNfcPostExecute() throws NfcDispatcher.CardException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).onNfcPostExecute();
         }
     }
 
     @Override
-    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
-        super.handleTagDiscoveredIntent(intent);
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mUnlockDialog).onNfcTagDiscovery(intent);
+    public void onNfcError(NfcDispatcher.CardException exception) {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).onNfcError(exception);
+        }
+    }
+
+    public void handleTagDiscoveredIntent(Intent intent) throws NfcDispatcher.CardException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).handleTagDiscoveredIntent(intent);
         }
     }
 
     @Override
-    protected void handleNfcError(Exception e) {
-        super.handleNfcError(e);
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
-            ((NfcListenerFragment) mUnlockDialog).onNfcError(e);
+    public void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology) {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
+            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).onNfcTechnologyInitialized(baseNfcTagTechnology);
         }
     }
 

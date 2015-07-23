@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Nfc Tag Technology interface.
  */
-public interface NfcTagTechnology {
+public interface BaseNfcTagTechnology {
     void connect() throws IOException;
 
     void upload(byte[] data) throws NfcDispatcher.CardException;
