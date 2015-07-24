@@ -22,11 +22,15 @@ public class MifareUltralight implements BaseNfcTagTechnology {
     }
 
     @Override
-    public void connect() throws IOException {
+    public void connect() throws NfcDispatcher.CardException {
         //timeout is set to 100 seconds to avoid cancellation during calculation
         mMifareUltralight.setTimeout(sTimeout);
         if (!mMifareUltralight.isConnected()) {
-            mMifareUltralight.connect();
+            try {
+                mMifareUltralight.connect();
+            } catch (IOException e) {
+                throw new NfcDispatcher.CardException(e.getMessage(), EXCEPTION_STATUS_GENERIC);
+            }
         }
     }
 

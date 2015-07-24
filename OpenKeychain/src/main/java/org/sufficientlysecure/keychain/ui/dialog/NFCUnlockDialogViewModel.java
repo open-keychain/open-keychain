@@ -2,15 +2,10 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NdefMessage;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
-import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Parcelable;
 import android.util.Log;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -37,7 +32,6 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
         NfcDispatcher.NfcDispatcherCallback,
         UnlockAsyncTask.OnUnlockAsyncTaskListener {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
-    public static final String EXTRA_PARAM_OPERATION_TYPE = "EXTRA_PARAM_OPERATION_TYPE";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
     public static final String EXTRA_SERVICE_INTENT = "data";
     public static final int NUM_PROGRESS_OPERATIONS = 5; //never zero!!
