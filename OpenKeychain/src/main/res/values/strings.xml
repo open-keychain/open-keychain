@@ -260,6 +260,7 @@
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
+    <string name="nfc_for">"Use '%s' Nfc tag"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
     <string name="nfc_wait">"Keep the YubiKey at the back!"</string>
