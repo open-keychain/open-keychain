@@ -190,7 +190,7 @@ public class KeyAdapter extends CursorAdapter {
 
                     mCreationDate.setText(context.getString(R.string.label_key_created,
                             dateTime));
-                    mCreationDate.setTextColor(context.getResources().getColor(textColor));
+                    mCreationDate.setTextColor(textColor);
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
                     mCreationDate.setVisibility(View.GONE);
