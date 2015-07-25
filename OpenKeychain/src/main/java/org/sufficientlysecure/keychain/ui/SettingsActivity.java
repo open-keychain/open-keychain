@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -53,15 +54,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String ACTION_PREFS_CLOUD = "org.sufficientlysecure.keychain.ui.PREFS_CLOUD";
     public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
     public static final String ACTION_PREFS_PROXY = "org.sufficientlysecure.keychain.ui.PREFS_PROXY";
+    public static final String ACTION_PREFS_GUI = "org.sufficientlysecure.keychain.ui.PREFS_GUI";
 
     public static final int REQUEST_CODE_KEYSERVER_PREF = 0x00007005;
 
     private PreferenceScreen mKeyServerPreference = null;
     private static Preferences sPreferences;
+    private ThemeChanger mThemeChanger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sPreferences = Preferences.getPreferences(this);
+
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.changeTheme();
         super.onCreate(savedInstanceState);
 
         setupToolbar();
@@ -106,6 +112,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
+        } else if (action != null && action.equals(ACTION_PREFS_GUI)) {
+            addPreferencesFromResource(R.xml.gui_preferences);
+
+            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mThemeChanger.changeTheme()) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
         }
     }
 
@@ -425,14 +446,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 mUseTor.setEnabled(true);
             }
         }
-
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+    /**
+     * This fragment shows gui preferences.
+     */
+    public static class GuiPrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.gui_preferences);
+
+            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
+        }
+    }
+
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
+                || GuiPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
@@ -459,6 +496,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         return false;
                     }
                 });
+    }
+
+    private static void initializeTheme(final ListPreference mTheme) {
+        mTheme.setValue(sPreferences.getTheme());
+        mTheme.setSummary(mTheme.getEntry());
+        mTheme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mTheme.setValue((String) newValue);
+                mTheme.setSummary(mTheme.getEntry());
+                sPreferences.setTheme((String) newValue);
+                return false;
+            }
+        });
     }
 
     private static void initializeSearchKeyserver(final CheckBoxPreference mSearchKeyserver) {

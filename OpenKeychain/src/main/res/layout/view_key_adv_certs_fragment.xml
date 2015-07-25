@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/holo_gray_bright"
+        android:background="?attr/colorButtonRow"
         android:padding="8dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/certs_text"

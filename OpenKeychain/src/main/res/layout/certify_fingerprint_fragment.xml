@@ -28,7 +28,7 @@
                 android:id="@+id/certify_fingerprint_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@android:color/white"
+                app:cardBackgroundColor="?attr/colorCardViewBackground"
                 app:cardUseCompatPadding="true"
                 app:cardCornerRadius="4dp"
                 android:layout_gravity="top">

@@ -149,11 +149,11 @@ abstract public class SelectKeyCursorAdapter extends CursorAdapter {
         boolean enabled;
         if (cursor.getInt(mIndexIsRevoked) != 0) {
             h.statusIcon.setVisibility(View.VISIBLE);
-            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, null, State.REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, null, State.REVOKED, R.color.key_flag_gray);
             enabled = false;
         } else if (cursor.getInt(mIndexIsExpiry) != 0) {
             h.statusIcon.setVisibility(View.VISIBLE);
-            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, null, State.EXPIRED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(mContext, h.statusIcon, null, State.EXPIRED, R.color.key_flag_gray);
             enabled = false;
         } else {
             h.statusIcon.setVisibility(View.GONE);

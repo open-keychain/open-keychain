@@ -68,6 +68,7 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -675,8 +676,11 @@ public class KeyListFragment extends LoaderFragment
 
         private HashMap<Integer, Boolean> mSelection = new HashMap<>();
 
+        private Context mContext;
+
         public KeyListAdapter(Context context, Cursor c, int flags) {
             super(context, c, flags);
+            mContext = context;
         }
 
         @Override
@@ -705,9 +709,11 @@ public class KeyListFragment extends LoaderFragment
             // let the adapter handle setting up the row views
             View v = super.getView(position, convertView, parent);
 
+            int colorEmphasis = FormattingUtils.getColorFromAttr(mContext, R.attr.colorEmphasis);
+
             if (mSelection.get(position) != null) {
                 // selected position color
-                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+                v.setBackgroundColor(colorEmphasis);
             } else {
                 // default color
                 v.setBackgroundColor(Color.TRANSPARENT);

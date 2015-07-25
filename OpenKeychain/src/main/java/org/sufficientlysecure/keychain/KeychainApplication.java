@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -91,12 +92,12 @@ public class KeychainApplication extends Application {
         }
 
         brandGlowEffect(getApplicationContext(),
-                getApplicationContext().getResources().getColor(R.color.primary));
+            FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).updatePreferences();
+        Preferences.getPreferences(this).upgradePreferences();
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 

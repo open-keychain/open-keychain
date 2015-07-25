@@ -211,18 +211,18 @@ public class ViewKeyAdvActivity extends BaseActivity implements
                     // Note: order is important
                     int color;
                     if (isRevoked || isExpired) {
-                        color = getResources().getColor(R.color.android_red_light);
+                        color = getResources().getColor(R.color.key_flag_red);
                     } else if (isSecret) {
-                        color = getResources().getColor(R.color.primary);
+                        color = getResources().getColor(R.color.android_green_light);
                     } else {
                         if (isVerified) {
-                            color = getResources().getColor(R.color.primary);
+                            color = getResources().getColor(R.color.android_green_light);
                         } else {
-                            color = getResources().getColor(R.color.android_orange_light);
+                            color = getResources().getColor(R.color.key_flag_orange);
                         }
                     }
                     mToolbar.setBackgroundColor(color);
-                    mStatusBar.setBackgroundColor(color);
+                    mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
                     mSlidingTabLayout.setBackgroundColor(color);
 
                     break;

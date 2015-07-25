@@ -1,54 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main theme colors -->
-
-    <!-- green colors from OpenKeychain logo bottom right -->
-    <!-- your app branding color for the app bar -->
     <color name="primary">#7bad45</color>
-    <!-- darker variant for the status bar and contextual app bars -->
-    <color name="primary_dark">#6c983d</color>
-    <!-- theme UI controls like checkboxes and text fields -->
-    <color name="accent">#2196F3</color>
 
-    <!-- Other colors -->
+    <color name="icons">#ffffff</color>
+    <color name="transparent">#00ffffff</color>
 
-    <color name="black">#000000</color>
+    <color name="key_flag_gray">#808080</color>
+    <color name="key_flag_red">#f44336</color>
+    <color name="key_flag_orange">#ff9800</color>
+    <color name="key_flag_green">#7bad45</color>
 
-    <color name="primary_light">#C8E6C9</color>
-    <color name="fab">@color/accent</color>
-    <color name="fab_pressed">#1976D2</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#B6B6B6</color>
-    <color name="transparent">#00FFFFFF</color>
-
-    <color name="header_text">#212121</color>
-    <!-- item selection, search highlight -->
-    <color name="emphasis">@color/accent</color>
-
-    <color name="bg_gray">#cecbce</color>
-    <color name="tertiary_text_light">#808080</color>
-    <color name="alert">#ffdd3333</color>
-
-    <color name="holo_gray_light">#33999999</color>
-    <color name="holo_gray_bright">#33CCCCCC</color>
-
-    <!-- tabs -->
-    <color name="tab_text">#70FFFFFF</color>
-    <color name="tab_text_selected">#FFFFFF</color>
-    <color name="tab_indicator">#FFFFFF</color>
-
-
-    <!-- floating action buttons -->
-    <color name="black_semi_transparent">#B2000000</color>
-    <color name="background">#e5e5e5</color>
-    <color name="half_black">#808080</color>
-    <color name="white">#fafafa</color>
-    <color name="white_pressed">#f1f1f1</color>
+    <color name="password_strength_low">#f44336</color>
+    <color name="password_strength_medium">#ff9800</color>
+    <color name="password_strength_high">#7bad45</color>
 
     <!--
+        Standard Android colors:
         http://www.google.com/design/spec/style/color.html#color-color-palette
         light = normal color
         dark = 900
@@ -58,10 +26,7 @@
     <color name="android_red_light">#f44336</color>
     <color name="android_red_dark">#b71c1c</color>
     <color name="android_orange_light">#ff9800</color>
-    <color name="android_orange_dark">#e65100</color>
-    <color name="android_green_light">@color/primary</color>
-    <color name="android_green_dark">@color/primary_dark</color>
-    <color name="android_purple_light">#673ab7</color>
-    <color name="android_purple_dark">#311b92</color>
+    <color name="android_green_light">#7bad45</color>
+    <color name="android_green_dark">#6c983d</color>
 
 </resources>

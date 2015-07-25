@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar_include"
     android:elevation="4dp"
-    android:background="@color/white"
+    android:background="?attr/colorBrightToolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

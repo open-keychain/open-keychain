@@ -30,6 +30,7 @@ import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
@@ -67,11 +68,7 @@ public class OrbotStartDialogFragment extends DialogFragment {
         int middleButton = getArguments().getInt(ARG_MIDDLE_BUTTON);
         final Activity activity = getActivity();
 
-        // if the dialog is displayed from the application class, design is missing.
-        // hack to get holo design (which is not automatically applied due to activity's
-        // Theme.NoDisplay)
-        ContextThemeWrapper theme = new ContextThemeWrapper(activity,
-                R.style.Theme_AppCompat_Light_Dialog);
+        ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
 
         CustomAlertDialogBuilder builder = new CustomAlertDialogBuilder(theme);
         builder.setTitle(title).setMessage(message);

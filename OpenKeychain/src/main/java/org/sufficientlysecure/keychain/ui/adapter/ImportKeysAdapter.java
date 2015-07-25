@@ -177,9 +177,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         if (entry.isRevoked()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.REVOKED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.REVOKED, R.color.key_flag_gray);
         } else if (entry.isExpired()) {
-            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.EXPIRED, R.color.bg_gray);
+            KeyFormattingUtils.setStatusImage(getContext(), holder.status, null, State.EXPIRED, R.color.key_flag_gray);
         }
 
         if (entry.isRevoked() || entry.isExpired()) {
@@ -188,9 +188,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // no more space for algorithm display
             holder.algorithm.setVisibility(View.GONE);
 
-            holder.mainUserId.setTextColor(getContext().getResources().getColor(R.color.bg_gray));
-            holder.mainUserIdRest.setTextColor(getContext().getResources().getColor(R.color.bg_gray));
-            holder.keyId.setTextColor(getContext().getResources().getColor(R.color.bg_gray));
+            holder.mainUserId.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
+            holder.mainUserIdRest.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
+            holder.keyId.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
         } else {
             holder.status.setVisibility(View.GONE);
             holder.algorithm.setVisibility(View.VISIBLE);
@@ -198,11 +198,11 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             if (entry.isSecretKey()) {
                 holder.mainUserId.setTextColor(Color.RED);
             } else {
-                holder.mainUserId.setTextColor(Color.BLACK);
+                holder.mainUserId.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
             }
 
-            holder.mainUserIdRest.setTextColor(Color.BLACK);
-            holder.keyId.setTextColor(Color.BLACK);
+            holder.mainUserIdRest.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
+            holder.keyId.setTextColor(FormattingUtils.getColorFromAttr(mActivity, R.attr.colorText));
         }
 
         if (entry.getUserIds().size() == 1) {
@@ -242,9 +242,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 uidView.setPadding(0, 0, FormattingUtils.dpToPx(getContext(), 8), 0);
 
                 if (entry.isRevoked() || entry.isExpired()) {
-                    uidView.setTextColor(getContext().getResources().getColor(R.color.bg_gray));
+                    uidView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
                 } else {
-                    uidView.setTextColor(getContext().getResources().getColor(R.color.black));
+                    uidView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
                 }
 
                 holder.userIdsList.addView(uidView);
@@ -258,9 +258,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                     emailView.setText(highlighter.highlight(email));
 
                     if (entry.isRevoked() || entry.isExpired()) {
-                        emailView.setTextColor(getContext().getResources().getColor(R.color.bg_gray));
+                        emailView.setTextColor(getContext().getResources().getColor(R.color.key_flag_gray));
                     } else {
-                        emailView.setTextColor(getContext().getResources().getColor(R.color.black));
+                        emailView.setTextColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorText));
                     }
 
                     holder.userIdsList.addView(emailView);

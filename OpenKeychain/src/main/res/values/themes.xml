@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="KeychainTheme" parent="KeychainTheme.Base" />
+    <style name="LightBaseTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">#7bad45</item>
+        <item name="colorPrimaryDark">#6c983d</item>
+        <item name="colorAccent">#2196f3</item>
+        <item name="colorBrightToolbar">#dddddd</item>
 
-    <style name="KeychainTheme.Base" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorFab">#2196f3</item>
+        <item name="colorFabPressed">#1976d2</item>
+        <item name="colorFabBackground">#b2000000</item>
+        <item name="colorFabText">#fafafa</item>
+
+        <item name="colorTabText">#70ffffff</item>
+        <item name="colorTabTextSelected">#ffffff</item>
+        <item name="colorTabIndicator">#ffffff</item>
+
+        <item name="colorEmphasis">#2196f3</item>
+        <item name="colorButtonRow">#33cccccc</item>
+        <item name="colorLogBackground">#cecbce</item>
+        <item name="colorCardViewHeaderDivider">#808080</item>
+        <item name="colorCardViewBackground">#ffffff</item>
+
+        <item name="colorText">#000000</item>
+        <item name="colorHeaderText">#212121</item>
+        <item name="colorTertiaryText">#808080</item>
 
         <!-- remove actionbar and title, we use toolbar! -->
         <item name="windowNoTitle">true</item>
@@ -14,6 +32,47 @@
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="DarkBaseTheme" parent="MaterialDrawerTheme.ActionBar">
+        <item name="colorPrimary">#268bd2</item>
+        <item name="colorPrimaryDark">#166bb2</item>
+        <item name="colorAccent">#2196f3</item>
+        <item name="colorBrightToolbar">#808080</item>
+
+        <item name="colorFab">#2196f3</item>
+        <item name="colorFabPressed">#1976d2</item>
+        <item name="colorFabBackground">#b2000000</item>
+        <item name="colorFabText">#fafafa</item>
+
+        <item name="colorTabText">#70ffffff</item>
+        <item name="colorTabTextSelected">#ffffff</item>
+        <item name="colorTabIndicator">#ffffff</item>
+
+        <item name="colorEmphasis">#2196f3</item>
+        <item name="colorButtonRow">#33cccccc</item>
+        <item name="colorLogBackground">#303030</item>
+        <item name="colorCardViewHeaderDivider">#808080</item>
+        <item name="colorCardViewBackground">#505050</item>
+
+        <item name="colorText">#ffffff</item>
+        <item name="colorHeaderText">#d0d0d0</item>
+        <item name="colorTertiaryText">#808080</item>
+
+        <item name="material_drawer_selected_text">#268bd2</item>
+
+        <!-- remove actionbar and title, we use toolbar! -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+    </style>
+
+    <style name="LightTheme" parent="LightBaseTheme">
+    </style>
+
+    <style name="DarkTheme" parent="DarkBaseTheme">
     </style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->

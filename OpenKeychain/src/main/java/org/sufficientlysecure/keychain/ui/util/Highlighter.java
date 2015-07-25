@@ -22,6 +22,7 @@ import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,9 +45,12 @@ public class Highlighter {
 
         Pattern pattern = Pattern.compile("(?i)(" + mQuery.trim().replaceAll("\\s+", "|") + ")");
         Matcher matcher = pattern.matcher(text);
+
+        int colorEmphasis = FormattingUtils.getColorFromAttr(mContext, R.attr.colorEmphasis);
+
         while (matcher.find()) {
             highlight.setSpan(
-                    new ForegroundColorSpan(mContext.getResources().getColor(R.color.emphasis)),
+                    new ForegroundColorSpan(colorEmphasis),
                     matcher.start(),
                     matcher.end(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

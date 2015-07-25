@@ -50,6 +50,7 @@
     <string name="section_cloud_search">"Cloud search"</string>
     <string name="section_passphrase_cache">"Password/PIN Handling"</string>
     <string name="section_proxy_settings">"Proxy Settings"</string>
+    <string name="section_gui">"Interface"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -167,6 +168,7 @@
     <string name="label_verify_keyserver">"Verify keyserver"</string>
     <string name="label_enter_keyserver_url">"Enter keyserver URL"</string>
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
+    <string name="label_theme">"Theme"</string>
 
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
@@ -245,6 +247,8 @@
     <string name="filemanager_title_open">"Open…"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
+    <string name="theme_dark">"Dark"</string>
+    <string name="theme_light">"Light"</string>
 
     <!-- key flags -->
     <string name="flag_certify">"Certify"</string>

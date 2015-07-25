@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
  * Setups Toolbar
@@ -36,12 +38,26 @@ import org.sufficientlysecure.keychain.R;
 public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
     protected View mStatusBar;
+    protected ThemeChanger mThemeChanger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.changeTheme();
         super.onCreate(savedInstanceState);
         initLayout();
         initToolbar();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mThemeChanger.changeTheme()) {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }
     }
 
     protected void initLayout() {

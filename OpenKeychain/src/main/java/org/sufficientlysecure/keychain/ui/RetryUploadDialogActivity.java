@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 
 public class RetryUploadDialogActivity extends FragmentActivity {
@@ -54,8 +55,7 @@ public class RetryUploadDialogActivity extends FragmentActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-            ContextThemeWrapper theme = new ContextThemeWrapper(getActivity(),
-                    R.style.Theme_AppCompat_Light_Dialog);
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(getActivity());
 
             CustomAlertDialogBuilder dialogBuilder = new CustomAlertDialogBuilder(theme);
             dialogBuilder.setTitle(R.string.retry_up_dialog_title);

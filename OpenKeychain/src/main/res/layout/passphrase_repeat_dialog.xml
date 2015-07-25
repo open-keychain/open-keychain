@@ -40,9 +40,9 @@
             android:layout_gravity="end|center_vertical"
             custom:strength="medium"
             custom:showGuides="false"
-            custom:color_fail="@color/android_red_light"
-            custom:color_weak="@color/android_orange_light"
-            custom:color_strong="@color/android_green_light" />
+            custom:color_fail="@color/password_strength_low"
+            custom:color_weak="@color/password_strength_medium"
+            custom:color_strong="@color/password_strength_high" />
 
     </FrameLayout>
 

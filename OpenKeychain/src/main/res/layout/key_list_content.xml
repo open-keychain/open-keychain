@@ -23,7 +23,7 @@
 
             <!--<LinearLayout
                 android:orientation="vertical"
-                android:background="@color/holo_gray_bright"
+                android:background="?attr/colorButtonRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

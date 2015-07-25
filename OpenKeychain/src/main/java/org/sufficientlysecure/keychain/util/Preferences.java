@@ -220,6 +220,15 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.TEXT_USE_COMPRESSION, true);
     }
 
+    public String getTheme() {
+        return mSharedPreferences.getString(Pref.THEME, Pref.Theme.LIGHT);
+    }
+
+    public void setTheme(String value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Constants.Pref.THEME, value);
+        editor.commit();
+    }
 
     public void setUseArmor(boolean useArmor) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -347,7 +356,7 @@ public class Preferences {
         }
     }
 
-    public void updatePreferences() {
+    public void upgradePreferences() {
         if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.PREF_VERSION) {
             switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
@@ -381,6 +390,10 @@ public class Preferences {
                 }
                 // fall through
                 case 4: {
+                    setTheme(Constants.Pref.Theme.DEFAULT);
+                }
+                // fall through
+                case 5: {
                 }
             }
 

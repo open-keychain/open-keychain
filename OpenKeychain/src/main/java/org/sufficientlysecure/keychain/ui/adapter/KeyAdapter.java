@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
+import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
@@ -49,6 +50,7 @@ public class KeyAdapter extends CursorAdapter {
 
     protected String mQuery;
     protected LayoutInflater mInflater;
+    protected Context mContext;
 
     // These are the rows that we will retrieve.
     public static final String[] PROJECTION = new String[]{
@@ -77,6 +79,7 @@ public class KeyAdapter extends CursorAdapter {
     public KeyAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
+        mContext = context;
         mInflater = LayoutInflater.from(context);
     }
 
@@ -138,26 +141,26 @@ public class KeyAdapter extends CursorAdapter {
                 // Note: order is important!
                 if (item.mIsRevoked) {
                     KeyFormattingUtils
-                            .setStatusImage(context, mStatus, null, State.REVOKED, R.color.bg_gray);
+                            .setStatusImage(context, mStatus, null, State.REVOKED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsExpired) {
-                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.bg_gray);
+                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
                     if (mSlingerButton.hasOnClickListeners()) {
                         mSlingerButton.setColorFilter(
-                                context.getResources().getColor(R.color.tertiary_text_light),
+                                FormattingUtils.getColorFromAttr(context, R.attr.colorTertiaryText),
                                 PorterDuff.Mode.SRC_IN);
                         mSlinger.setVisibility(View.VISIBLE);
                     } else {
                         mSlinger.setVisibility(View.GONE);
                     }
-                    textColor = R.color.black;
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 } else {
                     // this is a public key - show if it's verified
                     if (item.mIsVerified) {
@@ -168,15 +171,15 @@ public class KeyAdapter extends CursorAdapter {
                         mStatus.setVisibility(View.VISIBLE);
                     }
                     mSlinger.setVisibility(View.GONE);
-                    textColor = R.color.black;
+                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 }
 
                 if (!enabled) {
-                    textColor = R.color.bg_gray;
+                    textColor = context.getResources().getColor(R.color.key_flag_gray);
                 }
 
-                mMainUserId.setTextColor(context.getResources().getColor(textColor));
-                mMainUserIdRest.setTextColor(context.getResources().getColor(textColor));
+                mMainUserId.setTextColor(textColor);
+                mMainUserIdRest.setTextColor(textColor);
 
                 if (item.mHasDuplicate) {
                     String dateTime = DateUtils.formatDateTime(context,
@@ -187,7 +190,7 @@ public class KeyAdapter extends CursorAdapter {
 
                     mCreationDate.setText(context.getString(R.string.label_key_created,
                             dateTime));
-                    mCreationDate.setTextColor(context.getResources().getColor(textColor));
+                    mCreationDate.setTextColor(textColor);
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
                     mCreationDate.setVisibility(View.GONE);

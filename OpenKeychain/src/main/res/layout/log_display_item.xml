@@ -15,7 +15,7 @@
             android:layout_height="match_parent"
             android:id="@+id/log_img"
             android:minWidth="10dp"
-            android:background="@color/bg_gray" />
+            android:background="?attr/colorLogBackground" />
 
         <TextView
             android:layout_width="0dp"
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:id="@+id/log_second_img"
             android:minWidth="10dp"
-            android:background="@color/bg_gray" />
+            android:background="?attr/colorLogBackground" />
 
         <TextView
             android:layout_width="0dp"
