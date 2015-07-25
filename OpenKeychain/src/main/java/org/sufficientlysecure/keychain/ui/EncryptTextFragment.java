@@ -223,15 +223,17 @@ public class EncryptTextFragment
         data.setCleartextSignature(true);
 
         if (mUseCompression) {
-            data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.get(0));
+            data.setCompressionAlgorithm(
+                    PgpConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
         } else {
-            data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
+            data.setCompressionAlgorithm(
+                    PgpConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
         data.setSymmetricEncryptionAlgorithm(
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
         data.setSignatureHashAlgorithm(
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(true);

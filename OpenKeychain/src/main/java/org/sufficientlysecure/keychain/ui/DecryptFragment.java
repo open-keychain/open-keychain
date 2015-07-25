@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -208,37 +209,50 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         mDecryptVerifyResult = decryptVerifyResult;
         mSignatureResult = decryptVerifyResult.getSignatureResult();
+        OpenPgpDecryptionResult decryptionResult = decryptVerifyResult.getDecryptionResult();
 
         mResultLayout.setVisibility(View.VISIBLE);
 
-        // unsigned data
-        if (mSignatureResult == null) {
+        switch (decryptionResult.getResult()) {
+            case OpenPgpDecryptionResult.RESULT_ENCRYPTED: {
+                mEncryptionText.setText(R.string.decrypt_result_encrypted);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
+                break;
+            }
+
+            case OpenPgpDecryptionResult.RESULT_INSECURE: {
+                mEncryptionText.setText(R.string.decrypt_result_insecure);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.INSECURE);
+                break;
+            }
+
+            default:
+            case OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED: {
+                mEncryptionText.setText(R.string.decrypt_result_not_encrypted);
+                KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.NOT_ENCRYPTED);
+                break;
+            }
+        }
+
+        if (mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+            // no signature
 
             setSignatureLayoutVisibility(View.GONE);
 
             mSignatureText.setText(R.string.decrypt_result_no_signature);
             KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.NOT_SIGNED);
-            mEncryptionText.setText(R.string.decrypt_result_encrypted);
-            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
 
             getLoaderManager().destroyLoader(LOADER_ID_UNIFIED);
 
             showErrorOverlay(false);
 
             onVerifyLoaded(true);
-
-            return;
-        }
-
-        if (mSignatureResult.isSignatureOnly()) {
-            mEncryptionText.setText(R.string.decrypt_result_not_encrypted);
-            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.NOT_ENCRYPTED);
         } else {
-            mEncryptionText.setText(R.string.decrypt_result_encrypted);
-            KeyFormattingUtils.setStatusImage(getActivity(), mEncryptionIcon, mEncryptionText, State.ENCRYPTED);
-        }
+            // signature present
 
-        getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, this);
+            // after loader is restarted signature results are checked
+            getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, this);
+        }
     }
 
     private void setSignatureLayoutVisibility(int visibility) {
@@ -313,8 +327,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         // NOTE: Don't use revoked and expired fields from database, they don't show
         // revoked/expired subkeys
-        boolean isRevoked = mSignatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED;
-        boolean isExpired = mSignatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED;
+        boolean isRevoked = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
+        boolean isExpired = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
+        boolean isInsecure = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_INSECURE;
         boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
         boolean isYours = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
 
@@ -330,6 +345,17 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         } else if (isExpired) {
             mSignatureText.setText(R.string.decrypt_result_signature_expired_key);
             KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.EXPIRED);
+
+            setSignatureLayoutVisibility(View.VISIBLE);
+            setShowAction(signatureKeyId);
+
+            showErrorOverlay(false);
+
+            onVerifyLoaded(true);
+
+        } else if (isInsecure) {
+            mSignatureText.setText(R.string.decrypt_result_insecure_cryptography);
+            KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.INSECURE);
 
             setSignatureLayoutVisibility(View.VISIBLE);
             setShowAction(signatureKeyId);
@@ -389,9 +415,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
         final long signatureKeyId = mSignatureResult.getKeyId();
 
-        int result = mSignatureResult.getStatus();
-        if (result != OpenPgpSignatureResult.SIGNATURE_KEY_MISSING
-                && result != OpenPgpSignatureResult.SIGNATURE_ERROR) {
+        int result = mSignatureResult.getResult();
+        if (result != OpenPgpSignatureResult.RESULT_KEY_MISSING
+                && result != OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE) {
             Log.e(Constants.TAG, "got missing status for non-missing key, shouldn't happen!");
         }
 
@@ -409,9 +435,9 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                     getActivity(), mSignatureResult.getKeyId()));
         }
 
-        switch (mSignatureResult.getStatus()) {
+        switch (mSignatureResult.getResult()) {
 
-            case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
+            case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                 mSignatureText.setText(R.string.decrypt_result_signature_missing_key);
                 KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.UNKNOWN_KEY);
 
@@ -433,7 +459,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                 break;
             }
 
-            case OpenPgpSignatureResult.SIGNATURE_ERROR: {
+            case OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE: {
                 mSignatureText.setText(R.string.decrypt_result_invalid_signature);
                 KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.INVALID);
 

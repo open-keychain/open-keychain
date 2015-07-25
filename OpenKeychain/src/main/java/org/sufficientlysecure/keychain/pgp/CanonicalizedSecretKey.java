@@ -184,7 +184,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
         // choose best algo
 
-        return PgpConstants.sPreferredHashAlgorithms;
+        return new ArrayList<>();
     }
 
     private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo,

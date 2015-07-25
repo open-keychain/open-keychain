@@ -191,7 +191,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("cached session keys must be empty",
                     0, cryptoInput.getCryptoData().size());
 
-            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
         }
@@ -297,7 +297,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("must have one cached session key",
                     1, cryptoInput.getCryptoData().size());
 
-            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
 
@@ -486,7 +486,7 @@ public class PgpEncryptDecryptTest {
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertNull("signature should be empty", result.getSignatureResult());
 
-            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
         }
@@ -604,9 +604,9 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertEquals("signature should be verified and certified",
-                    OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED, result.getSignatureResult().getStatus());
+                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
 
-            OpenPgpMetadata metadata = result.getDecryptMetadata();
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
         }
@@ -631,8 +631,8 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertEquals("signature key should be missing",
-                    OpenPgpSignatureResult.SIGNATURE_KEY_MISSING,
-                    result.getSignatureResult().getStatus());
+                    OpenPgpSignatureResult.RESULT_KEY_MISSING,
+                    result.getSignatureResult().getResult());
         }
 
     }

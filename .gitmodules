@@ -4,11 +4,11 @@
 	ignore = dirty
 [submodule "extern/openpgp-api-lib"]
 	path = extern/openpgp-api-lib
-	url = https://github.com/open-keychain/openpgp-api-lib.git
+	url = https://github.com/open-keychain/openpgp-api.git
 	ignore = dirty
 [submodule "extern/openkeychain-api-lib"]
 	path = extern/openkeychain-api-lib
-	url = https://github.com/open-keychain/openkeychain-api-lib.git
+	url = https://github.com/open-keychain/openkeychain-intents.git
 	ignore = dirty
 [submodule "extern/KeybaseLib"]
 	path = extern/KeybaseLib

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.webkit.MimeTypeMap;
 
+import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
@@ -283,10 +284,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         PGPSignatureList signatureList = (PGPSignatureList) pgpF.nextObject();
         PGPSignature messageSignature = signatureList.get(signatureIndex);
 
-        // these are not cleartext signatures!
-        // TODO: what about binary signatures?
-        signatureResultBuilder.setSignatureOnly(false);
-
         // Verify signature and check binding signatures
         boolean validSignature = signature.verify(messageSignature);
         if (validSignature) {
@@ -298,8 +295,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
         OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
 
-        if (signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED
-                && signatureResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED) {
+        if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_CONFIRMED
+                && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED) {
             log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
@@ -309,9 +306,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         log.add(LogType.MSG_VL_OK, indent);
 
         // Return a positive result, with metadata and verification info
-        DecryptVerifyResult result =
-                new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureResult);
+        result.setDecryptionResult(
+                new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
         return result;
     }
 
@@ -322,6 +320,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
             InputStream in, OutputStream out, int indent) throws IOException, PGPException {
 
+        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
+        OpenPgpDecryptionResult decryptionResult = new OpenPgpDecryptionResult();
         OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_DC, indent);
@@ -614,15 +614,16 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
+        decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED);
 
-        // Warn about old encryption algorithms!
-        if (!PgpConstants.sPreferredSymmetricAlgorithms.contains(symmetricEncryptionAlgo)) {
+        // Check for insecure encryption algorithms!
+        if (!PgpConstants.sSymmetricAlgorithmsWhitelist.contains(symmetricEncryptionAlgo)) {
             log.add(LogType.MSG_DC_OLD_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
+            decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_INSECURE);
         }
 
         JcaPGPObjectFactory plainFact = new JcaPGPObjectFactory(clear);
         Object dataChunk = plainFact.nextObject();
-        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         int signatureIndex = -1;
         CanonicalizedPublicKeyRing signingRing = null;
         CanonicalizedPublicKey signingKey = null;
@@ -752,7 +753,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 DecryptVerifyResult result =
                         new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
                 result.setCharset(charset);
-                result.setDecryptMetadata(metadata);
+                result.setDecryptionMetadata(metadata);
                 return result;
             }
 
@@ -809,11 +810,9 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
 
-                // these are not cleartext signatures!
                 // TODO: what about binary signatures?
-                signatureResultBuilder.setSignatureOnly(false);
 
-                // Verify signature and check binding signatures
+                // Verify signature
                 boolean validSignature = signature.verify(messageSignature);
                 if (validSignature) {
                     log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
@@ -821,10 +820,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
                 }
 
-                // Don't allow verification of old hash algorithms!
-                if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
-                    validSignature = false;
+                // check for insecure hash algorithms
+                if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
                     log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                    signatureResultBuilder.setInsecure(true);
                 }
 
                 signatureResultBuilder.setValidSignature(validSignature);
@@ -852,7 +851,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             Log.d(Constants.TAG, "MDC fail");
             if (!signatureResultBuilder.isValidSignature()) {
                 log.add(LogType.MSG_DC_ERROR_INTEGRITY_MISSING, indent);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+                decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_INSECURE);
             }
         }
 
@@ -861,12 +860,12 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         log.add(LogType.MSG_DC_OK, indent);
 
         // Return a positive result, with metadata and verification info
-        DecryptVerifyResult result =
-                new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+        DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setCachedCryptoInputParcel(cryptoInput);
-        result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
         result.setCharset(charset);
+        result.setDecryptionResult(decryptionResult);
+        result.setDecryptionMetadata(metadata);
         return result;
 
     }
@@ -885,8 +884,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         OperationLog log = new OperationLog();
 
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-        // cleartext signatures are never encrypted ;)
-        signatureResultBuilder.setSignatureOnly(true);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -956,10 +953,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
                 }
 
-                // Don't allow verification of old hash algorithms!
-                if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
-                    validSignature = false;
+                // check for insecure hash algorithms
+                if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
                     log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                    signatureResultBuilder.setInsecure(true);
                 }
 
                 signatureResultBuilder.setValidSignature(validSignature);
@@ -981,8 +978,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 clearText.length);
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-        result.setDecryptMetadata(metadata);
         result.setSignatureResult(signatureResultBuilder.build());
+        result.setDecryptionResult(
+                new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
+        result.setDecryptionMetadata(metadata);
         return result;
     }
 
@@ -994,8 +993,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         OperationLog log = new OperationLog();
 
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-        // detached signatures are never encrypted
-        signatureResultBuilder.setSignatureOnly(true);
 
         updateProgress(R.string.progress_processing_signature, 0, 100);
         InputStream detachedSigIn = new ByteArrayInputStream(input.getDetachedSignature());
@@ -1050,9 +1047,6 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             updateProgress(R.string.progress_verifying_signature, 90, 100);
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
-            // these are not cleartext signatures!
-            signatureResultBuilder.setSignatureOnly(false);
-
             // Verify signature and check binding signatures
             boolean validSignature = signature.verify();
             if (validSignature) {
@@ -1061,10 +1055,10 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
             }
 
-            // Don't allow verification of old hash algorithms!
-            if (!PgpConstants.sPreferredHashAlgorithms.contains(signature.getHashAlgorithm())) {
-                validSignature = false;
+            // check for insecure hash algorithms
+            if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
                 log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                signatureResultBuilder.setInsecure(true);
             }
 
             signatureResultBuilder.setValidSignature(validSignature);
@@ -1076,6 +1070,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureResultBuilder.build());
+        result.setDecryptionResult(
+                new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
         return result;
     }
 

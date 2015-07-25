@@ -1206,7 +1206,7 @@ public class PgpKeyOperation {
                 // add packet with EMPTY notation data (updates old one, but will be stripped later)
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                         masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
-                        PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                        PgpConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 { // set subpackets
@@ -1233,7 +1233,7 @@ public class PgpKeyOperation {
             // add packet with "pin" notation data
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                     masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
-                    PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                    PgpConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
             { // set subpackets
@@ -1440,13 +1440,13 @@ public class PgpKeyOperation {
         if (divertToCard) {
             // use synchronous "NFC based" SignerBuilder
             builder = new NfcSyncPGPContentSignerBuilder(
-                    pKey.getAlgorithm(), PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO,
+                    pKey.getAlgorithm(), PgpConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO,
                     pKey.getKeyID(), cryptoInput.getCryptoData())
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
             builder = new JcaPGPContentSignerBuilder(
-                    pKey.getAlgorithm(), PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                    pKey.getAlgorithm(), PgpConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         }
 
@@ -1472,11 +1472,11 @@ public class PgpKeyOperation {
              */
             /* non-critical subpackets: */
             hashedPacketsGen.setPreferredSymmetricAlgorithms(false,
-                    PgpConstants.getAsArray(PgpConstants.sPreferredSymmetricAlgorithms));
+                    PgpConstants.PREFERRED_SYMMETRIC_ALGORITHMS);
             hashedPacketsGen.setPreferredHashAlgorithms(false,
-                    PgpConstants.getAsArray(PgpConstants.sPreferredHashAlgorithms));
+                    PgpConstants.PREFERRED_HASH_ALGORITHMS);
             hashedPacketsGen.setPreferredCompressionAlgorithms(false,
-                    PgpConstants.getAsArray(PgpConstants.sPreferredCompressionAlgorithms));
+                    PgpConstants.PREFERRED_COMPRESSION_ALGORITHMS);
             hashedPacketsGen.setPrimaryUserID(false, primary);
 
             /* critical subpackets: we consider those important for a modern pgp implementation */

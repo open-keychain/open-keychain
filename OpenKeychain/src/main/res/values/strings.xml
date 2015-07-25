@@ -343,6 +343,7 @@
     <!-- results shown after decryption/verification -->
     <string name="decrypt_result_no_signature">"Not Signed"</string>
     <string name="decrypt_result_invalid_signature">"Invalid signature!"</string>
+    <string name="decrypt_result_insecure_cryptography">"Invalid signature (Insecure Cryptography)!"</string>
     <string name="decrypt_result_signature_uncertified">"Signed by <b>unconfirmed</b> key"</string>
     <string name="decrypt_result_signature_secret">"Signed by your key"</string>
     <string name="decrypt_result_signature_certified">"Signed by confirmed key"</string>
@@ -351,6 +352,7 @@
     <string name="decrypt_result_signature_missing_key">"Signed by <b>unknown public key</b>"</string>
     <string name="decrypt_result_encrypted">"Encrypted"</string>
     <string name="decrypt_result_not_encrypted">"Not Encrypted"</string>
+    <string name="decrypt_result_insecure">"Insecure Encryption"</string>
     <string name="decrypt_result_action_show">"Show"</string>
     <string name="decrypt_result_action_Lookup">"Lookup"</string>
     <string name="decrypt_invalid_text">"Either the signature is invalid or the key has been revoked. You cannot be sure who wrote the text. Do you still want to display it?"</string>
@@ -1163,7 +1165,7 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
-    <string name="msg_dc_old_symmetric_encryption_algo">"Potentially insecure encryption algorithm has been used!"</string>
+    <string name="msg_dc_old_symmetric_encryption_algo">"Insecure encryption algorithm has been used!"</string>
 
     <!-- Messages for VerifySignedLiteralData operation -->
     <string name="msg_vl">"Starting signature check"</string>

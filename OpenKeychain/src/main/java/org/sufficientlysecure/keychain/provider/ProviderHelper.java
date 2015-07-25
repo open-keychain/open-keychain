@@ -1434,9 +1434,9 @@ public class ProviderHelper {
         // DEPRECATED and thus hardcoded
         values.put(KeychainContract.ApiAccounts.COMPRESSION, CompressionAlgorithmTags.ZLIB);
         values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM,
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
         values.put(KeychainContract.ApiAccounts.HASH_ALORITHM,
-                PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED);
+                PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
         return values;
     }
 

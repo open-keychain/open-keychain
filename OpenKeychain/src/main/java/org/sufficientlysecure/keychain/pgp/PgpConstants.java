@@ -21,50 +21,95 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
+/**
+ * NIST requirements for 2011-2030 (http://www.keylength.com/en/4/):
+ * - RSA: 2048 bit
+ * - ECC: 224 bit
+ * - Symmetric: 3TDEA
+ * - Digital Signature (hash A): SHA-224 - SHA-512
+ */
 public class PgpConstants {
 
-    public static ArrayList<Integer> sPreferredSymmetricAlgorithms = new ArrayList<>();
-    public static ArrayList<Integer> sPreferredHashAlgorithms = new ArrayList<>();
-    public static ArrayList<Integer> sPreferredCompressionAlgorithms = new ArrayList<>();
+//    public interface MIN_REQUIREMENT {
+//        int MIN_BITS;
+//        int BINDING_SIGNATURE_HASH_ALGO; // for User IDs, subkeys,...
+//        int SYMMETRIC_ALGO;
+//    }
+    // https://tools.ietf.org/html/rfc6637#section-13
 
-    // TODO: use hashmaps for contains in O(1) and intersections!
+
+    // PgpDecryptVerify: Secure Algorithms Whitelist
+    // all other algorithms will be rejected with OpenPgpDecryptionResult.RESULT_INSECURE
+    public static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>();
+    static {
+        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_256);
+        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_192);
+        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_128);
+        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.TWOFISH);
+    }
+
+    // all other algorithms will be rejected with OpenPgpSignatureResult.RESULT_INVALID_INSECURE
+    public static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>();
+    static {
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA256);
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA512);
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA384);
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA224);
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA1);
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.RIPEMD160);
+    }
 
     /*
      * Most preferred is first
      * These arrays are written as preferred algorithms into the keys on creation.
      * Other implementations may choose to honor this selection.
-     *
-     * These lists also define the only algorithms which are used in OpenKeychain.
-     * We do not support algorithms such as MD5
      */
-    static {
-        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_256);
-        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_192);
-        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.AES_128);
-        sPreferredSymmetricAlgorithms.add(SymmetricKeyAlgorithmTags.TWOFISH);
+    public static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
+            SymmetricKeyAlgorithmTags.AES_256,
+            SymmetricKeyAlgorithmTags.AES_192,
+            SymmetricKeyAlgorithmTags.AES_128,
+            SymmetricKeyAlgorithmTags.TWOFISH
+    };
 
-        // NOTE: some implementations do not support SHA512, thus we choose SHA256 as default (Mailvelope?)
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA256);
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA512);
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA384);
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA224);
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.SHA1);
-        sPreferredHashAlgorithms.add(HashAlgorithmTags.RIPEMD160);
+    // NOTE: some implementations do not support SHA512, thus we choose SHA256 as default (Mailvelope?)
+    public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
+            HashAlgorithmTags.SHA256,
+            HashAlgorithmTags.SHA512,
+            HashAlgorithmTags.SHA384,
+            HashAlgorithmTags.SHA224,
+    };
 
-        /*
-         * Prefer ZIP
-         * "ZLIB provides no benefit over ZIP and is more malleable"
-         * - (OpenPGP WG mailinglist: "[openpgp] Intent to deprecate: Insecure primitives")
-         * BZIP2: very slow
-         */
-        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZIP);
-        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.ZLIB);
-        sPreferredCompressionAlgorithms.add(CompressionAlgorithmTags.BZIP2);
-    }
+    /*
+     * Prefer ZIP
+     * "ZLIB provides no benefit over ZIP and is more malleable"
+     * - (OpenPGP WG mailinglist: "[openpgp] Intent to deprecate: Insecure primitives")
+     * BZIP2: very slow
+     */
+    public static final int[] PREFERRED_COMPRESSION_ALGORITHMS = new int[]{
+            CompressionAlgorithmTags.ZIP,
+            CompressionAlgorithmTags.ZLIB,
+            CompressionAlgorithmTags.BZIP2
+    };
 
     public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA256;
+
+
+    public static final int DEFAULT_SYMMETRIC_ALGORITHM = SymmetricKeyAlgorithmTags.AES_256;
+    public interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
+        int USE_DEFAULT = -1;
+    }
+
+    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA256;
+    public interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
+        int USE_DEFAULT = -1;
+    }
+
+    public static final int DEFAULT_COMPRESSION_ALGORITHM = CompressionAlgorithmTags.ZIP;
+    public interface OpenKeychainCompressionAlgorithmTags extends CompressionAlgorithmTags {
+        int USE_DEFAULT = -1;
+    }
 
     /*
      * Note: s2kcount is a number between 0 and 0xff that controls the
@@ -87,28 +132,9 @@ public class PgpConstants {
     public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
     public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     public static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    public static final int SECRET_KEY_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
+    public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
     // NOTE: only SHA1 is supported for key checksum calculations in OpenPGP,
     // see http://tools.ietf.org/html/rfc488 0#section-5.5.3
     public static final int SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO = HashAlgorithmTags.SHA1;
 
-    public static interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static interface OpenKeychainCompressionAlgorithmTags extends CompressionAlgorithmTags {
-        public static final int USE_PREFERRED = -1;
-    }
-
-    public static int[] getAsArray(ArrayList<Integer> list) {
-        int[] array = new int[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i);
-        }
-        return array;
-    }
 }
