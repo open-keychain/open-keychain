@@ -51,6 +51,11 @@ public class KeychainContract {
         String EXPIRY = "expiry";
     }
 
+    interface UpdatedKeysColumns {
+        String MASTER_KEY_ID = "master_key_id"; // not a database id
+        String LAST_UPDATED = "last_updated"; // time since epoch in seconds
+    }
+
     interface UserPacketsColumns {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
         String TYPE = "type"; // not a database id
@@ -96,6 +101,8 @@ public class KeychainContract {
             .parse("content://" + CONTENT_AUTHORITY);
 
     public static final String BASE_KEY_RINGS = "key_rings";
+
+    public static final String BASE_UPDATED_KEYS = "updated_keys";
 
     public static final String PATH_UNIFIED = "unified";
 
@@ -232,6 +239,16 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_KEYS).build();
         }
 
+    }
+
+    public static class UpdatedKeys implements UpdatedKeysColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_UPDATED_KEYS).build();
+
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
     }
 
     public static class UserPackets implements UserPacketsColumns, BaseColumns {

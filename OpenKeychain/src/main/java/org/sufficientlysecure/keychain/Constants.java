@@ -81,6 +81,11 @@ public final class Constants {
         public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");
     }
 
+    public static final class Notification {
+        public static final int PASSPHRASE_CACHE = 1;
+        public static final int KEYSERVER_SYNC_FAIL_ORBOT = 2;
+    }
+
     public static final class Pref {
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";

@@ -59,6 +59,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -82,6 +83,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class contains high level methods for database access. Despite its
@@ -685,6 +687,41 @@ public class ProviderHelper {
             mIndent -= 1;
         }
 
+        // before deleting key, retrieve it's last updated time
+        final int INDEX_MASTER_KEY_ID = 0;
+        final int INDEX_LAST_UPDATED = 1;
+        Cursor lastUpdatedCursor = mContentResolver.query(
+                UpdatedKeys.CONTENT_URI,
+                new String[]{
+                        UpdatedKeys.MASTER_KEY_ID,
+                        UpdatedKeys.LAST_UPDATED
+                },
+                UpdatedKeys.MASTER_KEY_ID + " = ?",
+                new String[]{"" + masterKeyId},
+                null
+        );
+        ContentValues lastUpdatedEntry = null;
+        if (lastUpdatedCursor.moveToNext()) {
+            lastUpdatedEntry = new ContentValues(2);
+            lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID,
+                    lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
+            lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED,
+                    lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+            Log.e("PHILIP", "cv: " + lastUpdatedEntry + " actual: " + masterKeyId);
+        }
+        lastUpdatedCursor.close();
+
+        if (lastUpdatedEntry != null) {
+            // there was an entry to re-insert
+            // this operation must happen after the new key is inserted
+            operations.add(
+                    ContentProviderOperation
+                            .newInsert(UpdatedKeys.CONTENT_URI)
+                            .withValues(lastUpdatedEntry)
+                            .build()
+            );
+        }
+
         try {
             // delete old version of this keyRing, which also deletes all keys and userIds on cascade
             int deleted = mContentResolver.delete(
@@ -1239,6 +1276,28 @@ public class ProviderHelper {
             }
 
             // 2. wipe database (IT'S DANGEROUS)
+
+            // first, backup our list of updated key times
+            ArrayList<ContentValues> updatedKeysValues = new ArrayList<>();
+            final int INDEX_MASTER_KEY_ID = 0;
+            final int INDEX_LAST_UPDATED = 1;
+            Cursor lastUpdatedCursor = mContentResolver.query(
+                    UpdatedKeys.CONTENT_URI,
+                    new String[]{
+                            UpdatedKeys.MASTER_KEY_ID,
+                            UpdatedKeys.LAST_UPDATED
+                    },
+                    null, null, null);
+            while (lastUpdatedCursor.moveToNext()) {
+                ContentValues values = new ContentValues();
+                values.put(UpdatedKeys.MASTER_KEY_ID,
+                        lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
+                values.put(UpdatedKeys.LAST_UPDATED,
+                        lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
+                updatedKeysValues.add(values);
+            }
+            lastUpdatedCursor.close();
+
             log.add(LogType.MSG_CON_DB_CLEAR, indent);
             mContentResolver.delete(KeyRings.buildUnifiedKeyRingsUri(), null, null);
 
@@ -1288,6 +1347,10 @@ public class ProviderHelper {
                             new ProgressFixedScaler(progress, 25, 99, 100, R.string.progress_con_reimport))
                             .serialKeyRingImport(itPublics, numPublics, null, null);
                     log.add(result, indent);
+                    // re-insert our backed up list of updated key times
+                    // TODO: can this cause issues in case a public key re-import failed?
+                    mContentResolver.bulkInsert(UpdatedKeys.CONTENT_URI,
+                            updatedKeysValues.toArray(new ContentValues[updatedKeysValues.size()]));
                 } else {
                     log.add(LogType.MSG_CON_REIMPORT_PUBLIC_SKIP, indent);
                 }
@@ -1395,6 +1458,14 @@ public class ProviderHelper {
         byte[] data = (byte[]) getGenericData(
                 uri, KeyRingData.KEY_RING_DATA, ProviderHelper.FIELD_TYPE_BLOB);
         return getKeyRingAsArmoredString(data);
+    }
+
+    public Uri renewKeyLastUpdatedTime(long masterKeyId, long time, TimeUnit timeUnit) {
+        ContentValues values = new ContentValues();
+        values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
+        values.put(UpdatedKeys.LAST_UPDATED, timeUnit.toSeconds(time));
+
+        return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
     }
 
     public ArrayList<String> getRegisteredApiApps() {

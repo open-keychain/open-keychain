@@ -196,9 +196,9 @@ public class HkpKeyserver extends Keyserver {
     /**
      * returns a client with pinned certificate if necessary
      *
-     * @param url
-     * @param proxy
-     * @return
+     * @param url url to be queried by client
+     * @param proxy proxy to be used by client
+     * @return client with a pinned certificate if necesary
      */
     public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
         OkHttpClient client = new OkHttpClient();

@@ -22,6 +22,7 @@ package org.sufficientlysecure.keychain.operations;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -305,15 +306,25 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 }
                 if (!result.success()) {
                     badKeys += 1;
-                } else if (result.updated()) {
-                    updatedKeys += 1;
-                    importedMasterKeyIds.add(key.getMasterKeyId());
                 } else {
-                    newKeys += 1;
-                    if (key.isSecret()) {
-                        secret += 1;
+                    if (result.updated()) {
+                        updatedKeys += 1;
+                        importedMasterKeyIds.add(key.getMasterKeyId());
+                    } else {
+                        newKeys += 1;
+                        if (key.isSecret()) {
+                            secret += 1;
+                        }
+                        importedMasterKeyIds.add(key.getMasterKeyId());
                     }
-                    importedMasterKeyIds.add(key.getMasterKeyId());
+                    if (entry.mBytes == null) {
+                        // synonymous to isDownloadFromKeyserver.
+                        // If no byte data was supplied, import from keyserver took place
+                        // this prevents file imports being noted as keyserver imports
+                        mProviderHelper.renewKeyLastUpdatedTime(key.getMasterKeyId(),
+                                GregorianCalendar.getInstance().getTimeInMillis(),
+                                TimeUnit.MILLISECONDS);
+                    }
                 }
 
                 log.add(result, 2);
@@ -386,7 +397,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     @NonNull
     @Override
-    public OperationResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
+    public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
         ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
         String keyServer = importInput.mKeyserver;
 
@@ -497,7 +508,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         Progressable mProgressable;
         private int mTotalKeys;
         private int mImportedKeys = 0;
-        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<Long>();
+        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<>();
         private int mBadKeys = 0;
         private int mNewKeys = 0;
         private int mUpdatedKeys = 0;
@@ -515,7 +526,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         public KeyImportAccumulator(int totalKeys, Progressable externalProgressable) {
             mTotalKeys = totalKeys;
             mProgressable = externalProgressable;
-            mProgressable.setProgress(0, totalKeys);
+            if (mProgressable != null) {
+                mProgressable.setProgress(0, totalKeys);
+            }
         }
 
         public int getTotalKeys() {
@@ -529,7 +542,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         public synchronized void accumulateKeyImport(ImportKeyResult result) {
             mImportedKeys++;
 
-            mProgressable.setProgress(mImportedKeys, mTotalKeys);
+            if (mProgressable != null) {
+                mProgressable.setProgress(mImportedKeys, mTotalKeys);
+            }
 
             mImportLog.addAll(result.getLog().toList());//accumulates log
             mBadKeys += result.mBadKeys;

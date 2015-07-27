@@ -800,6 +800,20 @@
                 android:resource="@xml/custom_pgp_contacts_structure" />
         </service>
 
+        <service
+            android:name=".service.KeyserverSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/keyserver_sync_adapter_desc" />
+        </service>
+
         <!-- Storage Provider for temporary decrypted files -->
         <provider
             android:name=".provider.TemporaryStorageProvider"
