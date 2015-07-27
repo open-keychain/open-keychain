@@ -52,8 +52,14 @@ public class Ndef implements BaseNfcTagTechnology {
                 if (ndefMessage == null) {
                     ndefMessage = new NdefMessage(extRecord);
                 } else {
-                    //what if the record is already inside?
-                    ndefMessage = new NdefMessage(extRecord, ndefMessage.getRecords());
+                    int index = getRecordIndex(ndefMessage);
+                    if (index != -1) {
+                        NdefRecord[] ndefRecords = ndefMessage.getRecords();
+                        ndefRecords[index] = extRecord;
+                        ndefMessage = new NdefMessage(ndefRecords);
+                    } else {
+                        ndefMessage = new NdefMessage(extRecord, ndefMessage.getRecords());
+                    }
                 }
             } else {
                 extRecord = new NdefRecord(NdefRecord.TNF_EXTERNAL_TYPE, (DOMAIN + TYPE).getBytes(),
@@ -61,12 +67,19 @@ public class Ndef implements BaseNfcTagTechnology {
                 if (ndefMessage == null) {
                     ndefMessage = new NdefMessage(extRecord.getPayload());
                 } else {
-                    //join the records together, it does not check yet if the record already exists
+                    //join the records together
                     NdefRecord[] ndefRecords = ndefMessage.getRecords();
-                    NdefRecord[] ndefRecordsDst = new NdefRecord[ndefRecords.length + 1];
-                    ndefRecordsDst[ndefRecords.length] = extRecord;
+                    int index = getRecordIndex(ndefMessage);
+                    if (index != -1) {
+                        ndefRecords[index] = extRecord;
+                        ndefMessage = new NdefMessage(ndefRecords);
+                    } else {
+                        NdefRecord[] ndefRecordsDst = new NdefRecord[ndefRecords.length + 1];
+                        System.arraycopy(ndefRecords, 0, ndefRecordsDst, 0, ndefRecords.length);
+                        ndefRecordsDst[ndefRecords.length] = extRecord;
 
-                    ndefMessage = new NdefMessage(ndefRecordsDst);
+                        ndefMessage = new NdefMessage(ndefRecordsDst);
+                    }
                 }
             }
             mNdef.writeNdefMessage(ndefMessage);
@@ -75,6 +88,19 @@ public class Ndef implements BaseNfcTagTechnology {
             throw new NfcDispatcher.CardException(e.getMessage(),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
+    }
+
+    int getRecordIndex(NdefMessage ndefMessage) {
+        int recordIndex = 0;
+        byte[] domainType = (DOMAIN + TYPE).getBytes();
+        for (NdefRecord ndefRecord : ndefMessage.getRecords()) {
+            if (ndefRecord.getTnf() == NdefRecord.TNF_EXTERNAL_TYPE &&
+                    Arrays.equals(ndefRecord.getType(), domainType)) {
+                return recordIndex;
+            }
+            recordIndex++;
+        }
+        return -1;
     }
 
     @Override
