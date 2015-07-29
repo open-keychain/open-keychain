@@ -141,9 +141,11 @@ android {
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.account\""
+            buildConfigField "String", "PROVIDER_CONTENT_AUTHORITY", "\"org.sufficientlysecure.keychain.provider\""
 
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.account"
+            resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.provider"
         }
 
         debug {
@@ -151,9 +153,11 @@ android {
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
+            buildConfigField "String", "PROVIDER_CONTENT_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.provider\""
 
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
+            resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.debug.provider"
 
             // Enable code coverage (Jacoco)
             testCoverageEnabled true

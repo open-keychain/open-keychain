@@ -16,6 +16,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
@@ -27,7 +28,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.ui.MainActivity;
+import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -41,19 +42,49 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class KeyserverSyncAdapterService extends Service {
 
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
+    private static final String ACTION_DISMISS_NOTIFICATION = "cancel_sync";
+    private static final String ACTION_START_ORBOT = "start_orbot";
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, final int startId) {
         Log.e("PHILIP", "Sync adapter service starting");
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         switch (intent.getAction()) {
             case ACTION_IGNORE_TOR: {
                 updateKeysFromKeyserver(this,
                         new CryptoInputParcel(ParcelableProxy.getForNoProxy()));
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
+                stopSelf(startId);
+                break;
+            }
+            case ACTION_START_ORBOT: {
+                Intent startOrbot = new Intent(this, OrbotRequiredDialogActivity.class);
+                startOrbot.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startOrbot.setAction(OrbotRequiredDialogActivity.ACTION_START_ORBOT);
+                startActivity(startOrbot);
+                new Handler().postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                updateKeysFromKeyserver(KeyserverSyncAdapterService.this,
+                                        new CryptoInputParcel());
+                                stopSelf(startId);
+                            }
+                        },
+                        30000 // shouldn't take longer for orbot to start
+                );
+
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
+                break;
+            }
+            case ACTION_DISMISS_NOTIFICATION: {
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
+                stopSelf(startId);
                 break;
             }
         }
         // TODO: correct flag?
-        return START_NOT_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     private static AtomicBoolean sCancelled = new AtomicBoolean(false);
@@ -92,16 +123,16 @@ public class KeyserverSyncAdapterService extends Service {
         final int INDEX_UPDATED_KEYS_MASTER_KEY_ID = 0;
         final int INDEX_LAST_UPDATED = 1;
 
-        final long TIME_DAY = TimeUnit.DAYS.toSeconds(1);
+        final long TIME_MAX = TimeUnit.DAYS.toSeconds(7);
         final long CURRENT_TIME = GregorianCalendar.getInstance().get(GregorianCalendar.SECOND);
-        Log.e("PHILIP", "day: " + TIME_DAY);
+        Log.e("PHILIP", "week: " + TIME_MAX);
         Cursor updatedKeysCursor = context.getContentResolver().query(
                 KeychainContract.UpdatedKeys.CONTENT_URI,
                 new String[]{
                         KeychainContract.UpdatedKeys.MASTER_KEY_ID,
                         KeychainContract.UpdatedKeys.LAST_UPDATED
                 },
-                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " < " + TIME_DAY,
+                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " < " + TIME_MAX,
                 new String[]{"" + CURRENT_TIME},
                 null
         );
@@ -110,7 +141,7 @@ public class KeyserverSyncAdapterService extends Service {
         while (updatedKeysCursor.moveToNext()) {
             long masterKeyId = updatedKeysCursor.getLong(INDEX_UPDATED_KEYS_MASTER_KEY_ID);
             Log.d(Constants.TAG, "Keyserver sync: {" + masterKeyId + "} last updated at {"
-                            + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
+                    + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
             ignoreMasterKeyIds.add(masterKeyId);
         }
         updatedKeysCursor.close();
@@ -197,7 +228,7 @@ public class KeyserverSyncAdapterService extends Service {
         ignoreTorIntent.setAction(ACTION_IGNORE_TOR);
         PendingIntent ignoreTorPi = PendingIntent.getService(
                 context,
-                Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT,
+                0, // security not issue since we're giving this pending intent to Notification Manager
                 ignoreTorIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
@@ -206,7 +237,48 @@ public class KeyserverSyncAdapterService extends Service {
                 context.getString(R.string.keyserver_sync_orbot_notif_ignore),
                 ignoreTorPi);
 
+        // not enough space to show it
+        Intent dismissIntent = new Intent(context, KeyserverSyncAdapterService.class);
+        dismissIntent.setAction(ACTION_DISMISS_NOTIFICATION);
+        PendingIntent dismissPi = PendingIntent.getService(
+                context,
+                0, // security not issue since we're giving this pending intent to Notification Manager
+                dismissIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        /*builder.addAction(R.drawable.abc_ic_clear_mtrl_alpha,
+                context.getString(android.R.string.cancel),
+                dismissPi
+        );*/
+
+        Intent startOrbotIntent = new Intent(context, KeyserverSyncAdapterService.class);
+        startOrbotIntent.setAction(ACTION_START_ORBOT);
+        PendingIntent startOrbotPi = PendingIntent.getService(
+                context,
+                0, // security not issue since we're giving this pending intent to Notification Manager
+                startOrbotIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        builder.addAction(R.drawable.abc_ic_clear_mtrl_alpha,
+                context.getString(R.string.keyserver_sync_orbot_notif_start),
+                startOrbotPi
+        );
+        builder.setContentIntent(startOrbotPi);
+
         return builder.build();
+    }
+
+    /**
+     * will perform a staggered update of user's keys using delays to ensure new Tor circuits, as
+     * performed by parcimonie
+     *
+     * @return result of the sync
+     */
+    private static ImportKeyResult staggeredSync() {
+        // TODO: WIP
+        return null;
     }
 
     // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android

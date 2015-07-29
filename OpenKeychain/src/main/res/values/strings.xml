@@ -1352,10 +1352,10 @@
     <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- Keyserver sync -->
-    <string name="keyserver_sync_orbot_notif_title">"Orbot not running"</string>
-    <string name="keyserver_sync_orbot_notif_msg">"Keyserver sync failed since Orbot is not running. What would you like to do?"</string>
+    <string name="keyserver_sync_orbot_notif_title">"Sync From Cloud requires Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
-    <string name="keyserver_sync_orbot_notif_ignore">"Don't use Tor"</string>
+    <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>

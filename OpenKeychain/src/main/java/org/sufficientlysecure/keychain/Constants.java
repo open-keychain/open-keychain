@@ -19,14 +19,9 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
-import org.sufficientlysecure.keychain.BuildConfig;
-
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 public final class Constants {
@@ -43,7 +38,7 @@ public final class Constants {
     public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static final String PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_CONTENT_AUTHORITY;
     public static final String TEMPSTORAGE_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
     public static final String CLIPBOARD_LABEL = "Keychain";
