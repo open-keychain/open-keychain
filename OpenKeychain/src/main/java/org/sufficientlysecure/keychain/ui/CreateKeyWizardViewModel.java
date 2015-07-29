@@ -310,7 +310,7 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
             case PIN:
                 mOnViewModelEventBind.onInstantiatePinUnlockMethod();
                 break;
-            case NFC: {
+            case NFC_TAG: {
                 mOnViewModelEventBind.onInstantiateNFCUnlockMethod();
             }
         }

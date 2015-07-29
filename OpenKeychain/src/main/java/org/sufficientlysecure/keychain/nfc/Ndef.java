@@ -13,7 +13,8 @@ import java.util.Arrays;
  */
 public class Ndef implements BaseNfcTagTechnology {
     public static final String DOMAIN = "org.openkeychain.nfc";
-    public static final String TYPE = "externalType";
+    public static final String TYPE = "externaltype";
+    public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
     private android.nfc.tech.Ndef mNdef;
 
     public Ndef(android.nfc.tech.Ndef ndef) {
@@ -62,7 +63,7 @@ public class Ndef implements BaseNfcTagTechnology {
                     }
                 }
             } else {
-                extRecord = new NdefRecord(NdefRecord.TNF_EXTERNAL_TYPE, (DOMAIN + TYPE).getBytes(),
+                extRecord = new NdefRecord(NdefRecord.TNF_EXTERNAL_TYPE, DOMAIN_TYPE.getBytes(),
                         new byte[0], data);
                 if (ndefMessage == null) {
                     ndefMessage = new NdefMessage(extRecord.getPayload());
@@ -92,7 +93,7 @@ public class Ndef implements BaseNfcTagTechnology {
 
     int getRecordIndex(NdefMessage ndefMessage) {
         int recordIndex = 0;
-        byte[] domainType = (DOMAIN + TYPE).getBytes();
+        byte[] domainType = DOMAIN_TYPE.getBytes();
         for (NdefRecord ndefRecord : ndefMessage.getRecords()) {
             if (ndefRecord.getTnf() == NdefRecord.TNF_EXTERNAL_TYPE &&
                     Arrays.equals(ndefRecord.getType(), domainType)) {
@@ -108,7 +109,7 @@ public class Ndef implements BaseNfcTagTechnology {
         try {
             NdefMessage ndefMessage = mNdef.getNdefMessage();
             if (ndefMessage != null) {
-                byte[] domainType = (DOMAIN + TYPE).getBytes();
+                byte[] domainType = DOMAIN_TYPE.getBytes();
                 for (NdefRecord ndefRecord : ndefMessage.getRecords()) {
                     if (ndefRecord.getTnf() == NdefRecord.TNF_EXTERNAL_TYPE &&
                             Arrays.equals(ndefRecord.getType(), domainType)) {

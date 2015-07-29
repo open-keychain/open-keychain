@@ -94,7 +94,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * Override to implement NFC operations (background thread)
      */
     protected void doNfcInBackground() throws IOException {
-        if(mIsoDep != null) {
+        if (mIsoDep != null) {
             mNfcFingerprints = nfcGetFingerprints();
             mNfcUserId = nfcGetUserId();
             mNfcAid = nfcGetAid();
@@ -222,6 +222,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     @Override
     public void onNewIntent(final Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())
+                && mTagHandlingEnabled || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 && mTagHandlingEnabled) {
             handleIntentInBackground(intent);
         }
@@ -394,15 +395,15 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     /**
      * Handle NFC communication and return a result.
-     * <p>
+     * <p/>
      * This method is called by onNewIntent above upon discovery of an NFC tag.
      * It handles initialization and login to the application, subsequently
      * calls either nfcCalculateSignature() or nfcDecryptSessionKey(), then
      * finishes the activity with an appropriate result.
-     * <p>
+     * <p/>
      * On general communication, see also
      * http://www.cardwerk.com/smartcards/smartcard_standard_ISO7816-4_annex-a.aspx
-     * <p>
+     * <p/>
      * References to pages are generally related to the OpenPGP Application
      * on ISO SmartCard Systems specification.
      */
@@ -412,7 +413,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Connect to the detected tag, setting a couple of settings
         mIsoDep = IsoDep.get(detectedTag);
-        if(mIsoDep != null) {
+        if (mIsoDep != null) {
             mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
             mIsoDep.connect();
 
@@ -942,8 +943,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
         IntentFilter[] writeTagFilters = new IntentFilter[]{
-                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-        };
+                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED),
+                new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)};
 
         // https://code.google.com/p/android/issues/detail?id=62918
         // maybe mNfcAdapter.enableReaderMode(); ?

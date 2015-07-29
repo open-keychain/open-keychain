@@ -324,7 +324,7 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
             throw new NfcDispatcher.CardException("Error while attempting to encode the nfc passphrase", NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
         mPassphrase = new Passphrase(sPin.toCharArray());
-        mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC);
+        mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
     }
 
     @Override
@@ -334,7 +334,7 @@ public class NFCUnlockDialogViewModel implements BaseViewModel,
         }
 
         //last phase of verifications
-        if (mPassphrase.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC &&
+        if (mPassphrase.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC_TAG &&
                 mPassphrase.getCharArray().length == 16) {
             mOperationState = OperationState.OPERATION_STATE_PERFORM_UNLOCK;
             mOnViewModelEventBind.onUpdateProgress(calculateProgress(NUM_PROGRESS_OPERATIONS));

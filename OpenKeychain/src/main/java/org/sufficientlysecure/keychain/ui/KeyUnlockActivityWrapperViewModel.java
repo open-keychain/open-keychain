@@ -99,7 +99,7 @@ public class KeyUnlockActivityWrapperViewModel implements BaseViewModel {
                 mOnViewModelEventBind.showUnlockDialog(new PinUnlockDialog());
             }
             break;
-            case NFC: {
+            case NFC_TAG: {
                 mOnViewModelEventBind.showUnlockDialog(new NFCUnlockDialog());
             }break;
             default: {
