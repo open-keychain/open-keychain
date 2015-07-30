@@ -18,8 +18,8 @@ public class Ndef implements BaseNfcTagTechnology {
     public static final String DOMAIN = "org.openkeychain.nfc";
     public static final String TYPE = "externaltype";
     public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
-    private android.nfc.tech.Ndef mNdef;
-    private Context mContext;
+    protected android.nfc.tech.Ndef mNdef;
+    protected Context mContext;
 
     public Ndef(android.nfc.tech.Ndef ndef, Context context) {
         mContext = context;

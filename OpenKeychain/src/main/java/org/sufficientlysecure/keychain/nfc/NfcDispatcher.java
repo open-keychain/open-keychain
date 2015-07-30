@@ -259,7 +259,7 @@ public final class NfcDispatcher {
                 android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.
                         MifareUltralight.get(detectedTag);
                 Log.v(TAG, "Using Mifare UltraLight nfc technology");
-                mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight);
+                mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight, mActivity);
                 mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
                 break;
             } else if (nfcTechnologyClass.equals(Ndef.class)) {

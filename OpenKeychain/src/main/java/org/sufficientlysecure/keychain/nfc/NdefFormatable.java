@@ -18,8 +18,8 @@ public class NdefFormatable implements BaseNfcTagTechnology {
     public static final String DOMAIN = "org.openkeychain.nfc";
     public static final String TYPE = "externaltype";
     public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
-    private android.nfc.tech.NdefFormatable mNdeFormatable;
-    private Context mContext;
+    protected android.nfc.tech.NdefFormatable mNdeFormatable;
+    protected Context mContext;
 
     public NdefFormatable(android.nfc.tech.NdefFormatable ndefFormatable, Context context) {
         mContext = context;

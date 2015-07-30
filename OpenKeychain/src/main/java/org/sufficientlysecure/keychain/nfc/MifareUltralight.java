@@ -1,6 +1,10 @@
 package org.sufficientlysecure.keychain.nfc;
 
 
+import android.content.Context;
+
+import org.sufficientlysecure.keychain.R;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -15,8 +19,10 @@ public class MifareUltralight implements BaseNfcTagTechnology {
 
     private static final int sTimeout = 100000;
     protected android.nfc.tech.MifareUltralight mMifareUltralight;
+    protected Context mContext;
 
-    public MifareUltralight(android.nfc.tech.MifareUltralight mifareUltralight) {
+    public MifareUltralight(android.nfc.tech.MifareUltralight mifareUltralight, Context context) {
+        mContext = context;
         mMifareUltralight = mifareUltralight;
 
         if (mMifareUltralight == null) {
@@ -32,7 +38,8 @@ public class MifareUltralight implements BaseNfcTagTechnology {
             try {
                 mMifareUltralight.connect();
             } catch (IOException e) {
-                throw new NfcDispatcher.CardException(e.getMessage(),
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_unable_to_connect),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         }
@@ -53,7 +60,8 @@ public class MifareUltralight implements BaseNfcTagTechnology {
             }
         } catch (ArrayIndexOutOfBoundsException | IllegalStateException | IOException e) {
             close();
-            throw new NfcDispatcher.CardException(e.getMessage(),
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_data_write),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
     }
@@ -74,7 +82,8 @@ public class MifareUltralight implements BaseNfcTagTechnology {
             }
         } catch (ArrayIndexOutOfBoundsException | IllegalStateException | IOException e) {
             close();
-            throw new NfcDispatcher.CardException(e.getMessage(),
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_data_read),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
 
@@ -91,7 +100,8 @@ public class MifareUltralight implements BaseNfcTagTechnology {
         try {
             mMifareUltralight.close();
         } catch (IOException e) {
-            throw new NfcDispatcher.CardException(e.getMessage(),
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_disconnect),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
     }
