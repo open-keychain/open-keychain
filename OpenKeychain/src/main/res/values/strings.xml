@@ -1399,7 +1399,9 @@
     <string name="error_nfc_tag_unable_to_connect">Unable to connect to the nfc tag</string>
     <string name="error_nfc_tag_failed_to_format">Failed to format Nfc Tag, make sure your nfc tag is a blank card</string>
     <string name="error_nfc_tag_disconnect">Failed to disconnect from the nfc tag</string>
-
+    <string name="error_nfc_tag_not_writable">Nfc tag is not writable</string>
+    <string name="error_nfc_tag_data_write">Failed to write nfc data to the card</string>
+    <string name="error_nfc_tag_data_read">Failed to read the data from the card</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
