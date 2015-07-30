@@ -11,13 +11,13 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
  * NFC Dispatcher class
@@ -123,12 +123,7 @@ public final class NfcDispatcher {
      */
     private void disconnectFromCard() throws CardException {
         if (mBaseNfcTagTechnology != null && mBaseNfcTagTechnology.isConnected()) {
-            try {
-                mBaseNfcTagTechnology.close();
-            } catch (CardException e) {
-                throw new CardException("Exception while closing the nfc tag connection",
-                        EXCEPTION_STATUS_GENERIC);
-            }
+            mBaseNfcTagTechnology.close();
         }
     }
 
@@ -146,6 +141,8 @@ public final class NfcDispatcher {
     /**
      * Method that receives all nfc errors that may occur.
      * Besides receiving nfc errors, any pending async operation will be canceled.
+     * A try is used on this method to avoid disconnect exceptions when there is a operation failure.
+     * Otherwise the previous exception message may be lost.
      *
      * @param e
      */
@@ -250,7 +247,7 @@ public final class NfcDispatcher {
     void handleTagDiscoveredIntent(Intent intent) throws CardException {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (mRegisteredTechHandler == null || mRegisteredTechHandler.getNumNfcTechnologies() == 0) {
-            throw new CardException("No NFC technologies were registered for dispatch",
+            throw new CardException(mActivity.getString(R.string.error_nfc_dispatcher_no_registered_tech),
                     EXCEPTION_STATUS_GENERIC);
         }
 
@@ -258,9 +255,11 @@ public final class NfcDispatcher {
             if (nfcTechnologyClass.equals(MifareUltralight.class)) {
                 android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.
                         MifareUltralight.get(detectedTag);
-                Log.v(TAG, "Using Mifare UltraLight nfc technology");
-                mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight, mActivity);
-                mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
+                if (mifareUltralight != null) {
+                    Log.v(TAG, "Using Mifare UltraLight nfc technology");
+                    mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight, mActivity);
+                    mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
+                }
                 break;
             } else if (nfcTechnologyClass.equals(Ndef.class)) {
                 android.nfc.tech.Ndef ndef = android.nfc.tech.Ndef.get(detectedTag);
@@ -283,7 +282,9 @@ public final class NfcDispatcher {
         }
     }
 
-    // Actual NFC operations are executed in doInBackground to not block the UI thread
+    /**
+     * Actual NFC operations are executed in doInBackground to not block the UI thread
+     */
     private class NfcDispatchTask extends AsyncTask<Void, Void, CardException> {
         private Intent mIntent;
 
