@@ -271,11 +271,11 @@ public final class NfcDispatcher {
                     break;
                 }
             } else if (nfcTechnologyClass.equals(NdefFormatable.class)) {
-                android.nfc.tech.NdefFormatable ndefFortmatable = android.nfc.tech.
+                android.nfc.tech.NdefFormatable ndefFormatable = android.nfc.tech.
                         NdefFormatable.get(detectedTag);
-                if (ndefFortmatable != null) {
+                if (ndefFormatable != null) {
                     Log.v(TAG, "Using NdefFormatable nfc technology, only write operations are available");
-                    mBaseNfcTagTechnology = new NdefFormatable(ndefFortmatable);
+                    mBaseNfcTagTechnology = new NdefFormatable(ndefFormatable, mActivity);
                     mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
                     break;
                 }
