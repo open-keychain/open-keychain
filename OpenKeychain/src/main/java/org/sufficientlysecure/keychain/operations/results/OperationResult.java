@@ -660,7 +660,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
         MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),
         MSG_PSE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pse_error_bad_passphrase),
-        MSG_PSE_ERROR_HASH_ALGO (LogLevel.ERROR, R.string.msg_pse_error_hash_algo),
         MSG_PSE_ERROR_IO (LogLevel.ERROR, R.string.msg_pse_error_io),
         MSG_PSE_ERROR_SIGN_KEY(LogLevel.ERROR, R.string.msg_pse_error_sign_key),
         MSG_PSE_ERROR_KEY_SIGN (LogLevel.ERROR, R.string.msg_pse_error_key_sign),

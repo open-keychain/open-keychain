@@ -29,6 +29,8 @@ import java.util.HashSet;
  * - ECC: 224 bit
  * - Symmetric: 3TDEA
  * - Digital Signature (hash A): SHA-224 - SHA-512
+ *
+ * Many decisions are based on https://gist.github.com/coruus/68a8c65571e2b4225a69
  */
 public class PgpConstants {
 
@@ -39,26 +41,36 @@ public class PgpConstants {
 //    }
     // https://tools.ietf.org/html/rfc6637#section-13
 
+    /*
+        PgpDecryptVerify: Secure Algorithms Whitelist
+        all other algorithms will be rejected with OpenPgpDecryptionResult.RESULT_INSECURE
 
-    // PgpDecryptVerify: Secure Algorithms Whitelist
-    // all other algorithms will be rejected with OpenPgpDecryptionResult.RESULT_INSECURE
+        No broken ciphers or ciphers with key length smaller than 128 bit are allowed!
+     */
     public static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>();
     static {
         sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_256);
         sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_192);
         sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_128);
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.TWOFISH);
+        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.TWOFISH); // 128 bit
     }
 
     // all other algorithms will be rejected with OpenPgpSignatureResult.RESULT_INVALID_INSECURE
     public static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>();
     static {
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA256);
         sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA512);
         sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA384);
+        /*
+            TODO: SHA256 and SHA224 are still allowed even though
+            coruus advises against it, to enable better backward compatibility
+
+            coruus:
+            Implementations MUST NOT sign SHA-224 hashes. They SHOULD NOT accept signatures over SHA-224 hashes.
+            ((collision resistance of 112-bits))
+            Implementations SHOULD NOT sign SHA-256 hashes. They MUST NOT default to signing SHA-256 hashes.
+         */
+        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA256);
         sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA224);
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA1);
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.RIPEMD160);
     }
 
     /*
@@ -70,15 +82,15 @@ public class PgpConstants {
             SymmetricKeyAlgorithmTags.AES_256,
             SymmetricKeyAlgorithmTags.AES_192,
             SymmetricKeyAlgorithmTags.AES_128,
-            SymmetricKeyAlgorithmTags.TWOFISH
     };
 
-    // NOTE: some implementations do not support SHA512, thus we choose SHA256 as default (Mailvelope?)
+    /*
+        coorus:
+        Implementations SHOULD use SHA-512 for RSA or DSA signatures. They SHOULD NOT use SHA-384.
+        ((cite to affine padding attacks; unproven status of RSA-PKCSv15))
+     */
     public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
-            HashAlgorithmTags.SHA256,
             HashAlgorithmTags.SHA512,
-            HashAlgorithmTags.SHA384,
-            HashAlgorithmTags.SHA224,
     };
 
     /*
@@ -89,19 +101,41 @@ public class PgpConstants {
      */
     public static final int[] PREFERRED_COMPRESSION_ALGORITHMS = new int[]{
             CompressionAlgorithmTags.ZIP,
-            CompressionAlgorithmTags.ZLIB,
-            CompressionAlgorithmTags.BZIP2
     };
 
-    public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA256;
+    public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA512;
 
 
+    /*
+    Always use AES-256! Ignore the preferred encryption algos of the recipient!
+
+    coorus:
+    Implementations SHOULD ignore the symmetric algorithm preferences of a recipient's public key;
+    in particular, implementations MUST NOT choose an algorithm forbidden by this
+    document because a recipient prefers it.
+
+    NEEDCITE downgrade attacks on TLS, other protocols
+     */
     public static final int DEFAULT_SYMMETRIC_ALGORITHM = SymmetricKeyAlgorithmTags.AES_256;
     public interface OpenKeychainSymmetricKeyAlgorithmTags extends SymmetricKeyAlgorithmTags {
         int USE_DEFAULT = -1;
     }
 
-    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA256;
+    /*
+    Always use SHA-512! Ignore the preferred hash algos of the recipient!
+
+    coorus:
+    Implementations MUST ignore the hash algorithm preferences of a recipient when signing
+    a message to a recipient. The difficulty of forging a signature under a given key,
+    using generic attacks on hash functions, is the difficulty of the weakest hash signed by that key.
+
+    Implementations MUST default to using SHA-512 for RSA signatures,
+
+    and either SHA-512 or the matched instance of SHA-2 for ECDSA signatures.
+    TODO: Ed25519
+    CITE: zooko's hash function table CITE: distinguishers on SHA-256
+     */
+    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA512;
     public interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
         int USE_DEFAULT = -1;
     }
@@ -130,9 +164,9 @@ public class PgpConstants {
      * OpenKeychain: 0x90
      */
     public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
-    public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
+    public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
     public static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
+    public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA512;
     // NOTE: only SHA1 is supported for key checksum calculations in OpenPGP,
     // see http://tools.ietf.org/html/rfc488 0#section-5.5.3
     public static final int SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO = HashAlgorithmTags.SHA1;

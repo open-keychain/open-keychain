@@ -226,17 +226,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 
-            // Use preferred hash algo
+            // Use requested hash algo
             int requestedAlgorithm = input.getSignatureHashAlgorithm();
-            ArrayList<Integer> supported = signingKey.getSupportedHashAlgorithms();
             if (requestedAlgorithm == PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT) {
                 input.setSignatureHashAlgorithm(PgpConstants.DEFAULT_HASH_ALGORITHM);
-                // TODO
-                // get most preferred
-//                input.setSignatureHashAlgorithm(supported.get(0));
-            } else if (!supported.contains(requestedAlgorithm)) {
-                log.add(LogType.MSG_PSE_ERROR_HASH_ALGO, indent);
-                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
         }
         updateProgress(R.string.progress_preparing_streams, 2, 100);
@@ -245,11 +238,9 @@ public class PgpSignEncryptOperation extends BaseOperation {
         PGPEncryptedDataGenerator cPk = null;
         if (enableEncryption) {
 
-            // Use preferred encryption algo
+            // Use requested encryption algo
             int algo = input.getSymmetricEncryptionAlgorithm();
             if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
-                // get most preferred
-                // TODO: get from recipients
                 algo = PgpConstants.DEFAULT_SYMMETRIC_ALGORITHM;
             }
             // has Integrity packet enabled!

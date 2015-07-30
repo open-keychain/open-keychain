@@ -177,16 +177,6 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return true;
     }
 
-    /**
-     * Returns a list of all supported hash algorithms.
-     */
-    public ArrayList<Integer> getSupportedHashAlgorithms() {
-        // TODO: intersection between preferred hash algos of this key and PgpConstants.PREFERRED_HASH_ALGORITHMS
-        // choose best algo
-
-        return new ArrayList<>();
-    }
-
     private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo,
             Map<ByteBuffer,byte[]> signedHashes) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {

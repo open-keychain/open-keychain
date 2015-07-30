@@ -1196,7 +1196,6 @@
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
     <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>
-    <string name="msg_pse_error_hash_algo">"Requested hashing algorithm is not supported by this key!"</string>
     <string name="msg_pse_error_io">"Encountered IO Exception during operation!"</string>
     <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
     <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
