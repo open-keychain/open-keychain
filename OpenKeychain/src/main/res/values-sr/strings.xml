@@ -212,7 +212,7 @@
   <string name="error_no_encryption_or_signature_key">Изаберите бар један кључ за шифровање или потписивање.</string>
   <string name="specify_file_to_encrypt_to">Одредите у који фајл да шифрујем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
   <string name="specify_file_to_decrypt_to">Одредите у који фајл да дешифрујем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
-  <string name="specify_file_to_export_to">Одредите у који фајл да извезем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
+  <string name="specify_backup_dest">Одредите у који фајл да извезем.\nУПОЗОРЕЊЕ: Фајл ће бити пребрисан ако постоји.</string>
   <string name="key_deletion_confirmation_multi">Желите ли заиста да обришете све изабране јавне кључеве?\nОво не можете да поништите!</string>
   <string name="secret_key_deletion_confirmation">Желите ли заиста да обришете ТАЈНИ кључ „%s“?\nОво не можете да поништите!</string>
   <string name="public_key_deletetion_confirmation">Желите ли заиста да обришете јавни кључ „%s“??\nОво не можете да поништите!</string>

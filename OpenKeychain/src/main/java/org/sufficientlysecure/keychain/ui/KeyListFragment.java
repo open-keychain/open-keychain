@@ -18,6 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -52,9 +57,6 @@ import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -68,21 +70,18 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -93,10 +92,7 @@ public class KeyListFragment extends LoaderFragment
         LoaderManager.LoaderCallbacks<Cursor>, FabContainer,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
 
-    static final int REQUEST_REPEAT_PASSPHRASE = 1;
-    static final int REQUEST_ACTION = 2;
-
-    ExportHelper mExportHelper;
+    static final int REQUEST_ACTION = 1;
 
     private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
@@ -115,18 +111,6 @@ public class KeyListFragment extends LoaderFragment
 
     // for ConsolidateOperation
     private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
-
-    // This ids for multiple key export.
-    private ArrayList<Long> mIdsForRepeatAskPassphrase;
-    // This index for remembering the number of master key.
-    private int mIndex;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mExportHelper = new ExportHelper(getActivity());
-    }
 
     /**
      * Load custom layout with StickyListView from library
@@ -239,18 +223,6 @@ public class KeyListFragment extends LoaderFragment
                     case R.id.menu_key_list_multi_delete: {
                         ids = mAdapter.getCurrentSelectedMasterKeyIds();
                         showDeleteKeyDialog(mode, ids, mAdapter.isAnySecretSelected());
-                        break;
-                    }
-                    case R.id.menu_key_list_multi_export: {
-                        ids = mAdapter.getCurrentSelectedMasterKeyIds();
-                        showMultiExportDialog(ids);
-                        break;
-                    }
-                    case R.id.menu_key_list_multi_select_all: {
-                        // select all
-                        for (int i = 0; i < mAdapter.getCount(); i++) {
-                            mStickyList.setItemChecked(i, true);
-                        }
                         break;
                     }
                 }
@@ -470,10 +442,6 @@ public class KeyListFragment extends LoaderFragment
                 createKey();
                 return true;
 
-            case R.id.menu_key_list_export:
-                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
-                return true;
-
             case R.id.menu_key_list_update_all_keys:
                 updateAllKeys();
                 return true;
@@ -502,10 +470,14 @@ public class KeyListFragment extends LoaderFragment
             case R.id.menu_key_list_debug_first_time:
                 Preferences prefs = Preferences.getPreferences(getActivity());
                 prefs.setFirstTime(true);
-                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-                intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+                Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
+                intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
                 startActivity(intent);
                 getActivity().finish();
+                return true;
+
+            case R.id.menu_key_list_debug_cons:
+                consolidate();
                 return true;
 
             default:
@@ -554,7 +526,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void createKey() {
-        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+        Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
         startActivityForResult(intent, REQUEST_ACTION);
     }
 
@@ -598,7 +570,7 @@ public class KeyListFragment extends LoaderFragment
             mKeyserver = cloudPrefs.keyserver;
         }
 
-        mImportOpHelper = new CryptoOperationHelper<>(this,
+        mImportOpHelper = new CryptoOperationHelper<>(1, this,
                 this, R.string.progress_updating);
         mImportOpHelper.cryptoOperation();
     }
@@ -635,43 +607,9 @@ public class KeyListFragment extends LoaderFragment
         };
 
         mConsolidateOpHelper =
-                new CryptoOperationHelper<>(this, callback, R.string.progress_importing);
+                new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
 
         mConsolidateOpHelper.cryptoOperation();
-    }
-
-    private void showMultiExportDialog(long[] masterKeyIds) {
-        mIdsForRepeatAskPassphrase = new ArrayList<>();
-        for (long id : masterKeyIds) {
-            try {
-                if (PassphraseCacheService.getCachedPassphrase(
-                        getActivity(), id, id) == null) {
-                    mIdsForRepeatAskPassphrase.add(id);
-                }
-            } catch (PassphraseCacheService.KeyNotFoundException e) {
-                // This happens when the master key is stripped
-                // and ignore this key.
-            }
-        }
-        mIndex = 0;
-        if (mIdsForRepeatAskPassphrase.size() != 0) {
-            startPassphraseActivity();
-            return;
-        }
-        long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-        for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
-            idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
-        }
-        mExportHelper.showExportKeysDialog(idsForMultiExport,
-                Constants.Path.APP_DIR_FILE,
-                mAdapter.isAnySecretSelected());
-    }
-
-    private void startPassphraseActivity() {
-        Intent intent = new Intent(getActivity(), PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
 
     @Override
@@ -682,23 +620,6 @@ public class KeyListFragment extends LoaderFragment
 
         if (mConsolidateOpHelper != null) {
             mConsolidateOpHelper.handleActivityResult(requestCode, resultCode, data);
-        }
-
-        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if (resultCode != Activity.RESULT_OK) {
-                return;
-            }
-            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
-                startPassphraseActivity();
-                return;
-            }
-            long[] idsForMultiExport = new long[mIdsForRepeatAskPassphrase.size()];
-            for (int i = 0; i < mIdsForRepeatAskPassphrase.size(); ++i) {
-                idsForMultiExport[i] = mIdsForRepeatAskPassphrase.get(i);
-            }
-            mExportHelper.showExportKeysDialog(idsForMultiExport,
-                    Constants.Path.APP_DIR_FILE,
-                    mAdapter.isAnySecretSelected());
         }
 
         if (requestCode == REQUEST_ACTION) {

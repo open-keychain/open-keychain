@@ -142,12 +142,6 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                         ring.getMasterKeyId(),
                         saveParcel.mNewUnlock.mNewPassphrase,
                         ring.getPublicKey().getPrimaryUserIdWithFallback());
-            } else if (saveParcel.mNewUnlock.mNewPin != null) {
-                PassphraseCacheService.addCachedPassphrase(mContext,
-                        ring.getMasterKeyId(),
-                        ring.getMasterKeyId(),
-                        saveParcel.mNewUnlock.mNewPin,
-                        ring.getPublicKey().getPrimaryUserIdWithFallback());
             }
         }
 

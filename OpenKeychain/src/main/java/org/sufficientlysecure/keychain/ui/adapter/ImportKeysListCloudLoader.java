@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -26,9 +27,11 @@ import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.Keyserver;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 
@@ -44,13 +47,21 @@ public class ImportKeysListCloudLoader
     private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<>();
     private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
+    /**
+     * Pass a parcelableProxy to specify an explicit proxy, otherwise will fetch from preferences
+     *
+     * @param context
+     * @param serverQuery
+     * @param cloudPrefs
+     * @param parcelableProxy
+     */
     public ImportKeysListCloudLoader(Context context, String serverQuery, Preferences.CloudSearchPrefs cloudPrefs,
-                                     ParcelableProxy proxy) {
+                                     @Nullable ParcelableProxy parcelableProxy) {
         super(context);
         mContext = context;
         mServerQuery = serverQuery;
         mCloudPrefs = cloudPrefs;
-        mParcelableProxy = proxy;
+        mParcelableProxy = parcelableProxy;
     }
 
     @Override
@@ -99,11 +110,30 @@ public class ImportKeysListCloudLoader
      * Query keyserver
      */
     private void queryServer(boolean enforceFingerprint) {
+        ParcelableProxy parcelableProxy;
+
+        if (mParcelableProxy == null) {
+            // no explicit proxy specified, fetch from preferences
+            if (OrbotHelper.isOrbotInRequiredState(mContext)) {
+                parcelableProxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                        .parcelableProxy;
+            } else {
+                // user needs to enable/install orbot
+                mEntryList.clear();
+                GetKeyResult pendingResult = new GetKeyResult(null,
+                        RequiredInputParcel.createOrbotRequiredOperation());
+                mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, pendingResult);
+                return;
+            }
+        } else {
+            parcelableProxy = mParcelableProxy;
+        }
+
         try {
             ArrayList<ImportKeysListEntry> searchResult = CloudSearch.search(
                     mServerQuery,
                     mCloudPrefs,
-                    mParcelableProxy != null ? mParcelableProxy.getProxy() : null
+                    parcelableProxy.getProxy()
             );
 
             mEntryList.clear();

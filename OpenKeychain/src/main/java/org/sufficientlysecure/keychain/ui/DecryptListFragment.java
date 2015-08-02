@@ -85,13 +85,16 @@ public class DecryptListFragment
 
     public static final String ARG_INPUT_URIS = "input_uris";
     public static final String ARG_OUTPUT_URIS = "output_uris";
+    public static final String ARG_CANCELLED_URIS = "cancelled_uris";
     public static final String ARG_RESULTS = "results";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
+    public static final String ARG_CURRENT_URI = "current_uri";
 
     private ArrayList<Uri> mInputUris;
     private HashMap<Uri, Uri> mOutputUris;
     private ArrayList<Uri> mPendingInputUris;
+    private ArrayList<Uri> mCancelledInputUris;
 
     private Uri mCurrentInputUri;
 
@@ -155,6 +158,8 @@ public class DecryptListFragment
 
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mOutputUris));
+        outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
+        outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
 
     }
 
@@ -165,25 +170,45 @@ public class DecryptListFragment
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
 
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
+        ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,Uri> outputUris = args.getParcelable(ARG_OUTPUT_URIS);
         ParcelableHashMap<Uri,DecryptVerifyResult> results = args.getParcelable(ARG_RESULTS);
+        Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
 
-        displayInputUris(inputUris,
+        displayInputUris(inputUris, currentInputUri, cancelledUris,
                 outputUris != null ? outputUris.getMap() : null,
                 results != null ? results.getMap() : null
         );
     }
 
-    private void displayInputUris(ArrayList<Uri> inputUris, HashMap<Uri,Uri> outputUris,
+    private void displayInputUris(ArrayList<Uri> inputUris, Uri currentInputUri,
+            ArrayList<Uri> cancelledUris, HashMap<Uri,Uri> outputUris,
             HashMap<Uri,DecryptVerifyResult> results) {
 
         mInputUris = inputUris;
+        mCurrentInputUri = currentInputUri;
         mOutputUris = outputUris != null ? outputUris : new HashMap<Uri,Uri>(inputUris.size());
+        mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
         mPendingInputUris = new ArrayList<>();
 
-        for (Uri uri : inputUris) {
+        for (final Uri uri : inputUris) {
             mAdapter.add(uri);
+
+            if (uri.equals(mCurrentInputUri)) {
+                continue;
+            }
+
+            if (mCancelledInputUris.contains(uri)) {
+                mAdapter.setCancelled(uri, new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        retryUri(uri);
+                    }
+                });
+                continue;
+            }
+
             if (results != null && results.containsKey(uri)) {
                 processResult(uri, results.get(uri));
             } else {
@@ -192,7 +217,9 @@ public class DecryptListFragment
             }
         }
 
-        cryptoOperation();
+        if (mCurrentInputUri == null) {
+            cryptoOperation();
+        }
     }
 
     private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
@@ -247,6 +274,7 @@ public class DecryptListFragment
         mAdapter.setProgress(mCurrentInputUri, progress, max, msg);
         return true;
     }
+
     @Override
     public void onQueuedOperationError(DecryptVerifyResult result) {
         final Uri uri = mCurrentInputUri;
@@ -265,6 +293,25 @@ public class DecryptListFragment
         processResult(uri, result);
 
         cryptoOperation();
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        super.onCryptoOperationCancelled();
+
+        final Uri uri = mCurrentInputUri;
+        mCurrentInputUri = null;
+
+        mCancelledInputUris.add(uri);
+        mAdapter.setCancelled(uri, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                retryUri(uri);
+            }
+        });
+
+        cryptoOperation();
+
     }
 
     private void processResult(final Uri uri, final DecryptVerifyResult result) {
@@ -347,6 +394,22 @@ public class DecryptListFragment
         }
 
         mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+
+    }
+
+    public void retryUri(Uri uri) {
+
+        // never interrupt running operations!
+        if (mCurrentInputUri != null) {
+            return;
+        }
+
+        // un-cancel this one
+        mCancelledInputUris.remove(uri);
+        mPendingInputUris.add(uri);
+        mAdapter.setCancelled(uri, null);
+
+        cryptoOperation();
 
     }
 
@@ -528,12 +591,14 @@ public class DecryptListFragment
 
             int mProgress, mMax;
             String mProgressMsg;
+            OnClickListener mCancelled;
 
             ViewModel(Context context, Uri uri) {
                 mContext = context;
                 mInputUri = uri;
                 mProgress = 0;
                 mMax = 100;
+                mCancelled = null;
             }
 
             void addResult(DecryptVerifyResult result) {
@@ -551,6 +616,10 @@ public class DecryptListFragment
 
             boolean hasResult() {
                 return mResult != null;
+            }
+
+            void setCancelled(OnClickListener retryListener) {
+                mCancelled = retryListener;
             }
 
             void setProgress(int progress, int max, String msg) {
@@ -610,6 +679,11 @@ public class DecryptListFragment
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
 
+            if (model.mCancelled != null) {
+                bindItemCancelled(holder, model);
+                return;
+            }
+
             if (!model.hasResult()) {
                 bindItemProgress(holder, model);
                 return;
@@ -621,6 +695,14 @@ public class DecryptListFragment
                 bindItemFailure(holder, model);
             }
 
+        }
+
+        private void bindItemCancelled(ViewHolder holder, ViewModel model) {
+            if (holder.vAnimator.getDisplayedChild() != 3) {
+                holder.vAnimator.setDisplayedChild(3);
+            }
+
+            holder.vCancelledRetry.setOnClickListener(model.mCancelled);
         }
 
         private void bindItemProgress(ViewHolder holder, ViewModel model) {
@@ -738,6 +820,13 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
+        public void setCancelled(Uri uri, OnClickListener retryListener) {
+            ViewModel newModel = new ViewModel(mContext, uri);
+            int pos = mDataset.indexOf(newModel);
+            mDataset.get(pos).setCancelled(retryListener);
+            notifyItemChanged(pos);
+        }
+
         public void addResult(Uri uri, DecryptVerifyResult result, Drawable icon,
                 OnClickListener onFileClick, OnClickListener onKeyClick) {
 
@@ -785,6 +874,8 @@ public class DecryptListFragment
         public TextView vErrorMsg;
         public ImageView vErrorViewLog;
 
+        public ImageView vCancelledRetry;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -812,6 +903,8 @@ public class DecryptListFragment
 
             vErrorMsg = (TextView) itemView.findViewById(R.id.result_error_msg);
             vErrorViewLog = (ImageView) itemView.findViewById(R.id.result_error_log);
+
+            vCancelledRetry = (ImageView) itemView.findViewById(R.id.cancel_retry);
 
         }
 

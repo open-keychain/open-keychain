@@ -25,8 +25,8 @@
     <string name="title_encrypt_to_file">"Encrypt To File"</string>
     <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
-    <string name="title_export_key">"Export Key"</string>
-    <string name="title_export_keys">"Export Keys"</string>
+    <string name="title_export_key">"Backup Key"</string>
+    <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
     <string name="title_certify_key">"Confirm Key"</string>
@@ -96,7 +96,7 @@
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
     <string name="menu_help">"Help"</string>
-    <string name="menu_export_key">"Export to file"</string>
+    <string name="menu_export_key">"Backup to file"</string>
     <string name="menu_delete_key">"Delete key"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
@@ -275,7 +275,10 @@
     <string name="error_no_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
     <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_file_to_export_to">"Please specify which file to export to.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest">"A backup excluding your keys will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_single">"This key will be shared, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_secret_single">"A full backup of your key will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
+    <string name="specify_backup_dest_secret">"A full backup of all keys including yours will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
     <string name="secret_key_deletion_confirmation">"After deletion you will not be able to read messages encrypted with this key and lose all key confirmations done with it!"</string>
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
@@ -569,8 +572,8 @@
     <string name="api_register_allow">"Allow access"</string>
     <string name="api_register_disallow">"Disallow access"</string>
     <string name="api_register_error_select_key">"Please select a key!"</string>
-    <string name="api_select_pub_keys_missing_text">"No keys were found for these identities:"</string>
-    <string name="api_select_pub_keys_dublicates_text">"More than one key exist for these identities:"</string>
+    <string name="api_select_pub_keys_missing_text">"No keys were found for these email addresses:"</string>
+    <string name="api_select_pub_keys_dublicates_text">"More than one key exist for these email addresses:"</string>
     <string name="api_select_pub_keys_text">"Please review the list of recipients!"</string>
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
@@ -736,6 +739,7 @@
     <string name="drawer_open">"Open navigation drawer"</string>
     <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
+    <string name="nav_backup">"Backup"</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
@@ -1103,6 +1107,7 @@
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
     <string name="msg_dc_clear">"Processing cleartext data"</string>
     <string name="msg_dc_error_bad_passphrase">"Error unlocking key, bad password!"</string>
+    <string name="msg_dc_error_sym_passphrase">"Error decrypting data! (Bad passphrase?)"</string>
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
@@ -1315,6 +1320,11 @@
     <string name="first_time_blank_yubikey">"Would you like to use this blank YubiKey NEO with OpenKeychain?\n\nPlease take away the YubiKey now, you will be prompted when it is needed again!"</string>
     <string name="first_time_blank_yubikey_yes">"Use this YubiKey"</string>
 
+    <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
+    <string name="backup_all">"All keys + your own keys"</string>
+    <string name="backup_public_keys">"All keys"</string>
+    <string name="backup_section">"Backup"</string>
+
     <!-- unsorted -->
     <string name="section_certifier_id">"Certifier"</string>
     <string name="section_cert">"Certificate Details"</string>
@@ -1352,9 +1362,37 @@
     <string name="btn_start_exchange">"Start exchange"</string>
     <string name="user_id_none"><![CDATA[<none>]]></string>
 
+
+    <!-- Create Key wizard -->
+    <string name="create_key_wizard_title">Create Key Wizard</string>
+    <string name="input_pin">Input your pin to unlock the key</string>
+    <string name="title_unlock">Key Unlock</string>
+    <string name="title_unlock_method">Choose an unlock method</string>
+    <string name="reset">Reset</string>
+    <string name="pin">Pin</string>
+    <string name="confirm_caps">CONFIRM</string>
+    <string name="unlock_caps">UNLOCK</string>
+    <string name="unknown">UNKNOWN</string>
+    <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
+
+    <string name="error_no_pin">Your pin code must have at least one pin number</string>
+    <string name="error_pin_mismatch">The pins do not match, re-input your new pin again</string>
+    <string name="error_unknown_operation">Unknown operation error</string>
+    <string name="passphrase_key">Passphrase</string>
+    <string name="passphrase_tip">Use a passphrase to unlock your key</string>
+    <string name="nfc_tip">Use your personal NFC card to unlock your key</string>
+    <string name="lockpattern_tip">Use a lockpattern to unlock your key</string>
+    <string name="pin_tip">Use a pin to unlock your key</string>
+    <string name="wizard_unlock_tip">Choose an unlock method to protect your key.</string>
+    <string name="lockpattern_tip2">Choose a strong lockpattern. It protects your key when your device gets stolen.</string>
+    <string name="error_lockpattern_mismatch">Your lock pattern does not match. Please click on the reset button and try again</string>
+    <string name="pin_tip2">Choose a strong pin. It protects your key when your device gets stolen.</string>
+    <string name="error_wrong_pin">Wrong pin, please re-input your pin</string>
+
+
+
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
-    <string name="title_unlock_method">Choose an unlock method</string>
     <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
     <string name="enter_passphrase">Enter password</string>
     <string name="passphrase">Password</string>
@@ -1434,7 +1472,8 @@
     <string name="file_delete_exception">"Original file could not be deleted!"</string>
     <string name="error_clipboard_empty">"Clipboard is empty!"</string>
     <string name="error_clipboard_copy">"Error copying data to clipboard!"</string>
-    <string name="error_scan_fp">Error scanning fingerprint!</string>
-    <string name="error_scan_match">Fingerprints did not match!</string>
+    <string name="error_scan_fp">"Error scanning fingerprint!"</string>
+    <string name="error_scan_match">"Fingerprints did not match!"</string>
+    <string name="error_expiry_past">"Expiry date is in the past!"</string>
 
 </resources>

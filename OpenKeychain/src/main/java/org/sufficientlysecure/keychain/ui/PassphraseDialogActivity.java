@@ -26,6 +26,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
@@ -136,8 +137,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onResumeFragments() {
+        super.onResumeFragments();
 
         /* Show passphrase dialog to cache a new passphrase the user enters for using it later for
          * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
@@ -175,6 +176,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         private Intent mServiceIntent;
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Activity activity = getActivity();

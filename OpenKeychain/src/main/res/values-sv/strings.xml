@@ -204,7 +204,7 @@
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
   <string name="specify_file_to_encrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
-  <string name="specify_file_to_export_to">Ange vilken fil du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
+  <string name="specify_backup_dest">Ange vilken fil du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>

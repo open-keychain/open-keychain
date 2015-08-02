@@ -232,21 +232,21 @@ public class PassphraseCacheService extends Service {
      * Internal implementation to get cached passphrase.
      */
     private Passphrase getCachedPassphraseImpl(long masterKeyId, long subKeyId) throws ProviderHelper.NotFoundException {
+        // on "none" key, just do nothing
+        if (masterKeyId == Constants.key.none) {
+            return null;
+        }
+
         // passphrase for symmetric encryption?
         if (masterKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
-            Passphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric).getPassphrase();
+            CachedPassphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
             if (cachedPassphrase == null) {
                 return null;
             }
             addCachedPassphrase(this, Constants.key.symmetric, Constants.key.symmetric,
-                    cachedPassphrase, getString(R.string.passp_cache_notif_pwd));
-            return cachedPassphrase;
-        }
-
-        // on "none" key, just do nothing
-        if (masterKeyId == Constants.key.none) {
-            return null;
+                    cachedPassphrase.getPassphrase(), getString(R.string.passp_cache_notif_pwd));
+            return cachedPassphrase.getPassphrase();
         }
 
         // try to get master key id which is used as an identifier for cached passphrases

@@ -77,7 +77,7 @@ public class ViewKeyYubiKeyFragment
     }
 
     public ViewKeyYubiKeyFragment() {
-        super(R.string.progress_processing);
+        super(null);
     }
 
     @Override

@@ -32,7 +32,7 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
+import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.SignKeySpinner;
 import org.sufficientlysecure.keychain.util.Log;
@@ -94,9 +94,9 @@ public class AccountSettingsFragment extends Fragment {
     private void createKey() {
         KeyRing.UserId userId = KeyRing.splitUserId(mAccSettings.getAccountName());
 
-        Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userId.name);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userId.email);
+        Intent intent = new Intent(getActivity(), CreateKeyWizardActivity.class);
+        intent.putExtra(CreateKeyWizardActivity.EXTRA_NAME, userId.name);
+        intent.putExtra(CreateKeyWizardActivity.EXTRA_EMAIL, userId.email);
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 

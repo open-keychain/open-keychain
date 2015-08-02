@@ -206,7 +206,7 @@
   <string name="select_encryption_key">Vyberte alespoň jeden šifrovací klíč.</string>
   <string name="specify_file_to_encrypt_to">Prosím specifikujte do kterého souboru zašifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
   <string name="specify_file_to_decrypt_to">Prosím specifikujte do kterého souboru rozšifrovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
-  <string name="specify_file_to_export_to">Prosím specifikujte do kterého souboru exportovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
+  <string name="specify_backup_dest">Prosím specifikujte do kterého souboru exportovat.\nVAROVÁNÍ: Pokud soubor již existuje, bude přepsán.</string>
   <string name="key_deletion_confirmation_multi">Opravdu chcete smazat všechny vybrané soubory?</string>
   <string name="secret_key_deletion_confirmation">Po smazání již nebudete schopni přečíst zprávy zašifrované tímto klíčem a stratíte všechny potvrzení udělané tímto klíčem!</string>
   <string name="public_key_deletetion_confirmation">Smazat klíč \'%s\'?</string>

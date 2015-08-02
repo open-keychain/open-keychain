@@ -245,7 +245,7 @@
   <string name="error_no_encryption_or_signature_key">Hautatu gutxienez enkriptaketa giltza bat edo sinadura giltza bat.</string>
   <string name="specify_file_to_encrypt_to">Mesedez adierazi zein agirira enkriptatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
   <string name="specify_file_to_decrypt_to">Mesedez adierazi zein agirira dekriptatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
-  <string name="specify_file_to_export_to">Mesedez adierazi zein agirira esportatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
+  <string name="specify_backup_dest">Mesedez adierazi zein agirira esportatu.\nKONTUZ: Agiria gainidatzi egingo da egonez gero!</string>
   <string name="key_deletion_confirmation_multi">Egitan nahi duzu hautaturiko giltzak ezabatzea?</string>
   <string name="secret_key_deletion_confirmation">Ezabatu ondoren ezingo dituzu giltza honekin enkriptatutako mezuak irakurri eta berarekin egindako giltza baieztapen guztiak galduko dira!</string>
   <string name="public_key_deletetion_confirmation">Ezabatu \'%s\' giltza?</string>

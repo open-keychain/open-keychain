@@ -26,6 +26,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
+import org.spongycastle.openpgp.PGPDataValidationException;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
 import org.spongycastle.openpgp.PGPException;
@@ -47,6 +48,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
 import org.spongycastle.util.encoders.DecoderException;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -485,12 +487,23 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
                 if (!cryptoInput.hasPassphrase()) {
-                    log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                    return new DecryptVerifyResult(log,
-                            RequiredInputParcel.createRequiredSymmetricPassphrase());
-                }
 
-                passphrase = cryptoInput.getPassphrase();
+                    try {
+                        passphrase = getCachedPassphrase(key.symmetric);
+                        log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
+                        // nvm
+                    }
+
+                    if (passphrase == null) {
+                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                        return new DecryptVerifyResult(log,
+                                RequiredInputParcel.createRequiredSymmetricPassphrase());
+                    }
+
+                } else {
+                    passphrase = cryptoInput.getPassphrase();
+                }
 
                 // break out of while, only decrypt the first packet
                 break;
@@ -526,7 +539,14 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
                     passphrase.getCharArray());
 
-            clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
+            try {
+                clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
+            } catch (PGPDataValidationException e) {
+                log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent +1);
+                return new DecryptVerifyResult(log,
+                        RequiredInputParcel.createRequiredSymmetricPassphrase());
+            }
+
             encryptedData = encryptedDataSymmetric;
 
             symmetricEncryptionAlgo = encryptedDataSymmetric.getSymmetricAlgorithm(decryptorFactory);

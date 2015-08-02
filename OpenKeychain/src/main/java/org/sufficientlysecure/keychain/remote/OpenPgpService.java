@@ -53,8 +53,8 @@ import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
+import org.sufficientlysecure.keychain.ui.KeyUnlockActivityWrapper;
 import org.sufficientlysecure.keychain.ui.NfcOperationActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -88,8 +88,8 @@ public class OpenPgpService extends RemoteService {
         boolean duplicateUserIdsCheck = false;
 
         ArrayList<Long> keyIds = new ArrayList<>();
-        ArrayList<String> missingUserIds = new ArrayList<>();
-        ArrayList<String> duplicateUserIds = new ArrayList<>();
+        ArrayList<String> missingEmails = new ArrayList<>();
+        ArrayList<String> duplicateEmails = new ArrayList<>();
         if (!noUserIdsCheck) {
             for (String email : encryptionUserIds) {
                 // try to find the key for this specific email
@@ -102,13 +102,13 @@ public class OpenPgpService extends RemoteService {
                         keyIds.add(id);
                     } else {
                         missingUserIdsCheck = true;
-                        missingUserIds.add(email);
+                        missingEmails.add(email);
                         Log.d(Constants.TAG, "user id missing");
                     }
-                    // another entry for this email -> too keys with the same email inside user id
+                    // another entry for this email -> two keys with the same email inside user id
                     if (cursor != null && cursor.moveToNext()) {
                         duplicateUserIdsCheck = true;
-                        duplicateUserIds.add(email);
+                        duplicateEmails.add(email);
 
                         // also pre-select
                         long id = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
@@ -136,8 +136,8 @@ public class OpenPgpService extends RemoteService {
             intent.setAction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS);
             intent.putExtra(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
             intent.putExtra(RemoteServiceActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
-            intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            intent.putExtra(RemoteServiceActivity.EXTRA_DUPLICATE_USER_IDS, duplicateUserIds);
+            intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_EMAILS, missingEmails);
+            intent.putExtra(RemoteServiceActivity.EXTRA_DUPLICATE_EMAILS, duplicateEmails);
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
@@ -181,10 +181,10 @@ public class OpenPgpService extends RemoteService {
 
             case PASSPHRASE: {
                 // build PendingIntent for Passphrase request
-                Intent intent = new Intent(context, PassphraseDialogActivity.class);
+                Intent intent = new Intent(context, KeyUnlockActivityWrapper.class);
                 // pass params through to activity that it can be returned again later to repeat pgp operation
-                intent.putExtra(PassphraseDialogActivity.EXTRA_SERVICE_INTENT, data);
-                intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
+                intent.putExtra(KeyUnlockActivityWrapper.EXTRA_SERVICE_INTENT, data);
+                intent.putExtra(KeyUnlockActivityWrapper.EXTRA_REQUIRED_INPUT, requiredInput);
                 return PendingIntent.getActivity(context, 0, intent,
                         PendingIntent.FLAG_CANCEL_CURRENT);
             }

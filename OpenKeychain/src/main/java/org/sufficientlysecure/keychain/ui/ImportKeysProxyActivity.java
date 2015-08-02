@@ -44,9 +44,7 @@ import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -112,7 +110,16 @@ public class ImportKeysProxyActivity extends FragmentActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper != null) {
-            mImportOpHelper.cryptoOperation();
+            if (!mImportOpHelper.handleActivityResult(requestCode, resultCode, data)) {
+                // if a result has been returned, and it does not belong to mImportOpHelper,
+                // return it down to other activity
+                if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
+                    returnResult(data);
+                } else {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    finish();
+                }
+            }
         }
 
         if (requestCode == IntentIntegratorSupportV4.REQUEST_CODE) {
@@ -129,13 +136,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
             processScannedContent(scannedContent);
 
             return;
-        }
-        // if a result has been returned, return it down to other activity
-        if (data != null && data.hasExtra(OperationResult.EXTRA_RESULT)) {
-            returnResult(data);
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-            finish();
         }
     }
 
@@ -223,7 +223,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
         mKeyList = keyRings;
 
-        mImportOpHelper = new CryptoOperationHelper<>(this, this, R.string.progress_importing);
+        mImportOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_importing);
 
         mImportOpHelper.cryptoOperation();
     }
@@ -257,7 +257,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
         Intent data = new Intent();
         data.putExtras(returnData);
         returnResult(data);
-        return;
     }
 
     @Override

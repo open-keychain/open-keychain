@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:persistentDrawingCache="all">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/wizardLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="16dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="240dp"
+                android:src="@drawable/first_time_1" />
+
+            <RelativeLayout
+                android:id="@+id/create_key_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/wizardLogo">
+
+                <TextView
+                    android:id="@+id/create_key_create_key_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+                    android:gravity="right|center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/first_time_create_key"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/create_key_yubikey_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/create_key_create_key_button"
+                    android:clickable="true"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+                    android:gravity="right|center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/first_time_yubikey"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/create_key_import_button"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/create_key_yubikey_button"
+                    android:clickable="true"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+                    android:gravity="right|center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/first_time_import_key"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/create_key_cancel"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/create_key_import_button"
+                    android:clickable="true"
+                    android:drawablePadding="8dp"
+                    android:drawableRight="@drawable/ic_close_grey_24dp"
+                    android:gravity="right|center_vertical"
+                    android:minHeight="?android:attr/listPreferredItemHeight"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/btn_do_not_save"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

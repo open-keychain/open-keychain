@@ -166,11 +166,13 @@ public class EncryptTextFragment
 //                break;
 //            }
             case R.id.encrypt_copy: {
+                hideKeyboard();
                 mShareAfterEncrypt = false;
                 cryptoOperation();
                 break;
             }
             case R.id.encrypt_share: {
+                hideKeyboard();
                 mShareAfterEncrypt = true;
                 cryptoOperation();
                 break;
@@ -332,6 +334,9 @@ public class EncryptTextFragment
 
     @Override
     public void onQueuedOperationSuccess(SignEncryptResult result) {
+        super.onQueuedOperationSuccess(result);
+
+        hideKeyboard();
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file

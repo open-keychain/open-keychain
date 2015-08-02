@@ -144,7 +144,7 @@ public class SafeSlingerActivity extends BaseActivity
                 cache.writeCache(it.size(), it.iterator());
 
                 mOperationHelper =
-                        new CryptoOperationHelper(this, this, R.string.progress_importing);
+                        new CryptoOperationHelper(1, this, this, R.string.progress_importing);
 
                 mKeyList = null;
                 mKeyserver = null;

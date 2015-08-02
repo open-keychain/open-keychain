@@ -130,6 +130,13 @@ public class OrbotHelper {
         return intent;
     }
 
+    /**
+     * checks preferences to see if Orbot is required, and if yes, if it is installed and running
+     *
+     * @param context used to retrieve preferences
+     * @return false if Tor is selected proxy and Orbot is not installed or running, true
+     * otherwise
+     */
     public static boolean isOrbotInRequiredState(Context context) {
         Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(context).getProxyPrefs();
         if (!proxyPrefs.torEnabled) {
@@ -218,5 +225,28 @@ public class OrbotHelper {
         };
         return putOrbotInRequiredState(middleButton, middleButtonRunnable, emptyRunnable,
                 proxyPrefs, fragmentActivity);
+    }
+
+    /**
+     * generates a standard Orbot install/enable dialog if necessary, based on proxy settings in
+     * preferences
+     *
+     * @param ignoreTorRunnable run when the "Ignore Tor" button is pressed
+     * @param fragmentActivity used to start the activ
+     * @return
+     */
+    public static boolean putOrbotInRequiredState(Runnable ignoreTorRunnable,
+                                                  FragmentActivity fragmentActivity) {
+        return putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTorRunnable,
+                Preferences.getPreferences(fragmentActivity).getProxyPrefs(), fragmentActivity);
+    }
+
+    public static boolean putOrbotInRequiredState(Runnable ignoreTorRunnable,
+                                                  Runnable dismissDialogRunnable,
+                                                  FragmentActivity fragmentActivity) {
+        return putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTorRunnable,
+                dismissDialogRunnable,
+                Preferences.getPreferences(fragmentActivity).getProxyPrefs(),
+                fragmentActivity);
     }
 }
