@@ -33,7 +33,6 @@ import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
@@ -360,9 +359,9 @@ public class OpenPgpService extends RemoteService {
             boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
             int compressionId;
             if (enableCompression) {
-                compressionId = CompressionAlgorithmTags.ZLIB;
+                compressionId = PgpConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT;
             } else {
-                compressionId = CompressionAlgorithmTags.UNCOMPRESSED;
+                compressionId = PgpConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
             // first try to get key ids from non-ambiguous key id extra
