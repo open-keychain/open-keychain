@@ -1134,7 +1134,6 @@
     <string name="msg_dc_clear_meta_size_unknown">"File size is unknown"</string>
     <string name="msg_dc_clear_meta_time">"Modification time: %s"</string>
     <string name="msg_dc_clear_signature_bad">"Signature check NOT OK!"</string>
-    <string name="msg_dc_error_unsupported_hash_algo">"Unsupported and potentially insecure hash algorithm!"</string>
     <string name="msg_dc_clear_signature_check">"Verifying signature data"</string>
     <string name="msg_dc_clear_signature_ok">"Signature check OK"</string>
     <string name="msg_dc_clear_signature">"Saving signature data for later"</string>
@@ -1144,7 +1143,6 @@
     <string name="msg_dc_error_corrupt_data">"Data is corrupt!"</string>
     <string name="msg_dc_error_extract_key">"Unknown error unlocking key!"</string>
     <string name="msg_dc_error_integrity_check">"Integrity check error!"</string>
-    <string name="msg_dc_error_integrity_missing">"Missing integrity check! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
     <string name="msg_dc_error_invalid_data">"No valid OpenPGP encrypted or signed data found!"</string>
     <string name="msg_dc_error_io">"Encountered an error reading input data!"</string>
     <string name="msg_dc_error_input">"Error opening input data stream!"</string>
@@ -1165,7 +1163,10 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
-    <string name="msg_dc_old_symmetric_encryption_algo">"Insecure encryption algorithm has been used!"</string>
+    <string name="msg_dc_insecure_symmetric_encryption_algo">"Insecure encryption algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
+    <string name="msg_dc_insecure_hash_algo">"Insecure hash algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
+    <string name="msg_dc_insecure_mdc_missing">"Missing the Modification Detection Code (MDC) packet! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
+    <string name="msg_dc_insecure_key">"Insecure key: Either the bit length of RSA/DSA/ElGamal is too short or the ECC curve/algorithm is considered insecure! This can happen because the application is out of date, or from an attack."</string>
 
     <!-- Messages for VerifySignedLiteralData operation -->
     <string name="msg_vl">"Starting signature check"</string>

@@ -981,7 +981,7 @@
   <string name="msg_dc_clear_meta_size_unknown">La taille du fichier est inconnue</string>
   <string name="msg_dc_clear_meta_time">Heure de modification : %s</string>
   <string name="msg_dc_clear_signature_bad">La vérification de la signature n\'est PAS CORRECTE !</string>
-  <string name="msg_dc_error_unsupported_hash_algo">Algorithme de hachage non pris en charge et potentiellement non sécurisé ! </string>
+  <string name="msg_dc_insecure_hash_algo">Algorithme de hachage non pris en charge et potentiellement non sécurisé ! </string>
   <string name="msg_dc_clear_signature_check">Vérification des données de signature</string>
   <string name="msg_dc_clear_signature_ok">La vérification de la signature OK</string>
   <string name="msg_dc_clear_signature">Enregistrement des données de signature pour plus tard</string>
@@ -990,7 +990,7 @@
   <string name="msg_dc_error_corrupt_data"> Les données sont corrompues !</string>
   <string name="msg_dc_error_extract_key">Erreur inconnue de déverrouillage de la clef !</string>
   <string name="msg_dc_error_integrity_check">Erreur de vérification de l\'intégrité !</string>
-  <string name="msg_dc_error_integrity_missing">Vérification de l\'intégrité absente ! Ceci peut arriver car l\'application n\'est pas à jour, ou à cause d\'une attaque par mise à niveau inférieur.</string>
+  <string name="msg_dc_insecure_mdc_missing">Vérification de l\'intégrité absente ! Ceci peut arriver car l\'application n\'est pas à jour, ou à cause d\'une attaque par mise à niveau inférieur.</string>
   <string name="msg_dc_error_invalid_data">Aucune donnée OpenPGP valide chiffrée ou signée n\'a été trouvée !</string>
   <string name="msg_dc_error_no_data">Aucune donnée chiffrée n\'a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clef secrète connue n\'a été trouvée dans le flux !</string>
@@ -1009,7 +1009,7 @@
   <string name="msg_dc_trail_sym">Des données traînantes chiffrées symétriquement ont été rencontrées</string>
   <string name="msg_dc_trail_unknown">Des données traînantes de type inconnu ont été rencontrées</string>
   <string name="msg_dc_unlocking">Déverrouillage de la clef secrète</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">Un algorithme de chiffrement possiblement non sécurisé à été utilisé !</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Un algorithme de chiffrement possiblement non sécurisé à été utilisé !</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Lancement de la vérification de la signature</string>
   <string name="msg_vl_error_no_siglist">Aucune liste de signatures dans les données littérales signées</string>

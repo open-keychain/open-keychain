@@ -841,7 +841,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Agiri neurria ezezaguna da</string>
   <string name="msg_dc_clear_meta_time">Aldaketa ordua: %s</string>
   <string name="msg_dc_clear_signature_bad">Sinadura egiaztapena EZ ONGI!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">Hash algoritmo sostengatu gabea eta potentzialki segurtasun gabea!</string>
+  <string name="msg_dc_insecure_hash_algo">Hash algoritmo sostengatu gabea eta potentzialki segurtasun gabea!</string>
   <string name="msg_dc_clear_signature_check">Sinadura datuak egiaztatzen</string>
   <string name="msg_dc_clear_signature_ok">Sinadura egiaztapena ONGI</string>
   <string name="msg_dc_clear_signature">Sinadura datuak gerorako gordetzen</string>
@@ -864,7 +864,7 @@
   <string name="msg_dc">Dekriptaketa eragiketa abiatzen...</string>
   <string name="msg_dc_sym_skip">Datu simetrikoak ez daude ahalbidetuta, jauzi egiten...</string>
   <string name="msg_dc_unlocking">Giltza sekretua desblokeatzen</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">Potentzialki segurtasun gabea den enkriptaketa algoritmoa erabili da!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Potentzialki segurtasun gabea den enkriptaketa algoritmoa erabili da!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Sinadura egiaztapena abiatzen</string>
   <string name="msg_vl_error_wrong_key">Mezua ez dago giltza zuzenarekin sinatuta</string>

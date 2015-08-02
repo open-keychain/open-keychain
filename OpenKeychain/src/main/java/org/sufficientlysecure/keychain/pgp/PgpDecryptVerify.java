@@ -321,7 +321,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             InputStream in, OutputStream out, int indent) throws IOException, PGPException {
 
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-        OpenPgpDecryptionResult decryptionResult = new OpenPgpDecryptionResult();
+        OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
         OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_DC, indent);
@@ -462,6 +462,12 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                                     secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()),
                                 cryptoInput);
                     }
+                }
+
+                // check for insecure encryption key
+                if ( ! PgpSecurityConstants.isSecureKey(secretEncryptionKey)) {
+                    log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+                    decryptionResultBuilder.setInsecure(true);
                 }
 
                 // break out of while, only decrypt the first packet where we have a key
@@ -614,12 +620,12 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
-        decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED);
+        decryptionResultBuilder.setEncrypted(true);
 
         // Check for insecure encryption algorithms!
-        if (!PgpConstants.sSymmetricAlgorithmsWhitelist.contains(symmetricEncryptionAlgo)) {
-            log.add(LogType.MSG_DC_OLD_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-            decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_INSECURE);
+        if (!PgpSecurityConstants.isSecureSymmetricAlgorithm(symmetricEncryptionAlgo)) {
+            log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
+            decryptionResultBuilder.setInsecure(true);
         }
 
         JcaPGPObjectFactory plainFact = new JcaPGPObjectFactory(clear);
@@ -685,6 +691,13 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                     signatureResultBuilder.setKnownKey(false);
                     signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
                 }
+            }
+
+            // check for insecure signing key
+            // TODO: checks on signingRing ?
+            if (signingKey != null && ! PgpSecurityConstants.isSecureKey(signingKey)) {
+                log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+                signatureResultBuilder.setInsecure(true);
             }
 
             dataChunk = plainFact.nextObject();
@@ -821,8 +834,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 }
 
                 // check for insecure hash algorithms
-                if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
-                    log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+                    log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
                     signatureResultBuilder.setInsecure(true);
                 }
 
@@ -850,8 +863,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             // The MDC packet can be stripped by an attacker!
             Log.d(Constants.TAG, "MDC fail");
             if (!signatureResultBuilder.isValidSignature()) {
-                log.add(LogType.MSG_DC_ERROR_INTEGRITY_MISSING, indent);
-                decryptionResult.setResult(OpenPgpDecryptionResult.RESULT_INSECURE);
+                log.add(LogType.MSG_DC_INSECURE_MDC_MISSING, indent);
+                decryptionResultBuilder.setInsecure(true);
             }
         }
 
@@ -864,7 +877,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
         result.setCachedCryptoInputParcel(cryptoInput);
         result.setSignatureResult(signatureResultBuilder.build());
         result.setCharset(charset);
-        result.setDecryptionResult(decryptionResult);
+        result.setDecryptionResult(decryptionResultBuilder.build());
         result.setDecryptionMetadata(metadata);
         return result;
 
@@ -921,7 +934,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        PGPSignature signature = processPGPSignatureList(sigList, signatureResultBuilder);
+        PGPSignature signature = processPGPSignatureList(sigList, signatureResultBuilder, log, indent);
 
         if (signature != null) {
             try {
@@ -954,8 +967,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 }
 
                 // check for insecure hash algorithms
-                if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
-                    log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+                if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+                    log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
                     signatureResultBuilder.setInsecure(true);
                 }
 
@@ -1013,7 +1026,7 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        PGPSignature signature = processPGPSignatureList(sigList, signatureResultBuilder);
+        PGPSignature signature = processPGPSignatureList(sigList, signatureResultBuilder, log, indent);
 
         if (signature != null) {
             updateProgress(R.string.progress_reading_data, 60, 100);
@@ -1056,8 +1069,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
             }
 
             // check for insecure hash algorithms
-            if (!PgpConstants.sHashAlgorithmsWhitelist.contains(signature.getHashAlgorithm())) {
-                log.add(LogType.MSG_DC_ERROR_UNSUPPORTED_HASH_ALGO, indent + 1);
+            if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+                log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
                 signatureResultBuilder.setInsecure(true);
             }
 
@@ -1076,7 +1089,8 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
     }
 
     private PGPSignature processPGPSignatureList(
-            PGPSignatureList sigList, OpenPgpSignatureResultBuilder signatureResultBuilder)
+            PGPSignatureList sigList, OpenPgpSignatureResultBuilder signatureResultBuilder,
+            OperationLog log, int indent)
             throws PGPException {
         CanonicalizedPublicKeyRing signingRing = null;
         CanonicalizedPublicKey signingKey = null;
@@ -1116,6 +1130,13 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 signatureResultBuilder.setKnownKey(false);
                 signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
             }
+        }
+
+        // check for insecure signing key
+        // TODO: checks on signingRing ?
+        if (signingKey != null && ! PgpSecurityConstants.isSecureKey(signingKey)) {
+            log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+            signatureResultBuilder.setInsecure(true);
         }
 
         return signature;

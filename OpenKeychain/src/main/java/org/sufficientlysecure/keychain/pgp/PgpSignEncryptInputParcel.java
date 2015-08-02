@@ -33,10 +33,10 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     protected int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
     protected Passphrase mSymmetricPassphrase = null;
-    protected int mSymmetricEncryptionAlgorithm = PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
+    protected int mSymmetricEncryptionAlgorithm = PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
-    protected int mSignatureHashAlgorithm = PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
+    protected int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected boolean mFailOnMissingEncryptionKeyIds = false;
     protected String mCharset;

@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -195,7 +194,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     public PGPSignatureGenerator getCertSignatureGenerator(Map<ByteBuffer, byte[]> signedHashes) {
         PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(
-                PgpConstants.CERTIFY_HASH_ALGO, signedHashes);
+                PgpSecurityConstants.CERTIFY_HASH_ALGO, signedHashes);
 
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();

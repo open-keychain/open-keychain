@@ -1007,7 +1007,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Bestandsgrootte onbekend</string>
   <string name="msg_dc_clear_meta_time">Wijzigingstijd: %s</string>
   <string name="msg_dc_clear_signature_bad">Ondertekeningscontrole NIET OKÉ!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">Niet ondersteund en mogelijk onveilig hash-algoritme!</string>
+  <string name="msg_dc_insecure_hash_algo">Niet ondersteund en mogelijk onveilig hash-algoritme!</string>
   <string name="msg_dc_clear_signature_check">Bezig met verifiëren van ondertekeningsgegevens</string>
   <string name="msg_dc_clear_signature_ok">Ondertekeningscontrole OKÉ</string>
   <string name="msg_dc_clear_signature">Bezig met opslaan van ondertekeningsgegevens voor later</string>
@@ -1016,7 +1016,7 @@
   <string name="msg_dc_error_corrupt_data">Gegevens zijn corrupt!</string>
   <string name="msg_dc_error_extract_key">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_dc_error_integrity_check">Fout bij integriteitscontrole!</string>
-  <string name="msg_dc_error_integrity_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
+  <string name="msg_dc_insecure_mdc_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
   <string name="msg_dc_error_invalid_data">Geen geldige OpenPGP-versleutelde of ondertekende inhoud gevonden!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>
@@ -1035,7 +1035,7 @@
   <string name="msg_dc_trail_sym">Achterlopende, symmetrisch versleutelde gegevens tegengekomen</string>
   <string name="msg_dc_trail_unknown">Achterlopende gegevens van onbekend type tegengekomen</string>
   <string name="msg_dc_unlocking">Bezig met ontgrendelen van geheime sleutel</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">Mogelijk onveilig versleutelingsalgoritme gebruikt!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Mogelijk onveilig versleutelingsalgoritme gebruikt!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Ondertekeningscontrole wordt gestart</string>
   <string name="msg_vl_error_no_siglist">Geen ondertekeningslijst in ondertekende letterlijke gegevens</string>

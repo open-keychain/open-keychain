@@ -62,7 +62,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
@@ -228,8 +227,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
             // Use requested hash algo
             int requestedAlgorithm = input.getSignatureHashAlgorithm();
-            if (requestedAlgorithm == PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT) {
-                input.setSignatureHashAlgorithm(PgpConstants.DEFAULT_HASH_ALGORITHM);
+            if (requestedAlgorithm == PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT) {
+                input.setSignatureHashAlgorithm(PgpSecurityConstants.DEFAULT_HASH_ALGORITHM);
             }
         }
         updateProgress(R.string.progress_preparing_streams, 2, 100);
@@ -240,8 +239,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
             // Use requested encryption algo
             int algo = input.getSymmetricEncryptionAlgorithm();
-            if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
-                algo = PgpConstants.DEFAULT_SYMMETRIC_ALGORITHM;
+            if (algo == PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
+                algo = PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM;
             }
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =
@@ -337,8 +336,8 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
                     // Use preferred compression algo
                     int algo = input.getCompressionAlgorithm();
-                    if (algo == PgpConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
-                        algo = PgpConstants.DEFAULT_COMPRESSION_ALGORITHM;
+                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
+                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
                     }
                     compressGen = new PGPCompressedDataGenerator(algo);
                     bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));

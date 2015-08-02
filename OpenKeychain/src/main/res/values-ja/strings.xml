@@ -905,7 +905,7 @@
   <string name="msg_dc_clear_meta_size_unknown">ファイルサイズが不明</string>
   <string name="msg_dc_clear_meta_time">更新日時: %s</string>
   <string name="msg_dc_clear_signature_bad">署名の確認がOKではありません!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">サポート外かつセキュアでない可能性があるハッシュアルゴリズム!</string>
+  <string name="msg_dc_insecure_hash_algo">サポート外かつセキュアでない可能性があるハッシュアルゴリズム!</string>
   <string name="msg_dc_clear_signature_check">署名データの検証中</string>
   <string name="msg_dc_clear_signature_ok">署名の確認はOKです</string>
   <string name="msg_dc_clear_signature">後程署名データを保存します</string>
@@ -913,7 +913,7 @@
   <string name="msg_dc_error_bad_passphrase">鍵のロック解除エラー、パスフレーズに問題があります!</string>
   <string name="msg_dc_error_extract_key">鍵のロック解除で不明なエラー!</string>
   <string name="msg_dc_error_integrity_check">完全性チェックエラー!</string>
-  <string name="msg_dc_error_integrity_missing">完全聖チェックの欠落!これは暗号化アプリケーションが期限切れになった場合、もしくは暗号強度低下攻撃がある場合に発生します。</string>
+  <string name="msg_dc_insecure_mdc_missing">完全聖チェックの欠落!これは暗号化アプリケーションが期限切れになった場合、もしくは暗号強度低下攻撃がある場合に発生します。</string>
   <string name="msg_dc_error_invalid_data">正常な署名データが見付からなかった!</string>
   <string name="msg_dc_error_io">操作中にIO例外に当たりました!</string>
   <string name="msg_dc_error_no_data">ストリーム中に暗号化されたデータが見付からなかった!</string>
@@ -933,7 +933,7 @@
   <string name="msg_dc_trail_sym">追跡で遭遇、対称暗号化されたデータ</string>
   <string name="msg_dc_trail_unknown">追跡で未知のタイプのデータに遭遇</string>
   <string name="msg_dc_unlocking">秘密鍵のロック解除</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">セキュアでない可能性がある暗号化アルゴリズムが利用されています!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">セキュアでない可能性がある暗号化アルゴリズムが利用されています!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">署名の確認開始</string>
   <string name="msg_vl_error_no_siglist">署名済み固定データに署名リストがありません</string>

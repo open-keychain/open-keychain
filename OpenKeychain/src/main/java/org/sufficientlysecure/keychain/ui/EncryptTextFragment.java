@@ -33,12 +33,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
@@ -224,16 +223,16 @@ public class EncryptTextFragment
 
         if (mUseCompression) {
             data.setCompressionAlgorithm(
-                    PgpConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
+                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
         } else {
             data.setCompressionAlgorithm(
-                    PgpConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
         data.setSymmetricEncryptionAlgorithm(
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
         data.setSignatureHashAlgorithm(
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         // Always use armor for messages
         data.setEnableAsciiArmorOutput(true);

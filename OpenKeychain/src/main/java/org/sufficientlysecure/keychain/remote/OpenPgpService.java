@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
-import org.sufficientlysecure.keychain.pgp.PgpConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
@@ -248,7 +248,7 @@ public class OpenPgpService extends RemoteService {
                     .setCleartextSignature(cleartextSign)
                     .setDetachedSignature(!cleartextSign)
                     .setVersionHeader(null)
-                    .setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
+                    .setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
 
             Intent signKeyIdIntent = getSignKeyMasterId(data);
             // NOTE: Fallback to return account settings (Old API)
@@ -359,9 +359,9 @@ public class OpenPgpService extends RemoteService {
             boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
             int compressionId;
             if (enableCompression) {
-                compressionId = PgpConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT;
+                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT;
             } else {
-                compressionId = PgpConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
+                compressionId = PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED;
             }
 
             // first try to get key ids from non-ambiguous key id extra
@@ -392,7 +392,7 @@ public class OpenPgpService extends RemoteService {
             pseInput.setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null)
                     .setCompressionAlgorithm(compressionId)
-                    .setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
+                    .setSymmetricEncryptionAlgorithm(PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT)
                     .setEncryptionMasterKeyIds(keyIds)
                     .setFailOnMissingEncryptionKeyIds(true);
 
@@ -421,7 +421,7 @@ public class OpenPgpService extends RemoteService {
                 }
 
                 // sign and encrypt
-                pseInput.setSignatureHashAlgorithm(PgpConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT)
+                pseInput.setSignatureHashAlgorithm(PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT)
                         .setAdditionalEncryptId(signKeyId); // add sign key for encryption
             }
 
