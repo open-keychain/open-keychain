@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.TypedValue;
@@ -34,9 +33,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.IOException;
 
 public class HelpMarkdownFragment extends Fragment {
-    private Activity mActivity;
-
-    private int mHtmlFile;
 
     public static final String ARG_MARKDOWN_RES = "htmlFile";
 
@@ -56,15 +52,13 @@ public class HelpMarkdownFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mActivity = getActivity();
+        int mHtmlFile = getArguments().getInt(ARG_MARKDOWN_RES);
 
-        mHtmlFile = getArguments().getInt(ARG_MARKDOWN_RES);
-
-        ScrollView scroller = new ScrollView(mActivity);
-        HtmlTextView text = new HtmlTextView(mActivity);
+        ScrollView scroller = new ScrollView(getActivity());
+        HtmlTextView text = new HtmlTextView(getActivity());
 
         // padding
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, mActivity
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getActivity()
                 .getResources().getDisplayMetrics());
         text.setPadding(padding, padding, padding, 0);
 
@@ -72,8 +66,9 @@ public class HelpMarkdownFragment extends Fragment {
 
         // load markdown from raw resource
         try {
-            String html = new Markdown4jProcessor().process(getActivity().getResources().openRawResource(mHtmlFile));
-            text.setHtmlFromString(html, true);
+            String html = new Markdown4jProcessor().process(
+                    getActivity().getResources().openRawResource(mHtmlFile));
+            text.setHtmlFromString(html, new HtmlTextView.LocalImageGetter());
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
         }

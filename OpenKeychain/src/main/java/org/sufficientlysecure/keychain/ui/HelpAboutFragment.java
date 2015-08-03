@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ public class HelpAboutFragment extends Fragment {
         try {
             String html = new Markdown4jProcessor().process(
                     getActivity().getResources().openRawResource(R.raw.help_about));
-            aboutTextView.setHtmlFromString(html, true);
+            aboutTextView.setHtmlFromString(html, new HtmlTextView.LocalImageGetter());
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException", e);
         }

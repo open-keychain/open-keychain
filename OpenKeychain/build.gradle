@@ -12,7 +12,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:22.1.0'
+    compile 'com.android.support:cardview-v7:22.2.0'
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
@@ -48,7 +48,7 @@ dependencies {
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.0'
     compile 'com.splitwise:tokenautocomplete:1.3.3@aar'
     compile 'se.emilsjolander:stickylistheaders:2.6.0'
-    compile 'org.sufficientlysecure:html-textview:1.1'
+    compile 'org.sufficientlysecure:html-textview:1.2'
     compile 'com.mikepenz:materialdrawer:3.0.9@aar'
     compile 'com.mikepenz:iconics:1.0.2'
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
@@ -77,7 +77,7 @@ dependencyVerification {
             'com.android.support:appcompat-v7:2d5867698410b41f75140c91d6c1e58da74ae0f97baf6e0bdd1f7cc1017ceb2c',
             'com.android.support:design:41ff5f700d1bf8c190e1d3ac33582f92ad6e1f3b1080c8b8e2ac4f7b703be76a',
             'com.android.support:recyclerview-v7:3a8da14585fa1c81f06e7cef4d93a7641f0323d8f984ff9a7bd7a6e416b46888',
-            'com.android.support:cardview-v7:8dc99af71fec000baa4470c3907755264f15f816920861bc015b2babdbb49807',
+            'com.android.support:cardview-v7:15b934f69f10d85f5adc12231ba1b708618a7daf6e5102af42addf2c67a85e2c',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
             'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
             'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
@@ -87,23 +87,25 @@ dependencyVerification {
             'org.commonjava.googlecode.markdown4j:markdown4j:e952e825d29e1317d96f79f346bfb6786c7c5eef50bd26e54a80823704b62e13',
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
             'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
-            'org.sufficientlysecure:html-textview:ca24b1522be88378634093815ce9ff1b4920c72e7513a045a7846e14069ef988',
+            'org.sufficientlysecure:html-textview:1d3bed31ef837437154de8d2362a0e6b0e59b6c3535d87ee48c2fab12c84f9bb',
             'com.mikepenz:materialdrawer:70c3efb3842461db41df6a918ea93969a7da21e63c092be838b153e5a47a17bf',
             'com.mikepenz:iconics:c1a02203d8e0d638959463c00af3ab9096e0a7c1ad5928762eb10ef5ce8a63cd',
             'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
+            'com.squareup.okhttp:okhttp:bc0da7ac1f5441619faa2082811938acf7df97e4a8e08f0e043ff4937414d5ad',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:b918e50a7876fad34e4020ee41418039772c5fe8dd36825720ca8ffecb7d0f06',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:111d7d53b9e920ad3405f8f3eb0ab7bd3aee66d577442452754b83c7c1c1d49a',
+//            'com.madgag.spongycastle:core:97276487be598747ba78c063c90cea7fc3c7ad9bc7aeba03c0b9c98692052b8a',
+//            'com.madgag.spongycastle:pg:da319de706d946f178140959c74aec126f7803f1104dbad89bb1f55a53f6e1a9',
+//            'com.madgag.spongycastle:pkix:979aa4b2aaef94866e0f97b05b1922244eaf8b650f3691a3c44760ff0a41562b',
+//            'com.madgag.spongycastle:prov:902a484219bbf4e395a1c32da65b2453133e195bcc92336dc8c33b7c58edcd60',
+//            'OpenKeychain.extern:minidns:8274d50124d9584e95df0c5da7798269ac9caf0eab560df929c2c658ca624037',
+//            'OpenKeychain.extern.KeybaseLib:Lib:d52e7888cea6de9e077501bb533270b2a86b52cb8af49e5f44ee8c4bb19ea017',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:76e5da6b4f5f8835b12649e17569f0d0d8d89552815a61383c128545632689d1',
+//            'OpenKeychain.extern.snackbar:lib:6847a73d2680558d35f0b384ac3ed006532c0a2306598b000db94ef18aab62aa',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
-//            'OpenKeychain.extern:openpgp-api-lib:f05a9215cdad3a6597e4c5ece6fcec92b178d218195a3e88d2c0937c48dd9580',
-//            'OpenKeychain.extern:openkeychain-api-lib:50f6ebb5452d3fdc7be137ccf857a0ff44d55539fcb7b91baef495766ed7f429',
-//            'com.madgag.spongycastle:core:df8fcc028a95ac5ffab3b78c9163f5cfa672e41cd50128ca55d458b6cfbacf4b',
-//            'com.madgag.spongycastle:pg:160b345b10a2c92dc731453eec87037377f66a8e14a0648d404d7b193c4e380d',
-//            'com.madgag.spongycastle:pkix:0b4f3301ea12dd9f25d71770e6ea9f75e0611bf53062543e47be5bc15340a7e4',
-//            'com.madgag.spongycastle:prov:7325942e0b39f5fb35d6380818eed4b826e7dfc7570ad35b696d778049d8c36a',
-//            'OpenKeychain.extern:minidns:77b1786d29469e3b21f9404827cab811edc857cd68bc732cd57f11307c332eae',
-//            'OpenKeychain.extern.KeybaseLib:Lib:c91cda4a75692d8664644cd17d8ac962ce5bc0e266ea26673a639805f1eccbdf',
-//            'OpenKeychain.extern:safeslinger-exchange:d222721bb35408daaab9f46449364b2657112705ee571d7532f81cbeb9c4a73f',
-//            'OpenKeychain.extern.snackbar:lib:52357426e5275412e2063bdf6f0e6b957a3ea74da45e0aef35d22d9afc542e23',
+            'com.squareup.okio:okio:b53c1760864e1c39b5275d9023e2a6fbe8f3189e6e67b4c87877b8ec8f92e05a',
     ]
 }
 
