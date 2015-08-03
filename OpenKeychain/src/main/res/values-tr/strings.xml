@@ -439,7 +439,7 @@
   <string name="unknown_algorithm">bilinmeyen</string>
   <string name="can_sign_not">imzalanamadı</string>
   <string name="error_no_encrypt_subkey">Şifreleme için kullanılabilecek altanahtar mevcut değil!</string>
-  <string name="info_no_manual_account_creation">OpenKeychain-hesaplarını kendiniz oluşturmayın.\nDaha fazla bilgi için Yardım bölümüne bakın.</string>
+  <string name="account_no_manual_account_creation">OpenKeychain-hesaplarını kendiniz oluşturmayın.\nDaha fazla bilgi için Yardım bölümüne bakın.</string>
   <string name="contact_show_key">Anahtarı göster (%s)</string>
   <string name="swipe_to_update">Anahtar sunucudan güncelleme almak için parmağınızı aşağıya doğru kaydırın</string>
   <string name="error_no_file_selected">Şifrelemek için en az bir dosya seçin!</string>

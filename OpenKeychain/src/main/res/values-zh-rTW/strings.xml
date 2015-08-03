@@ -630,7 +630,7 @@
   <string name="title_view_cert">查看認證內容</string>
   <string name="unknown_algorithm">未知</string>
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
-  <string name="info_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
+  <string name="account_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
   <string name="btn_start_exchange">開始交換</string>
   <!--Passphrase wizard-->

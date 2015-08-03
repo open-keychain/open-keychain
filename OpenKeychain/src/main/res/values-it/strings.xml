@@ -743,7 +743,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="unknown_algorithm">sconosciuto</string>
   <string name="can_sign_not">non può firmare</string>
   <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
-  <string name="info_no_manual_account_creation">Non creare account OpenKeychain manualmente.\nPer ulteriori informazioni, vedere la Guida.</string>
+  <string name="account_no_manual_account_creation">Non creare account OpenKeychain manualmente.\nPer ulteriori informazioni, vedere la Guida.</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
   <string name="key_colon">Chiave:</string>

@@ -1385,7 +1385,6 @@
     <string name="unknown_algorithm">"unknown"</string>
     <string name="can_sign_not">"cannot sign"</string>
     <string name="error_no_encrypt_subkey">"No encryption subkey available!"</string>
-    <string name="info_no_manual_account_creation">"Do not create OpenKeychain-Accounts manually.\nFor more information, see Help."</string>
     <string name="contact_show_key">"Show key (%s)"</string>
     <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
@@ -1397,6 +1396,11 @@
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
     <string name="btn_start_exchange">"Start exchange"</string>
     <string name="user_id_none"><![CDATA[<none>]]></string>
+
+    <!-- Android Account -->
+    <string name="account_no_manual_account_creation">"You can not create OpenKeychain accounts manually."</string>
+    <string name="account_privacy_title">"Privacy"</string>
+    <string name="account_privacy_text">"OpenKeychain does not synchronizes your contacts with the Internet. It only links contacts to keys based on names and email addresses. It does this offline on your device."</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->

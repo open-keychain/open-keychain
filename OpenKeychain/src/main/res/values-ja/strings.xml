@@ -1097,7 +1097,7 @@
   <string name="unknown_algorithm">不明</string>
   <string name="can_sign_not">署名不可</string>
   <string name="error_no_encrypt_subkey">暗号化の副鍵がありません!</string>
-  <string name="info_no_manual_account_creation">OpenKeychainのアカウントを手動では生成できません.
+  <string name="account_no_manual_account_creation">OpenKeychainのアカウントを手動では生成できません.
 より詳細は、ヘルプを参照のこと。</string>
   <string name="contact_show_key">鍵 (%s) を表示</string>
   <string name="swipe_to_update">下スワイプでキーサーバから更新します</string>

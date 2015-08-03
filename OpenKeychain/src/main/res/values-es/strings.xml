@@ -1233,7 +1233,7 @@
   <string name="unknown_algorithm">desconocido</string>
   <string name="can_sign_not">no puede firmarse</string>
   <string name="error_no_encrypt_subkey">¡No hay subclave de cifrado disponible!</string>
-  <string name="info_no_manual_account_creation">No crear Cuentas-OpenKeychain manualmente.\nPara más información, vea la Ayuda.</string>
+  <string name="account_no_manual_account_creation">No crear Cuentas-OpenKeychain manualmente.\nPara más información, vea la Ayuda.</string>
   <string name="contact_show_key">Mostrar clave (%s)</string>
   <string name="swipe_to_update">Gesto de barrido hacia abajo para actualizar desde el servidor de claves</string>
   <string name="error_no_file_selected">¡Seleccione al menos un fichero a cifrar!</string>

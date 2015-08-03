@@ -1032,7 +1032,7 @@
   <string name="unknown_algorithm">ezezaguna</string>
   <string name="can_sign_not">ezin da sinatu</string>
   <string name="error_no_encrypt_subkey">Ez dago enkriptaketa azpigiltzarik eskuragarri!</string>
-  <string name="info_no_manual_account_creation">Ez sortu OpenKeychain-Kontuak eskuz.\n.Argibide gehiagorako, ikusi Laguntza.</string>
+  <string name="account_no_manual_account_creation">Ez sortu OpenKeychain-Kontuak eskuz.\n.Argibide gehiagorako, ikusi Laguntza.</string>
   <string name="contact_show_key">Erakutsi (%s) giltza</string>
   <string name="swipe_to_update">Irristatu behera giltza-zerbitzaritik eguneratzeko</string>
   <string name="error_no_file_selected">Hautatu agiri bat gutxienez enkriptatzeko!</string>

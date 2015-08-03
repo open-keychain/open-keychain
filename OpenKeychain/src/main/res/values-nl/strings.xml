@@ -1231,7 +1231,7 @@
   <string name="unknown_algorithm">onbekend</string>
   <string name="can_sign_not">kan niet ondertekenen</string>
   <string name="error_no_encrypt_subkey">Geen codeer-subsleutel beschikbaar!</string>
-  <string name="info_no_manual_account_creation">Maak OpenKeychain-accounts niet handmatig aan.\nVoor meer informatie, zie Help.</string>
+  <string name="account_no_manual_account_creation">Maak OpenKeychain-accounts niet handmatig aan.\nVoor meer informatie, zie Help.</string>
   <string name="contact_show_key">Toon sleutel (%s)</string>
   <string name="swipe_to_update">Veeg naar beneden om van sleutelserver te updaten</string>
   <string name="error_no_file_selected">Selecteer minstens een bestand om te versleutelen!</string>

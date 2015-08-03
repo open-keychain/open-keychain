@@ -1201,7 +1201,7 @@
   <string name="unknown_algorithm">inconnu</string>
   <string name="can_sign_not">impossible de signer</string>
   <string name="error_no_encrypt_subkey">Aucune sous-clef de chiffrement n\'est proposée !</string>
-  <string name="info_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
+  <string name="account_no_manual_account_creation">Ne pas créer de comptes-OpenKeychain manuellement.\nPour plus d\'informations, consultez l\'Aide.</string>
   <string name="contact_show_key">Montrer la clef (%s)</string>
   <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clefs</string>
   <string name="error_no_file_selected">Choisir au moins un fichier à chiffrer !</string>

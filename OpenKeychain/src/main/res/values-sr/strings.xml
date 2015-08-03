@@ -1108,7 +1108,7 @@
   <string name="unknown_algorithm">непознат</string>
   <string name="can_sign_not">не може да потпише</string>
   <string name="error_no_encrypt_subkey">Поткључ за шифровање није доступан!</string>
-  <string name="info_no_manual_account_creation">Не прави налоге Отвореног кључарника ручно.\nПогледајте Помоћ за више информација.</string>
+  <string name="account_no_manual_account_creation">Не прави налоге Отвореног кључарника ручно.\nПогледајте Помоћ за више информација.</string>
   <string name="contact_show_key">Прикажи кључ (%s)</string>
   <string name="swipe_to_update">Превуците прстом доле да ажурирате са сервера кључева</string>
   <string name="error_no_file_selected">Изаберите бар један фајл за шифровање!</string>

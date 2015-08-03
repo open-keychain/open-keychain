@@ -1161,7 +1161,7 @@
   <string name="unknown_algorithm">unbekannt</string>
   <string name="can_sign_not">Kann nicht unterschreiben</string>
   <string name="error_no_encrypt_subkey">Kein Unterschlüssel zum Verschlüsseln verfügbar!</string>
-  <string name="info_no_manual_account_creation">Erstelle OpenKeychain-Benutzerkonten nicht manuell.\nFür mehr Informationen sieh in die Hilfe.</string>
+  <string name="account_no_manual_account_creation">Erstelle OpenKeychain-Benutzerkonten nicht manuell.\nFür mehr Informationen sieh in die Hilfe.</string>
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
   <string name="swipe_to_update">Nach unten wischen um von Schlüsselserver zu aktualisieren</string>
   <string name="error_no_file_selected">Mindestens eine Datei zum Verschlüsseln auswählen!</string>

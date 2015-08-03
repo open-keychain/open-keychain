@@ -907,7 +907,7 @@
   <string name="unknown_algorithm">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
-  <string name="info_no_manual_account_creation">Skapa inte OpenKeychain-konton manuellt. \nFör mer information, se Hjälp.</string>
+  <string name="account_no_manual_account_creation">Skapa inte OpenKeychain-konton manuellt. \nFör mer information, se Hjälp.</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>
   <string name="swipe_to_update">Dra nedåt för att uppdatera från nyckelserver</string>
   <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>

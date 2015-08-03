@@ -83,7 +83,7 @@ public class DummyAccountService extends Service {
         public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String authTokenType,
                                  String[] requiredFeatures, Bundle options) throws NetworkErrorException {
             response.onResult(new Bundle());
-            toaster.toast(R.string.info_no_manual_account_creation);
+            toaster.toast(R.string.account_no_manual_account_creation);
             Log.d(Constants.TAG, "DummyAccountService.addAccount");
             return null;
         }
