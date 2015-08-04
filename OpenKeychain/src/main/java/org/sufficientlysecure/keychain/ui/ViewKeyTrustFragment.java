@@ -256,7 +256,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                             i++;
                         }
                         appendProofLinks(ssb, fingerprint, proofsFor[i]);
-                        proofList.add(insertLinks(ssb,getProofNarrative(proofType)));
+                        proofList.add(formatSpannableString(ssb, getProofNarrative(proofType)));
                     }
                 }
 
@@ -266,7 +266,10 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             return new ResultPage(getString(R.string.key_trust_results_prefix), proofList);
         }
 
-        private SpannableStringBuilder insertLinks(SpannableStringBuilder proofLinks,String proofType){
+        private SpannableStringBuilder formatSpannableString(SpannableStringBuilder proofLinks,String proofType){
+            //Formatting SpannableStringBuilder with String.format() causes the links to stop working.
+            //This method is to insert the links while reserving the links
+
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             ssb.append(proofType);
             if(proofType.contains("%s")){
