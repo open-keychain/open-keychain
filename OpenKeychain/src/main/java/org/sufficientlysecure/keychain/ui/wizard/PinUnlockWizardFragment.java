@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -32,6 +33,7 @@ public class PinUnlockWizardFragment extends WizardFragment implements
         PinUnlockWizardFragmentViewModel.OnViewModelEventBind {
     private PinUnlockWizardFragmentViewModel mPinUnlockWizardFragmentViewModel;
     private FeedbackIndicatorView mFeedbackIndicatorView;
+    private TextView mPinLengthText;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class PinUnlockWizardFragment extends WizardFragment implements
         @Override
         public void onClick(View v) {
             mPinUnlockWizardFragmentViewModel.appendToCurrentKeyword(((TextView) v).getText());
+            mPinLengthText.setText(String.valueOf(mPinUnlockWizardFragmentViewModel.getPinLength()));
         }
     };
 
@@ -81,6 +84,10 @@ public class PinUnlockWizardFragment extends WizardFragment implements
         pinUnlockKey = (Button) view.findViewById(R.id.unlockKey1);
         pinUnlockKey.setOnClickListener(mOnKeyClickListener);
 
+        RelativeLayout pinLengthLayout = (RelativeLayout) view.findViewById(R.id.pinLengthLayout);
+        pinLengthLayout.setVisibility(View.VISIBLE);
+
+        mPinLengthText = (TextView) view.findViewById(R.id.pinLength);
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mPinUnlockWizardFragmentViewModel.prepareViewModel(savedInstanceState, getArguments(), getActivity());
     }

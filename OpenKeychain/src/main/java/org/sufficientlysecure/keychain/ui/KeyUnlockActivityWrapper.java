@@ -57,7 +57,6 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
             );
         }
 
-        KeyboardUtils.hideKeyboard(this);
         mKeyUnlockActivityWrapperViewModel.startUnlockOperation();
     }
 

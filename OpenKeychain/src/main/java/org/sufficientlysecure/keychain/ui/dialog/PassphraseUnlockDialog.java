@@ -65,7 +65,6 @@ public class PassphraseUnlockDialog extends UnlockDialog implements
         //alert.setTitle()
         View view = LayoutInflater.from(theme).inflate(R.layout.passphrase_dialog, null);
         alert.setView(view);
-        setCancelable(false);
 
         mPassphraseText = (TextView) view.findViewById(R.id.passphrase_text);
         mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
@@ -102,7 +101,6 @@ public class PassphraseUnlockDialog extends UnlockDialog implements
 
         mAlertDialog = alert.show();
         mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        mPositiveDialogButton.setTextColor(getResources().getColor(R.color.primary));
         mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,7 +110,6 @@ public class PassphraseUnlockDialog extends UnlockDialog implements
         });
 
         Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        b.setTextColor(getResources().getColor(R.color.primary));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,6 +117,8 @@ public class PassphraseUnlockDialog extends UnlockDialog implements
                 mAlertDialog.cancel();
             }
         });
+
+        mAlertDialog.setCanceledOnTouchOutside(false);
 
         //only call this method after the ui is initialized.
         mPassphraseUnlockDialogViewModel.prepareViewModel(savedInstanceState, getArguments(),

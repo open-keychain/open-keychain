@@ -68,7 +68,6 @@ public class PinUnlockDialog extends UnlockDialog
 
         mAlertDialog = alertDialogBuilder.show();
         mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        mPositiveDialogButton.setTextColor(getResources().getColor(R.color.primary));
         mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,7 +76,6 @@ public class PinUnlockDialog extends UnlockDialog
         });
 
         Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        b.setTextColor(getResources().getColor(R.color.primary));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +83,8 @@ public class PinUnlockDialog extends UnlockDialog
                 mAlertDialog.cancel();
             }
         });
+
+        mAlertDialog.setCanceledOnTouchOutside(false);
 
         return mAlertDialog;
     }
@@ -102,7 +102,6 @@ public class PinUnlockDialog extends UnlockDialog
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
         View view = LayoutInflater.from(theme).inflate(R.layout.unlock_pin_fragment, null);
         alert.setView(view);
-        setCancelable(false);
 
         Button pinUnlockKey = (Button) view.findViewById(R.id.unlockKey0);
         pinUnlockKey.setOnClickListener(mOnKeyClickListener);

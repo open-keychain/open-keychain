@@ -209,6 +209,14 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
     }
 
     /**
+     * Returns the current Pin length.
+     * @return
+     */
+    public Integer getPinLength() {
+        return mCurrentInputKeyWord.length();
+    }
+
+    /**
      * Resets the current input keyword.
      */
     public void resetCurrentKeyword() {

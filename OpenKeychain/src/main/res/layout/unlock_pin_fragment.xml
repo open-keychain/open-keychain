@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:persistentDrawingCache="all">
 
     <TextView
@@ -19,22 +19,50 @@
         android:layout_margin="24dp">
     </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
+    <RelativeLayout
+        android:id="@+id/pinLengthLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="24dp"
+        android:visibility="invisible"
+        android:layout_below="@id/unlockTip">
+        <TextView
+            android:id="@+id/pinLength"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@id/pinLength"
+            android:text="Pin Length:"
+            android:textColor="@color/black"/>
+    </RelativeLayout>
     <RelativeLayout
         android:id="@+id/unlockInputLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/unlockDialogBottomContainer"
+        android:layout_above="@id/progressBar"
         android:layout_below="@id/unlockTip">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
-            android:src="@android:drawable/sym_def_app_icon"
-            android:visibility="invisible"/>
-
         <RelativeLayout
+            android:id="@+id/pinKeyboardLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -149,14 +177,8 @@
                 android:text="0"
                 android:textSize="18sp"/>
         </RelativeLayout>
+
     </RelativeLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"
-        android:indeterminate="true"
-        android:visibility="invisible"/>
+
 </RelativeLayout>

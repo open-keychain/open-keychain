@@ -29,7 +29,7 @@
             android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
             android:drawablePadding="8dp"
             android:text="@string/btn_back"
-            android:textColor="@color/primary"/>
+            android:textColor="@color/black"/>
 
         <Button
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
@@ -41,7 +41,7 @@
             android:drawablePadding="8dp"
             android:gravity="right|center_vertical"
             android:text="@string/btn_next"
-            android:textColor="@color/primary"/>
+            android:textColor="@color/black"/>
 
     </LinearLayout>
 
