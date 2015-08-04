@@ -46,7 +46,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:drawablePadding="8dp"
-                android:enabled="false"
                 android:drawableRight="@drawable/pattern_option"
                 android:text="Pattern unlock"/>
         </RadioGroup>
