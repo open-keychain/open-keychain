@@ -250,9 +250,6 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     public class KeyserverListAdapter extends RecyclerView.Adapter<KeyserverListAdapter.ViewHolder>
             implements ItemTouchHelperAdapter {
 
-        // to update the ViewHolder associated with first item, for when an item is deleted
-        private ViewHolder mFirstItem;
-
         private final List<String> mKeyservers;
 
         public KeyserverListAdapter(List<String> keyservers) {
@@ -263,15 +260,11 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.settings_keyserver_item, parent, false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            return viewHolder;
+            return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            if (position == 0) {
-                mFirstItem = holder;
-            }
             holder.keyserverUrl.setText(mKeyservers.get(position));
 
             // Start a drag whenever the handle view it touched

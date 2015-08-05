@@ -200,19 +200,30 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 mStartSearch.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
-                                .getProxyPrefs();
+                        final Preferences.ProxyPrefs proxyPrefs =
+                                Preferences.getPreferences(getActivity()).getProxyPrefs();
 
-                        Runnable ignoreTor = new Runnable() {
+                        OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
                             @Override
-                            public void run() {
+                            public void onOrbotStarted() {
                                 mStartSearch.setEnabled(false);
                                 new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
                             }
+
+                            @Override
+                            public void onNeutralButton() {
+                                mStartSearch.setEnabled(false);
+                                new DescribeKey(ParcelableProxy.getForNoProxy())
+                                        .execute(fingerprint);
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
                         };
 
-                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                                getActivity())) {
+                        if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
                             mStartSearch.setEnabled(false);
                             new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
                         }

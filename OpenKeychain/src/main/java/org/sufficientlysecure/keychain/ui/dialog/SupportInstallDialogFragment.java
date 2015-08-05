@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import org.sufficientlysecure.keychain.ui.util.InstallDialogFragmentHelper;
@@ -34,7 +35,7 @@ public class SupportInstallDialogFragment extends DialogFragment {
      * and "Cancel") and an optional third button. Callbacks are provided only for the middle button, if set.
      *
      * @param messenger        required only for callback from middle button if it has been set
-     * @param title
+     * @param title            xml resource for title of the install dialog
      * @param message          content of dialog
      * @param packageToInstall package name of application to install
      * @param middleButton     if not null, adds a third button to the app with a call back
@@ -57,16 +58,17 @@ public class SupportInstallDialogFragment extends DialogFragment {
     /**
      * To create a DialogFragment with only two buttons
      *
-     * @param title
-     * @param message
-     * @param packageToInstall
+     * @param title            xml string resource for title of the dialog
+     * @param message          xml string resource to display as dialog body
+     * @param packageToInstall name of package to install
      * @return
      */
     public static SupportInstallDialogFragment newInstance(int title, int message,
-                                                    String packageToInstall) {
+                                                           String packageToInstall) {
         return newInstance(null, title, message, packageToInstall, -1, false);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 

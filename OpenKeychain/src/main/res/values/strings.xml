@@ -421,6 +421,8 @@
 
     <string name="progress_verifying_keyserver_url">"verifying keyserver…"</string>
 
+    <string name="progress_starting_orbot">"Starting Orbot…"</string>
+
     <!-- action strings -->
     <string name="hint_cloud_search_hint">"Search via Name, Email…"</string>
 

@@ -371,32 +371,38 @@ public class ImportKeysListFragment extends ListFragment implements
                         Runnable showOrbotDialog = new Runnable() {
                             @Override
                             public void run() {
-                                final Runnable ignoreTor = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mParcelableProxy = ParcelableProxy
-                                                .getForNoProxy();
-                                        mShowingOrbotDialog = false;
-                                        restartLoaders();
-                                    }
-                                };
+                                OrbotHelper.DialogActions dialogActions =
+                                        new OrbotHelper.DialogActions() {
+                                            @Override
+                                            public void onOrbotStarted() {
+                                                mShowingOrbotDialog = false;
+                                                restartLoaders();
+                                            }
 
-                                final Runnable dialogDismiss = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mShowingOrbotDialog = false;
-                                    }
-                                };
+                                            @Override
+                                            public void onNeutralButton() {
+                                                mParcelableProxy = ParcelableProxy
+                                                        .getForNoProxy();
+                                                mShowingOrbotDialog = false;
+                                                restartLoaders();
+                                            }
 
-                                if (OrbotHelper.putOrbotInRequiredState(
-                                        ignoreTor, dialogDismiss, getActivity())) {
+                                            @Override
+                                            public void onCancel() {
+                                                mShowingOrbotDialog = false;
+                                            }
+                                        };
+
+                                if (OrbotHelper.putOrbotInRequiredState(dialogActions,
+                                        getActivity())) {
                                     // looks like we didn't have to show the
                                     // dialog after all
+                                    mShowingOrbotDialog = false;
                                     restartLoaders();
                                 }
                             }
                         };
-                        new Handler().post(showOrbotDialog );
+                        new Handler().post(showOrbotDialog);
                         mShowingOrbotDialog = true;
                     }
                 } else {

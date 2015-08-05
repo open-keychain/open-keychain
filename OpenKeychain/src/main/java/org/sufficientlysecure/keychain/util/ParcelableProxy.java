@@ -51,8 +51,11 @@ public class ParcelableProxy implements Parcelable {
         if (mProxyHost == null) {
             return null;
         }
-
-        return new Proxy(mProxyType, new InetSocketAddress(mProxyHost, mProxyPort));
+        /*
+        * InetSocketAddress.createUnresolved so we can use this method even in the main thread
+        * (no network call)
+        */
+        return new Proxy(mProxyType, InetSocketAddress.createUnresolved(mProxyHost, mProxyPort));
     }
 
     protected ParcelableProxy(Parcel in) {

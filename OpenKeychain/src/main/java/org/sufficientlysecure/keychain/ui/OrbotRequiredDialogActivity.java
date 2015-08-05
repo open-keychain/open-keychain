@@ -22,18 +22,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
 
 /**
  * Simply encapsulates a dialog. If orbot is not installed, it shows an install dialog, else a
  * dialog to enable orbot.
  */
-public class OrbotRequiredDialogActivity extends FragmentActivity {
+public class OrbotRequiredDialogActivity extends FragmentActivity
+        implements OrbotHelper.DialogActions {
+
+    // if suppplied and true will start Orbot directly without showing dialog
+    public static final String EXTRA_START_ORBOT = "start_orbot";
 
     // to provide any previous crypto input into which proxy preference is merged
     public static final String EXTRA_CRYPTO_INPUT = "extra_crypto_input";
@@ -45,47 +47,68 @@ public class OrbotRequiredDialogActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mCryptoInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
         if (mCryptoInputParcel == null) {
+            // compatibility with usages that don't use a CryptoInputParcel
             mCryptoInputParcel = new CryptoInputParcel();
         }
-        showDialog();
+
+        boolean startOrbotDirect = getIntent().getBooleanExtra(EXTRA_START_ORBOT, false);
+        if (startOrbotDirect) {
+            OrbotHelper.bestPossibleOrbotStart(this, this);
+        } else {
+            showDialog();
+        }
     }
 
     /**
-     * Displays an install or start orbot dialog depending on orbot's presence and state
+     * Displays an install or start orbot dialog (or silent orbot start) depending on orbot's
+     * presence and state
      */
     public void showDialog() {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
-                Runnable ignoreTor = new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent();
-                        mCryptoInputParcel.addParcelableProxy(ParcelableProxy.getForNoProxy());
-                        intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                };
 
-                Runnable dialogDismissed = new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                };
-
-                if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, dialogDismissed,
-                        Preferences.getPreferences(OrbotRequiredDialogActivity.this)
-                                .getProxyPrefs(),
+                if (OrbotHelper.putOrbotInRequiredState(OrbotRequiredDialogActivity.this,
                         OrbotRequiredDialogActivity.this)) {
                     // no action required after all
-                    Intent intent = new Intent();
-                    intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
-                    setResult(RESULT_OK, intent);
+                    onOrbotStarted();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case OrbotHelper.START_TOR_RESULT: {
+                onOrbotStarted(); // assumption that orbot was started, no way to tell for sure
+            }
+        }
+    }
+
+    @Override
+    public void onOrbotStarted() {
+        Intent intent = new Intent();
+        // send back unmodified CryptoInputParcel for a retry
+        intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public void onNeutralButton() {
+        Intent intent = new Intent();
+        mCryptoInputParcel.addParcelableProxy(ParcelableProxy.getForNoProxy());
+        intent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public void onCancel() {
+        finish();
     }
 }

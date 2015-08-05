@@ -49,7 +49,8 @@
 
 package org.sufficientlysecure.keychain.util.orbot;
 
-import org.sufficientlysecure.keychain.Constants;
+import android.content.Context;
+
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedReader;
@@ -62,24 +63,27 @@ import java.util.StringTokenizer;
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
  */
 public class TorServiceUtils {
-    // various console cmds
+
+    private final static String TAG = "TorUtils";
+
     public final static String SHELL_CMD_PS = "ps";
     public final static String SHELL_CMD_PIDOF = "pidof";
 
-    public static int findProcessId(String command) {
+    public static int findProcessId(Context context) {
+        String dataPath = context.getFilesDir().getParentFile().getParentFile().getAbsolutePath();
+        String command = dataPath + "/" + OrbotHelper.ORBOT_PACKAGE_NAME + "/app_bin/tor";
         int procId = -1;
 
         try {
             procId = findProcessIdWithPidOf(command);
 
-            if (procId == -1) {
+            if (procId == -1)
                 procId = findProcessIdWithPS(command);
-            }
         } catch (Exception e) {
             try {
                 procId = findProcessIdWithPS(command);
             } catch (Exception e2) {
-                Log.e(Constants.TAG, "Unable to get proc id for command: " + URLEncoder.encode(command), e2);
+                Log.e(TAG, "Unable to get proc id for command: " + URLEncoder.encode(command), e2);
             }
         }
 
@@ -90,7 +94,9 @@ public class TorServiceUtils {
     public static int findProcessIdWithPidOf(String command) throws Exception {
 
         int procId = -1;
+
         Runtime r = Runtime.getRuntime();
+
         Process procPs;
 
         String baseName = new File(command).getName();
@@ -115,18 +121,23 @@ public class TorServiceUtils {
         }
 
         return procId;
+
     }
 
     // use 'ps' command
     public static int findProcessIdWithPS(String command) throws Exception {
+
         int procId = -1;
+
         Runtime r = Runtime.getRuntime();
+
         Process procPs;
 
         procPs = r.exec(SHELL_CMD_PS);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(procPs.getInputStream()));
         String line;
+
         while ((line = reader.readLine()) != null) {
             if (line.contains(' ' + command)) {
 
@@ -140,5 +151,6 @@ public class TorServiceUtils {
         }
 
         return procId;
+
     }
 }
