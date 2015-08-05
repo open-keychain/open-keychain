@@ -1400,7 +1400,7 @@
     <!-- Android Account -->
     <string name="account_no_manual_account_creation">"You can not create OpenKeychain accounts manually."</string>
     <string name="account_privacy_title">"Privacy"</string>
-    <string name="account_privacy_text">"OpenKeychain does not synchronizes your contacts with the Internet. It only links contacts to keys based on names and email addresses. It does this offline on your device."</string>
+    <string name="account_privacy_text">"OpenKeychain does not synchronize your contacts with the Internet. It only links contacts to keys based on names and email addresses. It does this offline on your device."</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
