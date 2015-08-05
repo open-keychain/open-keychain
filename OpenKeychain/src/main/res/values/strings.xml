@@ -658,14 +658,14 @@
     <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to confirming them."</string>
 
     <!-- keybase proof stuff -->
-    <string name="keybase_narrative_twitter">"Posts to Twitter as"</string>
-    <string name="keybase_narrative_github">"Is known on GitHub as"</string>
-    <string name="keybase_narrative_dns">"Controls the domain name(s)"</string>
-    <string name="keybase_narrative_web_site">"Can post to the Web site(s)"</string>
-    <string name="keybase_narrative_reddit">"Posts to Reddit as"</string>
-    <string name="keybase_narrative_coinbase">"Is known on Coinbase as"</string>
-    <string name="keybase_narrative_hackernews">"Posts to Hacker News as"</string>
-    <string name="keybase_narrative_unknown">"Unknown proof type"</string>
+    <string name="keybase_narrative_twitter">"Posts to Twitter as %s"</string>
+    <string name="keybase_narrative_github">"Is known on GitHub as %s"</string>
+    <string name="keybase_narrative_dns">"Controls the domain name(s) %s"</string>
+    <string name="keybase_narrative_web_site">"Can post to the Web site(s) %s"</string>
+    <string name="keybase_narrative_reddit">"Posts to Reddit as %s"</string>
+    <string name="keybase_narrative_coinbase">"Is known on Coinbase as %s"</string>
+    <string name="keybase_narrative_hackernews">"Posts to Hacker News as %s"</string>
+    <string name="keybase_narrative_unknown">"Unknown proof type %s"</string>
     <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
     <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
     <string name="keybase_problem_fetching_evidence">"Problem with proof"</string>

@@ -271,8 +271,6 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                     Proof[] proofsFor = proofs.get(proofType).toArray(x);
                     if (proofsFor.length > 0) {
                         SpannableStringBuilder ssb = new SpannableStringBuilder();
-                        ssb.append(getProofNarrative(proofType)).append(" ");
-
                         int i = 0;
                         while (i < proofsFor.length - 1) {
                             appendProofLinks(ssb, fingerprint, proofsFor[i]);
@@ -280,7 +278,7 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                             i++;
                         }
                         appendProofLinks(ssb, fingerprint, proofsFor[i]);
-                        proofList.add(ssb);
+                        proofList.add(formatSpannableString(ssb, getProofNarrative(proofType)));
                     }
                 }
 
@@ -288,6 +286,21 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             }
 
             return new ResultPage(getString(R.string.key_trust_results_prefix), proofList);
+        }
+
+        private SpannableStringBuilder formatSpannableString(SpannableStringBuilder proofLinks,String proofType){
+            //Formatting SpannableStringBuilder with String.format() causes the links to stop working.
+            //This method is to insert the links while reserving the links
+
+            SpannableStringBuilder ssb = new SpannableStringBuilder();
+            ssb.append(proofType);
+            if(proofType.contains("%s")){
+                int i = proofType.indexOf("%s");
+                ssb.replace(i,i+2,proofLinks);
+            }
+            else ssb.append(proofLinks);
+
+            return ssb;
         }
 
         private SpannableStringBuilder appendProofLinks(SpannableStringBuilder ssb, final String fingerprint, final Proof proof) throws KeybaseException {
