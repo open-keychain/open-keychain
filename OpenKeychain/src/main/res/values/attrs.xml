@@ -3,19 +3,20 @@
     <declare-styleable name="CustomTheme">
         <attr name="colorFab" format="color" />
         <attr name="colorFabPressed" format="color" />
-        <attr name="colorFabBackground" format="color" />
+        <attr name="fabLabelBackgroundDrawable" format="reference" />
         <attr name="colorFabText" format="color" />
         <attr name="colorEmphasis" format="color" />
         <attr name="colorHeaderText" format="color" />
         <attr name="colorTertiaryText" format="color" />
         <attr name="colorButtonRow" format="color" />
         <attr name="colorLogBackground" format="color" />
-        <attr name="colorCardViewHeaderDivider" format="color" />
+        <attr name="cardViewHeaderDrawable" format="reference" />
         <attr name="colorText" format="color" />
         <attr name="colorBrightToolbar" format="color" />
         <attr name="colorCardViewBackground" format="color" />
         <attr name="colorTabText" format="color" />
         <attr name="colorTabTextSelected" format="color" />
         <attr name="colorTabIndicator" format="color" />
+        <attr name="sectionHeaderDrawable" format="reference" />
     </declare-styleable>
 </resources>
