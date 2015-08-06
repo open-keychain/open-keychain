@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorFabBackground"/>
+    <!-- using an attribute for color will crash on API <= 20. Refer to http://stackoverflow.com/a/13471695/3000919 -->
+    <solid android:color="#b2000000"/>
     <padding
         android:left="16dp"
         android:top="4dp"

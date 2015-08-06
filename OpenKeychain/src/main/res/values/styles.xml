@@ -2,7 +2,7 @@
 <resources>
 
     <style name="CardViewHeader">
-        <item name="android:drawableBottom">@drawable/cardview_header</item>
+        <item name="android:drawableBottom">?attr/cardViewHeaderDrawable</item>
         <item name="android:drawablePadding">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:paddingLeft">16dp</item>
@@ -12,7 +12,7 @@
     </style>
 
     <style name="SectionHeader">
-        <item name="android:drawableBottom">@drawable/section_header</item>
+        <item name="android:drawableBottom">?attr/sectionHeaderDrawable</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:paddingLeft">8dp</item>
@@ -22,7 +22,7 @@
     </style>
 
     <style name="FabMenuStyle">
-        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:background">?attr/fabLabelBackgroundDrawable</item>
         <item name="android:textColor">?attr/colorFabText</item>
     </style>
 
