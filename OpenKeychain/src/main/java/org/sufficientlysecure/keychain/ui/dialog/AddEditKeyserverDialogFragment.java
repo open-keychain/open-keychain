@@ -50,6 +50,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
@@ -216,15 +217,25 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                     if (mVerifyKeyserverCheckBox.isChecked()) {
                         final Preferences.ProxyPrefs proxyPrefs = Preferences.getPreferences(getActivity())
                                 .getProxyPrefs();
-                        Runnable ignoreTor = new Runnable() {
+                        OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
                             @Override
-                            public void run() {
+                            public void onOrbotStarted() {
+                                verifyConnection(keyserverUrl,
+                                        proxyPrefs.parcelableProxy.getProxy());
+                            }
+
+                            @Override
+                            public void onNeutralButton() {
                                 verifyConnection(keyserverUrl, null);
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                // do nothing
                             }
                         };
 
-                        if (OrbotHelper.putOrbotInRequiredState(R.string.orbot_ignore_tor, ignoreTor, proxyPrefs,
-                                getActivity())) {
+                        if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
                             verifyConnection(keyserverUrl, proxyPrefs.parcelableProxy.getProxy());
                         }
                     } else {

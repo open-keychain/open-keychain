@@ -18,15 +18,19 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
+import android.view.View;
+import android.widget.Button;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -43,8 +47,11 @@ public class OrbotStartDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_MIDDLE_BUTTON = "middleButton";
 
+    private static final int ORBOT_REQUEST_CODE = 1;
+
     public static final int MESSAGE_MIDDLE_BUTTON = 1;
-    public static final int MESSAGE_DIALOG_DISMISSED = 2; // for either cancel or enable pressed
+    public static final int MESSAGE_DIALOG_CANCELLED = 2; // for either cancel or enable pressed
+    public static final int MESSAGE_ORBOT_STARTED = 3; // for either cancel or enable pressed
 
     public static OrbotStartDialogFragment newInstance(Messenger messenger, int title, int message, int middleButton) {
         Bundle args = new Bundle();
@@ -59,6 +66,7 @@ public class OrbotStartDialogFragment extends DialogFragment {
         return fragment;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -77,7 +85,7 @@ public class OrbotStartDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Message msg = Message.obtain();
-                msg.what = MESSAGE_DIALOG_DISMISSED;
+                msg.what = MESSAGE_DIALOG_CANCELLED;
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
@@ -86,23 +94,6 @@ public class OrbotStartDialogFragment extends DialogFragment {
                     Log.w(Constants.TAG, "Messenger is null!", e);
                 }
 
-            }
-        });
-
-        builder.setPositiveButton(R.string.orbot_start_dialog_start, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getActivity().startActivityForResult(OrbotHelper.getOrbotStartIntent(), 1);
-
-                Message msg = Message.obtain();
-                msg.what = MESSAGE_DIALOG_DISMISSED;
-                try {
-                    messenger.send(msg);
-                } catch (RemoteException e) {
-                    Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
-                } catch (NullPointerException e) {
-                    Log.w(Constants.TAG, "Messenger is null!", e);
-                }
             }
         });
 
@@ -121,6 +112,52 @@ public class OrbotStartDialogFragment extends DialogFragment {
             }
         });
 
+        builder.setPositiveButton(R.string.orbot_start_dialog_start, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // actual onClick defined in onStart, this is just to make the button appear
+            }
+        });
+
         return builder.show();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //super.onStart() is where dialog.show() is actually called on the underlying dialog,
+        // so we have to do it after this point
+        AlertDialog d = (AlertDialog) getDialog();
+        if (d != null) {
+            Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
+            positiveButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    startActivityForResult(OrbotHelper.getShowOrbotStartIntent(),
+                            ORBOT_REQUEST_CODE);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ORBOT_REQUEST_CODE) {
+            // assume Orbot was started
+            final Messenger messenger = getArguments().getParcelable(ARG_MESSENGER);
+
+            Message msg = Message.obtain();
+            msg.what = MESSAGE_ORBOT_STARTED;
+            try {
+                messenger.send(msg);
+            } catch (RemoteException e) {
+                Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            } catch (NullPointerException e) {
+                Log.w(Constants.TAG, "Messenger is null!", e);
+            }
+            dismiss();
+        }
     }
 }
