@@ -1375,8 +1375,8 @@
     <string name="unlock_caps">UNLOCK</string>
     <string name="unknown">UNKNOWN</string>
     <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
-
     <string name="error_pin_length">Your pin length must be between 4 and 14</string>
+    <string name="error_no_pattern">You need to input your pattern before continuing</string>
     <string name="error_pin_mismatch">The pins do not match, re-input your new pin again</string>
     <string name="error_unknown_operation">Unknown operation error</string>
     <string name="passphrase_key">Passphrase</string>

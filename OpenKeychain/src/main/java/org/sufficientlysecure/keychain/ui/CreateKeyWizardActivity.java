@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.ui.dialog.AddEmailDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.wizard.EmailWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.NameWizardFragment;
+import org.sufficientlysecure.keychain.ui.wizard.PatternUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.PinUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.UnlockChoiceWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.WelcomeWizardFragment;
@@ -341,6 +342,12 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     @Override
     public void onInstantiatePinUnlockMethod() {
         mCurrentVisibleFragment = new PinUnlockWizardFragment();
+        beginWizardTransaction(mCurrentVisibleFragment, true);
+    }
+
+    @Override
+    public void onInstantiatePatternUnlockMethod() {
+        mCurrentVisibleFragment = new PatternUnlockWizardFragment();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 

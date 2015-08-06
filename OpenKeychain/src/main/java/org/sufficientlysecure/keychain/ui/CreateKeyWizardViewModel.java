@@ -69,6 +69,8 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
     public interface OnViewModelEventBind {
         void onInstantiatePinUnlockMethod();
 
+        void onInstantiatePatternUnlockMethod();
+
         void onWelcomeState();
 
         void onUnlockChoiceState();
@@ -324,6 +326,9 @@ public class CreateKeyWizardViewModel implements BaseViewModel {
         switch (mWizardModel.getSecretKeyType()) {
             case PIN:
                 mOnViewModelEventBind.onInstantiatePinUnlockMethod();
+                break;
+            case PATTERN:
+                mOnViewModelEventBind.onInstantiatePatternUnlockMethod();
                 break;
         }
     }
