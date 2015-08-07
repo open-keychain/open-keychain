@@ -1365,7 +1365,7 @@
 
     <!-- Create Key wizard -->
     <string name="create_key_wizard_title">Create Key Wizard</string>
-    <string name="input_pin">Input your pin to unlock the key</string>
+    <string name="input_pin">Input your pin to unlock the key. Your pin length must be between 4 and 14</string>
     <string name="title_unlock">Key Unlock</string>
     <string name="title_unlock_method">Choose an unlock method</string>
     <string name="reset">Reset</string>
@@ -1375,7 +1375,7 @@
     <string name="unknown">UNKNOWN</string>
     <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
 
-    <string name="error_no_pin">Your pin code must have at least one pin number</string>
+    <string name="error_pin_length">Your pin length must be between 4 and 14</string>
     <string name="error_pin_mismatch">The pins do not match, re-input your new pin again</string>
     <string name="error_unknown_operation">Unknown operation error</string>
     <string name="passphrase_key">Passphrase</string>

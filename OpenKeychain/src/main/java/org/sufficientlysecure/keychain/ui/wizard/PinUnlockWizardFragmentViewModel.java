@@ -26,6 +26,8 @@ import org.sufficientlysecure.keychain.ui.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
+    public static final int MIN_PIN_LENGTH = 4;
+    public static final int MAX_PIN_LENGTH = 14;
     public static final String STATE_SAVE_LAST_KEYWORD = "STATE_SAVE_LAST_KEYWORD";
     public static final String STATE_SAVE_CURRENT_KEYWORD = "STATE_SAVE_CURRENT_KEYWORD";
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
@@ -115,34 +117,14 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
     }
 
     /**
-     * Resets the keyword input to its initial step, allowing the user to re-input the pin again.
-     */
-    public void resetKeywordInputToBegin() {
-        if (mLastInputKeyWord == null) {
-            mLastInputKeyWord = new StringBuilder();
-        } else {
-            clearInputKeyword();
-        }
-
-        if (mCurrentInputKeyWord == null) {
-            mCurrentInputKeyWord = new StringBuilder();
-        } else {
-            clearInputKeyword();
-        }
-
-        mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_KEYWORD;
-    }
-
-
-    /**
      * Handles the first pin input operation.
      *
      * @return
      */
     public boolean onOperationStateInputFirstKeyword() {
         mOnViewModelEventBind.onOperationStateOK("");
-        if (mCurrentInputKeyWord.length() == 0) {
-            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_no_pin));
+        if (mCurrentInputKeyWord.length() < MIN_PIN_LENGTH || mCurrentInputKeyWord.length() > MAX_PIN_LENGTH) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pin_length));
             resetCurrentKeyword();
             return false;
         }
@@ -161,11 +143,11 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
     public boolean onOperationStateInputSecondKeyword() {
         if (!(mLastInputKeyWord.toString().equals(mCurrentInputKeyWord.toString()))) {
             mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pin_mismatch));
-            resetKeywordInputToBegin();
+            initializeUnlockOperation();
             return false;
-        } else if (mCurrentInputKeyWord.length() == 0) {
-            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_no_pin));
-            resetKeywordInputToBegin();
+        } else if (mCurrentInputKeyWord.length() < MIN_PIN_LENGTH || mCurrentInputKeyWord.length() > MAX_PIN_LENGTH) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pin_length));
+            initializeUnlockOperation();
             return false;
         }
         mOperationState = OperationState.OPERATION_STATE_FINISHED;
@@ -210,6 +192,7 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
 
     /**
      * Returns the current Pin length.
+     *
      * @return
      */
     public Integer getPinLength() {
