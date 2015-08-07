@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseViewModel;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseUnlockDialog;
+import org.sufficientlysecure.keychain.ui.dialog.PatternUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.PinUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.UnlockDialog;
 
@@ -108,12 +109,14 @@ public class KeyUnlockActivityWrapperViewModel implements BaseViewModel {
         switch (mKeyType) {
             case PASSPHRASE: {
                 mOnViewModelEventBind.showUnlockDialog(new PassphraseUnlockDialog());
-                break;
-            }
+            }break;
             case PIN: {
                 mOnViewModelEventBind.showUnlockDialog(new PinUnlockDialog());
             }
             break;
+            case PATTERN: {
+                mOnViewModelEventBind.showUnlockDialog(new PatternUnlockDialog());
+            } break;
             default: {
                 throw new AssertionError("Unhandled SecretKeyType (should not happen)");
             }

@@ -1259,6 +1259,32 @@ public class PgpKeyOperation {
 
                     return sKR;
                 }
+                case PATTERN: {
+                    sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
+
+                    log.add(LogType.MSG_MF_NOTATION_PIN, indent);
+
+                    // add packet with "pin" notation data
+                    PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                            masterPrivateKey.getPublicKeyPacket().getAlgorithm(),
+                            PgpConstants.SECRET_KEY_SIGNATURE_HASH_ALGO)
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                    { // set subpackets
+                        PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                        hashedPacketsGen.setExportable(false, false);
+                        hashedPacketsGen.setNotationData(false, true, "unlock.pattern@sufficientlysecure.org", "1");
+                        sGen.setHashedSubpackets(hashedPacketsGen.generate());
+                    }
+                    sGen.init(PGPSignature.DIRECT_KEY, masterPrivateKey);
+                    PGPSignature emptySig = sGen.generateCertification(masterPublicKey);
+
+                    masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, emptySig);
+                    sKR = PGPSecretKeyRing.insertSecretKey(sKR,
+                            PGPSecretKey.replacePublicKey(sKR.getSecretKey(), masterPublicKey));
+
+                    return sKR;
+                }
                 default: {
                     throw new UnsupportedOperationException("Passphrase type not yet implemented!");
 

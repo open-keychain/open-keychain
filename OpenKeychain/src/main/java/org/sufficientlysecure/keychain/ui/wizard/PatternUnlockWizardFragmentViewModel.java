@@ -1,11 +1,24 @@
+/*
+ * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.sufficientlysecure.keychain.ui.wizard;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import org.spongycastle.crypto.digests.SHA256Digest;
-import org.spongycastle.jcajce.provider.digest.SHA1;
-import org.spongycastle.jcajce.provider.digest.SHA256;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseViewModel;
 import org.sufficientlysecure.keychain.ui.base.WizardFragmentListener;
@@ -16,13 +29,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
+    public static final String STATE_SAVE_LAST_KEYWORD = "STATE_SAVE_LAST_KEYWORD";
+    public static final String STATE_SAVE_CURRENT_KEYWORD = "STATE_SAVE_CURRENT_KEYWORD";
+    public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
     private OperationState mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_PATTERN;
     private StringBuilder mLastInputKeyWord;
     private StringBuilder mCurrentInputKeyWord;
     private Activity mActivity;
     private OnViewModelEventBind mOnViewModelEventBind;
     private WizardFragmentListener mWizardFragmentListener;
-
 
     /**
      * View Model communication
@@ -70,12 +85,16 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void saveViewModelState(Bundle outState) {
-
+        outState.putSerializable(STATE_SAVE_LAST_KEYWORD, mLastInputKeyWord);
+        outState.putSerializable(STATE_SAVE_OPERATION_STATE, mOperationState);
+        outState.putSerializable(STATE_SAVE_CURRENT_KEYWORD, mCurrentInputKeyWord);
     }
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-
+        mLastInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_LAST_KEYWORD);
+        mOperationState = (OperationState) savedInstanceState.getSerializable(STATE_SAVE_OPERATION_STATE);
+        mCurrentInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_CURRENT_KEYWORD);
     }
 
     /**
@@ -97,7 +116,11 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
         mOperationState = OperationState.OPERATION_STATE_INPUT_FIRST_PATTERN;
     }
 
-
+    /**
+     * Handles the first pattern input operation.
+     *
+     * @return
+     */
     public boolean onOperationStateInputFirstPattern() {
         mOnViewModelEventBind.onOperationStateOK("");
         if (mCurrentInputKeyWord.length() == 0) {
@@ -108,18 +131,36 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
         mLastInputKeyWord.append(mCurrentInputKeyWord);
         mOperationState = OperationState.OPERATION_STATE_INPUT_SECOND_PATTERN;
         resetCurrentKeyword();
-        mOnViewModelEventBind.onOperationStateOK(mActivity.getString(R.string.reenter_pin));
+        mOnViewModelEventBind.onOperationStateOK(mActivity.getString(R.string.reenter_pattern));
         return true;
     }
 
+    /**
+     * Handles the second pattern input operation.
+     *
+     * @return
+     */
     public boolean onOperationStateInputSecondPattern() {
+        if (!(mLastInputKeyWord.toString().equals(mCurrentInputKeyWord.toString()))) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pattern_mismatch));
+            initializeUnlockOperation();
+            return false;
+        } else if (mCurrentInputKeyWord.length() == 0) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_no_pattern));
+            initializeUnlockOperation();
+            return false;
+        }
         mOperationState = OperationState.OPERATION_STATE_FINISHED;
         resetCurrentKeyword();
         mOnViewModelEventBind.onOperationStateCompleted("");
         return true;
     }
 
-
+    /**
+     * Updates the operation state.
+     *
+     * @return
+     */
     public boolean updateOperationState() {
         if (mOperationState == OperationState.OPERATION_STATE_FINISHED) {
             return true;
@@ -165,10 +206,8 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
             updateOperationState();
             return false;
         } else {
-
-            MessageDigest md = null;
             try {
-                md = MessageDigest.getInstance("SHA-256");
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
 
                 md.update(mLastInputKeyWord.toString().getBytes());
                 byte[] digest = md.digest();

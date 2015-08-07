@@ -142,6 +142,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             if (notation.containsKey("unlock.pin@sufficientlysecure.org")
                     && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
                 return SecretKeyType.PIN;
+            } else if (notation.containsKey("unlock.pattern@sufficientlysecure.org")
+                    && "1".equals(notation.get("unlock.pattern@sufficientlysecure.org"))) {
+                return SecretKeyType.PATTERN;
             }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;

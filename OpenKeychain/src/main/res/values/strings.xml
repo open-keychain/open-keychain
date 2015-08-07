@@ -260,6 +260,7 @@
     <string name="passphrase_for_symmetric_encryption">"Symmetric encryption."</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
+    <string name="pattern_for">"Enter PATTERN for '%s'"</string>
     <string name="yubikey_pin_for">"Enter PIN to access YubiKey for '%s'"</string>
     <string name="nfc_text">"Hold YubiKey against the NFC marker at the back of your device."</string>
     <string name="nfc_wait">"Keep the YubiKey at the back!"</string>
@@ -1376,8 +1377,10 @@
     <string name="unknown">UNKNOWN</string>
     <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
     <string name="error_pin_length">Your pin length must be between 4 and 14</string>
+    <string name="reenter_pattern">Reenter your pattern again and click next to proceed</string>
     <string name="error_no_pattern">You need to input your pattern before continuing</string>
     <string name="error_pin_mismatch">The pins do not match, re-input your new pin again</string>
+    <string name="error_pattern_mismatch">The patterns do not match, re-input your new pattern again</string>
     <string name="error_unknown_operation">Unknown operation error</string>
     <string name="passphrase_key">Passphrase</string>
     <string name="passphrase_tip">Use a passphrase to unlock your key</string>
@@ -1389,6 +1392,7 @@
     <string name="error_lockpattern_mismatch">Your lock pattern does not match. Please click on the reset button and try again</string>
     <string name="pin_tip2">Choose a strong pin. It protects your key when your device gets stolen.</string>
     <string name="error_wrong_pin">Wrong pin, please re-input your pin</string>
+    <string name="error_wrong_pattern">Wrong pattern, please re-input your pattern</string>
 
 
 
