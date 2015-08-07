@@ -29,6 +29,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
+    public static final int MIN_PATTERN_LENGTH = 4;
+    public static final int MAX_PATTERN_LENGTH = 14;
     public static final String STATE_SAVE_LAST_KEYWORD = "STATE_SAVE_LAST_KEYWORD";
     public static final String STATE_SAVE_CURRENT_KEYWORD = "STATE_SAVE_CURRENT_KEYWORD";
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
@@ -50,6 +52,8 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
         void onOperationStateCompleted(String showText);
 
         void hideNavigationButtons(boolean hideBack, boolean hideNext);
+
+        int getPatternLength();
     }
 
     /**
@@ -123,8 +127,9 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
      */
     public boolean onOperationStateInputFirstPattern() {
         mOnViewModelEventBind.onOperationStateOK("");
-        if (mCurrentInputKeyWord.length() == 0) {
-            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_no_pattern));
+        int patternLength = mOnViewModelEventBind.getPatternLength();
+        if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pattern_length));
             resetCurrentKeyword();
             return false;
         }
@@ -141,12 +146,13 @@ public class PatternUnlockWizardFragmentViewModel implements BaseViewModel {
      * @return
      */
     public boolean onOperationStateInputSecondPattern() {
+        int patternLength = mOnViewModelEventBind.getPatternLength();
         if (!(mLastInputKeyWord.toString().equals(mCurrentInputKeyWord.toString()))) {
             mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pattern_mismatch));
             initializeUnlockOperation();
             return false;
-        } else if (mCurrentInputKeyWord.length() == 0) {
-            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_no_pattern));
+        } else if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH) {
+            mOnViewModelEventBind.onOperationStateError(mActivity.getString(R.string.error_pattern_length));
             initializeUnlockOperation();
             return false;
         }

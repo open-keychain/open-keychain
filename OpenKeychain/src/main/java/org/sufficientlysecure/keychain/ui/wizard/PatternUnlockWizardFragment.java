@@ -73,6 +73,11 @@ public class PatternUnlockWizardFragment extends WizardFragment
     }
 
     @Override
+    public int getPatternLength() {
+        return mPatternView.getPattern().size();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mPatternUnlockWizardFragmentViewModel.saveViewModelState(outState);
