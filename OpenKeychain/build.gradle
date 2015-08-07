@@ -54,6 +54,7 @@ dependencies {
     compile 'com.mikepenz.iconics:octicons-typeface:2.2.0@aar'
     compile 'com.mikepenz.iconics:meteocons-typeface:1.1.1@aar'
     compile 'com.mikepenz.iconics:community-material-typeface:1.0.0@aar'
+    compile 'com.nispok:snackbar:2.11.0'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     // libs as submodules
@@ -66,7 +67,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange:safeslinger-exchange')
-    compile project(':extern:snackbar:lib')
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -106,6 +106,7 @@ dependencyVerification {
 //            'OpenKeychain.extern.snackbar:lib:6847a73d2680558d35f0b384ac3ed006532c0a2306598b000db94ef18aab62aa',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
             'com.squareup.okio:okio:b53c1760864e1c39b5275d9023e2a6fbe8f3189e6e67b4c87877b8ec8f92e05a',
+            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
     ]
 }
 
