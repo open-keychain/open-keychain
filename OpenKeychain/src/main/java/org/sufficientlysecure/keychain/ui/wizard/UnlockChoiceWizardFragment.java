@@ -43,6 +43,8 @@ public class UnlockChoiceWizardFragment extends WizardFragment
         super.onCreate(savedInstanceState);
         mUnlockChoiceWizardFragmentViewModel = new UnlockChoiceWizardFragmentViewModel(this,
                 mWizardFragmentListener);
+
+        mUnlockChoiceWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
     }
 
     @Nullable
@@ -76,6 +78,12 @@ public class UnlockChoiceWizardFragment extends WizardFragment
     @Override
     public boolean onNextClicked() {
         return mUnlockChoiceWizardFragmentViewModel.onNextClicked();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mUnlockChoiceWizardFragmentViewModel.saveViewModelState(outState);
     }
 
     @Override

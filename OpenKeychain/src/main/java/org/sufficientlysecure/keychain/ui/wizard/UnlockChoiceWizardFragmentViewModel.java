@@ -50,10 +50,6 @@ public class UnlockChoiceWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Activity activity) {
-        if (savedInstanceState != null) {
-            restoreViewModelState(savedInstanceState);
-        }
-
         mOnViewModelEventBind.hideNavigationButtons(false, false);
     }
 
@@ -64,8 +60,10 @@ public class UnlockChoiceWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-        mSecretKeyType = (CanonicalizedSecretKey.SecretKeyType) savedInstanceState.
-                getSerializable(STATE_SAVE_UNLOCK_METHOD);
+        if (savedInstanceState != null) {
+            mSecretKeyType = (CanonicalizedSecretKey.SecretKeyType) savedInstanceState.
+                    getSerializable(STATE_SAVE_UNLOCK_METHOD);
+        }
     }
 
     /**
