@@ -18,10 +18,12 @@ package org.sufficientlysecure.keychain.ui.wizard;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.RadioGroup;
 
 import org.sufficientlysecure.keychain.R;
@@ -33,6 +35,8 @@ import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 public class UnlockChoiceWizardFragment extends WizardFragment
         implements UnlockChoiceWizardFragmentViewModel.OnViewModelEventBind {
     private UnlockChoiceWizardFragmentViewModel mUnlockChoiceWizardFragmentViewModel;
+    private Handler mHandler;
+    private Runnable mRunnable;
 
     public static UnlockChoiceWizardFragment newInstance() {
         return new UnlockChoiceWizardFragment();
@@ -45,6 +49,15 @@ public class UnlockChoiceWizardFragment extends WizardFragment
                 mWizardFragmentListener);
 
         mUnlockChoiceWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
+
+        mHandler = new Handler();
+        mRunnable = new Runnable() {
+            @Override
+            public void run() {
+                hideNavigationButtons(false, false);
+            }
+        };
+
     }
 
     @Nullable
@@ -89,5 +102,14 @@ public class UnlockChoiceWizardFragment extends WizardFragment
     @Override
     public void hideNavigationButtons(boolean hideBack, boolean hideNext) {
         mWizardFragmentListener.onHideNavigationButtons(hideBack, hideNext);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (mHandler != null) {
+            mHandler.postDelayed(mRunnable, 500);
+            mHandler = null;
+        }
     }
 }

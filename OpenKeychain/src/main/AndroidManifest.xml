@@ -90,6 +90,7 @@
             android:allowTaskReparenting="true"
             android:label="@string/title_manage_my_keys"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data

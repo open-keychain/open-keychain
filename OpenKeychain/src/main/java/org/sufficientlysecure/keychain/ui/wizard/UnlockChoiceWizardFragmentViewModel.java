@@ -50,7 +50,6 @@ public class UnlockChoiceWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Activity activity) {
-        mOnViewModelEventBind.hideNavigationButtons(false, false);
     }
 
     @Override

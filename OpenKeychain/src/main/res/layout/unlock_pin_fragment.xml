@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="48dp"
                 android:persistentDrawingCache="all">
 
     <TextView
@@ -32,9 +33,10 @@
         android:id="@+id/pinLengthLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/unlockTip"
         android:layout_marginRight="24dp"
-        android:visibility="invisible"
-        android:layout_below="@id/unlockTip">
+        android:visibility="invisible">
+
         <TextView
             android:id="@+id/pinLength"
             android:layout_width="wrap_content"
@@ -54,6 +56,7 @@
             android:text="Pin Length:"
             android:textColor="@color/black"/>
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/unlockInputLayout"
         android:layout_width="match_parent"

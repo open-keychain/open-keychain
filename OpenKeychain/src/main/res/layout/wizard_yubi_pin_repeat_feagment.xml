@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="48dp">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +23,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/create_key_yubi_key_pin_repeat_text"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -30,7 +31,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/create_key_yubi_key_pin"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <EditText
                 android:id="@+id/create_yubi_key_pin_repeat"
@@ -40,7 +41,7 @@
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/create_key_yubi_key_pin_repeat"
-                android:inputType="numberPassword" />
+                android:inputType="numberPassword"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -48,7 +49,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/create_key_yubi_key_admin_pin"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <EditText
                 android:id="@+id/create_yubi_key_admin_pin_repeat"
@@ -58,7 +59,7 @@
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/create_key_yubi_key_admin_pin_repeat"
-                android:inputType="numberPassword" />
+                android:inputType="numberPassword"/>
 
         </LinearLayout>
     </ScrollView>

@@ -11,10 +11,16 @@
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
+    <FrameLayout
+        android:id="@+id/unlockWizardFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_include" />
+
     <LinearLayout
         android:id="@+id/createKeyWizardActivityButtonContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:weightSum="1">
@@ -44,11 +50,4 @@
             android:textColor="@color/black"/>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/unlockWizardFragmentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/createKeyWizardActivityButtonContainer"
-        android:layout_below="@id/toolbar_include" />
 </RelativeLayout>

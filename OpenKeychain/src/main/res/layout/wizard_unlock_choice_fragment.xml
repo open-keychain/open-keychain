@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="48dp"
                 android:persistentDrawingCache="all">
 
     <TextView
@@ -29,8 +30,8 @@
             android:id="@+id/wizardUnlockChoiceRadioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp"
-            android:checkedButton="@+id/radioPinUnlock">
+            android:checkedButton="@+id/radioPinUnlock"
+            android:padding="24dp">
 
             <RadioButton
                 android:id="@id/radioPinUnlock"

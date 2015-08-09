@@ -328,14 +328,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
      */
     void beginWizardTransaction(WizardFragment fragment, boolean addToBackStack) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if (addToBackStack) {
-            transaction.addToBackStack(null);
-        }
+
         transaction.setCustomAnimations(R.anim.frag_slide_in_from_right,
                 R.anim.frag_slide_out_to_left,
                 R.anim.frag_slide_in_from_left, R.anim.frag_slide_out_to_right);
-        transaction.replace(R.id.unlockWizardFragmentContainer, fragment,
-                FRAGMENT_TAG);
+        if (addToBackStack) {
+            transaction.addToBackStack(null);
+        }
+
+        transaction.replace(R.id.unlockWizardFragmentContainer, fragment, FRAGMENT_TAG);
         transaction.commit();
     }
 
