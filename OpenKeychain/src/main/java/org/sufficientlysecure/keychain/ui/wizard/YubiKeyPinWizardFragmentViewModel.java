@@ -54,11 +54,6 @@ public class YubiKeyPinWizardFragmentViewModel implements BaseViewModel,
     @Override
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Activity activity) {
         mActivity = activity;
-
-        if (savedInstanceState != null) {
-            restoreViewModelState(savedInstanceState);
-        }
-
         onYubiKeyPinDataSet(mWizardFragmentListener.getYubiKeyPin(),
                 mWizardFragmentListener.getYubiKeyAdminPin());
     }

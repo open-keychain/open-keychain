@@ -41,6 +41,7 @@ public class PinUnlockWizardFragment extends WizardFragment implements
 
         mPinUnlockWizardFragmentViewModel = new PinUnlockWizardFragmentViewModel(this,
                 mWizardFragmentListener);
+        mPinUnlockWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
     }
 
     /**

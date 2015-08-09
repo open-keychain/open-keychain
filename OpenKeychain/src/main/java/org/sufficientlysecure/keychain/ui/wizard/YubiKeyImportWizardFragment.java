@@ -67,6 +67,7 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mYubiKeyImportWizardFragmentViewModel = new YubiKeyImportWizardFragmentViewModel(this);
+        mYubiKeyImportWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
     }
 
     @Nullable
@@ -107,6 +108,12 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 
         mYubiKeyImportWizardFragmentViewModel.prepareViewModel(savedInstanceState, getArguments(),
                 getActivity());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mYubiKeyImportWizardFragmentViewModel.saveViewModelState(outState);
     }
 
     public void onSearchClicked() {

@@ -51,6 +51,7 @@ public class EmailWizardFragment extends WizardFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEmailWizardFragmentViewModel = new EmailWizardFragmentViewModel(this, mWizardFragmentListener);
+        mEmailWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
     }
 
     @Nullable

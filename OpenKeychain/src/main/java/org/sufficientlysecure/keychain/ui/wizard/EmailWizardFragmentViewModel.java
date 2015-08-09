@@ -73,9 +73,7 @@ public class EmailWizardFragmentViewModel implements BaseViewModel {
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Activity activity) {
         mActivity = activity;
 
-        if (savedInstanceState != null) {
-            restoreViewModelState(savedInstanceState);
-        } else {
+        if (savedInstanceState == null) {
             mAdditionalEmailModels = new ArrayList<>();
 
             if (mWizardFragmentListener.getName() == null) {
@@ -93,9 +91,10 @@ public class EmailWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-        mAdditionalEmailModels = (ArrayList<WizardEmailAdapter.ViewModel>)
-                savedInstanceState.getSerializable(STATE_SAVE_ADDITIONAL_EMAILS);
-
+        if (savedInstanceState != null) {
+            mAdditionalEmailModels = (ArrayList<WizardEmailAdapter.ViewModel>)
+                    savedInstanceState.getSerializable(STATE_SAVE_ADDITIONAL_EMAILS);
+        }
     }
 
     /**

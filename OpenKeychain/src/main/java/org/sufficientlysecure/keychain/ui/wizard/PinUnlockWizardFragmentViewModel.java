@@ -76,8 +76,6 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
         mActivity = activity;
         if (savedInstanceState == null) {
             initializeUnlockOperation();
-        } else {
-            restoreViewModelState(savedInstanceState);
         }
 
         mOnViewModelEventBind.hideNavigationButtons(false, false);
@@ -92,9 +90,11 @@ public class PinUnlockWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-        mLastInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_LAST_KEYWORD);
-        mOperationState = (OperationState) savedInstanceState.getSerializable(STATE_SAVE_OPERATION_STATE);
-        mCurrentInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_CURRENT_KEYWORD);
+        if (savedInstanceState != null) {
+            mLastInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_LAST_KEYWORD);
+            mOperationState = (OperationState) savedInstanceState.getSerializable(STATE_SAVE_OPERATION_STATE);
+            mCurrentInputKeyWord = (StringBuilder) savedInstanceState.getSerializable(STATE_SAVE_CURRENT_KEYWORD);
+        }
     }
 
     /**

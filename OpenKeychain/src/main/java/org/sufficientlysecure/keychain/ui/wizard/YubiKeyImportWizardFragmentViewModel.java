@@ -59,9 +59,7 @@ public class YubiKeyImportWizardFragmentViewModel implements BaseViewModel {
     @Override
     public void prepareViewModel(Bundle savedInstanceState, Bundle arguments, Activity activity) {
         mActivity = activity;
-        if (savedInstanceState != null) {
-            restoreViewModelState(savedInstanceState);
-        } else {
+        if (savedInstanceState == null) {
             updateNFCData(arguments.getByteArray(ARG_FINGERPRINT), arguments.getByteArray(ARG_AID),
                     arguments.getString(ARG_USER_ID), true);
         }
@@ -76,9 +74,11 @@ public class YubiKeyImportWizardFragmentViewModel implements BaseViewModel {
 
     @Override
     public void restoreViewModelState(Bundle savedInstanceState) {
-        updateNFCData(savedInstanceState.getByteArray(ARG_FINGERPRINT),
-                savedInstanceState.getByteArray(ARG_AID),
-                savedInstanceState.getString(ARG_USER_ID), true);
+        if (savedInstanceState != null) {
+            updateNFCData(savedInstanceState.getByteArray(ARG_FINGERPRINT),
+                    savedInstanceState.getByteArray(ARG_AID),
+                    savedInstanceState.getString(ARG_USER_ID), true);
+        }
     }
 
     /**

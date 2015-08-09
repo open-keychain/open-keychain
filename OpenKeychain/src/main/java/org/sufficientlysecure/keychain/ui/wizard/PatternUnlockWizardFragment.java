@@ -41,6 +41,7 @@ public class PatternUnlockWizardFragment extends WizardFragment
 
         mPatternUnlockWizardFragmentViewModel = new PatternUnlockWizardFragmentViewModel(this,
                 mWizardFragmentListener);
+        mPatternUnlockWizardFragmentViewModel.restoreViewModelState(savedInstanceState);
     }
 
     @Nullable
