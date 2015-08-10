@@ -43,6 +43,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
     protected boolean mHiddenRecipients = false;
+    protected boolean mIntegrityProtected = true;
 
     public PgpSignEncryptInputParcel() {
 
@@ -68,6 +69,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         mCleartextSignature = source.readInt() == 1;
         mDetachedSignature = source.readInt() == 1;
         mHiddenRecipients = source.readInt() == 1;
+        mIntegrityProtected = source.readInt() == 1;
     }
 
     @Override
@@ -97,6 +99,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
         dest.writeInt(mHiddenRecipients ? 1 : 0);
+        dest.writeInt(mIntegrityProtected ? 1 : 0);
     }
 
     public String getCharset() {
@@ -226,6 +229,18 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public PgpSignEncryptInputParcel setHiddenRecipients(boolean hiddenRecipients) {
         this.mHiddenRecipients = hiddenRecipients;
+        return this;
+    }
+
+    public boolean isIntegrityProtected() {
+        return mIntegrityProtected;
+    }
+
+    /**
+     * Only use for testing! Never disable integrity protection!
+     */
+    public PgpSignEncryptInputParcel setIntegrityProtected(boolean integrityProtected) {
+        this.mIntegrityProtected = integrityProtected;
         return this;
     }
 

@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -44,7 +45,6 @@ import org.spongycastle.bcpg.PacketTags;
 import org.spongycastle.bcpg.PublicKeyEncSessionPacket;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -72,11 +72,12 @@ import static org.hamcrest.core.Is.is;
 @Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class PgpEncryptDecryptTest {
 
-    static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
+    static Passphrase mSymmetricPassphrase = TestingUtils.genPassphrase(true);
 
-    static UncachedKeyRing mStaticRing1, mStaticRing2;
+    static UncachedKeyRing mStaticRing1, mStaticRing2, mStaticRingInsecure;
     static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
     static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhraseInsecure = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -91,13 +92,13 @@ public class PgpEncryptDecryptTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("bloom");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase1);
 
@@ -111,11 +112,11 @@ public class PgpEncryptDecryptTest {
         {
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.DSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ELGAMAL, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("belle");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhrase2);
 
@@ -124,6 +125,25 @@ public class PgpEncryptDecryptTest {
             Assert.assertNotNull("initial test key creation must succeed", result.getRing());
 
             mStaticRing2 = result.getRing();
+        }
+
+        {
+            // insecure (1024 bit) RSA key
+            SaveKeyringParcel parcel = new SaveKeyringParcel();
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+            parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
+                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+            parcel.mAddUserIds.add("eve");
+            parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhraseInsecure);
+
+            PgpEditKeyResult result = op.createSecretKeyRing(parcel);
+            Assert.assertTrue("initial test key creation must succeed", result.success());
+            Assert.assertNotNull("initial test key creation must succeed", result.getRing());
+
+            mStaticRingInsecure = result.getRing();
         }
 
     }
@@ -158,8 +178,9 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
-            b.setSymmetricPassphrase(mPassphrase);
-            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            b.setSymmetricPassphrase(mSymmetricPassphrase);
+            b.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
                     data, out);
@@ -169,7 +190,7 @@ public class PgpEncryptDecryptTest {
             ciphertext = out.toByteArray();
         }
 
-        { // decryption with same passphrase should yield the same result
+        { // decryption with same passphrase should yield the same plaintext
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
@@ -180,12 +201,15 @@ public class PgpEncryptDecryptTest {
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(
-                    input, new CryptoInputParcel(mPassphrase), data, out);
+                    input, new CryptoInputParcel(mSymmetricPassphrase), data, out);
 
             Assert.assertTrue("decryption must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
-            Assert.assertNull("signature should be an error", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
             CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
             Assert.assertEquals("cached session keys must be empty",
@@ -207,12 +231,15 @@ public class PgpEncryptDecryptTest {
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
             DecryptVerifyResult result = op.execute(input,
-                    new CryptoInputParcel(new Passphrase(new String(mPassphrase.getCharArray()) + "x")),
+                    new CryptoInputParcel(new Passphrase(new String(mSymmetricPassphrase.getCharArray()) + "x")),
                     data, out);
 
             Assert.assertFalse("decryption must fail", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
-            Assert.assertNull("signature should be an error", result.getSignatureResult());
+            Assert.assertNull("decryptionResult should be null",
+                    result.getDecryptionResult());
+            Assert.assertNull("signatureResult should be null",
+                    result.getSignatureResult());
         }
 
         { // decryption with an unset passphrase should fail
@@ -230,7 +257,10 @@ public class PgpEncryptDecryptTest {
 
             Assert.assertFalse("decryption must fail", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
-            Assert.assertNull("signature should be an error", result.getSignatureResult());
+            Assert.assertNull("decryptionResult should be null",
+                    result.getDecryptionResult());
+            Assert.assertNull("signatureResult should be null",
+                    result.getSignatureResult());
         }
 
         { // decryption if symmetric decryption isn't allowed should fail
@@ -248,7 +278,10 @@ public class PgpEncryptDecryptTest {
 
             Assert.assertFalse("decryption must fail", result.success());
             Assert.assertEquals("decrypted plaintext should be empty", 0, out.size());
-            Assert.assertNull("signature should be an error", result.getSignatureResult());
+            Assert.assertNull("decryptionResult should be null",
+                    result.getDecryptionResult());
+            Assert.assertNull("signatureResult should be null",
+                    result.getSignatureResult());
         }
 
     }
@@ -270,7 +303,8 @@ public class PgpEncryptDecryptTest {
             PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            input.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -291,7 +325,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with provided passphrase should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
-            Assert.assertNull("signature be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
             CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
             Assert.assertEquals("must have one cached session key",
@@ -321,7 +358,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
-            Assert.assertNull("signature should be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
         }
 
         { // decryption with no passphrase provided should return status pending
@@ -361,7 +401,8 @@ public class PgpEncryptDecryptTest {
             PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            input.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -417,7 +458,8 @@ public class PgpEncryptDecryptTest {
             PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
 
             input.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            input.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            input.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
                     data, out);
             Assert.assertTrue("encryption must succeed", result.success());
@@ -461,7 +503,8 @@ public class PgpEncryptDecryptTest {
                     mStaticRing1.getMasterKeyId(),
                     mStaticRing2.getMasterKeyId()
             });
-            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            b.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
             PgpSignEncryptResult result = op.execute(b, new CryptoInputParcel(new Date()),
                     data, out);
@@ -484,7 +527,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption with cached passphrase must succeed for the first key", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
-            Assert.assertNull("signature should be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
 
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
@@ -512,7 +558,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
             Assert.assertTrue("other key was skipped", result.getLog().containsType(LogType.MSG_DC_ASKIP_NOT_ALLOWED));
-            Assert.assertNull("signature should be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
         }
 
         { // decryption should fail if no key is allowed
@@ -553,7 +602,10 @@ public class PgpEncryptDecryptTest {
             Assert.assertTrue("decryption with cached passphrase must succeed", result.success());
             Assert.assertArrayEquals("decrypted ciphertext with cached passphrase  should equal plaintext",
                     out.toByteArray(), plaintext.getBytes());
-            Assert.assertNull("signature should be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
         }
 
     }
@@ -580,7 +632,8 @@ public class PgpEncryptDecryptTest {
             });
             b.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
             b.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
-            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            b.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
 
             PgpSignEncryptResult result = op.execute(b,
                     new CryptoInputParcel(new Date(), mKeyPhrase1), data, out);
@@ -659,7 +712,8 @@ public class PgpEncryptDecryptTest {
             PgpSignEncryptInputParcel b = new PgpSignEncryptInputParcel();
 
             b.setEncryptionMasterKeyIds(new long[] { mStaticRing1.getMasterKeyId() });
-            b.setSymmetricEncryptionAlgorithm(PGPEncryptedData.AES_128);
+            b.setSymmetricEncryptionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_128);
             // this only works with ascii armored output!
             b.setEnableAsciiArmorOutput(true);
             b.setCharset("iso-2022-jp");
@@ -687,9 +741,81 @@ public class PgpEncryptDecryptTest {
                     "iso-2022-jp", result.getCharset());
             Assert.assertEquals("decrypted ciphertext should equal plaintext",
                     new String(out.toByteArray(), result.getCharset()), plaintext);
-            Assert.assertNull("signature be empty", result.getSignatureResult());
+            Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
         }
 
+    }
+
+    @Test
+    public void testAsymmetricInsecureEncryptDecrypt() {
+
+        // insecure symmetric algo
+        subtestInsecureEncryptDecrypt(mStaticRing1, mKeyPhrase1,
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.DES, true);
+        // don't use MDC
+        subtestInsecureEncryptDecrypt(mStaticRing1, mKeyPhrase1,
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256, false);
+        // insecure key (1024 bit RSA)
+        subtestInsecureEncryptDecrypt(mStaticRingInsecure, mKeyPhraseInsecure,
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.AES_256, true);
+
+    }
+
+    private void subtestInsecureEncryptDecrypt(UncachedKeyRing key, Passphrase passphrase,
+                                               int algorithm, boolean isIntegrityProtected) {
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        byte[] ciphertext;
+
+        { // encrypt data with insecure key
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            input.setEncryptionMasterKeyIds(new long[]{key.getMasterKeyId()})
+                    .setSymmetricEncryptionAlgorithm(algorithm)
+                    .setIntegrityProtected(isIntegrityProtected);
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+                    data, out);
+            Assert.assertTrue("encryption must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+        }
+
+        { // decryption with provided passphrase should yield insecure status
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase), data, out);
+
+            Assert.assertTrue("decryption with provided passphrase must succeed", result.success());
+            Assert.assertArrayEquals("decrypted ciphertext with provided passphrase should equal plaintext",
+                    out.toByteArray(), plaintext.getBytes());
+            Assert.assertEquals("decryptionResult should be RESULT_INSECURE",
+                    OpenPgpDecryptionResult.RESULT_INSECURE, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",
+                    OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
+
+            CryptoInputParcel cryptoInput = result.getCachedCryptoInputParcel();
+            Assert.assertEquals("must have one cached session key",
+                    1, cryptoInput.getCryptoData().size());
+
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
+
+        }
     }
 
     private PgpDecryptVerify operationWithFakePassphraseCache(

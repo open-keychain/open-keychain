@@ -242,11 +242,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
             if (algo == PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
                 algo = PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM;
             }
-            // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =
                     new JcePGPDataEncryptorBuilder(algo)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
-                            .setWithIntegrityPacket(true);
+                            .setWithIntegrityPacket(input.isIntegrityProtected());
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
