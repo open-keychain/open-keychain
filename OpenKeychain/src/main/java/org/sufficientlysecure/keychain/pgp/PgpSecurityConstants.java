@@ -101,9 +101,6 @@ public class PgpSecurityConstants {
      * all other algorithms are rejected with OpenPgpSignatureResult.RESULT_INSECURE or
      * OpenPgpDecryptionResult.RESULT_INSECURE
      *
-     * REASON:
-     * Don't allow ELGAMAL_GENERAL (20), reason in RFC
-     *
      * coorus:
      * Implementations MUST NOT accept, or treat any signature as valid, by an RSA key with
      * bitlength less than 1023 bits.
@@ -118,25 +115,21 @@ public class PgpSecurityConstants {
 
     public static boolean isSecureKey(CanonicalizedPublicKey key) {
         switch (key.getAlgorithm()) {
-            case PublicKeyAlgorithmTags.RSA_GENERAL:
-            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
-            case PublicKeyAlgorithmTags.RSA_SIGN: {
+            case PublicKeyAlgorithmTags.RSA_GENERAL: {
                 return (key.getBitStrength() >= 2048);
             }
-
+            // RSA_ENCRYPT, RSA_SIGN: deprecated in RFC 4880, use RSA_GENERAL with key flags
             case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT: {
                 return (key.getBitStrength() >= 2048);
             }
-
             case PublicKeyAlgorithmTags.DSA: {
                 return (key.getBitStrength() >= 2048);
             }
-
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA: {
                 return PgpSecurityConstants.sCurveWhitelist.contains(key.getCurveOid());
             }
-            // ELGAMAL_GENERAL: Must not be used, use ELGAMAL_ENCRYPT
+            // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT
             // DIFFIE_HELLMAN: unsure
             default:
                 return false;
