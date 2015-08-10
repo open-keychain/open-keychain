@@ -38,19 +38,6 @@ import java.util.HashSet;
  */
 public class PgpSecurityConstants {
 
-    /*
-     * TODO:
-     * 1. Check binding signatures for requirements on import! throw out binding signatures with insecure
-     * signatures (bit length, hash algo)
-     *
-     * - put checks for curve OIDs and algorithm tags into import instead of PgpDecryptVerify?
-     * - check signingRing in PgpDecryptVerify?
-     * - ECC checks https://tools.ietf.org/html/rfc6637#section-13
-     * - check encryption algo used for encrypting secret keys?
-     * - check S2K security?
-     * - check for min rsa/dsa/elgamal/ecc requirements in key creation backend
-     */
-
     /**
      * Whitelist of accepted symmetric encryption algorithms
      * all other algorithms are rejected with OpenPgpDecryptionResult.RESULT_INSECURE
