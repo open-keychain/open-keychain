@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout style="@style/KeychainTheme"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:persistentDrawingCache="all">
+
+    <include
+        android:id="@+id/toolbar_include"
+        layout="@layout/toolbar_standalone"/>
+
+    <FrameLayout
+        android:id="@+id/unlockWizardFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar_include"/>
+
+    <LinearLayout
+        android:id="@+id/createKeyWizardActivityButtonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/backButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:drawableLeft="@drawable/ic_chevron_left_grey_24dp"
+            android:drawablePadding="8dp"
+            android:gravity="left|center_vertical"
+            android:text="@string/btn_back"
+            android:textColor="@android:color/black"/>
+
+        <Button
+            android:id="@+id/nextButton"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:drawablePadding="8dp"
+            android:drawableRight="@drawable/ic_chevron_right_grey_24dp"
+            android:gravity="right|center_vertical"
+            android:text="@string/btn_next"
+            android:textColor="@android:color/black"/>
+
+    </LinearLayout>
+</RelativeLayout>

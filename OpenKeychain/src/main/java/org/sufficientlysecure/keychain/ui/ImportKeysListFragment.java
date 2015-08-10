@@ -188,6 +188,11 @@ public class ImportKeysListFragment extends ListFragment implements
         }
     }
 
+    public static CloudLoaderState newCloudLoaderStateInstance(String serverQuery, Preferences.
+            CloudSearchPrefs cloudPrefs) {
+        return new CloudLoaderState(serverQuery, cloudPrefs);
+    }
+
     static public class CloudLoaderState extends LoaderState {
         Preferences.CloudSearchPrefs mCloudPrefs;
         String mServerQuery;

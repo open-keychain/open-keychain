@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="48dp"
+                android:persistentDrawingCache="all">
+
+    <TextView
+        android:id="@+id/unlockTip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:text="@string/input_pattern"/>
+
+    <org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView
+        android:id="@+id/unlockUserFeedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp">
+    </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="24dp"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
+    <RelativeLayout
+        android:id="@+id/unlockInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/progressBar"
+        android:layout_below="@id/unlockTip">
+
+        <com.eftimoff.patternview.PatternView
+            android:id="@+id/patternView"
+            xmlns:patternview="http://schemas.android.com/apk/res-auto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            patternview:circleColor="@color/highlighted_text_material_light"
+            patternview:gridSize="4"
+            patternview:pathColor="@color/primary_dark_material_light"/>
+    </RelativeLayout>
+</RelativeLayout>

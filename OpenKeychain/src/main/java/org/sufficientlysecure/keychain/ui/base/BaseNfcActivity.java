@@ -79,9 +79,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     private static final int TIMEOUT = 100000;
 
-    private byte[] mNfcFingerprints;
-    private String mNfcUserId;
-    private byte[] mNfcAid;
+    protected byte[] mNfcFingerprints;
+    protected String mNfcUserId;
+    protected byte[] mNfcAid;
+    protected String mNfcFingerprint;
 
     /**
      * Override to change UI before NFC handling (UI thread)

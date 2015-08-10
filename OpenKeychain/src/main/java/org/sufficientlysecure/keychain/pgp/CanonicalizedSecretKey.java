@@ -142,6 +142,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             if (notation.containsKey("unlock.pin@sufficientlysecure.org")
                     && "1".equals(notation.get("unlock.pin@sufficientlysecure.org"))) {
                 return SecretKeyType.PIN;
+            } else if (notation.containsKey("unlock.pattern@sufficientlysecure.org")
+                    && "1".equals(notation.get("unlock.pattern@sufficientlysecure.org"))) {
+                return SecretKeyType.PATTERN;
             }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
@@ -188,7 +191,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo,
-            Map<ByteBuffer,byte[]> signedHashes) {
+                                                            Map<ByteBuffer, byte[]> signedHashes) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // use synchronous "NFC based" SignerBuilder
             return new NfcSyncPGPContentSignerBuilder(
@@ -222,7 +225,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public PGPSignatureGenerator getDataSignatureGenerator(int hashAlgo, boolean cleartext,
-            Map<ByteBuffer, byte[]> signedHashes, Date creationTimestamp)
+                                                           Map<ByteBuffer, byte[]> signedHashes, Date creationTimestamp)
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
@@ -299,7 +302,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             throw new PgpGeneralException("Error converting private key!", e);
         }
 
-        return (RSAPrivateCrtKey)retVal;
+        return (RSAPrivateCrtKey) retVal;
     }
 
     public byte[] getIv() {
