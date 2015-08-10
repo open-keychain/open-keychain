@@ -790,12 +790,13 @@ public class OpenPgpService extends RemoteService {
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 4
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 5
                 && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 6
-                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 7) {
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 7
+                && data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != 8) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError
                     (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
                             + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: 3-7");
+                            + "supported API versions: 3-8");
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
