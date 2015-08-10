@@ -111,6 +111,9 @@ public class PinUnlockWizardFragment extends WizardFragment {
         mPinLengthText = (TextView) view.findViewById(R.id.pinLength);
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
 
+        view.setPadding(0, 0, 0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                48, getResources().getDisplayMetrics()));
+
         if (savedInstanceState == null) {
             initializeUnlockOperation();
         }

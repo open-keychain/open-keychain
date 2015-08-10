@@ -18,6 +18,7 @@ package org.sufficientlysecure.keychain.ui.wizard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,9 @@ public class PatternUnlockWizardFragment extends WizardFragment {
 
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mPatternView = (PatternView) view.findViewById(R.id.patternView);
+
+        view.setPadding(0,0,0,(int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                48,getResources().getDisplayMetrics()));
 
         if (savedInstanceState == null) {
             initializeUnlockOperation();
