@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -38,7 +37,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,14 +56,16 @@ import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.MimeParsingResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+import org.sufficientlysecure.keychain.service.MimeParsingParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
@@ -432,45 +432,47 @@ public class DecryptListFragment
         // OpenKeychain's internal viewer
         if ("text/plain".equals(metadata.getMimeType())) {
 
+            parseMime(outputUri);
+
             // this is a significant i/o operation, use an asynctask
-            new AsyncTask<Void,Void,Intent>() {
-
-                @Override
-                protected Intent doInBackground(Void... params) {
-
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        return null;
-                    }
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(outputUri, "text/plain");
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    return intent;
-                }
-
-                @Override
-                protected void onPostExecute(Intent intent) {
-                    // for result so we can possibly get a snackbar error from internal viewer
-                    Activity activity = getActivity();
-                    if (intent == null || activity == null) {
-                        return;
-                    }
-
-                    LabeledIntent internalIntent = new LabeledIntent(
-                            new Intent(intent)
-                                    .setClass(activity, DisplayTextActivity.class)
-                                    .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
-                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
-
-                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                            new Parcelable[] { internalIntent });
-
-                    activity.startActivity(chooserIntent);
-                }
-
-            }.execute();
+//            new AsyncTask<Void,Void,Intent>() {
+//
+//                @Override
+//                protected Intent doInBackground(Void... params) {
+//
+//                    Activity activity = getActivity();
+//                    if (activity == null) {
+//                        return null;
+//                    }
+//
+//                    Intent intent = new Intent(Intent.ACTION_VIEW);
+//                    intent.setDataAndType(outputUri, "text/plain");
+//                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                    return intent;
+//                }
+//
+//                @Override
+//                protected void onPostExecute(Intent intent) {
+//                    // for result so we can possibly get a snackbar error from internal viewer
+//                    Activity activity = getActivity();
+//                    if (intent == null || activity == null) {
+//                        return;
+//                    }
+//
+//                    LabeledIntent internalIntent = new LabeledIntent(
+//                            new Intent(intent)
+//                                    .setClass(activity, DisplayTextActivity.class)
+//                                    .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
+//                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
+//
+//                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+//                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+//                            new Parcelable[] { internalIntent });
+//
+//                    activity.startActivity(chooserIntent);
+//                }
+//
+//            }.execute();
 
         } else {
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -482,6 +484,52 @@ public class DecryptListFragment
             activity.startActivity(chooserIntent);
         }
 
+    }
+
+    private void parseMime(final Uri inputUri) {
+
+        CryptoOperationHelper.Callback<MimeParsingParcel, MimeParsingResult> callback
+                = new CryptoOperationHelper.Callback<MimeParsingParcel, MimeParsingResult>() {
+
+            @Override
+            public MimeParsingParcel createOperationInput() {
+                return new MimeParsingParcel(inputUri, null);
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(MimeParsingResult result) {
+                handleResult(result);
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+
+            }
+
+            @Override
+            public void onCryptoOperationError(MimeParsingResult result) {
+                handleResult(result);
+            }
+
+            public void handleResult(MimeParsingResult result) {
+                // TODO: merge with other log
+//                saveKeyResult.getLog().add(result, 0);
+
+                mOutputUris = new HashMap<>(result.getTemporaryUris().size());
+                for (Uri tempUri : result.getTemporaryUris()) {
+                    // TODO: use same inputUri for all?
+                    mOutputUris.put(inputUri, tempUri);
+                }
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        CryptoOperationHelper mimeParsingHelper = new CryptoOperationHelper<>(3, this, callback, R.string.progress_uploading);
+        mimeParsingHelper.cryptoOperation();
     }
 
     @Override

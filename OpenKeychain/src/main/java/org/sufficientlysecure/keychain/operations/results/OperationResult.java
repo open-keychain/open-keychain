@@ -787,6 +787,11 @@ public abstract class OperationResult implements Parcelable {
         MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
         MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
         MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success),
+
+        // mim parsing
+        MSG_MIME_PARSING(LogLevel.START,R.string.msg_mime_parsing_start),
+        MSG_MIME_PARSING_ERROR(LogLevel.ERROR,R.string.msg_mime_parsing_error),
+        MSG_MIME_PARSING_SUCCESS(LogLevel.OK,R.string.msg_mime_parsing_success),
         ;
 
         public final int mMsgId;

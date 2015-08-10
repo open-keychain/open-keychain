@@ -1341,6 +1341,11 @@
     <string name="msg_export_log_error_writing">"I/O error writing to file!"</string>
     <string name="msg_export_log_success">"Log exported successfully!"</string>
 
+    <!-- Messages for Mime parsing operation -->
+    <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>
+    <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
+    <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
+
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
