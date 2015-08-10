@@ -583,13 +583,13 @@ public class OpenPgpService extends RemoteService {
                     }
                 }
 
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 6) {
-                    // RESULT_INVALID_INSECURE has been added in version 6, fallback to RESULT_INVALID_SIGNATURE
+                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) < 8) {
+                    // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
                     if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_INSECURE) {
                         signatureResult.setResult(OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE);
                     }
 
-                    // RESULT_NO_SIGNATURE has been added in version 6, before the signatureResult was null
+                    // RESULT_NO_SIGNATURE has been added in version 8, before the signatureResult was null
                     if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
                         result.putExtra(OpenPgpApi.RESULT_SIGNATURE, (Parcelable[]) null);
                     }
@@ -602,7 +602,7 @@ public class OpenPgpService extends RemoteService {
                     }
                 }
 
-                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 6) {
+                if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 8) {
                     OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
                     if (decryptionResult != null) {
                         result.putExtra(OpenPgpApi.RESULT_DECRYPTION, decryptionResult);
