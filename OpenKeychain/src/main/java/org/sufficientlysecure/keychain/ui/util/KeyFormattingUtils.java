@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
@@ -40,7 +41,6 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Curve;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
@@ -408,7 +408,8 @@ public class KeyFormattingUtils {
         UNVERIFIED,
         UNKNOWN_KEY,
         INVALID,
-        NOT_SIGNED
+        NOT_SIGNED,
+        INSECURE
     }
 
     public static void setStatusImage(Context context, ImageView statusIcon, State state) {
@@ -443,18 +444,33 @@ public class KeyFormattingUtils {
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
     public static void setStatus(Context context, StatusHolder holder, DecryptVerifyResult result) {
 
-        OpenPgpSignatureResult signatureResult = result.getSignatureResult();
-
         if (holder.hasEncrypt()) {
+            OpenPgpDecryptionResult decryptionResult = result.getDecryptionResult();
+
             int encText, encIcon, encColor;
-            if (signatureResult != null && signatureResult.isSignatureOnly()) {
-                encIcon = R.drawable.status_lock_open_24dp;
-                encText = R.string.decrypt_result_not_encrypted;
-                encColor = R.color.key_flag_red;
-            } else {
-                encIcon = R.drawable.status_lock_closed_24dp;
-                encText = R.string.decrypt_result_encrypted;
-                encColor = R.color.key_flag_green;
+
+            switch (decryptionResult.getResult()) {
+                case OpenPgpDecryptionResult.RESULT_ENCRYPTED: {
+                    encText = R.string.decrypt_result_encrypted;
+                    encIcon = R.drawable.status_lock_closed_24dp;
+                    encColor = R.color.key_flag_green;
+                    break;
+                }
+
+                case OpenPgpDecryptionResult.RESULT_INSECURE: {
+                    encText = R.string.decrypt_result_insecure;
+                    encIcon = R.drawable.status_signature_invalid_cutout_24dp;
+                    encColor = R.color.key_flag_red;
+                    break;
+                }
+
+                default:
+                case OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED: {
+                    encText = R.string.decrypt_result_not_encrypted;
+                    encIcon = R.drawable.status_lock_open_24dp;
+                    encColor = R.color.key_flag_red;
+                    break;
+                }
             }
 
             int encColorRes = context.getResources().getColor(encColor);
@@ -464,22 +480,27 @@ public class KeyFormattingUtils {
             holder.getEncryptionStatusText().setTextColor(encColorRes);
         }
 
+        OpenPgpSignatureResult signatureResult = result.getSignatureResult();
+
         int sigText, sigIcon, sigColor;
         int sigActionText, sigActionIcon;
 
-        if (signatureResult == null) {
+        switch (signatureResult.getResult()) {
 
-            sigText = R.string.decrypt_result_no_signature;
-            sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
-            sigColor = R.color.key_flag_gray;
+            case OpenPgpSignatureResult.RESULT_NO_SIGNATURE: {
+                // no signature
 
-            // won't be used, but makes compiler happy
-            sigActionText = 0;
-            sigActionIcon = 0;
+                sigText = R.string.decrypt_result_no_signature;
+                sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
+                sigColor = R.color.key_flag_gray;
 
-        } else switch (signatureResult.getStatus()) {
+                // won't be used, but makes compiler happy
+                sigActionText = 0;
+                sigActionIcon = 0;
+                break;
+            }
 
-            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
+            case OpenPgpSignatureResult.RESULT_VALID_CONFIRMED: {
                 sigText = R.string.decrypt_result_signature_certified;
                 sigIcon = R.drawable.status_signature_verified_cutout_24dp;
                 sigColor = R.color.key_flag_green;
@@ -489,7 +510,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
+            case OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED: {
                 sigText = R.string.decrypt_result_signature_uncertified;
                 sigIcon = R.drawable.status_signature_unverified_cutout_24dp;
                 sigColor = R.color.key_flag_orange;
@@ -499,7 +520,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED: {
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED: {
                 sigText = R.string.decrypt_result_signature_revoked_key;
                 sigIcon = R.drawable.status_signature_revoked_cutout_24dp;
                 sigColor = R.color.key_flag_red;
@@ -509,7 +530,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED: {
+            case OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED: {
                 sigText = R.string.decrypt_result_signature_expired_key;
                 sigIcon = R.drawable.status_signature_expired_cutout_24dp;
                 sigColor = R.color.key_flag_red;
@@ -519,7 +540,7 @@ public class KeyFormattingUtils {
                 break;
             }
 
-            case OpenPgpSignatureResult.SIGNATURE_KEY_MISSING: {
+            case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
                 sigText = R.string.decrypt_result_signature_missing_key;
                 sigIcon = R.drawable.status_signature_unknown_cutout_24dp;
                 sigColor = R.color.key_flag_red;
@@ -529,8 +550,18 @@ public class KeyFormattingUtils {
                 break;
             }
 
+            case OpenPgpSignatureResult.RESULT_INVALID_INSECURE: {
+                sigText = R.string.decrypt_result_insecure_cryptography;
+                sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
+                sigColor = R.color.key_flag_red;
+
+                sigActionText = R.string.decrypt_result_action_show;
+                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                break;
+            }
+
             default:
-            case OpenPgpSignatureResult.SIGNATURE_ERROR: {
+            case OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE: {
                 sigText = R.string.decrypt_result_invalid_signature;
                 sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
                 sigColor = R.color.key_flag_red;
@@ -548,7 +579,8 @@ public class KeyFormattingUtils {
         holder.getSignatureStatusText().setText(sigText);
         holder.getSignatureStatusText().setTextColor(sigColorRes);
 
-        if (signatureResult != null) {
+        if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+            // has a signature, thus display layouts
 
             holder.getSignatureLayout().setVisibility(View.VISIBLE);
 
@@ -556,7 +588,7 @@ public class KeyFormattingUtils {
             holder.getSignatureAction().setCompoundDrawablesWithIntrinsicBounds(
                     0, 0, sigActionIcon, 0);
 
-            String userId = signatureResult.getPrimaryUserId();
+            String userId = result.getSignatureResult().getPrimaryUserId();
             KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
             if (userIdSplit.name != null) {
                 holder.getSignatureUserName().setText(userIdSplit.name);
@@ -676,6 +708,24 @@ public class KeyFormattingUtils {
                 } else {
                     statusIcon.setImageDrawable(
                             context.getResources().getDrawable(R.drawable.status_signature_expired_cutout_24dp));
+                }
+                if (color == KeyFormattingUtils.DEFAULT_COLOR) {
+                    color = R.color.key_flag_red;
+                }
+                statusIcon.setColorFilter(context.getResources().getColor(color),
+                        PorterDuff.Mode.SRC_IN);
+                if (statusText != null) {
+                    statusText.setTextColor(context.getResources().getColor(color));
+                }
+                break;
+            }
+            case INSECURE: {
+                if (big) {
+                    statusIcon.setImageDrawable(
+                            context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_96dp));
+                } else {
+                    statusIcon.setImageDrawable(
+                            context.getResources().getDrawable(R.drawable.status_signature_invalid_cutout_24dp));
                 }
                 if (color == KeyFormattingUtils.DEFAULT_COLOR) {
                     color = R.color.key_flag_red;

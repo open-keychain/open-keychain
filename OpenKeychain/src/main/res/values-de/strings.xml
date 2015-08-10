@@ -953,7 +953,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Dateigröße unbekannt</string>
   <string name="msg_dc_clear_meta_time">Änderungszeit: %s</string>
   <string name="msg_dc_clear_signature_bad">Signaturprüfung NICHT OK!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">Nicht unterstützter und potentiell unsicherer Hash-Algorithmus!</string>
+  <string name="msg_dc_insecure_hash_algo">Nicht unterstützter und potentiell unsicherer Hash-Algorithmus!</string>
   <string name="msg_dc_clear_signature_check">Signaturdaten werden überprüft</string>
   <string name="msg_dc_clear_signature_ok">Signaturprüfung OK</string>
   <string name="msg_dc_clear_signature">Speichere Signatur für später</string>
@@ -962,7 +962,7 @@
   <string name="msg_dc_error_corrupt_data">Daten beschädigt!</string>
   <string name="msg_dc_error_extract_key">Unbekannter Fehler bei Schlüsselentsperrung!</string>
   <string name="msg_dc_error_integrity_check">Integritätsprüfungsfehler!</string>
-  <string name="msg_dc_error_integrity_missing">Fehlende Integritätsprüfung Dies kann passieren, wenn die Verschlüsselungsanwendung veraltet ist oder durch einen Downgrade-Angriff.</string>
+  <string name="msg_dc_insecure_mdc_missing">Fehlende Integritätsprüfung Dies kann passieren, wenn die Verschlüsselungsanwendung veraltet ist oder durch einen Downgrade-Angriff.</string>
   <string name="msg_dc_error_invalid_data">Kein gültiger OpenPGP-verschlüsselter oder -signierter Inhalt!</string>
   <string name="msg_dc_error_no_data">Keine verschlüsselten Daten in Datenstrom gefunden!</string>
   <string name="msg_dc_error_no_key">Keine verschlüsselten Daten mit bekanntem geheimen Schlüssel in Datenstrom gefunden!</string>
@@ -981,7 +981,7 @@
   <string name="msg_dc_trail_sym">Anhang gefunden, symmetrisch verschlüsselte Daten</string>
   <string name="msg_dc_trail_unknown">Anhängende Daten unbekannter Art gefunden</string>
   <string name="msg_dc_unlocking">Geheimer Schlüssel wird entsperrt</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">Ein potentiell unsicherer Verschlüsselungsalgorithmus wurde verwendet!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Ein potentiell unsicherer Verschlüsselungsalgorithmus wurde verwendet!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Starte Signaturprüfung</string>
   <string name="msg_vl_error_no_siglist">Keine Signaturliste in signierten Literaldaten</string>

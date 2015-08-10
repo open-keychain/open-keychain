@@ -50,12 +50,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.SignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -553,14 +552,18 @@ public class EncryptFilesFragment
         data.addInputUris(mFilesAdapter.getAsArrayList());
 
         if (mUseCompression) {
-            data.setCompressionId(PgpConstants.sPreferredCompressionAlgorithms.get(0));
+            data.setCompressionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT);
         } else {
-            data.setCompressionId(CompressionAlgorithmTags.UNCOMPRESSED);
+            data.setCompressionAlgorithm(
+                    PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
         }
         data.setHiddenRecipients(mHiddenRecipients);
         data.setEnableAsciiArmorOutput(mAfterEncryptAction == AfterEncryptAction.COPY || mUseArmor);
-        data.setSymmetricEncryptionAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
-        data.setSignatureHashAlgorithm(PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+        data.setSymmetricEncryptionAlgorithm(
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
+        data.setSignatureHashAlgorithm(
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
 
         EncryptActivity encryptActivity = (EncryptActivity) getActivity();
         EncryptModeFragment modeFragment = encryptActivity.getModeFragment();

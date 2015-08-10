@@ -62,7 +62,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
@@ -124,7 +123,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
         boolean enableSignature = input.getSignatureMasterKeyId() != Constants.key.none;
         boolean enableEncryption = ((input.getEncryptionMasterKeyIds() != null && input.getEncryptionMasterKeyIds().length > 0)
                 || input.getSymmetricPassphrase() != null);
-        boolean enableCompression = (input.getCompressionId() != CompressionAlgorithmTags.UNCOMPRESSED);
+        boolean enableCompression = (input.getCompressionAlgorithm() != CompressionAlgorithmTags.UNCOMPRESSED);
 
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
                 + "\nenableEncryption:" + enableEncryption
@@ -226,15 +225,10 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
             }
 
-            // Use preferred hash algo
+            // Use requested hash algo
             int requestedAlgorithm = input.getSignatureHashAlgorithm();
-            ArrayList<Integer> supported = signingKey.getSupportedHashAlgorithms();
-            if (requestedAlgorithm == PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED) {
-                // get most preferred
-                input.setSignatureHashAlgorithm(supported.get(0));
-            } else if (!supported.contains(requestedAlgorithm)) {
-                log.add(LogType.MSG_PSE_ERROR_HASH_ALGO, indent);
-                return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
+            if (requestedAlgorithm == PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT) {
+                input.setSignatureHashAlgorithm(PgpSecurityConstants.DEFAULT_HASH_ALGORITHM);
             }
         }
         updateProgress(R.string.progress_preparing_streams, 2, 100);
@@ -243,18 +237,15 @@ public class PgpSignEncryptOperation extends BaseOperation {
         PGPEncryptedDataGenerator cPk = null;
         if (enableEncryption) {
 
-            // Use preferred encryption algo
+            // Use requested encryption algo
             int algo = input.getSymmetricEncryptionAlgorithm();
-            if (algo == PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED) {
-                // get most preferred
-                // TODO: get from recipients
-                algo = PgpConstants.sPreferredSymmetricAlgorithms.get(0);
+            if (algo == PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT) {
+                algo = PgpSecurityConstants.DEFAULT_SYMMETRIC_ALGORITHM;
             }
-            // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =
                     new JcePGPDataEncryptorBuilder(algo)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
-                            .setWithIntegrityPacket(true);
+                            .setWithIntegrityPacket(input.isIntegrityProtected());
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
@@ -341,7 +332,13 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
                 if (enableCompression) {
                     log.add(LogType.MSG_PSE_COMPRESSING, indent);
-                    compressGen = new PGPCompressedDataGenerator(input.getCompressionId());
+
+                    // Use preferred compression algo
+                    int algo = input.getCompressionAlgorithm();
+                    if (algo == PgpSecurityConstants.OpenKeychainCompressionAlgorithmTags.USE_DEFAULT) {
+                        algo = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
+                    }
+                    compressGen = new PGPCompressedDataGenerator(algo);
                     bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
                 } else {
                     bcpgOut = new BCPGOutputStream(encryptionOut);
@@ -464,7 +461,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                 InputStream in = inputData.getInputStream();
 
                 if (enableCompression) {
-                    compressGen = new PGPCompressedDataGenerator(input.getCompressionId());
+                    compressGen = new PGPCompressedDataGenerator(input.getCompressionAlgorithm());
                     bcpgOut = new BCPGOutputStream(compressGen.open(out));
                 } else {
                     bcpgOut = new BCPGOutputStream(out);

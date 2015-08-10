@@ -726,7 +726,7 @@
   <string name="msg_dc_clear_decompress">Распаковка сжатых данных</string>
   <string name="msg_dc_clear_meta_size_unknown">Неизвестный размер файла</string>
   <string name="msg_dc_clear_signature_bad">Проверка подписи НЕ ПРОЙДЕНА!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">Неподдерживаемый, и потенциально небезопасный алгоритм хэширования!</string>
+  <string name="msg_dc_insecure_hash_algo">Неподдерживаемый, и потенциально небезопасный алгоритм хэширования!</string>
   <string name="msg_dc_clear_signature_check">Проверка подписи данных</string>
   <string name="msg_dc_clear_signature_ok">Проверка подписи ПРОЙДЕНА</string>
   <string name="msg_dc_clear_signature">Сохранение данных подписи</string>
@@ -737,7 +737,7 @@
   <string name="msg_dc_ok">Расшифрование/проверка закончена</string>
   <string name="msg_dc_pass_cached">Использование фразы-пароля из кэша</string>
   <string name="msg_dc_unlocking">Разблокировка секретного ключа</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">Был использован потенциально небезопасный алгоритм шифрования!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">Был использован потенциально небезопасный алгоритм шифрования!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_clear_signature_check">Проверка подписи данных</string>
   <string name="msg_vl_ok">ОК</string>

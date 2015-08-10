@@ -57,11 +57,11 @@ public class UncachedKeyringTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");

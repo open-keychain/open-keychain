@@ -211,12 +211,19 @@ public class UncachedPublicKey {
         return getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT;
     }
 
+    public boolean isRSA() {
+        return getAlgorithm() == PGPPublicKey.RSA_GENERAL
+                || getAlgorithm() == PGPPublicKey.RSA_ENCRYPT
+                || getAlgorithm() == PGPPublicKey.RSA_SIGN;
+    }
+
     public boolean isDSA() {
         return getAlgorithm() == PGPPublicKey.DSA;
     }
 
     public boolean isEC() {
-        return getAlgorithm() == PGPPublicKey.ECDH || getAlgorithm() == PGPPublicKey.ECDSA;
+        return getAlgorithm() == PGPPublicKey.ECDH
+                || getAlgorithm() == PGPPublicKey.ECDSA;
     }
 
     public byte[] getFingerprint() {

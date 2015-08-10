@@ -45,7 +45,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.PgpConstants;
+import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
@@ -1434,9 +1434,9 @@ public class ProviderHelper {
         // DEPRECATED and thus hardcoded
         values.put(KeychainContract.ApiAccounts.COMPRESSION, CompressionAlgorithmTags.ZLIB);
         values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM,
-                PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED);
+                PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT);
         values.put(KeychainContract.ApiAccounts.HASH_ALORITHM,
-                PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED);
+                PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT);
         return values;
     }
 

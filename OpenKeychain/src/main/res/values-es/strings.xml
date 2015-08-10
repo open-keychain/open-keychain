@@ -1007,7 +1007,7 @@
   <string name="msg_dc_clear_meta_size_unknown">Tamaño de fichero desconocido</string>
   <string name="msg_dc_clear_meta_time">Hora de la modificación: %s</string>
   <string name="msg_dc_clear_signature_bad">¡Comprobación de firma NO CORRECTA!</string>
-  <string name="msg_dc_error_unsupported_hash_algo">¡Algoritmo de identificador criptográfico (hash) no soportado y potencialmente inseguro!</string>
+  <string name="msg_dc_insecure_hash_algo">¡Algoritmo de identificador criptográfico (hash) no soportado y potencialmente inseguro!</string>
   <string name="msg_dc_clear_signature_check">Verificando datos de firma</string>
   <string name="msg_dc_clear_signature_ok">Comprobación de firma CORRECTA</string>
   <string name="msg_dc_clear_signature">Guardando datos de firma para más tarde</string>
@@ -1016,7 +1016,7 @@
   <string name="msg_dc_error_corrupt_data">¡Los datos están corruptos!</string>
   <string name="msg_dc_error_extract_key">¡Error desconocido al desbloquear clave!</string>
   <string name="msg_dc_error_integrity_check">¡Error de comprobación de integridad!</string>
-  <string name="msg_dc_error_integrity_missing">¡Verificación de integridad ausente! Esto puede ocurrir porque la aplicación de cifrado no está actualizada, o debido a un ataque desactualización.</string>
+  <string name="msg_dc_insecure_mdc_missing">¡Verificación de integridad ausente! Esto puede ocurrir porque la aplicación de cifrado no está actualizada, o debido a un ataque desactualización.</string>
   <string name="msg_dc_error_invalid_data">¡No se encontraron datos firmados o cifrados con OpenPGP válidos!</string>
   <string name="msg_dc_error_io">¡Se encontró un error al leer los datos de entrada!</string>
   <string name="msg_dc_error_input">¡Error al abrir el flujo de datos de entrada!</string>
@@ -1037,7 +1037,7 @@
   <string name="msg_dc_trail_sym">Se encontró huella, datos cifrados simétricamente</string>
   <string name="msg_dc_trail_unknown">Se encontró huella, datos de tipo desconocido</string>
   <string name="msg_dc_unlocking">Desbloqueando clave secreta (privada)</string>
-  <string name="msg_dc_old_symmetric_encryption_algo">¡Se ha usado un algoritmo de cifrado potencialmente inseguro!</string>
+  <string name="msg_dc_insecure_symmetric_encryption_algo">¡Se ha usado un algoritmo de cifrado potencialmente inseguro!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Comenzando comprobación de firma</string>
   <string name="msg_vl_error_no_siglist">No hay lista de firmas en los datos literales firmados</string>

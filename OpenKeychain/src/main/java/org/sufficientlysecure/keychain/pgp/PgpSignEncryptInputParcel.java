@@ -30,19 +30,20 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     protected String mVersionHeader = null;
     protected boolean mEnableAsciiArmorOutput = false;
-    protected int mCompressionId = CompressionAlgorithmTags.UNCOMPRESSED;
+    protected int mCompressionAlgorithm = CompressionAlgorithmTags.UNCOMPRESSED;
     protected long[] mEncryptionMasterKeyIds = null;
     protected Passphrase mSymmetricPassphrase = null;
-    protected int mSymmetricEncryptionAlgorithm = PgpConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_PREFERRED;
+    protected int mSymmetricEncryptionAlgorithm = PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags.USE_DEFAULT;
     protected long mSignatureMasterKeyId = Constants.key.none;
     protected Long mSignatureSubKeyId = null;
-    protected int mSignatureHashAlgorithm = PgpConstants.OpenKeychainHashAlgorithmTags.USE_PREFERRED;
+    protected int mSignatureHashAlgorithm = PgpSecurityConstants.OpenKeychainHashAlgorithmTags.USE_DEFAULT;
     protected long mAdditionalEncryptId = Constants.key.none;
     protected boolean mFailOnMissingEncryptionKeyIds = false;
     protected String mCharset;
     protected boolean mCleartextSignature;
     protected boolean mDetachedSignature = false;
     protected boolean mHiddenRecipients = false;
+    protected boolean mIntegrityProtected = true;
 
     public PgpSignEncryptInputParcel() {
 
@@ -55,7 +56,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         // we do all of those here, so the PgpSignEncryptInput class doesn't have to be parcelable
         mVersionHeader = source.readString();
         mEnableAsciiArmorOutput  = source.readInt() == 1;
-        mCompressionId = source.readInt();
+        mCompressionAlgorithm = source.readInt();
         mEncryptionMasterKeyIds = source.createLongArray();
         mSymmetricPassphrase = source.readParcelable(loader);
         mSymmetricEncryptionAlgorithm = source.readInt();
@@ -68,6 +69,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         mCleartextSignature = source.readInt() == 1;
         mDetachedSignature = source.readInt() == 1;
         mHiddenRecipients = source.readInt() == 1;
+        mIntegrityProtected = source.readInt() == 1;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mVersionHeader);
         dest.writeInt(mEnableAsciiArmorOutput ? 1 : 0);
-        dest.writeInt(mCompressionId);
+        dest.writeInt(mCompressionAlgorithm);
         dest.writeLongArray(mEncryptionMasterKeyIds);
         dest.writeParcelable(mSymmetricPassphrase, 0);
         dest.writeInt(mSymmetricEncryptionAlgorithm);
@@ -97,6 +99,7 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         dest.writeInt(mCleartextSignature ? 1 : 0);
         dest.writeInt(mDetachedSignature ? 1 : 0);
         dest.writeInt(mHiddenRecipients ? 1 : 0);
+        dest.writeInt(mIntegrityProtected ? 1 : 0);
     }
 
     public String getCharset() {
@@ -174,12 +177,12 @@ public class PgpSignEncryptInputParcel implements Parcelable {
         return this;
     }
 
-    public int getCompressionId() {
-        return mCompressionId;
+    public int getCompressionAlgorithm() {
+        return mCompressionAlgorithm;
     }
 
-    public PgpSignEncryptInputParcel setCompressionId(int compressionId) {
-        mCompressionId = compressionId;
+    public PgpSignEncryptInputParcel setCompressionAlgorithm(int compressionAlgorithm) {
+        mCompressionAlgorithm = compressionAlgorithm;
         return this;
     }
 
@@ -226,6 +229,18 @@ public class PgpSignEncryptInputParcel implements Parcelable {
 
     public PgpSignEncryptInputParcel setHiddenRecipients(boolean hiddenRecipients) {
         this.mHiddenRecipients = hiddenRecipients;
+        return this;
+    }
+
+    public boolean isIntegrityProtected() {
+        return mIntegrityProtected;
+    }
+
+    /**
+     * Only use for testing! Never disable integrity protection!
+     */
+    public PgpSignEncryptInputParcel setIntegrityProtected(boolean integrityProtected) {
+        this.mIntegrityProtected = integrityProtected;
         return this;
     }
 

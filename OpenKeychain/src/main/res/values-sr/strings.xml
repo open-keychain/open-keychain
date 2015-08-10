@@ -915,7 +915,7 @@
   <string name="msg_dc_error_bad_passphrase">Грешка откључавања кључа, погрешна лозинка!</string>
   <string name="msg_dc_error_extract_key">Непозната грешка откључавања кључа!</string>
   <string name="msg_dc_error_integrity_check">Грешка провере интегритета!</string>
-  <string name="msg_dc_error_integrity_missing">Недостаје провера интегритета! Ово може да се деси ако је апликација за шифровање застарела, или услед напада старијег издања.</string>
+  <string name="msg_dc_insecure_mdc_missing">Недостаје провера интегритета! Ово може да се деси ако је апликација за шифровање застарела, или услед напада старијег издања.</string>
   <string name="msg_dc_error_invalid_data">Нису нађени исправни подаци потписа!</string>
   <string name="msg_dc_error_io">Наиђох на У/И изузетак током радње!</string>
   <string name="msg_dc_error_no_data">Шифровани подаци нису нађени у току!</string>

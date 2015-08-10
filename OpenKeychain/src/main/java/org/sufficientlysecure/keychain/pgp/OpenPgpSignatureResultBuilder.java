@@ -30,7 +30,6 @@ import java.util.ArrayList;
  */
 public class OpenPgpSignatureResultBuilder {
     // OpenPgpSignatureResult
-    private boolean mSignatureOnly = false;
     private String mPrimaryUserId;
     private ArrayList<String> mUserIds = new ArrayList<>();
     private long mKeyId;
@@ -42,10 +41,7 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mIsSignatureKeyCertified = false;
     private boolean mIsKeyRevoked = false;
     private boolean mIsKeyExpired = false;
-
-    public void setSignatureOnly(boolean signatureOnly) {
-        this.mSignatureOnly = signatureOnly;
-    }
+    private boolean mInsecure = false;
 
     public void setPrimaryUserId(String userId) {
         this.mPrimaryUserId = userId;
@@ -61,6 +57,10 @@ public class OpenPgpSignatureResultBuilder {
 
     public void setValidSignature(boolean validSignature) {
         this.mValidSignature = validSignature;
+    }
+
+    public void setInsecure(boolean insecure) {
+        this.mInsecure = insecure;
     }
 
     public void setSignatureKeyCertified(boolean isSignatureKeyCertified) {
@@ -87,6 +87,10 @@ public class OpenPgpSignatureResultBuilder {
         return mValidSignature;
     }
 
+    public boolean isInsecure() {
+        return mInsecure;
+    }
+
     public void initValid(CanonicalizedPublicKeyRing signingRing,
                           CanonicalizedPublicKey signingKey) {
         setSignatureAvailable(true);
@@ -109,47 +113,50 @@ public class OpenPgpSignatureResultBuilder {
     }
 
     public OpenPgpSignatureResult build() {
-        if (mSignatureAvailable) {
-            OpenPgpSignatureResult result = new OpenPgpSignatureResult();
-            result.setSignatureOnly(mSignatureOnly);
+        OpenPgpSignatureResult result = new OpenPgpSignatureResult();
 
-            // valid sig!
-            if (mKnownKey) {
-                if (mValidSignature) {
-                    result.setKeyId(mKeyId);
-                    result.setPrimaryUserId(mPrimaryUserId);
-                    result.setUserIds(mUserIds);
-
-                    if (mIsKeyRevoked) {
-                        Log.d(Constants.TAG, "SIGNATURE_KEY_REVOKED");
-                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_REVOKED);
-                    } else if (mIsKeyExpired) {
-                        Log.d(Constants.TAG, "SIGNATURE_KEY_EXPIRED");
-                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_EXPIRED);
-                    } else if (mIsSignatureKeyCertified) {
-                        Log.d(Constants.TAG, "SIGNATURE_SUCCESS_CERTIFIED");
-                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED);
-                    } else {
-                        Log.d(Constants.TAG, "SIGNATURE_SUCCESS_UNCERTIFIED");
-                        result.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
-                    }
-                } else {
-                    Log.d(Constants.TAG, "Error! Invalid signature.");
-                    result.setStatus(OpenPgpSignatureResult.SIGNATURE_ERROR);
-                }
-            } else {
-                result.setKeyId(mKeyId);
-
-                Log.d(Constants.TAG, "SIGNATURE_KEY_MISSING");
-                result.setStatus(OpenPgpSignatureResult.SIGNATURE_KEY_MISSING);
-            }
-
+        if (!mSignatureAvailable) {
+            Log.d(Constants.TAG, "RESULT_NO_SIGNATURE");
+            result.setResult(OpenPgpSignatureResult.RESULT_NO_SIGNATURE);
             return result;
-        } else {
-            Log.d(Constants.TAG, "no signature found!");
-
-            return null;
         }
+
+        if (!mKnownKey) {
+            result.setKeyId(mKeyId);
+
+            Log.d(Constants.TAG, "RESULT_KEY_MISSING");
+            result.setResult(OpenPgpSignatureResult.RESULT_KEY_MISSING);
+            return result;
+        }
+
+        if (!mValidSignature) {
+            Log.d(Constants.TAG, "RESULT_INVALID_SIGNATURE");
+            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE);
+            return result;
+        }
+
+        result.setKeyId(mKeyId);
+        result.setPrimaryUserId(mPrimaryUserId);
+        result.setUserIds(mUserIds);
+
+        if (mIsKeyRevoked) {
+            Log.d(Constants.TAG, "RESULT_INVALID_KEY_REVOKED");
+            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED);
+        } else if (mIsKeyExpired) {
+            Log.d(Constants.TAG, "RESULT_INVALID_KEY_EXPIRED");
+            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED);
+        } else if (mInsecure) {
+            Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
+            result.setResult(OpenPgpSignatureResult.RESULT_INVALID_INSECURE);
+        } else if (mIsSignatureKeyCertified) {
+            Log.d(Constants.TAG, "RESULT_VALID_CONFIRMED");
+            result.setResult(OpenPgpSignatureResult.RESULT_VALID_CONFIRMED);
+        } else {
+            Log.d(Constants.TAG, "RESULT_VALID_UNCONFIRMED");
+            result.setResult(OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED);
+        }
+
+        return result;
     }
 
 

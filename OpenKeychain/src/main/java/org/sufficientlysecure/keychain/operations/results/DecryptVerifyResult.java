@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014-2015 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
 
+import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -31,7 +32,8 @@ public class DecryptVerifyResult extends InputPendingResult {
     public static final int RESULT_KEY_DISALLOWED = RESULT_ERROR + 32;
 
     OpenPgpSignatureResult mSignatureResult;
-    OpenPgpMetadata mDecryptMetadata;
+    OpenPgpDecryptionResult mDecryptionResult;
+    OpenPgpMetadata mDecryptionMetadata;
     // This holds the charset which was specified in the ascii armor, if specified
     // https://tools.ietf.org/html/rfc4880#page56
     String mCharset;
@@ -52,7 +54,8 @@ public class DecryptVerifyResult extends InputPendingResult {
     public DecryptVerifyResult(Parcel source) {
         super(source);
         mSignatureResult = source.readParcelable(OpenPgpSignatureResult.class.getClassLoader());
-        mDecryptMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
+        mDecryptionResult = source.readParcelable(OpenPgpDecryptionResult.class.getClassLoader());
+        mDecryptionMetadata = source.readParcelable(OpenPgpMetadata.class.getClassLoader());
         mCachedCryptoInputParcel = source.readParcelable(CryptoInputParcel.class.getClassLoader());
     }
 
@@ -69,6 +72,14 @@ public class DecryptVerifyResult extends InputPendingResult {
         mSignatureResult = signatureResult;
     }
 
+    public OpenPgpDecryptionResult getDecryptionResult() {
+        return mDecryptionResult;
+    }
+
+    public void setDecryptionResult(OpenPgpDecryptionResult decryptionResult) {
+        mDecryptionResult = decryptionResult;
+    }
+
     public CryptoInputParcel getCachedCryptoInputParcel() {
         return mCachedCryptoInputParcel;
     }
@@ -77,12 +88,12 @@ public class DecryptVerifyResult extends InputPendingResult {
         mCachedCryptoInputParcel = cachedCryptoInputParcel;
     }
 
-    public OpenPgpMetadata getDecryptMetadata() {
-        return mDecryptMetadata;
+    public OpenPgpMetadata getDecryptionMetadata() {
+        return mDecryptionMetadata;
     }
 
-    public void setDecryptMetadata(OpenPgpMetadata decryptMetadata) {
-        mDecryptMetadata = decryptMetadata;
+    public void setDecryptionMetadata(OpenPgpMetadata decryptMetadata) {
+        mDecryptionMetadata = decryptMetadata;
     }
 
     public String getCharset () {
@@ -107,9 +118,10 @@ public class DecryptVerifyResult extends InputPendingResult {
 
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(mSignatureResult, 0);
-        dest.writeParcelable(mDecryptMetadata, 0);
-        dest.writeParcelable(mCachedCryptoInputParcel, 0);
+        dest.writeParcelable(mSignatureResult, flags);
+        dest.writeParcelable(mDecryptionResult, flags);
+        dest.writeParcelable(mDecryptionMetadata, flags);
+        dest.writeParcelable(mCachedCryptoInputParcel, flags);
     }
 
     public static final Creator<DecryptVerifyResult> CREATOR = new Creator<DecryptVerifyResult>() {

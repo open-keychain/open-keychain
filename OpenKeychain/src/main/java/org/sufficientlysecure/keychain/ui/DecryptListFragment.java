@@ -321,11 +321,11 @@ public class DecryptListFragment
             protected Drawable doInBackground(Void... params) {
 
                 Context context = getActivity();
-                if (result.getDecryptMetadata() == null || context == null) {
+                if (result.getDecryptionMetadata() == null || context == null) {
                     return null;
                 }
 
-                String type = result.getDecryptMetadata().getMimeType();
+                String type = result.getDecryptionMetadata().getMimeType();
                 Uri outputUri = mOutputUris.get(uri);
                 if (type == null || outputUri == null) {
                     return null;
@@ -368,7 +368,7 @@ public class DecryptListFragment
         OpenPgpSignatureResult sigResult = result.getSignatureResult();
         if (sigResult != null) {
             final long keyId = sigResult.getKeyId();
-            if (sigResult.getStatus() != OpenPgpSignatureResult.SIGNATURE_KEY_MISSING) {
+            if (sigResult.getResult() != OpenPgpSignatureResult.RESULT_KEY_MISSING) {
                 onKeyClick = new OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -384,7 +384,7 @@ public class DecryptListFragment
             }
         }
 
-        if (result.success() && result.getDecryptMetadata() != null) {
+        if (result.success() && result.getDecryptionMetadata() != null) {
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -425,7 +425,7 @@ public class DecryptListFragment
             return;
         }
 
-        final OpenPgpMetadata metadata = result.getDecryptMetadata();
+        final OpenPgpMetadata metadata = result.getDecryptionMetadata();
 
         // text/plain is a special case where we extract the uri content into
         // the EXTRA_TEXT extra ourselves, and display a chooser which includes
@@ -529,7 +529,7 @@ public class DecryptListFragment
                 activity.startActivity(intent);
                 return true;
             case R.id.decrypt_save:
-                OpenPgpMetadata metadata = result.getDecryptMetadata();
+                OpenPgpMetadata metadata = result.getDecryptionMetadata();
                 if (metadata == null) {
                     return true;
                 }
@@ -724,7 +724,7 @@ public class DecryptListFragment
 
             KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
 
-            final OpenPgpMetadata metadata = model.mResult.getDecryptMetadata();
+            final OpenPgpMetadata metadata = model.mResult.getDecryptionMetadata();
 
             String filename;
             if (metadata == null) {
