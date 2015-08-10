@@ -1,6 +1,6 @@
 [submodule "extern/spongycastle"]
 	path = extern/spongycastle
-	url = https://github.com/open-keychain/spongycastle.git
+	url = https://github.com/iseki-masaya/spongycastle.git
 	ignore = dirty
 [submodule "extern/openpgp-api-lib"]
 	path = extern/openpgp-api-lib
