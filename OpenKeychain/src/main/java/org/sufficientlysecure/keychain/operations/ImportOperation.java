@@ -503,7 +503,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
     /**
      * Used to accumulate the results of individual key imports
      */
-    private class KeyImportAccumulator {
+    public static class KeyImportAccumulator {
         private OperationResult.OperationLog mImportLog = new OperationResult.OperationLog();
         Progressable mProgressable;
         private int mTotalKeys;
@@ -529,14 +529,6 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             if (mProgressable != null) {
                 mProgressable.setProgress(0, totalKeys);
             }
-        }
-
-        public int getTotalKeys() {
-            return mTotalKeys;
-        }
-
-        public int getImportedKeys() {
-            return mImportedKeys;
         }
 
         public synchronized void accumulateKeyImport(ImportKeyResult result) {

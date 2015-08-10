@@ -19,9 +19,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,14 +37,11 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.util.FabContainer;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 public class MainActivity extends BaseNfcActivity implements FabContainer, OnBackStackChangedListener {
@@ -170,19 +164,6 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
             }
         }
 
-        enablePeriodicKeyserverSync();
-
-    }
-
-    private void enablePeriodicKeyserverSync() {
-        // TODO: Increase periodic update time after testing
-        Log.e("PHILIP", "enabled periodic keyserversybc");
-        ContentResolver.addPeriodicSync(
-                new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE),
-                Constants.PROVIDER_AUTHORITY,
-                new Bundle(),
-                2*60
-        );
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {

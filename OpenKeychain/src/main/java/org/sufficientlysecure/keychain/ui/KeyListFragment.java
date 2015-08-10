@@ -18,13 +18,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -64,19 +60,24 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -520,9 +521,7 @@ public class KeyListFragment extends LoaderFragment
     }
 
     private void updateAllKeys() {
-        // TODO: PHILIP just for testing, remove!
-        KeyserverSyncAdapterService.updateKeysFromKeyserver(getActivity(), new CryptoInputParcel());
-        /*Activity activity = getActivity();
+        Activity activity = getActivity();
         if (activity == null) {
             return;
         }
@@ -536,7 +535,7 @@ public class KeyListFragment extends LoaderFragment
         );
 
         if (cursor == null) {
-            Notify.create(activity, R.string.error_loading_keys, Style.ERROR);
+            Notify.create(activity, R.string.error_loading_keys, Notify.Style.ERROR);
             return;
         }
 
@@ -563,7 +562,7 @@ public class KeyListFragment extends LoaderFragment
 
         mImportOpHelper = new CryptoOperationHelper<>(1, this,
                 this, R.string.progress_updating);
-        mImportOpHelper.cryptoOperation();*/
+        mImportOpHelper.cryptoOperation();
     }
 
     private void consolidate() {
@@ -645,18 +644,6 @@ public class KeyListFragment extends LoaderFragment
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        KeyserverSyncAdapterService.preventAndCancelUpdates();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        KeyserverSyncAdapterService.allowUpdates();
     }
 
     @Override

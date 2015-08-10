@@ -28,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.widget.Toast;
@@ -44,6 +45,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.TlsHelper;
 
 import java.security.Security;
+import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -136,17 +138,31 @@ public class KeychainApplication extends Application {
     }
 
     /**
-     * Add OpenKeychain account to Android to link contacts with keys
+     * Add OpenKeychain account to Android to link contacts with keys and keyserver sync
      */
     public static void setupAccountAsNeeded(Context context) {
         try {
             AccountManager manager = AccountManager.get(context);
             Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-            if (accounts == null || accounts.length == 0) {
+
+            if (accounts.length == 0) {
                 Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
                 if (manager.addAccountExplicitly(account, null, null)) {
+                    // for contact sync
                     ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
                     ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                    // for keyserver sync
+                    ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
+                    ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY,
+                            true);
+                    // TODO: Increase periodic update time after testing
+                    Log.e("PHILIP", "enabled periodic keyserversync");
+                    ContentResolver.addPeriodicSync(
+                            new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE),
+                            Constants.PROVIDER_AUTHORITY,
+                            new Bundle(),
+                            60
+                    );
                 } else {
                     Log.e(Constants.TAG, "Adding account failed!");
                 }

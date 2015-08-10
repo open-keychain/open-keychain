@@ -361,7 +361,7 @@ public class OrbotHelper {
                             .show(fragmentActivity.getSupportFragmentManager(),
                                     "OrbotHelperOrbotStartDialog");
                 }
-            }.startOrbotAndListen(fragmentActivity);
+            }.startOrbotAndListen(fragmentActivity, true);
 
             return false;
         } else {
@@ -385,7 +385,8 @@ public class OrbotHelper {
      * activities wishing to respond to a change in Orbot state.
      */
     public static void bestPossibleOrbotStart(final DialogActions dialogActions,
-                                              final Activity activity) {
+                                              final Activity activity,
+                                              boolean showProgress) {
         new SilentStartManager() {
 
             @Override
@@ -397,23 +398,23 @@ public class OrbotHelper {
             protected void onSilentStartDisabled() {
                 requestShowOrbotStart(activity);
             }
-        }.startOrbotAndListen(activity);
+        }.startOrbotAndListen(activity, showProgress);
     }
 
     /**
      * base class for listening to silent orbot starts. Also handles display of progress dialog.
      */
-    private static abstract class SilentStartManager {
+    public static abstract class SilentStartManager {
 
         private ProgressDialog mProgressDialog;
 
-        public void startOrbotAndListen(Context context) {
-            mProgressDialog = new ProgressDialog(ThemeChanger.getDialogThemeWrapper(context));
-            mProgressDialog.setMessage(context.getString(R.string.progress_starting_orbot));
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.show();
+        public void startOrbotAndListen(final Context context, final boolean showProgress) {
+            Log.e("PHILIP", "starting orbot listener");
+            if (showProgress) {
+                showProgressDialog(context);
+            }
 
-            BroadcastReceiver receiver = new BroadcastReceiver() {
+            final BroadcastReceiver receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     switch (intent.getStringExtra(OrbotHelper.EXTRA_STATUS)) {
@@ -423,14 +424,18 @@ public class OrbotHelper {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    mProgressDialog.dismiss();
+                                    if (showProgress) {
+                                        mProgressDialog.dismiss();
+                                    }
                                     onOrbotStarted();
                                 }
                             }, 1000);
                             break;
                         case OrbotHelper.STATUS_STARTS_DISABLED:
                             context.unregisterReceiver(this);
-                            mProgressDialog.dismiss();
+                            if (showProgress) {
+                                mProgressDialog.dismiss();
+                            }
                             onSilentStartDisabled();
                             break;
 
@@ -442,6 +447,13 @@ public class OrbotHelper {
             context.registerReceiver(receiver, new IntentFilter(OrbotHelper.ACTION_STATUS));
 
             requestStartTor(context);
+        }
+
+        private void showProgressDialog(Context context) {
+            mProgressDialog = new ProgressDialog(ThemeChanger.getDialogThemeWrapper(context));
+            mProgressDialog.setMessage(context.getString(R.string.progress_starting_orbot));
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
         }
 
         protected abstract void onOrbotStarted();
