@@ -154,6 +154,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     R.string.rsa)));
             choices.add(new Choice<>(Algorithm.ECDSA, getResources().getString(
                     R.string.ecdsa)));
+            choices.add(new Choice<>(Algorithm.EDDSA, getResources().getString(
+                    R.string.eddsa)));
             choices.add(new Choice<>(Algorithm.ECDH, getResources().getString(
                     R.string.ecdh)));
             ArrayAdapter<Choice<Algorithm>> adapter = new ArrayAdapter<>(context,
@@ -397,7 +399,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
     private void setOkButtonAvailability(AlertDialog alertDialog) {
         Algorithm algorithm = ((Choice<Algorithm>) mAlgorithmSpinner.getSelectedItem()).getId();
-        boolean enabled = algorithm == Algorithm.ECDSA || algorithm == Algorithm.ECDH
+        boolean enabled = algorithm == Algorithm.ECDSA || algorithm == Algorithm.ECDH || algorithm == Algorithm.EDDSA
                 || getProperKeyLength(algorithm, getSelectedKeyLength()) > 0;
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(enabled);
     }
@@ -509,6 +511,20 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 mFlagEncrypt.setEnabled(true);
                 mFlagAuthenticate.setChecked(false);
                 mFlagAuthenticate.setEnabled(false);
+                break;
+            case EDDSA:
+                mKeySizeRow.setVisibility(View.GONE);
+                mCurveRow.setVisibility(View.VISIBLE);
+                mCustomKeyInfoTextView.setText("");
+                // allowed flags:
+                mFlagCertify.setEnabled(mWillBeMasterKey);
+                mFlagCertify.setChecked(mWillBeMasterKey);
+                mFlagSign.setEnabled(true);
+                mFlagSign.setChecked(!mWillBeMasterKey);
+                mFlagEncrypt.setEnabled(false);
+                mFlagEncrypt.setChecked(false);
+                mFlagAuthenticate.setEnabled(true);
+                mFlagAuthenticate.setChecked(false);
                 break;
         }
         keySizeAdapter.notifyDataSetChanged();

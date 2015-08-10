@@ -147,6 +147,7 @@ public class PgpKeyOperation {
             case NIST_P256: return new ECGenParameterSpec("P-256");
             case NIST_P384: return new ECGenParameterSpec("P-384");
             case NIST_P521: return new ECGenParameterSpec("P-521");
+            case ED25519: return new ECGenParameterSpec("ed25519");
 
             // @see SaveKeyringParcel
             // case BRAINPOOL_P256: return new ECGenParameterSpec("brainpoolp256r1");
@@ -161,7 +162,11 @@ public class PgpKeyOperation {
 
         try {
             // Some safety checks
-            if (add.mAlgorithm == Algorithm.ECDH || add.mAlgorithm == Algorithm.ECDSA) {
+            if ( add.mAlgorithm == Algorithm.EDDSA )
+            {
+                add.mCurve = Curve.ED25519;
+            }
+            else if (add.mAlgorithm == Algorithm.ECDH || add.mAlgorithm == Algorithm.ECDSA) {
                 if (add.mCurve == null) {
                     log.add(LogType.MSG_CR_ERROR_NO_CURVE, indent);
                     return null;
@@ -245,6 +250,20 @@ public class PgpKeyOperation {
                     keyGen.initialize(ecParamSpec, new SecureRandom());
 
                     algorithm = PGPPublicKey.ECDH;
+                    break;
+                }
+
+                case EDDSA: {
+                    if ((add.mFlags & (PGPKeyFlags.CAN_ENCRYPT_COMMS | PGPKeyFlags.CAN_ENCRYPT_STORAGE)) > 0) {
+                        log.add(LogType.MSG_CR_ERROR_FLAGS_ECDSA, indent);
+                        return null;
+                    }
+                    progress(R.string.progress_generating_ecdsa, 30);
+                    ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.mCurve);
+                    keyGen = KeyPairGenerator.getInstance("EDDSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    keyGen.initialize(new ECGenParameterSpec("ed25519"));
+
+                    algorithm = PGPPublicKey.EDDSA;
                     break;
                 }
 

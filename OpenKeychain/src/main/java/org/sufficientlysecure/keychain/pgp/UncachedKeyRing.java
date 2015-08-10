@@ -252,6 +252,7 @@ public class UncachedKeyRing implements Serializable {
         PublicKeyAlgorithmTags.ECDSA, // 19
         PublicKeyAlgorithmTags.ELGAMAL_GENERAL, // 20
         // PublicKeyAlgorithmTags.DIFFIE_HELLMAN, // 21
+        PublicKeyAlgorithmTags.EDDSA, // 22
     };
 
     /** "Canonicalizes" a public key, removing inconsistencies in the process.
@@ -1284,7 +1285,8 @@ public class UncachedKeyRing implements Serializable {
                 || algorithm == PGPPublicKey.RSA_SIGN
                 || algorithm == PGPPublicKey.DSA
                 || algorithm == PGPPublicKey.ELGAMAL_GENERAL
-                || algorithm == PGPPublicKey.ECDSA;
+                || algorithm == PGPPublicKey.ECDSA
+                || algorithm == PGPPublicKey.EDDSA;
     }
 
     /** Returns true if the algorithm is of a type which is suitable for encryption. */

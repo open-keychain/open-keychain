@@ -93,6 +93,13 @@ public class KeyFormattingUtils {
                 String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
                 return "ECDH (" + oidName + ")";
             }
+            case PublicKeyAlgorithmTags.EDDSA: {
+                if (oid == null) {
+                    return "EDDSA";
+                }
+                String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
+                return "EDDSA (" + oidName + ")";
+            }
 
             default: {
                 if (context != null) {
@@ -148,6 +155,13 @@ public class KeyFormattingUtils {
                 }
                 return algorithmStr;
             }
+            case EDDSA: {
+                algorithmStr = "EDDSA";
+                if (curve != null) {
+                    algorithmStr += " (" + getCurveInfo(context, curve) + ")";
+                }
+                return algorithmStr;
+            }
 
             default: {
                 if (context != null) {
@@ -174,6 +188,8 @@ public class KeyFormattingUtils {
             case NIST_P384:
                 return "NIST P-384";
             case NIST_P521:
+                return "NIST P-521";
+            case ED25519:
                 return "NIST P-521";
 
             /* see SaveKeyringParcel
