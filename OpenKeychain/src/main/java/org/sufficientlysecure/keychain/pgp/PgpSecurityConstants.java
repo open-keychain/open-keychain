@@ -249,9 +249,9 @@ public class PgpSecurityConstants {
      *
      * Bouncy Castle default: 0x60
      * kbsriram proposes: 0xc0
-     * Yahoo's End-to-End: 96 (65536 iterations) (https://github.com/yahoo/end-to-end/blob/master/src/javascript/crypto/e2e/openpgp/keyring.js)
+     * Yahoo's End-to-End: 96=0x60 (65536 iterations) (https://github.com/yahoo/end-to-end/blob/master/src/javascript/crypto/e2e/openpgp/keyring.js)
      */
-    public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 96;
+    public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
     public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
     public static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
     public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA512;
