@@ -8,11 +8,11 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:recyclerview-v7:22.2.0'
-    compile 'com.android.support:cardview-v7:22.2.0'
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:recyclerview-v7:22.2.1'
+    compile 'com.android.support:cardview-v7:22.2.1'
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
@@ -73,11 +73,11 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
-            'com.android.support:support-v4:7bb6e40a18774aa2595e4d8f9fe0ae14e61670f71a1279272fb0b79b8be71180',
-            'com.android.support:appcompat-v7:2d5867698410b41f75140c91d6c1e58da74ae0f97baf6e0bdd1f7cc1017ceb2c',
-            'com.android.support:design:41ff5f700d1bf8c190e1d3ac33582f92ad6e1f3b1080c8b8e2ac4f7b703be76a',
-            'com.android.support:recyclerview-v7:3a8da14585fa1c81f06e7cef4d93a7641f0323d8f984ff9a7bd7a6e416b46888',
-            'com.android.support:cardview-v7:15b934f69f10d85f5adc12231ba1b708618a7daf6e5102af42addf2c67a85e2c',
+            'com.android.support:support-v4:c62f0d025dafa86f423f48df9185b0d89496adbc5f6a9be5a7c394d84cf91423',
+            'com.android.support:appcompat-v7:4b5ccba8c4557ef04f99aa0a80f8aa7d50f05f926a709010a54afd5c878d3618',
+            'com.android.support:design:58be3ca6a73789615f7ece0937d2f683b98b594bb90aa10565fa760fb10b07ee',
+            'com.android.support:recyclerview-v7:b0f530a5b14334d56ce0de85527ffe93ac419bc928e2884287ce1dddfedfb505',
+            'com.android.support:cardview-v7:2c2354761a4e20ba451ae903ab808f15c9acc8343b1e74001869c2d0a672c1fc',
             'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
             'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
             'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
@@ -88,25 +88,24 @@ dependencyVerification {
             'com.splitwise:tokenautocomplete:20bee71cc59b3828eb000b684d46ddf738efd56b8fee453a509cd16fda42c8cb',
             'se.emilsjolander:stickylistheaders:8c05981ec5725be33f7cee5e68c13f3db49cd5c75f1aaeb04024920b1ef96ad4',
             'org.sufficientlysecure:html-textview:1d3bed31ef837437154de8d2362a0e6b0e59b6c3535d87ee48c2fab12c84f9bb',
-            'com.mikepenz:materialdrawer:70c3efb3842461db41df6a918ea93969a7da21e63c092be838b153e5a47a17bf',
             'com.mikepenz:iconics:c1a02203d8e0d638959463c00af3ab9096e0a7c1ad5928762eb10ef5ce8a63cd',
-            'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
+            'com.mikepenz:materialdrawer:70c3efb3842461db41df6a918ea93969a7da21e63c092be838b153e5a47a17bf',
             'com.mikepenz.iconics:meteocons-typeface:39a8a9e70cd8287cdb119af57a672a41dd09240dba6697f5a0dbda1ccc33298b',
+            'com.mikepenz.iconics:octicons-typeface:67ed7d456a9ce5f5307b85f955797bfb3dd674e2f6defb31c6b8bbe2ede290be',
+            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
             'com.mikepenz.iconics:community-material-typeface:f1c5afee5f0f10d66beb3ed0df977246a02a9c46de4e05d7c0264bcde53b6b7f',
             'com.squareup.okhttp:okhttp:bc0da7ac1f5441619faa2082811938acf7df97e4a8e08f0e043ff4937414d5ad',
-//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:bbbc0b964757450ec78823ec448b0754999e16c9c620e3587c14289cba8e87f8',
-//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:4b2f5637580b9bad786d57c32e8b86d6554e2d4ed55ccbfb028bbece655100cc',
-//            'OpenKeychain.extern.spongycastle:core:4a2a3c86616944bfdaf8f3148a9e047d5007433f1af0a4b38a552b4ec94f6804',
-//            'OpenKeychain.extern.spongycastle:pg:44690d345d806626d0a83eb5434ba9b52ccfcb37f5a775842333470658ffe28f',
-//            'OpenKeychain.extern.spongycastle:pkix:bb08d67b726bcf09018cac43c57dfaa00bb7540d16e6e986f0378feb0fed5327',
-//            'OpenKeychain.extern.spongycastle:prov:b9f0df403c1c9ac6ec7b0bb138fd8dda3d1ac72983c7a5e4a6dc9deab1d7a11e',
-//            'OpenKeychain.extern:minidns:feb3bbbb3ce15e6e2a4711b35695a54f420188e4264b87116a03b8374b74eb86',
-//            'OpenKeychain.extern.KeybaseLib:Lib:c80857e2347fb0a80f48a0da8aa510cdfe7c2486784af1d17fb385382f45fe6c',
-//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:781c4a5723b6a3c68d1178ac67908cd250d7bac6f11c39836618cc8fc8d0177f',
-//            'OpenKeychain.extern.snackbar:lib:6847a73d2680558d35f0b384ac3ed006532c0a2306598b000db94ef18aab62aa',
+//            'OpenKeychain.extern.openkeychain-api-lib:openkeychain-intents:111d7d53b9e920ad3405f8f3eb0ab7bd3aee66d577442452754b83c7c1c1d49a',
+//            'OpenKeychain.extern.openpgp-api-lib:openpgp-api:544b7b2e20955556b83d1b72763543aa789836ebc1e77b332ed7cd83ef765c4a',
+//            'com.madgag.spongycastle:core:97276487be598747ba78c063c90cea7fc3c7ad9bc7aeba03c0b9c98692052b8a',
+//            'com.madgag.spongycastle:pkix:979aa4b2aaef94866e0f97b05b1922244eaf8b650f3691a3c44760ff0a41562b',
+//            'com.madgag.spongycastle:pg:da319de706d946f178140959c74aec126f7803f1104dbad89bb1f55a53f6e1a9',
+//            'OpenKeychain.extern:minidns:8274d50124d9584e95df0c5da7798269ac9caf0eab560df929c2c658ca624037',
+//            'com.madgag.spongycastle:prov:902a484219bbf4e395a1c32da65b2453133e195bcc92336dc8c33b7c58edcd60',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
+//            'OpenKeychain.extern.KeybaseLib:Lib:d52e7888cea6de9e077501bb533270b2a86b52cb8af49e5f44ee8c4bb19ea017',
+//            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:76e5da6b4f5f8835b12649e17569f0d0d8d89552815a61383c128545632689d1',
             'com.squareup.okio:okio:b53c1760864e1c39b5275d9023e2a6fbe8f3189e6e67b4c87877b8ec8f92e05a',
-            'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
     ]
 }
 
