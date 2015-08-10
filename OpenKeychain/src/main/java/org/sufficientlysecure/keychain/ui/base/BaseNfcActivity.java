@@ -50,8 +50,8 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService.KeyNotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
+import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
+import org.sufficientlysecure.keychain.ui.KeyUnlockActivityWrapper;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -118,10 +118,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
             intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
             startActivity(intent);
         } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_AID, mNfcAid);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
             startActivity(intent);
         }
     }
@@ -351,8 +351,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 return;
             }
 
-            Intent intent = new Intent(this, PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT,
+            Intent intent = new Intent(this, KeyUnlockActivityWrapper.class);
+            intent.putExtra(KeyUnlockActivityWrapper.EXTRA_REQUIRED_INPUT,
                     RequiredInputParcel.createRequiredPassphrase(requiredInput));
             startActivityForResult(intent, REQUEST_CODE_PIN);
         } catch (KeyNotFoundException e) {
@@ -375,7 +375,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                     finish();
                     return;
                 }
-                CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
+                CryptoInputParcel input = data.getParcelableExtra(KeyUnlockActivityWrapper.RESULT_CRYPTO_INPUT);
                 mPin = input.getPassphrase();
                 break;
             }

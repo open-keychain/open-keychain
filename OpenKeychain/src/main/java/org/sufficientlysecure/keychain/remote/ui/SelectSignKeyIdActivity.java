@@ -29,8 +29,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class SelectSignKeyIdActivity extends BaseActivity {
@@ -98,9 +98,9 @@ public class SelectSignKeyIdActivity extends BaseActivity {
     private void createKey(String userId) {
         KeyRing.UserId userIdSplit = KeyRing.splitUserId(userId);
 
-        Intent intent = new Intent(this, CreateKeyActivity.class);
-        intent.putExtra(CreateKeyActivity.EXTRA_NAME, userIdSplit.name);
-        intent.putExtra(CreateKeyActivity.EXTRA_EMAIL, userIdSplit.email);
+        Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+        intent.putExtra(CreateKeyWizardActivity.EXTRA_NAME, userIdSplit.name);
+        intent.putExtra(CreateKeyWizardActivity.EXTRA_EMAIL, userIdSplit.email);
         startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
     }
 

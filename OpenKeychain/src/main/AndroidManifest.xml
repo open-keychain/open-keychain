@@ -86,26 +86,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.CreateKeyActivity"
-            android:allowTaskReparenting="true"
-            android:label="@string/title_manage_my_keys"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="adjustResize">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
-            <!-- Connect with YubiKeys. This Activity will automatically show/import/create YubiKeys -->
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data
-                    android:scheme="https"
-                    android:host="my.yubico.com"
-                    android:pathPrefix="/neo"/>
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
@@ -178,6 +158,30 @@
                 <data android:mimeType="multipart/*" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.CreateKeyWizardActivity"
+            android:allowTaskReparenting="true"
+            android:label="@string/title_manage_my_keys"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+            <!-- Connect with YubiKeys. This Activity will automatically show/import/create YubiKeys -->
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data
+                    android:scheme="https"
+                    android:host="my.yubico.com"
+                    android:pathPrefix="/neo"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.KeyUnlockActivityWrapper"
+            android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -680,9 +684,6 @@
             android:name=".ui.ConsolidateDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
-            android:name=".ui.PassphraseDialogActivity"
-            android:theme="@android:style/Theme.NoDisplay" />
-        <activity
             android:name=".ui.RetryUploadDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
         <activity
@@ -691,7 +692,6 @@
         <activity
             android:name=".ui.OrbotRequiredDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!

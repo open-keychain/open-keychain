@@ -150,9 +150,9 @@ public class BackupFragment extends Fragment {
             return;
         }
 
-        Intent intent = new Intent(activity, PassphraseDialogActivity.class);
+        Intent intent = new Intent(activity, KeyUnlockActivityWrapper.class);
         long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
+        intent.putExtra(KeyUnlockActivityWrapper.EXTRA_SUBKEY_ID, masterKeyId);
         startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
     }
 
