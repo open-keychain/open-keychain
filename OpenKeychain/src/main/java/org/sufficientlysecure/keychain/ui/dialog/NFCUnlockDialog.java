@@ -58,7 +58,6 @@ import java.io.UnsupportedEncodingException;
 public class NFCUnlockDialog extends UnlockDialog
         implements NfcDispatcher.NfcDispatcherCallback, UnlockAsyncTask.OnUnlockAsyncTaskListener {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
-    public static final String EXTRA_PARAM_OPERATION_TYPE = "EXTRA_PARAM_OPERATION_TYPE";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
     public static final String EXTRA_SERVICE_INTENT = "data";
     public static final int NUM_PROGRESS_OPERATIONS = 5; //never zero!!

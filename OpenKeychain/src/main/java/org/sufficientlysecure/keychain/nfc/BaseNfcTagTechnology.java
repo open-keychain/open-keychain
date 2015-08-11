@@ -1,13 +1,11 @@
 package org.sufficientlysecure.keychain.nfc;
 
 
-import java.io.IOException;
-
 /**
  * Nfc Tag Technology interface.
  */
 public interface BaseNfcTagTechnology {
-    void connect() throws IOException;
+    void connect() throws NfcDispatcher.CardException;
 
     void upload(byte[] data) throws NfcDispatcher.CardException;
 
