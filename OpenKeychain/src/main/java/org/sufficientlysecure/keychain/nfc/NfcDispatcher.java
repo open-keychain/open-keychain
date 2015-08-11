@@ -31,7 +31,7 @@ public final class NfcDispatcher {
     private NfcDispatcherCallback mNfcDispatcherCallback;
     private NfcDispatchTask mNfcDispatchTask;
     private RegisteredTechHandler mRegisteredTechHandler;
-    private NfcTagTechnology mNfcTagTechnology;
+    private BaseNfcTagTechnology mBaseNfcTagTechnology;
 
     /**
      * NFC Exception
@@ -63,7 +63,7 @@ public final class NfcDispatcher {
 
         void handleTagDiscoveredIntent(Intent intent) throws CardException;
 
-        void onNfcTechnologyInitialized(NfcTagTechnology nfcTagTechnology);
+        void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology);
     }
 
     /**
@@ -205,8 +205,8 @@ public final class NfcDispatcher {
             android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.MifareUltralight.get(detectedTag);
             if (mifareUltralight != null) {
                 Log.v(TAG, "Using Mifare UltraLight nfc technology");
-                mNfcTagTechnology = new MifareUltralight(mifareUltralight);
-                mNfcDispatcherCallback.onNfcTechnologyInitialized(mNfcTagTechnology);
+                mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight);
+                mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
                 return;
             }
         }
