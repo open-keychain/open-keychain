@@ -1447,6 +1447,7 @@
     <string name="error_nfc_tag_not_writable">Nfc tag is not writable</string>
     <string name="error_nfc_tag_data_write">Failed to write nfc data to the card</string>
     <string name="error_nfc_tag_data_read">Failed to read the data from the card</string>
+    <string name="error_nfc_dispatcher_no_registered_tech">No NFC technologies were registered for dispatch</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
