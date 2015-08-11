@@ -220,7 +220,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
             String sPin = new String(pin, "ISO-8859-1");
 
             mNfcPin = new Passphrase(sPin.toCharArray());
-            mNfcPin.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC);
+            mNfcPin.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
 
             if (Constants.DEBUG) {
                 Log.v(Constants.TAG, "Generated Pin: " + Hex.toHexString(pin));
@@ -255,7 +255,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
             return;
         }
         //last phase of verifications
-        if (mNfcPin.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC &&
+        if (mNfcPin.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC_TAG &&
                 mNfcPin.getCharArray().length == 16 && mPinMovedToCard) {
             mOperationState = OperationState.OPERATION_STATE_CARD_READY;
             onUpdateProgress(calculateProgress(NUM_PROGRESS_OPERATIONS));
@@ -293,6 +293,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
         Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
         if (rawMsgs != null) {
             NdefMessage msg = (NdefMessage) rawMsgs[0];
+            Log.v(Constants.TAG, msg.toString());
         }
     }
 

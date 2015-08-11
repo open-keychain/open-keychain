@@ -383,7 +383,7 @@ public class NFCUnlockDialog extends UnlockDialog
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
         mPassphrase = new Passphrase(sPin.toCharArray());
-        mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC);
+        mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
     }
 
     @Override
@@ -393,7 +393,7 @@ public class NFCUnlockDialog extends UnlockDialog
         }
 
         //last phase of verifications
-        if (mPassphrase.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC &&
+        if (mPassphrase.getSecretKeyType() == CanonicalizedSecretKey.SecretKeyType.NFC_TAG &&
                 mPassphrase.getCharArray().length == 16) {
             mOperationState = OperationState.OPERATION_STATE_PERFORM_UNLOCK;
             onUpdateProgress(calculateProgress(NUM_PROGRESS_OPERATIONS));

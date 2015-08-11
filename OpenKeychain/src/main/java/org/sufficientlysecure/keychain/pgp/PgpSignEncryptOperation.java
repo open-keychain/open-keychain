@@ -186,7 +186,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                     }
 
                     case PIN:
-                    case NFC:
+                    case NFC_TAG:
                     case PATTERN:
                     case PASSPHRASE: {
                         Passphrase localPassphrase = cryptoInput.getPassphrase();

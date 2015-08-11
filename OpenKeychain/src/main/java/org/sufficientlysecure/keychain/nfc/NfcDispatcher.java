@@ -134,7 +134,8 @@ public final class NfcDispatcher {
      * @param intent
      */
     public void onNewIntent(final Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) && mTagHandlingEnabled) {
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction()) && mTagHandlingEnabled ||
+                NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction()) && mTagHandlingEnabled) {
             try {
                 handleIntentInBackground(intent);
             } catch (CardException e) {
@@ -194,7 +195,8 @@ public final class NfcDispatcher {
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(mActivity, 0, nfcI,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         IntentFilter[] writeTagFilters = new IntentFilter[]{
-                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
+                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED),
+                new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)
         };
 
         // https://code.google.com/p/android/issues/detail?id=62918

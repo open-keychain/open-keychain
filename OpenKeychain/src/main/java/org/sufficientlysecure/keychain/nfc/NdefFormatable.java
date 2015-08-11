@@ -6,7 +6,6 @@ import android.nfc.NdefRecord;
 import android.os.Build;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * Implements NdefFormatable technology.
@@ -14,7 +13,8 @@ import java.util.Arrays;
  */
 public class NdefFormatable implements BaseNfcTagTechnology {
     public static final String DOMAIN = "org.openkeychain.nfc";
-    public static final String TYPE = "externalType";
+    public static final String TYPE = "externaltype";
+    public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
     private android.nfc.tech.NdefFormatable mNdeFormatable;
 
     public NdefFormatable(android.nfc.tech.NdefFormatable ndefFormatable) {
@@ -41,20 +41,19 @@ public class NdefFormatable implements BaseNfcTagTechnology {
     public void upload(byte[] data) throws NfcDispatcher.CardException {
         try {
             NdefRecord extRecord;
-            NdefMessage ndefMessage = null;
+            NdefMessage ndefMessage;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 extRecord = NdefRecord.createExternal(DOMAIN, TYPE, data);
                 ndefMessage = new NdefMessage(extRecord);
-
             } else {
-                extRecord = new NdefRecord(NdefRecord.TNF_EXTERNAL_TYPE, (DOMAIN + TYPE).getBytes(),
+                extRecord = new NdefRecord(NdefRecord.TNF_EXTERNAL_TYPE, DOMAIN_TYPE.getBytes(),
                         new byte[0], data);
                 ndefMessage = new NdefMessage(extRecord.getPayload());
             }
             mNdeFormatable.format(ndefMessage);
-
         } catch (IOException | FormatException e) {
-            throw new NfcDispatcher.CardException(e.getMessage(),
+            throw new NfcDispatcher.CardException("Failed to format Nfc Tag, make sure your nfc tag" +
+                    " is a blank card",
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
     }
@@ -69,9 +68,17 @@ public class NdefFormatable implements BaseNfcTagTechnology {
         return new byte[0];
     }
 
+    /**
+     * NDefFormatable does not support read operations, assume that the write operation went ok.
+     *
+     * @param original
+     * @param fromNFC
+     * @return
+     * @throws NfcDispatcher.CardException
+     */
     @Override
     public boolean verify(byte[] original, byte[] fromNFC) throws NfcDispatcher.CardException {
-        return Arrays.equals(original, fromNFC);
+        return true;
     }
 
     @Override

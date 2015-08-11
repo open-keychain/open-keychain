@@ -223,6 +223,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     @Override
     public void onNewIntent(final Intent intent) {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())
+                && mTagHandlingEnabled || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction())
                 && mTagHandlingEnabled) {
             handleIntentInBackground(intent);
         }
@@ -939,8 +940,8 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(this, 0, nfcI, PendingIntent.FLAG_CANCEL_CURRENT);
         IntentFilter[] writeTagFilters = new IntentFilter[]{
-                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-        };
+                new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED),
+                new IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)};
 
         // https://code.google.com/p/android/issues/detail?id=62918
         // maybe mNfcAdapter.enableReaderMode(); ?

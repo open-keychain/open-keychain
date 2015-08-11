@@ -140,7 +140,7 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
                 showUnlockDialog(new PatternUnlockDialog());
             }
             break;
-            case NFC: {
+            case NFC_TAG: {
                 showUnlockDialog(new NFCUnlockDialog());
             }
             break;

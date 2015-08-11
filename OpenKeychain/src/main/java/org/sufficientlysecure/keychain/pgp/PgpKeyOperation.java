@@ -1286,7 +1286,7 @@ public class PgpKeyOperation {
 
                     return sKR;
                 }
-                case NFC: {
+                case NFC_TAG: {
                     sKR = applyNewPassphrase(sKR, masterPublicKey, passphrase, newUnlock.mNewPassphrase, log, indent);
 
                     log.add(LogType.MSG_MF_NOTATION_PIN, indent);
