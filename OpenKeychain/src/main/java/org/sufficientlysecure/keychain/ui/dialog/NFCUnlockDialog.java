@@ -32,12 +32,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 
 public class NFCUnlockDialog extends UnlockDialog {
-    RelativeLayout mNfcFeedbackLayout;
-    LinearLayout mUnlockTipLayout;
-    TextView mUnlockTip;
-    FeedbackIndicatorView mUnlockUserFeedback;
-    ProgressBar mProgressBar;
-    RelativeLayout mUnlockInputLayout;
+    private RelativeLayout mNfcFeedbackLayout;
+    private LinearLayout mUnlockTipLayout;
+    private TextView mUnlockTip;
+    private FeedbackIndicatorView mUnlockUserFeedback;
+    private ProgressBar mProgressBar;
+    private RelativeLayout mUnlockInputLayout;
 
     @NonNull
     @Override
