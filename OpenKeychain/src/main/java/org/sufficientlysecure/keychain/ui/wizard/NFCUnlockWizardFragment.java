@@ -305,15 +305,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
             }
             mNfcTechnology = new MifareUltralightTechnology(mifareUltralight);
             postProgressToMainThread(1);
-        } else {
-            NfcA nfcA = NfcA.get(detectedTag);
-            if (nfcA != null) {
-                if (Constants.DEBUG) {
-                    Log.v(Constants.TAG, "Using NfcA tech");
-                }
-                mNfcTechnology = new NfcATechnology(nfcA);
-                postProgressToMainThread(1);
-            }
         }
 
         //get device NDEF records
@@ -498,99 +489,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
         @Override
         public void close() throws IOException {
             mMifareUltralight.close();
-        }
-    }
-
-    /**
-     * NfcA technology communication
-     * Work in progress
-     * Specification: http://apps4android.org/nfc-specifications/NFCForum-TS-Type-1-Tag_1.1.pdf
-     */
-    public static class NfcATechnology implements NfcTechnology {
-        public static final byte HR0_STATIC_MEMORY = 0x11;
-        public static final byte HR0_DYNAMIC_MEMORY = 0x10;
-
-        //static commands
-        public static final byte COMMAND_RALL = 0x00;
-        public static final byte COMMAND_READ = 0x01;
-        public static final byte COMMAND_WRITE_E = 0x53;
-        public static final byte COMMAND_WRITE_NE = 0x1A;
-
-        public static final byte COMMAND_RSEG = 0x10;
-        public static final byte COMMAND_READ8 = 0x02;
-        public static final byte COMMAND_WRITE_E8 = 0x54;
-        public static final byte COMMAND_WRITE_NE8 = 0x1B;
-
-        //Memory blocks 8 bytes each total 96 bytes
-        //Byte 0 (LSB) corresponds to byte address
-        //(byte address, LSB)00 00 00 00 00 00 00 00(MSB)
-        //Static memory
-        public static final byte STATIC_MEMORY_BLOCK_START = 0x01;
-        public static final byte STATIC_MEMORY_BLOCK_END = 0x0C;
-        public static final byte STATIC_MEMORY_LOCK_BLOCK = 0x0E;
-
-        //Dynamic memory
-        public static final byte DYNAMIC_MEMORY_BLOCK_START = 0x0F;
-        public static final byte DYNAMIC_MEMORY_BLOCK_END = 0x15; //k
-
-        //TLV
-        public static final byte TLV_NULL = 0x00;
-        public static final byte TLV_LOCK_CONTROL = 0x01;
-        public static final byte TLV_MEMORY_CONTROL = 0x02;
-        public static final byte TLV_NDEF_MESSAGE = 0x03;
-        public static final short TLV_PROPRIETARY = 0xFD;
-        public static final short TLV_TERMINATOR = 0xFE;
-
-        //
-        public static final byte OPERAND_NULL = 0x00;
-        public static final byte DUMMY_FRAME = 0x00;
-
-
-        private static final int sTimeout = 100000;
-        protected NfcA mNfcA;
-
-        public NfcATechnology(NfcA nfcA) {
-            mNfcA = nfcA;
-        }
-
-        public void connect() throws IOException {
-            mNfcA.setTimeout(sTimeout); // timeout is set to 100 seconds to avoid cancellation during calculation
-            if (!mNfcA.isConnected()) {
-                mNfcA.connect();
-            }
-        }
-
-        public void upload(byte[] data) throws IOException {
-            StringBuilder dataToSend = new StringBuilder(16);
-            dataToSend.append(COMMAND_RALL);
-            dataToSend.append(OPERAND_NULL);
-            dataToSend.append(DUMMY_FRAME);
-            //UID-0-3
-            //mNfcA.transceive(data);
-        }
-
-        @Override
-        public byte[] read() throws IOException {
-            return new byte[0];
-        }
-
-        @Override
-        public boolean verify(byte[] original, byte[] fromNFC) throws IOException {
-            return Arrays.equals(original, fromNFC);
-        }
-
-        public void close() throws IOException {
-            mNfcA.close();
-        }
-
-        /**
-         * Using NDEF to write to the tag.
-         *
-         * @param payload
-         */
-        private void writeNDEF(byte[] payload) {
-            String URI = "http://nfc.openkeychain.com/unlock";
-            NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, URI.getBytes(Charset.forName("US-ASCII")), new byte[0], new byte[0]);
         }
     }
 }

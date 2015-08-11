@@ -18,6 +18,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.WindowManager;
 
@@ -27,21 +28,27 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.dialog.NFCUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.PatternUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.PinUnlockDialog;
 import org.sufficientlysecure.keychain.ui.dialog.UnlockDialog;
+import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity.NfcListenerFragment;
+
+import java.io.IOException;
 
 /**
  * Activity wrapper for the key unlock dialogs
  */
-public class KeyUnlockActivityWrapper extends FragmentActivity {
+public class KeyUnlockActivityWrapper extends BaseNfcActivity {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
     public static final String EXTRA_KEY_TYPE = "secret_key_type";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
     private long mKeyId = Constants.key.none;
+    private UnlockDialog mUnlockDialog;
 
     // special extra for OpenPgpService
     public static final String EXTRA_SERVICE_INTENT = "data";
@@ -126,6 +133,10 @@ public class KeyUnlockActivityWrapper extends FragmentActivity {
                 showUnlockDialog(new PatternUnlockDialog());
             }
             break;
+            case NFC: {
+                showUnlockDialog(new NFCUnlockDialog());
+            }
+            break;
             default: {
                 throw new AssertionError("Unhandled SecretKeyType (should not happen)");
             }
@@ -139,6 +150,7 @@ public class KeyUnlockActivityWrapper extends FragmentActivity {
      */
     public void showUnlockDialog(UnlockDialog unlockDialog) {
         if (unlockDialog != null) {
+            mUnlockDialog = unlockDialog;
             Intent serviceIntent = getIntent().getParcelableExtra(EXTRA_SERVICE_INTENT);
 
             Bundle bundle = new Bundle();
@@ -167,5 +179,52 @@ public class KeyUnlockActivityWrapper extends FragmentActivity {
                 unlockDialog.show(fragmentActivity.getSupportFragmentManager(), "passphraseDialog");
             }
         });
+    }
+
+    //NFC STUFF
+    @Override
+    protected void doNfcInBackground() throws IOException {
+        super.doNfcInBackground();
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mUnlockDialog).doNfcInBackground();
+        }
+    }
+
+    @Override
+    protected void onNfcPreExecute() throws IOException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mUnlockDialog).onNfcPreExecute();
+        }
+    }
+
+    @Override
+    protected void onNfcPostExecute() throws IOException {
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mUnlockDialog).onNfcPostExecute();
+        }
+    }
+
+    @Override
+    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
+        super.handleTagDiscoveredIntent(intent);
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mUnlockDialog).onNfcTagDiscovery(intent);
+        }
+    }
+
+    @Override
+    protected void handleNfcError(Exception e) {
+        super.handleNfcError(e);
+        if (mUnlockDialog != null && mUnlockDialog instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mUnlockDialog).onNfcError(e);
+        }
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        if (fragment instanceof UnlockDialog) {
+            mUnlockDialog = (UnlockDialog) fragment;
+        }
     }
 }
