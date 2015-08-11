@@ -77,7 +77,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
     protected boolean mPw3Validated;
     private NfcAdapter mNfcAdapter;
     private IsoDep mIsoDep;
-    private NfcA mNfcA;
     private boolean mTagHandlingEnabled;
     private static final int TIMEOUT = 100000;
 
@@ -413,7 +412,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
         // Connect to the detected tag, setting a couple of settings
-        mNfcA = NfcA.get(detectedTag);
         mIsoDep = IsoDep.get(detectedTag);
         if (mIsoDep != null) {
             mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
