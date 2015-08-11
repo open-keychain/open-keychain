@@ -266,7 +266,7 @@ public final class NfcDispatcher {
                 android.nfc.tech.Ndef ndef = android.nfc.tech.Ndef.get(detectedTag);
                 if (ndef != null) {
                     Log.v(TAG, "Using Ndef nfc technology");
-                    mBaseNfcTagTechnology = new Ndef(ndef);
+                    mBaseNfcTagTechnology = new Ndef(ndef, mActivity);
                     mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
                     break;
                 }

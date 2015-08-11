@@ -1,9 +1,12 @@
 package org.sufficientlysecure.keychain.nfc;
 
+import android.content.Context;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Build;
+
+import org.sufficientlysecure.keychain.R;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,8 +19,10 @@ public class Ndef implements BaseNfcTagTechnology {
     public static final String TYPE = "externaltype";
     public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
     private android.nfc.tech.Ndef mNdef;
+    private Context mContext;
 
-    public Ndef(android.nfc.tech.Ndef ndef) {
+    public Ndef(android.nfc.tech.Ndef ndef, Context context) {
+        mContext = context;
         mNdef = ndef;
 
         if (mNdef == null) {
@@ -31,7 +36,8 @@ public class Ndef implements BaseNfcTagTechnology {
             try {
                 mNdef.connect();
             } catch (IOException e) {
-                throw new NfcDispatcher.CardException(e.getMessage(),
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_unable_to_connect),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         }
@@ -39,10 +45,10 @@ public class Ndef implements BaseNfcTagTechnology {
 
     @Override
     public void upload(byte[] data) throws NfcDispatcher.CardException {
-        //Ndef message upload
         try {
             if (!mNdef.isWritable()) {
-                throw new NfcDispatcher.CardException("Nfc tag is not writable",
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_not_writable),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
 
@@ -85,12 +91,19 @@ public class Ndef implements BaseNfcTagTechnology {
             }
             mNdef.writeNdefMessage(ndefMessage);
 
-        } catch (IOException | FormatException e) {
-            throw new NfcDispatcher.CardException(e.getMessage(),
+        } catch (IOException | IllegalArgumentException | FormatException e) {
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_data_write),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
     }
 
+    /**
+     * Returns previous ndef record index
+     *
+     * @param ndefMessage
+     * @return
+     */
     int getRecordIndex(NdefMessage ndefMessage) {
         int recordIndex = 0;
         byte[] domainType = DOMAIN_TYPE.getBytes();
@@ -117,9 +130,9 @@ public class Ndef implements BaseNfcTagTechnology {
                     }
                 }
             }
-
         } catch (IOException | FormatException e) {
-            throw new NfcDispatcher.CardException(e.getMessage(),
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_data_read),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
         //no pay load
@@ -137,7 +150,8 @@ public class Ndef implements BaseNfcTagTechnology {
             try {
                 mNdef.close();
             } catch (IOException e) {
-                throw new NfcDispatcher.CardException(e.getMessage(),
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_disconnect),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         }
