@@ -195,8 +195,8 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
 
     @Override
     protected void onPause() {
-        super.onPause();
         mNfcDispatcher.onPause();
+        super.onPause();
     }
 
     @Override

@@ -190,7 +190,7 @@ public final class NfcDispatcher {
         if (mNfcAdapter == null) {
             return;
         }
-        Intent nfcI = new Intent(mActivity, getClass())
+        Intent nfcI = new Intent(mActivity, mActivity.getClass())
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent nfcPendingIntent = PendingIntent.getActivity(mActivity, 0, nfcI,
                 PendingIntent.FLAG_CANCEL_CURRENT);
@@ -227,7 +227,6 @@ public final class NfcDispatcher {
         //other technologies
 
     }
-
 
     // Actual NFC operations are executed in doInBackground to not block the UI thread
     private class NfcDispatchTask extends AsyncTask<Void, Void, CardException> {

@@ -240,7 +240,7 @@ public class NFCUnlockDialog extends UnlockDialog
      * @param userId
      */
     public void setDialogTitleMessageForUserID(CharSequence userId) {
-        onUpdateDialogTitle(getString(R.string.pin_for, userId));
+        onUpdateDialogTitle(getString(R.string.nfc_for, userId));
     }
 
     /**
@@ -380,7 +380,7 @@ public class NFCUnlockDialog extends UnlockDialog
         try {
             sPin = new String(nfcPin, "ISO-8859-1");
         } catch (UnsupportedEncodingException e) {
-            throw new NfcDispatcher.CardException("Error while attempeting to encode the nfc passphrase",
+            throw new NfcDispatcher.CardException("Error while attempting to encode the nfc passphrase",
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
         mPassphrase = new Passphrase(sPin.toCharArray());
