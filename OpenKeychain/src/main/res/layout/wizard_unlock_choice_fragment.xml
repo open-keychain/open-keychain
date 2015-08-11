@@ -49,6 +49,15 @@
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/pattern_option"
                 android:text="Pattern unlock"/>
+
+            <RadioButton
+                android:id="@+id/radioNFCUnlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:drawablePadding="8dp"
+                android:drawableRight="@drawable/ic_nfc_grey_24dp"
+                android:text="NFC Unlock"/>
         </RadioGroup>
     </ScrollView>
 </RelativeLayout>
