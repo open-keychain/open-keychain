@@ -15,7 +15,9 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * NFC Dispatcher class
@@ -70,7 +72,8 @@ public final class NfcDispatcher {
      * Generic dispatch implementation
      */
 
-    public NfcDispatcher(NfcDispatcherCallback callback, Activity activity, RegisteredTechHandler registeredTechHandler) {
+    public NfcDispatcher(NfcDispatcherCallback callback, Activity activity,
+                         RegisteredTechHandler registeredTechHandler) {
         mRegisteredTechHandler = registeredTechHandler;
         mActivity = activity;
         mNfcDispatcherCallback = callback;
@@ -79,6 +82,11 @@ public final class NfcDispatcher {
         }
     }
 
+    /**
+     * Initializes the dispatcher.
+     *
+     * @param savedInstanceState
+     */
     public void initialize(Bundle savedInstanceState) {
         // Check whether we're recreating a previously destroyed instance
         // Restore value of members from saved state
@@ -91,30 +99,43 @@ public final class NfcDispatcher {
     }
 
     public void onPause() {
-        Log.d(TAG, "onPause");
-        disableNfcForegroundDispatch();
+        try {
+            disableNfcForegroundDispatch();
+        } catch (CardException e) {
+
+        }
     }
 
     public void onResume() {
-        Log.d(TAG, "onResume");
         enableNfcForegroundDispatch();
     }
 
     public void onDestroy() {
-        cancelDispatchTask();
+        try {
+            cancelDispatchTask();
+        } catch (CardException e) {
+
+        }
     }
 
-    private void disconnectFromCard() {
+    /**
+     * Disconnects the nfc tag.
+     */
+    private void disconnectFromCard() throws CardException {
         if (mBaseNfcTagTechnology != null && mBaseNfcTagTechnology.isConnected()) {
             try {
                 mBaseNfcTagTechnology.close();
             } catch (CardException e) {
-                e.printStackTrace();
+                throw new CardException("Exception while closing the nfc tag connection",
+                        EXCEPTION_STATUS_GENERIC);
             }
         }
     }
 
-    private void cancelDispatchTask() {
+    /**
+     * Cancels the dispatch async task.
+     */
+    private void cancelDispatchTask() throws CardException {
         disconnectFromCard();
         if (mNfcDispatchTask != null) {
             mNfcDispatchTask.cancel(true);
@@ -122,9 +143,19 @@ public final class NfcDispatcher {
         }
     }
 
+    /**
+     * Method that receives all nfc errors that may occur.
+     * Besides receiving nfc errors, any pending async operation will be canceled.
+     *
+     * @param e
+     */
     protected void handleNfcError(CardException e) {
-        Log.e(TAG, "nfc error", e);
-        cancelDispatchTask();
+        try {
+            cancelDispatchTask();
+        } catch (CardException e1) {
+            mNfcDispatcherCallback.onNfcError(e1);
+            return;
+        }
         mNfcDispatcherCallback.onNfcError(e);
     }
 
@@ -172,7 +203,7 @@ public final class NfcDispatcher {
     /**
      * Disable foreground dispatch in onPause!
      */
-    public void disableNfcForegroundDispatch() {
+    public void disableNfcForegroundDispatch() throws CardException {
         if (mNfcAdapter == null) {
             return;
         }
@@ -209,24 +240,47 @@ public final class NfcDispatcher {
         Log.d(TAG, "NfcForegroundDispatch has been enabled!");
     }
 
+    /**
+     * Handles the intent. This method will attempt to instantiate any registered nfc tag technologies.
+     * When registering a nfc technology, it will be given priority to the first element of the array.
+     *
+     * @param intent
+     * @throws CardException
+     */
     void handleTagDiscoveredIntent(Intent intent) throws CardException {
         Tag detectedTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (mRegisteredTechHandler == null || mRegisteredTechHandler.getNumNfcTechnologies() == 0) {
-            throw new CardException("No NFC technologies were registered for dispatch", EXCEPTION_STATUS_GENERIC);
+            throw new CardException("No NFC technologies were registered for dispatch",
+                    EXCEPTION_STATUS_GENERIC);
         }
 
-        //attempt at initializing a nfc tag technology
-        if (mRegisteredTechHandler.has(MifareUltralight.class)) {
-            android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.MifareUltralight.get(detectedTag);
-            if (mifareUltralight != null) {
+        for (Class nfcTechnologyClass : mRegisteredTechHandler) {
+            if (nfcTechnologyClass.equals(MifareUltralight.class)) {
+                android.nfc.tech.MifareUltralight mifareUltralight = android.nfc.tech.
+                        MifareUltralight.get(detectedTag);
                 Log.v(TAG, "Using Mifare UltraLight nfc technology");
                 mBaseNfcTagTechnology = new MifareUltralight(mifareUltralight);
                 mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
-                return;
+                break;
+            } else if (nfcTechnologyClass.equals(Ndef.class)) {
+                android.nfc.tech.Ndef ndef = android.nfc.tech.Ndef.get(detectedTag);
+                if (ndef != null) {
+                    Log.v(TAG, "Using Ndef nfc technology");
+                    mBaseNfcTagTechnology = new Ndef(ndef);
+                    mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
+                    break;
+                }
+            } else if (nfcTechnologyClass.equals(NdefFormatable.class)) {
+                android.nfc.tech.NdefFormatable ndefFortmatable = android.nfc.tech.
+                        NdefFormatable.get(detectedTag);
+                if (ndefFortmatable != null) {
+                    Log.v(TAG, "Using NdefFormatable nfc technology, only write operations are available");
+                    mBaseNfcTagTechnology = new NdefFormatable(ndefFortmatable);
+                    mNfcDispatcherCallback.onNfcTechnologyInitialized(mBaseNfcTagTechnology);
+                    break;
+                }
             }
         }
-        //other technologies
-
     }
 
     // Actual NFC operations are executed in doInBackground to not block the UI thread
@@ -283,7 +337,7 @@ public final class NfcDispatcher {
         }
     }
 
-    public static class RegisteredTechHandler implements Parcelable {
+    public static class RegisteredTechHandler implements Parcelable, Iterable<Class> {
         private ArrayList<Class> mRegisterTechArray;
 
         public RegisteredTechHandler() {
@@ -297,6 +351,7 @@ public final class NfcDispatcher {
         public void put(Class NfcTech) {
             mRegisterTechArray.add(NfcTech);
         }
+
 
         public boolean has(Class nfcTech) {
             for (Class nfcTechItem : mRegisterTechArray) {
@@ -331,6 +386,11 @@ public final class NfcDispatcher {
                 return new RegisteredTechHandler[size];
             }
         };
+
+        @Override
+        public Iterator<Class> iterator() {
+            return mRegisterTechArray.listIterator();
+        }
     }
 }
 
