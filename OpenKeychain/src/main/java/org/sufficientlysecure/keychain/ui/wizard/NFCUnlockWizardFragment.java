@@ -28,6 +28,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
+import org.sufficientlysecure.keychain.ui.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -51,6 +52,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
     private NfcTechnology mNfcTechnology;
     private ProgressHandler mProgressHandler;
     private boolean mPinMovedToCard = false;
+    private WizardFragmentListener mWizardFragmentListener;
 
     /**
      * NFC Technology interface
@@ -59,6 +61,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
         void connect() throws IOException;
 
         void upload(byte[] data) throws IOException;
+
         byte[] read() throws IOException;
 
         boolean verify(byte[] original, byte[] fromNFC) throws IOException;
@@ -368,6 +371,12 @@ public class NFCUnlockWizardFragment extends WizardFragment
         onTipTextUpdate(getString(R.string.nfc_pin_moved_to_card));
         onOperationStateCompleted(null);
         onUpdateNavigationState(false, false);
+
+        //update the results back to the activity holding the data
+        if (mWizardFragmentListener != null) {
+            mWizardFragmentListener.setPassphrase(mNfcPin);
+        }
+
         mOperationState = OperationState.OPERATION_STATE_FINALIZED;
         return false;
     }

@@ -103,6 +103,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
                     return PIN;
                 case 6:
                     return PATTERN;
+                case 7:
+                    return NFC;
                 // if this case happens, it's probably a check from a database value
                 default:
                     return UNAVAILABLE;
@@ -145,6 +147,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             } else if (notation.containsKey("unlock.pattern@sufficientlysecure.org")
                     && "1".equals(notation.get("unlock.pattern@sufficientlysecure.org"))) {
                 return SecretKeyType.PATTERN;
+            } else if (notation.containsKey("unlock.nfc@sufficientlysecure.org")
+                    && "1".equals(notation.get("unlock.nfc@sufficientlysecure.org"))) {
+                return SecretKeyType.NFC;
             }
             // Otherwise, it's just a regular ol' passphrase
             return SecretKeyType.PASSPHRASE;
