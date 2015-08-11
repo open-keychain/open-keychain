@@ -1,9 +1,12 @@
 package org.sufficientlysecure.keychain.nfc;
 
+import android.content.Context;
 import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.os.Build;
+
+import org.sufficientlysecure.keychain.R;
 
 import java.io.IOException;
 
@@ -16,8 +19,10 @@ public class NdefFormatable implements BaseNfcTagTechnology {
     public static final String TYPE = "externaltype";
     public static final String DOMAIN_TYPE = "org.openkeychain.nfc:externaltype";
     private android.nfc.tech.NdefFormatable mNdeFormatable;
+    private Context mContext;
 
-    public NdefFormatable(android.nfc.tech.NdefFormatable ndefFormatable) {
+    public NdefFormatable(android.nfc.tech.NdefFormatable ndefFormatable, Context context) {
+        mContext = context;
         mNdeFormatable = ndefFormatable;
 
         if (mNdeFormatable == null) {
@@ -31,7 +36,8 @@ public class NdefFormatable implements BaseNfcTagTechnology {
             try {
                 mNdeFormatable.connect();
             } catch (IOException e) {
-                throw new NfcDispatcher.CardException(e.getMessage(),
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_unable_to_connect),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         }
@@ -51,9 +57,9 @@ public class NdefFormatable implements BaseNfcTagTechnology {
                 ndefMessage = new NdefMessage(extRecord.getPayload());
             }
             mNdeFormatable.format(ndefMessage);
-        } catch (IOException | FormatException e) {
-            throw new NfcDispatcher.CardException("Failed to format Nfc Tag, make sure your nfc tag" +
-                    " is a blank card",
+        } catch (IOException | IllegalArgumentException | FormatException e) {
+            throw new NfcDispatcher.CardException(mContext.
+                    getString(R.string.error_nfc_tag_failed_to_format),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
     }
@@ -87,7 +93,8 @@ public class NdefFormatable implements BaseNfcTagTechnology {
             try {
                 mNdeFormatable.close();
             } catch (IOException e) {
-                throw new NfcDispatcher.CardException(e.getMessage(),
+                throw new NfcDispatcher.CardException(mContext.
+                        getString(R.string.error_nfc_tag_disconnect),
                         NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         }
