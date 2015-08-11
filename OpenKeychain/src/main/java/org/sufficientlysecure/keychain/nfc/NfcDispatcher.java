@@ -138,8 +138,7 @@ public final class NfcDispatcher {
             try {
                 handleIntentInBackground(intent);
             } catch (CardException e) {
-                e.printStackTrace();
-                mNfcDispatcherCallback.onNfcError(e);
+                handleNfcError(e);
             }
         }
     }
@@ -317,7 +316,7 @@ public final class NfcDispatcher {
         }
 
         protected RegisteredTechHandler(Parcel in) {
-            this.mRegisterTechArray = new ArrayList<Class>();
+            this.mRegisterTechArray = new ArrayList<>();
             in.readList(this.mRegisterTechArray, List.class.getClassLoader());
         }
 
