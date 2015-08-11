@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 /**
  * Mifare Ultra Light Technology Implementation for Passphrase 128 bit key store.
+ * Specification: http://www.nxp.com/documents/data_sheet/MF0ICU1.pdf
  */
 public class MifareUltralight implements NfcTagTechnology {
     public static final byte COMMAND_WRITE = (byte) 0xA2;
