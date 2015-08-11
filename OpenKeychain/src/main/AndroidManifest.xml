@@ -181,7 +181,15 @@
         </activity>
         <activity
             android:name=".ui.KeyUnlockActivityWrapper"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:theme="@android:style/Theme.NoDisplay"
+            android:parentActivityName=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:allowTaskReparenting="true"
+            android:launchMode="singleTop">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".ui.MainActivity" />
+        </activity>
         <activity
             android:name=".ui.EncryptTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
