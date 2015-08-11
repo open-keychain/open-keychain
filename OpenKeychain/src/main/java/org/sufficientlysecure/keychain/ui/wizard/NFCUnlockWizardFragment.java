@@ -285,15 +285,18 @@ public class NFCUnlockWizardFragment extends WizardFragment
             if (Constants.DEBUG) {
                 Log.v(Constants.TAG, "Using Mifare Ultra Light tech");
             }
-            mNfcTechnology = new org.sufficientlysecure.keychain.nfc.MifareUltralight(mifareUltralight);
+            mNfcTechnology = new org.sufficientlysecure.keychain.nfc.
+                    MifareUltralight(mifareUltralight, getActivity());
             postProgressToMainThread(1);
         }
 
         //get device NDEF records
-        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-        if (rawMsgs != null) {
-            NdefMessage msg = (NdefMessage) rawMsgs[0];
-            Log.v(Constants.TAG, msg.toString());
+        if (Constants.DEBUG) {
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if (rawMsgs != null) {
+                NdefMessage msg = (NdefMessage) rawMsgs[0];
+                Log.v(Constants.TAG, msg.toString());
+            }
         }
     }
 
