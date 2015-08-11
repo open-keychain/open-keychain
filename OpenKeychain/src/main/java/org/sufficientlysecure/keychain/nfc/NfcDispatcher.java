@@ -28,7 +28,7 @@ public final class NfcDispatcher {
     /**
      * NFC Exception
      */
-    public class CardException extends IOException {
+    public static class CardException extends IOException {
         private short mResponseCode;
 
         public CardException(String detailMessage, short responseCode) {
