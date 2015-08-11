@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.ui.wizard;
 
 
+import android.content.Intent;
 import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
@@ -8,9 +9,7 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
@@ -28,12 +27,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
         implements CreateKeyWizardActivity.NfcListenerFragment {
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
     public static final String STATE_SAVE_NFC_PIN = "STATE_SAVE_NFC_PIN";
-    private RelativeLayout mNfcFeedbackLayout;
-    private LinearLayout mUnlockTipLayout;
     private TextView mUnlockTip;
     private FeedbackIndicatorView mUnlockUserFeedback;
     private ProgressBar mProgressBar;
-    private RelativeLayout mUnlockInputLayout;
     private OperationState mOperationState;
     private Passphrase mNfcPin;
 
@@ -66,15 +62,16 @@ public class NFCUnlockWizardFragment extends WizardFragment
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mNfcFeedbackLayout = (RelativeLayout) view.findViewById(R.id.nfcFeedbackLayout);
-        mUnlockTipLayout = (LinearLayout) view.findViewById(R.id.unlockTipLayout);
         mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
         mUnlockUserFeedback = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mUnlockInputLayout = (RelativeLayout) view.findViewById(R.id.unlockInputLayout);
 
         if (mWizardFragmentListener != null) {
             mWizardFragmentListener.onHideNavigationButtons(false, true);
+        }
+
+        if (savedInstanceState == null) {
+            initializeUnlockOperation();
         }
     }
 
@@ -105,7 +102,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
     @Override
     public boolean onNextClicked() {
-        return super.onNextClicked();
+        return updateOperationState();
     }
 
     @Override
@@ -120,6 +117,31 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mUnlockUserFeedback.showCorrectTextMessage(showText, true);
     }
 
+    public void onTipTextUpdate(CharSequence text) {
+        mUnlockTip.setText(text);
+    }
+
+    public void onShowProgressBar(boolean show) {
+        mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    public void onUpdateProgress(int progress) {
+        mProgressBar.setProgress(progress);
+    }
+
+    /**
+     * NFC handling
+     *
+     * @param exception
+     */
+    public void onNfcError(Exception exception) {
+
+    }
+
+    public void onNfcPreExecute() throws IOException {
+
+    }
+
     @Override
     public void doNfcInBackground() throws IOException {
 
@@ -127,6 +149,10 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
     @Override
     public void onNfcPostExecute() throws IOException {
+
+    }
+
+    public void onNfcTagDiscovery(Intent intent) {
 
     }
 

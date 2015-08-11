@@ -84,9 +84,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     private WizardModel mWizardModel;
 
     public interface NfcListenerFragment {
+        void onNfcError(Exception exception);
+
+        void onNfcPreExecute() throws IOException;
+
         void doNfcInBackground() throws IOException;
 
         void onNfcPostExecute() throws IOException;
+
+        void onNfcTagDiscovery(Intent intent);
     }
 
     /**
@@ -691,6 +697,22 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         byte[] fp = new byte[20];
         ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
         mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+    }
+
+    @Override
+    protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
+        super.handleTagDiscoveredIntent(intent);
+        if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentVisibleFragment).onNfcTagDiscovery(intent);
+        }
+    }
+
+    @Override
+    protected void handleNfcError(Exception e) {
+        super.handleNfcError(e);
+        if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
+            ((NfcListenerFragment) mCurrentVisibleFragment).onNfcError(e);
+        }
     }
 
     @Override
