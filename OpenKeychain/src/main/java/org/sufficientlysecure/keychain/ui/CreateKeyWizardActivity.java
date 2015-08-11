@@ -88,7 +88,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
         void onNfcPreExecute() throws IOException;
 
-        void doNfcInBackground() throws IOException;
+        Throwable doNfcInBackground() throws IOException;
 
         void onNfcPostExecute() throws IOException;
 

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
@@ -34,7 +35,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
         implements CreateKeyWizardActivity.NfcListenerFragment {
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
     public static final String STATE_SAVE_NFC_PIN = "STATE_SAVE_NFC_PIN";
-    public static final int NUM_PROGRESS_OPERATIONS = 2; //never zero!!
+    public static final int NUM_PROGRESS_OPERATIONS = 5; //never zero!!
     public static final int MESSAGE_PROGRESS_UPDATE = 1;
     private TextView mUnlockTip;
     private FeedbackIndicatorView mUnlockUserFeedback;
@@ -49,6 +50,12 @@ public class NFCUnlockWizardFragment extends WizardFragment
      */
     public interface NfcTechnology {
         void connect() throws IOException;
+
+        void upload(byte[] data) throws IOException;
+
+        void verify() throws IOException;
+
+        void close() throws IOException;
     }
 
     /**
@@ -183,6 +190,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
     }
 
     public void onNfcPreExecute() throws IOException {
+        mOperationState = OperationState.OPERATION_STATE_NFC_PIN_UPLOAD;
         onTipTextUpdate(getActivity().getString(R.string.nfc_configuring_card));
         onShowProgressBar(true);
         onProgressBarUpdateStyle(false, getResources().
@@ -190,12 +198,27 @@ public class NFCUnlockWizardFragment extends WizardFragment
         onUpdateProgress(0);
     }
 
-    @Override
-    public void doNfcInBackground() throws IOException {
+    public Throwable doNfcInBackground() throws IOException {
         if (mNfcTechnology != null) {
             mNfcTechnology.connect();
         }
         postProgressToMainThread(2);
+        //generates the pin
+        try {
+            byte[] pin = generateSecureRoomPin();
+            mNfcPin = new Passphrase(Arrays.toString(pin));
+
+            if (Constants.DEBUG) {
+                Log.v(Constants.TAG, "Generated Pin: " + Hex.toHexString(pin));
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return e.getCause();
+        }
+
+        postProgressToMainThread(3);
+
+        return null;
     }
 
     @Override
@@ -281,11 +304,11 @@ public class NFCUnlockWizardFragment extends WizardFragment
      *
      * @throws NoSuchAlgorithmException
      */
-    public void generateSecureRoomPin() throws NoSuchAlgorithmException {
+    public byte[] generateSecureRoomPin() throws NoSuchAlgorithmException {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
         byte buffer[] = new byte[16];
         sr.nextBytes(buffer);
-        mNfcPin = new Passphrase(Arrays.toString(buffer));
+        return buffer;
     }
 
     /**
@@ -311,8 +334,23 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
     /**
      * NfcA technology communication
+     * Specification: http://apps4android.org/nfc-specifications/NFCForum-TS-Type-1-Tag_1.1.pdf
      */
     public static class NfcATechnology implements NfcTechnology {
+        public static final byte COMMAND_RALL = 0x00;
+        public static final byte COMMAND_READ = 0x01;
+        public static final byte COMMAND_WRITE_E = 0x53;
+        public static final byte COMMAND_WRITE_NE = 0x1A;
+
+        public static final byte COMMAND_RSEG = 0x10;
+        public static final byte COMMAND_READ8 = 0x02;
+        public static final byte COMMAND_WRITE_E8 = 0x54;
+        public static final byte COMMAND_WRITE_NE8 = 0x1B;
+
+        //Memory blocks 8 bytes each total 96 bytes
+        public static final byte STATIC_MEMORY_BLOCK_START = 0x01;
+        public static final byte STATIC_MEMORY_BLOCK_END = 0x0C;
+
         private static final int sTimeout = 100000;
         protected NfcA mNfcA;
 
@@ -325,6 +363,18 @@ public class NFCUnlockWizardFragment extends WizardFragment
             if (!mNfcA.isConnected()) {
                 mNfcA.connect();
             }
+        }
+
+        public void upload(byte[] data) throws IOException {
+            mNfcA.transceive(data);
+        }
+
+        public void verify() throws IOException {
+
+        }
+
+        public void close() throws IOException {
+            mNfcA.close();
         }
     }
 }

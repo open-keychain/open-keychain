@@ -147,7 +147,7 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
 
     public void refreshSearch() {
         mListFragment.loadNew(ImportKeysListFragment.newCloudLoaderStateInstance("0x" + mNfcFingerprint,
-                        Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
+                Preferences.getPreferences(getActivity()).getCloudSearchPrefs()));
     }
 
     public void importKey() {
@@ -189,9 +189,10 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
     }
 
     @Override
-    public void doNfcInBackground() throws IOException {
+    public Throwable doNfcInBackground() throws IOException {
         updateNFCData(mWizardFragmentListener.nfcGetFingerprints(), mWizardFragmentListener.nfcGetAid(),
                 mWizardFragmentListener.nfcGetUserId(), false);
+        return null;
     }
 
     @Override
