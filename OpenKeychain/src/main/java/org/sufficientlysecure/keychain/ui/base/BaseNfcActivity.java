@@ -89,7 +89,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     /**
      * Override to change UI before NFC handling (UI thread)
      */
-    protected void onNfcPreExecute() {
+    protected void onNfcPreExecute() throws IOException {
     }
 
     /**
@@ -143,7 +143,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                onNfcPreExecute();
+                try {
+                    onNfcPreExecute();
+                } catch (IOException e) {
+                    handleNfcError(e);
+                    cancel(true);
+                }
             }
 
             @Override
