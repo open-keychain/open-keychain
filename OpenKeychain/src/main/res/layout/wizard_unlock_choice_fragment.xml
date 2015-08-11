@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/pin_option_black"
-                android:text="Pin unlock"/>
+                android:text="@string/pin_unlock"/>
 
             <RadioButton
                 android:id="@+id/radioPatternUnlock"
@@ -48,7 +48,7 @@
                 android:layout_marginTop="24dp"
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/pattern_option"
-                android:text="Pattern unlock"/>
+                android:text="@string/pattern_unlock"/>
 
             <RadioButton
                 android:id="@+id/radioNFCUnlock"
@@ -56,8 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:drawablePadding="8dp"
-                android:drawableRight="@drawable/ic_nfc_grey_24dp"
-                android:text="NFC Unlock"/>
+                android:drawableRight="@drawable/nfc_option"
+                android:text="@string/nfc_unlock"/>
         </RadioGroup>
     </ScrollView>
 </RelativeLayout>

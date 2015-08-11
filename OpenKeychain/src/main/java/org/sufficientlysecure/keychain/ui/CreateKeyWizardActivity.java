@@ -374,6 +374,9 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
             case PATTERN:
                 onInstantiatePatternUnlockMethod();
                 break;
+            case NFC_TAG:
+                onInstantiateNFCUnlockMethod();
+                break;
         }
     }
 
