@@ -6,6 +6,7 @@ import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +88,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
      */
     public void initializeUnlockOperation() {
         mOperationState = OperationState.OPERATION_STATE_WAITING_FOR_NFC_TAG;
+        updateOperationState();
     }
 
     /**
@@ -129,6 +131,12 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mProgressBar.setProgress(progress);
     }
 
+    public void onProgressBarUpdateStyle(boolean indeterminate, int tint) {
+        mProgressBar.setIndeterminate(indeterminate);
+        DrawableCompat.setTint(mProgressBar.getIndeterminateDrawable(), tint);
+        DrawableCompat.setTint(mProgressBar.getProgressDrawable(), tint);
+    }
+
     /**
      * NFC handling
      *
@@ -164,15 +172,28 @@ public class NFCUnlockWizardFragment extends WizardFragment
     public boolean updateOperationState() {
         switch (mOperationState) {
             case OPERATION_STATE_WAITING_FOR_NFC_TAG:
-                break;
+                return handleOperationStateWaitForNFCTag();
             case OPERATION_STATE_NFC_PIN_UPLOAD:
-                break;
+                return handleOperationStatePinUpload();
             case OPERATION_STATE_CARD_READY:
-                return true;
+                return handleOperationStateCardReady();
             default:
                 return false;
         }
+    }
 
+    public boolean handleOperationStateWaitForNFCTag() {
+        onShowProgressBar(true);
+        onTipTextUpdate(getActivity().getString(R.string.nfc_move_card));
+        onProgressBarUpdateStyle(true, getActivity().getResources().getColor(R.color.android_green_dark));
+        return false;
+    }
+
+    public boolean handleOperationStatePinUpload() {
+        return false;
+    }
+
+    public boolean handleOperationStateCardReady() {
         return false;
     }
 
