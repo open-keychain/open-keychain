@@ -322,7 +322,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
         public void connect() throws IOException {
             mNfcA.setTimeout(sTimeout); // timeout is set to 100 seconds to avoid cancellation during calculation
-            mNfcA.connect();
+            if (!mNfcA.isConnected()) {
+                mNfcA.connect();
+            }
         }
     }
 }
