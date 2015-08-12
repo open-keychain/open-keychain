@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.tasks.UnlockAsyncTask;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -60,7 +61,7 @@ public class NFCUnlockDialog extends UnlockDialog
     public static final String RESULT_CRYPTO_INPUT = "result_data";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
     public static final String EXTRA_SERVICE_INTENT = "data";
-    public static final int NUM_PROGRESS_OPERATIONS = 5; //never zero!!
+    public static final int NUM_PROGRESS_OPERATIONS = 3; //never zero!!
     public static final int MESSAGE_PROGRESS_UPDATE = 1;
     private TextView mUnlockTip;
     private FeedbackIndicatorView mUnlockUserFeedback;
@@ -87,14 +88,11 @@ public class NFCUnlockDialog extends UnlockDialog
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // if the dialog is displayed from the application class, design is missing
-        // hack to get holo design (which is not automatically applied due to activity's Theme.NoDisplay
-        ContextThemeWrapper theme = new ContextThemeWrapper(getActivity(), R.style.KeychainTheme);
-
+        ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(mActivity);
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
+
         View view = LayoutInflater.from(theme).inflate(R.layout.unlock_nfc_fragment, null);
         alert.setView(view);
-        setCancelable(false);
 
         mProgressHandler = new ProgressHandler(Looper.getMainLooper());
 
@@ -107,6 +105,7 @@ public class NFCUnlockDialog extends UnlockDialog
         alert.setTitle(getString(R.string.title_unlock));
 
         mAlertDialog = alert.show();
+        mAlertDialog.setCanceledOnTouchOutside(false);
 
         Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         b.setTextColor(getResources().getColor(R.color.primary));
