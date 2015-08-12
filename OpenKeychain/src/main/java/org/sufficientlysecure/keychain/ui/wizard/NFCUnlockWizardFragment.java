@@ -27,7 +27,6 @@ import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
-import org.sufficientlysecure.keychain.ui.base.WizardFragmentListener;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -35,6 +34,9 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+/**
+ * Wizard fragment that handles the NFC configuration.
+ */
 public class NFCUnlockWizardFragment extends WizardFragment
         implements CreateKeyWizardActivity.NfcListenerFragment {
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
@@ -49,7 +51,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
     private BaseNfcTagTechnology mNfcTechnology;
     private ProgressHandler mProgressHandler;
     private boolean mPinMovedToCard = false;
-    private WizardFragmentListener mWizardFragmentListener;
 
     /**
      * Operation state
@@ -135,18 +136,23 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mUnlockUserFeedback.showWrongTextMessage(error, true);
     }
 
+    /**
+     * Notifies the user if the operation was successful.
+     *
+     * @param showText
+     */
     public void onOperationStateOK(String showText) {
         mUnlockUserFeedback.showCorrectTextMessage(showText, false);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         return updateOperationState();
-    }
-
-    @Override
-    public boolean onBackClicked() {
-        return super.onBackClicked();
     }
 
     /**
@@ -156,26 +162,43 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mUnlockUserFeedback.showCorrectTextMessage(showText, true);
     }
 
+    /**
+     * Updates the layout top text.
+     *
+     * @param text
+     */
     public void onTipTextUpdate(CharSequence text) {
         mUnlockTip.setText(text);
     }
 
+    /**
+     * Shows or hides the progress bar.
+     *
+     * @param show
+     */
     public void onShowProgressBar(boolean show) {
         mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
+    /**
+     * Updates the progress bar.
+     *
+     * @param progress
+     */
     public void onUpdateProgress(int progress) {
         mProgressBar.setProgress(progress);
     }
 
+    /**
+     * Updates the progress bar style that is displayed to the user.
+     *
+     * @param indeterminate
+     * @param tint
+     */
     public void onProgressBarUpdateStyle(boolean indeterminate, int tint) {
         mProgressBar.setIndeterminate(indeterminate);
         DrawableCompat.setTint(mProgressBar.getIndeterminateDrawable(), tint);
         DrawableCompat.setTint(mProgressBar.getProgressDrawable(), tint);
-    }
-
-    public void onUpdateNavigationState(boolean hideBack, boolean hideNext) {
-        mWizardFragmentListener.onHideNavigationButtons(hideBack, hideNext);
     }
 
     /**
@@ -195,11 +218,18 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mOperationState = OperationState.OPERATION_STATE_NFC_PIN_UPLOAD;
         onTipTextUpdate(getActivity().getString(R.string.nfc_configuring_card));
         onShowProgressBar(true);
-        onProgressBarUpdateStyle(false, getResources().
-                getColor(R.color.android_green_dark));
+        onProgressBarUpdateStyle(false, getResources().getColor(R.color.android_green_dark));
         onUpdateProgress(0);
     }
 
+    /**
+     * Connects to the NFC card and uploads the pin.
+     * There is a small verification just to be sure that the uploaded pin matches the
+     * generated pin.
+     *
+     * @return
+     * @throws IOException
+     */
     public Throwable doNfcInBackground() throws IOException {
         if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
             return null;
@@ -241,6 +271,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
         //verify step
         mNfcTechnology.close();
         postProgressToMainThread(4);
+
         byte[] pinPasspgrase = new String(mNfcPin.getCharArray()).getBytes("ISO-8859-1");
         if (mNfcTechnology.verify(pinPasspgrase, nfcPin)) {
             mPinMovedToCard = true;
@@ -320,8 +351,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
         switch (mOperationState) {
             case OPERATION_STATE_WAITING_FOR_NFC_TAG:
                 return handleOperationStateWaitForNFCTag();
-            case OPERATION_STATE_NFC_PIN_UPLOAD:
-                return handleOperationStatePinUpload();
             case OPERATION_STATE_CARD_READY:
                 return handleOperationStateCardReady();
             case OPERATION_STATE_FINALIZED: {
@@ -332,6 +361,13 @@ public class NFCUnlockWizardFragment extends WizardFragment
         }
     }
 
+    /**
+     * Handles the wait for nfc tag state.
+     * The wizard will wait for the user to move the nfc tag to the back of the device before
+     * proceeding.
+     *
+     * @return
+     */
     public boolean handleOperationStateWaitForNFCTag() {
         onShowProgressBar(true);
         onTipTextUpdate(getActivity().getString(R.string.nfc_move_card));
@@ -340,14 +376,15 @@ public class NFCUnlockWizardFragment extends WizardFragment
         return false;
     }
 
-    public boolean handleOperationStatePinUpload() {
-        return false;
-    }
-
+    /**
+     * Handles the card ready state.
+     *
+     * @return
+     */
     public boolean handleOperationStateCardReady() {
         onTipTextUpdate(getString(R.string.nfc_pin_moved_to_card));
         onOperationStateCompleted(null);
-        onUpdateNavigationState(false, false);
+        mWizardFragmentListener.onHideNavigationButtons(false, false);
 
         //update the results back to the activity holding the data
         if (mWizardFragmentListener != null) {
@@ -356,15 +393,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
         mOperationState = OperationState.OPERATION_STATE_FINALIZED;
         return false;
-    }
-
-    /**
-     * Reads the tag data from the nfc tag
-     *
-     * @param tag
-     */
-    public void onNfcTagDiscovery(Tag tag) {
-
     }
 
     /**
