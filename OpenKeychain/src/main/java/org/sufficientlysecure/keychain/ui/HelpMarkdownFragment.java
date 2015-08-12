@@ -73,9 +73,6 @@ public class HelpMarkdownFragment extends Fragment {
             Log.e(Constants.TAG, "IOException", e);
         }
 
-        // no flickering when clicking textview for Android < 4
-        text.setTextColor(getResources().getColor(android.R.color.black));
-
         return scroller;
     }
 }

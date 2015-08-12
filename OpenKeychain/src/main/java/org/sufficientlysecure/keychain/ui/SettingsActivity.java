@@ -65,8 +65,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         sPreferences = Preferences.getPreferences(this);
-
         mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.setThemes(R.style.Theme_Keychain_Light, R.style.Theme_Keychain_Dark);
         mThemeChanger.changeTheme();
         super.onCreate(savedInstanceState);
 
@@ -126,7 +126,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
             finish();
+            overridePendingTransition(0, 0);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -506,6 +508,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 mTheme.setValue((String) newValue);
                 mTheme.setSummary(mTheme.getEntry());
                 sPreferences.setTheme((String) newValue);
+
+                ((SettingsActivity) mTheme.getContext()).recreate();
+
                 return false;
             }
         });

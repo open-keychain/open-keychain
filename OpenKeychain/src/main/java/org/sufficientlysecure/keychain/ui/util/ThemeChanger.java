@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
@@ -25,9 +26,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 public class ThemeChanger {
-    private Context mContext;
+    private Activity mContext;
     private Preferences mPreferences;
     private String mCurrentTheme = null;
+
+    private int mLightResId;
+    private int mDarkResId;
 
     static public ContextThemeWrapper getDialogThemeWrapper(Context context) {
         Preferences preferences = Preferences.getPreferences(context);
@@ -42,7 +46,12 @@ public class ThemeChanger {
         }
     }
 
-    public ThemeChanger(Context context) {
+    public void setThemes(int lightResId, int darkResId) {
+        mLightResId = lightResId;
+        mDarkResId = darkResId;
+    }
+
+    public ThemeChanger(Activity context) {
         mContext = context;
         mPreferences = Preferences.getPreferences(mContext);
     }
@@ -59,9 +68,9 @@ public class ThemeChanger {
             return false;
         }
 
-        int themeId = R.style.Theme_Keychain_Light;
+        int themeId = mLightResId;
         if (Constants.Pref.Theme.DARK.equals(newTheme)) {
-            themeId = R.style.Theme_Keychain_Dark;
+            themeId = mDarkResId;
         }
 
         ContextThemeWrapper w = new ContextThemeWrapper(mContext, themeId);
@@ -70,4 +79,5 @@ public class ThemeChanger {
 
         return true;
     }
+
 }

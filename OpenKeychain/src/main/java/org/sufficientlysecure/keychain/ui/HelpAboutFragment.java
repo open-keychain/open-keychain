@@ -56,9 +56,6 @@ public class HelpAboutFragment extends Fragment {
             Log.e(Constants.TAG, "IOException", e);
         }
 
-        // no flickering when clicking textview for Android < 4
-        aboutTextView.setTextColor(getResources().getColor(android.R.color.black));
-
         return view;
     }
 

@@ -115,11 +115,16 @@
         <item name="colorAccent">#7bad45</item>
     </style>
 
-    <style name="Theme.Keychain.Dark.Dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+    <style name="Theme.Keychain.Dark.Dialog" parent="Base.Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">#268bd2</item>
     </style>
 
     <style name="Theme.Keychain.Light.Dialog.SecurityToken" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Keychain.Dark.Dialog.SecurityToken" parent="Theme.AppCompat.Dialog.MinWidth">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

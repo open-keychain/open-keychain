@@ -42,8 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mThemeChanger = new ThemeChanger(this);
-        mThemeChanger.changeTheme();
+        initTheme();
         super.onCreate(savedInstanceState);
         initLayout();
         initToolbar();
@@ -56,7 +55,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
             finish();
+            overridePendingTransition(0, 0);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -71,6 +72,15 @@ public abstract class BaseActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         mStatusBar = findViewById(R.id.status_bar);
+    }
+
+    /**
+     * Override if you want a different theme!
+     */
+    protected void initTheme() {
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.setThemes(R.style.Theme_Keychain_Light, R.style.Theme_Keychain_Dark);
+        mThemeChanger.changeTheme();
     }
 
     protected void setActionBarIcon(int iconRes) {

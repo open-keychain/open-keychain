@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -63,6 +64,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
     private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
     private CryptoInputParcel mInputParcel;
+
+    @Override
+    protected void initTheme() {
+        mThemeChanger = new ThemeChanger(this);
+        mThemeChanger.setThemes(R.style.Theme_Keychain_Light_Dialog_SecurityToken,
+                R.style.Theme_Keychain_Dark_Dialog_SecurityToken);
+        mThemeChanger.changeTheme();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
