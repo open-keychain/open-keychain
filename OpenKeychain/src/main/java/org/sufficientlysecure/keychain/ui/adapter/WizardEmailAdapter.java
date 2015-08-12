@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class WizardEmailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int TYPE_FOOTER = 0;
     private static final int TYPE_ITEM = 1;
 
-    public static class ViewModel {
+    public static class ViewModel implements Serializable {
         private String email;
 
         ViewModel(String email) {
