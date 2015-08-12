@@ -701,7 +701,7 @@
          -->
         <activity
             android:name=".ui.NfcOperationActivity"
-            android:theme="@style/KeychainTheme.YubiKeyDialog"
+            android:theme="@style/KeychainTheme.LightSecurityTokenDialog"
             android:allowTaskReparenting="true"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc" />

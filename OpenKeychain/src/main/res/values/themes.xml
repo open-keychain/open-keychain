@@ -37,6 +37,9 @@
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
+
+        <!-- style dialogs -->
+        <item name="alertDialogTheme">@style/KeychainTheme.LightDialog</item>
     </style>
 
     <style name="DarkBaseTheme" parent="MaterialDrawerTheme.ActionBar">
@@ -77,6 +80,9 @@
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
         <item name="searchViewStyle">@style/MySearchViewStyle</item>
+
+        <!-- style dialogs -->
+        <item name="alertDialogTheme">@style/KeychainTheme.DarkDialog</item>
     </style>
 
     <style name="LightTheme" parent="LightBaseTheme">
@@ -105,7 +111,15 @@
         <!--<item name="suggestionRowLayout">...</item>-->
     </style>
 
-    <style name="KeychainTheme.YubiKeyDialog" parent="@style/Theme.AppCompat.Light.Dialog.MinWidth">
+    <style name="KeychainTheme.LightDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#7bad45</item>
+    </style>
+
+    <style name="KeychainTheme.DarkDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#268bd2</item>
+    </style>
+
+    <style name="KeychainTheme.LightSecurityTokenDialog" parent="Theme.AppCompat.Light.Dialog.MinWidth">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
