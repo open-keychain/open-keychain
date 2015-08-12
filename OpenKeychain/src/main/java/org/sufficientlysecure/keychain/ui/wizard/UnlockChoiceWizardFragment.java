@@ -123,7 +123,6 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
         super.onStart();
         if (mHandler != null) {
             mHandler.postDelayed(mRunnable, 500);
-            mHandler = null;
         }
     }
 }
