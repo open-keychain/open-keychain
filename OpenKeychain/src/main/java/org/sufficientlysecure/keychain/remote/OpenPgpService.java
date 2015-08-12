@@ -594,11 +594,27 @@ public class OpenPgpService extends RemoteService {
                         result.putExtra(OpenPgpApi.RESULT_SIGNATURE, (Parcelable[]) null);
                     }
 
-                    OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
-                    if (decryptionResult.getResult() != OpenPgpDecryptionResult.RESULT_ENCRYPTED
-                            && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
-                        // not encrypted and signed, set deprecated signatureOnly variable
-                        signatureResult.setSignatureOnly(true);
+                    // OpenPgpDecryptionResult does not exist in API < 8
+                    {
+                        OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
+
+                        // case RESULT_NOT_ENCRYPTED, but a signature, fallback to deprecated signatureOnly variable
+                        if (decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
+                                && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+                            signatureResult.setSignatureOnly(true);
+                        }
+
+                        // case RESULT_INSECURE, fallback to an error
+                        if (decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_INSECURE) {
+                            Intent resultError = new Intent();
+                            resultError.putExtra(OpenPgpApi.RESULT_ERROR, new OpenPgpError(OpenPgpError.GENERIC_ERROR,
+                                    "Insecure encryption: An outdated algorithm has been used!"));
+                            resultError.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                            return resultError;
+                        }
+
+                        // case RESULT_ENCRYPTED
+                        // nothing to do!
                     }
                 }
 
