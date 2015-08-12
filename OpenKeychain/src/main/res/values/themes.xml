@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LightBaseTheme" parent="Theme.AppCompat.Light">
+    <style name="Base.Theme.Keychain.Light" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">#7bad45</item>
         <item name="colorPrimaryDark">#6c983d</item>
         <item name="colorAccent">#2196f3</item>
@@ -36,13 +36,13 @@
         <item name="windowActionBar">false</item>
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
-        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+        <item name="searchViewStyle">@style/Widget.Keychain.SearchView</item>
 
         <!-- style dialogs -->
-        <item name="alertDialogTheme">@style/KeychainTheme.LightDialog</item>
+        <item name="alertDialogTheme">@style/Theme.Keychain.Light.Dialog</item>
     </style>
 
-    <style name="DarkBaseTheme" parent="MaterialDrawerTheme.ActionBar">
+    <style name="Base.Theme.Keychain.Dark" parent="MaterialDrawerTheme.ActionBar">
         <item name="colorPrimary">#268bd2</item>
         <item name="colorPrimaryDark">#166bb2</item>
         <item name="colorAccent">#2196f3</item>
@@ -79,20 +79,20 @@
         <item name="windowActionBar">false</item>
         <!-- multi selection should overlay Toolbar! http://stackoverflow.com/a/26450875 -->
         <item name="windowActionModeOverlay">true</item>
-        <item name="searchViewStyle">@style/MySearchViewStyle</item>
+        <item name="searchViewStyle">@style/Widget.Keychain.SearchView</item>
 
         <!-- style dialogs -->
-        <item name="alertDialogTheme">@style/KeychainTheme.DarkDialog</item>
+        <item name="alertDialogTheme">@style/Theme.Keychain.Dark.Dialog</item>
     </style>
 
-    <style name="LightTheme" parent="LightBaseTheme">
+    <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light">
     </style>
 
-    <style name="DarkTheme" parent="DarkBaseTheme">
+    <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark">
     </style>
 
     <!-- http://android-developers.blogspot.de/2014/10/appcompat-v21-material-design-for-pre.html -->
-    <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
+    <style name="Widget.Keychain.SearchView" parent="Widget.AppCompat.SearchView">
         <!-- Background for the search query section (e.g. EditText) -->
         <!--<item name="queryBackground">...</item>-->
         <!-- Background for the actions section (e.g. voice, submit) -->
@@ -111,15 +111,15 @@
         <!--<item name="suggestionRowLayout">...</item>-->
     </style>
 
-    <style name="KeychainTheme.LightDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+    <style name="Theme.Keychain.Light.Dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">#7bad45</item>
     </style>
 
-    <style name="KeychainTheme.DarkDialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+    <style name="Theme.Keychain.Dark.Dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">#268bd2</item>
     </style>
 
-    <style name="KeychainTheme.LightSecurityTokenDialog" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+    <style name="Theme.Keychain.Light.Dialog.SecurityToken" parent="Theme.AppCompat.Light.Dialog.MinWidth">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

@@ -73,7 +73,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/LightTheme">
+        android:theme="@style/Theme.Keychain.Light">
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -701,7 +701,7 @@
          -->
         <activity
             android:name=".ui.NfcOperationActivity"
-            android:theme="@style/KeychainTheme.LightSecurityTokenDialog"
+            android:theme="@style/Theme.Keychain.Light.Dialog.SecurityToken"
             android:allowTaskReparenting="true"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc" />

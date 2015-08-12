@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LightTheme" parent="LightBaseTheme">
+    <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light">
         <item name="android:windowTranslucentStatus">true</item>
 
         <!-- enable window content transitions -->
@@ -13,7 +13,7 @@
 
     </style>
 
-     <style name="DarkTheme" parent="DarkBaseTheme">
+     <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark">
         <item name="android:windowTranslucentStatus">true</item>
 
         <!-- enable window content transitions -->

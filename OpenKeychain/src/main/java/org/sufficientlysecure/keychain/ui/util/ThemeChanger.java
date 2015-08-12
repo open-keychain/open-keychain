@@ -59,9 +59,9 @@ public class ThemeChanger {
             return false;
         }
 
-        int themeId = R.style.LightTheme;
+        int themeId = R.style.Theme_Keychain_Light;
         if (Constants.Pref.Theme.DARK.equals(newTheme)) {
-            themeId = R.style.DarkTheme;
+            themeId = R.style.Theme_Keychain_Dark;
         }
 
         ContextThemeWrapper w = new ContextThemeWrapper(mContext, themeId);
