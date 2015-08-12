@@ -39,7 +39,7 @@ dependencies {
     }
 
     // JCenter etc.
-    compile 'com.eftimoff:android-patternview:1.0.1@aar'
+    //compile 'com.eftimoff:android-patternview:1.0.2@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
     compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
     compile 'com.google.zxing:core:3.2.0'
@@ -78,7 +78,7 @@ dependencyVerification {
             'com.android.support:design:41ff5f700d1bf8c190e1d3ac33582f92ad6e1f3b1080c8b8e2ac4f7b703be76a',
             'com.android.support:recyclerview-v7:3a8da14585fa1c81f06e7cef4d93a7641f0323d8f984ff9a7bd7a6e416b46888',
             'com.android.support:cardview-v7:15b934f69f10d85f5adc12231ba1b708618a7daf6e5102af42addf2c67a85e2c',
-            'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
+            //'com.eftimoff:android-patternview:cec80e7265b8d8278b3c55b5fcdf551e4600ac2c8bf60d8dd76adca538af0b1e',
             'com.journeyapps:zxing-android-embedded:702a4f58154dbd9baa80f66b6a15410f7a4d403f3e73b66537a8bfb156b4b718',
             'com.journeyapps:zxing-android-integration:562737821b6d34c899b6fd2234ce0a8a31e02ff1fd7c59f6211961ce9767c7c8',
             'com.google.zxing:core:7fe5a8ff437635a540e56317649937b768b454795ce999ed5f244f83373dee7b',
