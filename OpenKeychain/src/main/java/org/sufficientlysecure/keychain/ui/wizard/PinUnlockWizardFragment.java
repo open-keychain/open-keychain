@@ -18,7 +18,6 @@ package org.sufficientlysecure.keychain.ui.wizard;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +31,9 @@ import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
+/**
+ * Wizard fragment that handles the Pin configuration.
+ */
 public class PinUnlockWizardFragment extends WizardFragment {
     public static final int MIN_PIN_LENGTH = 4;
     public static final int MAX_PIN_LENGTH = 14;
@@ -118,7 +120,7 @@ public class PinUnlockWizardFragment extends WizardFragment {
             initializeUnlockOperation();
         }
 
-        hideNavigationButtons(false, false);
+        mWizardFragmentListener.onHideNavigationButtons(false, false);
     }
 
     @Override
@@ -129,6 +131,11 @@ public class PinUnlockWizardFragment extends WizardFragment {
         outState.putSerializable(STATE_SAVE_CURRENT_KEYWORD, mCurrentInputKeyWord);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         if (mOperationState != OperationState.OPERATION_STATE_FINISHED) {
@@ -149,6 +156,11 @@ public class PinUnlockWizardFragment extends WizardFragment {
         mFeedbackIndicatorView.showWrongTextMessage(error, true);
     }
 
+    /**
+     * Notifies the user if the operation was successful.
+     *
+     * @param showText
+     */
     public void onOperationStateOK(String showText) {
         mFeedbackIndicatorView.showCorrectTextMessage(showText, false);
     }
@@ -158,10 +170,6 @@ public class PinUnlockWizardFragment extends WizardFragment {
      */
     public void onOperationStateCompleted(String showText) {
         mFeedbackIndicatorView.showCorrectTextMessage(showText, true);
-    }
-
-    public void hideNavigationButtons(boolean hideBack, boolean hideNext) {
-        mWizardFragmentListener.onHideNavigationButtons(hideBack, hideNext);
     }
 
     /**
@@ -203,7 +211,7 @@ public class PinUnlockWizardFragment extends WizardFragment {
     }
 
     /**
-     * handles the second pin input operation.
+     * Handles the second pin input operation.
      *
      * @return
      */

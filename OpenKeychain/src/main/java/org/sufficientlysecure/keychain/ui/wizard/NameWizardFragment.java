@@ -26,6 +26,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 
+/**
+ * Wizard fragment that handles the user name.
+ */
 public class NameWizardFragment extends WizardFragment {
     private org.sufficientlysecure.keychain.ui.widget.NameEditText mCreateKeyName;
 
@@ -52,6 +55,11 @@ public class NameWizardFragment extends WizardFragment {
         mWizardFragmentListener.onHideNavigationButtons(false, false);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         if (isEditTextNotEmpty()) {
@@ -61,6 +69,11 @@ public class NameWizardFragment extends WizardFragment {
         return false;
     }
 
+    /**
+     * Display an error if the name is invalid.
+     * @param error
+     * @param focus
+     */
     public void showNameError(CharSequence error, boolean focus) {
         if (focus) {
             mCreateKeyName.setError(error);

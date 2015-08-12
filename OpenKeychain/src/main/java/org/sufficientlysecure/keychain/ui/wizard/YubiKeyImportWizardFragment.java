@@ -127,6 +127,10 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
         outState.putString(ARG_USER_ID, mNfcUserId);
     }
 
+    /**
+     * Allows the user to go back to the previous wizard step.
+     * @return
+     */
     @Override
     public boolean onBackClicked() {
         final Activity activity = getActivity();
@@ -139,6 +143,11 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
         }
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         importKey();

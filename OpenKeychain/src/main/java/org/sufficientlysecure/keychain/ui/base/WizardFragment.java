@@ -19,13 +19,8 @@ package org.sufficientlysecure.keychain.ui.base;
 import android.app.Activity;
 
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
-import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Base fragment class for any wizard fragment

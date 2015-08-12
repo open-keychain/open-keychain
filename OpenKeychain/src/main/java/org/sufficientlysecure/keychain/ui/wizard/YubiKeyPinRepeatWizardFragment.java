@@ -52,6 +52,11 @@ public class YubiKeyPinRepeatWizardFragment extends WizardFragment {
         mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         final Activity activity = getActivity();

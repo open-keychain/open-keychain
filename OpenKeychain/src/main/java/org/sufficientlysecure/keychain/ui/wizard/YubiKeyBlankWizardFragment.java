@@ -41,6 +41,10 @@ public class YubiKeyBlankWizardFragment extends WizardFragment {
         return inflater.inflate(R.layout.wizard_yubi_blank_fragment, container, false);
     }
 
+    /**
+     * Allows the user to go back to the previous wizard step.
+     * @return
+     */
     @Override
     public boolean onBackClicked() {
         final Activity activity = getActivity();
@@ -52,6 +56,11 @@ public class YubiKeyBlankWizardFragment extends WizardFragment {
         return true;
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         mWizardFragmentListener.setUseYubiKey();

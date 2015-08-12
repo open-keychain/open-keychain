@@ -96,6 +96,11 @@ public class EmailWizardFragment extends WizardFragment {
         mCreateKeyEmails.setAdapter(mEmailAdapter);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         if (isMainEmailValid()) {
@@ -130,10 +135,21 @@ public class EmailWizardFragment extends WizardFragment {
         addEmailDialog.show(getActivity().getSupportFragmentManager(), "addEmailDialog");
     }
 
+    /**
+     * Shows the message as a notification.
+     *
+     * @param message
+     */
     public void notifyUser(String message) {
         Notify.create(getActivity(), message, Notify.LENGTH_LONG, Notify.Style.ERROR).show(this);
     }
 
+    /**
+     * Displays an error if the email is invalid.
+     *
+     * @param error
+     * @param focus
+     */
     public void showEmailError(CharSequence error, boolean focus) {
         if (focus) {
             mCreateKeyEmail.setError(error);
@@ -150,7 +166,7 @@ public class EmailWizardFragment extends WizardFragment {
     }
 
     /**
-     * Checks if a given email is valid
+     * Checks if a given email is valid.
      *
      * @param email
      * @param additionalEmail
@@ -176,7 +192,7 @@ public class EmailWizardFragment extends WizardFragment {
     }
 
     /**
-     * Checks the email format
+     * Checks the email format.
      *
      * @param email
      * @return
@@ -234,6 +250,9 @@ public class EmailWizardFragment extends WizardFragment {
         return emails;
     }
 
+    /**
+     * Hides the keyboard.
+     */
     public void hideKeyboard() {
         KeyboardUtils.hideKeyboard(getActivity(), getActivity().getCurrentFocus());
     }

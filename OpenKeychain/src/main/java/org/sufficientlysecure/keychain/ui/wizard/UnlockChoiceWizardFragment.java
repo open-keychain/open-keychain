@@ -30,7 +30,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 
 /**
- * Radio based unlock choice fragment
+ * Wizard fragment that handles the user unlock choice.
  */
 public class UnlockChoiceWizardFragment extends WizardFragment {
     public static final String STATE_SAVE_UNLOCK_METHOD = "STATE_SAVE_UNLOCK_METHOD";
@@ -85,6 +85,11 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
         });
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         mWizardFragmentListener.setUnlockMethod(mSecretKeyType);
@@ -108,7 +113,7 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
 
         } else if (id == R.id.radioPatternUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PATTERN;
-        } else if(id == R.id.radioNFCUnlock) {
+        } else if (id == R.id.radioNFCUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.NFC_TAG;
         }
     }

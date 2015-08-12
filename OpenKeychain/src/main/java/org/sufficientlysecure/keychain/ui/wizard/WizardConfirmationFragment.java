@@ -52,7 +52,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Confirmation fragment before creating the key
+ * Wizard fragment that handles the Confirmation step, before creating the key
  */
 public class WizardConfirmationFragment extends WizardFragment {
     public static final int REQUEST_EDIT_KEY = 0x00008007;
@@ -173,12 +173,20 @@ public class WizardConfirmationFragment extends WizardFragment {
         }
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         createKey();
         return false;
     }
 
+    /**
+     * Creates the key ring with the user data.
+     */
     public void prepareKeyRingData() {
         if (mSaveKeyringParcel == null) {
             mSaveKeyringParcel = new SaveKeyringParcel();
@@ -247,6 +255,9 @@ public class WizardConfirmationFragment extends WizardFragment {
         return emails;
     }
 
+    /**
+     * Creates the key.
+     */
     private void createKey() {
         CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult> createKeyCallback
                 = new CryptoOperationHelper.Callback<SaveKeyringParcel, EditKeyResult>() {
@@ -379,6 +390,11 @@ public class WizardConfirmationFragment extends WizardFragment {
         mMoveToCardOpHelper.cryptoOperation();
     }
 
+    /**
+     * Uploads the key to the Keyserver.
+     *
+     * @param saveKeyResult
+     */
     private void uploadKey(final EditKeyResult saveKeyResult) {
         // if the activity is gone at this point, there is nothing we can do!
         final Activity activity = getActivity();
@@ -443,6 +459,9 @@ public class WizardConfirmationFragment extends WizardFragment {
         activity.finish();
     }
 
+    /**
+     * Method that is called when the user clicks on the change key configuration button.
+     */
     public void onCreateKeyClicked() {
         Intent edit = new Intent(getActivity(), EditKeyActivity.class);
         edit.putExtra(EditKeyActivity.EXTRA_SAVE_KEYRING_PARCEL, mSaveKeyringParcel);

@@ -34,6 +34,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Wizard fragment that handles the Pattern configuration.
+ */
 public class PatternUnlockWizardFragment extends WizardFragment {
     public static final int MIN_PATTERN_LENGTH = 4;
     public static final int MAX_PATTERN_LENGTH = 14;
@@ -79,13 +82,13 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mPatternView = (PatternView) view.findViewById(R.id.patternView);
 
-        view.setPadding(0,0,0,(int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                48,getResources().getDisplayMetrics()));
+        view.setPadding(0, 0, 0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                48, getResources().getDisplayMetrics()));
 
         if (savedInstanceState == null) {
             initializeUnlockOperation();
         }
-        hideNavigationButtons(false, false);
+        mWizardFragmentListener.onHideNavigationButtons(false, false);
 
         mPatternView.setOnPatternCellAddedListener(new PatternView.OnPatternCellAddedListener() {
             @Override
@@ -110,6 +113,11 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         outState.putSerializable(STATE_SAVE_CURRENT_KEYWORD, mCurrentInputKeyWord);
     }
 
+    /**
+     * Allows the user to advance to the next wizard step.
+     *
+     * @return
+     */
     @Override
     public boolean onNextClicked() {
         if (mOperationState != OperationState.OPERATION_STATE_FINISHED) {
@@ -126,7 +134,6 @@ public class PatternUnlockWizardFragment extends WizardFragment {
                 passphrase.setSecretKeyType(mWizardFragmentListener.getSecretKeyType());
                 mWizardFragmentListener.setPassphrase(passphrase);
                 return true;
-
             } catch (NoSuchAlgorithmException e) {
                 return false;
             } catch (UnsupportedEncodingException e) {
@@ -142,6 +149,11 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         mFeedbackIndicatorView.showWrongTextMessage(error, true);
     }
 
+    /**
+     * Notifies the user if the operation was successful.
+     *
+     * @param showText
+     */
     public void onOperationStateOK(String showText) {
         mFeedbackIndicatorView.showCorrectTextMessage(showText, false);
     }
@@ -151,10 +163,6 @@ public class PatternUnlockWizardFragment extends WizardFragment {
      */
     public void onOperationStateCompleted(String showText) {
         mFeedbackIndicatorView.showCorrectTextMessage(showText, true);
-    }
-
-    public void hideNavigationButtons(boolean hideBack, boolean hideNext) {
-        mWizardFragmentListener.onHideNavigationButtons(hideBack, hideNext);
     }
 
     /**

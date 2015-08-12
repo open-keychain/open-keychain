@@ -33,6 +33,9 @@ import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+/**
+ * Wizard fragment that handles the first wizard screen step.
+ */
 public class WelcomeWizardFragment extends WizardFragment {
     public static final int REQUEST_CODE_IMPORT_KEY = 0x00007012;
 
@@ -118,18 +121,32 @@ public class WelcomeWizardFragment extends WizardFragment {
         }
     }
 
+    /**
+     * Prevents the user from leaving the screen since this is the first screen shown.
+     *
+     * @return
+     */
     public boolean onBackClicked() {
         return false;
     }
 
+    /**
+     * Method that is called when the user clicks on the cancel button.
+     */
     public void onCancelClicked() {
         mWizardFragmentListener.cancelRequest();
     }
 
+    /**
+     * Method that is called when the user clicks on the create key button.
+     */
     public void onCreateKeyClicked() {
         mWizardFragmentListener.onAdvanceToNextWizardStep();
     }
 
+    /**
+     * Method that is called when the user clicks on the key import button.
+     */
     public void onKeyImportClicked() {
         Activity activity = getActivity();
         Intent intent = new Intent(activity, ImportKeysActivity.class);
@@ -137,6 +154,9 @@ public class WelcomeWizardFragment extends WizardFragment {
         activity.startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
     }
 
+    /**
+     * Method that is called when the user clicks on the yubi key button.
+     */
     public void onCreateYubiKeyClicked() {
         if (mWizardFragmentListener != null) {
             mWizardFragmentListener.setUseYubiKey();
