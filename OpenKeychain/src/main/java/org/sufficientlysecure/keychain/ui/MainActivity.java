@@ -125,16 +125,6 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
                 .withSavedInstance(savedInstanceState)
                 .build();
 
-        // if this is the first time show first time activity
-        Preferences prefs = Preferences.getPreferences(this);
-        if (!getIntent().getBooleanExtra(EXTRA_SKIP_FIRST_TIME, false) && prefs.isFirstTime()) {
-            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
-            intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
-            startActivity(intent);
-            finish();
-            return;
-        }
-
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         // all further initialization steps are saved as instance state
@@ -164,6 +154,13 @@ public class MainActivity extends BaseNfcActivity implements FabContainer, OnBac
             }
         }
 
+        // if this is the first time show first time activity
+        Preferences prefs = Preferences.getPreferences(this);
+        if (!getIntent().getBooleanExtra(EXTRA_SKIP_FIRST_TIME, false) && prefs.isFirstTime()) {
+            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+            intent.putExtra(CreateKeyWizardActivity.EXTRA_FIRST_TIME, true);
+            startActivity(intent);
+        }
     }
 
     private void setFragment(Fragment fragment, boolean addToBackStack) {
