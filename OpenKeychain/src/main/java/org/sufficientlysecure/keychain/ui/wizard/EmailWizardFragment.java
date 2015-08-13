@@ -55,6 +55,18 @@ public class EmailWizardFragment extends WizardFragment {
         return new EmailWizardFragment();
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            mAdditionalEmailModels = new ArrayList<>();
+        } else {
+            mAdditionalEmailModels = (ArrayList<WizardEmailAdapter.ViewModel>)
+                    savedInstanceState.getSerializable(STATE_SAVE_ADDITIONAL_EMAILS);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,15 +83,8 @@ public class EmailWizardFragment extends WizardFragment {
         mCreateKeyEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCreateKeyEmails.setItemAnimator(new DefaultItemAnimator());
 
-        if (savedInstanceState == null) {
-            mAdditionalEmailModels = new ArrayList<>();
-
-            if (mWizardFragmentListener.getName() == null) {
-                mCreateKeyEmail.requestFocus();
-            }
-        } else {
-            mAdditionalEmailModels = (ArrayList<WizardEmailAdapter.ViewModel>)
-                    savedInstanceState.getSerializable(STATE_SAVE_ADDITIONAL_EMAILS);
+        if (mWizardFragmentListener.getName() == null) {
+            mCreateKeyEmail.requestFocus();
         }
 
         mWizardFragmentListener.onHideNavigationButtons(false, false);

@@ -201,6 +201,7 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         mOperationState = OperationState.OPERATION_STATE_INPUT_SECOND_PATTERN;
         resetCurrentKeyword();
         onOperationStateOK(getString(R.string.reenter_pattern));
+        mPatternView.clearPattern();
         return true;
     }
 
@@ -223,6 +224,7 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         mOperationState = OperationState.OPERATION_STATE_FINISHED;
         resetCurrentKeyword();
         onOperationStateCompleted("");
+        mPatternView.clearPattern();
         return true;
     }
 
