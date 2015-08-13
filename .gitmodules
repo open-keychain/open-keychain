@@ -24,4 +24,4 @@
 	ignore = dirty
 [submodule "extern/android-patternview"]
 	path = extern/android-patternview
-	url = https://github.com/geftimov/android-patternview.git
+	url = https://github.com/open-keychain/android-patternview.git
