@@ -40,6 +40,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -300,8 +301,8 @@ public class KeyListFragment extends LoaderFragment
         // old cursor once we return.)
         mAdapter.setSearchQuery(mQuery);
 
-        if (data != null && data.moveToFirst()) {
-            boolean isSecret = data.getInt(KeyListAdapter.INDEX_HAS_ANY_SECRET) != 0;
+        if (data != null && (mQuery == null || TextUtils.isEmpty(mQuery))) {
+            boolean isSecret = data.moveToFirst() && data.getInt(KeyListAdapter.INDEX_HAS_ANY_SECRET) != 0;
             if (!isSecret) {
                 MatrixCursor headerCursor = new MatrixCursor(KeyListAdapter.PROJECTION);
                 Long[] row = new Long[KeyListAdapter.PROJECTION.length];
