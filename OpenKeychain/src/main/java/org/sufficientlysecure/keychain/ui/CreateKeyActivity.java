@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -262,8 +263,19 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     interface NfcListenerFragment {
-        public void doNfcInBackground() throws IOException;
-        public void onNfcPostExecute() throws IOException;
+        void doNfcInBackground() throws IOException;
+        void onNfcPostExecute() throws IOException;
     }
 
+    @Override
+    public void finish() {
+        if (mFirstTime) {
+            Preferences prefs = Preferences.getPreferences(this);
+            prefs.setFirstTime(false);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
+
+        super.finish();
+    }
 }

@@ -98,17 +98,10 @@ public class CreateKeyStartFragment extends Fragment {
         mSkipOrCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCreateKeyActivity.mFirstTime) {
-                    Preferences prefs = Preferences.getPreferences(mCreateKeyActivity);
-                    prefs.setFirstTime(false);
-                    Intent intent = new Intent(mCreateKeyActivity, MainActivity.class);
-                    startActivity(intent);
-                    mCreateKeyActivity.finish();
-                } else {
-                    // just finish activity and return data
+                if (!mCreateKeyActivity.mFirstTime) {
                     mCreateKeyActivity.setResult(Activity.RESULT_CANCELED);
-                    mCreateKeyActivity.finish();
                 }
+                mCreateKeyActivity.finish();
             }
         });
 
@@ -124,9 +117,6 @@ public class CreateKeyStartFragment extends Fragment {
                 if (mCreateKeyActivity.mFirstTime) {
                     Preferences prefs = Preferences.getPreferences(mCreateKeyActivity);
                     prefs.setFirstTime(false);
-                    Intent intent = new Intent(mCreateKeyActivity, MainActivity.class);
-                    intent.putExtras(data);
-                    startActivity(intent);
                     mCreateKeyActivity.finish();
                 } else {
                     // just finish activity and return data
