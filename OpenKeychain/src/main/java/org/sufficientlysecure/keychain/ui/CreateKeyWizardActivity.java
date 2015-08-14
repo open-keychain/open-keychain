@@ -191,6 +191,13 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(STATE_SAVE_WIZARD_STEP, mWizardStep);
+        outState.putParcelable(STATE_SAVE_WIZARD_MODEL, mWizardModel);
+    }
+
+    @Override
     protected void initLayout() {
         setContentView(R.layout.create_key_wizard_activity);
 
@@ -212,7 +219,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     /**
-     * Updates the interface and the viewModel state when the user clicks on the back button.
+     * Updates the UI when the user clicks on the back button.
      *
      * @param view
      */
@@ -227,8 +234,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     /**
-     * Restores the button text if it was altered previously
-     * Note: might be a good idea to let the fragments manipulate the texts instead.
+     * Restores the button text if it was altered previously.
      */
     private void restoreNavigationButtonText() {
         mNextButton.setText(R.string.btn_next);
@@ -237,7 +243,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     /**
-     * Updates the interface and the viewModel state when the user clicks on the next button.
+     * Updates the UI when the user clicks on the next button.
      *
      * @param view
      */
@@ -245,6 +251,14 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         if (mCurrentVisibleFragment != null && mCurrentVisibleFragment.onNextClicked()) {
             updateWizardStateOnNext();
         }
+    }
+
+    /**
+     * Updates the UI when the user clicks on the back button.
+     */
+    @Override
+    public void onBackPressed() {
+        onBackClicked(null);
     }
 
     /**
@@ -365,7 +379,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     /**
-     * Notifies the view to load the unlock fragment.
+     * Loads the unlock fragment based on the unlock option that the user chose.
      */
     private void onInstantiateUnlockMethod() {
         switch (mWizardModel.getSecretKeyType()) {
@@ -385,6 +399,12 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         }
     }
 
+    /**
+     * Animates the wizard navigation buttons by hiding/displaying them with an animation.
+     *
+     * @param hideBack
+     * @param hideNext
+     */
     @Override
     public void onHideNavigationButtons(boolean hideBack, boolean hideNext) {
         if (hideBack) {
@@ -408,16 +428,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         }
     }
 
+    /**
+     * Wizard fragment interface callback methods.
+     */
+
     @Override
     public void onAdvanceToNextWizardStep() {
         updateWizardStateOnNext();
     }
 
-    /**
-     * Updates the model with the current selected unlock type.
-     *
-     * @param secretKeyType
-     */
     @Override
     public void setUnlockMethod(CanonicalizedSecretKey.SecretKeyType secretKeyType) {
         mWizardModel.setSecretKeyType(secretKeyType);
@@ -513,12 +532,17 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(STATE_SAVE_WIZARD_STEP, mWizardStep);
-        outState.putParcelable(STATE_SAVE_WIZARD_MODEL, mWizardModel);
+    public void onAddAdditionalEmail(String email) {
+        mCurrentVisibleFragment.onRequestAddEmail(email);
     }
 
+
+    /**
+     * Checks if the card contains a key.
+     *
+     * @param scannedFingerprints
+     * @return
+     */
     public boolean containsKeys(byte[] scannedFingerprints) {
         // If all fingerprint bytes are 0, the card contains no keys.
         boolean cardContainsKeys = false;
@@ -529,11 +553,6 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
             }
         }
         return cardContainsKeys;
-    }
-
-    @Override
-    public void onAddAdditionalEmail(String email) {
-        mCurrentVisibleFragment.onRequestAddEmail(email);
     }
 
     /**
@@ -557,41 +576,65 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         transaction.commit();
     }
 
+    /**
+     * Shows the passphrase unlock method fragment.
+     */
     public void onInstantiatePassphraseUnlockMethod() {
         mCurrentVisibleFragment = new PassphraseUnlockWizardFragment();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the pin unlock method fragment.
+     */
     public void onInstantiatePinUnlockMethod() {
         mCurrentVisibleFragment = new PinUnlockWizardFragment();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the pattern unlock method fragment.
+     */
     public void onInstantiatePatternUnlockMethod() {
         mCurrentVisibleFragment = new PatternUnlockWizardFragment();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the welcome fragment.
+     */
     public void onWelcomeState() {
         mCurrentVisibleFragment = WelcomeWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, false);
     }
 
+    /**
+     * Shows the unlock choice fragment.
+     */
     public void onUnlockChoiceState() {
         mCurrentVisibleFragment = UnlockChoiceWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the name input fragment.
+     */
     public void onNameState() {
         mCurrentVisibleFragment = NameWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the email input fragment.
+     */
     public void onEmailState() {
         mCurrentVisibleFragment = EmailWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the confirmation fragment.
+     */
     public void onFinalizeState() {
         //finalize the creation of the key
         mCurrentVisibleFragment = WizardConfirmationFragment.
@@ -602,6 +645,9 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
                 R.drawable.ic_key_plus_grey600_24dp, 0);
     }
 
+    /**
+     * Handles all the UI configurations when it's the first time the user opens the wizard.
+     */
     public void onFirstTime() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.app_name);
@@ -610,33 +656,55 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         mToolbar.setNavigationOnClickListener(null);
     }
 
+    /**
+     * Handles all UI configurations when it's not the first time the user opens the wizard.
+     */
     public void onNotFirstTime() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.title_manage_my_keys);
         }
     }
 
+    /**
+     * Shows the Yubi Key wait fragment.
+     */
     public void onYubiWaitState() {
         mCurrentVisibleFragment = YubiKeyWaitWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the Yubi Key blank fragment.
+     */
     public void onYubiBlankState() {
         mCurrentVisibleFragment = YubiKeyBlankWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
         mNextButton.setText(getString(R.string.first_time_blank_yubikey_yes));
     }
 
+    /**
+     * Shows the Yubi Key pin fragment.
+     */
     public void onYubiPinState() {
         mCurrentVisibleFragment = YubiKeyPinWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the Yubi Key pin repeat fragment.
+     */
     public void onYubiPinRepeatState() {
         mCurrentVisibleFragment = YubiKeyPinRepeatWizardFragment.newInstance();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows the Yubi Key import fragment.
+     *
+     * @param nfcFingerprints
+     * @param nfcUserId
+     * @param nfcAid
+     */
     public void onYubiImportState(byte[] nfcFingerprints, String nfcUserId, byte[] nfcAid) {
         mCurrentVisibleFragment = YubiKeyImportWizardFragment.newInstance(nfcFingerprints, nfcAid,
                 nfcUserId);
@@ -646,19 +714,36 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
                 R.drawable.ic_key_plus_grey600_24dp, 0);
     }
 
+    /**
+     * Shows the NFC unlock fragment.
+     */
     public void onInstantiateNFCUnlockMethod() {
         mCurrentVisibleFragment = new NFCUnlockWizardFragment();
         beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
+    /**
+     * Shows UI notifications.
+     *
+     * @param message
+     */
     public void onShowNotification(CharSequence message) {
         Notify.create(this, message.toString(), Notify.Style.ERROR).show();
     }
 
+    /**
+     * Starts the view key activity.
+     *
+     * @param intent
+     */
     public void onStartViewKeyActivity(Intent intent) {
         startActivity(intent);
         finish();
     }
+
+    /**
+     * NFC Interface callbacks.
+     */
 
     @Override
     protected void doNfcInBackground() throws IOException {
@@ -706,17 +791,6 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         }
     }
 
-    /**
-     * Updates the nfc data.
-     */
-    public void updateNFCData() {
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
-
-        byte[] fp = new byte[20];
-        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
-    }
-
     @Override
     protected void handleTagDiscoveredIntent(Intent intent) throws IOException {
         super.handleTagDiscoveredIntent(intent);
@@ -733,11 +807,22 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        onBackClicked(null);
+    /**
+     * Updates the nfc data.
+     * Used for Yubi Key.
+     */
+    public void updateNFCData() {
+        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
+
+        byte[] fp = new byte[20];
+        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
+        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
     }
 
+    /**
+     * Checks the user preferences and sets the first time preference to false when the activity
+     * finishes.
+     */
     @Override
     public void finish() {
         if (isFirstTime()) {
