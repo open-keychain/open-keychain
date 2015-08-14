@@ -29,6 +29,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -265,7 +267,6 @@ public class KeyListFragment extends LoaderFragment
     static final String ORDER =
             KeyRings.HAS_ANY_SECRET + " DESC, UPPER(" + KeyRings.USER_ID + ") ASC";
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -298,6 +299,22 @@ public class KeyListFragment extends LoaderFragment
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         mAdapter.setSearchQuery(mQuery);
+
+        if (data != null && data.moveToFirst()) {
+            boolean isSecret = data.getInt(KeyListAdapter.INDEX_HAS_ANY_SECRET) != 0;
+            if (!isSecret) {
+                MatrixCursor headerCursor = new MatrixCursor(KeyListAdapter.PROJECTION);
+                Long[] row = new Long[KeyListAdapter.PROJECTION.length];
+                row[KeyListAdapter.INDEX_HAS_ANY_SECRET] = 1L;
+                row[KeyListAdapter.INDEX_MASTER_KEY_ID] = 0L;
+                headerCursor.addRow(row);
+
+                Cursor dataCursor = data;
+                data = new MergeCursor(new Cursor[] {
+                        headerCursor, dataCursor
+                });
+            }
+        }
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
@@ -722,6 +739,29 @@ public class KeyListFragment extends LoaderFragment
             return v;
         }
 
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            boolean isSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) != 0;
+            long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+            if (isSecret && masterKeyId == 0L) {
+
+                // sort of a hack: if this item isn't enabled, we make it clickable
+                // to intercept its click events
+                view.setClickable(true);
+
+                KeyItemViewHolder h = (KeyItemViewHolder) view.getTag();
+                h.setDummy(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        createKey();
+                    }
+                });
+                return;
+            }
+
+            super.bindView(view, context, cursor);
+        }
+
         private class HeaderViewHolder {
             TextView mText;
             TextView mCount;
@@ -760,6 +800,10 @@ public class KeyListFragment extends LoaderFragment
             if (mCursor.getInt(INDEX_HAS_ANY_SECRET) != 0) {
                 { // set contact count
                     int num = mCursor.getCount();
+                    // If this is a dummy secret key, subtract one
+                    if (mCursor.getLong(INDEX_MASTER_KEY_ID) == 0L) {
+                        num -= 1;
+                    }
                     String contactsTotal = mContext.getResources().getQuantityString(R.plurals.n_keys, num, num);
                     holder.mCount.setText(contactsTotal);
                     holder.mCount.setVisibility(View.VISIBLE);
@@ -818,8 +862,9 @@ public class KeyListFragment extends LoaderFragment
 
         public boolean isAnySecretSelected() {
             for (int pos : mSelection.keySet()) {
-                if (isSecretAvailable(pos))
+                if (isSecretAvailable(pos)) {
                     return true;
+                }
             }
             return false;
         }
