@@ -30,6 +30,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:clickable="true"
+            android:enabled="false"
             style="?android:attr/borderlessButtonStyle" />
 
         <TextView
