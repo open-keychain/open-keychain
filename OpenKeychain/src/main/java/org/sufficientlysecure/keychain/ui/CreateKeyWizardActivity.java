@@ -677,12 +677,12 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
     @Override
     protected void onNfcPostExecute() throws IOException {
-        updateNFCData();
         if (mCurrentVisibleFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentVisibleFragment).onNfcPostExecute();
             return;
         }
 
+        updateNFCData();
         if (containsKeys(mNfcFingerprints)) {
             try {
                 long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
