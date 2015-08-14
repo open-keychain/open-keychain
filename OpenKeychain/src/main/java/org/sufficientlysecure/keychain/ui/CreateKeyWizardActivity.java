@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.wizard.EmailWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.NFCUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.NameWizardFragment;
+import org.sufficientlysecure.keychain.ui.wizard.PassphraseUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.PatternUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.PinUnlockWizardFragment;
 import org.sufficientlysecure.keychain.ui.wizard.UnlockChoiceWizardFragment;
@@ -368,6 +369,10 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
      */
     private void onInstantiateUnlockMethod() {
         switch (mWizardModel.getSecretKeyType()) {
+            case PASSPHRASE: {
+                onInstantiatePassphraseUnlockMethod();
+                break;
+            }
             case PIN:
                 onInstantiatePinUnlockMethod();
                 break;
@@ -550,6 +555,11 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
         transaction.replace(R.id.unlockWizardFragmentContainer, fragment, FRAGMENT_TAG);
         transaction.commit();
+    }
+
+    public void onInstantiatePassphraseUnlockMethod() {
+        mCurrentVisibleFragment = new PassphraseUnlockWizardFragment();
+        beginWizardTransaction(mCurrentVisibleFragment, true);
     }
 
     public void onInstantiatePinUnlockMethod() {

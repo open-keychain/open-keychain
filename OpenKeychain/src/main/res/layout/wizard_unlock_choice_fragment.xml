@@ -34,9 +34,19 @@
             android:padding="24dp">
 
             <RadioButton
+                android:id="@+id/radioPassphraseUnlock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:drawableRight="@drawable/passphrase_option"
+                android:visibility="gone"
+                android:text="@string/passphrase_unlock"/>
+
+            <RadioButton
                 android:id="@id/radioPinUnlock"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/pin_option_black"
                 android:text="@string/pin_unlock"/>

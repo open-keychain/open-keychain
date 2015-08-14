@@ -110,11 +110,12 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
     public void updateUnlockMethodById(int id) {
         if (id == R.id.radioPinUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PIN;
-
         } else if (id == R.id.radioPatternUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PATTERN;
         } else if (id == R.id.radioNFCUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.NFC_TAG;
+        } else if(id == R.id.radioPassphraseUnlock) {
+            mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
         }
     }
 

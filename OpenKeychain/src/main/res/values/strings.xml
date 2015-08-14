@@ -1439,9 +1439,10 @@
     <string name="nfc_configuring_card">Please wait while OpenKeyChain configures your NFC Card</string>
     <string name="nfc_pin_moved_to_card">Your NFC Card has been configured, please move the card from the back of your device and  click next to proceed</string>
     <string name="nfc_configuration_error">An error has occurred while configuring your NFC Card, please try again</string>
-    <string name="nfc_unlock">NFC Unlock</string>
-    <string name="pattern_unlock">Pattern unlock</string>
-    <string name="pin_unlock">Pin unlock</string>
+    <string name="nfc_unlock">NFC</string>
+    <string name="pattern_unlock">Pattern</string>
+    <string name="pin_unlock">Pin</string>
+    <string name="passphrase_unlock">Password</string>
 
     <!-- NFC -->
     <string name="error_nfc_tag_unable_to_connect">Unable to connect to the nfc tag</string>

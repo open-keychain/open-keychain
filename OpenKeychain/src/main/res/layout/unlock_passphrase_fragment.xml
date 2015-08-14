@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/create_key_passphrase_text"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <org.sufficientlysecure.keychain.ui.widget.PassphraseEditText
+                android:id="@+id/create_key_passphrase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:hint="@string/label_passphrase"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword" />
+
+            <EditText
+                android:id="@+id/create_key_passphrase_again"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:ems="10"
+                android:hint="@string/label_passphrase_again"
+                android:inputType="textPassword" />
+
+            <CheckBox
+                android:id="@+id/create_key_show_passphrase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/label_show_passphrase" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
