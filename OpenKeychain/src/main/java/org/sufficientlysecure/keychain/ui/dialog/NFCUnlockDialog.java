@@ -85,6 +85,12 @@ public class NFCUnlockDialog extends UnlockDialog
         OPERATION_STATE_FINALIZED
     }
 
+    /**
+     * Dialog setup for the unlock operation
+     *
+     * @param savedInstanceState
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -131,8 +137,8 @@ public class NFCUnlockDialog extends UnlockDialog
 
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         if (mUnlockAsyncTask != null) {
             mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
@@ -170,8 +176,6 @@ public class NFCUnlockDialog extends UnlockDialog
                 return handleOperationStateWaitForNFCTag();
             case OPERATION_STATE_PERFORM_UNLOCK:
                 return handleOperationPerformUnlock();
-            case OPERATION_STATE_READING_NFC_TAG:
-                return handleOperationStateReadingNfcTag();
             case OPERATION_STATE_FINALIZED: {
                 return true;
             }
@@ -180,10 +184,10 @@ public class NFCUnlockDialog extends UnlockDialog
         }
     }
 
-    public boolean handleOperationStateReadingNfcTag() {
-        return false;
-    }
-
+    /**
+     * Handles the nfc tag wait operation state.
+     * @return
+     */
     public boolean handleOperationStateWaitForNFCTag() {
         onShowProgressBar(true);
         onTipTextUpdate(getString(R.string.nfc_move_card));
@@ -192,6 +196,10 @@ public class NFCUnlockDialog extends UnlockDialog
         return false;
     }
 
+    /**
+     * Handles the unlock operation state.
+     * @return
+     */
     public boolean handleOperationPerformUnlock() {
         if (mSecretRing == null) {
             PassphraseCacheService.addCachedPassphrase(getActivity(),
@@ -294,41 +302,84 @@ public class NFCUnlockDialog extends UnlockDialog
         mUnlockAsyncTask.execute();
     }
 
+    /**
+     * Notifies the user of any errors that may have occurred
+     */
     public void onOperationStateError(String error) {
         mUnlockUserFeedback.showWrongTextMessage(error, true);
     }
 
+    /**
+     * Notifies the user with a positive operation status.
+     * @param showText
+     */
     public void onOperationStateOK(String showText) {
         mUnlockUserFeedback.showCorrectTextMessage(showText, false);
     }
 
+    /**
+     * updates the dialog tip text.
+     *
+     * @param text
+     */
     public void onTipTextUpdate(CharSequence text) {
         mUnlockTip.setText(text);
     }
 
+    /**
+     * Shows the progress bar.
+     *
+     * @param show
+     */
     public void onShowProgressBar(boolean show) {
         mProgressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
+    /**
+     * Updates the progress bar.
+     * @param progress
+     */
     public void onUpdateProgress(int progress) {
         mProgressBar.setProgress(progress);
     }
 
+    /**
+     * Updates the progress bar style that is displayed to the user.
+     *
+     * @param indeterminate
+     * @param tint
+     */
     public void onProgressBarUpdateStyle(boolean indeterminate, int tint) {
         mProgressBar.setIndeterminate(indeterminate);
         DrawableCompat.setTint(mProgressBar.getIndeterminateDrawable(), tint);
         DrawableCompat.setTint(mProgressBar.getProgressDrawable(), tint);
     }
 
+    /**
+     * updates the dialog title.
+     *
+     * @param text
+     */
     public void onUpdateDialogTitle(CharSequence text) {
         mAlertDialog.setTitle(text);
     }
 
+    /**
+     * Method that is called when the unlock operation is successful;
+     *
+     * @param serviceIntent
+     */
     public void onUnlockOperationSuccess(Intent serviceIntent) {
         mUnlockUserFeedback.showCorrectTextMessage(null, true);
         getActivity().setResult(Activity.RESULT_OK, serviceIntent);
         getActivity().finish();
     }
+
+    /**
+     * NFC handling
+     *
+     * @param exception
+     */
 
     @Override
     public void onNfcError(NfcDispatcher.CardException exception) {

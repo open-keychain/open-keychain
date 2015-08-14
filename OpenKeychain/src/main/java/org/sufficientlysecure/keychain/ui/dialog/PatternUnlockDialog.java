@@ -82,12 +82,32 @@ public class PatternUnlockDialog extends UnlockDialog
         DIALOG_UNLOCK_OPERATION_STATE_INITIAL
     }
 
-    public Dialog prepareUnlockDialog(CustomAlertDialogBuilder alertDialogBuilder) {
-        alertDialogBuilder.setTitle(getString(R.string.title_unlock));
-        alertDialogBuilder.setPositiveButton(getString(R.string.unlock_caps), null);
-        alertDialogBuilder.setNegativeButton(android.R.string.cancel, null);
+    /**
+     * Dialog setup for the unlock operation
+     *
+     * @param savedInstanceState
+     * @return
+     */
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreateDialog(savedInstanceState);
+        ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(mActivity);
 
-        mAlertDialog = alertDialogBuilder.show();
+        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
+        View view = LayoutInflater.from(theme).inflate(R.layout.unlock_pattern_fragment, null);
+        alert.setView(view);
+
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
+        mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
+        mPatternView = (PatternView) view.findViewById(R.id.patternView);
+
+        alert.setTitle(getString(R.string.title_unlock));
+        alert.setPositiveButton(getString(R.string.unlock_caps), null);
+        alert.setNegativeButton(android.R.string.cancel, null);
+
+        mAlertDialog = alert.show();
         mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
         mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,34 +141,17 @@ public class PatternUnlockDialog extends UnlockDialog
             }
         });
 
-        return mAlertDialog;
-    }
-
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreateDialog(savedInstanceState);
-        ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(mActivity);
-
-        CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
-        View view = LayoutInflater.from(theme).inflate(R.layout.unlock_pattern_fragment, null);
-        alert.setView(view);
-
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
-        mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
-        mPatternView = (PatternView) view.findViewById(R.id.patternView);
-
         //only call this method after the ui is initialized.
         if (savedInstanceState == null) {
             initializeUnlockOperation(getArguments());
         }
-        return prepareUnlockDialog(alert);
+
+        return mAlertDialog;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         if (mUnlockAsyncTask != null) {
             mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
@@ -156,6 +159,11 @@ public class PatternUnlockDialog extends UnlockDialog
         }
     }
 
+    /**
+     * Method that is called when the unlock operation is successful;
+     *
+     * @param serviceIntent
+     */
     public void onUnlockOperationSuccess(Intent serviceIntent) {
         mActivity.setResult(Activity.RESULT_OK, serviceIntent);
         mActivity.finish();

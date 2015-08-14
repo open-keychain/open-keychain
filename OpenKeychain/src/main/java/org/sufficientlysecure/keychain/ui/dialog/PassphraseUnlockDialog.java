@@ -84,6 +84,12 @@ public class PassphraseUnlockDialog extends UnlockDialog
         DIALOG_UNLOCK_OPERATION_STATE_INITIAL
     }
 
+    /**
+     * Dialog setup for the unlock operation
+     *
+     * @param savedInstanceState
+     * @return
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -170,8 +176,8 @@ public class PassphraseUnlockDialog extends UnlockDialog
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         if (mUnlockAsyncTask != null) {
             mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
@@ -179,14 +185,28 @@ public class PassphraseUnlockDialog extends UnlockDialog
         }
     }
 
+    /**
+     * updates the dialog title.
+     *
+     * @param text
+     */
     public void onUpdateDialogTitle(CharSequence text) {
         mAlertDialog.setTitle(text);
     }
 
+    /**
+     * updates the dialog tip text.
+     *
+     * @param text
+     */
     public void onTipTextUpdate(CharSequence text) {
         mPassphraseText.setText(text);
     }
 
+    /**
+     * Notifies the view that no retries are allowed. The next positive action will be the dialog
+     * dismiss.
+     */
     public void onNoRetryAllowed() {
         mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,6 +216,9 @@ public class PassphraseUnlockDialog extends UnlockDialog
         });
     }
 
+    /**
+     * Notifies the user of any errors that may have occurred
+     */
     public void onOperationStateError(int errorId, boolean showToast) {
         mInputLayout.setVisibility(View.VISIBLE);
 
@@ -206,20 +229,38 @@ public class PassphraseUnlockDialog extends UnlockDialog
         }
     }
 
+    /**
+     * Shows the progress bar.
+     *
+     * @param show
+     */
     public void onShowProgressBar(boolean show) {
         mProgressLayout.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
+    /**
+     * Method that is called when the unlock operation is successful;
+     *
+     * @param serviceIntent
+     */
     public void onUnlockOperationSuccess(Intent serviceIntent) {
         mActivity.setResult(Activity.RESULT_OK, serviceIntent);
         mActivity.finish();
     }
 
+    /**
+     * Notifies the dialog that the unlock operation has started.
+     */
     public void onOperationStarted() {
         mInputLayout.setVisibility(View.INVISIBLE);
         mPositiveDialogButton.setEnabled(false);
     }
 
+    /**
+     * Updates the dialog button.
+     *
+     * @param text
+     */
     public void onUpdateDialogButtonText(CharSequence text) {
         mPositiveDialogButton.setText(text);
     }
@@ -303,6 +344,10 @@ public class PassphraseUnlockDialog extends UnlockDialog
         onTipTextUpdate(mActivity.getString(R.string.passphrase_for, userId));
     }
 
+    /**
+     * Updates the operation state.
+     * Failed operations are allowed to be restarted if unlock retries are permitted.
+     */
     public void onOperationRequest() {
         if (mOperationState == DialogUnlockOperationState.DIALOG_UNLOCK_OPERATION_STATE_FINISHED) {
             return;
@@ -397,6 +442,10 @@ public class PassphraseUnlockDialog extends UnlockDialog
         onFatalError(R.string.error_could_not_extract_private_key, true);
         onUpdateDialogButtonText(mActivity.getString(android.R.string.ok));
     }
+
+    /**
+     * UnlockAsyncTask callbacks that will be redirected to the dialog,
+     */
 
     @Override
     public void onErrorWrongPassphrase() {

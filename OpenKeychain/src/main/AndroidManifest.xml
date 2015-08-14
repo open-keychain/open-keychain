@@ -163,7 +163,7 @@
             android:allowTaskReparenting="true"
             android:label="@string/title_manage_my_keys"
             android:launchMode="singleTop"
-            android:configChanges="orientation|screenSize"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".ui.MainActivity"
             android:windowSoftInputMode="adjustResize">
             <meta-data
@@ -183,6 +183,7 @@
             android:name=".ui.KeyUnlockActivityWrapper"
             android:theme="@android:style/Theme.NoDisplay"
             android:parentActivityName=".ui.MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize"
             android:allowTaskReparenting="true"
             android:launchMode="singleTop">

@@ -53,7 +53,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 public class PinUnlockDialog extends UnlockDialog
         implements UnlockAsyncTask.OnUnlockAsyncTaskListener {
     public static final String RESULT_CRYPTO_INPUT = "result_data";
-    public static final String EXTRA_PARAM_OPERATION_TYPE = "EXTRA_PARAM_OPERATION_TYPE";
     public static final String EXTRA_SUBKEY_ID = "secret_key_id";
     public static final String EXTRA_SERVICE_INTENT = "data";
 
@@ -91,37 +90,9 @@ public class PinUnlockDialog extends UnlockDialog
     /**
      * Dialog setup for the unlock operation
      *
-     * @param alertDialogBuilder
+     * @param savedInstanceState
      * @return
      */
-    public Dialog prepareUnlockDialog(CustomAlertDialogBuilder alertDialogBuilder) {
-        alertDialogBuilder.setTitle(getString(R.string.title_unlock));
-        alertDialogBuilder.setPositiveButton(getString(R.string.unlock_caps), null);
-        alertDialogBuilder.setNegativeButton(android.R.string.cancel, null);
-
-        mAlertDialog = alertDialogBuilder.show();
-        mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onOperationRequest();
-            }
-        });
-
-        Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onOperationCancel();
-                mAlertDialog.cancel();
-            }
-        });
-
-        mAlertDialog.setCanceledOnTouchOutside(false);
-
-        return mAlertDialog;
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -156,17 +127,41 @@ public class PinUnlockDialog extends UnlockDialog
         mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
 
+        alert.setTitle(getString(R.string.title_unlock));
+        alert.setPositiveButton(getString(R.string.unlock_caps), null);
+        alert.setNegativeButton(android.R.string.cancel, null);
+
+        mAlertDialog = alert.show();
+        mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onOperationRequest();
+            }
+        });
+
+        Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOperationCancel();
+                mAlertDialog.cancel();
+            }
+        });
+
+        mAlertDialog.setCanceledOnTouchOutside(false);
+
         //only call this method after the ui is initialized.
         if (savedInstanceState == null) {
             initializeUnlockOperation(getArguments());
         }
 
-        return prepareUnlockDialog(alert);
+        return mAlertDialog;
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onDestroy() {
+        super.onDestroy();
         if (mUnlockAsyncTask != null) {
             mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
@@ -174,6 +169,11 @@ public class PinUnlockDialog extends UnlockDialog
         }
     }
 
+    /**
+     * Method that is called when the unlock operation is successful;
+     *
+     * @param serviceIntent
+     */
     public void onUnlockOperationSuccess(Intent serviceIntent) {
         getActivity().setResult(Activity.RESULT_OK, serviceIntent);
         getActivity().finish();
@@ -354,6 +354,9 @@ public class PinUnlockDialog extends UnlockDialog
         }
     }
 
+    /**
+     * Handles the initial operation.
+     */
     public void onOperationStateInitial() {
         onOperationStarted();
         onShowProgressBar(true);

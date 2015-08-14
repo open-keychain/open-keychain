@@ -98,6 +98,9 @@ public final class NfcDispatcher {
         outState.putBoolean(EXTRA_TAG_HANDLING_ENABLED, mTagHandlingEnabled);
     }
 
+    /**
+     * Handles the pause lifecycle.
+     */
     public void onPause() {
         try {
             disableNfcForegroundDispatch();
@@ -106,10 +109,16 @@ public final class NfcDispatcher {
         }
     }
 
+    /**
+     * Handles the resume lifecycle.
+     */
     public void onResume() {
         enableNfcForegroundDispatch();
     }
 
+    /**
+     * Handles the destroy lifecycle.
+     */
     public void onDestroy() {
         try {
             cancelDispatchTask();
@@ -338,6 +347,9 @@ public final class NfcDispatcher {
         }
     }
 
+    /**
+     * Registers all the handled NFC technologies by the host.
+     */
     public static class RegisteredTechHandler implements Parcelable, Iterable<Class> {
         private ArrayList<Class> mRegisterTechArray;
 
