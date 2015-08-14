@@ -471,8 +471,6 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     @Override
     public void cancelRequest() {
         if (isFirstTime()) {
-            Preferences prefs = Preferences.getPreferences(this);
-            prefs.setFirstTime(false);
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -728,5 +726,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
     @Override
     public void onBackPressed() {
         onBackClicked(null);
+    }
+
+    @Override
+    public void finish() {
+        if (isFirstTime()) {
+            Preferences prefs = Preferences.getPreferences(this);
+            prefs.setFirstTime(false);
+        }
+
+        super.finish();
     }
 }
