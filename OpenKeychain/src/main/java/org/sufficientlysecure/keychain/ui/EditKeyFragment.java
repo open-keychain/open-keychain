@@ -325,9 +325,6 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     }
 
     private void changePassphrase() {
-//        Intent passIntent = new Intent(getActivity(), PassphraseWizardActivity.class);
-//        passIntent.setAction(PassphraseWizardActivity.CREATE_METHOD);
-//        startActivityForResult(passIntent, 12);
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
