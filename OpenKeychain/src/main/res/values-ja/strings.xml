@@ -804,6 +804,7 @@
   <string name="msg_cr_error_flags_elgamal">問題のある鍵フラグが選択されています、ElGamalは署名に使えません!</string>
   <string name="msg_cr_error_flags_ecdsa">問題のある鍵フラグが選択されています、楕円曲線DSAは暗号化に使えません!</string>
   <string name="msg_cr_error_flags_ecdh">問題のある鍵フラグが選択されています、楕円曲線DHは署名に使えません!</string>
+  <string name="msg_cr_error_flags_eddsa">問題のある鍵フラグが選択されています、楕円曲線EDDSAは暗号化に使えません!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">鍵輪 %s を変更中</string>
   <string name="msg_mf_error_divert_serial">カードに対比した鍵のシリアル番号には16バイトは必要です!これはプロラグラムエラーで、バグレポートでファイルの提出をお願いします!</string>

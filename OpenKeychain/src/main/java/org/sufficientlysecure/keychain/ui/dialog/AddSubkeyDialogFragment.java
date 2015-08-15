@@ -514,7 +514,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 break;
             case EDDSA:
                 mKeySizeRow.setVisibility(View.GONE);
-                mCurveRow.setVisibility(View.VISIBLE);
+                // mCurveRow.setVisibility(View.VISIBLE);
                 mCustomKeyInfoTextView.setText("");
                 // allowed flags:
                 mFlagCertify.setEnabled(mWillBeMasterKey);
