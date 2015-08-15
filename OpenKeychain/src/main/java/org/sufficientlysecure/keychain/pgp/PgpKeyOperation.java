@@ -261,7 +261,7 @@ public class PgpKeyOperation {
                     progress(R.string.progress_generating_ecdsa, 30);
                     ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.mCurve);
                     keyGen = KeyPairGenerator.getInstance("EDDSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(new ECGenParameterSpec("ed25519"));
+                    keyGen.initialize(ecParamSpec, new SecureRandom());
 
                     algorithm = PGPPublicKey.EDDSA;
                     break;
@@ -283,6 +283,7 @@ public class PgpKeyOperation {
             return null;
         } catch(PGPException e) {
             Log.e(Constants.TAG, "internal pgp error", e);
+            log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             return null;
         }
@@ -1001,21 +1002,34 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
+
                 if (add.mExpiry == null) {
                     log.add(LogType.MSG_MF_ERROR_NULL_EXPIRY, indent +1);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
+
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
                 if (add.mExpiry > 0L && new Date(add.mExpiry*1000).before(new Date())) {
                     log.add(LogType.MSG_MF_ERROR_PAST_EXPIRY, indent +1);
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
+
                 // generate a new secret key (privkey only for now)
                 subProgressPush(
                     (i-1) * (100 / saveParcel.mAddSubKeys.size()),
                     i * (100 / saveParcel.mAddSubKeys.size())
                 );
+
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
+
                 PGPKeyPair keyPair = createKey(add, cryptoInput.getSignatureTime(), log, indent);
                 subProgressPop();
                 if (keyPair == null) {
@@ -1023,19 +1037,31 @@ public class PgpKeyOperation {
                     return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
                 }
 
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
+
                 // add subkey binding signature (making this a sub rather than master key)
                 PGPPublicKey pKey = keyPair.getPublicKey();
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
                 try {
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
                     PGPSignature cert = generateSubkeyBindingSignature(
                             getSignatureGenerator(masterSecretKey, cryptoInput),
                             cryptoInput.getSignatureTime(),
                             masterPublicKey, masterPrivateKey,
                             getSignatureGenerator(pKey, cryptoInput, false), keyPair.getPrivateKey(), pKey,
-                            add.mFlags, add.mExpiry);
+                            add.mFlags, add.mExpiry, log);
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
                     pKey = PGPPublicKey.addSubkeyBindingCertification(pKey, cert);
                 } catch (NfcInteractionNeeded e) {
                     nfcSignOps.addHash(e.hashToSign, e.hashAlgo);
                 }
+
+                log.add(LogType.MSG_MF_SUBKEY_NEW, indent,
+                        KeyFormattingUtils.getAlgorithmInfo(add.mAlgorithm, add.mKeySize, add.mCurve) );
 
                 PGPSecretKey sKey; {
                     // Build key encrypter and decrypter based on passphrase
@@ -1579,8 +1605,64 @@ public class PgpKeyOperation {
             PGPSignatureGenerator sGen, Date creationTime,
             PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
             PGPSignatureGenerator subSigGen, PGPPrivateKey subPrivateKey, PGPPublicKey pKey,
+            int flags, long expiry, OperationLog log)
+            throws IOException, PGPException, SignatureException {
+
+                log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature");
+
+        PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
+
+        log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1");
+
+        // If this key can sign, we need a primary key binding signature
+        if ((flags & KeyFlags.SIGN_DATA) > 0) {
+            // cross-certify signing keys
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.1");
+            PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.2");
+            subHashedPacketsGen.setSignatureCreationTime(false, creationTime);
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.3");
+            subSigGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.4");
+            subSigGen.setHashedSubpackets(subHashedPacketsGen.generate());
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.5");
+            PGPSignature certification = subSigGen.generateCertification(masterPublicKey, pKey);
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 1.6");
+            unhashedPacketsGen.setEmbeddedSignature(true, certification);
+        }
+
+        log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 2");
+
+        PGPSignatureSubpacketGenerator hashedPacketsGen;
+        {
+            hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+            hashedPacketsGen.setSignatureCreationTime(true, creationTime);
+            hashedPacketsGen.setKeyFlags(true, flags);
+            if (expiry > 0) {
+                hashedPacketsGen.setKeyExpirationTime(true,
+                        expiry - pKey.getCreationTime().getTime() / 1000);
+            }
+        }
+
+        log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 3");
+
+        sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
+        sGen.setHashedSubpackets(hashedPacketsGen.generate());
+        sGen.setUnhashedSubpackets(unhashedPacketsGen.generate());
+
+log.add(LogType.MSG_MF_SUBKEY_NEW, 4, "generateSubkeyBindingSignature 4");
+
+        return sGen.generateCertification(masterPublicKey, pKey);
+
+    }
+
+    static PGPSignature generateSubkeyBindingSignature(
+            PGPSignatureGenerator sGen, Date creationTime,
+            PGPPublicKey masterPublicKey, PGPPrivateKey masterPrivateKey,
+            PGPSignatureGenerator subSigGen, PGPPrivateKey subPrivateKey, PGPPublicKey pKey,
             int flags, long expiry)
             throws IOException, PGPException, SignatureException {
+
 
         PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
@@ -1605,6 +1687,7 @@ public class PgpKeyOperation {
                         expiry - pKey.getCreationTime().getTime() / 1000);
             }
         }
+
 
         sGen.init(PGPSignature.SUBKEY_BINDING, masterPrivateKey);
         sGen.setHashedSubpackets(hashedPacketsGen.generate());
