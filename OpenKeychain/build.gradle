@@ -34,7 +34,7 @@ dependencies {
         resolutionStrategy.force 'com.android.support:support-annotations:22.2.0'
     }
     // JCenter etc.
-    //compile 'com.eftimoff:android-patternview:1.0.2@aar'
+    compile 'com.eftimoff:android-patternview:1.0.3@aar'
     compile 'com.journeyapps:zxing-android-embedded:2.3.0@aar'
     compile 'com.journeyapps:zxing-android-integration:2.3.0@aar'
     compile 'com.google.zxing:core:3.2.0'
@@ -61,7 +61,6 @@ dependencies {
     compile project(':extern:minidns')
     compile project(':extern:KeybaseLib:Lib')
     compile project(':extern:safeslinger-exchange:safeslinger-exchange')
-    compile project(':extern:android-patternview:android-patternview')
 }
 
 // Output of ./gradlew -q calculateChecksums

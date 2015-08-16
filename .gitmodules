@@ -22,6 +22,3 @@
 	path = extern/safeslinger-exchange
 	url = https://github.com/open-keychain/exchange-android
 	ignore = dirty
-[submodule "extern/android-patternview"]
-	path = extern/android-patternview
-	url = https://github.com/open-keychain/android-patternview.git
