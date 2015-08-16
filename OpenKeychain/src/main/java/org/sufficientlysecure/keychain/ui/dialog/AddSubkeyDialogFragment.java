@@ -281,7 +281,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     Curve curve = null;
                     Integer keySize = null;
                     // For EC keys, add a curve
-                    if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
+                    if (algorithm == Algorithm.EDDSA) {
+                        curve = Curve.ED25519;
+                    } if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
                         curve = ((Choice<Curve>) mCurveSpinner.getSelectedItem()).getId();
                         // Otherwise, get a keysize
                     } else {

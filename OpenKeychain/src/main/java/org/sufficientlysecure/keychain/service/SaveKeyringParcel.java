@@ -336,7 +336,7 @@ public class SaveKeyringParcel implements Parcelable {
     // All curves defined in the standard
     // http://www.bouncycastle.org/wiki/pages/viewpage.action?pageId=362269
     public enum Curve {
-        NIST_P256, NIST_P384, NIST_P521
+        NIST_P256, NIST_P384, NIST_P521, ED25519
 
         // these are supported by gpg, but they are not in rfc6637 and not supported by BouncyCastle yet
         // (adding support would be trivial though -> JcaPGPKeyConverter.java:190)
