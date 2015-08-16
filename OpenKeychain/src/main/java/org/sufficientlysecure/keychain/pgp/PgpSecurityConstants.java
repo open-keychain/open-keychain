@@ -126,7 +126,8 @@ public class PgpSecurityConstants {
                 return (key.getBitStrength() >= 2048);
             }
             case PublicKeyAlgorithmTags.ECDH:
-            case PublicKeyAlgorithmTags.ECDSA: {
+            case PublicKeyAlgorithmTags.ECDSA:
+            case PublicKeyAlgorithmTags.EDDSA: {
                 return PgpSecurityConstants.sCurveWhitelist.contains(key.getCurveOid());
             }
             // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT

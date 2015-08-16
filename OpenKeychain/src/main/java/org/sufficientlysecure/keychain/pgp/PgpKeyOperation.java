@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.io.*;
+
+
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.S2K;
 import org.spongycastle.bcpg.sig.Features;
@@ -261,7 +264,7 @@ public class PgpKeyOperation {
                     progress(R.string.progress_generating_ecdsa, 30);
                     ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.mCurve);
                     keyGen = KeyPairGenerator.getInstance("EDDSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(ecParamSpec, new SecureRandom());
+                    keyGen.initialize(ecParamSpec);
 
                     algorithm = PGPPublicKey.EDDSA;
                     break;
@@ -1135,6 +1138,14 @@ public class PgpKeyOperation {
         } catch (PGPException e) {
             Log.e(Constants.TAG, "encountered pgp error while modifying key", e);
             log.add(LogType.MSG_MF_ERROR_PGP, indent+1);
+
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            pw.flush();
+            String str = sw.toString();
+            log.add(LogType.MSG_MF_SUBKEY_NEW, 4, str);
+
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         } catch (SignatureException e) {
             Log.e(Constants.TAG, "encountered SignatureException while modifying key", e);
