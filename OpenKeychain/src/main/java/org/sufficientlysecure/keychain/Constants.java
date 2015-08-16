@@ -104,6 +104,9 @@ public final class Constants {
         public static final String PROXY_PORT = "proxyPort";
         public static final String PROXY_TYPE = "proxyType";
         public static final String THEME = "theme";
+        // keyserver sync settings
+        public static final String SYNC_CONTACTS = "syncContacts";
+        public static final String SYNC_KEYSERVER = "syncKeyserver";
 
         public static final class Theme {
             public static final String LIGHT = "light";

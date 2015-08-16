@@ -11,4 +11,7 @@
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
         android:title="@string/section_proxy_settings" />
+    <header
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$SyncSettingsFragment"
+        android:title="@string/section_sync_settings" />
 </preference-headers>

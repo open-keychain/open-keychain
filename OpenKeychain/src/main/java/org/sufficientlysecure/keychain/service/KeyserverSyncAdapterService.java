@@ -162,6 +162,12 @@ public class KeyserverSyncAdapterService extends Service {
                 postponeSync();
             }
         }
+
+        @Override
+        public void onSyncCanceled() {
+            super.onSyncCanceled();
+            cancelUpdates(KeyserverSyncAdapterService.this);
+        }
     }
 
     @Override
@@ -402,7 +408,9 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     /**
-     * will cancel an update already in progress
+     * will cancel an update already in progress. We send an Intent to cancel it instead of simply
+     * modifying a static variable sync the service is running in a process that is different from
+     * the default application process where the UI code runs.
      *
      * @param context used to send an Intent to the service requesting cancellation.
      */

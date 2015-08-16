@@ -51,6 +51,7 @@
     <string name="section_passphrase_cache">"Password/PIN Handling"</string>
     <string name="section_proxy_settings">"Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
+    <string name="section_sync_settings">"Sync Settings"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -174,6 +175,11 @@
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
+
+    <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
+    <string name="label_sync_settings_keyserver_summary">"Updates keys older than a week, from the preferred keyserver"</string>
+    <string name="label_sync_settings_contacts_title">"Sync Contacts with Keys"</string>
+    <string name="label_sync_settings_contacts_summary">"Associates contacts with imported keys, based on email, completely offline"</string>
 
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>

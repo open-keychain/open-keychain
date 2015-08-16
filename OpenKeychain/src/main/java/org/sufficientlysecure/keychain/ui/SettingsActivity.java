@@ -18,11 +18,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -31,6 +32,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.provider.ContactsContract;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -467,11 +469,69 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    /**
+     * This fragment shows the keyserver/contacts sync preferences
+     */
+    public static class SyncSettingsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.sync_preferences);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // this needs to be done in onResume since the user can change sync values from Android
+            // settings and we need to reflect that change when the user navigates back
+            AccountManager manager = AccountManager.get(getActivity());
+            final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+            // for keyserver sync
+            initializeSyncCheckBox(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
+                    account,
+                    Constants.PROVIDER_AUTHORITY
+            );
+            // for contacts sync
+            initializeSyncCheckBox(
+                    (CheckBoxPreference) findPreference(Constants.Pref.SYNC_CONTACTS),
+                    account,
+                    ContactsContract.AUTHORITY
+            );
+        }
+
+        private void initializeSyncCheckBox(CheckBoxPreference syncCheckBox, final Account account,
+                                            final String authority) {
+            boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority);
+            syncCheckBox.setChecked(syncEnabled);
+
+            syncCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean syncEnabled = (Boolean) newValue;
+                    if (syncEnabled) {
+                        ContentResolver.setSyncAutomatically(account, authority, true);
+                    } else {
+                        // disable syncs
+                        ContentResolver.setSyncAutomatically(account, authority, false);
+                        // cancel any ongoing/pending syncs
+                        ContentResolver.cancelSync(account, authority);
+                    }
+                    return true;
+                }
+            });
+        }
+    }
+
     protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || GuiPrefsFragment.class.getName().equals(fragmentName)
+                || SyncSettingsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
