@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.actions;
 
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
+import android.support.test.espresso.action.CloseKeyboardAction;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -75,6 +76,36 @@ public abstract class CustomActions {
             @Override
             public void perform(UiController uiController, View view) {
                 ((TokenCompleteTextView) view).addObject(item);
+            }
+        };
+    }
+
+    public static ViewAction closeSoftKeyboard() {
+        return new ViewAction() {
+            /**
+             * The delay time to allow the soft keyboard to dismiss.
+             */
+            private static final long KEYBOARD_DISMISSAL_DELAY_MILLIS = 1000L;
+
+            /**
+             * The real {@link CloseKeyboardAction} instance.
+             */
+            private final ViewAction mCloseSoftKeyboard = new CloseKeyboardAction();
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return mCloseSoftKeyboard.getConstraints();
+            }
+
+            @Override
+            public String getDescription() {
+                return mCloseSoftKeyboard.getDescription();
+            }
+
+            @Override
+            public void perform(final UiController uiController, final View view) {
+                mCloseSoftKeyboard.perform(uiController, view);
+                uiController.loopMainThreadForAtLeast(KEYBOARD_DISMISSAL_DELAY_MILLIS);
             }
         };
     }
