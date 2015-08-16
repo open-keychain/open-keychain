@@ -1352,6 +1352,7 @@
     <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- Keyserver sync -->
+    <string name="keyserver_sync_settings_title">"Update Keys from Cloud"</string>
     <string name="keyserver_sync_orbot_notif_title">"Sync From Cloud requires Orbot"</string>
     <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>

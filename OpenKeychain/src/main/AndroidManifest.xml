@@ -723,10 +723,13 @@
             android:name=".service.KeychainService"
             android:exported="false" />
 
+        <!-- label is made to be "Keyserver Sync" since that is the only context in which
+        the user will see it-->
         <provider
             android:name=".provider.KeychainProvider"
             android:authorities="${applicationId}.provider"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/keyserver_sync_settings_title"/>
 
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity
