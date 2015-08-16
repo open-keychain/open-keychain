@@ -26,11 +26,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
+import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -75,7 +77,8 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
 
         boolean startOrbotDirect = getIntent().getBooleanExtra(EXTRA_START_ORBOT, false);
         if (startOrbotDirect) {
-            mShowOrbotProgressDialog = new ProgressDialog(this);
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(this);
+            mShowOrbotProgressDialog = new ProgressDialog(theme);
             mShowOrbotProgressDialog.setTitle(R.string.progress_starting_orbot);
             mShowOrbotProgressDialog.setCancelable(false);
             mShowOrbotProgressDialog.show();

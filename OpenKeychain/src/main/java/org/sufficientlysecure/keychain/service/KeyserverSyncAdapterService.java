@@ -63,8 +63,6 @@ public class KeyserverSyncAdapterService extends Service {
     public int onStartCommand(final Intent intent, int flags, final int startId) {
         Log.e("PHILIP", "Sync adapter service starting" + intent.getAction());
 
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
         switch (intent.getAction()) {
             case ACTION_CANCEL: {
                 mCancelled.set(true);
@@ -88,10 +86,14 @@ public class KeyserverSyncAdapterService extends Service {
                 break;
             }
             case ACTION_IGNORE_TOR: {
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
                 asyncKeyUpdate(this, new CryptoInputParcel(ParcelableProxy.getForNoProxy()));
                 break;
             }
             case ACTION_START_ORBOT: {
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
                 Intent startOrbot = new Intent(this, OrbotRequiredDialogActivity.class);
                 startOrbot.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startOrbot.putExtra(OrbotRequiredDialogActivity.EXTRA_START_ORBOT, true);
@@ -126,7 +128,8 @@ public class KeyserverSyncAdapterService extends Service {
                 break;
             }
             case ACTION_DISMISS_NOTIFICATION: {
-                // notification is dismissed at the beginning
+                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                manager.cancel(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT);
                 stopSelf(startId);
                 break;
             }
@@ -417,7 +420,6 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     private Notification getOrbotNoification(Context context) {
-        // TODO: PHILIP work in progress
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setLargeIcon(getBitmap(R.drawable.ic_launcher, context))
@@ -435,7 +437,7 @@ public class KeyserverSyncAdapterService extends Service {
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
 
-        builder.addAction(R.drawable.abc_ic_clear_mtrl_alpha,
+        builder.addAction(R.drawable.ic_stat_tor_off,
                 context.getString(R.string.keyserver_sync_orbot_notif_ignore),
                 ignoreTorPi);
 
@@ -448,7 +450,7 @@ public class KeyserverSyncAdapterService extends Service {
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
 
-        builder.addAction(R.drawable.abc_ic_commit_search_api_mtrl_alpha,
+        builder.addAction(R.drawable.ic_stat_tor,
                 context.getString(R.string.keyserver_sync_orbot_notif_start),
                 startOrbotPi
         );
