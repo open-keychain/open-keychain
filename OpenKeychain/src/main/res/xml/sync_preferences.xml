@@ -2,11 +2,9 @@
     <CheckBoxPreference
         android:key="syncKeyserver"
         android:persistent="false"
-        android:title="@string/label_sync_settings_keyserver_title"
-        android:summary="@string/label_sync_settings_keyserver_summary" />
+        android:title="@string/label_sync_settings_keyserver_title"/>
     <CheckBoxPreference
         android:key="syncContacts"
         android:persistent="false"
-        android:title="@string/label_sync_settings_contacts_title"
-        android:summary="@string/label_sync_settings_contacts_summary" />
+        android:title="@string/label_sync_settings_contacts_title" />
 </PreferenceScreen>

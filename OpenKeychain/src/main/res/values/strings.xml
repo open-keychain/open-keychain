@@ -177,9 +177,13 @@
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
     <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
-    <string name="label_sync_settings_keyserver_summary">"Updates keys older than a week, from the preferred keyserver"</string>
+    <string name="label_sync_settings_keyserver_summary_on">"Keys older than a week are updated from the preferred keyserver"</string>
+    <string name="label_sync_settings_keyserver_summary_off">"Keys not automatically updated"</string>
     <string name="label_sync_settings_contacts_title">"Sync Contacts with Keys"</string>
-    <string name="label_sync_settings_contacts_summary">"Associates contacts with imported keys, based on email, completely offline"</string>
+    <string name="label_sync_settings_contacts_summary_on">"Keys linked to contacts with matching emails, happens completely offline"</string>
+    <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
+    <!-- label shown in Android settings under the OpenKeychain account -->
+    <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
 
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
@@ -1358,7 +1362,6 @@
     <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- Keyserver sync -->
-    <string name="keyserver_sync_settings_title">"Update Keys from Cloud"</string>
     <string name="keyserver_sync_orbot_notif_title">"Sync From Cloud requires Orbot"</string>
     <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>

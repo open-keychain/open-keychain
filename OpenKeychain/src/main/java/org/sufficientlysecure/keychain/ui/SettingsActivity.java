@@ -503,10 +503,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             );
         }
 
-        private void initializeSyncCheckBox(CheckBoxPreference syncCheckBox, final Account account,
+        private void initializeSyncCheckBox(final CheckBoxPreference syncCheckBox,
+                                            final Account account,
                                             final String authority) {
             boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority);
             syncCheckBox.setChecked(syncEnabled);
+            setSummary(syncCheckBox, authority, syncEnabled);
 
             syncCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -520,9 +522,32 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         // cancel any ongoing/pending syncs
                         ContentResolver.cancelSync(account, authority);
                     }
+                    setSummary(syncCheckBox, authority, syncEnabled);
                     return true;
                 }
             });
+        }
+
+        private void setSummary(CheckBoxPreference syncCheckBox, String authority,
+                                boolean checked) {
+            switch (authority) {
+                case Constants.PROVIDER_AUTHORITY: {
+                    if (checked) {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_on);
+                    } else {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_off);
+                    }
+                    break;
+                }
+                case ContactsContract.AUTHORITY: {
+                    if (checked) {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_on);
+                    } else {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_off);
+                    }
+                    break;
+                }
+            }
         }
     }
 
