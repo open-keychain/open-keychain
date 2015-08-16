@@ -283,7 +283,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     // For EC keys, add a curve
                     if (algorithm == Algorithm.EDDSA) {
                         curve = Curve.ED25519;
-                    } if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
+                    } else if (algorithm == Algorithm.ECDH || algorithm == Algorithm.ECDSA) {
                         curve = ((Choice<Curve>) mCurveSpinner.getSelectedItem()).getId();
                         // Otherwise, get a keysize
                     } else {
@@ -516,7 +516,6 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                 break;
             case EDDSA:
                 mKeySizeRow.setVisibility(View.GONE);
-                // mCurveRow.setVisibility(View.VISIBLE);
                 mCustomKeyInfoTextView.setText("");
                 // allowed flags:
                 mFlagCertify.setEnabled(mWillBeMasterKey);
