@@ -22,6 +22,7 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
 
 import java.util.HashSet;
 
@@ -111,6 +112,7 @@ public class PgpSecurityConstants {
         sCurveWhitelist.add(NISTNamedCurves.getOID("P-256").getId());
         sCurveWhitelist.add(NISTNamedCurves.getOID("P-384").getId());
         sCurveWhitelist.add(NISTNamedCurves.getOID("P-521").getId());
+        sCurveWhitelist.add(CustomNamedCurves.getOID("ed25519").getId());
     }
 
     public static boolean isSecureKey(CanonicalizedPublicKey key) {

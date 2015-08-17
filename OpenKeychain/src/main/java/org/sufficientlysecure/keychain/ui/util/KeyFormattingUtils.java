@@ -34,6 +34,7 @@ import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -217,6 +218,10 @@ public class KeyFormattingUtils {
             return name;
         }
         name = TeleTrusTNamedCurves.getName(oid);
+        if (name != null) {
+            return name;
+        }
+        name = CustomNamedCurves.getName(oid);
         if (name != null) {
             return name;
         }

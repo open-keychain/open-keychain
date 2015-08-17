@@ -927,6 +927,7 @@ public class UncachedKeyRing implements Serializable {
                                 WrappedSignature subsig = new WrappedSignature(list.get(i));
                                 if (subsig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
                                     subsig.init(key);
+                                    log.add(LogType.MSG_MF_SUBKEY_NEW, indent, "needsPrimaryBinding");
                                     if (subsig.verifySignature(masterKey, key)) {
                                         ok = true;
                                     } else {
