@@ -161,11 +161,10 @@ public class EncryptTextFragment
                 toggleEnableCompression(item, !item.isChecked());
                 break;
             }
-//            case R.id.check_hidden_recipients: {
-//                mHiddenRecipients = item.isChecked();
-//                notifyUpdate();
-//                break;
-//            }
+            case R.id.check_hidden_recipients: {
+                toggleEnableHiddenRecipients(item, !item.isChecked());
+                break;
+            }
             case R.id.encrypt_copy: {
                 hideKeyboard();
                 mShareAfterEncrypt = false;
@@ -183,6 +182,11 @@ public class EncryptTextFragment
             }
         }
         return true;
+    }
+
+    public void toggleEnableHiddenRecipients(MenuItem item, final boolean hideRecipients) {
+        mHiddenRecipients = hideRecipients;
+        item.setChecked(hideRecipients);
     }
 
     public void toggleEnableCompression(MenuItem item, final boolean compress) {

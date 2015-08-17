@@ -45,6 +45,8 @@ public class CryptoInputParcel implements Parcelable {
     // specifies whether passphrases should be cached
     public boolean mCachePassphrase = true;
 
+    private Integer mDecryptHiddenRecipientsIndex;
+
     // this map contains both decrypted session keys and signed hashes to be
     // used in the crypto operation described by this parcel.
     private HashMap<ByteBuffer, byte[]> mCryptoData = new HashMap<>();
@@ -75,7 +77,6 @@ public class CryptoInputParcel implements Parcelable {
     }
 
     public CryptoInputParcel(ParcelableProxy parcelableProxy) {
-        this();
         mParcelableProxy =  parcelableProxy;
     }
 
@@ -98,6 +99,7 @@ public class CryptoInputParcel implements Parcelable {
         mPassphrase = source.readParcelable(getClass().getClassLoader());
         mParcelableProxy = source.readParcelable(getClass().getClassLoader());
         mCachePassphrase = source.readByte() != 0;
+        mDecryptHiddenRecipientsIndex = source.readInt() != 0 ? source.readInt() : null;
 
         {
             int count = source.readInt();
@@ -125,6 +127,12 @@ public class CryptoInputParcel implements Parcelable {
         dest.writeParcelable(mPassphrase, 0);
         dest.writeParcelable(mParcelableProxy, 0);
         dest.writeByte((byte) (mCachePassphrase ? 1 : 0));
+        if (mDecryptHiddenRecipientsIndex != null) {
+            dest.writeInt(1);
+            dest.writeInt(mDecryptHiddenRecipientsIndex);
+        } else {
+            dest.writeInt(0);
+        }
 
         dest.writeInt(mCryptoData.size());
         for (HashMap.Entry<ByteBuffer, byte[]> entry : mCryptoData.entrySet()) {
@@ -149,6 +157,14 @@ public class CryptoInputParcel implements Parcelable {
         mCryptoData.putAll(cachedSessionKeys);
     }
 
+    public void setDecryptHiddenRecipientsIndex(int index) {
+        mDecryptHiddenRecipientsIndex = index;
+    }
+
+    public Integer getDecryptHiddenRecipientsIndex() {
+        return mDecryptHiddenRecipientsIndex;
+    }
+
     public ParcelableProxy getParcelableProxy() {
         return mParcelableProxy;
     }
@@ -159,6 +175,10 @@ public class CryptoInputParcel implements Parcelable {
 
     public Date getSignatureTime() {
         return mSignatureTime;
+    }
+
+    public void setPassphrase(Passphrase passphrase) {
+        mPassphrase = passphrase;
     }
 
     public boolean hasPassphrase() {
@@ -185,11 +205,11 @@ public class CryptoInputParcel implements Parcelable {
         b.append("CryptoInput: { ");
         b.append(mSignatureTime).append(" ");
         if (mPassphrase != null) {
-            b.append("passphrase");
+            b.append("includes passphrase");
         }
         if (mCryptoData != null) {
             b.append(mCryptoData.size());
-            b.append(" hashes ");
+            b.append(" crypto data size ");
         }
         b.append("}");
         return b.toString();

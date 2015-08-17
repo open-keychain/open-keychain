@@ -295,7 +295,7 @@ public class ProviderHelper {
                     throw new NotFoundException("Secret key not available!");
                 }
                 return secret
-                        ? new CanonicalizedSecretKeyRing(blob, true, verified)
+                        ? new CanonicalizedSecretKeyRing(blob, verified)
                         : new CanonicalizedPublicKeyRing(blob, verified);
             } else {
                 throw new NotFoundException("Key not found!");
@@ -1580,6 +1580,53 @@ public class ProviderHelper {
                 cursor.close();
             }
         }
+    }
+
+    public Long getEncryptionSubkeyIdForHiddenRecipient(int index) throws NotFoundException {
+
+        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
+        String[] projection = new String[]{
+                KeyRings.HAS_ANY_SECRET,
+                KeyRings.VERIFIED,
+                KeyRings.USER_ID,
+                KeyRings.PRIVKEY_DATA
+        };
+        String selection = KeyRings.HAS_ANY_SECRET + " != 0";
+        String sortOrder = KeyRings.USER_ID + " ASC";
+
+        Cursor cursor = mContentResolver.query(
+                baseUri, projection, selection, null, sortOrder);
+
+        int currentIndex = 0;
+        try {
+            if (cursor != null) {
+                int verifiedCol = cursor.getColumnIndex(KeyRings.VERIFIED);
+                int privkeyDataCol = cursor.getColumnIndex(KeyRings.PRIVKEY_DATA);
+
+                while (cursor.moveToNext()) {
+                    int verified = cursor.getInt(verifiedCol);
+                    byte[] blob = cursor.getBlob(privkeyDataCol);
+
+                    CanonicalizedSecretKeyRing secretKeyRing =
+                            new CanonicalizedSecretKeyRing(blob, verified);
+                    Set<Long> encryptIds = secretKeyRing.getEncryptIds();
+                    for (Long encryptId : encryptIds) {
+
+                        if (currentIndex == index) {
+                            return encryptId;
+                        }
+
+                        currentIndex++;
+                    }
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        throw new NotFoundException("No more subkeys available to try for decrypting hidden recipients!");
     }
 
     public ContentResolver getContentResolver() {

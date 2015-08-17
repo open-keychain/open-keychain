@@ -42,7 +42,7 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         mRing = ring;
     }
 
-    public CanonicalizedSecretKeyRing(byte[] blob, boolean isRevoked, int verified)
+    public CanonicalizedSecretKeyRing(byte[] blob, int verified)
     {
         super(verified);
         JcaPGPObjectFactory factory = new JcaPGPObjectFactory(blob);

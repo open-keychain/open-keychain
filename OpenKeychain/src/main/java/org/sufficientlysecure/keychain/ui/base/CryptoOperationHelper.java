@@ -154,6 +154,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                 return;
             }
 
+            case RESTART_CRYPTO_OPERATION: {
+                cryptoOperation(cryptoInputParcel);
+                return;
+            }
+
             default: {
                 throw new RuntimeException("Unhandled pending result!");
             }
