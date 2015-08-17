@@ -1,10 +1,17 @@
 [//]: #
 
+## 3.5
+
+  * Key revocation on key deletion
+  * Improved checks for insecure cryptography
+  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * API: Version 8
+
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Анонимна преузимања кључева преко Тора
+  * Подршка за прокси
+  * Боље руковање грешкама Јубикључа
 
 ## 3.3
 

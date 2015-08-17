@@ -1,10 +1,17 @@
 [//] : # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 3.5
+
+  * Key revocation on key deletion
+  * Improved checks for insecure cryptography
+  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * API: Version 8
+
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Téléchargement anonyme de clefs avec Tor
+  * Prise en charge des serveurs mandataires
+  * Meilleur gestion des erreurs de la ClefYubi
 
 ## 3.3
 

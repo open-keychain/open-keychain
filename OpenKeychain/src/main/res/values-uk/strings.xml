@@ -14,8 +14,6 @@
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
-  <string name="title_export_key">Експортувати ключ</string>
-  <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
   <string name="title_key_details">Подробиці про ключ</string>
@@ -46,7 +44,6 @@
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
-  <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
@@ -293,6 +290,7 @@
   <!--Delete result toast-->
   <string name="delete_nothing">Нема що вилучати.</string>
   <string name="delete_cancelled">Операція вилучення скасована.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
@@ -308,20 +306,20 @@
   <string name="api_settings_start">Запустити програму</string>
   <string name="api_settings_delete_account">Видалити профіль</string>
   <string name="api_settings_package_name">Назва пакунку</string>
-  <string name="api_settings_package_certificate">SHA-256 підписку пакунку</string>
   <string name="api_settings_settings">Параметри</string>
   <string name="api_settings_accounts_empty">Немає облікового запису приєднаного до цієї програми.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>
-  <string name="api_select_pub_keys_missing_text">Не знайдено жодного ключа для цих сутностей:</string>
-  <string name="api_select_pub_keys_dublicates_text">Наявно більше одного ключа для цих сутностей:</string>
   <string name="api_select_pub_keys_text">Будь ласка, перевірте список одержувачів!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Будь ласка, виберіть одержувачів!</string>
   <string name="api_error_wrong_signature">Перевірка підпису пакету не вдалася! Може ви встановили програму з іншого джерела? Якщо ви впевнені, що це не атака, то відкличте реєстрацію програми у OpenKeychain та знову зареєструйте її.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Відправити як штрих-код</string>
   <string name="share_nfc_dialog">Поділитися з NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 ключ вибрано.</item>
@@ -530,6 +528,7 @@
   <string name="can_sign_not">не можна підписати</string>
   <string name="error_no_encrypt_subkey">Жодний підключ шифрування недоступний!</string>
   <string name="contact_show_key">Показати ключ (%s)</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

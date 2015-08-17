@@ -18,8 +18,6 @@
   <string name="title_encrypt_to_file">Šifriraj v datoteko</string>
   <string name="title_decrypt_to_file">Dešifriraj v datoteko</string>
   <string name="title_import_keys">Uvozi ključe</string>
-  <string name="title_export_key">Izvozi kluč</string>
-  <string name="title_export_keys">Izvozi ključe</string>
   <string name="title_key_not_found">Ključ ni bil najden</string>
   <string name="title_send_key">Naloži na strežnik</string>
   <string name="title_certify_key">Potrdi ključ</string>
@@ -70,7 +68,6 @@
   <!--menu-->
   <string name="menu_preferences">Nastavitve</string>
   <string name="menu_help">Pomoč</string>
-  <string name="menu_export_key">Izvozi v datoteko</string>
   <string name="menu_delete_key">Izbriši ključ</string>
   <string name="menu_manage_keys">Upravljanje mojih ključev</string>
   <string name="menu_search">Išči</string>
@@ -180,7 +177,6 @@
   <string name="select_encryption_key">Izberite vsaj en šifrirni ključ.</string>
   <string name="specify_file_to_encrypt_to">Določite datoteko, v katero želite šifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
   <string name="specify_file_to_decrypt_to">Določite datoteko, v katero želite dešifrirati vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
-  <string name="specify_backup_dest">Določite datoteko, v katero želite izvoziti vsebino.\nPOZOR: če datoteka že obstaja, bo prepisana.</string>
   <string name="key_deletion_confirmation_multi">Ali zares želite izbrisati vse izbrane ključe?</string>
   <string name="secret_key_deletion_confirmation">Po izbrisu ne bo več mogoče prebirati sporočil šifriranih s tem ključem! Izgubljene bodo tudi vse z njim narejene potrditve.</string>
   <string name="public_key_deletetion_confirmation">Izbrišem ključ \'%s\'?</string>
@@ -401,6 +397,7 @@
   </plurals>
   <string name="delete_nothing">Ničesar ni za izbrisati.</string>
   <string name="delete_cancelled">Operacija brisanja prekinjena.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Uspešno potrjen ključ%2$s.</item>
@@ -436,7 +433,6 @@
   <string name="api_settings_start">Zaženi aplikacijo</string>
   <string name="api_settings_delete_account">Izbriši račun</string>
   <string name="api_settings_package_name">Ime paketa</string>
-  <string name="api_settings_package_certificate">SHA-256 podpisa paketa</string>
   <string name="api_settings_allowed_keys">Dovoljeni ključi</string>
   <string name="api_settings_settings">Nastavitve</string>
   <string name="api_settings_key">Ključ računa:</string>
@@ -447,8 +443,6 @@
   <string name="api_register_allow">Dovoli dostop</string>
   <string name="api_register_disallow">Zavrni dostop</string>
   <string name="api_register_error_select_key">Izberite ključ!</string>
-  <string name="api_select_pub_keys_missing_text">Za te identitete ni bil najden noben ključ:</string>
-  <string name="api_select_pub_keys_dublicates_text">Za te identitete obstaja več ključev:</string>
   <string name="api_select_pub_keys_text">Preverite seznam prejemnikov!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Prosim, izberite prejemnike!</string>
   <string name="api_error_wrong_signature">Preverjanje podpisa ni uspelo! Ste namestili to aplikacijo iz drugega vira? Če ste prepričani, da to ni napad, prekličite registracijo te aplikacije v OpenKeychain in jo izvedite znova.</string>
@@ -456,6 +450,9 @@
   <!--Share-->
   <string name="share_qr_code_dialog_title">Deli s kodo QR</string>
   <string name="share_nfc_dialog">Deli preko NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">Izbran 1 ključ.</item>
@@ -500,14 +497,6 @@
   <string name="key_trust_results_prefix">Keybase.io ponuja \"dokazilo\", da je lastnik tega kluča:</string>
   <string name="key_trust_header_text">Pozor: Dokazila Keybase.io v aplikaciji OpenKeychain so eksperimantalne narave. Za večjo zanesljivost priporočamo, da dodatno skenirate kode QR ali izmenjate ključe preko NFC.</string>
   <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Objavlja na Twitterju kot</string>
-  <string name="keybase_narrative_github">Prisoten na GitHub-u kot</string>
-  <string name="keybase_narrative_dns">Upravlja domeno(e)</string>
-  <string name="keybase_narrative_web_site">Objavlja na spletni strani(eh)</string>
-  <string name="keybase_narrative_reddit">Objavlja na Reddit-u kot</string>
-  <string name="keybase_narrative_coinbase">Prisoten na Coinbase-u kot</string>
-  <string name="keybase_narrative_hackernews">Objavlja na Hacker News kot</string>
-  <string name="keybase_narrative_unknown">Neznano dokazilo</string>
   <string name="keybase_proof_failure">Dokazila se žal ne da preveriti.</string>
   <string name="keybase_unknown_proof_failure">Neznan problem pri pregledovalniku dokazil</string>
   <string name="keybase_problem_fetching_evidence">Problem z dokazilom</string>
@@ -840,6 +829,7 @@
   <string name="error_no_encrypt_subkey">Ni nobenega podključa za šifriranje!</string>
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

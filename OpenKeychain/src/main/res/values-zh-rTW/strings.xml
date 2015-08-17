@@ -19,8 +19,6 @@
   <string name="title_encrypt_to_file">加密到檔案</string>
   <string name="title_decrypt_to_file">解密到檔案</string>
   <string name="title_import_keys">匯入金鑰</string>
-  <string name="title_export_key">匯出金鑰</string>
-  <string name="title_export_keys">匯出所有金鑰</string>
   <string name="title_key_not_found">找不到金鑰</string>
   <string name="title_send_key">上傳到金鑰伺服器</string>
   <string name="title_certify_key">確認金鑰</string>
@@ -69,7 +67,6 @@
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">說明</string>
-  <string name="menu_export_key">匯出到檔案</string>
   <string name="menu_delete_key">刪除金鑰</string>
   <string name="menu_manage_keys">管理我的金鑰</string>
   <string name="menu_search">搜尋</string>
@@ -175,7 +172,6 @@
   <string name="select_encryption_key">選擇至少一把加密金鑰。</string>
   <string name="specify_file_to_encrypt_to">請指定欲加密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="specify_file_to_decrypt_to">請指定欲解密的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
-  <string name="specify_backup_dest">請指定欲輸出的檔案。\n警告：已經存在的檔案將被覆蓋。</string>
   <string name="key_deletion_confirmation_multi">您真的想要刪除所有已選金鑰嗎？</string>
   <string name="secret_key_deletion_confirmation">刪除之後您將無法閱讀以這把金鑰加密的訊息，而且所有用這把金鑰做的認證都會失效！</string>
   <string name="public_key_deletetion_confirmation">刪除金鑰 \'%s\' ？</string>
@@ -364,6 +360,7 @@
   </plurals>
   <string name="delete_nothing">沒有東西可以刪除。</string>
   <string name="delete_cancelled">刪除已取消。</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="other">成功認證 %1$d 金鑰%2$s。</item>
@@ -394,7 +391,6 @@
   <string name="api_settings_start">開啟應用程式</string>
   <string name="api_settings_delete_account">移除帳戶</string>
   <string name="api_settings_package_name">打包名稱</string>
-  <string name="api_settings_package_certificate">SHA-256 所打包的簽章</string>
   <string name="api_settings_accounts">帳戶(舊版API)</string>
   <string name="api_settings_advanced">延伸資訊</string>
   <string name="api_settings_allowed_keys">允許的金鑰</string>
@@ -410,6 +406,9 @@
   <!--Share-->
   <string name="share_qr_code_dialog_title">以二維條碼分享</string>
   <string name="share_nfc_dialog">以NFC分享</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <string name="key_list_empty_text1">找不到金鑰！</string>
   <!--Key view-->
@@ -440,14 +439,6 @@
   <string name="key_trust_results_prefix">Keybase.io提供“證據”證明這把金鑰的持有人：</string>
   <string name="key_trust_header_text">注意：Keybase.io證據是個OpenKeychain實驗性功能。我們推薦你另外以QR條碼或是NFC交換金鑰進行確認。</string>
   <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">用下列身分在Twitter發布訊息：</string>
-  <string name="keybase_narrative_github">用下列身分在GitHub活動：</string>
-  <string name="keybase_narrative_dns">掌控這些域名：</string>
-  <string name="keybase_narrative_web_site">能在這些網站張貼文章：</string>
-  <string name="keybase_narrative_reddit">用下列身分在Reddit參與討論：</string>
-  <string name="keybase_narrative_coinbase">擁有這些Coinbase帳戶：</string>
-  <string name="keybase_narrative_hackernews">用下列身分在Hacker News發表文章：</string>
-  <string name="keybase_narrative_unknown">未知的證據型態</string>
   <string name="keybase_proof_failure">很不幸地我們沒法驗證這些證據。</string>
   <string name="keybase_unknown_proof_failure">檢查證據的過程遇到無法辨識的問題</string>
   <string name="keybase_message_fetching_data">取得證據中</string>
@@ -630,9 +621,9 @@
   <string name="title_view_cert">查看認證內容</string>
   <string name="unknown_algorithm">未知</string>
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
-  <string name="account_no_manual_account_creation">請不要自行建立OpenKeychain帳戶。\n更多資訊請參考說明。</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
   <string name="btn_start_exchange">開始交換</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

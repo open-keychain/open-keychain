@@ -20,8 +20,6 @@
   <string name="title_encrypt_to_file">Versleutelen naar bestand</string>
   <string name="title_decrypt_to_file">Ontsleutelen naar bestand</string>
   <string name="title_import_keys">Sleutels importeren</string>
-  <string name="title_export_key">Sleutels exporteren</string>
-  <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_send_key">Upload naar sleutelserver</string>
   <string name="title_certify_key">Sleutel bevestigen</string>
@@ -44,6 +42,7 @@
   <string name="section_cloud_search">Cloud zoeken</string>
   <string name="section_passphrase_cache">Verwerken van wachtwoorden/PINs</string>
   <string name="section_proxy_settings">Proxy-instellingen</string>
+  <string name="section_gui">Interface</string>
   <string name="section_certify">Bevestigen</string>
   <string name="section_actions">Acties</string>
   <string name="section_share_key">Sleutel</string>
@@ -88,7 +87,6 @@
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
   <string name="menu_help">Help</string>
-  <string name="menu_export_key">Exporteren naar bestand</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_manage_keys">Beheer mijn sleutels</string>
   <string name="menu_search">Zoeken</string>
@@ -120,6 +118,7 @@
   <string name="label_use_default_yubikey_pin">Gebruik standaard YubiKey PIN</string>
   <string name="label_use_num_keypad_for_yubikey_pin">Gebruik numeriek toetsenbord voor YubiKey PIN</string>
   <string name="label_label_use_default_yubikey_pin_summary">Gebruikt standaard PIN (123456) om YubiKeys over NFC te bereiken</string>
+  <string name="label_asymmetric_from">Ondertekenen met:</string>
   <string name="label_to">Versleutelen naar:</string>
   <string name="label_delete_after_encryption">Verwijder bestanden na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
@@ -155,6 +154,7 @@
   <string name="label_verify_keyserver">Sleutelserver verifiëren</string>
   <string name="label_enter_keyserver_url">Voer sleutelserver-URL in</string>
   <string name="label_keyserver_dialog_delete">Sleutelserver verwijderen</string>
+  <string name="label_theme">Thema</string>
   <string name="pref_keyserver">OpenPGP-sleutelservers</string>
   <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -237,6 +237,8 @@
   <string name="yubikey_pin_for">Voer PIN in om toegang te verkrijgen tot YubiKey voor \'%s\'</string>
   <string name="nfc_text">Hou de YubiKey tegen de NFC-aanduiding aan de achterkant van je toestel.</string>
   <string name="nfc_wait">Hou de YubiKey tegen de achterkant!</string>
+  <string name="nfc_finished">Neem de YubiKey nu weg.</string>
+  <string name="nfc_try_again_text">Neem de YubiKey nu weg en druk op Opnieuw proberen.</string>
   <string name="file_delete_confirmation_title">Oorspronkelijke bestanden verwijderen?</string>
   <string name="file_delete_confirmation">De volgende bestanden zullen worden verwijderd:%s</string>
   <string name="file_delete_successful">%1$d van %2$d bestanden zijn verwijderd.%3$s</string>
@@ -247,7 +249,6 @@
   <string name="error_no_encryption_or_signature_key">Kies ten minste één versleutelingssleutel of een ondertekeningssleutel.</string>
   <string name="specify_file_to_encrypt_to">Gelieve aan te geven naar welk bestand versleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="specify_file_to_decrypt_to">Gelieve aan te geven naar welk bestand ontsleuteld moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
-  <string name="specify_backup_dest">Gelieve aan te geven naar welk bestand geëxporteerd moet worden.\nWAARSCHUWING: Als het bestand al bestaat, zal het overschreven worden!</string>
   <string name="key_deletion_confirmation_multi">Ben je zeker dat je alle geselecteerde sleutels wil verwijderen?</string>
   <string name="secret_key_deletion_confirmation">Na verwijderen zal je niet langer berichten versleuteld met deze sleutel kunnen lezen, en alle sleutelbevestigingen die ermee gedaan zijn verliezen!</string>
   <string name="public_key_deletetion_confirmation">Sleutel \'%s\' verwijderen?</string>
@@ -464,6 +465,7 @@
   </plurals>
   <string name="delete_nothing">Niets te verwijderen.</string>
   <string name="delete_cancelled">Verwijderen geannuleerd.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Sleutel%2$s succesvol gecertificeerd.</item>
@@ -497,7 +499,7 @@
   <string name="api_settings_start">Start applicatie</string>
   <string name="api_settings_delete_account">Verwijder account</string>
   <string name="api_settings_package_name">Pakketnaam</string>
-  <string name="api_settings_package_certificate">SHA-256 van Pakkethandtekening</string>
+  <string name="api_settings_package_certificate">SHA-256 van Pakketcertificaat</string>
   <string name="api_settings_accounts">Accounts (oude API)</string>
   <string name="api_settings_advanced">Uitgebreide informatie</string>
   <string name="api_settings_allowed_keys">Toegestane sleutels</string>
@@ -510,8 +512,8 @@
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
-  <string name="api_select_pub_keys_missing_text">Geen sleutels gevonden voor deze identiteiten:</string>
-  <string name="api_select_pub_keys_dublicates_text">Meer dan een sleutel bestaat voor deze identiteiten:</string>
+  <string name="api_select_pub_keys_missing_text">Geen sleutels gevonden voor deze e-mailadressen:</string>
+  <string name="api_select_pub_keys_dublicates_text">Er bestaat meer dan een sleutel voor deze e-mailadressen:</string>
   <string name="api_select_pub_keys_text">Bekijkt u a.u.b. de ontvangers</string>
   <string name="api_select_pub_keys_text_no_user_ids">Gelieve de ontvangers te selecteren!</string>
   <string name="api_error_wrong_signature">Handtekening check mislukt! Hebt u deze app van een andere bron geïnstalleerd? Als u zeker weet dat dit geen aanval is, haal dan de registratie van deze app in OpenKeychain weg en registreer de app opnieuw.</string>
@@ -520,6 +522,9 @@
   <!--Share-->
   <string name="share_qr_code_dialog_title">Delen met QR-code</string>
   <string name="share_nfc_dialog">Deel met NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 sleutel geselecteerd.</item>
@@ -562,14 +567,6 @@
   <string name="key_trust_results_prefix">Keybase.io geeft “bewijzen” die stellen dat de eigenaar van deze sleutel:</string>
   <string name="key_trust_header_text">Let op: Keybase.io-bewijzen zijn een experimentele functie van OpenKeychain. We moedigen je aan QR-codes te scannen of sleutels uit te wisselen via NFC bovenop het bevestigen ervan.</string>
   <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Post op Twitter als</string>
-  <string name="keybase_narrative_github">Bekend is op GitHub als</string>
-  <string name="keybase_narrative_dns">De volgende domeinnamen beheert</string>
-  <string name="keybase_narrative_web_site">Kan posten op de website(s)</string>
-  <string name="keybase_narrative_reddit">Post op Reddit als</string>
-  <string name="keybase_narrative_coinbase">Bekend is op Coinbase als</string>
-  <string name="keybase_narrative_hackernews">Post op Hacker News als</string>
-  <string name="keybase_narrative_unknown">Onbekend bewijstype</string>
   <string name="keybase_proof_failure">Helaas kan dit bewijs niet geverifieerd worden.</string>
   <string name="keybase_unknown_proof_failure">Niet-herkend probleem met de bewijschecker</string>
   <string name="keybase_problem_fetching_evidence">Probleem met bewijs</string>
@@ -908,6 +905,7 @@
   <string name="msg_mf_error_passphrase_master">Fatale fout bij ontsleutelen van hoofdsleutel. Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_mf_error_sig">Ondertekeningsuitzondering!</string>
+  <string name="msg_mf_error_sub_stripped">Kan gestripte subsleutel %s niet wijzigen!</string>
   <string name="msg_mf_error_subkey_missing">Geprobeerd om bewerking uit te voeren op ontbrekende subsleutel %s!</string>
   <string name="msg_mf_error_conflicting_nfc_commands">Kan sleutel niet tegelijk verplaatsen naar smartcard en een on-card-ondertekening aanmaken.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard ondersteunt slechts een slot per sleuteltype</string>
@@ -1007,17 +1005,18 @@
   <string name="msg_dc_clear_meta_size_unknown">Bestandsgrootte onbekend</string>
   <string name="msg_dc_clear_meta_time">Wijzigingstijd: %s</string>
   <string name="msg_dc_clear_signature_bad">Ondertekeningscontrole NIET OKÉ!</string>
-  <string name="msg_dc_insecure_hash_algo">Niet ondersteund en mogelijk onveilig hash-algoritme!</string>
   <string name="msg_dc_clear_signature_check">Bezig met verifiëren van ondertekeningsgegevens</string>
   <string name="msg_dc_clear_signature_ok">Ondertekeningscontrole OKÉ</string>
   <string name="msg_dc_clear_signature">Bezig met opslaan van ondertekeningsgegevens voor later</string>
   <string name="msg_dc_clear">Bezig met verwerken van platte tekst-gegevens</string>
   <string name="msg_dc_error_bad_passphrase">Fout bij ontgrendelen van sleutel, verkeerd wachtwoord!</string>
+  <string name="msg_dc_error_sym_passphrase">Fout bij ontsleutelen van gegevens! (Verkeerd wachtwoord?)</string>
   <string name="msg_dc_error_corrupt_data">Gegevens zijn corrupt!</string>
   <string name="msg_dc_error_extract_key">Onbekende fout bij ontgrendelen van sleutel!</string>
   <string name="msg_dc_error_integrity_check">Fout bij integriteitscontrole!</string>
-  <string name="msg_dc_insecure_mdc_missing">Integriteitscheck ontbreekt! Dit kan gebeuren omdat de versleutelingsapplicatie verouderd is, of door een downgrade-aanval.</string>
   <string name="msg_dc_error_invalid_data">Geen geldige OpenPGP-versleutelde of ondertekende inhoud gevonden!</string>
+  <string name="msg_dc_error_io">Fout bij lezen van invoergegevens!</string>
+  <string name="msg_dc_error_input">Fout bij openen van invoergegevensstream!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>
   <string name="msg_dc_error_pgp_exception">OpenPGP-uitzondering tegengekomen tijdens bewerking!</string>
@@ -1035,7 +1034,6 @@
   <string name="msg_dc_trail_sym">Achterlopende, symmetrisch versleutelde gegevens tegengekomen</string>
   <string name="msg_dc_trail_unknown">Achterlopende gegevens van onbekend type tegengekomen</string>
   <string name="msg_dc_unlocking">Bezig met ontgrendelen van geheime sleutel</string>
-  <string name="msg_dc_insecure_symmetric_encryption_algo">Mogelijk onveilig versleutelingsalgoritme gebruikt!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Ondertekeningscontrole wordt gestart</string>
   <string name="msg_vl_error_no_siglist">Geen ondertekeningslijst in ondertekende letterlijke gegevens</string>
@@ -1063,7 +1061,6 @@
   <string name="msg_pse_compressing">Bezig met voorbereiden van comprimeren</string>
   <string name="msg_pse_encrypting">Bezig met versleutelen van gegevens</string>
   <string name="msg_pse_error_bad_passphrase">Wachtwoord verkeerd!</string>
-  <string name="msg_pse_error_hash_algo">Het gevraagde hashing-algoritme wordt niet ondersteund door deze sleutel!</string>
   <string name="msg_pse_error_io">I/O-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_pse_error_key_sign">Geselecteerde sleutel kan geen gegevens ondertekenen!</string>
   <string name="msg_pse_error_sign_key">Fout bij ophalen van ondertekeningssleutel!</string>
@@ -1207,6 +1204,8 @@
   <string name="first_time_skip">Setup overslaan</string>
   <string name="first_time_blank_yubikey">Wil je deze lege YubiKey NEO gebruiken met OpenKeychain?\n\nNeem de YubiKey nu weg, je zal gevraagd worden deze terug boven te halen wanneer nodig!</string>
   <string name="first_time_blank_yubikey_yes">Gebruik deze YubiKey</string>
+  <string name="backup_all">Alle sleutels + je eigen sleutels</string>
+  <string name="backup_public_keys">Alle sleutels</string>
   <!--unsorted-->
   <string name="section_certifier_id">Certificeer</string>
   <string name="section_cert">Certificaat Details</string>
@@ -1231,7 +1230,6 @@
   <string name="unknown_algorithm">onbekend</string>
   <string name="can_sign_not">kan niet ondertekenen</string>
   <string name="error_no_encrypt_subkey">Geen codeer-subsleutel beschikbaar!</string>
-  <string name="account_no_manual_account_creation">Maak OpenKeychain-accounts niet handmatig aan.\nVoor meer informatie, zie Help.</string>
   <string name="contact_show_key">Toon sleutel (%s)</string>
   <string name="swipe_to_update">Veeg naar beneden om van sleutelserver te updaten</string>
   <string name="error_no_file_selected">Selecteer minstens een bestand om te versleutelen!</string>
@@ -1243,6 +1241,8 @@
   <string name="exchange_description">Selecteer om een sleuteluitwisseling te starten het aantal deelnemers aan de rechterkant, en klik vervolgens op de knop \'Start uitwisseling\'.\n\nJe zal twee vragne gesteld worden om zeker te zijn dat enkel de juiste deelnemers zich in de uitwisseling bevinden en dat hun vingerafdrukken correct zijn.</string>
   <string name="btn_start_exchange">Uitwisseling starten</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
+  <!--Android Account-->
+  <string name="account_privacy_title">Privacy</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <string name="title_unlock_method">Kies een ontgrendelingsmethode</string>
@@ -1282,6 +1282,18 @@
   <string name="btn_import">Importeren</string>
   <string name="snack_yubi_other">Andere sleutel opgeslagen op YubiKey!</string>
   <string name="error_nfc">NFC-fout: %s</string>
+  <plurals name="error_pin">
+    <item quantity="one">Ongeldige PIN!\n%d resterende poging.</item>
+    <item quantity="other">Ongeldige PIN!\n%d resterende pogingen.</item>
+  </plurals>
+  <string name="error_nfc_terminated">YubiKey in beëindigingsstaat.</string>
+  <string name="error_nfc_wrong_length">Ingevoerde PIN is te kort. PIN\'s zijn minstens 6 tekens lang.</string>
+  <string name="error_nfc_conditions_not_satisfied">Gebruiksvoorwaarden niet voldaan.</string>
+  <string name="error_nfc_security_not_satisfied">Veiligheidsstatus niet voldaan.</string>
+  <string name="error_nfc_authentication_blocked">PIN geblokkeerd na te veel pogingen.</string>
+  <string name="error_nfc_data_not_found">Sleutel of object niet gevonden.</string>
+  <string name="error_nfc_unknown">Onbekende fout</string>
+  <string name="error_nfc_try_again">Opnieuw proberen</string>
   <string name="error_pin_nodefault">Standaard-PIN geweigerd!</string>
   <string name="error_temp_file">Fout bij aanmaken van tijdelijk bestand.</string>
   <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
@@ -1307,4 +1319,8 @@
   <string name="file_delete_none">Geen bestand verwijderd! (Misschien was het al verwijderd?)</string>
   <string name="file_delete_exception">Oorspronkelijk bestand kon niet worden verwijderd!</string>
   <string name="error_clipboard_empty">Klembord is leeg!</string>
+  <string name="error_clipboard_copy">Fout bij kopiëren van gegevens naar klembord!</string>
+  <string name="error_scan_fp">Fout bij scannen van vingerafdruk!</string>
+  <string name="error_scan_match">Vingerafdrukken komen niet overeen!</string>
+  <string name="error_expiry_past">Verloopdatum is in het verleden!</string>
 </resources>

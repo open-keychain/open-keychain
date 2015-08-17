@@ -6,8 +6,6 @@
   <string name="title_decrypt">Dekrüpteeri</string>
   <string name="title_edit_key">Muuda võtit</string>
   <string name="title_import_keys">Impordi võtmeid</string>
-  <string name="title_export_key">Ekspordi võti</string>
-  <string name="title_export_keys">Ekspordi võtmed</string>
   <string name="title_key_not_found">Võtit ei leitud</string>
   <string name="title_send_key">Lae võtmeserverisse</string>
   <string name="title_help">Abi</string>
@@ -80,10 +78,14 @@
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
@@ -115,6 +117,7 @@
   <!--PassphraseCache-->
   <!--First Time-->
   <!--unsorted-->
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

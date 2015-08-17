@@ -1,10 +1,17 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTITZ: Bitte setze jeden Satz in eine eigene Zeile, Transifex setzt jede Zeile in ein eigenes Übersetzungsfeld!)
+
+## 3.5
+
+  * Key revocation on key deletion
+  * Improved checks for insecure cryptography
+  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * API: Version 8
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Anonymer Schlüsseldownload über Tor
+  * Proxyunterstützung
+  * Bessere YubiKey Fehlerbehandlung
 
 ## 3.3
 
@@ -150,30 +157,30 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Neue einheitliche Schlüsselliste
   * Eingefärbter Schlüsselfingerabdruck
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
-  * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
+  * Unterstützt Schlüsselserver ports
+  * Deaktiviere Möglichkeit unsichere Schlüssel zu erstellen
+  * Viel mehr interne Arbeit an der API
+  * Benutzerkennungen beglaubigen
+  * Schlüsselserver-Suchanfrage basierend auf maschinenlesbarer Ausgabe
+  * "Navigation Drawer" auf Tablets sperren
+  * Vorschläge für E-Mails bei Schlüsselerzeugung
   * Suchen in öffentlichen Schlüssellisten
-  * And much more improvements and fixes…
+  * Und viele weitere Verbesserungen und Fehlerbehebungen...
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * Hotfix für Absturz beim Aktualisieren von alten Versionen
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
+  * Kein unnötiger Export öffentlicher Schlüssel beim Export der geheimen Schlüssel (Dank an Ash Hughes)
+  * Behoben: Setzen des Schlüsselablaufdatums (Dank an Ash Hughes)
+  * Weitere interne Fehlerbehebungen für das Editieren von Schlüsseln (Dank an Ash Hughes)
+  * Schlüsselserverabfrage direkt aus dem Importierungsbildschirm
+  * Behoben: Layout und Dialogstil auf Android 2.2-3.0
+  * Behoben: Absturz bei leeren Benutzer-IDs
   * Fix crash and empty lists when coming back from signing screen
   * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
   * Fix upload of key from signing screen
@@ -181,15 +188,15 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
+  * Neues Design mit "Navigation Drawer"
+  * Neues Design der Liste öffentlicher Schlüssel
   * Neue Ansicht für öffentliche Schlüssel
   * Bug fixes for importing of keys
   * Key cross-certification (thanks to Ash Hughes)
   * Handle UTF-8 passwords properly (thanks to Ash Hughes)
   * First version with new languages (thanks to the contributors on Transifex)
   * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * Paket-Signaturprüfung für API
 
 
 ## 2.1.1
@@ -247,7 +254,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Much smaller package, due to reduced BC sources
   * Neues Einstellungen-Benutzeroberfläche
   * Layout adjustment for localization
-  * Signature bugfix
+  Fehler in der Signatur behoben
 
 
 ## 1.0.4

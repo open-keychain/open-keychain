@@ -20,8 +20,8 @@
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
   <string name="title_import_keys">Importa Chiavi</string>
-  <string name="title_export_key">Esporta Chiave</string>
-  <string name="title_export_keys">Esporta Chiavi</string>
+  <string name="title_export_key">Backup chiave</string>
+  <string name="title_export_keys">Backup chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
   <string name="title_send_key">Carica sul Server delle Chiavi</string>
   <string name="title_certify_key">Conferma chiave</string>
@@ -86,7 +86,6 @@
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
-  <string name="menu_export_key">Esporta su un file</string>
   <string name="menu_delete_key">Cancella chiave</string>
   <string name="menu_manage_keys">Gestisci mie chiavi</string>
   <string name="menu_search">Cerca</string>
@@ -158,10 +157,25 @@
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Ricerca chiavi su keybase.io</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_type_title">Tipo proxy</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
+  <string name="pref_proxy_type_value_http">proxyHttp</string>
+  <string name="pref_proxy_type_value_socks">proxySocks</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Non usare Tor</string>
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Installa Orbot per usare Tor?</string>
+  <string name="orbot_install_dialog_install">Installa</string>
+  <string name="orbot_install_dialog_content">Orbot deve essere installato e attivato per fare attraversare il traffico dei dati tramite proxy. Vuoi installare Orbot?</string>
+  <string name="orbot_install_dialog_cancel">Annulla</string>
+  <string name="orbot_install_dialog_ignore_tor">Non usare Tor</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">Attivare Orbot?</string>
+  <string name="orbot_start_btn">Attivare Orbot</string>
+  <string name="orbot_start_dialog_start">Attivare Orbot</string>
+  <string name="orbot_start_dialog_cancel">Annulla</string>
   <string name="user_id_no_name">&lt;nessun nome&gt;</string>
   <string name="none">&lt;nessuno&gt;</string>
   <plurals name="n_keys">
@@ -219,7 +233,6 @@
   <string name="error_no_encryption_or_signature_key">Selezionare almeno una chiave per la cifratura o una chiave per la firma.</string>
   <string name="specify_file_to_encrypt_to">Per favore specifica il file da codificare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
   <string name="specify_file_to_decrypt_to">Per favore specifica il file da decifrare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
-  <string name="specify_backup_dest">Per favore specifica il file da esportare entro.\nATTENZIONE: Il file sarà sovrascritto se esistente.</string>
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare tutte le chiavi selezionate?</string>
   <string name="secret_key_deletion_confirmation">Dopo la cancellazione non sarai in grado di leggere i messaggi cifrati con questa chiave e perderai tutte le conferme principali fatti con essa!</string>
   <string name="public_key_deletetion_confirmation">Elimnina chiave \'%s\'?</string>
@@ -288,6 +301,7 @@
   <string name="progress_cancelling">cancellando...</string>
   <string name="progress_saving">salvataggio...</string>
   <string name="progress_importing">importazione...</string>
+  <string name="progress_updating">Aggiorna chiavi...</string>
   <string name="progress_exporting">esportazione...</string>
   <string name="progress_uploading">caricamento...</string>
   <string name="progress_building_key">fabbricazione chiave...</string>
@@ -307,6 +321,8 @@
   <string name="progress_modify_subkeystrip">pulizia sottochiavi...</string>
   <string name="progress_modify_subkeyadd">Aggiunta sottochiave...</string>
   <string name="progress_modify_passphrase">cambiando la password...</string>
+  <string name="progress_modify_pin">cambiando PIN...</string>
+  <string name="progress_modify_admin_pin">cambiando Admin PIN...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">esportazione chiave...</item>
     <item quantity="other">esportazione chiavi...</item>
@@ -370,8 +386,10 @@
   <string name="import_tab_qr_code">Codice QR/NFC</string>
   <string name="import_import">Importa chiavi selezionate</string>
   <string name="import_qr_code_wrong">Codica QR deformato! Prova di nuovo!</string>
+  <string name="import_qr_code_button">Scansione codice QR</string>
   <!--Import from URL-->
   <!--Generic result toast-->
+  <string name="snackbar_details">Dettagli</string>
   <string name="with_warnings">, con avvisi</string>
   <string name="with_cancelled">, fino all\'annullamento</string>
   <!--Import result toast-->
@@ -404,6 +422,7 @@
   <!--Delete result toast-->
   <string name="delete_nothing">Niente da cancellare.</string>
   <string name="delete_cancelled">Operazione di eliminazione cancellata.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
@@ -413,6 +432,7 @@
   <!--Remote API-->
   <string name="api_settings_no_key">Nessuna chiave selezionata</string>
   <string name="api_settings_select_key">Seleziona chiave</string>
+  <string name="api_settings_create_key">Crea chiave nuova</string>
   <string name="api_settings_save">Salva</string>
   <string name="api_settings_save_msg">L\'account è stato salvato</string>
   <string name="api_settings_cancel">Annulla</string>
@@ -420,7 +440,6 @@
   <string name="api_settings_start">Avvia applicazione</string>
   <string name="api_settings_delete_account">Cancella account</string>
   <string name="api_settings_package_name">Nome Pacchetto</string>
-  <string name="api_settings_package_certificate">SHA-256 della Firma del Pacchetto</string>
   <string name="api_settings_settings">Impostazioni</string>
   <string name="api_settings_key">Chiave account:</string>
   <string name="api_settings_accounts_empty">Nessun account collegato a questa applicazione</string>
@@ -431,14 +450,15 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
-  <string name="api_select_pub_keys_missing_text">Nessuna chiave trovata per queste identità:</string>
-  <string name="api_select_pub_keys_dublicates_text">Esistono piu\' di una chiave per queste identità:</string>
   <string name="api_select_pub_keys_text">Per favore ricontrolla la lista destinatari!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Per favore seleziona i destinatari!</string>
   <string name="api_error_wrong_signature">Controllo della firma fallito! Hai installato questa app da una fonte diversa? Se sei sicuro che non sia un attacco, revoca la registrazione di questa app in OpenKeychain e dopo registra di nuovo l\'app.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Condividi tramite Codice QR</string>
   <string name="share_nfc_dialog">Condividi tramite NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 chiave selezionata.</item>
@@ -743,12 +763,13 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="unknown_algorithm">sconosciuto</string>
   <string name="can_sign_not">non può firmare</string>
   <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
-  <string name="account_no_manual_account_creation">Non creare account OpenKeychain manualmente.\nPer ulteriori informazioni, vedere la Guida.</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
   <string name="key_colon">Chiave:</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="file_saved">File salvato!</string>
 </resources>

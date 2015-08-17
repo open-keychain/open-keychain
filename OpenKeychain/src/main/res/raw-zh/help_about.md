@@ -57,7 +57,7 @@
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache 许可证 v2)
   * [ZXing](https://github.com/zxing/zxing) (Apache 许可证 v2)
   * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache 许可证 v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache License v2)
+  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design)</a> (Apache 许可证 v2)
   * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache 许可证 v2)
   * [Snackbar](https://github.com/nispok/snackbar) (MIT 许可证)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache 许可证 v2)

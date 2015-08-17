@@ -19,10 +19,10 @@ Ukatua: Giltza hau aurrerantzean ez da baliozkoa. Bere jabeak ukatua izan da.
 ## Argibide Aurreratuak
 OpenKeychain-en "giltza baieztapen" bat OpenPGP estandarraren araberako egiaztagiri bat sortuz egokitzen da.
 Egiaztapen hau da ["egiaztapen generikoa (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) estandarrean azaltzen duena honek:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+"Egiaztagiri honen jaulkitzaileak ez du inolako baieztapen berezirik egin egiaztatzaileak zein ongi egiaztatu duen Erabiltzaile ID-ak azaltzen duen norbanakoa egitan den giltzaren jabea."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Arrunt, egiaztagiriak (baita egiaztagiritze maila handienekoak, "egiaztagiritze positiboak" bezalakoak (0x13)) OpenPGP-ren Fidagarritasun Webean daude antolatuta.
+Gure giltza baieztapena adigai askoz errazagoa da Fidagarritasun Webaren erabiltze arrunteko arazoak saihesteko.
+Onartzen dugu giltzak maila batean bakarrik daudela egiaztatuta oraindik nahikoa erabilgarria dena "joanean" exekutatuak izateko.
+Ez dugu ezartzen ere (potentzialki transitiboa) sinadura fidagarriak edo jabe-fidagarritasuneko datubase bat GnuPG-n bezala.
+Gainera, gutxienez giltza fidagarri batek egiaztatuta dauden erabiltzaile ID egiaztagiritu bat duten giltzak "baieztatua" bezala markatuko dira giltza zerrendan.

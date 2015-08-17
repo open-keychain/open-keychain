@@ -36,10 +36,14 @@
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
@@ -71,6 +75,7 @@
   <!--PassphraseCache-->
   <!--First Time-->
   <!--unsorted-->
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
