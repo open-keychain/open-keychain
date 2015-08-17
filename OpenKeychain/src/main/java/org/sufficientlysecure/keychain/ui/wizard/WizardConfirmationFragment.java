@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -236,8 +237,8 @@ public class WizardConfirmationFragment extends WizardFragment {
      * @param additionalEmails
      * @return
      */
-    CharSequence generateAdditionalEmails(CharSequence mainEmail, ArrayList<String> additionalEmails) {
-        if (additionalEmails == null) {
+    public static CharSequence generateAdditionalEmails(@NonNull CharSequence mainEmail, ArrayList<String> additionalEmails) {
+        if (additionalEmails == null || additionalEmails.size() == 0) {
             return mainEmail;
         }
 
