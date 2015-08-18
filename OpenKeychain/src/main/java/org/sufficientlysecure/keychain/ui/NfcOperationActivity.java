@@ -79,8 +79,8 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void initTheme() {
         mThemeChanger = new ThemeChanger(this);
-        mThemeChanger.setThemes(R.style.Theme_Keychain_Light_Dialog_SecurityToken,
-                R.style.Theme_Keychain_Dark_Dialog_SecurityToken);
+        mThemeChanger.setThemes(R.style.Theme_Keychain_Light_Dialog,
+                R.style.Theme_Keychain_Dark_Dialog);
         mThemeChanger.changeTheme();
     }
 

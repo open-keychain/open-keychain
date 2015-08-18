@@ -34,4 +34,8 @@
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
+    <style name="MaterialFlatButton" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">?attr/colorAccent</item>
+    </style>
+
 </resources>

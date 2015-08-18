@@ -162,15 +162,13 @@
 
             <Button
                 android:id="@+id/nfc_activity_3_error_try_again"
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/nfc_activity_3_placeholder"
                 android:layout_margin="8dp"
-                android:text="@string/error_nfc_try_again"
-                android:textColor="@color/accent" />
+                android:text="@string/error_nfc_try_again" />
 
         </RelativeLayout>
 

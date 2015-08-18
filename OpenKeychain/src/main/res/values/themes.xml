@@ -39,7 +39,7 @@
         <item name="searchViewStyle">@style/Widget.Keychain.SearchView</item>
 
         <!-- style dialogs -->
-        <item name="alertDialogTheme">@style/Theme.Keychain.Light.Dialog</item>
+        <item name="alertDialogTheme">@style/Theme.Keychain.Light.Dialog.Alert</item>
     </style>
 
     <style name="Base.Theme.Keychain.Dark" parent="MaterialDrawerTheme.ActionBar">
@@ -82,7 +82,7 @@
         <item name="searchViewStyle">@style/Widget.Keychain.SearchView</item>
 
         <!-- style dialogs -->
-        <item name="alertDialogTheme">@style/Theme.Keychain.Dark.Dialog</item>
+        <item name="alertDialogTheme">@style/Theme.Keychain.Dark.Dialog.Alert</item>
     </style>
 
     <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light">
@@ -111,20 +111,26 @@
         <!--<item name="suggestionRowLayout">...</item>-->
     </style>
 
-    <style name="Theme.Keychain.Light.Dialog" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+    <style name="Theme.Keychain.Light.Dialog.Alert" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">#7bad45</item>
     </style>
 
-    <style name="Theme.Keychain.Dark.Dialog" parent="Base.Theme.AppCompat.Dialog.Alert">
+    <style name="Theme.Keychain.Dark.Dialog.Alert" parent="Base.Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">#268bd2</item>
     </style>
 
-    <style name="Theme.Keychain.Light.Dialog.SecurityToken" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+    <style name="Theme.Keychain.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.MinWidth">
+        <item name="colorAccent">#7bad45</item>
+        <item name="android:buttonStyle">@style/MaterialFlatButton</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.Keychain.Dark.Dialog.SecurityToken" parent="Theme.AppCompat.Dialog.MinWidth">
+    <style name="Theme.Keychain.Dark.Dialog" parent="Theme.AppCompat.Dialog.MinWidth">
+        <item name="colorAccent">#268bd2</item>
+        <item name="android:buttonStyle">@style/MaterialFlatButton</item>
+
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
