@@ -700,20 +700,14 @@ public class ProviderHelper {
                 new String[]{"" + masterKeyId},
                 null
         );
-        ContentValues lastUpdatedEntry = null;
         if (lastUpdatedCursor.moveToNext()) {
-            lastUpdatedEntry = new ContentValues(2);
+            // there was an entry to re-insert
+            // this operation must happen after the new key is inserted
+            ContentValues lastUpdatedEntry = new ContentValues(2);
             lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID,
                     lastUpdatedCursor.getLong(INDEX_MASTER_KEY_ID));
             lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED,
                     lastUpdatedCursor.getLong(INDEX_LAST_UPDATED));
-            Log.e("PHILIP", "cv: " + lastUpdatedEntry + " actual: " + masterKeyId);
-        }
-        lastUpdatedCursor.close();
-
-        if (lastUpdatedEntry != null) {
-            // there was an entry to re-insert
-            // this operation must happen after the new key is inserted
             operations.add(
                     ContentProviderOperation
                             .newInsert(UpdatedKeys.CONTENT_URI)
@@ -721,6 +715,7 @@ public class ProviderHelper {
                             .build()
             );
         }
+        lastUpdatedCursor.close();
 
         try {
             // delete old version of this keyRing, which also deletes all keys and userIds on cascade

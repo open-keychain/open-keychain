@@ -93,13 +93,13 @@ public class RevokeOperation extends BaseOperation<RevokeKeyringParcel> {
                 log.add(OperationResult.LogType.MSG_REVOKE_OK, 1);
                 return new RevokeResult(RevokeResult.RESULT_OK, log, masterKeyId);
             } else {
-                log.add(OperationResult.LogType.MSG_REVOKE_KEY_FAIL, 1);
+                log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
                 return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
         } catch (PgpKeyNotFoundException | ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "could not find key to revoke", e);
-            log.add(OperationResult.LogType.MSG_REVOKE_KEY_FAIL, 1);
+            log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
             return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
         }
     }

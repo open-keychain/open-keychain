@@ -360,7 +360,7 @@ public class HkpKeyserver extends Keyserver {
         try {
             data = query(request, proxy);
         } catch (HttpError httpError) {
-            Log.e(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
+            Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
         }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);

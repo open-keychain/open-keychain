@@ -1314,7 +1314,6 @@
     </plurals>
 
     <string name="msg_revoke_error_empty">"Nothing to revoke!"</string>
-    <string name="msg_revoke_error_multi_secret">"Secret keys can only be revoked individually!"</string>
     <string name="msg_revoke_error_not_found">"Cannot find key to revoke!"</string>
     <string name="msg_revoke_key">"Revoking key %s"</string>
     <string name="msg_revoke_key_fail">"Failed revoking key"</string>

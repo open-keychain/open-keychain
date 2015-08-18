@@ -409,7 +409,7 @@ public class OrbotHelper {
         private ProgressDialog mProgressDialog;
 
         public void startOrbotAndListen(final Context context, final boolean showProgress) {
-            Log.e("PHILIP", "starting orbot listener");
+            Log.d(Constants.TAG, "starting orbot listener");
             if (showProgress) {
                 showProgressDialog(context);
             }

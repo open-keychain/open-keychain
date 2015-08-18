@@ -232,7 +232,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                                 log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
                             }
                         } catch (Keyserver.QueryFailedException e) {
-                            Log.e(Constants.TAG, "query failed", e);
+                            Log.d(Constants.TAG, "query failed", e);
                             log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
                         }
                     }

@@ -1,6 +1,7 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -25,6 +26,7 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -50,6 +52,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KeyserverSyncAdapterService extends Service {
 
+    // how often a sync should be initiated, in s
+    public static final long SYNC_INTERVAL =
+            Constants.DEBUG_KEYSERVER_SYNC
+                    ? TimeUnit.MINUTES.toSeconds(2) : TimeUnit.DAYS.toSeconds(3);
+    // time since last update after which a key should be updated again, in s
+    public static final long KEY_UPDATE_LIMIT =
+            Constants.DEBUG_KEYSERVER_SYNC ? 1 : TimeUnit.DAYS.toSeconds(7);
+    // time by which a sync is postponed in case of a
+    public static final long SYNC_POSTPONE_TIME =
+            Constants.DEBUG_KEYSERVER_SYNC ? 30 * 1000 : TimeUnit.MINUTES.toMillis(5);
+    // Time taken by Orbot before a new circuit is created
+    public static final int ORBOT_CIRCUIT_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(10);
+
+
     private static final String ACTION_IGNORE_TOR = "ignore_tor";
     private static final String ACTION_UPDATE_ALL = "update_all";
     private static final String ACTION_SYNC_NOW = "sync_now";
@@ -61,8 +77,6 @@ public class KeyserverSyncAdapterService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
-        Log.e("PHILIP", "Sync adapter service starting" + intent.getAction());
-
         switch (intent.getAction()) {
             case ACTION_CANCEL: {
                 mCancelled.set(true);
@@ -103,7 +117,6 @@ public class KeyserverSyncAdapterService extends Service {
                             public void handleMessage(Message msg) {
                                 switch (msg.what) {
                                     case OrbotRequiredDialogActivity.MESSAGE_ORBOT_STARTED: {
-                                        Log.e("PHILIP", "orbot activity returned");
                                         asyncKeyUpdate(KeyserverSyncAdapterService.this,
                                                 new CryptoInputParcel());
                                         break;
@@ -177,10 +190,8 @@ public class KeyserverSyncAdapterService extends Service {
 
     private void handleUpdateResult(ImportKeyResult result) {
         if (result.isPending()) {
-            Log.e(Constants.TAG, "Keyserver sync pending result: "
-                    + result.getRequiredInputParcel().mType);
             // result is pending due to Orbot not being started
-            // try to start it silently, if disabled show notificationaa
+            // try to start it silently, if disabled show notifications
             new OrbotHelper.SilentStartManager() {
                 @Override
                 protected void onOrbotStarted() {
@@ -199,7 +210,8 @@ public class KeyserverSyncAdapterService extends Service {
                 }
             }.startOrbotAndListen(this, false);
         } else if (isUpdateCancelled()) {
-            Log.d(Constants.TAG, "Keyserver sync cancelled");
+            Log.d(Constants.TAG, "Keyserver sync cancelled, postponing by" + SYNC_POSTPONE_TIME
+                    + "ms");
             postponeSync();
         } else {
             Log.d(Constants.TAG, "Keyserver sync completed: Updated: " + result.mUpdatedKeys
@@ -216,14 +228,13 @@ public class KeyserverSyncAdapterService extends Service {
                 PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 30 * 1000,
+                SystemClock.elapsedRealtime() + SYNC_POSTPONE_TIME,
                 pi
         );
     }
 
     private void asyncKeyUpdate(final Context context,
                                 final CryptoInputParcel cryptoInputParcel) {
-        Log.e("PHILIP", "async key update starting");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -234,7 +245,7 @@ public class KeyserverSyncAdapterService extends Service {
     }
 
     private synchronized ImportKeyResult updateKeysFromKeyserver(final Context context,
-                                                    final CryptoInputParcel cryptoInputParcel) {
+                                                                 final CryptoInputParcel cryptoInputParcel) {
         mCancelled.set(false);
 
         ArrayList<ParcelableKeyRing> keyList = getKeysToUpdate(context);
@@ -278,10 +289,6 @@ public class KeyserverSyncAdapterService extends Service {
     private ImportKeyResult staggeredUpdate(Context context, ArrayList<ParcelableKeyRing> keyList,
                                             CryptoInputParcel cryptoInputParcel) {
         Log.d(Constants.TAG, "Starting staggered update");
-        // assuming maxCircuitDirtiness is 10min in Tor
-        // final int MAX_CIRCUIT_DIRTINESS = (int) TimeUnit.MINUTES.toSeconds(10);
-        // TODO: PHILIP remove after testing
-        final int MAX_CIRCUIT_DIRTINESS = (int) TimeUnit.MINUTES.toSeconds(1);
         // final int WEEK_IN_SECONDS = (int) TimeUnit.DAYS.toSeconds(7);
         final int WEEK_IN_SECONDS = 0;
         ImportOperation.KeyImportAccumulator accumulator
@@ -289,10 +296,10 @@ public class KeyserverSyncAdapterService extends Service {
         for (ParcelableKeyRing keyRing : keyList) {
             int waitTime;
             int staggeredTime = new Random().nextInt(1 + 2 * (WEEK_IN_SECONDS / keyList.size()));
-            if (staggeredTime >= MAX_CIRCUIT_DIRTINESS) {
+            if (staggeredTime >= ORBOT_CIRCUIT_TIMEOUT) {
                 waitTime = staggeredTime;
             } else {
-                waitTime = MAX_CIRCUIT_DIRTINESS + new Random().nextInt(MAX_CIRCUIT_DIRTINESS);
+                waitTime = ORBOT_CIRCUIT_TIMEOUT + new Random().nextInt(ORBOT_CIRCUIT_TIMEOUT);
             }
             Log.d(Constants.TAG, "Updating key with fingerprint " + keyRing.mExpectedFingerprint +
                     " with a wait time of " + waitTime + "s");
@@ -342,18 +349,14 @@ public class KeyserverSyncAdapterService extends Service {
         final int INDEX_LAST_UPDATED = 1;
 
         // all time in seconds not milliseconds
-        // TODO: PHILIP correct TIME_MAX after testing
-        // final long TIME_MAX = TimeUnit.DAYS.toSeconds(7);
-        final long TIME_MAX = 1;
         final long CURRENT_TIME = GregorianCalendar.getInstance().getTimeInMillis() / 1000;
-        Log.e("PHILIP", "week: " + TIME_MAX + " current: " + CURRENT_TIME);
         Cursor updatedKeysCursor = context.getContentResolver().query(
                 KeychainContract.UpdatedKeys.CONTENT_URI,
                 new String[]{
                         KeychainContract.UpdatedKeys.MASTER_KEY_ID,
                         KeychainContract.UpdatedKeys.LAST_UPDATED
                 },
-                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " < " + TIME_MAX,
+                "? - " + KeychainContract.UpdatedKeys.LAST_UPDATED + " < " + KEY_UPDATE_LIMIT,
                 new String[]{"" + CURRENT_TIME},
                 null
         );
@@ -361,7 +364,7 @@ public class KeyserverSyncAdapterService extends Service {
         ArrayList<Long> ignoreMasterKeyIds = new ArrayList<>();
         while (updatedKeysCursor.moveToNext()) {
             long masterKeyId = updatedKeysCursor.getLong(INDEX_UPDATED_KEYS_MASTER_KEY_ID);
-            Log.d(Constants.TAG, "Keyserver sync: {" + masterKeyId + "} last updated at {"
+            Log.d(Constants.TAG, "Keyserver sync: Ignoring {" + masterKeyId + "} last updated at {"
                     + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
             ignoreMasterKeyIds.add(masterKeyId);
         }
@@ -391,6 +394,7 @@ public class KeyserverSyncAdapterService extends Service {
             if (ignoreMasterKeyIds.contains(keyId)) {
                 continue;
             }
+            Log.d(Constants.TAG, "Keyserver sync: Updating {" + keyId + "}");
             String fingerprint = KeyFormattingUtils
                     .convertFingerprintToHex(keyCursor.getBlob(INDEX_FINGERPRINT));
             String hexKeyId = KeyFormattingUtils
@@ -418,13 +422,6 @@ public class KeyserverSyncAdapterService extends Service {
         Intent intent = new Intent(context, KeyserverSyncAdapterService.class);
         intent.setAction(ACTION_CANCEL);
         context.startService(intent);
-    }
-
-    // TODO: PHILIP remove!
-    @Override
-    public void onDestroy() {
-        Log.e("PHILIP", "onDestroy");
-        super.onDestroy();
     }
 
     private Notification getOrbotNoification(Context context) {
@@ -465,6 +462,33 @@ public class KeyserverSyncAdapterService extends Service {
         builder.setContentIntent(startOrbotPi);
 
         return builder.build();
+    }
+
+    public static void enableKeyserverSync(Context context) {
+        try {
+            AccountManager manager = AccountManager.get(context);
+            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+
+            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+            if (accounts.length == 0) {
+                if (!manager.addAccountExplicitly(account, null, null)) {
+                    Log.e(Constants.TAG, "Adding account failed!");
+                }
+            }
+            // for keyserver sync
+            ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
+            ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY,
+                    true);
+            ContentResolver.addPeriodicSync(
+                    account,
+                    Constants.PROVIDER_AUTHORITY,
+                    new Bundle(),
+                    SYNC_INTERVAL
+            );
+        } catch (SecurityException e) {
+            Log.e(Constants.TAG, "SecurityException when adding the account", e);
+            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
+        }
     }
 
     // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android

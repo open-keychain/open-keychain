@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -306,7 +307,7 @@ public class Preferences {
             return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
                     Constants.Orbot.PROXY_TYPE);
         } else if (useNormalProxy) {
-            return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
+            return new ProxyPrefs(false, true, getProxyHost(), getProxyPort(), getProxyType());
         } else {
             return new ProxyPrefs(false, false, null, -1, null);
         }
@@ -356,7 +357,7 @@ public class Preferences {
         }
     }
 
-    public void upgradePreferences() {
+    public void upgradePreferences(Context context) {
         if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.PREF_VERSION) {
             switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
@@ -394,6 +395,10 @@ public class Preferences {
                 }
                 // fall through
                 case 5: {
+                    KeyserverSyncAdapterService.enableKeyserverSync(context);
+                }
+                // fall through
+                case 6: {
                 }
             }
 

@@ -29,6 +29,7 @@ public final class Constants {
     public static final boolean DEBUG = BuildConfig.DEBUG;
     public static final boolean DEBUG_LOG_DB_QUERIES = false;
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
+    public static final boolean DEBUG_KEYSERVER_SYNC = false;
 
     public static final String TAG = DEBUG ? "Keychain D" : "Keychain";
 
@@ -126,7 +127,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 5;
+        public static final int PREF_VERSION = 6;
     }
 
     public static final class key {
