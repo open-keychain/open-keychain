@@ -198,10 +198,9 @@ public class YubiKeyImportWizardFragment extends WizardFragment implements
     }
 
     @Override
-    public Throwable doNfcInBackground() throws IOException {
+    public void doNfcInBackground() throws IOException {
         updateNFCData(mWizardFragmentListener.nfcGetFingerprints(), mWizardFragmentListener.nfcGetAid(),
                 mWizardFragmentListener.nfcGetUserId(), false);
-        return null;
     }
 
     @Override

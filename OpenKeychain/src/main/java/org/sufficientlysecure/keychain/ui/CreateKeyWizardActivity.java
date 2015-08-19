@@ -90,7 +90,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
         void onNfcPreExecute() throws IOException;
 
-        Throwable doNfcInBackground() throws IOException;
+        void doNfcInBackground() throws IOException;
 
         void onNfcPostExecute() throws IOException;
 
@@ -386,17 +386,20 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
         switch (mWizardModel.getSecretKeyType()) {
             case PASSPHRASE: {
                 onInstantiatePassphraseUnlockMethod();
-                break;
             }
-            case PIN:
+            break;
+            case PIN: {
                 onInstantiatePinUnlockMethod();
-                break;
-            case PATTERN:
+            }
+            break;
+            case PATTERN: {
                 onInstantiatePatternUnlockMethod();
-                break;
-            case NFC_TAG:
+            }
+            break;
+            case NFC_TAG: {
                 onInstantiateNFCUnlockMethod();
-                break;
+            }
+            break;
         }
     }
 
@@ -554,6 +557,9 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
      * @return
      */
     public boolean containsKeys(byte[] scannedFingerprints) {
+        if (scannedFingerprints == null) {
+            return false;
+        }
         // If all fingerprint bytes are 0, the card contains no keys.
         boolean cardContainsKeys = false;
         for (byte b : scannedFingerprints) {
@@ -822,11 +828,13 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
      * Used for Yubi Key.
      */
     public void updateNFCData() {
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
+        if (mNfcFingerprints != null) {
+            mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(mNfcFingerprints);
 
-        byte[] fp = new byte[20];
-        ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
-        mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+            byte[] fp = new byte[20];
+            ByteBuffer.wrap(fp).put(mNfcFingerprints, 0, 20);
+            mNfcFingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
+        }
     }
 
     /**

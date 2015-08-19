@@ -40,6 +40,7 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
+import org.sufficientlysecure.keychain.nfc.NfcDispatcher;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
@@ -218,6 +219,15 @@ public class NFCUnlockWizardFragment extends WizardFragment
     }
 
     /**
+     * Returns the current nfc technology being used.
+     *
+     * @return
+     */
+    public BaseNfcTagTechnology getNfcTechnology() {
+        return mNfcTechnology;
+    }
+
+    /**
      * NFC handling
      *
      * @param exception
@@ -246,9 +256,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
      * @return
      * @throws IOException
      */
-    public Throwable doNfcInBackground() throws IOException {
+    public void doNfcInBackground() throws IOException {
         if (mOperationState == OperationState.OPERATION_STATE_FINALIZED) {
-            return null;
+            return;
         }
 
         if (mNfcTechnology != null) {
@@ -273,7 +283,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
             }
         } catch (NoSuchAlgorithmException e) {
             mNfcTechnology.close();
-            return new IOException(e.getCause());
+            throw new IOException("Failed to generate the pin for the card - internal error");
         }
 
         postProgressToMainThread(3);
@@ -291,9 +301,9 @@ public class NFCUnlockWizardFragment extends WizardFragment
         byte[] pinPasspgrase = new String(mNfcPin.getCharArray()).getBytes("ISO-8859-1");
         if (mNfcTechnology.verify(pinPasspgrase, nfcPin)) {
             mPinMovedToCard = true;
-            return null;
+            return;
         }
-        return new IOException("Generate 128 bit passphrase did not match - internal error");
+        throw new IOException("Generate 128 bit passphrase did not match - internal error");
     }
 
     @Override
