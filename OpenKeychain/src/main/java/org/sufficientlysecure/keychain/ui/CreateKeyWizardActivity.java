@@ -80,6 +80,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
 
     private Button mNextButton;
     private Button mBackButton;
+
     private WizardFragment mCurrentVisibleFragment;
     private WizardStep mWizardStep = WizardStep.WIZARD_STEP_BEGIN;
     private WizardModel mWizardModel;
@@ -426,6 +427,15 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
             mNextButton.animate().setDuration(WIZARD_BUTTON_ANIMATION_DURATION);
             mNextButton.animate().alpha(1);
         }
+    }
+
+    /**
+     * Returns the current visible fragment.
+     *
+     * @return
+     */
+    public WizardFragment getCurrentVisibleFragment() {
+        return mCurrentVisibleFragment;
     }
 
     /**

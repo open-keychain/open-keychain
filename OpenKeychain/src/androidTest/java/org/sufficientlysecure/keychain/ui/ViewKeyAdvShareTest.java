@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -52,7 +53,8 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.sufficientlysecure.keychain.TestHelpers.checkAndDismissSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.cleanupForTests;
+import static org.sufficientlysecure.keychain.TestHelpers.cleanupDatabase;
+import static org.sufficientlysecure.keychain.TestHelpers.importKeys;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -77,7 +79,8 @@ public class ViewKeyAdvShareTest {
     public void setUp() throws Exception {
         mActivity = mActivityRule.getActivity();
 
-        cleanupForTests(mActivity);
+        cleanupDatabase(mActivity);
+        importKeys(mActivity);
     }
 
     @Test

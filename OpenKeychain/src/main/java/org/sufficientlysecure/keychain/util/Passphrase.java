@@ -25,6 +25,7 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
@@ -60,6 +61,10 @@ public class Passphrase implements Parcelable {
 
     public Passphrase(char[] passphrase) {
         mPassphrase = passphrase;
+    }
+
+    public Passphrase(byte[] passphrase) throws UnsupportedEncodingException {
+        mPassphrase = new String(passphrase, "ISO-8859-1").toCharArray();
     }
 
     public Passphrase(String passphrase) {

@@ -30,7 +30,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.sufficientlysecure.keychain.TestHelpers.cleanupForTests;
+import static org.sufficientlysecure.keychain.TestHelpers.cleanupDatabase;
+import static org.sufficientlysecure.keychain.TestHelpers.importKeys;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 
 
@@ -46,7 +47,8 @@ public class OpenPgpServiceTest {
     @Before
     public void setUp() throws Exception {
 
-        cleanupForTests(InstrumentationRegistry.getTargetContext());
+        cleanupDatabase(InstrumentationRegistry.getTargetContext());
+        importKeys(InstrumentationRegistry.getTargetContext());
 
         Intent serviceIntent = new Intent(InstrumentationRegistry.getTargetContext(), OpenPgpService.class);
         IBinder binder = mServiceRule.bindService(serviceIntent);

@@ -37,6 +37,7 @@ import android.view.View;
 
 import com.nispok.snackbar.Snackbar;
 import com.tokenautocomplete.TokenCompleteTextView;
+
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -61,22 +62,22 @@ public class TestHelpers {
 
     public static void dismissSnackbar() {
         onView(withClassName(endsWith("Snackbar")))
-            .perform(new ViewAction() {
-                @Override
-                public Matcher<View> getConstraints() {
-                    return ViewMatchers.isAssignableFrom(Snackbar.class);
-                }
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return ViewMatchers.isAssignableFrom(Snackbar.class);
+                    }
 
-                @Override
-                public String getDescription() {
-                    return "dismiss snackbar";
-                }
+                    @Override
+                    public String getDescription() {
+                        return "dismiss snackbar";
+                    }
 
-                @Override
-                public void perform(UiController uiController, View view) {
-                    ((Snackbar) view).dismiss();
-                }
-            });
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ((Snackbar) view).dismiss();
+                    }
+                });
     }
 
     public static void checkSnackbar(Style style, @StringRes Integer text) {
@@ -101,7 +102,7 @@ public class TestHelpers {
                 getInstrumentation().getContext().getAssets().open(name));
 
         ProviderHelper helper = new ProviderHelper(context);
-        while(stream.hasNext()) {
+        while (stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {
                 helper.saveSecretKeyRing(ring, new ProgressScaler());
@@ -123,13 +124,14 @@ public class TestHelpers {
             InputStream in = new BufferedInputStream(getInstrumentation().getContext().getAssets().open(filename));
             OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
             int len;
-            while( (len = in.read(buf)) > 0) {
+            while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
         }
     }
 
-    public static final String[] FILES = new String[] { "pa.png", "re.png", "ci.png" };
+    public static final String[] FILES = new String[]{"pa.png", "re.png", "ci.png"};
+
     public static File[] getImageNames() {
         File cacheDir = getInstrumentation().getTargetContext().getFilesDir();
         File[] ret = new File[FILES.length];
@@ -148,22 +150,22 @@ public class TestHelpers {
         Random r = new Random();
         StringBuilder passbuilder = new StringBuilder();
         // 5% chance for an empty string
-        for(int i = 0, j = r.nextInt(max)+min; i < j; i++) {
+        for (int i = 0, j = r.nextInt(max) + min; i < j; i++) {
             passbuilder.append(chars.charAt(r.nextInt(chars.length())));
         }
         return passbuilder.toString();
     }
 
-    public static void cleanupForTests(Context context) throws Exception {
-
-        new KeychainDatabase(context).clearDatabase();
-
+    public static void importKeys(Context context) throws Exception {
         // import these two, make sure they're there
         importKeysFromResource(context, "x.sec.asc");
+    }
+
+    public static void cleanupDatabase(Context context) {
+        new KeychainDatabase(context).clearDatabase();
 
         // make sure no passphrases are cached
         PassphraseCacheService.clearCachedPassphrases(context);
-
     }
 
 }

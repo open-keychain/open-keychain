@@ -39,7 +39,9 @@ import java.security.NoSuchAlgorithmException;
  */
 public class PatternUnlockWizardFragment extends WizardFragment {
     public static final int MIN_PATTERN_LENGTH = 4;
-    public static final int MAX_PATTERN_LENGTH = 14;
+    public static final int MIN_PATTERN_STRING_LENGTH = (MIN_PATTERN_LENGTH * 8) - 1;
+    public static final int MAX_PATTERN_LENGTH = 16;
+    public static final int MAX_PATTERN_STRING_LENGTH = (MAX_PATTERN_LENGTH * 8) - 1;
     public static final String STATE_SAVE_LAST_KEYWORD = "STATE_SAVE_LAST_KEYWORD";
     public static final String STATE_SAVE_CURRENT_KEYWORD = "STATE_SAVE_CURRENT_KEYWORD";
     public static final String STATE_SAVE_OPERATION_STATE = "STATE_SAVE_OPERATION_STATE";
@@ -125,12 +127,7 @@ public class PatternUnlockWizardFragment extends WizardFragment {
             return false;
         } else {
             try {
-                MessageDigest md = MessageDigest.getInstance("SHA-256");
-
-                md.update(mLastInputKeyWord.toString().getBytes());
-                byte[] digest = md.digest();
-
-                Passphrase passphrase = new Passphrase(new String(digest, "ISO-8859-1").toCharArray());
+                Passphrase passphrase = encodePassphrase(mLastInputKeyWord.toString());
                 passphrase.setSecretKeyType(mWizardFragmentListener.getSecretKeyType());
                 mWizardFragmentListener.setPassphrase(passphrase);
                 return true;
@@ -140,6 +137,21 @@ public class PatternUnlockWizardFragment extends WizardFragment {
                 return false;
             }
         }
+    }
+
+    /**
+     * Hashes the passphrase.
+     *
+     * @param passphraseString
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
+    public Passphrase encodePassphrase(String passphraseString) throws NoSuchAlgorithmException,
+            UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(passphraseString.getBytes());
+        return new Passphrase(md.digest());
     }
 
     /**
@@ -192,7 +204,9 @@ public class PatternUnlockWizardFragment extends WizardFragment {
     public boolean onOperationStateInputFirstPattern() {
         onOperationStateOK("");
         int patternLength = mPatternView.getPattern().size();
-        if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH) {
+        if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH ||
+                mCurrentInputKeyWord.length() < MIN_PATTERN_STRING_LENGTH ||
+                mCurrentInputKeyWord.length() > MAX_PATTERN_STRING_LENGTH) {
             onOperationStateError(getString(R.string.error_pattern_length));
             resetCurrentKeyword();
             return false;
@@ -216,7 +230,9 @@ public class PatternUnlockWizardFragment extends WizardFragment {
             onOperationStateError(getString(R.string.error_pattern_mismatch));
             initializeUnlockOperation();
             return false;
-        } else if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH) {
+        } else if (patternLength < MIN_PATTERN_LENGTH || patternLength > MAX_PATTERN_LENGTH ||
+                mCurrentInputKeyWord.length() < MIN_PATTERN_STRING_LENGTH ||
+                mCurrentInputKeyWord.length() > MAX_PATTERN_STRING_LENGTH) {
             onOperationStateError(getString(R.string.error_pattern_length));
             initializeUnlockOperation();
             return false;
@@ -275,5 +291,14 @@ public class PatternUnlockWizardFragment extends WizardFragment {
     public void appendPattern(CharSequence text) {
         resetCurrentKeyword();
         mCurrentInputKeyWord.append(text);
+    }
+
+    /**
+     * Returns the pattern view.
+     *
+     * @return
+     */
+    public PatternView getPatternView() {
+        return mPatternView;
     }
 }
