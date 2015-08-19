@@ -2,21 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/wizard_activity_margin"
+                android:paddingBottom="48dp"
                 android:persistentDrawingCache="all">
 
     <TextView
         android:id="@+id/unlockTip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
         android:text="@string/input_pin"/>
 
     <org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView
         android:id="@+id/unlockUserFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp">
+        android:layout_alignParentBottom="true">
     </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
     <ProgressBar
@@ -24,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"
         android:indeterminate="true"
         android:visibility="invisible"/>
 
@@ -33,7 +32,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/unlockTip"
-        android:layout_marginRight="24dp"
         android:visibility="invisible">
 
         <TextView
@@ -42,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="0"
+            android:text="@string/number_0"
             android:textColor="@android:color/black"
             android:textSize="24sp"/>
 
@@ -52,7 +50,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@id/pinLength"
-            android:text="Pin Length:"
+            android:text="@string/pin_length"
             android:textColor="@android:color/black"/>
     </RelativeLayout>
 
@@ -61,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/progressBar"
-        android:layout_below="@id/unlockTip">
+        android:layout_below="@id/pinLengthLayout">
 
         <RelativeLayout
             android:id="@+id/pinKeyboardLayout"
@@ -73,29 +71,29 @@
             <Button
                 android:id="@+id/unlockKey1"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="@string/number_1"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey2"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey1"
-                android:text="2"
+                android:text="@string/number_2"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey3"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey2"
-                android:text="3"
+                android:text="@string/number_3"
                 android:textSize="18sp"/>
 
 
@@ -104,33 +102,32 @@
             <Button
                 android:id="@+id/unlockKey4"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_below="@id/unlockKey1"
-                android:layout_marginTop="24dp"
-                android:text="4"
+                android:text="@string/number_4"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey5"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignBaseline="@id/unlockKey4"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey4"
-                android:text="5"
+                android:text="@string/number_5"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey6"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignBaseline="@id/unlockKey5"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey5"
-                android:text="6"
+                android:text="@string/number_6"
                 android:textSize="18sp"/>
 
             <!-- third row -->
@@ -138,49 +135,44 @@
             <Button
                 android:id="@+id/unlockKey7"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_below="@id/unlockKey4"
-                android:layout_marginTop="@dimen/wizard_unlock_margin"
-                android:text="7"
+                android:text="@string/number_7"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey8"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignBaseline="@id/unlockKey7"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey4"
-                android:text="8"
+                android:text="@string/number_8"
                 android:textSize="18sp"/>
 
             <Button
                 android:id="@+id/unlockKey9"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignBaseline="@id/unlockKey7"
-                android:layout_marginLeft="@dimen/wizard_unlock_margin"
+                android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/unlockKey5"
-                android:text="9"
+                android:text="@string/number_9"
                 android:textSize="18sp"/>
 
             <!-- fourth row -->
             <Button
                 android:id="@+id/unlockKey0"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_below="@id/unlockKey7"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/wizard_unlock_margin"
-                android:text="0"
+                android:text="@string/number_0"
                 android:textSize="18sp"/>
         </RelativeLayout>
-
     </RelativeLayout>
-
-
 </RelativeLayout>

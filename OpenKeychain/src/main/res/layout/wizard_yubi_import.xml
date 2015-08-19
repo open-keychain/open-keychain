@@ -2,19 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="@dimen/wizard_activity_margin"
                 android:paddingBottom="48dp">
 
     <LinearLayout
         android:id="@+id/yubikey_status_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="4dp">
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_margin="14dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="14dp"
             android:scaleType="centerCrop"
             android:src="@drawable/yubi_icon"/>
 

@@ -2,21 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/wizard_activity_margin"
+                android:paddingBottom="48dp"
                 android:persistentDrawingCache="all">
 
     <TextView
         android:id="@+id/unlockTip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
         android:text="@string/input_pattern"/>
 
     <org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView
         android:id="@+id/unlockUserFeedback"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="24dp">
+        android:layout_alignParentBottom="true">
     </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
     <ProgressBar
@@ -24,7 +24,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="24dp"
         android:indeterminate="true"
         android:visibility="invisible"/>
 

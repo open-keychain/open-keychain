@@ -9,7 +9,7 @@
         android:id="@+id/wizardUnlockSuggestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/wizard_unlock_margin"
+        android:layout_margin="@dimen/wizard_activity_margin"
         android:text="@string/wizard_unlock_tip"
         android:textColor="@color/primary_text_default_material_light"
         android:textSize="14sp"/>
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checkedButton="@+id/radioPinUnlock"
-            android:padding="24dp">
+            android:padding="16dp">
 
             <RadioButton
                 android:id="@+id/radioPassphraseUnlock"
