@@ -7,8 +7,8 @@ import android.support.v4.app.FragmentManager;
  * Wait for dialogs to dismiss by tag.
  */
 public class DialogFragmentIdlingResource implements IdlingResource {
-    protected FragmentManager mManager;
-    protected String mTag;
+    private FragmentManager mManager;
+    private String mTag;
     private ResourceCallback mResourceCallback;
 
     public DialogFragmentIdlingResource(FragmentManager manager, String tag) {

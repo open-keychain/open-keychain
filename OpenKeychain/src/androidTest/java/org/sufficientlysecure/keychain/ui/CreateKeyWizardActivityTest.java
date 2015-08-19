@@ -21,8 +21,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.TestHelpers;
 import org.sufficientlysecure.keychain.actions.CustomActions;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.resources.DialogFragmentIdlingResource;
+import org.sufficientlysecure.keychain.resources.NFCWizardIdlingResource;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
 import org.sufficientlysecure.keychain.ui.wizard.PatternUnlockWizardFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -120,6 +121,15 @@ public class CreateKeyWizardActivityTest {
     }
 
     /**
+     * Test containsKeys with a null fingerprint.
+     */
+    @Test
+    public void testContainsKeysNullParam() {
+        CreateKeyWizardActivity activity = mActivity.getActivity();
+        assertFalse(activity.containsKeys(null));
+    }
+
+    /**
      * Test the activity for first time usage.
      */
     @Test
@@ -167,6 +177,7 @@ public class CreateKeyWizardActivityTest {
 
         //check passphrase
         assertNotNull(activity.getPassphrase());
+        assertEquals(activity.getPassphrase().getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.PIN);
         assertTrue(Arrays.equals(activity.getPassphrase().getCharArray(), PIN));
 
         // Clicks next with empty name
@@ -193,6 +204,7 @@ public class CreateKeyWizardActivityTest {
 
         // Adds same email as additional email and dismisses the snackbar
         onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
         onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_EMAIL));
 
         // Closes the keyboard
@@ -206,6 +218,7 @@ public class CreateKeyWizardActivityTest {
 
         // Adds additional email
         onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
         onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_ADDITIONAL_EMAIL));
 
         // Closes the keyboard
@@ -268,7 +281,7 @@ public class CreateKeyWizardActivityTest {
         onView(withId(R.id.create_key_create_key_button)).perform(click());
 
         // Selects Pattern option
-        onView(withId(R.id.radioPatternUnlock)).perform(click());
+        onView(withId(R.id.radioPatternUnlock)).perform(scrollTo(), click());
 
         // Clicks next
         nextButton.perform(click());
@@ -311,7 +324,14 @@ public class CreateKeyWizardActivityTest {
 
         //check passphrase
         assertNotNull(activity.getPassphrase());
-        assertEquals(activity.getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.PATTERN);
+        assertEquals(activity.getPassphrase().getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.PATTERN);
+
+        try {
+            Passphrase patternPassphrase = patternUnlockWizardFragment.encodePassphrase(PATTERN);
+            assertTrue(Arrays.equals(activity.getPassphrase().getCharArray(), patternPassphrase.getCharArray()));
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         // Clicks next with empty name
         nextButton.perform(click());
@@ -337,6 +357,7 @@ public class CreateKeyWizardActivityTest {
 
         // Adds same email as additional email and dismisses the snackbar
         onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
         onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_EMAIL));
 
         // Closes the keyboard
@@ -350,6 +371,7 @@ public class CreateKeyWizardActivityTest {
 
         // Adds additional email
         onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
         onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_ADDITIONAL_EMAIL));
 
         // Closes the keyboard
@@ -391,7 +413,7 @@ public class CreateKeyWizardActivityTest {
             e.printStackTrace();
         }
 
-        assertEquals(activity.getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.PATTERN);
+        assertEquals(activity.getPassphrase().getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.PATTERN);
         assertTrue(activity.getName().equals(SAMPLE_NAME));
         assertTrue(activity.getEmail().equals(SAMPLE_EMAIL));
         assertTrue(activity.getAdditionalEmails() == null || activity.getAdditionalEmails().size() == 0);
@@ -411,20 +433,113 @@ public class CreateKeyWizardActivityTest {
                 ServiceProgressHandler.TAG_PROGRESS_DIALOG);
         registerIdlingResources(idlingResource);
 
+        IdlingResource nfcIdlingResource = new NFCWizardIdlingResource(activity);
+        registerIdlingResources(nfcIdlingResource);
+
         ViewInteraction nextButton = onView(withId(R.id.nextButton));
 
         // Clicks create my key
         onView(withId(R.id.create_key_create_key_button)).perform(click());
 
-        // Selects Pin option
+        // Selects NFC option
         onView(withId(R.id.radioNFCUnlock)).perform(scrollTo(), click());
 
         // Clicks next
         nextButton.perform(click());
 
-        //checks if the secret key type is of type PIN
+        //checks if the secret key type is of type NFC
         assertEquals(activity.getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
+        nextButton.perform(click());
+
+        //check passphrase
+        assertNotNull(activity.getPassphrase());
+        assertEquals(activity.getPassphrase().getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
+
+        // Clicks next with empty name
+        nextButton.perform(click());
+        onView(withId(R.id.create_key_name)).check(matches(withError(R.string.create_key_empty)));
+
+        // Types name
+        onView(withId(R.id.create_key_name)).perform(typeText(SAMPLE_NAME));
+
+        // Closes the keyboard
+        onView(withId(R.id.create_key_name)).perform(CustomActions.closeSoftKeyboard());
+
+        // Clicks next
+        nextButton.perform(click());
+
+        // checks if the name has been saved.
+        assertTrue(activity.getName().equals(SAMPLE_NAME));
+
+        // Types email
+        onView(withId(R.id.create_key_email)).perform(typeText(SAMPLE_EMAIL));
+
+        // Closes the keyboard
+        onView(withId(R.id.create_key_email)).perform(CustomActions.closeSoftKeyboard());
+
+        // Adds same email as additional email and dismisses the snackbar
+        onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
+        onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_EMAIL));
+
+        // Closes the keyboard
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
+
+        onView(withText(android.R.string.ok)).inRoot(isDialog()).perform(click());
+        onView(allOf(withId(R.id.sb__text), withText(R.string.create_key_email_already_exists_text)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.sb__text), withText(R.string.create_key_email_already_exists_text)))
+                .perform(swipeLeft());
+
+        // Adds additional email
+        onView(withId(R.id.create_key_add_email)).perform(click());
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
+        onView(withId(R.id.add_email_address)).perform(typeText(SAMPLE_ADDITIONAL_EMAIL));
+
+        // Closes the keyboard
+        onView(withId(R.id.add_email_address)).perform(CustomActions.closeSoftKeyboard());
+
+        //click dialog OK
+        onView(withText(android.R.string.ok)).inRoot(isDialog()).perform(click());
+        onView(withId(R.id.create_key_emails))
+                .check(matches(hasDescendant(allOf(withId(R.id.create_key_email_item_email),
+                        withText(SAMPLE_ADDITIONAL_EMAIL)))));
+
+        // Removes additional email and clicks next
+        onView(allOf(withId(R.id.create_key_email_item_delete_button),
+                hasSibling(allOf(withId(R.id.create_key_email_item_email),
+                        withText(SAMPLE_ADDITIONAL_EMAIL)))))
+                .perform(click())
+                .check(doesNotExist());
+
+
+        // Clicks next
+        nextButton.perform(click());
+
+        // checks if the email has been saved.
+        assertTrue(activity.getEmail().equals(SAMPLE_EMAIL));
+
+        //checks final name and email
+        onView(withId(R.id.name)).check(matches(withText(SAMPLE_NAME)));
+        onView(withId(R.id.email)).check(matches(withText(SAMPLE_EMAIL)));
+
+        //opens edit key
+        onView(withId(R.id.create_key_edit_button)).perform(click());
+        onView(ViewMatchers.isRoot()).perform(pressBack());
+
+        //check wizard view model data consistency
+        assertNotNull(activity.getPassphrase());
+        assertTrue(activity.getPassphrase().getCharArray().length == 16);
+        assertEquals(activity.getPassphrase().getSecretKeyType(), CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
+        assertTrue(activity.getName().equals(SAMPLE_NAME));
+        assertTrue(activity.getEmail().equals(SAMPLE_EMAIL));
+        assertTrue(activity.getAdditionalEmails() == null || activity.getAdditionalEmails().size() == 0);
+        assertTrue(!activity.isFirstTime());
+
+        // Clicks next
+        nextButton.perform(click());
 
         unregisterIdlingResources(idlingResource);
+        unregisterIdlingResources(nfcIdlingResource);
     }
 }
