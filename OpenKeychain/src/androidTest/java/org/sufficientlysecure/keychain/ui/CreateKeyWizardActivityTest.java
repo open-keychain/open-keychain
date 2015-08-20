@@ -70,6 +70,7 @@ public class CreateKeyWizardActivityTest {
     public static final String SAMPLE_PASSWORD = "sample_password";
     public static final char[] PIN = {'2', '5', '8', '0'};
     public static final String PATTERN = "000-000&000-001&000-002&000-003";
+
     @Rule
     public final ActivityTestRule<CreateKeyWizardActivity> mActivity
             = new ActivityTestRule<CreateKeyWizardActivity>(CreateKeyWizardActivity.class) {
