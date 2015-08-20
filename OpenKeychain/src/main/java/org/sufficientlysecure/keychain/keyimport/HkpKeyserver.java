@@ -196,9 +196,9 @@ public class HkpKeyserver extends Keyserver {
     /**
      * returns a client with pinned certificate if necessary
      *
-     * @param url
-     * @param proxy
-     * @return
+     * @param url url to be queried by client
+     * @param proxy proxy to be used by client
+     * @return client with a pinned certificate if necesary
      */
     public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
         OkHttpClient client = new OkHttpClient();
@@ -360,7 +360,7 @@ public class HkpKeyserver extends Keyserver {
         try {
             data = query(request, proxy);
         } catch (HttpError httpError) {
-            Log.e(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
+            Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
         }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);

@@ -23,7 +23,6 @@ import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -35,7 +34,7 @@ import android.widget.Toast;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
@@ -97,7 +96,7 @@ public class KeychainApplication extends Application {
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
-        Preferences.getPreferences(this).upgradePreferences();
+        Preferences.getPreferences(this).upgradePreferences(this);
 
         TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
 
@@ -136,17 +135,20 @@ public class KeychainApplication extends Application {
     }
 
     /**
-     * Add OpenKeychain account to Android to link contacts with keys
+     * Add OpenKeychain account to Android to link contacts with keys and keyserver sync
      */
     public static void setupAccountAsNeeded(Context context) {
         try {
             AccountManager manager = AccountManager.get(context);
             Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-            if (accounts == null || accounts.length == 0) {
+
+            if (accounts.length == 0) {
                 Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
                 if (manager.addAccountExplicitly(account, null, null)) {
+                    // for contact sync
                     ContentResolver.setIsSyncable(account, ContactsContract.AUTHORITY, 1);
                     ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
+                    KeyserverSyncAdapterService.enableKeyserverSync(context);
                 } else {
                     Log.e(Constants.TAG, "Adding account failed!");
                 }

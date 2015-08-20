@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -71,6 +72,9 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
+
+    private static final int UPDATED_KEYS = 500;
+    private static final int UPDATED_KEYS_SPECIFIC = 501;
 
     protected UriMatcher mUriMatcher;
 
@@ -179,6 +183,12 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
 
+        /**
+         * to access table containing last updated dates of keys
+         */
+        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
+        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
+
         return matcher;
     }
 
@@ -217,6 +227,11 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RING_SECRET:
                 return KeyRings.CONTENT_ITEM_TYPE;
+
+            case UPDATED_KEYS:
+                return UpdatedKeys.CONTENT_TYPE;
+            case UPDATED_KEYS_SPECIFIC:
+                return UpdatedKeys.CONTENT_ITEM_TYPE;
 
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
@@ -606,6 +621,22 @@ public class KeychainProvider extends ContentProvider {
                 break;
             }
 
+            case UPDATED_KEYS:
+            case UPDATED_KEYS_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.UPDATED_KEYS);
+                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "."
+                        + UpdatedKeys.MASTER_KEY_ID);
+                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "."
+                        + UpdatedKeys.LAST_UPDATED);
+                qb.setProjectionMap(projectionMap);
+                if (match == UPDATED_KEYS_SPECIFIC) {
+                    qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                }
+                break;
+            }
+
             case API_APPS: {
                 qb.setTables(Tables.API_APPS);
 
@@ -724,6 +755,12 @@ public class KeychainProvider extends ContentProvider {
                     // TODO this would be better handled in savePublicKeyRing directly!
                     db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
+                    break;
+                }
+                case UPDATED_KEYS: {
+                    long updatedKeyId = db.replace(Tables.UPDATED_KEYS, null, values);
+                    rowUri = UpdatedKeys.CONTENT_URI.buildUpon().appendPath("" + updatedKeyId)
+                            .build();
                     break;
                 }
                 case API_APPS: {

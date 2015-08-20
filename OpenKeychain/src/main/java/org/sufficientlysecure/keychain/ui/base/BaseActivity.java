@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
@@ -51,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        KeyserverSyncAdapterService.cancelUpdates(this);
 
         if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();

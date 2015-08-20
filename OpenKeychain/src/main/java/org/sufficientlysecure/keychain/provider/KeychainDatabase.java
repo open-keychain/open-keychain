@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
@@ -53,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 11;
+    private static final int DATABASE_VERSION = 12;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -61,6 +62,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
+        String UPDATED_KEYS = "updated_keys";
         String USER_PACKETS = "user_packets";
         String CERTS = "certs";
         String API_APPS = "api_apps";
@@ -144,6 +146,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.USER_PACKETS + "(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + ") ON DELETE CASCADE"
             + ")";
 
+    private static final String CREATE_UPDATE_KEYS =
+            "CREATE TABLE IF NOT EXISTS " + Tables.UPDATED_KEYS + " ("
+                    + UpdatedKeysColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY, "
+                    + UpdatedKeysColumns.LAST_UPDATED + " INTEGER, "
+                    + "FOREIGN KEY(" + UpdatedKeysColumns.MASTER_KEY_ID + ") REFERENCES "
+                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
+                    + ")";
+
     private static final String CREATE_API_APPS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -206,6 +216,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_PACKETS);
         db.execSQL(CREATE_CERTS);
+        db.execSQL(CREATE_UPDATE_KEYS);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ACCOUNTS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
@@ -278,8 +289,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 // fix problems in database, see #1402 for details
                 // https://github.com/open-keychain/open-keychain/issues/1402
                 db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
+            case 12:
+                db.execSQL(CREATE_UPDATE_KEYS);
                 if (oldVersion == 10) {
-                    // no consolidate if we are updating from 10, we're just here for the api_accounts fix
+                    // no consolidate if we are updating from 10, we're just here for
+                    // the api_accounts fix and the new update keys table
                     return;
                 }
 

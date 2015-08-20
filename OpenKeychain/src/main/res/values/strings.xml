@@ -51,6 +51,7 @@
     <string name="section_passphrase_cache">"Password/PIN Handling"</string>
     <string name="section_proxy_settings">"Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
+    <string name="section_sync_settings">"Sync Settings"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -174,6 +175,15 @@
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
+
+    <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
+    <string name="label_sync_settings_keyserver_summary_on">"Keys older than a week are updated from the preferred keyserver"</string>
+    <string name="label_sync_settings_keyserver_summary_off">"Keys not automatically updated"</string>
+    <string name="label_sync_settings_contacts_title">"Sync Contacts with Keys"</string>
+    <string name="label_sync_settings_contacts_summary_on">"Keys linked to contacts with matching emails, happens completely offline"</string>
+    <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
+    <!-- label shown in Android settings under the OpenKeychain account -->
+    <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
 
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
@@ -1304,7 +1314,6 @@
     </plurals>
 
     <string name="msg_revoke_error_empty">"Nothing to revoke!"</string>
-    <string name="msg_revoke_error_multi_secret">"Secret keys can only be revoked individually!"</string>
     <string name="msg_revoke_error_not_found">"Cannot find key to revoke!"</string>
     <string name="msg_revoke_key">"Revoking key %s"</string>
     <string name="msg_revoke_key_fail">"Failed revoking key"</string>
@@ -1350,6 +1359,12 @@
     <string name="passp_cache_notif_keys">"Remembered passwords"</string>
     <string name="passp_cache_notif_clear">"Clear Passwords"</string>
     <string name="passp_cache_notif_pwd">"Password"</string>
+
+    <!-- Keyserver sync -->
+    <string name="keyserver_sync_orbot_notif_title">"Sync From Cloud requires Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
+    <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>

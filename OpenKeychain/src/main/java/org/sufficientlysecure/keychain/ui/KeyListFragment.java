@@ -18,11 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -68,17 +63,21 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -536,7 +535,7 @@ public class KeyListFragment extends LoaderFragment
         );
 
         if (cursor == null) {
-            Notify.create(activity, R.string.error_loading_keys, Style.ERROR);
+            Notify.create(activity, R.string.error_loading_keys, Notify.Style.ERROR);
             return;
         }
 
