@@ -63,7 +63,6 @@ public class PatternUnlockDialog extends UnlockDialog
     private FeedbackIndicatorView mFeedbackIndicatorView;
     private ProgressBar mProgressBar;
     private TextView mUnlockTip;
-    private Button mPositiveDialogButton;
     private PatternView mPatternView;
     private DialogUnlockOperationState mOperationState;
     private StringBuilder mInputKeyword;
@@ -104,17 +103,9 @@ public class PatternUnlockDialog extends UnlockDialog
         mPatternView = (PatternView) view.findViewById(R.id.patternView);
 
         alert.setTitle(getString(R.string.title_unlock));
-        alert.setPositiveButton(getString(R.string.unlock_caps), null);
         alert.setNegativeButton(android.R.string.cancel, null);
 
         mAlertDialog = alert.show();
-        mPositiveDialogButton = mAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onOperationRequest();
-            }
-        });
 
         Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
         b.setOnClickListener(new View.OnClickListener() {
@@ -138,6 +129,13 @@ public class PatternUnlockDialog extends UnlockDialog
             @Override
             public void onPatternStart() {
                 resetCurrentKeyword();
+            }
+        });
+
+        mPatternView.setOnPatternDetectedListener(new PatternView.OnPatternDetectedListener() {
+            @Override
+            public void onPatternDetected() {
+                onOperationRequest();
             }
         });
 
@@ -190,15 +188,6 @@ public class PatternUnlockDialog extends UnlockDialog
     }
 
     /**
-     * Updates the dialog button.
-     *
-     * @param text
-     */
-    public void onUpdateDialogButtonText(CharSequence text) {
-        mPositiveDialogButton.setText(text);
-    }
-
-    /**
      * Notifies the dialog that the unlock operation has started.
      */
     public void onOperationStarted() {
@@ -210,12 +199,7 @@ public class PatternUnlockDialog extends UnlockDialog
      * dismiss.
      */
     public void onNoRetryAllowed() {
-        mPositiveDialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        dismiss();
     }
 
     /**
@@ -307,9 +291,9 @@ public class PatternUnlockDialog extends UnlockDialog
     }
 
     /**
-     * Method that starts the async task operation for the current pin.
+     * Method that starts the async task operation for the current pattern.
      */
-    public void startAsyncUnlockOperationForPin(Passphrase passphrase) {
+    public void startAsyncUnlockOperationForPattern(Passphrase passphrase) {
         if (mUnlockAsyncTask != null) {
             mUnlockAsyncTask.setOnUnlockAsyncTaskListener(null);
             mUnlockAsyncTask.cancel(true);
@@ -352,12 +336,7 @@ public class PatternUnlockDialog extends UnlockDialog
         onShowProgressBar(true);
 
         try {
-            MessageDigest md;
-            md = MessageDigest.getInstance("SHA-256");
-            md.update(mInputKeyword.toString().getBytes());
-            byte[] digest = md.digest();
-
-            mPassphrase = new Passphrase(new String(digest, "ISO-8859-1").toCharArray());
+            mPassphrase = encodePassphrase(mInputKeyword.toString());
             mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.PATTERN);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             onFatalError(R.string.msg_dc_error_extract_key, true);
@@ -374,7 +353,22 @@ public class PatternUnlockDialog extends UnlockDialog
         }
 
         mOperationState = DialogUnlockOperationState.DIALOG_UNLOCK_OPERATION_STATE_IN_PROGRESS;
-        startAsyncUnlockOperationForPin(mPassphrase);
+        startAsyncUnlockOperationForPattern(mPassphrase);
+    }
+
+    /**
+     * Hashes the passphrase.
+     *
+     * @param passphraseString
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     */
+    public Passphrase encodePassphrase(String passphraseString) throws NoSuchAlgorithmException,
+            UnsupportedEncodingException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(passphraseString.getBytes());
+        return new Passphrase(md.digest());
     }
 
     /**
@@ -430,7 +424,6 @@ public class PatternUnlockDialog extends UnlockDialog
     @Override
     public void onErrorCouldNotExtractKey() {
         onFatalError(R.string.msg_dc_error_extract_key, true);
-        onUpdateDialogButtonText(mActivity.getString(android.R.string.ok));
     }
 
     @Override
@@ -438,7 +431,6 @@ public class PatternUnlockDialog extends UnlockDialog
         resetOperationToInitialState();
         onShowProgressBar(false);
         onOperationStateError(R.string.error_wrong_pattern, false);
-        onUpdateDialogButtonText(mActivity.getString(R.string.unlock_caps));
     }
 
     @Override
