@@ -37,7 +37,7 @@ public class EmailWizardFragmentTest {
     public static final String SAMPLE_EMAIL = "openkeychain@openkeychain.org";
     public static final String SAMPLE_WRONG_EMAIL = "openkeychain.@org";
     public static final String SAMPLE_ADDITIONAL_EMAIL = "additionalopenkeychain@openkeychain.org";
-    private static EmailWizardFragment mFragment;
+    private EmailWizardFragment mFragment;
 
     @Rule
     public final ActivityTestRule<CreateKeyWizardActivity> mActivity
