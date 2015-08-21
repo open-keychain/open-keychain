@@ -267,7 +267,7 @@ public class PatternUnlockWizardFragment extends WizardFragment {
     /**
      * Clears all input keywords if they were initialized.
      */
-    private void clearInputKeyword() {
+    public void clearInputKeyword() {
         if (mLastInputKeyWord != null) {
             mLastInputKeyWord.setLength(0);
         }
@@ -300,5 +300,32 @@ public class PatternUnlockWizardFragment extends WizardFragment {
      */
     public PatternView getPatternView() {
         return mPatternView;
+    }
+
+    /**
+     * Returns the first user input (First time the user input a pattern).
+     *
+     * @return
+     */
+    public StringBuilder getLastInputKeyWord() {
+        return mLastInputKeyWord;
+    }
+
+    /**
+     * Returns the second user pattern input.
+     *
+     * @return
+     */
+    public StringBuilder getCurrentInputKeyWord() {
+        return mCurrentInputKeyWord;
+    }
+
+    /**
+     * Returns the current operation state.
+     *
+     * @return
+     */
+    public OperationState getOperationState() {
+        return mOperationState;
     }
 }
