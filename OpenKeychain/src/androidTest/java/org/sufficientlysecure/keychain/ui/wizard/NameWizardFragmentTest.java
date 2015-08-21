@@ -43,7 +43,7 @@ public class NameWizardFragmentTest {
 
     @Before
     public void setUp() {
-        //force the email fragment to load.
+        //force the name fragment to load.
         mActivity.getActivity().onNameState();
         try {
             mActivity.runOnUiThread(new Runnable() {
