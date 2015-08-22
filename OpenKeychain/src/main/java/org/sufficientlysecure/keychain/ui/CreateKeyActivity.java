@@ -187,15 +187,17 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     private boolean containsKeys(byte[] scannedFingerprints) {
+        if (scannedFingerprints == null) {
+            return false;
+        }
+
         // If all fingerprint bytes are 0, the card contains no keys.
-        boolean cardContainsKeys = false;
         for (byte b : scannedFingerprints) {
             if (b != 0) {
-                cardContainsKeys = true;
-                break;
+                return true;
             }
         }
-        return cardContainsKeys;
+        return false;
     }
 
     @Override

@@ -147,8 +147,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
             protected Exception doInBackground(Void... params) {
                 try {
                     handleTagDiscoveredIntent(intent);
-                } catch (CardException e) {
-                    return e;
                 } catch (IOException e) {
                     return e;
                 }
@@ -406,6 +404,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Connect to the detected tag, setting a couple of settings
         mIsoDep = IsoDep.get(detectedTag);
+        if (mIsoDep == null) {
+            // TODO: better exception?
+            throw new IOException("Tag does not support ISO-DEP (ISO 14443-4)!");
+        }
         mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
         mIsoDep.connect();
 
@@ -496,6 +498,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
      */
     public byte[] nfcGetFingerprint(int idx) throws IOException {
         byte[] data = nfcGetFingerprints();
+        if (data == null) {
+            return null;
+        }
 
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
@@ -507,14 +512,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     public byte[] nfcGetAid() throws IOException {
-
         String info = "00CA004F00";
         return mIsoDep.transceive(Hex.decode(info));
-
     }
 
     public String nfcGetUserId() throws IOException {
-
         String info = "00CA006500";
         return nfcGetHolderName(nfcCommunicate(info));
     }
@@ -952,14 +954,20 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     public String nfcGetHolderName(String name) {
-        String slength;
-        int ilength;
-        name = name.substring(6);
-        slength = name.substring(0, 2);
-        ilength = Integer.parseInt(slength, 16) * 2;
-        name = name.substring(2, ilength + 2);
-        name = (new String(Hex.decode(name))).replace('<', ' ');
-        return (name);
+        try {
+            String slength;
+            int ilength;
+            name = name.substring(6);
+            slength = name.substring(0, 2);
+            ilength = Integer.parseInt(slength, 16) * 2;
+            name = name.substring(2, ilength + 2);
+            name = (new String(Hex.decode(name))).replace('<', ' ');
+            return name;
+        } catch (IndexOutOfBoundsException e) {
+            Log.e(Constants.TAG, "couldn't get holder name", e);
+            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
+            return "";
+        }
     }
 
     private String nfcGetDataField(String output) {
