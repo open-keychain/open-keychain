@@ -114,7 +114,7 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PATTERN;
         } else if (id == R.id.radioNFCUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.NFC_TAG;
-        } else if(id == R.id.radioPassphraseUnlock) {
+        } else if (id == R.id.radioPassphraseUnlock) {
             mSecretKeyType = CanonicalizedSecretKey.SecretKeyType.PASSPHRASE;
         }
     }
@@ -124,6 +124,15 @@ public class UnlockChoiceWizardFragment extends WizardFragment {
         super.onStart();
         if (mHandler != null) {
             mHandler.postDelayed(mRunnable, 500);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mRunnable);
+            mWizardFragmentListener.onHideNavigationButtons(true, true);
         }
     }
 }
