@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/preferred_dialog_padding"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/wizard_activity_margin"
+                android:paddingBottom="48dp"
                 android:persistentDrawingCache="all">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
         android:weightSum="1">
@@ -22,6 +23,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:src="@drawable/nfc_black_48dp"/>
         </RelativeLayout>
@@ -53,8 +55,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/nfc_move_card"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:tint="@color/primary"/>
+                    android:textAppearance="?android:attr/textAppearanceSmall"/>
             </LinearLayout>
 
             <ProgressBar

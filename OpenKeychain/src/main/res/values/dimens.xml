@@ -6,4 +6,5 @@
     <dimen name="huge_toolbar">222dp</dimen>
     <dimen name="minus_statusbar_height">0dp</dimen>
     <dimen name="wizard_activity_margin">16dp</dimen>
+    <dimen name="preferred_dialog_padding">24dp</dimen>
 </resources>

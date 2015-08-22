@@ -135,7 +135,8 @@ public class PassphraseUnlockDialog extends UnlockDialog
         mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
         mPassphraseEditText.setOnEditorActionListener(this);
 
-        if ((mKeyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(mActivity).useNumKeypadForYubiKeyPin())) {
+        if ((mKeyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD &&
+                Preferences.getPreferences(mActivity).useNumKeypadForYubiKeyPin())) {
             mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
             mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         } else {
@@ -354,9 +355,6 @@ public class PassphraseUnlockDialog extends UnlockDialog
         }
 
         switch (mOperationState) {
-            /**
-             * Unlock operation
-             */
             case DIALOG_UNLOCK_OPERATION_STATE_INITIAL: {
                 onUnlockOperationStateInitial();
             }

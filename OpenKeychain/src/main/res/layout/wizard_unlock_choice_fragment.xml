@@ -12,7 +12,7 @@
         android:layout_margin="@dimen/wizard_activity_margin"
         android:text="@string/wizard_unlock_tip"
         android:textColor="@color/primary_text_default_material_light"
-        android:textSize="14sp"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
     <View
         android:id="@+id/horizontalLine"
@@ -39,7 +39,6 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="8dp"
                 android:drawableRight="@drawable/passphrase_option"
-                android:visibility="gone"
                 android:text="@string/passphrase_unlock"/>
 
             <RadioButton

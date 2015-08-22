@@ -174,7 +174,7 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
                     }
                     onYubiImportState(mNfcFingerprints, mNfcUserId, mNfcAid);
                 } else {
-                    onShowNotification("YubiKey key creation is currently not supported. Please follow our FAQ.");
+                    onShowNotification(getString(R.string.error_nfc_yubikey_not_supported));
                 }
                 return;
             }
@@ -798,12 +798,12 @@ public class CreateKeyWizardActivity extends BaseNfcActivity implements WizardFr
                 onStartViewKeyActivity(intent);
 
             } catch (PgpKeyNotFoundException e) {
-                onShowNotification("YubiKey key creation is currently not supported. Please follow our FAQ.");
+                onShowNotification(getString(R.string.error_nfc_yubikey_not_supported));
             }
         } else {
             //mWizardStep = WizardStep.WIZARD_STEP_YUBI_KEY_BLANK;
             //mOnViewModelEventBind.onYubiBlankState();
-            onShowNotification("YubiKey key creation is currently not supported. Please follow our FAQ.");
+            onShowNotification(getString(R.string.error_nfc_yubikey_not_supported));
         }
     }
 

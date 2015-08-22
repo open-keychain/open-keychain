@@ -1408,8 +1408,8 @@
 
     <!-- Create Key wizard -->
     <string name="create_key_wizard_title">Create Key Wizard</string>
-    <string name="input_pin">Input your pin to unlock the key. Your pin length must be between 4 and 14</string>
-    <string name="input_pattern">Use your finger to generate a pattern to unlock the key. Your pattern length must be between 4 and 14</string>
+    <string name="input_pin">Input your pin to secure the key. Your pin length must be between 4 and 14</string>
+    <string name="input_pattern">Use your finger to draw a pattern to secure your key. Your pattern length must be between 4 and 16</string>
     <string name="title_unlock">Key Unlock</string>
     <string name="title_unlock_method">Choose an unlock method</string>
     <string name="reset">Reset</string>
@@ -1417,7 +1417,7 @@
     <string name="confirm_caps">CONFIRM</string>
     <string name="unlock_caps">UNLOCK</string>
     <string name="unknown">UNKNOWN</string>
-    <string name="reenter_pin">Reenter your pin again and click confirm to proceed</string>
+    <string name="reenter_pin">Reenter your pin again and click next to proceed</string>
     <string name="error_pin_length">Your pin length must be between 4 and 14</string>
     <string name="reenter_pattern">Reenter your pattern again and click next to proceed</string>
     <string name="error_pattern_length">Your pattern length must be between 4 and 16</string>
@@ -1434,10 +1434,12 @@
     <string name="error_lockpattern_mismatch">Your lock pattern does not match. Please click on the reset button and try again</string>
     <string name="pin_tip2">Choose a strong pin. It protects your key when your device gets stolen.</string>
     <string name="error_wrong_pin">Wrong pin, please re-input your pin</string>
+    <string name="error_wrong_nfc_pin">Wrong NFC Card while attempting to unlock the key</string>
     <string name="error_wrong_pattern">Wrong pattern, please re-input your pattern</string>
     <string name="nfc_move_card">"Hold your NFC Card against the NFC marker at the back of your device."</string>
     <string name="nfc_configuring_card">Please wait while OpenKeyChain configures your NFC Card</string>
     <string name="nfc_pin_moved_to_card">Your NFC Card has been configured, please move the card from the back of your device and  click next to proceed</string>
+    <string name="nfc_unlocking_key">Performing unlocking...</string>
     <string name="nfc_configuration_error">An error has occurred while configuring your NFC Card, please try again</string>
     <string name="nfc_unlock">NFC</string>
     <string name="pattern_unlock">Pattern</string>
@@ -1463,6 +1465,12 @@
     <string name="error_nfc_tag_data_write">Failed to write nfc data to the card</string>
     <string name="error_nfc_tag_data_read">Failed to read the data from the card</string>
     <string name="error_nfc_dispatcher_no_registered_tech">No NFC technologies were registered for dispatch</string>
+    <string name="error_nfc_encode_pin">Error while attempting to encode the nfc pin</string>
+    <string name="error_nfc_encoded_pin_mismatch">Generated 128 bit pin did not match with the card pin</string>
+    <string name="error_nfc_failed_to_generate_pin">Failed to generate the pin for the card</string>
+
+    <!-- YUBIKEY -->
+    <string name="error_nfc_yubikey_not_supported">YubiKey key creation is currently not supported. Please follow our FAQ.</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->

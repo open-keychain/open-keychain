@@ -18,7 +18,6 @@ package org.sufficientlysecure.keychain.ui.wizard;
 
 
 import android.content.Intent;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.MifareUltralight;
@@ -26,7 +25,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
@@ -40,11 +38,10 @@ import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.nfc.BaseNfcTagTechnology;
-import org.sufficientlysecure.keychain.nfc.NfcDispatcher;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
-import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.IOException;
@@ -61,7 +58,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
     public static final int NUM_PROGRESS_OPERATIONS = 5; //never zero!!
     public static final int MESSAGE_PROGRESS_UPDATE = 1;
     private TextView mUnlockTip;
-    private FeedbackIndicatorView mUnlockUserFeedback;
     private ProgressBar mProgressBar;
     private OperationState mOperationState;
     private Passphrase mNfcPin;
@@ -94,7 +90,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.unlock_nfc_fragment, container, false);
+        return inflater.inflate(R.layout.wizard_nfc_fragment, container, false);
     }
 
     @Override
@@ -102,7 +98,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
         super.onViewCreated(view, savedInstanceState);
 
         mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
-        mUnlockUserFeedback = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         if (mWizardFragmentListener != null) {
@@ -150,16 +145,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
      * Notifies the user of any errors that may have occurred
      */
     public void onOperationStateError(String error) {
-        mUnlockUserFeedback.showWrongTextMessage(error, true);
-    }
-
-    /**
-     * Notifies the user if the operation was successful.
-     *
-     * @param showText
-     */
-    public void onOperationStateOK(String showText) {
-        mUnlockUserFeedback.showCorrectTextMessage(showText, false);
+        Notify.create(getActivity(), error, Notify.Style.WARN).show();
     }
 
     /**
@@ -170,13 +156,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
     @Override
     public boolean onNextClicked() {
         return updateOperationState();
-    }
-
-    /**
-     * Updates the view state by giving feedback to the user.
-     */
-    public void onOperationStateCompleted(String showText) {
-        mUnlockUserFeedback.showCorrectTextMessage(showText, true);
     }
 
     /**
@@ -264,7 +243,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
         if (mNfcTechnology != null) {
             mNfcTechnology.connect();
         } else {
-            throw new IOException("Unsupported Technology -> no data was present");
+            throw new IOException(getString(R.string.error_nfc_dispatcher_no_registered_tech));
         }
 
         postProgressToMainThread(2);
@@ -273,9 +252,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
 
         try {
             pin = generateSecureRoomPin();
-            String sPin = new String(pin, "ISO-8859-1");
-
-            mNfcPin = new Passphrase(sPin.toCharArray());
+            mNfcPin = new Passphrase(pin);
             mNfcPin.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
 
             if (Constants.DEBUG) {
@@ -283,7 +260,7 @@ public class NFCUnlockWizardFragment extends WizardFragment
             }
         } catch (NoSuchAlgorithmException e) {
             mNfcTechnology.close();
-            throw new IOException("Failed to generate the pin for the card - internal error");
+            throw new IOException(getString(R.string.error_nfc_failed_to_generate_pin));
         }
 
         postProgressToMainThread(3);
@@ -298,12 +275,11 @@ public class NFCUnlockWizardFragment extends WizardFragment
         mNfcTechnology.close();
         postProgressToMainThread(4);
 
-        byte[] pinPasspgrase = new String(mNfcPin.getCharArray()).getBytes("ISO-8859-1");
-        if (mNfcTechnology.verify(pinPasspgrase, nfcPin)) {
+        if (mNfcTechnology.verify(pin, nfcPin)) {
             mPinMovedToCard = true;
             return;
         }
-        throw new IOException("Generate 128 bit passphrase did not match - internal error");
+        throw new IOException(getString(R.string.error_nfc_encoded_pin_mismatch));
     }
 
     @Override
@@ -346,15 +322,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
                     MifareUltralight(mifareUltralight, getActivity());
             postProgressToMainThread(1);
         }
-
-        //get device NDEF records
-        if (Constants.DEBUG) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if (rawMsgs != null) {
-                NdefMessage msg = (NdefMessage) rawMsgs[0];
-                Log.v(Constants.TAG, msg.toString());
-            }
-        }
     }
 
     /**
@@ -395,10 +362,10 @@ public class NFCUnlockWizardFragment extends WizardFragment
      * @return
      */
     public boolean handleOperationStateWaitForNFCTag() {
+        onUpdateProgress(0);
         onShowProgressBar(true);
         onTipTextUpdate(getActivity().getString(R.string.nfc_move_card));
-        onProgressBarUpdateStyle(true, getActivity().getResources().getColor(R.color.android_green_dark));
-        onOperationStateOK(null);
+        onProgressBarUpdateStyle(false, getActivity().getResources().getColor(R.color.android_green_dark));
         return false;
     }
 
@@ -409,7 +376,6 @@ public class NFCUnlockWizardFragment extends WizardFragment
      */
     public boolean handleOperationStateCardReady() {
         onTipTextUpdate(getString(R.string.nfc_pin_moved_to_card));
-        onOperationStateCompleted(null);
         mWizardFragmentListener.onHideNavigationButtons(false, false);
 
         //update the results back to the activity holding the data

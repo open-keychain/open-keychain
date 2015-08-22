@@ -28,7 +28,6 @@ import android.widget.EditText;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.WizardFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyboardUtils;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class YubiKeyPinRepeatWizardFragment extends WizardFragment {
 
@@ -88,6 +87,14 @@ public class YubiKeyPinRepeatWizardFragment extends WizardFragment {
         return output;
     }
 
+    /**
+     * Checks if the edit text pin is correct compared to the given pin.
+     *
+     * @param context
+     * @param editText1
+     * @param pin
+     * @return
+     */
     private static boolean checkPin(Context context, EditText editText1, String pin) {
         boolean output = editText1.getText().toString().equals(pin);
 
@@ -101,6 +108,11 @@ public class YubiKeyPinRepeatWizardFragment extends WizardFragment {
         return output;
     }
 
+    /**
+     * Validates the pin data.
+     *
+     * @return
+     */
     public boolean onValidatePinData() {
         if (isEditTextNotEmpty(getActivity(), mPin)
                 && checkPin(getActivity(), mPin, mWizardFragmentListener.getYubiKeyPin().toStringUnsafe())

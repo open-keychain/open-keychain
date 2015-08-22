@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.remote.CryptoInputParcelCacheService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.tasks.UnlockAsyncTask;
+import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -64,7 +65,6 @@ public class NFCUnlockDialog extends UnlockDialog
     public static final int NUM_PROGRESS_OPERATIONS = 3; //never zero!!
     public static final int MESSAGE_PROGRESS_UPDATE = 1;
     private TextView mUnlockTip;
-    private FeedbackIndicatorView mUnlockUserFeedback;
     private ProgressBar mProgressBar;
     private CanonicalizedSecretKeyRing mSecretRing = null;
     private Intent mServiceIntent;
@@ -103,7 +103,6 @@ public class NFCUnlockDialog extends UnlockDialog
         mProgressHandler = new ProgressHandler(Looper.getMainLooper());
 
         mUnlockTip = (TextView) view.findViewById(R.id.unlockTip);
-        mUnlockUserFeedback = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         alert.setPositiveButton(getString(R.string.unlock_caps), null);
@@ -114,7 +113,6 @@ public class NFCUnlockDialog extends UnlockDialog
         mAlertDialog.setCanceledOnTouchOutside(false);
 
         Button b = mAlertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        b.setTextColor(getResources().getColor(R.color.primary));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,7 +132,6 @@ public class NFCUnlockDialog extends UnlockDialog
 
         return mAlertDialog;
     }
-
 
     @Override
     public void onDestroy() {
@@ -189,10 +186,10 @@ public class NFCUnlockDialog extends UnlockDialog
      * @return
      */
     public boolean handleOperationStateWaitForNFCTag() {
+        onUpdateProgress(0);
         onShowProgressBar(true);
         onTipTextUpdate(getString(R.string.nfc_move_card));
-        onProgressBarUpdateStyle(true, getResources().getColor(R.color.android_green_dark));
-        onOperationStateOK(null);
+        onProgressBarUpdateStyle(false, getResources().getColor(R.color.android_green_dark));
         return false;
     }
 
@@ -306,15 +303,7 @@ public class NFCUnlockDialog extends UnlockDialog
      * Notifies the user of any errors that may have occurred
      */
     public void onOperationStateError(String error) {
-        mUnlockUserFeedback.showWrongTextMessage(error, true);
-    }
-
-    /**
-     * Notifies the user with a positive operation status.
-     * @param showText
-     */
-    public void onOperationStateOK(String showText) {
-        mUnlockUserFeedback.showCorrectTextMessage(showText, false);
+        Notify.create(getActivity(), error, Notify.Style.WARN).show();
     }
 
     /**
@@ -370,7 +359,6 @@ public class NFCUnlockDialog extends UnlockDialog
      * @param serviceIntent
      */
     public void onUnlockOperationSuccess(Intent serviceIntent) {
-        mUnlockUserFeedback.showCorrectTextMessage(null, true);
         getActivity().setResult(Activity.RESULT_OK, serviceIntent);
         getActivity().finish();
     }
@@ -394,7 +382,7 @@ public class NFCUnlockDialog extends UnlockDialog
             return;
         }
         mOperationState = OperationState.OPERATION_STATE_READING_NFC_TAG;
-        onTipTextUpdate(getString(R.string.nfc_configuring_card));
+        onTipTextUpdate(getString(R.string.nfc_unlocking_key));
         onShowProgressBar(true);
         onProgressBarUpdateStyle(false, getResources().getColor(R.color.android_green_dark));
         onUpdateProgress(0);
@@ -413,7 +401,7 @@ public class NFCUnlockDialog extends UnlockDialog
                 throw new NfcDispatcher.CardException(e.getMessage(), NfcDispatcher.EXCEPTION_STATUS_GENERIC);
             }
         } else {
-            throw new NfcDispatcher.CardException("No technology was present, forgot to register the nfc technologies?",
+            throw new NfcDispatcher.CardException(getString(R.string.error_nfc_dispatcher_no_registered_tech),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
 
@@ -425,14 +413,14 @@ public class NFCUnlockDialog extends UnlockDialog
         //verify step
         mNfcTechnology.close();
         postProgressToMainThread(2);
-        String sPin;
+
         try {
-            sPin = new String(nfcPin, "ISO-8859-1");
+            mPassphrase = new Passphrase(nfcPin);
         } catch (UnsupportedEncodingException e) {
-            throw new NfcDispatcher.CardException("Error while attempting to encode the nfc passphrase",
+            throw new NfcDispatcher.CardException(getString(R.string.error_nfc_encode_pin),
                     NfcDispatcher.EXCEPTION_STATUS_GENERIC);
         }
-        mPassphrase = new Passphrase(sPin.toCharArray());
+
         mPassphrase.setSecretKeyType(CanonicalizedSecretKey.SecretKeyType.NFC_TAG);
     }
 
@@ -458,11 +446,6 @@ public class NFCUnlockDialog extends UnlockDialog
         mNfcTechnology = baseNfcTagTechnology;
     }
 
-    @Override
-    public void handleTagDiscoveredIntent(Intent intent) throws NfcDispatcher.CardException {
-
-    }
-
     /**
      * UnlockAsyncTask callbacks that will be redirected to the dialog,
      */
@@ -475,7 +458,7 @@ public class NFCUnlockDialog extends UnlockDialog
     @Override
     public void onErrorWrongPassphrase() {
         onShowProgressBar(false);
-        onOperationStateError(getString(R.string.error_wrong_pin));
+        onOperationStateError(getString(R.string.error_wrong_nfc_pin));
         mOperationState = OperationState.OPERATION_STATE_WAITING_FOR_NFC_TAG;
         updateOperationState();
     }

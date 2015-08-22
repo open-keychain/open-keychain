@@ -79,8 +79,6 @@ public final class NfcDispatcher {
 
         void onNfcError(CardException exception);
 
-        void handleTagDiscoveredIntent(Intent intent) throws CardException;
-
         void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology);
     }
 

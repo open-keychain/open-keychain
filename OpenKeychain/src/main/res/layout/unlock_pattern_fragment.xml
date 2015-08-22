@@ -2,8 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/wizard_activity_margin"
-                android:paddingBottom="48dp"
+                android:padding="@dimen/preferred_dialog_padding"
                 android:persistentDrawingCache="all">
 
     <TextView
@@ -19,29 +18,21 @@
         android:layout_alignParentBottom="true">
     </org.sufficientlysecure.keychain.ui.widget.FeedbackIndicatorView>
 
+    <com.eftimoff.patternview.PatternView
+        android:id="@+id/patternView"
+        xmlns:patternview="http://schemas.android.com/apk/res-auto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/unlockTip"
+        patternview:circleColor="@color/highlighted_text_material_light"
+        patternview:gridSize="4"
+        patternview:pathColor="@color/primary_dark_material_light"/>
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/patternView"
         android:indeterminate="true"
         android:visibility="invisible"/>
-
-    <RelativeLayout
-        android:id="@+id/unlockInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/progressBar"
-        android:layout_below="@id/unlockTip">
-
-        <com.eftimoff.patternview.PatternView
-            android:id="@+id/patternView"
-            xmlns:patternview="http://schemas.android.com/apk/res-auto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            patternview:circleColor="@color/highlighted_text_material_light"
-            patternview:gridSize="4"
-            patternview:pathColor="@color/primary_dark_material_light"/>
-    </RelativeLayout>
 </RelativeLayout>

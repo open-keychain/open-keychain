@@ -47,7 +47,7 @@ public class PassphraseUnlockWizardFragment extends WizardFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.unlock_passphrase_fragment, container, false);
+        return inflater.inflate(R.layout.wizard_passphrase_fragment, container, false);
     }
 
     @Override

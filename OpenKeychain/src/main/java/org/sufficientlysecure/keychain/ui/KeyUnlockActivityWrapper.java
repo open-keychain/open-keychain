@@ -240,12 +240,6 @@ public class KeyUnlockActivityWrapper extends FragmentActivity
         }
     }
 
-    public void handleTagDiscoveredIntent(Intent intent) throws NfcDispatcher.CardException {
-        if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {
-            ((NfcDispatcher.NfcDispatcherCallback) mUnlockDialog).handleTagDiscoveredIntent(intent);
-        }
-    }
-
     @Override
     public void onNfcTechnologyInitialized(BaseNfcTagTechnology baseNfcTagTechnology) {
         if (mUnlockDialog != null && mUnlockDialog instanceof NfcDispatcher.NfcDispatcherCallback) {

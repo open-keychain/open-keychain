@@ -74,7 +74,7 @@ public class PatternUnlockWizardFragment extends WizardFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.unlock_pattern_fragment, container, false);
+        return inflater.inflate(R.layout.wizard_pattern_fragment, container, false);
     }
 
     @Override
@@ -84,12 +84,6 @@ public class PatternUnlockWizardFragment extends WizardFragment {
         mFeedbackIndicatorView = (FeedbackIndicatorView) view.findViewById(R.id.unlockUserFeedback);
         mPatternView = (PatternView) view.findViewById(R.id.patternView);
 
-        view.setPadding(0, 0, 0, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                48, getResources().getDisplayMetrics()));
-
-        if (savedInstanceState == null) {
-            initializeUnlockOperation();
-        }
         mWizardFragmentListener.onHideNavigationButtons(false, false);
 
         mPatternView.setOnPatternCellAddedListener(new PatternView.OnPatternCellAddedListener() {
@@ -105,6 +99,10 @@ public class PatternUnlockWizardFragment extends WizardFragment {
                 resetCurrentKeyword();
             }
         });
+
+        if (savedInstanceState == null) {
+            initializeUnlockOperation();
+        }
     }
 
     @Override
