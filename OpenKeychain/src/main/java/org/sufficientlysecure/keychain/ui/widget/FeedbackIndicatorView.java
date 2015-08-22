@@ -18,6 +18,8 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -72,7 +74,7 @@ public class FeedbackIndicatorView extends RelativeLayout {
         mTextView = (TextView) viewGroup.findViewById(R.id.feedbackIndicatorText);
 
         //hide everything
-        mImageView.setVisibility(INVISIBLE);
+        mImageView.setVisibility(GONE);
     }
 
     /**
@@ -84,22 +86,31 @@ public class FeedbackIndicatorView extends RelativeLayout {
     public void showCorrectTextMessage(CharSequence text, boolean showIcon) {
         mTextView.setText(text);
         mTextView.setTextColor(mContext.getResources().getColor(R.color.android_green_dark));
-        mImageView.setVisibility(showIcon ? VISIBLE : INVISIBLE);
+        mImageView.setVisibility(showIcon ? VISIBLE : GONE);
         updateImageView(R.drawable.ic_done_black_48dp, R.color.android_green_dark);
 
         mShowImage = showIcon;
         mState = true;
     }
 
+    /**
+     * Updates the drawable by tinting it.
+     * @param drawableId
+     * @param colorTint
+     */
     private void updateImageView(@DrawableRes int drawableId, int colorTint) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
             mImageView.setImageDrawable(mContext.getResources().getDrawable(drawableId));
+            Drawable wrappedDrawable = DrawableCompat.wrap(mImageView.getDrawable());
+            DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(mContext.getResources().
+                    getColor(colorTint)));
+            mImageView.setImageDrawable(wrappedDrawable);
+
         } else {
             mImageView.setImageDrawable(mContext.getDrawable(drawableId));
+            DrawableCompat.setTint(mImageView.getDrawable(), mContext.getResources().
+                    getColor(colorTint));
         }
-
-        DrawableCompat.setTint(mImageView.getDrawable(), mContext.getResources().
-                getColor(colorTint));
     }
 
     /**
@@ -111,7 +122,7 @@ public class FeedbackIndicatorView extends RelativeLayout {
     public void showWrongTextMessage(CharSequence text, boolean showIcon) {
         mTextView.setText(text);
         mTextView.setTextColor(mContext.getResources().getColor(R.color.android_red_dark));
-        mImageView.setVisibility(showIcon ? VISIBLE : INVISIBLE);
+        mImageView.setVisibility(showIcon ? VISIBLE : GONE);
         updateImageView(R.drawable.ic_close_black_48dp, R.color.android_red_dark);
         mShowImage = showIcon;
         mState = false;
