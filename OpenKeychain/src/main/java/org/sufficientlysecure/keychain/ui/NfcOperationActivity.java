@@ -294,9 +294,11 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
         byte[] cardFingerprint = nfcGetFingerprint(idx);
+
         // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
-            Arrays.equals(cardFingerprint, fingerprint)) {
+        if (cardFingerprint == null ||
+                Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
+                Arrays.equals(cardFingerprint, fingerprint)) {
             return true;
         }
 
