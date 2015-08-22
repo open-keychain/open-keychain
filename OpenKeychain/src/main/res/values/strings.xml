@@ -1279,6 +1279,7 @@
         <item quantity="one">"Exporting one key"</item>
         <item quantity="other">"Exporting %d keys"</item>
     </plurals>
+    <string name="msg_export_file_name">"Filename: %s"</string>
     <string name="msg_export_all">"Exporting all keys"</string>
     <string name="msg_export_public">"Exporting public key %s"</string>
     <string name="msg_export_upload_public">"Uploading public key %s"</string>
