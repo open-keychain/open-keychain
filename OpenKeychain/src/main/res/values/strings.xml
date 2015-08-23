@@ -198,8 +198,6 @@
     <!-- proxy type choices and values -->
     <string name="pref_proxy_type_choice_http">"HTTP"</string>
     <string name="pref_proxy_type_choice_socks">"SOCKS"</string>
-    <string name="pref_proxy_type_value_http">"proxyHttp"</string>
-    <string name="pref_proxy_type_value_socks">"proxySocks"</string>
 
     <!-- OrbotHelper strings -->
     <string name="orbot_ignore_tor">"Don\'t use Tor"</string>

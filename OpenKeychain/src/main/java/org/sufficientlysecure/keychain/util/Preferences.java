@@ -286,16 +286,19 @@ public class Preferences {
     }
 
     public Proxy.Type getProxyType() {
-        final String typeHttp = mResources.getString(R.string.pref_proxy_type_value_http);
-        final String typeSocks = mResources.getString(R.string.pref_proxy_type_value_socks);
+        final String typeHttp = Pref.ProxyType.TYPE_HTTP;
+        final String typeSocks = Pref.ProxyType.TYPE_SOCKS;
 
         String type = mSharedPreferences.getString(Pref.PROXY_TYPE, typeHttp);
 
-        if (type.equals(typeHttp)) return Proxy.Type.HTTP;
-        else if (type.equals(typeSocks)) return Proxy.Type.SOCKS;
-        else { // shouldn't happen
-            Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
-            return null;
+        switch (type) {
+            case typeHttp:
+                return Proxy.Type.HTTP;
+            case typeSocks:
+                return Proxy.Type.SOCKS;
+            default:  // shouldn't happen
+                Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
+                return null;
         }
     }
 

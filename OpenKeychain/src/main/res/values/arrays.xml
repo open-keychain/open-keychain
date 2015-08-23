@@ -34,8 +34,8 @@
         <item>@string/pref_proxy_type_choice_socks</item>
     </string-array>
     <string-array name="pref_proxy_type_values" translatable="false">
-        <item>@string/pref_proxy_type_value_http</item>
-        <item>@string/pref_proxy_type_value_socks</item>
+        <item>"proxyHttp"</item>
+        <item>"proxySocks"</item>
     </string-array>
     <string-array name="rev_del_dialog_entries" translatable="true">
         <item>@string/del_rev_dialog_choice_rev_upload</item>
@@ -67,6 +67,6 @@
     </string-array>
     <string-array name="theme_values" translatable="false">
         <item>"dark"</item>
-        <item>"ligh"</item>
+        <item>"light"</item>
     </string-array>
 </resources>

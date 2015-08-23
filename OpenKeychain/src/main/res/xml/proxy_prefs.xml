@@ -27,7 +27,7 @@
     <ListPreference
             android:entries="@array/pref_proxy_type_entries"
             android:entryValues="@array/pref_proxy_type_values"
-            android:defaultValue="@string/pref_proxy_type_value_http"
+            android:defaultValue="proxyHttp"
             android:key="proxyType"
             android:persistent="true"
             android:title="@string/pref_proxy_type_title" />
