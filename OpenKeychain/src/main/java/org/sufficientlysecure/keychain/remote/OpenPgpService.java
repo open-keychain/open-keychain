@@ -715,28 +715,40 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent getSignKeyIdImpl(Intent data) {
-        String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
+        // if data already contains EXTRA_SIGN_KEY_ID, it has been executed again
+        // after user interaction. Then, we just need to return the long again!
+        if (data.hasExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID)) {
+            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID,
+                    Constants.key.none);
 
-        Intent intent = new Intent(getBaseContext(), SelectSignKeyIdActivity.class);
-        String currentPkg = getCurrentCallingPackage();
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(currentPkg));
-        intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
-        intent.putExtra(SelectSignKeyIdActivity.EXTRA_DATA, data);
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, signKeyId);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            return result;
+        } else {
+            String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+            Intent intent = new Intent(getBaseContext(), SelectSignKeyIdActivity.class);
+            String currentPkg = getCurrentCallingPackage();
+            intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(currentPkg));
+            intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
+            intent.putExtra(SelectSignKeyIdActivity.EXTRA_DATA, data);
 
-        // return PendingIntent to be executed by client
-        Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-        result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
 
-        return result;
+            // return PendingIntent to be executed by client
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+
+            return result;
+        }
     }
 
     private Intent getKeyIdsImpl(Intent data) {
-        // if data already contains key ids extra GET_KEY_IDS has been executed again
+        // if data already contains EXTRA_KEY_IDS, it has been executed again
         // after user interaction. Then, we just need to return the array again!
         if (data.hasExtra(OpenPgpApi.EXTRA_KEY_IDS)) {
             long[] keyIdsArray = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
