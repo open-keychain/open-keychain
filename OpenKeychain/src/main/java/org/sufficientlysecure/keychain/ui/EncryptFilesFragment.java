@@ -312,16 +312,20 @@ public class EncryptFilesFragment
                 toggleEncryptFilenamesCheck(item, !item.isChecked());
                 break;
             }
-//            case R.id.check_hidden_recipients: {
-//                mHiddenRecipients = item.isChecked();
-//                notifyUpdate();
-//                break;
-//            }
+            case R.id.check_hidden_recipients: {
+                toggleEnableHiddenRecipients(item, !item.isChecked());
+                break;
+            }
             default: {
                 return super.onOptionsItemSelected(item);
             }
         }
         return true;
+    }
+
+    public void toggleEnableHiddenRecipients(MenuItem item, final boolean hideRecipients) {
+        mHiddenRecipients = hideRecipients;
+        item.setChecked(hideRecipients);
     }
 
     public void toggleUseArmor(MenuItem item, final boolean useArmor) {

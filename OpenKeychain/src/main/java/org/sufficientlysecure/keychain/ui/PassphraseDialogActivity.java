@@ -128,7 +128,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 SecretKeyType.PASSPHRASE_EMPTY) {
                             // also return passphrase back to activity
                             Intent returnIntent = new Intent();
-                            mCryptoInputParcel.mPassphrase = new Passphrase("");
+                            mCryptoInputParcel.setPassphrase(new Passphrase(""));
                             returnIntent.putExtra(RESULT_CRYPTO_INPUT, mCryptoInputParcel);
                             setResult(RESULT_OK, returnIntent);
                             finish();
@@ -440,7 +440,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CryptoInputParcel inputParcel =
                     ((PassphraseDialogActivity) getActivity()).mCryptoInputParcel;
-            inputParcel.mPassphrase = passphrase;
+            inputParcel.setPassphrase(passphrase);
             if (mServiceIntent != null) {
                 CryptoInputParcelCacheService.addCryptoInputParcel(getActivity(), mServiceIntent,
                         inputParcel);

@@ -15,7 +15,7 @@ public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
         PASSPHRASE, PASSPHRASE_SYMMETRIC, NFC_SIGN, NFC_DECRYPT, NFC_MOVE_KEY_TO_CARD, ENABLE_ORBOT,
-        UPLOAD_FAIL_RETRY
+        UPLOAD_FAIL_RETRY, RESTART_CRYPTO_OPERATION
     }
 
     public Date mSignatureTime;
@@ -77,13 +77,19 @@ public class RequiredInputParcel implements Parcelable {
         return mSubKeyId;
     }
 
+    public static RequiredInputParcel createRestartCryptoOperation() {
+        return new RequiredInputParcel(RequiredInputType.RESTART_CRYPTO_OPERATION,
+                null, null, null, null, null);
+    }
+
     public static RequiredInputParcel createRetryUploadOperation() {
         return new RequiredInputParcel(RequiredInputType.UPLOAD_FAIL_RETRY,
-                null, null, null, 0L, 0L);
+                null, null, null, null, null);
     }
 
     public static RequiredInputParcel createOrbotRequiredOperation() {
-        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT, null, null, null, 0L, 0L);
+        return new RequiredInputParcel(RequiredInputType.ENABLE_ORBOT,
+                null, null, null, null, null);
     }
 
     public static RequiredInputParcel createNfcSignOperation(

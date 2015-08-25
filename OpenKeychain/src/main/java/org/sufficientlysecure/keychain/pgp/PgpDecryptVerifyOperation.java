@@ -79,9 +79,9 @@ import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
 
-public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel> {
+public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
-    public PgpDecryptVerify(Context context, ProviderHelper providerHelper, Progressable progressable) {
+    public PgpDecryptVerifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
 
@@ -390,12 +390,32 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
 
+                // TODO: currently only tries the first PGPPublicKeyEncryptedData, we need to check all others!
+                // decrypt using hidden recipients (no subkey ids specified in OpenPGP packet)
+                if (subKeyId == 0L) {
+                    Log.d(Constants.TAG, "cryptoInput.getDecryptHiddenRecipientsIndex() "+cryptoInput.getDecryptHiddenRecipientsIndex() );
+                    // on first pass, start with index 0
+                    if (cryptoInput.getDecryptHiddenRecipientsIndex() == null) {
+                        cryptoInput.setDecryptHiddenRecipientsIndex(0);
+                    }
+
+                    try {
+                        subKeyId = mProviderHelper.getEncryptionSubkeyIdForHiddenRecipient(
+                                cryptoInput.getDecryptHiddenRecipientsIndex());
+                    } catch (ProviderHelper.NotFoundException e) {
+                        // TODO: new log type
+                        Log.d(Constants.TAG, "All available encrypt subkeys have been tried!");
+                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                        return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+                    }
+                }
+
                 log.add(LogType.MSG_DC_ASYM, indent,
                         KeyFormattingUtils.convertKeyIdToHex(subKeyId));
 
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    // get actual keyring object based on master key id
+                    // get actual keyring object based on sub key id
                     secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
                     );
@@ -593,12 +613,29 @@ public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel>
 
             }
 
+//            try {
+//                clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+//            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
+//                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
+//                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+//            }
+
             try {
                 clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
-            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
-                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException | ClassCastException e) {
+
+                // try next subkey in next pass
+                cryptoInput.setDecryptHiddenRecipientsIndex(
+                        cryptoInput.getDecryptHiddenRecipientsIndex() + 1
+                );
+
+                return new DecryptVerifyResult(log,
+                        RequiredInputParcel.createRestartCryptoOperation(),
+                        cryptoInput);
+//                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
+//                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
+
 
             symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
 

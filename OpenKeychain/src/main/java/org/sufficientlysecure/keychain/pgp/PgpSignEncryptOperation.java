@@ -265,6 +265,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
                         CanonicalizedPublicKeyRing keyRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 KeyRings.buildUnifiedKeyRingUri(id));
                         Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
+                        // encrypt to all capable subkeys
                         for (Long subKeyId : encryptSubKeyIds) {
                             CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
                             cPk.addMethod(key.getPubKeyEncryptionGenerator(input.isHiddenRecipients()));
