@@ -2,10 +2,10 @@
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Sleutel intrekken bij verwijderen
+  * Verbeterde controles voor onveilige cryptografie
+  * Opgelost: Sluit OpenKeychain niet na eerste gebruik
+  * API: versie 8
 
 ## 3.4
 

@@ -136,6 +136,7 @@
   <string name="expiry_date_dialog_title">有效期</string>
   <string name="label_encrypt_filenames">加密文件名</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_normal_title">启用其它代理服务器</string>
   <string name="pref_proxy_host_title">服务器地址</string>
@@ -300,6 +301,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->

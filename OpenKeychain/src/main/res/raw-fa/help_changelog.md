@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (تذکر: هر جمله در همان خط!)
 
 ## 3.5
 
@@ -227,7 +227,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * App2sd
   * More choices for passphrase cache: 1, 2, 4, 8, hours
   * Translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
+  تعمیر باگ‌ها
   * Optimizations
 
 
@@ -245,7 +245,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
   * Interface changes
-  * Bugfixes
+  تعمیر باگ‌ها
 
 
 ## 1.0.5
@@ -287,4 +287,4 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Slovenian translation
   * New database, much faster, less memory usage
   * Defined Intents and content provider for other apps
-  * Bugfixes
+  تعمیر باگ‌ها

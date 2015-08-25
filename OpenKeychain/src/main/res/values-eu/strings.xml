@@ -162,6 +162,7 @@
   <string name="pref_keyserver_summary">Bilatu giltzak hautaturiko OpenPGP giltza-zerbitzarietan (HKP protokoloa)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Bilatu giltzak keybase.io-an</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gaitu Tor</string>
   <string name="pref_proxy_tor_summary">Orbot ezarrita egotea behar du</string>
@@ -174,8 +175,6 @@
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
-  <string name="pref_proxy_type_value_http">proxyHttp</string>
-  <string name="pref_proxy_type_value_socks">proxySocks</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Ez erabili Tor</string>
   <!--InstallDialogFragment strings-->
@@ -543,8 +542,6 @@
   <string name="retry_up_dialog_btn_reupload">Bersaiatu Eragiketa</string>
   <string name="retry_up_dialog_btn_cancel">Ezeztatu Eragiketa</string>
   <!--Delete or revoke private key dialog-->
-  <string name="del_rev_dialog_message">Ez baduzu giltza hau gehiago erabili behar, ukatu eta igo egin behar da. Hautatu ezabatu giltza OpenKeychainetik kendu nahi baduzu baina beste nonbait erabiltzen jarraitu behar baduzu bakarrik.</string>
-  <string name="del_rev_dialog_title">Ukatu/Ezabatu \\"%s\\" giltza</string>
   <string name="del_rev_dialog_btn_revoke">Ukatu eta igo</string>
   <string name="del_rev_dialog_btn_delete">Ezabatu bakarrik</string>
   <!--Delete Or Revoke Dialog spinner-->
@@ -1112,7 +1109,6 @@
     <item quantity="other">Hutsegitea %d giltza ezabatzerakoan</item>
   </plurals>
   <string name="msg_revoke_error_empty">Ez dago ezer ukatzeko!</string>
-  <string name="msg_revoke_error_multi_secret">Giltza sekretuak banaka bakarrik ukatu daitezke!</string>
   <string name="msg_revoke_error_not_found">Ezin da giltza aurkitu ukatzeko!</string>
   <string name="msg_revoke_key">%s giltza ukatzen</string>
   <string name="msg_revoke_key_fail">Hutsegitea giltza ukatzerakoan</string>
@@ -1148,6 +1144,7 @@
   <string name="passp_cache_notif_keys">Gogoratutako sarhitzak</string>
   <string name="passp_cache_notif_clear">Garbitu Sarhitzak</string>
   <string name="passp_cache_notif_pwd">Sarhitza</string>
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Berreskuratu zure pribatutasuna OpenKeychain-ekin!</string>
   <string name="first_time_create_key">Sortu nire giltza</string>

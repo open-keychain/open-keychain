@@ -82,6 +82,7 @@
   <string name="label_fingerprint">Sormenjälki</string>
   <string name="expiry_date_dialog_title">Aseta umpeutumispäivämäärä</string>
   <string name="label_preferred">ensisijainen</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -187,6 +188,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->

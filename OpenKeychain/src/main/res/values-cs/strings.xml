@@ -141,6 +141,7 @@
   <string name="pref_keyserver_summary">Vyhledat klíče na vybraném OpenPGP keyserveru (protokol HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Hledat klíče na keybase.io</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -650,6 +651,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Převezměte opět kontrolu nad svým soukromím s OpenKeychain!</string>
   <string name="first_time_skip">Přeskočit nastavení</string>

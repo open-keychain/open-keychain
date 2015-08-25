@@ -82,6 +82,7 @@
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
   <string name="label_preferred">бажаний</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -508,6 +509,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Заберіть вашу приватність із OpenKeychain!</string>
   <string name="first_time_skip">Пропустити установку</string>

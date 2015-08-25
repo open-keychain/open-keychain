@@ -7,6 +7,7 @@
   <!--button-->
   <!--menu-->
   <!--label-->
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -73,6 +74,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->

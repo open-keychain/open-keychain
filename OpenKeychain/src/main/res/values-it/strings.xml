@@ -156,13 +156,12 @@
   <string name="pref_keyserver_summary">Cerca chiavi su server chiavi OpenPGP selezionati (protocollo HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Ricerca chiavi su keybase.io</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_type_title">Tipo proxy</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
-  <string name="pref_proxy_type_value_http">proxyHttp</string>
-  <string name="pref_proxy_type_value_socks">proxySocks</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Non usare Tor</string>
   <!--InstallDialogFragment strings-->
@@ -743,6 +742,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Riappropriati della tua privacy con OpenKeychain!</string>
   <string name="first_time_skip">Salta Installazione</string>

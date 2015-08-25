@@ -2,21 +2,21 @@
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  *可以在刪除金鑰時撤銷金鑰
+  *改進對加密安全性進行檢查
+  *修正：在OpenKeychain第一次執行精靈成功後不自動關閉程式
   * API: Version 8
 
 ## 3.4
 
   * Anonymous key download over Tor
-  * Proxy support
+  *支援代理伺服器
   * Better YubiKey error handling
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
+  *新的解密畫面
+  *可同時解密多個檔案
   * Better handling of YubiKey errors
 
 ## 3.2

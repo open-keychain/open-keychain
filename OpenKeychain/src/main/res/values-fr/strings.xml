@@ -45,6 +45,7 @@
   <string name="section_passphrase_cache">Gestion des mots de passe/NIP</string>
   <string name="section_proxy_settings">Paramètres du mandataire</string>
   <string name="section_gui">Interface</string>
+  <string name="section_sync_settings">Paramètres de synchro</string>
   <string name="section_certify">Confirmer</string>
   <string name="section_actions">Actions</string>
   <string name="section_share_key">Clef</string>
@@ -162,6 +163,14 @@
   <string name="pref_keyserver_summary">Rechercher les clefs dans les serveurs de clefs OpenPGP choisis (protocole HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Rechercher les clefs sur keybase.io</string>
+  <string name="label_sync_settings_keyserver_title">Mettre les clefs à jour automatiquement</string>
+  <string name="label_sync_settings_keyserver_summary_on">Les clefs de plus d\'une semaine sont misent à jour à partir du serveur de clefs</string>
+  <string name="label_sync_settings_keyserver_summary_off">Les clefs ne sont pas mises à jour automatiquement</string>
+  <string name="label_sync_settings_contacts_title">Synchroniser les contacts avec les clefs</string>
+  <string name="label_sync_settings_contacts_summary_on">Les clefs sont reliées aux contacts dont les adresses courriels correspondantes, ce qui se passe complètement hors ligne</string>
+  <string name="label_sync_settings_contacts_summary_off">Les nouvelles clefs ne seront pas reliées aux contacts</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Mettre les clefs à jour automatiquement</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activer Tor</string>
   <string name="pref_proxy_tor_summary">Orbot doit être installé</string>
@@ -174,8 +183,6 @@
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
-  <string name="pref_proxy_type_value_http">mandataireHttp</string>
-  <string name="pref_proxy_type_value_socks">mandataireSocks</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Ne pas utiliser Tor</string>
   <!--InstallDialogFragment strings-->
@@ -545,8 +552,8 @@
   <string name="retry_up_dialog_btn_reupload">Ressayer l\'opération</string>
   <string name="retry_up_dialog_btn_cancel">Annuler l\'opération</string>
   <!--Delete or revoke private key dialog-->
-  <string name="del_rev_dialog_message">Si vous ne voulez plus utiliser cette clef, elle devrait être révoquée et téléversée. Choisissez Supprimer seulement si vous souhaitez retirer la clef d\'OpenKeychain mais continuerez à l\'utiliser ailleurs.</string>
-  <string name="del_rev_dialog_title">Révoquer/supprimer la clef \«%s\» </string>
+  <string name="del_rev_dialog_message">Si vous ne voulez plus utiliser cette clef, elle devrait être révoquée et téléversée. Choisissez \'SUPPRIMER SEULEMENT\'  si vous souhaitez retirer la clef d\'OpenKeychain mais continuerez à l\'utiliser ailleurs.</string>
+  <string name="del_rev_dialog_title">Révoquer/supprimer la clef \'%s\' </string>
   <string name="del_rev_dialog_btn_revoke">Révoquer et téléverser</string>
   <string name="del_rev_dialog_btn_delete">Supprimer seulement</string>
   <!--Delete Or Revoke Dialog spinner-->
@@ -1171,6 +1178,7 @@
     <item quantity="one">Exportation d\'une clef</item>
     <item quantity="other">Exportation de %d clefs</item>
   </plurals>
+  <string name="msg_export_file_name">Nom de fichier : %s</string>
   <string name="msg_export_all">Exportation de toutes les clefs</string>
   <string name="msg_export_public">Exportation de la clef publique %s</string>
   <string name="msg_export_upload_public">Téléversement de la clef publique %s</string>
@@ -1204,7 +1212,6 @@
     <item quantity="other">Échec de suppression de %d clefs</item>
   </plurals>
   <string name="msg_revoke_error_empty">Rien à révoquer !</string>
-  <string name="msg_revoke_error_multi_secret">Les clefs secrètes ne peuvent être révoquées qu\'individuellement !</string>
   <string name="msg_revoke_error_not_found">Impossible de trouver la clef a révoquer !</string>
   <string name="msg_revoke_key">Révocation de la clef %s</string>
   <string name="msg_revoke_key_fail">Échec de révocation de la clef</string>
@@ -1244,6 +1251,11 @@
   <string name="passp_cache_notif_keys">Mots de passe mémorisés</string>
   <string name="passp_cache_notif_clear">Effacer les mots de passe</string>
   <string name="passp_cache_notif_pwd">Mot de passe</string>
+  <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_title">Synchroniser à partir du nuage (Orbot exigé)</string>
+  <string name="keyserver_sync_orbot_notif_msg">Toquer pour lancer Orbot</string>
+  <string name="keyserver_sync_orbot_notif_start">Lancer Orbot</string>
+  <string name="keyserver_sync_orbot_notif_ignore">Directe</string>
   <!--First Time-->
   <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
   <string name="first_time_create_key">Créer ma clef</string>

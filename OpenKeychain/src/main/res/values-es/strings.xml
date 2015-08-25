@@ -45,6 +45,7 @@
   <string name="section_passphrase_cache">Manejo de contraseña/PIN</string>
   <string name="section_proxy_settings">Configuración para proxy</string>
   <string name="section_gui">Interfaz</string>
+  <string name="section_sync_settings">Sincronizar configuración</string>
   <string name="section_certify">Confirmar</string>
   <string name="section_actions">Acciones</string>
   <string name="section_share_key">Clave</string>
@@ -162,6 +163,14 @@
   <string name="pref_keyserver_summary">Busca claves en los servidores de claves OpenPGP seleccionados (protocolo HKP)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Busca claves en keybase.io</string>
+  <string name="label_sync_settings_keyserver_title">Actualizar claves automáticamente</string>
+  <string name="label_sync_settings_keyserver_summary_on">Las claves con más de una semana de vida se actualizarán desde el servidor de claves preferido</string>
+  <string name="label_sync_settings_keyserver_summary_off">Las claves no se actualizarán automáticamente</string>
+  <string name="label_sync_settings_contacts_title">Sincronizar contactos con claves</string>
+  <string name="label_sync_settings_contacts_summary_on">Las claves se vincularon a contactos con correos coincidentes, ocurre de forma completamente desconectada</string>
+  <string name="label_sync_settings_contacts_summary_off">Las claves nuevas no se vincularán a contactos</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">Actualizar claves automáticamente</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Habilitar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere que Orbot esté instalado</string>
@@ -174,8 +183,6 @@
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
-  <string name="pref_proxy_type_value_http">proxyHttp</string>
-  <string name="pref_proxy_type_value_socks">proxySocks</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">No usar Tor</string>
   <!--InstallDialogFragment strings-->
@@ -545,8 +552,8 @@
   <string name="retry_up_dialog_btn_reupload">Reintentar operación</string>
   <string name="retry_up_dialog_btn_cancel">Cancelar operación</string>
   <!--Delete or revoke private key dialog-->
-  <string name="del_rev_dialog_message">Si ya no desea usar esta clave, debería ser revocada y subida. Seleccione \'Sólo borrar\' si desea eliminar la clave de OpenKeychain pero continuar usándola desde cualquier otro sitio.</string>
-  <string name="del_rev_dialog_title">Revocar/Borrar clave \\"%s\\"</string>
+  <string name="del_rev_dialog_message">Si ya no desea usar esta clave, debe ser revocada y subida. Seleccione \'SÓLO BORRAR\' si desea eliminar la clave de OpenKeychain pero continuar usándola desde cualquier otro sitio.</string>
+  <string name="del_rev_dialog_title">Revocar/Borrar Clave \'%s\'</string>
   <string name="del_rev_dialog_btn_revoke">Revocar y subir</string>
   <string name="del_rev_dialog_btn_delete">Sólo borrar</string>
   <!--Delete Or Revoke Dialog spinner-->
@@ -1171,6 +1178,7 @@
     <item quantity="one">Exportando una clave</item>
     <item quantity="other">Exportando %d claves</item>
   </plurals>
+  <string name="msg_export_file_name">Nombre de fichero: %s</string>
   <string name="msg_export_all">Exportando todas las claves</string>
   <string name="msg_export_public">Exportando clave pública %s</string>
   <string name="msg_export_upload_public">Subiendo clave pública %s</string>
@@ -1204,7 +1212,6 @@
     <item quantity="other">No se pudieron borrar %d claves</item>
   </plurals>
   <string name="msg_revoke_error_empty">¡Nada que revocar!</string>
-  <string name="msg_revoke_error_multi_secret">¡Las claves secretas (privadas) sólo pueden ser revocadas individualmente!</string>
   <string name="msg_revoke_error_not_found">¡No se pudo encontrar clave a revocar!</string>
   <string name="msg_revoke_key">Revocando clave %s</string>
   <string name="msg_revoke_key_fail">Fallo al revocar clave</string>
@@ -1244,6 +1251,11 @@
   <string name="passp_cache_notif_keys">Contraseñas recordadas</string>
   <string name="passp_cache_notif_clear">Limpiar contraseñas</string>
   <string name="passp_cache_notif_pwd">Contraseña</string>
+  <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_title">La sincronizacion desde la nube requiere Orbot</string>
+  <string name="keyserver_sync_orbot_notif_msg">Pulse para iniciar Orbot</string>
+  <string name="keyserver_sync_orbot_notif_start">Iniciar Orbot</string>
+  <string name="keyserver_sync_orbot_notif_ignore">Directamente</string>
   <!--First Time-->
   <string name="first_time_text1">¡Recupere su privacidad con OpenKeychain!</string>
   <string name="first_time_create_key">Crear mi clave</string>

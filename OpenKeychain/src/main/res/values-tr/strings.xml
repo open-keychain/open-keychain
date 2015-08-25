@@ -82,6 +82,7 @@
   <string name="label_fingerprint">Parmak izi</string>
   <string name="expiry_date_dialog_title">Zaman aşımı tarihini ayarla</string>
   <string name="label_preferred">tercih edilen</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -419,6 +420,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Gizliliğinizi OpenKeychain ile geri alın!</string>
   <string name="first_time_skip">Kurulumu Atla</string>

@@ -2,10 +2,10 @@
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Опозив кључа при брисању кључа
+  * Побољшане провере за небезбедну криптографију
+  * Поправка: не затварај Отворени кључарник након успеха чаробњака за прво покретање
+  * АПИ: издање 8
 
 ## 3.4
 

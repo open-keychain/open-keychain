@@ -151,6 +151,7 @@
   <string name="label_keyserver_dialog_delete">حذف سرورهای کلید</string>
   <string name="label_theme">قالب</string>
   <string name="pref_keyserver">سرورهای کلید OpenPGP</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعال‌کردن Tor</string>
   <string name="pref_proxy_tor_summary">برنامهٔ Orbot باید نصب شده باشد</string>
@@ -256,10 +257,38 @@
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="user_id_info_invalid_title">نامعتبر</string>
+  <string name="user_id_info_invalid_text">هویت مشکل دارد!</string>
   <!--Key trust-->
+  <string name="key_trust_already_verified">شما قبلاً این کلید را تأیید کرده‌اید!</string>
+  <string name="key_trust_it_is_yours">این یکی از کلیدهای‌تان است!</string>
+  <string name="key_trust_maybe">این کلید نه لغو شده و نه منقضی شده است.\nشما آن را تأیید نکرده‌اید، ولی می‌توانید اعتماد به آن کلید را انتخاب کنید.</string>
+  <string name="key_trust_revoked">این کلید توسط صاحب‌اش لغو شده است. نباید به آن اعتماد کنید.</string>
+  <string name="key_trust_expired">این کلید منقضی شده است. نباید به آن اعتماد کنید.</string>
+  <string name="key_trust_old_keys">اگر از این برای رمزگشاییِ یک پیغام قدیمی مربوط به قبل از منقضی شدن‌اش استفاده می‌کنید، مشکلی نیست.</string>
+  <string name="key_trust_no_cloud_evidence">هیچ دلیلی برای اعتماد به این کلید بر روی اینترنت نیست.</string>
+  <string name="key_trust_start_cloud_search">آغاز جستجو</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">روی Twitter پست می‌کند به عنوان %s</string>
+  <string name="keybase_narrative_github">بر روی GitHub شناخته شده است به عنوان %s</string>
+  <string name="keybase_narrative_dns">کنترل می‌کند نام دامنه‌(های) %s</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">تغییر رمزعبور</string>
+  <string name="edit_key_action_add_identity">اضافه‌کردن هویت</string>
+  <string name="edit_key_action_add_subkey">اضافه کردن زیرکلید</string>
+  <string name="edit_key_edit_user_id_title">یک عمل را انتخاب کنید!</string>
+  <string name="edit_key_edit_user_id_revoked">این هویت لغو شده‌است. انصراف از این عمل شدنی نیست.</string>
+  <string name="edit_key_edit_subkey_title">یک عمل را انتخاب کنید!</string>
+  <string name="edit_key_new_subkey">زیرکلیدِ جدید</string>
+  <string name="edit_key_select_flag">لطفاً حداقل یک پرچم انتخاب کنید!</string>
+  <string name="edit_key_error_add_identity">حداقل یک هویت اصافه کنید!</string>
+  <string name="edit_key_error_add_subkey">حداقل یک زیر‌کلید اضافه کنید</string>
   <!--Create key-->
+  <string name="create_key_empty">این فیلد لازم است</string>
+  <string name="create_key_passphrases_not_equal">رمز عبور‌ها مطابقت ندارند</string>
+  <string name="create_key_final_text">شما هویتِ زیر را وارد کردید:</string>
+  <string name="create_key_rsa">(3 زیرکلید, RSA, 4096 بیت)</string>
+  <string name="create_key_custom">(تنظیمات شخصیِ کلید)</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Navigation Drawer-->
@@ -273,7 +302,17 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Consolidate-->
+  <string name="msg_con_reimport_secret_skip">هیچ کلید خصوصی‌ای برای ورود یافت نشد، نادیده گرفته شد...</string>
+  <string name="msg_con_warn_delete_public">استثنا در حذف کردن فایل عمومیِ cache</string>
+  <string name="msg_con_warn_delete_secret">استثنا در حذف کردن فایل خصوصیِ cache</string>
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed">در حال انجام عملیات کلید</string>
+  <string name="msg_ed_caching_new">در حال کَش کردنِ رمزعبور جدید</string>
+  <string name="msg_ed_error_no_parcel">SaveKeyringParcel یافت نشد! (این یک باگ است، لطفاً گزارش کنید)</string>
+  <string name="msg_ed_error_key_not_found">کلید یافت نشد!</string>
+  <string name="msg_ed_error_extract_public_upload">خطا در خارج کردنِ کلید عمومی برای آپلود!</string>
+  <string name="msg_ed_fetching">در حال واکشیِ کلید برای ویرایش (%s)</string>
+  <string name="msg_ed_success">عملیات کلید با موفقیت انجام شد</string>
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
@@ -283,6 +322,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->

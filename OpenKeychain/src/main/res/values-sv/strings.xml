@@ -141,6 +141,7 @@
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -874,6 +875,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
   <string name="first_time_create_key">Skapa min nyckel</string>

@@ -93,6 +93,7 @@
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
   <string name="label_preferred">preferowany</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -563,6 +564,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
   <string name="first_time_skip">Pomiń ustawienia</string>

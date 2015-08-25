@@ -19,10 +19,10 @@
 ## Напредни подаци
 „Потврда кључа“ у Отвореном кључарнику се реализује прављењем сертификације по ОпенПГП стандарду.
 Ова сертификација је [„општа сертификација (0x10)“](http://tools.ietf.org/html/rfc4880#section-5.2.1) описана у стандарду:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+„Издавач ове сертификације не наводи посебно са којом сигурношћу је сертификатор утврдио да је власник кључа у ствари особа описана корисничким ИД-ом.“
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Традиционално, сертификације (такође оне са вишим нивоима овере, као нпр. „позитивне сертификације“ (0x13)) су организоване у ОпенПГП-овом Вебу поверења.
+Наш модел потврде кључа је много једноставнији концепт да би се избегли уобичајени проблеми са коришћењем везаним за овај Веб поверења.
+Ми претпостављамо да су кључеви потврђени само до одређеног степена, довољно употребљивог за коришћење „у покрету“.
+Такође не имплементирамо (потенцијално прелазне) потписе поверења или базу података поузданих власника као у ГнуПГ-у.
+Штавише, кључеви који садрже бар један кориснички ИД потврђен поузданим кључем биће означен као „потврђен“ на списку кључева.

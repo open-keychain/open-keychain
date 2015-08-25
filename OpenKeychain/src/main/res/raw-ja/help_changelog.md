@@ -2,9 +2,9 @@
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * 鍵削除時の鍵の破棄
+  * セキュアではない暗号についてのチェックの改善
+  * 修正: OpenKeychainの初回ウィザード成功後クローズされない問題
   * API: Version 8
 
 ## 3.4

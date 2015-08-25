@@ -159,6 +159,7 @@
   <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Zoek sleutels op keybase.io</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aanzetten</string>
   <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
@@ -171,8 +172,6 @@
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
-  <string name="pref_proxy_type_value_http">proxyHttp</string>
-  <string name="pref_proxy_type_value_socks">proxySocks</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Gebruik Tor niet</string>
   <!--InstallDialogFragment strings-->
@@ -1196,6 +1195,7 @@
   <string name="passp_cache_notif_keys">Onthouden wachtwoorden</string>
   <string name="passp_cache_notif_clear">Wachtwoorden wissen</string>
   <string name="passp_cache_notif_pwd">Wachtwoord</string>
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Neem je privacy terug met OpenKeychain!</string>
   <string name="first_time_create_key">Mijn sleutel aanmaken</string>
