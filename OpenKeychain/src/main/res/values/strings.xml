@@ -834,7 +834,7 @@
     <string name="msg_ip_master_flags_xxxa">"Master flags: authenticate"</string>
     <string name="msg_ip_master_flags_xxxx">"Master flags: none"</string>
     <string name="msg_ip_merge_public">"Merging imported data into existing public keyring"</string>
-    <string name="msg_ip_merge_secret">"Merging imported data into existing public keyring"</string>
+    <string name="msg_ip_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
