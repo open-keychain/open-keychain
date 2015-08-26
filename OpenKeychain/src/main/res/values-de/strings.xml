@@ -295,8 +295,8 @@
   <string name="error_file_not_found">Datei nicht gefunden</string>
   <string name="error_no_secret_key_found">kein geeigneter privater Schlüssel gefunden</string>
   <string name="error_external_storage_not_ready">Externes Laufwerk ist nicht bereit</string>
-  <string name="error_key_size_minimum512bit">Schlüssel muss mindestens 512 Bit lang sein</string>
-  <string name="error_unknown_algorithm_choice">Unbekannte Auswahl für Algorithmus</string>
+  <string name="error_key_size_minimum512bit">Schlüssellänge muss mindestens 512 Bit betragen</string>
+  <string name="error_unknown_algorithm_choice">Unbekannter Algorithmus ausgewählt </string>
   <string name="error_user_id_no_email">keine E-Mail-Adresse gefunden</string>
   <string name="error_key_needs_a_user_id">Mindestens eine Identität wird benötigt</string>
   <string name="error_no_signature_passphrase">kein Passwort angegeben</string>
@@ -329,7 +329,7 @@
   <string name="decrypt_result_action_show">Anzeigen</string>
   <string name="decrypt_result_action_Lookup">Nachschlagen</string>
   <string name="decrypt_invalid_text">Entweder die Signatur ist ungültig oder der Schlüssel wurde widerrufen. Es ist nicht sicher, wer den Text geschrieben hat. Soll er trotzdem angezeigt werden?</string>
-  <string name="decrypt_invalid_button">Ich verstehe das Risiko, Nachricht anzeigen!</string>
+  <string name="decrypt_invalid_button">Ich kenne die Risiken, Nachricht anzeigen!</string>
   <!--Add keys-->
   <string name="add_keys_my_key">Mein Schlüssel:</string>
   <!--progress dialogs, usually ending in '…'-->
@@ -339,7 +339,7 @@
   <string name="progress_saving">Wird gespeichert…</string>
   <string name="progress_importing">Wird importiert…</string>
   <string name="progress_revoking_uploading">Schlüssel wird widerrufen und hochgeladen..</string>
-  <string name="progress_updating">Aktualisiere Schlüssel...</string>
+  <string name="progress_updating">Schlüssel werden aktualisiert...</string>
   <string name="progress_exporting">Wird exportiert…</string>
   <string name="progress_uploading">Wird hochgeladen...</string>
   <string name="progress_building_key">Schlüssel wird erstellt…</string>
@@ -445,16 +445,16 @@
     <item quantity="other">%1$d Schlüssel wurden erfolgreich importiert</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
-    <item quantity="one">und aktualisierte Schlüssel%2$s.</item>
-    <item quantity="other">und aktualisierte %1$d Schlüssel%2$s.</item>
+    <item quantity="one">und Schlüssel aktualisiert%2$s.</item>
+    <item quantity="other">und %1$d Schlüssel aktualisiert%2$s.</item>
   </plurals>
   <plurals name="import_keys_added">
-    <item quantity="one">Schlüssel %2$s erfolgreich importiert</item>
-    <item quantity="other">%1$d Schlüssel erfolgreich importiert: %2$s.</item>
+    <item quantity="one">Schlüssel erfolgreich importiert%2$s.</item>
+    <item quantity="other">%1$d Schlüssel erfolgreich importiert%2$s.</item>
   </plurals>
   <plurals name="import_keys_updated">
-    <item quantity="one">Schlüssel %2$s erfolgreich aktualisiert.</item>
-    <item quantity="other">%1$d Schlüssel erfolgreich aktualisiert: %2$s.</item>
+    <item quantity="one">Schlüssel erfolgreich aktualisiert%2$s.</item>
+    <item quantity="other">%1$d Schlüssel erfolgreich aktualisiert%2$s.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Import eines Schlüssels fehlgeschlagen!</item>
@@ -472,12 +472,12 @@
     <item quantity="other">%1$d Schlüssel wurden erfolgreich gelöscht</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
-    <item quantity="one">, aber das Löschen eines Schlüssels%2$s ist fehlgeschlagen.</item>
-    <item quantity="other">, aber das Löschen von %1$d Schlüsseln%2$s ist fehlgeschlagen.</item>
+    <item quantity="one">, aber das Löschen eines Schlüssels ist fehlgeschlagen%2$s.</item>
+    <item quantity="other">, aber das Löschen von %1$d Schlüsseln ist fehlgeschlagen%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
-    <item quantity="one">Schlüssel wurde erfolgreich gelöscht %2$s.</item>
-    <item quantity="other">%1$d Schlüssel wurden erfolgreich gelöscht %2$s.</item>
+    <item quantity="one">Schlüssel wurde erfolgreich gelöscht%2$s.</item>
+    <item quantity="other">%1$d Schlüssel wurden erfolgreich gelöscht%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Fehler beim Löschen eines Schlüssels%2$s.</item>
@@ -492,8 +492,8 @@
   <string name="revoke_cancelled">Widerrufvorgang abgebrochen.</string>
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
-    <item quantity="one">Schlüssel%2$s erfolgreich beglaubigt.</item>
-    <item quantity="other">%1$d Schlüssel%2$s erfolgreich beglaubigt.</item>
+    <item quantity="one">Schlüssel wurde erfolgreich beglaubigt%2$s.</item>
+    <item quantity="other">%1$d Schlüssel wurden erfolgreich beglaubigt%2$s.</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Beglaubigung fehlgeschlagen!</item>
@@ -588,7 +588,7 @@
   <string name="user_id_info_uncertified_title">Nicht beglaubigt</string>
   <string name="user_id_info_uncertified_text">Diese Identität wurde noch nicht beglaubigt. Du kannst nicht sicher sein, dass diese Identität wirklich zu einer bestimmten Person gehört.</string>
   <string name="user_id_info_invalid_title">Ungültig</string>
-  <string name="user_id_info_invalid_text">Irgend etwas ist mit dieser Identität nicht in Ordnung!</string>
+  <string name="user_id_info_invalid_text">Etwas ist mit dieser Identität nicht in Ordnung!</string>
   <!--Key trust-->
   <string name="key_trust_already_verified">Du hast diesen Schlüssel bereits bestätigt!</string>
   <string name="key_trust_it_is_yours">Dies ist einer deiner Schlüssel!</string>
@@ -598,27 +598,27 @@
   <string name="key_trust_old_keys">Es ist möglicherweise in Ordnung dies zu nutzen, um eine alte Nachricht zu entschlüsseln, die aus der Zeit stammt, als der Schlüssel noch gültig war.</string>
   <string name="key_trust_no_cloud_evidence">Kein Nachweis aus der Cloud zur Vertrauenswürdigkeit dieses Schlüssels.</string>
   <string name="key_trust_start_cloud_search">Suche beginnen</string>
-  <string name="key_trust_results_prefix">Keybase.io bietet \"Nachweise\" die versichern, dass der Schlüsselinhaber:</string>
+  <string name="key_trust_results_prefix">Keybase.io bietet \"Nachweise\" die bestätigen, dass der Schlüsselinhaber:</string>
   <string name="key_trust_header_text">Hinweis: Keybase.io-Nachweise sind ein experimentelles Feature von OpenKeychain. Wir rufen dazu auf, zusätzlich zur Bestätigung, QR-Codes zu nutzen oder Schlüssel via NFC auszutauschen.</string>
   <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Schreibt auf Twitter als %s</string>
-  <string name="keybase_narrative_github">Ist auf GitHub bekannt als %s</string>
+  <string name="keybase_narrative_twitter">Auf Twitter schreibt, als %s</string>
+  <string name="keybase_narrative_github">Auf GitHub bekannt ist, als %s</string>
   <string name="keybase_narrative_dns">Kontrolliert den/die Domainname(n) %s</string>
-  <string name="keybase_narrative_web_site">Kann auf diese Webseite(n) %s posten</string>
-  <string name="keybase_narrative_reddit">Veröffentlicht auf Reddit als %s</string>
-  <string name="keybase_narrative_coinbase">Ist auf Coinbase bekannt als %s</string>
-  <string name="keybase_narrative_hackernews">Veröffentlicht auf Hacker News als %s</string>
+  <string name="keybase_narrative_web_site">Auf diese Webseite(n) veröffentlichen kann %s</string>
+  <string name="keybase_narrative_reddit">Auf Reddit veröffentlicht, als %s</string>
+  <string name="keybase_narrative_coinbase">Auf Coinbase bekannt ist, als %s</string>
+  <string name="keybase_narrative_hackernews">Auf Hacker News veröffentlicht, als %s</string>
   <string name="keybase_narrative_unknown">Unbekannter Nachweistyp %s</string>
   <string name="keybase_proof_failure">Leider kann dieser Nachweis nicht überprüft werden.</string>
-  <string name="keybase_unknown_proof_failure">Unbekanntes Problem mit dem Nachweis-Prüfer</string>
+  <string name="keybase_unknown_proof_failure">Unbekanntes Problem mit dem Nachweisprüfer</string>
   <string name="keybase_problem_fetching_evidence">Problem mit dem Nachweis</string>
-  <string name="keybase_key_mismatch">Schlüssel-Fingerabdruck stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
+  <string name="keybase_key_mismatch">Fingerabdruck des Schlüssels stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
   <string name="keybase_dns_query_failure">Abfrage des DNS-TXT-Eintrags fehlgeschlagen</string>
-  <string name="keybase_no_prover_found">Kein Nachweis-Prüfer gefunden für</string>
+  <string name="keybase_no_prover_found">Kein Nachweisprüfer gefunden für</string>
   <string name="keybase_message_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
-  <string name="keybase_message_fetching_data">Hole Nachweis</string>
+  <string name="keybase_message_fetching_data">Nachweis wird abgerufen</string>
   <string name="keybase_proof_succeeded">Dieser Nachweis wurde verifiziert!</string>
-  <string name="keybase_a_post">Ein Posting</string>
+  <string name="keybase_a_post">Ein Posting / eine Veröffentlichung</string>
   <string name="keybase_fetched_from">abgerufen von</string>
   <string name="keybase_for_the_domain">für die Domain</string>
   <string name="keybase_contained_signature">enthält eine Nachricht, die nur vom Schlüsselinhaber hätte erzeugt werden können.</string>
@@ -655,7 +655,7 @@
   <string name="edit_key_error_add_subkey">Füge mindestens einen Unterschlüssel hinzu!</string>
   <string name="edit_key_error_bad_nfc_algo">Hash-Algorithmus wird von dieser Smartcard nicht unterstützt!</string>
   <string name="edit_key_error_bad_nfc_size">Die Schlüssellänge wird von dieser Smartcard nicht unterstützt!</string>
-  <string name="edit_key_error_bad_nfc_stripped">Kann Schlüssel nicht auf Smartcard verschieben (entweder gekürzt oder \'auf Karte umgeleitet\')!</string>
+  <string name="edit_key_error_bad_nfc_stripped">Schlüssel kann nicht auf Smartcard verschoben werden (entweder er ist gekürzt oder \'auf Karte umgeleitet\')!</string>
   <!--Create key-->
   <string name="create_key_upload">Mit der Cloud synchronisieren</string>
   <string name="create_key_empty">Dieses Feld wird benötigt</string>
@@ -663,8 +663,8 @@
   <string name="create_key_final_text">Du hast folgende Identität eingegeben:</string>
   <string name="create_key_final_robot_text">Einen Schlüssel zu erzeugen braucht eine Weile, trink in der Zeit einen Kaffee...</string>
   <string name="create_key_rsa">(3 Unterschlüssel, RSA, 4096 Bit)</string>
-  <string name="create_key_custom">(Benutzerdefinierte Schlüsseleinstellung)</string>
-  <string name="create_key_name_text">Verknüpfe einen Namen mit diesem Schlüssel. Es kann ein voller Name, z.B. \"John Doe\", oder ein Spitzname, z.B. \"Johnny\", sein.</string>
+  <string name="create_key_custom">(Benutzerdefinierte Schlüsselkonfiguration)</string>
+  <string name="create_key_name_text">Verknüpfe einen Namen mit diesem Schlüssel. Es kann ein voller Name wie z.B. \"John Doe\", oder ein Spitzname wie z.B. \"Johnny\", sein.</string>
   <string name="create_key_email_text">Gib deine Haupt-E-Mail-Adresse ein, die du für sichere Kommunikation nutzen möchtest.</string>
   <string name="create_key_passphrase_text">Wähle ein starkes Passwort. Es schützt den Schlüssel, wenn dein Gerät gestohlen werden sollte.</string>
   <string name="create_key_hint_full_name">Vollständiger Name oder Spitzname</string>
@@ -683,7 +683,7 @@
   <!--View key-->
   <string name="view_key_revoked">Widerrufen: Schlüssel darf nicht mehr genutzt werden!</string>
   <string name="view_key_expired">Abgelaufen: Der Kontakt muss die Gültigkeit des Schlüssels verlängern!</string>
-  <string name="view_key_expired_secret">Abgelaufen: Du kannst die Gültigkeit des Schlüssels verlängern indem du ihn bearbeitest.</string>
+  <string name="view_key_expired_secret">Abgelaufen: Du kannst die Gültigkeit des Schlüssels verlängern, indem du ihn bearbeitest.</string>
   <string name="view_key_my_key">Mein Schlüssel</string>
   <string name="view_key_verified">Bestätigter Schlüssel</string>
   <string name="view_key_unverified">Unbestätigt: QR-Code einscannen, um den Schlüssel zu bestätigen!</string>
@@ -691,7 +691,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Schlüsselserver hinzufügen</string>
   <string name="edit_keyserver_dialog_title">Schlüsselserver bearbeiten</string>
-  <string name="add_keyserver_verified">Schlüsselserver bestätigt!</string>
+  <string name="add_keyserver_verified">Schlüsselserver verifiziert!</string>
   <string name="add_keyserver_without_verification">Schlüsselserver ohne Verifikation hinzugefügt.</string>
   <string name="add_keyserver_invalid_url">Ungültige URL!</string>
   <string name="add_keyserver_connection_failed">Verbindung zum Schlüsselserver fehlgeschlagen. Bitte überprüfe die URL und deine Internetverbindung.</string>
@@ -753,8 +753,8 @@
   <string name="msg_ip_master_flags_xxsx">Haupt-Attribute: signieren</string>
   <string name="msg_ip_master_flags_xxxa">Haupt-Attribute: authentifizieren</string>
   <string name="msg_ip_master_flags_xxxx">Haupt-Attribute: keine</string>
-  <string name="msg_ip_merge_public">Füge importierte Daten in existierend öffentlichen Schlüsselbund ein</string>
-  <string name="msg_ip_merge_secret">Importierte Daten werden in vorhandenen öffentlichen Schlüsselbund eingefügt</string>
+  <string name="msg_ip_merge_public">Importierte Daten werden in vorhandenen öffentlichen Schlüsselbund eingefügt</string>
+  <string name="msg_ip_merge_secret">Importierte Daten werden in vorhandenen privaten Schlüsselbund eingefügt</string>
   <string name="msg_ip_subkey">Verarbeite Unterschlüssel %s</string>
   <string name="msg_ip_subkey_expired">Unterschlüssel abgelaufen am %s</string>
   <string name="msg_ip_subkey_expires">Unterschlüssel läuft ab am %s</string>
@@ -776,13 +776,13 @@
   <string name="msg_ip_subkey_flags_xxxa">Unterschlüssel-Attribut: authentifizieren</string>
   <string name="msg_ip_subkey_flags_xxxx">Unterschlüssel-Attribute: keine</string>
   <string name="msg_ip_success">Öffentlicher Schlüsselbund erfolgreich importiert</string>
-  <string name="msg_ip_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun.</string>
+  <string name="msg_ip_success_identical">Schlüsselbund enthält keine neuen Daten, es gibt nichts zu tun</string>
   <string name="msg_ip_reinsert_secret">Privaten Schlüssel wiedereinfügen</string>
   <string name="msg_ip_uid_cert_bad">Fehlerhafte Beglaubigung gefunden!</string>
   <string name="msg_ip_uid_cert_error">Fehler beim Verarbeiten der Beglaubigung!</string>
-  <string name="msg_ip_uid_cert_nonrevoke">Besitzt bereits eine nicht widerrufbare Beglaubigung, überspringe.</string>
-  <string name="msg_ip_uid_cert_old">Beglaubgigung ist älter als Vorherige, überspringe.</string>
-  <string name="msg_ip_uid_cert_new">Beglaubigung ist aktueller, ersetze Vorherhige.</string>
+  <string name="msg_ip_uid_cert_nonrevoke">Besitzt bereits eine nicht widerrufbare Beglaubigung, wird übersprungen.</string>
+  <string name="msg_ip_uid_cert_old">Beglaubgigung ist älter als Vorherige, wird übersprungen.</string>
+  <string name="msg_ip_uid_cert_new">Beglaubigung ist aktueller, Vorherhige wird ersetzt.</string>
   <string name="msg_ip_uid_cert_good">Korrekte Beglaubigung von %1$s gefunden</string>
   <string name="msg_ip_uid_cert_good_revoke">Korrekten Beglaubigungwiderruf von %1$s gefunden</string>
   <plurals name="msg_ip_uid_certs_unknown">
@@ -813,14 +813,14 @@
   <string name="msg_ip_uat_classifying">Klassifiziere Benutzerattribute</string>
   <string name="msg_ip_uat_revoked">Benutzerattribut wurde widerrufen</string>
   <string name="msg_is_bad_type_public">Es wurde versucht einen öffentlichen Schlüsselbund als privaten zu importieren. Dies ist ein Fehler, bitte reiche einen Fehlerbericht ein!</string>
-  <string name="msg_is_bad_type_uncanon">Es wurde versucht, einen Schlüsselbund ohne Anpassung zu importieren. Dies ist ein Fehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_is_bad_type_uncanon">Es wurde versucht, einen Schlüsselbund ohne vorschriftsmäßiges Format zu importieren. Dies ist ein Fehler, bitte reiche einen Fehlerbericht ein!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Importiere privaten Schlüssel %s</string>
   <string name="msg_is_db_exception">Datenbankfehler!</string>
   <string name="msg_is_importing_subkeys">Private Unterschlüssel werden verarbeitet</string>
   <string name="msg_is_error_io_exc">Fehler bei Kordierung des Schlüsselbunds</string>
   <string name="msg_is_merge_public">Importierte Daten werden in vorhandenen öffentlichen Schlüsselbund eingefügt</string>
-  <string name="msg_is_merge_secret">Importierte Daten werden in vorhandenen öffentlichen Schlüsselbund eingefügt</string>
+  <string name="msg_is_merge_secret">Importierte Daten werden in vorhandenen privaten Schlüsselbund eingefügt</string>
   <string name="msg_is_merge_special">Eigenbeglaubigungsdaten aus öffentlichem Schlüsselbund werden eingefügt</string>
   <string name="msg_is_pubring_generate">Öffentlicher Schlüsselbund wird aus privatem Schlüsselbund erzeugt</string>
   <string name="msg_is_subkey_nonexistent">Unterschlüssel %s in privatem Schlüssel nicht verfügbar</string>
@@ -922,8 +922,8 @@
   <string name="msg_cr_error_no_user_id">Schlüsselbünde müssen mindestens eine User-ID enthalten!</string>
   <string name="msg_cr_error_no_certify">Hauptschlüssel benötigt das Attribut beglaubigen!</string>
   <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerstellung nicht \'gleiche wie vorher\' sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
-  <string name="msg_cr_error_keysize_512">Schlüsselgröße muss größer/gleich 512 sein!</string>
-  <string name="msg_cr_error_no_curve">Keine Schlüsselgröße spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
+  <string name="msg_cr_error_keysize_512">Schlüssellänge muss größer/gleich 512 sein!</string>
+  <string name="msg_cr_error_no_curve">Keine Schlüssellänge spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_no_keysize">Keine Elliptische Kurve spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_internal_pgp">Interner OpenPGP Fehler!</string>
   <string name="msg_cr_error_unknown_algo">Unbekannter Algorithmus ausgewählt. Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
@@ -933,7 +933,7 @@
   <string name="msg_cr_error_flags_ecdh">Falsche Schlüsselattribute ausgewählt, ECDH kann nicht zum Signieren verwendet werden!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Schlüsselbund %s wird verändert</string>
-  <string name="msg_mf_divert">Kryptographische Vorgänge werden auf auf Smartcard umgeleitet</string>
+  <string name="msg_mf_divert">Kryptographische Vorgänge werden auf Smartcard umgeleitet</string>
   <string name="msg_mf_error_divert_newsub">Erzeugung neuer Unterschlüssel wird für \'auf Karte umgeleitete\' Hauptschlüssel nicht unterstützt!</string>
   <string name="msg_mf_error_divert_serial">Die Seriennummer eines \'auf Karte umgeleiteten\' Schlüssels muss 16 Byte lang sein! Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_encode">Kodierungsfehler!</string>
@@ -954,7 +954,7 @@
   <string name="msg_mf_error_subkey_missing">Versuch mit fehlendem Unterschlüssel %s zu arbeiten!</string>
   <string name="msg_mf_error_conflicting_nfc_commands">Der Schlüssel kann nicht im selben Vorgang auf die Smartcard verschoben werden, der auf der Smartcard eine Signatur erzeugt.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Smartcard unterstützt nur einen Slot pro Schlüsseltyp.</string>
-  <string name="msg_mf_error_invalid_flags_for_keytocard">Unangebrachte Schlüsselattribute für Schlüssel auf Smartcard.</string>
+  <string name="msg_mf_error_invalid_flags_for_keytocard">Ungeeignete Schlüsselattribute für Schlüssel auf Smartcard.</string>
   <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
   <string name="msg_mf_notation_empty">Füge leeres Vermerk-Paket hinzu</string>
   <string name="msg_mf_notation_pin">Füge PIN-Vermerk-Paket hinzu</string>
@@ -1294,7 +1294,7 @@
   <string name="can_sign_not">kann nicht signieren</string>
   <string name="error_no_encrypt_subkey">Kein Unterschlüssel zum Verschlüsseln verfügbar!</string>
   <string name="contact_show_key">Schlüssel anzeigen (%s)</string>
-  <string name="swipe_to_update">Nach unten wischen um von Schlüsselserver zu aktualisieren</string>
+  <string name="swipe_to_update">Nach unten wischen, um vom Schlüsselserver zu aktualisieren</string>
   <string name="error_no_file_selected">Mindestens eine Datei zum Verschlüsseln auswählen!</string>
   <string name="error_multi_files">Das speichern von mehreren Dateien wird nicht unterstützt. Dies ist eine Einschränkung der aktuellen Android Version.</string>
   <string name="error_multi_clipboard">Verschlüsselung mehrerer Dateien in die Zwischenablage wird nicht unterstützt.</string>
@@ -1354,9 +1354,9 @@
   <string name="error_nfc_terminated">YubiKey befindet sich in beendetem Zustand.</string>
   <string name="error_nfc_wrong_length">Eingegebene PIN zu kurz. PINs müssen aus mindestens 6 Ziffern bestehen.</string>
   <string name="error_nfc_conditions_not_satisfied">Nutzungsbedingungen werden nicht erfüllt. </string>
-  <string name="error_nfc_security_not_satisfied">Sicherheitsstatus nicht zufriedenstellend.</string>
+  <string name="error_nfc_security_not_satisfied">Sicherheitsstatus nicht erfüllt.</string>
   <string name="error_nfc_authentication_blocked">PIN nach zu vielen Versuchen gesperrt.</string>
-  <string name="error_nfc_data_not_found">Schlüssel oder Objekt nicht gefunden!</string>
+  <string name="error_nfc_data_not_found">Schlüssel oder Objekt nicht gefunden.</string>
   <string name="error_nfc_unknown">Unbekannter Fehler</string>
   <string name="error_nfc_bad_data">YubiKey meldete ungültige Daten.</string>
   <string name="error_nfc_chaining_error">YubiKey erwartete das letzte Kommando in einer Kette.</string>
@@ -1365,7 +1365,7 @@
   <string name="error_nfc_try_again">Erneut versuchen</string>
   <string name="error_pin_nodefault">Standard-PIN abgelehnt</string>
   <string name="error_temp_file">Erstellen der temporären Datei fehlgeschlagen.</string>
-  <string name="btn_delete_original">Original Datei löschen</string>
+  <string name="btn_delete_original">Originaldatei löschen</string>
   <string name="snack_encrypt_filenames_on">Dateinamen <b>sind</b> verschlüsselt.</string>
   <string name="snack_encrypt_filenames_off">Dateinamen <b>sind nicht</b> verschlüsselt.</string>
   <string name="snack_armor_on">Ausgabe als Text kodiert.</string>
@@ -1373,7 +1373,7 @@
   <string name="snack_compression_on">Komprimierung <b>aktiviert</b>.</string>
   <string name="snack_compression_off">Komprimierung <b>deaktiviert</b>.</string>
   <string name="error_loading_keys">Fehler beim Laden der Schlüssel!</string>
-  <string name="error_empty_log">(Fehler, leeres Protokoll)</string>
+  <string name="error_empty_log">(Fehler, Protokoll leer)</string>
   <string name="error_reading_text">Konnte Eingabe zur Entschlüsselung nicht lesen!</string>
   <string name="filename_unknown">&lt;kein Dateiname&gt;</string>
   <string name="filename_unknown_text">&lt;Klartextdaten&gt;</string>
@@ -1381,12 +1381,12 @@
   <string name="view_internal">In OpenKeychain ansehen</string>
   <string name="error_preparing_data">Fehler beim Vorbereiten der Daten!</string>
   <string name="label_clip_title">Verschlüsselte Daten</string>
-  <string name="progress_processing">Verarbeite...</string>
+  <string name="progress_processing">Wird verarbeitet...</string>
   <string name="error_saving_file">Fehler beim Speichern der Datei!</string>
   <string name="file_saved">Datei gespeichert!</string>
-  <string name="file_delete_ok">Original Datei gelöscht</string>
+  <string name="file_delete_ok">Originaldatei gelöscht.</string>
   <string name="file_delete_none">Keine Datei gelöscht! (bereits gelöscht?)</string>
-  <string name="file_delete_exception">Original Datei konnte nicht gelöscht werden!</string>
+  <string name="file_delete_exception">Originaldatei konnte nicht gelöscht werden!</string>
   <string name="error_clipboard_empty">Zwischenablage ist leer!</string>
   <string name="error_clipboard_copy">Fehler beim Kopieren der Daten in die Zwischenablage!</string>
   <string name="error_scan_fp">Fehler beim Scannen des Fingerabdrucks!</string>
