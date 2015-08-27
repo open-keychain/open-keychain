@@ -94,10 +94,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                     });
             initializeSearchKeyserver(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
             );
             initializeSearchKeybase(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
             );
 
         } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
@@ -195,10 +195,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                     });
             initializeSearchKeyserver(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
             );
             initializeSearchKeybase(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
             );
         }
 
@@ -256,8 +256,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         public static class Initializer {
-            private CheckBoxPreference mUseTor;
-            private CheckBoxPreference mUseNormalProxy;
+            private SwitchPreference mUseTor;
+            private SwitchPreference mUseNormalProxy;
             private EditTextPreference mProxyHost;
             private EditTextPreference mProxyPort;
             private ListPreference mProxyType;
@@ -293,8 +293,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     mActivity.addPreferencesFromResource(R.xml.proxy_prefs);
                 }
 
-                mUseTor = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
-                mUseNormalProxy = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
+                mUseTor = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
+                mUseNormalProxy = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
                 mProxyHost = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_HOST);
                 mProxyPort = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_PORT);
                 mProxyType = (ListPreference) automaticallyFindPreference(Constants.Pref.PROXY_TYPE);
@@ -492,19 +492,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
             // for keyserver sync
             initializeSyncCheckBox(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
+                    (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
                     account,
                     Constants.PROVIDER_AUTHORITY
             );
             // for contacts sync
             initializeSyncCheckBox(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SYNC_CONTACTS),
+                    (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS),
                     account,
                     ContactsContract.AUTHORITY
             );
         }
 
-        private void initializeSyncCheckBox(final CheckBoxPreference syncCheckBox,
+        private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
                                             final Account account,
                                             final String authority) {
             boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority);
@@ -529,7 +529,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             });
         }
 
-        private void setSummary(CheckBoxPreference syncCheckBox, String authority,
+        private void setSummary(SwitchPreference syncCheckBox, String authority,
                                 boolean checked) {
             switch (authority) {
                 case Constants.PROVIDER_AUTHORITY: {
@@ -623,7 +623,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         });
     }
 
-    private static void initializeSearchKeyserver(final CheckBoxPreference mSearchKeyserver) {
+    private static void initializeSearchKeyserver(final SwitchPreference mSearchKeyserver) {
         Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
         mSearchKeyserver.setChecked(prefs.searchKeyserver);
         mSearchKeyserver.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -636,7 +636,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         });
     }
 
-    private static void initializeSearchKeybase(final CheckBoxPreference mSearchKeybase) {
+    private static void initializeSearchKeybase(final SwitchPreference mSearchKeybase) {
         Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
         mSearchKeybase.setChecked(prefs.searchKeybase);
         mSearchKeybase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
