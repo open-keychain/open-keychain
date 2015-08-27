@@ -18,7 +18,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -93,7 +97,7 @@ public class BackupFragment extends Fragment {
         }
 
         if (!includeSecretKeys) {
-            mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
+            startBackup(false);
             return;
         }
 
@@ -148,7 +152,7 @@ public class BackupFragment extends Fragment {
                     return;
                 }
 
-                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                startBackup(true);
             }
 
         }.execute(activity.getContentResolver());
@@ -178,7 +182,19 @@ public class BackupFragment extends Fragment {
                 return;
             }
 
-            mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+            startBackup(true);
         }
     }
+
+    private void startBackup(boolean exportSecret) {
+        File filename;
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        if (exportSecret) {
+            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".asc");
+        } else {
+            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".pub.asc");
+        }
+        mExportHelper.showExportKeysDialog(null, filename, exportSecret);
+    }
+
 }
