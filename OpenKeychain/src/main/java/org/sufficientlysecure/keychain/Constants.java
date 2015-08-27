@@ -108,6 +108,8 @@ public final class Constants {
         // keyserver sync settings
         public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
+        // other settings
+        public static final String ENABLE_EXPERIMENTAL_FEATURES = "enableExperimentalFeatures";
 
         public static final class Theme {
             public static final String LIGHT = "light";

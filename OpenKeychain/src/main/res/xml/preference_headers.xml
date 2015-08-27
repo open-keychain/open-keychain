@@ -6,12 +6,15 @@
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$CloudSearchPrefsFragment"
         android:title="@string/section_cloud_search" />
     <header
-        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$AdvancedPrefsFragment"
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$PassphrasePrefsFragment"
         android:title="@string/section_passphrase_cache" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
         android:title="@string/section_proxy_settings" />
     <header
-        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$SyncSettingsFragment"
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$SyncPrefsFragment"
         android:title="@string/section_sync_settings" />
+    <header
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$OtherPrefsFragment"
+        android:title="@string/section_other_settings" />
 </preference-headers>

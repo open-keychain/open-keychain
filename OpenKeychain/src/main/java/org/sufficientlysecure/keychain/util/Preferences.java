@@ -335,7 +335,7 @@ public class Preferences {
         }
     }
 
-    // proxy preference functions ends here
+    // cloud prefs
 
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
@@ -358,6 +358,18 @@ public class Preferences {
             this.searchKeybase = searchKeybase;
             this.keyserver = keyserver;
         }
+    }
+
+    // other prefs
+
+    public void setEnableExperimentalFeatures(boolean enableExperimentalFeatures) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.ENABLE_EXPERIMENTAL_FEATURES, enableExperimentalFeatures);
+        editor.commit();
+    }
+
+    public boolean getEnableExperimentalFeatures() {
+        return mSharedPreferences.getBoolean(Pref.ENABLE_EXPERIMENTAL_FEATURES, false);
     }
 
     public void upgradePreferences(Context context) {

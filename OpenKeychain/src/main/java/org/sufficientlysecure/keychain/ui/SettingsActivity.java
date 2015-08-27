@@ -32,6 +32,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.ContactsContract;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -100,7 +101,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             );
 
         } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
-            addPreferencesFromResource(R.xml.adv_preferences);
+            addPreferencesFromResource(R.xml.passphrase_preferences);
 
             initializePassphraseCacheSubs(
                     (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
@@ -221,14 +222,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * This fragment shows the PIN/password preferences
      */
-    public static class AdvancedPrefsFragment extends PreferenceFragment {
+    public static class PassphrasePrefsFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.adv_preferences);
+            addPreferencesFromResource(R.xml.passphrase_preferences);
 
             initializePassphraseCacheSubs(
                     (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
@@ -472,7 +473,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * This fragment shows the keyserver/contacts sync preferences
      */
-    public static class SyncSettingsFragment extends PreferenceFragment {
+    public static class SyncPrefsFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -551,12 +552,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    /**
+     * This fragment shows other preferences
+     */
+    public static class OtherPrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.other_preferences);
+
+            initializeEnableExperimentalFeatures(
+                    (SwitchPreference) findPreference(Constants.Pref.ENABLE_EXPERIMENTAL_FEATURES));
+        }
+    }
+
     protected boolean isValidFragment(String fragmentName) {
-        return AdvancedPrefsFragment.class.getName().equals(fragmentName)
+        return PassphrasePrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || GuiPrefsFragment.class.getName().equals(fragmentName)
-                || SyncSettingsFragment.class.getName().equals(fragmentName)
+                || SyncPrefsFragment.class.getName().equals(fragmentName)
+                || OtherPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
@@ -652,6 +671,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mUseNumKeypadForYubiKeyPin.setChecked((Boolean) newValue);
                 sPreferences.setUseNumKeypadForYubiKeyPin((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeEnableExperimentalFeatures(final SwitchPreference mEnableExperimentalFeatures) {
+        mEnableExperimentalFeatures.setChecked(sPreferences.getEnableExperimentalFeatures());
+        mEnableExperimentalFeatures.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mEnableExperimentalFeatures.setChecked((Boolean) newValue);
+                sPreferences.setEnableExperimentalFeatures((Boolean) newValue);
                 return false;
             }
         });
