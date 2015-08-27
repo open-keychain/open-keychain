@@ -45,13 +45,17 @@
     <string name="section_linked_system_contact">"Linked System Contact"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
-    <string name="section_cloud_evidence">"Proofs from the cloud"</string>
+    <string name="section_cloud_evidence">"Proofs from the Internet"</string>
     <string name="section_keys">"Subkeys"</string>
-    <string name="section_cloud_search">"Cloud search"</string>
-    <string name="section_passphrase_cache">"Password/PIN Handling"</string>
-    <string name="section_proxy_settings">"Proxy Settings"</string>
+    <string name="section_cloud_search">"Key Search"</string>
+    <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
+    <string name="section_passphrase_cache">"Passwords and PINs"</string>
+    <string name="section_passphrase_cache_summary">"Handling, user interface, remember time"</string>
+    <string name="section_proxy_settings">"Network Anonymity"</string>
+    <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
-    <string name="section_sync_settings">"Sync Settings"</string>
+    <string name="section_sync_settings">"Synchronization"</string>
+    <string name="section_sync_settings_summary">"Automatic key updates, contact linking"</string>
     <string name="section_experimental_features">"Experimental Features"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
@@ -156,7 +160,7 @@
     <string name="label_name">"Name"</string>
     <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Synchronize with the cloud"</string>
+    <string name="label_send_key">"Synchronize with the Internet"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_keyservers_title">"Keyservers"</string>
@@ -180,8 +184,8 @@
     <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
     <string name="label_sync_settings_keyserver_summary_on">"Keys older than a week are updated from the preferred keyserver"</string>
     <string name="label_sync_settings_keyserver_summary_off">"Keys not automatically updated"</string>
-    <string name="label_sync_settings_contacts_title">"Sync Contacts with Keys"</string>
-    <string name="label_sync_settings_contacts_summary_on">"Keys linked to contacts with matching emails, happens completely offline"</string>
+    <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
+    <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
     <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
     <!-- label shown in Android settings under the OpenKeychain account -->
     <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
@@ -483,7 +487,7 @@
 
     <!-- Import -->
     <string name="import_tab_keyserver">"Keyserver"</string>
-    <string name="import_tab_cloud">"Search Cloud"</string>
+    <string name="import_tab_cloud">"Key Search"</string>
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
     <string name="import_import">"Import selected keys"</string>
@@ -641,6 +645,9 @@
     <string name="key_list_empty_text1">"No keys found!"</string>
     <string name="key_list_filter_show_all">"Show all keys"</string>
     <string name="key_list_filter_show_certified">"Show certified keys only"</string>
+    <string name="key_list_fab_qr_code">"Scan QR Code"</string>
+    <string name="key_list_fab_search">"Key Search"</string>
+    <string name="key_list_fab_import">"Import from File"</string>
 
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit key"</string>
@@ -672,7 +679,7 @@
     <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
     <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
     <string name="key_trust_old_keys">"It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
-    <string name="key_trust_no_cloud_evidence">"No proof from the cloud on this key’s trustworthiness."</string>
+    <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
     <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to confirming them."</string>
@@ -736,7 +743,7 @@
     <string name="edit_key_error_bad_nfc_stripped">"Cannot move key to smart card (either stripped or 'divert-to-card')!"</string>
 
     <!-- Create key -->
-    <string name="create_key_upload">"Synchronize with the cloud"</string>
+    <string name="create_key_upload">"Synchronize with the Internet"</string>
     <string name="create_key_empty">"This field is required"</string>
     <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
@@ -776,7 +783,7 @@
     <string name="add_keyserver_verified">"Keyserver verified!"</string>
     <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
     <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
-    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your internet connection."</string>
+    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your Internet connection."</string>
     <string name="keyserver_preference_deleted">"%s deleted"</string>
     <string name="keyserver_preference_cannot_delete_last">"Cannot delete last keyserver. At least one is required!"</string>
 
@@ -911,7 +918,7 @@
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
-    <string name="msg_is_merge_secret">"Merging imported data into existing public keyring"</string>
+    <string name="msg_is_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_is_merge_special">"Merging in self-certificates data from public keyring"</string>
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
@@ -1298,7 +1305,7 @@
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
     <string name="msg_export_error_key">"Error preprocessing key data!"</string>
-    <string name="msg_export_error_upload">"Error uploading key to server! Please check your internet connection"</string>
+    <string name="msg_export_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
     <string name="msg_export_success">"Export operation successful"</string>
     <string name="msg_export_upload_success">"Upload to keyserver successful"</string>
 
@@ -1368,7 +1375,7 @@
     <string name="passp_cache_notif_pwd">"Password"</string>
 
     <!-- Keyserver sync -->
-    <string name="keyserver_sync_orbot_notif_title">"Sync From Cloud requires Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_title">"Sync From Servers requires Orbot"</string>
     <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
     <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>

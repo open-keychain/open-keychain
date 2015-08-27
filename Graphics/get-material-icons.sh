@@ -63,3 +63,10 @@ python copy OpenKeychain action white delete 24
 
 # yubikey dialog
 python copy OpenKeychain action black check_circle 48
+
+# preference header
+python copy OpenKeychain file black cloud 24 # cloud
+python copy OpenKeychain action black lock 24 # password settings
+python copy OpenKeychain action black settings_ethernet 24 # proxy
+python copy OpenKeychain notification black sync 24 # sync
+python copy OpenKeychain action black extension 24 # experimental

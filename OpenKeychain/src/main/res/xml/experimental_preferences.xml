@@ -17,4 +17,13 @@
         android:persistent="false"
         android:summary="@string/label_experimental_settings_linked_identities_summary"
         android:title="@string/label_experimental_settings_linked_identities_title" />
+
+    <ListPreference
+        android:dialogTitle="@string/label_theme"
+        android:entries="@array/theme_entries"
+        android:entryValues="@array/theme_values"
+        android:key="theme"
+        android:persistent="false"
+        android:title="@string/label_theme" />
+
 </PreferenceScreen>
