@@ -37,4 +37,10 @@
         android:visible="false"
         android:title="@string/menu_certify_fingerprint" />
 
+    <item
+        android:id="@+id/menu_key_view_certify_fingerprint_word"
+        app:showAsAction="never"
+        android:visible="false"
+        android:title="@string/menu_certify_fingerprint_word" />
+
 </menu>
