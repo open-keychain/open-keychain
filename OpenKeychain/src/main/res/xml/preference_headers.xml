@@ -1,20 +1,29 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
     <!--<header-->
-        <!--android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$GuiPrefsFragment"-->
-        <!--android:title="@string/section_gui" />-->
+    <!--android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$GuiPrefsFragment"-->
+    <!--android:title="@string/section_gui" />-->
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$CloudSearchPrefsFragment"
+        android:icon="@drawable/ic_cloud_black_24dp"
+        android:summary="Keyserver, keybase.io"
         android:title="@string/section_cloud_search" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$PassphrasePrefsFragment"
+        android:icon="@drawable/ic_lock_black_24dp"
+        android:summary="@string/section_passphrase_cache_summary"
         android:title="@string/section_passphrase_cache" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ProxyPrefsFragment"
+        android:icon="@drawable/ic_settings_ethernet_black_24dp"
+        android:summary="@string/section_proxy_settings_summary"
         android:title="@string/section_proxy_settings" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$SyncPrefsFragment"
+        android:icon="@drawable/ic_sync_black_24dp"
+        android:summary="@string/section_sync_settings_summary"
         android:title="@string/section_sync_settings" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ExperimentalPrefsFragment"
+        android:icon="@drawable/ic_extension_black_24dp"
         android:title="@string/section_experimental_features" />
 </preference-headers>
