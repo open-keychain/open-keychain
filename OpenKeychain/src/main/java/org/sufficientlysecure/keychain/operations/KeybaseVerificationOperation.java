@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -141,7 +141,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 }
             }
 
-            PgpDecryptVerify op = new PgpDecryptVerify(mContext, mProviderHelper, mProgressable);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
 
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
                     .setSignedLiteralData(true)

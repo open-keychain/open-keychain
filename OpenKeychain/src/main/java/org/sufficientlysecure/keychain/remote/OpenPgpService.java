@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
@@ -533,7 +533,7 @@ public class OpenPgpService extends RemoteService {
 
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
 
-            PgpDecryptVerify op = new PgpDecryptVerify(this, mProviderHelper, null);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mProviderHelper, null);
 
             long inputLength = inputStream.available();
             InputData inputData = new InputData(inputStream, inputLength);

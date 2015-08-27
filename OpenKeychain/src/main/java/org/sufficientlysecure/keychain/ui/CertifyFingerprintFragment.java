@@ -51,9 +51,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
 
     private Uri mDataUri;
 
-    private View mActionNo;
-    private View mActionYes;
-
     /**
      * Creates new instance of this fragment
      */
@@ -72,18 +69,18 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.certify_fingerprint_fragment, getContainer());
 
-        mActionNo = view.findViewById(R.id.certify_fingerprint_button_no);
-        mActionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
+        View actionNo = view.findViewById(R.id.certify_fingerprint_button_no);
+        View actionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
 
         mFingerprint = (TextView) view.findViewById(R.id.certify_fingerprint_fingerprint);
 
-        mActionNo.setOnClickListener(new View.OnClickListener() {
+        actionNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getActivity().finish();
             }
         });
-        mActionYes.setOnClickListener(new View.OnClickListener() {
+        actionYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 certify(mDataUri);

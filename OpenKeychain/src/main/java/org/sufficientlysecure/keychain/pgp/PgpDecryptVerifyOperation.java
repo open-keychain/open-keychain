@@ -79,9 +79,9 @@ import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
 
-public class PgpDecryptVerify extends BaseOperation<PgpDecryptVerifyInputParcel> {
+public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
-    public PgpDecryptVerify(Context context, ProviderHelper providerHelper, Progressable progressable) {
+    public PgpDecryptVerifyOperation(Context context, ProviderHelper providerHelper, Progressable progressable) {
         super(context, providerHelper, progressable);
     }
 

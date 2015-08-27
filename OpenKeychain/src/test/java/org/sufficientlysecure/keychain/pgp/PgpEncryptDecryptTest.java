@@ -196,7 +196,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
@@ -226,7 +226,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
@@ -248,7 +248,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(true);
@@ -269,7 +269,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = new PgpDecryptVerify(RuntimeEnvironment.application,
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                     new ProviderHelper(RuntimeEnvironment.application), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowSymmetricDecryption(false);
@@ -318,7 +318,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
 
@@ -346,7 +346,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -370,7 +370,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     null, mStaticRing1.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -519,7 +519,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -548,7 +548,7 @@ public class PgpEncryptDecryptTest {
             allowed.add(mStaticRing2.getMasterKeyId());
 
             // provide passphrase for the second, and check that the first is never asked for!
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowedKeyIds(allowed);
@@ -571,7 +571,7 @@ public class PgpEncryptDecryptTest {
             InputData data = new InputData(in, in.available());
 
             // provide passphrase for the second, and check that the first is never asked for!
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             input.setAllowedKeyIds(new HashSet<Long>());
@@ -594,7 +594,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -648,7 +648,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase1, mStaticRing1.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -675,7 +675,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(
                     mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
@@ -730,7 +730,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
 
@@ -796,7 +796,7 @@ public class PgpEncryptDecryptTest {
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
             InputData data = new InputData(in, in.available());
 
-            PgpDecryptVerify op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(passphrase), data, out);
 
@@ -819,10 +819,10 @@ public class PgpEncryptDecryptTest {
         }
     }
 
-    private PgpDecryptVerify operationWithFakePassphraseCache(
+    private PgpDecryptVerifyOperation operationWithFakePassphraseCache(
             final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
-        return new PgpDecryptVerify(RuntimeEnvironment.application,
+        return new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                 new ProviderHelper(RuntimeEnvironment.application), null) {
             @Override
             public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
