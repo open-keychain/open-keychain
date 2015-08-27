@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.util.ExperimentalWordConfirm;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -44,20 +46,24 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     static final int REQUEST_CERTIFY = 1;
 
     public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_ENABLE_WORD_CONFIRM = "enable_word_confirm";
 
     private TextView mFingerprint;
+    private TextView mIntro;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
     private Uri mDataUri;
+    private boolean mEnableWordConfirm;
 
     /**
      * Creates new instance of this fragment
      */
-    public static CertifyFingerprintFragment newInstance(Uri dataUri) {
+    public static CertifyFingerprintFragment newInstance(Uri dataUri, boolean enableWordConfirm) {
         CertifyFingerprintFragment frag = new CertifyFingerprintFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putBoolean(ARG_ENABLE_WORD_CONFIRM, enableWordConfirm);
 
         frag.setArguments(args);
 
@@ -73,6 +79,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
         View actionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
 
         mFingerprint = (TextView) view.findViewById(R.id.certify_fingerprint_fingerprint);
+        mIntro = (TextView) view.findViewById(R.id.certify_fingerprint_intro);
 
         actionNo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +106,11 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
+        }
+        mEnableWordConfirm = getArguments().getBoolean(ARG_ENABLE_WORD_CONFIRM);
+
+        if (mEnableWordConfirm) {
+            mIntro.setText(R.string.certify_fingerprint_text_words);
         }
 
         loadData(dataUri);
@@ -146,10 +158,13 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
         switch (loader.getId()) {
             case LOADER_ID_UNIFIED: {
                 if (data.moveToFirst()) {
-
                     byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
-                    String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
-                    mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
+
+                    if (mEnableWordConfirm) {
+                        displayWordConfirm(fingerprintBlob);
+                    } else {
+                        displayHexConfirm(fingerprintBlob);
+                    }
 
                     break;
                 }
@@ -157,6 +172,19 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
 
         }
         setContentShown(true);
+    }
+
+    private void displayHexConfirm(byte[] fingerprintBlob) {
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
+        mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
+    }
+
+    private void displayWordConfirm(byte[] fingerprintBlob) {
+        String fingerprint = ExperimentalWordConfirm.getWords(getActivity(), fingerprintBlob);
+
+        mFingerprint.setTextSize(24);
+        mFingerprint.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        mFingerprint.setText(fingerprint);
     }
 
     /**

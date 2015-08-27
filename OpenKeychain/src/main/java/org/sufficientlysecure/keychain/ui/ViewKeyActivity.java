@@ -349,7 +349,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingeprint(mDataUri);
+                certifyFingeprint(mDataUri, false);
+                return true;
+            }
+            case R.id.menu_key_view_certify_fingerprint_word: {
+                certifyFingeprint(mDataUri, true);
                 return true;
             }
         }
@@ -364,6 +368,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         exportKey.setVisible(mIsSecret);
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
+        MenuItem certifyFingerprintWord = menu.findItem(R.id.menu_key_view_certify_fingerprint_word);
+        certifyFingerprintWord.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked
+                && Preferences.getPreferences(this).getExperimentalEnableWordConfirm());
 
         return true;
     }
@@ -375,9 +382,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         startActivityForResult(scanQrCode, REQUEST_QR_FINGERPRINT);
     }
 
-    private void certifyFingeprint(Uri dataUri) {
+    private void certifyFingeprint(Uri dataUri, boolean enableWordConfirm) {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
         intent.setData(dataUri);
+        intent.putExtra(CertifyFingerprintActivity.EXTRA_ENABLE_WORD_CONFIRM, enableWordConfirm);
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }

@@ -115,6 +115,7 @@
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
+    <string name="menu_certify_fingerprint_word">"Confirm via word comparison"</string>
     <string name="menu_export_log">"Export Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
@@ -1404,7 +1405,8 @@
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
     <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
+    <string name="certify_fingerprint_text_words">"Compare the displayed fingerprint, word by word, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text2">"Do the fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>
