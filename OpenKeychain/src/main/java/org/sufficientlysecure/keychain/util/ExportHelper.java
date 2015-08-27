@@ -69,7 +69,7 @@ public class ExportHelper
                     : R.string.specify_backup_dest_single);
         }
 
-        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
+        FileHelper.saveDocumentDialog(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
                 mExportFile = file;

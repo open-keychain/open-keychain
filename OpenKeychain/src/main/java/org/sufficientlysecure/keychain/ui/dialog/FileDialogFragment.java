@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -119,14 +120,19 @@ public class FileDialogFragment extends DialogFragment {
         mFilename = (EditText) view.findViewById(R.id.input);
         mFilename.setText(mFile.getName());
         mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
-        mBrowse.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // only .asc or .gpg files
-                // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
-                // or gpg types!
-                FileHelper.openFile(FileDialogFragment.this, Uri.fromFile(mFile), "*/*", REQUEST_CODE);
-            }
-        });
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            mBrowse.setVisibility(View.GONE);
+        } else {
+            mBrowse.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // only .asc or .gpg files
+                    // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
+                    // or gpg types!
+                    FileHelper.saveDocumentKitKat(
+                            FileDialogFragment.this, "*/*", mFile.getName(), REQUEST_CODE);
+                    }
+            });
+        }
 
         mCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
         if (checkboxText == null) {

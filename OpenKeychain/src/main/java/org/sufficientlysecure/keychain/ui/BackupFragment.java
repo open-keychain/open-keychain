@@ -47,7 +47,20 @@ public class BackupFragment extends Fragment {
     private int mIndex;
 
     static final int REQUEST_REPEAT_PASSPHRASE = 1;
+    private ExportHelper mExportHelper;
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // we won't get attached to a non-fragment activity, so the cast should be safe
+        mExportHelper = new ExportHelper((FragmentActivity) activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mExportHelper = null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,8 +93,7 @@ public class BackupFragment extends Fragment {
         }
 
         if (!includeSecretKeys) {
-            ExportHelper exportHelper = new ExportHelper(activity);
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
+            mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
             return;
         }
 
@@ -136,8 +148,7 @@ public class BackupFragment extends Fragment {
                     return;
                 }
 
-                ExportHelper exportHelper = new ExportHelper(activity);
-                exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
             }
 
         }.execute(activity.getContentResolver());
@@ -167,8 +178,7 @@ public class BackupFragment extends Fragment {
                 return;
             }
 
-            ExportHelper exportHelper = new ExportHelper(getActivity());
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+            mExportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
         }
     }
 }

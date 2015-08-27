@@ -28,16 +28,19 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
@@ -46,42 +49,95 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 
+
+/** This class offers a number of helper functions for saving documents.
+ *
+ * There are three entry points here: openDocument, saveDocument and
+ * saveDocumentDialog. Each behaves a little differently depending on whether
+ * the Android version used is pre or post KitKat.
+ *
+ * - openDocument queries for a document for reading. Used in "open encrypted
+ *   file" ui flow. On pre-kitkat, this relies on an external file manager,
+ *   and will fail with a toast message if none is installed.
+ *
+ * - saveDocument queries for a document name for saving. on pre-kitkat, this
+ *   shows a dialog where a filename can be input.  on kitkat and up, it
+ *   directly triggers a "save document" intent. Used in "save encrypted file"
+ *   ui flow.
+ *
+ * - saveDocumentDialog queries for a document. this shows a dialog on all
+ *   versions of android. the browse button opens an external browser on
+ *   pre-kitkat or the "save document" intent on post-kitkat devices. Used in
+ *   "backup key" ui flow.
+ *
+ *   It is noteworthy that the "saveDocument" call is essentially substituted
+ *   by the "saveDocumentDialog" on pre-kitkat devices.
+ *
+ */
 public class FileHelper {
 
-    /**
-     * Checks if external storage is mounted if file is located on external storage
-     *
-     * @return true if storage is mounted
-     */
-    public static boolean isStorageMounted(String file) {
-        if (file.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
-            if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                return false;
-            }
+    public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
+        } else {
+            openDocumentKitKat(fragment, mimeType, multiple, requestCode);
         }
-
-        return true;
     }
 
-    /**
-     * Opens the preferred installed file manager on Android and shows a toast if no manager is
-     * installed.
-     *
-     * @param last        default selected Uri, not supported by all file managers
-     * @param mimeType    can be text/plain for example
-     * @param requestCode requestCode used to identify the result coming back from file manager to
-     *                    onActivityResult() in your activity
-     */
-    public static void openFile(Fragment fragment, Uri last, String mimeType, int requestCode) {
+    public static void saveDocument(Fragment fragment, String targetName, Uri inputUri,
+            @StringRes int title, @StringRes int message, int requestCode) {
+        saveDocument(fragment, targetName, inputUri, "*/*", title, message, requestCode);
+    }
+
+    public static void saveDocument(Fragment fragment, String targetName, Uri inputUri, String mimeType,
+            @StringRes int title, @StringRes int message, int requestCode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            saveDocumentDialog(fragment, targetName, inputUri, title, message, requestCode);
+        } else {
+            saveDocumentKitKat(fragment, mimeType, targetName, requestCode);
+        }
+    }
+
+    public static void saveDocumentDialog(final Fragment fragment, String targetName, Uri inputUri,
+            @StringRes int title, @StringRes int message, final int requestCode) {
+
+        saveDocumentDialog(fragment, targetName, inputUri, title, message, new FileDialogCallback() {
+            // is this a good idea? seems hacky...
+            @Override
+            public void onFileSelected(File file, boolean checked) {
+                Intent intent = new Intent();
+                intent.setData(Uri.fromFile(file));
+                fragment.onActivityResult(requestCode, Activity.RESULT_OK, intent);
+            }
+        });
+    }
+
+    public static void saveDocumentDialog(final Fragment fragment, String targetName, Uri inputUri,
+            @StringRes int title, @StringRes int message, FileDialogCallback callback) {
+
+        File file = inputUri == null ? null : new File(inputUri.getPath());
+        File parentDir = file != null && file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
+        File targetFile = new File(parentDir, targetName);
+        saveDocumentDialog(callback, fragment.getActivity().getSupportFragmentManager(),
+                fragment.getString(title), fragment.getString(message), targetFile, null);
+
+    }
+
+    /** Opens the preferred installed file manager on Android and shows a toast
+     * if no manager is installed. */
+    private static void openDocumentPreKitKat(
+            Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
+
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
+        }
         intent.setData(last);
         intent.setType(mimeType);
 
@@ -92,11 +148,34 @@ public class FileHelper {
             Toast.makeText(fragment.getActivity(), R.string.no_filemanager_installed,
                     Toast.LENGTH_SHORT).show();
         }
+
     }
 
-    public static void saveFile(final FileDialogCallback callback, final FragmentManager fragmentManager,
-                                final String title, final String message, final File defaultFile,
-                                final String checkMsg) {
+    /** Opens the storage browser on Android 4.4 or later for opening a file */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private static void openDocumentKitKat(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    /** Opens the storage browser on Android 4.4 or later for saving a file. */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static void saveDocumentKitKat(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeType);
+        intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
+        intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    public static void saveDocumentDialog(
+            final FileDialogCallback callback, final FragmentManager fragmentManager,
+            final String title, final String message, final File defaultFile,
+            final String checkMsg) {
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
@@ -121,61 +200,6 @@ public class FileHelper {
                 fileDialog.show(fragmentManager, "fileDialog");
             }
         });
-    }
-
-    public static void saveFile(Fragment fragment, String title, String message, File defaultFile, int requestCode) {
-        saveFile(fragment, title, message, defaultFile, requestCode, null);
-    }
-
-    public static void saveFile(final Fragment fragment, String title, String message, File defaultFile,
-                                final int requestCode, String checkMsg) {
-        saveFile(new FileDialogCallback() {
-            @Override
-            public void onFileSelected(File file, boolean checked) {
-                Intent intent = new Intent();
-                intent.setData(Uri.fromFile(file));
-                fragment.onActivityResult(requestCode, Activity.RESULT_OK, intent);
-            }
-        }, fragment.getActivity().getSupportFragmentManager(), title, message, defaultFile, checkMsg);
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void openDocument(Fragment fragment, String mimeType, int requestCode) {
-        openDocument(fragment, mimeType, false, requestCode);
-    }
-
-    /**
-     * Opens the storage browser on Android 4.4 or later for opening a file
-     *
-     * @param mimeType    can be text/plain for example
-     * @param multiple    allow file chooser to return multiple files
-     * @param requestCode used to identify the result coming back from storage browser onActivityResult() in your
-     */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void openDocument(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(mimeType);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
-
-        fragment.startActivityForResult(intent, requestCode);
-    }
-
-    /**
-     * Opens the storage browser on Android 4.4 or later for saving a file
-     *
-     * @param mimeType      can be text/plain for example
-     * @param suggestedName a filename desirable for the file to be saved
-     * @param requestCode   used to identify the result coming back from storage browser onActivityResult() in your
-     */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void saveDocument(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(mimeType);
-        intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
-        intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
-        fragment.startActivityForResult(intent, requestCode);
     }
 
     public static String getFilename(Context context, Uri uri) {
@@ -296,6 +320,17 @@ public class FileHelper {
                 // ignore, it's just stream closin'
             }
         }
+    }
+
+    /** Checks if external storage is mounted if file is located on external storage. */
+    public static boolean isStorageMounted(String file) {
+        if (file.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+            if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public interface FileDialogCallback {
