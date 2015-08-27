@@ -569,6 +569,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             initializeExperimentalEnableLinkedIdentities(
                     (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES));
+
+            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
         }
     }
 
