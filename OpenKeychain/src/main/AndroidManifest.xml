@@ -761,8 +761,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
-        <!-- OpenPGP Remote API, this service has explicitly no permission requirements
-             because we are using our own package based allow/disallow system -->
+        <!-- DEPRECATED service,
+           using this service may lead to truncated data being returned to the caller
+         -->
         <service
             android:name=".remote.OpenPgpService"
             android:enabled="true"
@@ -771,6 +772,19 @@
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService" />
+            </intent-filter>
+        </service>
+
+        <!-- OpenPGP Remote API, this service has explicitly no permission requirements
+             because we are using our own package based allow/disallow system -->
+        <service
+            android:name=".remote.OpenPgpService2"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote_api_2"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="org.openintents.openpgp.IOpenPgpService2" />
             </intent-filter>
         </service>
 
