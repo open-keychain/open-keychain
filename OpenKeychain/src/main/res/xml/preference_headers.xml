@@ -15,6 +15,6 @@
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$SyncPrefsFragment"
         android:title="@string/section_sync_settings" />
     <header
-        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$OtherPrefsFragment"
-        android:title="@string/section_other_settings" />
+        android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$ExperimentalPrefsFragment"
+        android:title="@string/section_experimental_features" />
 </preference-headers>

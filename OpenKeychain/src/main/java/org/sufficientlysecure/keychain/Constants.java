@@ -109,7 +109,8 @@ public final class Constants {
         public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
         // other settings
-        public static final String ENABLE_EXPERIMENTAL_FEATURES = "enableExperimentalFeatures";
+        public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
+        public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
 
         public static final class Theme {
             public static final String LIGHT = "light";

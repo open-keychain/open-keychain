@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:persistent="false"
+        android:selectable="false"
+        android:summary="@string/label_experimental_settings_desc_summary" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalEnableWordConfirm"
+        android:persistent="false"
+        android:summary="@string/label_experimental_settings_word_confirm_summary"
+        android:title="@string/label_experimental_settings_word_confirm_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalEnableLinkedIdentities"
+        android:persistent="false"
+        android:summary="@string/label_experimental_settings_linked_identities_summary"
+        android:title="@string/label_experimental_settings_linked_identities_title" />
+</PreferenceScreen>

@@ -52,7 +52,7 @@
     <string name="section_proxy_settings">"Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
     <string name="section_sync_settings">"Sync Settings"</string>
-    <string name="section_other_settings">"Other Settings"</string>
+    <string name="section_experimental_features">"Experimental Features"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -186,8 +186,12 @@
     <!-- label shown in Android settings under the OpenKeychain account -->
     <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
 
-    <string name="label_other_settings_experimental_title">"Enable experimental features"</string>
-    <string name="label_other_settings_experimental_summary">"Enable experimental features, mostly results of security/UX research. Don't rely on their security!"</string>
+    <string name="label_experimental_settings_desc_summary">"These features are mostly results of security/UX research. Don't rely on their security!"</string>
+
+    <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
+    <string name="label_experimental_settings_word_confirm_summary">"Allows to compare fingerprints with words instead of hexadecimal representation."</string>
+    <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
+    <string name="label_experimental_settings_linked_identities_summary">"Linked Identities"</string>
 
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>

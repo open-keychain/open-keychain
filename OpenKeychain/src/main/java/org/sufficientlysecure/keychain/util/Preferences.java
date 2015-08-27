@@ -25,7 +25,6 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 
 import java.net.Proxy;
@@ -360,16 +359,26 @@ public class Preferences {
         }
     }
 
-    // other prefs
+    // experimental prefs
 
-    public void setEnableExperimentalFeatures(boolean enableExperimentalFeatures) {
+    public void setExperimentalEnableWordConfirm(boolean enableWordConfirm) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Pref.ENABLE_EXPERIMENTAL_FEATURES, enableExperimentalFeatures);
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM, enableWordConfirm);
         editor.commit();
     }
 
-    public boolean getEnableExperimentalFeatures() {
-        return mSharedPreferences.getBoolean(Pref.ENABLE_EXPERIMENTAL_FEATURES, false);
+    public boolean getExperimentalEnableWordConfirm() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM, false);
+    }
+
+    public void setExperimentalEnableLinkedIdentities(boolean enableLinkedIdentities) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, enableLinkedIdentities);
+        editor.commit();
+    }
+
+    public boolean getExperimentalEnableLinkedIdentities() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, false);
     }
 
     public void upgradePreferences(Context context) {

@@ -553,19 +553,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows other preferences
+     * This fragment shows experimental features
      */
-    public static class OtherPrefsFragment extends PreferenceFragment {
+    public static class ExperimentalPrefsFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.other_preferences);
+            addPreferencesFromResource(R.xml.experimental_preferences);
 
-            initializeEnableExperimentalFeatures(
-                    (SwitchPreference) findPreference(Constants.Pref.ENABLE_EXPERIMENTAL_FEATURES));
+            initializeExperimentalEnableWordConfirm(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM));
+
+            initializeExperimentalEnableLinkedIdentities(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES));
         }
     }
 
@@ -575,7 +578,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || GuiPrefsFragment.class.getName().equals(fragmentName)
                 || SyncPrefsFragment.class.getName().equals(fragmentName)
-                || OtherPrefsFragment.class.getName().equals(fragmentName)
+                || ExperimentalPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
@@ -676,12 +679,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         });
     }
 
-    private static void initializeEnableExperimentalFeatures(final SwitchPreference mEnableExperimentalFeatures) {
-        mEnableExperimentalFeatures.setChecked(sPreferences.getEnableExperimentalFeatures());
-        mEnableExperimentalFeatures.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeExperimentalEnableWordConfirm(final SwitchPreference mExperimentalEnableWordConfirm) {
+        mExperimentalEnableWordConfirm.setChecked(sPreferences.getExperimentalEnableWordConfirm());
+        mExperimentalEnableWordConfirm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mEnableExperimentalFeatures.setChecked((Boolean) newValue);
-                sPreferences.setEnableExperimentalFeatures((Boolean) newValue);
+                mExperimentalEnableWordConfirm.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableWordConfirm((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeExperimentalEnableLinkedIdentities(final SwitchPreference mExperimentalEnableLinkedIdentities) {
+        mExperimentalEnableLinkedIdentities.setChecked(sPreferences.getExperimentalEnableLinkedIdentities());
+        mExperimentalEnableLinkedIdentities.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mExperimentalEnableLinkedIdentities.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableLinkedIdentities((Boolean) newValue);
                 return false;
             }
         });
