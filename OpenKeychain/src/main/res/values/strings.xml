@@ -114,8 +114,8 @@
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
-    <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
-    <string name="menu_certify_fingerprint_word">"Confirm via word comparison"</string>
+    <string name="menu_certify_fingerprint">"Confirm via fingerprints"</string>
+    <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
     <string name="menu_export_log">"Export Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
@@ -562,8 +562,8 @@
 
     <!-- Certify result toast -->
     <plurals name="certify_keys_ok">
-        <item quantity="one">"Successfully certified key%2$s."</item>
-        <item quantity="other">"Successfully certified %1$d keys%2$s."</item>
+        <item quantity="one">"Successfully confirmed key%2$s."</item>
+        <item quantity="other">"Successfully confirmed %1$d keys%2$s."</item>
     </plurals>
     <plurals name="certify_keys_with_errors">
         <item quantity="one">"Certification failed!"</item>
@@ -645,7 +645,7 @@
 
     <string name="key_list_empty_text1">"No keys found!"</string>
     <string name="key_list_filter_show_all">"Show all keys"</string>
-    <string name="key_list_filter_show_certified">"Show certified keys only"</string>
+    <string name="key_list_filter_show_certified">"Show confirmed keys only"</string>
     <string name="key_list_fab_qr_code">"Scan QR Code"</string>
     <string name="key_list_fab_search">"Key Search"</string>
     <string name="key_list_fab_import">"Import from File"</string>
@@ -666,10 +666,10 @@
     <string name="key_view_tab_keybase">"Keybase.io"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
-    <string name="user_id_info_certified_title">"Certified"</string>
-    <string name="user_id_info_certified_text">"This identity has been certified by you."</string>
-    <string name="user_id_info_uncertified_title">"Not certified"</string>
-    <string name="user_id_info_uncertified_text">"This identity has not been certified yet. You cannot be sure if the identity really corresponds to a specific person."</string>
+    <string name="user_id_info_certified_title">"Confirmed"</string>
+    <string name="user_id_info_certified_text">"This identity has been confirmed by you."</string>
+    <string name="user_id_info_uncertified_title">"Not confirmed"</string>
+    <string name="user_id_info_uncertified_text">"This identity has not been confirmed yet. You cannot be sure if the identity really corresponds to a specific person."</string>
     <string name="user_id_info_invalid_title">"Invalid"</string>
     <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 
