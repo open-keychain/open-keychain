@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.openintents.openpgp.IOpenPgpService;
@@ -842,67 +843,8 @@ public class OpenPgpService extends RemoteService {
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
         @Override
         public Intent execute(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
-            try {
-                Intent errorResult = checkRequirements(data);
-                if (errorResult != null) {
-                    return errorResult;
-                }
-
-                String action = data.getAction();
-                switch (action) {
-                    case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
-                        return signImpl(data, input, output, true);
-                    }
-                    case OpenPgpApi.ACTION_SIGN: {
-                        // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
-                        Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
-                        return signImpl(data, input, output, true);
-                    }
-                    case OpenPgpApi.ACTION_DETACHED_SIGN: {
-                        return signImpl(data, input, output, false);
-                    }
-                    case OpenPgpApi.ACTION_ENCRYPT: {
-                        return encryptAndSignImpl(data, input, output, false);
-                    }
-                    case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
-                        return encryptAndSignImpl(data, input, output, true);
-                    }
-                    case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
-                        return decryptAndVerifyImpl(data, input, output, false);
-                    }
-                    case OpenPgpApi.ACTION_DECRYPT_METADATA: {
-                        return decryptAndVerifyImpl(data, input, output, true);
-                    }
-                    case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
-                        return getSignKeyIdImpl(data);
-                    }
-                    case OpenPgpApi.ACTION_GET_KEY_IDS: {
-                        return getKeyIdsImpl(data);
-                    }
-                    case OpenPgpApi.ACTION_GET_KEY: {
-                        return getKeyImpl(data);
-                    }
-                    default: {
-                        return null;
-                    }
-                }
-            } finally {
-                // always close input and output file descriptors even in error cases
-                if (input != null) {
-                    try {
-                        input.close();
-                    } catch (IOException e) {
-                        Log.e(Constants.TAG, "IOException when closing input ParcelFileDescriptor", e);
-                    }
-                }
-                if (output != null) {
-                    try {
-                        output.close();
-                    } catch (IOException e) {
-                        Log.e(Constants.TAG, "IOException when closing output ParcelFileDescriptor", e);
-                    }
-                }
-            }
+            Log.w(Constants.TAG, "You are using a deprecated service which may lead to truncated data on return, please use IOpenPgpService2!");
+            return executeInternal(data, input, output);
         }
 
     };
@@ -912,4 +854,69 @@ public class OpenPgpService extends RemoteService {
         return mBinder;
     }
 
+
+
+    protected Intent executeInternal(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
+        try {
+            Intent errorResult = checkRequirements(data);
+            if (errorResult != null) {
+                return errorResult;
+            }
+
+            String action = data.getAction();
+            switch (action) {
+                case OpenPgpApi.ACTION_CLEARTEXT_SIGN: {
+                    return signImpl(data, input, output, true);
+                }
+                case OpenPgpApi.ACTION_SIGN: {
+                    // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
+                    Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                    return signImpl(data, input, output, true);
+                }
+                case OpenPgpApi.ACTION_DETACHED_SIGN: {
+                    return signImpl(data, input, output, false);
+                }
+                case OpenPgpApi.ACTION_ENCRYPT: {
+                    return encryptAndSignImpl(data, input, output, false);
+                }
+                case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
+                    return encryptAndSignImpl(data, input, output, true);
+                }
+                case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
+                    return decryptAndVerifyImpl(data, input, output, false);
+                }
+                case OpenPgpApi.ACTION_DECRYPT_METADATA: {
+                    return decryptAndVerifyImpl(data, input, output, true);
+                }
+                case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
+                    return getSignKeyIdImpl(data);
+                }
+                case OpenPgpApi.ACTION_GET_KEY_IDS: {
+                    return getKeyIdsImpl(data);
+                }
+                case OpenPgpApi.ACTION_GET_KEY: {
+                    return getKeyImpl(data);
+                }
+                default: {
+                    return null;
+                }
+            }
+        } finally {
+            // always close input and output file descriptors even in error cases
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing input ParcelFileDescriptor", e);
+                }
+            }
+            if (output != null) {
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    Log.e(Constants.TAG, "IOException when closing output ParcelFileDescriptor", e);
+                }
+            }
+        }
+    }
 }
