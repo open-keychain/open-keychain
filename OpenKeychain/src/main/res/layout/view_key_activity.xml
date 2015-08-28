@@ -182,18 +182,32 @@
         android:layout_gravity="fill_vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <FrameLayout
                 android:id="@+id/view_key_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content" />
+
+            <FrameLayout
+                android:id="@+id/view_key_keybase_fragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!--
+                placeholder to improve the scrolling.
+                Somehow the content must be large enough to enable scrolling on NestedScrollView
+            -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
                 android:orientation="vertical" />
 
-        </FrameLayout>
+        </LinearLayout>
 
     </android.support.v4.widget.FlingNestedScrollView>
 

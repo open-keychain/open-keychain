@@ -300,6 +300,13 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 .replace(R.id.view_key_fragment, frag)
                 .commit();
 
+        if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
+            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(mDataUri);
+            manager.beginTransaction()
+                    .replace(R.id.view_key_keybase_fragment, keybaseFrag)
+                    .commit();
+        }
+
         // need to postpone loading of the yubikey fragment until after mMasterKeyId
         // is available, but we mark here that this should be done
         mShowYubikeyAfterCreation = true;

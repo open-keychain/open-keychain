@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="6dip"
         android:text="1."
-        style="?android:attr/textAppearanceMedium" />
+        style="?android:attr/textAppearanceSmall" />
 
     <TextView
         android:id="@+id/proof_text"
@@ -15,5 +15,5 @@
         android:layout_height="wrap_content"
         android:paddingLeft="6dip"
         android:text="Posts to twitter as Timbray"
-        style="?android:attr/textAppearanceMedium" />
+        style="?android:attr/textAppearanceSmall" />
 </TableRow>

@@ -381,6 +381,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, false);
     }
 
+    public void setExperimentalEnableKeybase(boolean enableKeybase) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, enableKeybase);
+        editor.commit();
+    }
+
+    public boolean getExperimentalEnableKeybase() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
+    }
+
     public void upgradePreferences(Context context) {
         if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.PREF_VERSION) {

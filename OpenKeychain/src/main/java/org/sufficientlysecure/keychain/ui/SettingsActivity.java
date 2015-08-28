@@ -570,7 +570,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             initializeExperimentalEnableLinkedIdentities(
                     (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES));
 
+            initializeExperimentalEnableKeybase(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_KEYBASE));
+
             initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
+
         }
     }
 
@@ -698,6 +702,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mExperimentalEnableLinkedIdentities.setChecked((Boolean) newValue);
                 sPreferences.setExperimentalEnableLinkedIdentities((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeExperimentalEnableKeybase(final SwitchPreference mExperimentalKeybase) {
+        mExperimentalKeybase.setChecked(sPreferences.getExperimentalEnableKeybase());
+        mExperimentalKeybase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mExperimentalKeybase.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableKeybase((Boolean) newValue);
                 return false;
             }
         });

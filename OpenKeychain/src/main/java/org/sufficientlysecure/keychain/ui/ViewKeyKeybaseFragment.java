@@ -59,14 +59,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-public class ViewKeyTrustFragment extends LoaderFragment implements
+public class ViewKeyKeybaseFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<KeybaseVerificationParcel, KeybaseVerificationResult> {
 
     public static final String ARG_DATA_URI = "uri";
 
-    private View mStartSearch;
-    private TextView mTrustReadout;
     private TextView mReportHeader;
     private TableLayout mProofListing;
     private LayoutInflater mInflater;
@@ -86,15 +84,25 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     private CryptoOperationHelper<KeybaseVerificationParcel, KeybaseVerificationResult>
             mKeybaseOpHelper;
 
+    /**
+     * Creates new instance of this fragment
+     */
+    public static ViewKeyKeybaseFragment newInstance(Uri dataUri) {
+        ViewKeyKeybaseFragment frag = new ViewKeyKeybaseFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_DATA_URI, dataUri);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, getContainer());
         mInflater = inflater;
 
-        mTrustReadout = (TextView) view.findViewById(R.id.view_key_trust_readout);
-        mStartSearch = view.findViewById(R.id.view_key_trust_search_cloud);
-        mStartSearch.setEnabled(false);
         mReportHeader = (TextView) view.findViewById(R.id.view_key_trust_cloud_narrative);
         mProofListing = (TableLayout) view.findViewById(R.id.view_key_proof_list);
         mProofVerifyHeader = view.findViewById(R.id.view_key_proof_verify_header);
@@ -157,83 +165,45 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
         }
 
         boolean nothingSpecial = true;
-        StringBuilder message = new StringBuilder();
 
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         if (data.moveToFirst()) {
 
-            if (data.getInt(INDEX_UNIFIED_HAS_ANY_SECRET) != 0) {
-                message.append(getString(R.string.key_trust_it_is_yours)).append("\n");
-                nothingSpecial = false;
-            } else if (data.getInt(INDEX_VERIFIED) != 0) {
-                message.append(getString(R.string.key_trust_already_verified)).append("\n");
-                nothingSpecial = false;
-            }
-
-            // If this key is revoked, don’t trust it!
-            if (data.getInt(INDEX_TRUST_IS_REVOKED) != 0) {
-                message.append(getString(R.string.key_trust_revoked)).
-                        append(getString(R.string.key_trust_old_keys));
-
-                nothingSpecial = false;
-            } else {
-                if (data.getInt(INDEX_TRUST_IS_EXPIRED) != 0) {
-
-                    // if expired, don’t trust it!
-                    message.append(getString(R.string.key_trust_expired)).
-                            append(getString(R.string.key_trust_old_keys));
-
-                    nothingSpecial = false;
-                }
-            }
-
-            if (nothingSpecial) {
-                message.append(getString(R.string.key_trust_maybe));
-            }
-
             final byte[] fp = data.getBlob(INDEX_TRUST_FINGERPRINT);
             final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
-            if (fingerprint != null) {
 
-                mStartSearch.setEnabled(true);
-                mStartSearch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        final Preferences.ProxyPrefs proxyPrefs =
-                                Preferences.getPreferences(getActivity()).getProxyPrefs();
-
-                        OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
-                            @Override
-                            public void onOrbotStarted() {
-                                mStartSearch.setEnabled(false);
-                                new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
-                            }
-
-                            @Override
-                            public void onNeutralButton() {
-                                mStartSearch.setEnabled(false);
-                                new DescribeKey(ParcelableProxy.getForNoProxy())
-                                        .execute(fingerprint);
-                            }
-
-                            @Override
-                            public void onCancel() {
-
-                            }
-                        };
-
-                        if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
-                            mStartSearch.setEnabled(false);
-                            new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
-                        }
-                    }
-                });
-            }
+            startSearch(fingerprint);
         }
 
-        mTrustReadout.setText(message);
         setContentShown(true);
+    }
+
+    private void startSearch(final String fingerprint) {
+        final Preferences.ProxyPrefs proxyPrefs =
+                Preferences.getPreferences(getActivity()).getProxyPrefs();
+
+        OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
+            @Override
+            public void onOrbotStarted() {
+                new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+            }
+
+            @Override
+            public void onNeutralButton() {
+                new DescribeKey(ParcelableProxy.getForNoProxy())
+                        .execute(fingerprint);
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        };
+
+        if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
+            new DescribeKey(proxyPrefs.parcelableProxy).execute(fingerprint);
+        }
     }
 
     /**
@@ -299,17 +269,16 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
             return new ResultPage(getString(R.string.key_trust_results_prefix), proofList);
         }
 
-        private SpannableStringBuilder formatSpannableString(SpannableStringBuilder proofLinks,String proofType){
+        private SpannableStringBuilder formatSpannableString(SpannableStringBuilder proofLinks, String proofType) {
             //Formatting SpannableStringBuilder with String.format() causes the links to stop working.
             //This method is to insert the links while reserving the links
 
             SpannableStringBuilder ssb = new SpannableStringBuilder();
             ssb.append(proofType);
-            if(proofType.contains("%s")){
+            if (proofType.contains("%s")) {
                 int i = proofType.indexOf("%s");
-                ssb.replace(i,i+2,proofLinks);
-            }
-            else ssb.append(proofLinks);
+                ssb.replace(i, i + 2, proofLinks);
+            } else ssb.append(proofLinks);
 
             return ssb;
         }
@@ -343,7 +312,6 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 result.mHeader = getActivity().getString(R.string.key_trust_no_cloud_evidence);
             }
 
-            mStartSearch.setVisibility(View.GONE);
             mReportHeader.setVisibility(View.VISIBLE);
             mProofListing.setVisibility(View.VISIBLE);
             mReportHeader.setText(result.mHeader);
@@ -358,22 +326,35 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
                 text.setMovementMethod(LinkMovementMethod.getInstance());
                 mProofListing.addView(row);
             }
-
-            // mSearchReport.loadDataWithBaseURL("file:///android_res/drawable/", s, "text/html", "UTF-8", null);
         }
     }
 
     private String getProofNarrative(int proofType) {
         int stringIndex;
         switch (proofType) {
-            case Proof.PROOF_TYPE_TWITTER: stringIndex = R.string.keybase_narrative_twitter; break;
-            case Proof.PROOF_TYPE_GITHUB: stringIndex = R.string.keybase_narrative_github; break;
-            case Proof.PROOF_TYPE_DNS: stringIndex = R.string.keybase_narrative_dns; break;
-            case Proof.PROOF_TYPE_WEB_SITE: stringIndex = R.string.keybase_narrative_web_site; break;
-            case Proof.PROOF_TYPE_HACKERNEWS: stringIndex = R.string.keybase_narrative_hackernews; break;
-            case Proof.PROOF_TYPE_COINBASE: stringIndex = R.string.keybase_narrative_coinbase; break;
-            case Proof.PROOF_TYPE_REDDIT: stringIndex = R.string.keybase_narrative_reddit; break;
-            default: stringIndex = R.string.keybase_narrative_unknown;
+            case Proof.PROOF_TYPE_TWITTER:
+                stringIndex = R.string.keybase_narrative_twitter;
+                break;
+            case Proof.PROOF_TYPE_GITHUB:
+                stringIndex = R.string.keybase_narrative_github;
+                break;
+            case Proof.PROOF_TYPE_DNS:
+                stringIndex = R.string.keybase_narrative_dns;
+                break;
+            case Proof.PROOF_TYPE_WEB_SITE:
+                stringIndex = R.string.keybase_narrative_web_site;
+                break;
+            case Proof.PROOF_TYPE_HACKERNEWS:
+                stringIndex = R.string.keybase_narrative_hackernews;
+                break;
+            case Proof.PROOF_TYPE_COINBASE:
+                stringIndex = R.string.keybase_narrative_coinbase;
+                break;
+            case Proof.PROOF_TYPE_REDDIT:
+                stringIndex = R.string.keybase_narrative_reddit;
+                break;
+            default:
+                stringIndex = R.string.keybase_narrative_unknown;
         }
         return getActivity().getString(stringIndex);
     }
@@ -390,14 +371,22 @@ public class ViewKeyTrustFragment extends LoaderFragment implements
     // which proofs do we have working verifiers for?
     private boolean haveProofFor(int proofType) {
         switch (proofType) {
-            case Proof.PROOF_TYPE_TWITTER: return true;
-            case Proof.PROOF_TYPE_GITHUB: return true;
-            case Proof.PROOF_TYPE_DNS: return true;
-            case Proof.PROOF_TYPE_WEB_SITE: return true;
-            case Proof.PROOF_TYPE_HACKERNEWS: return true;
-            case Proof.PROOF_TYPE_COINBASE: return true;
-            case Proof.PROOF_TYPE_REDDIT: return true;
-            default: return false;
+            case Proof.PROOF_TYPE_TWITTER:
+                return true;
+            case Proof.PROOF_TYPE_GITHUB:
+                return true;
+            case Proof.PROOF_TYPE_DNS:
+                return true;
+            case Proof.PROOF_TYPE_WEB_SITE:
+                return true;
+            case Proof.PROOF_TYPE_HACKERNEWS:
+                return true;
+            case Proof.PROOF_TYPE_COINBASE:
+                return true;
+            case Proof.PROOF_TYPE_REDDIT:
+                return true;
+            default:
+                return false;
         }
     }
 

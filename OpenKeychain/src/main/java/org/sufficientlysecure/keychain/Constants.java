@@ -111,6 +111,7 @@ public final class Constants {
         // other settings
         public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
+        public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
 
         public static final class Theme {
             public static final String LIGHT = "light";
