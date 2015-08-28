@@ -48,6 +48,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -120,6 +121,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     private ImageButton mActionNfc;
     private FloatingActionButton mFab;
     private ImageView mPhoto;
+    private FrameLayout mPhotoLayout;
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
 
@@ -169,6 +171,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mActionNfc = (ImageButton) findViewById(R.id.view_key_action_nfc);
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mPhoto = (ImageView) findViewById(R.id.view_key_photo);
+        mPhotoLayout = (FrameLayout) findViewById(R.id.view_key_photo_layout);
         mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 
@@ -779,8 +782,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                                 }
 
                                 protected void onPostExecute(Bitmap photo) {
+                                    if (photo == null) {
+                                        return;
+                                    }
+
                                     mPhoto.setImageBitmap(photo);
-                                    mPhoto.setVisibility(View.VISIBLE);
+                                    mPhotoLayout.setVisibility(View.VISIBLE);
                                 }
                             };
 
@@ -892,6 +899,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         ObjectAnimator colorFade =
                                 ObjectAnimator.ofObject(mAppBarLayout, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
+                        mCollapsingToolbarLayout.setContentScrimColor(color);
+                        mCollapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
 
                         colorFade.setDuration(1200);
                         colorFade.start();

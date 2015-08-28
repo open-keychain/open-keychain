@@ -34,21 +34,36 @@
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax">
 
-                <ImageView
-                    android:id="@+id/view_key_photo"
+                <FrameLayout
+                    android:id="@+id/view_key_photo_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="false"
-                    android:adjustViewBounds="false"
-                    android:baselineAlignBottom="false"
-                    android:cropToPadding="false"
                     android:fitsSystemWindows="true"
-                    android:focusable="false"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_launcher"
-                    android:visibility="gone" />
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/view_key_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="false"
+                        android:baselineAlignBottom="false"
+                        android:cropToPadding="false"
+                        android:fitsSystemWindows="true"
+                        android:focusable="false"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_launcher" />
+
+                    <!-- text protection scrim -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:background="@drawable/scrim_bottom" />
+
+                </FrameLayout>
 
                 <TextView
                     android:id="@+id/view_key_status"
