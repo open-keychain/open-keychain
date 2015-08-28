@@ -32,6 +32,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
@@ -51,7 +54,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -107,10 +109,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     private ArrayList<ParcelableKeyRing> mKeyList;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
 
-    private TextView mName;
     private TextView mStatusText;
     private ImageView mStatusImage;
-    private RelativeLayout mBigToolbar;
+    private AppBarLayout mAppBarLayout;
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
     private ImageButton mActionEncryptFile;
     private ImageButton mActionEncryptText;
@@ -156,10 +158,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         setTitle(null);
 
-        mName = (TextView) findViewById(R.id.view_key_name);
         mStatusText = (TextView) findViewById(R.id.view_key_status);
         mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
-        mBigToolbar = (RelativeLayout) findViewById(R.id.toolbar_big);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
         mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
         mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
@@ -736,9 +738,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     // get name, email, and comment from USER_ID
                     KeyRing.UserId mainUserId = KeyRing.splitUserId(data.getString(INDEX_USER_ID));
                     if (mainUserId.name != null) {
-                        mName.setText(mainUserId.name);
+                        mCollapsingToolbarLayout.setTitle(mainUserId.name);
                     } else {
-                        mName.setText(R.string.user_id_no_name);
+                        mCollapsingToolbarLayout.setTitle(getString(R.string.user_id_no_name));
                     }
 
                     mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
@@ -789,9 +791,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                                 State.REVOKED, R.color.icons, true);
                         color = getResources().getColor(R.color.key_flag_red);
 
-                        mActionEncryptFile.setVisibility(View.GONE);
-                        mActionEncryptText.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
+                        mActionEncryptFile.setVisibility(View.INVISIBLE);
+                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        mActionNfc.setVisibility(View.INVISIBLE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsExpired) {
@@ -805,9 +807,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                                 State.EXPIRED, R.color.icons, true);
                         color = getResources().getColor(R.color.key_flag_red);
 
-                        mActionEncryptFile.setVisibility(View.GONE);
-                        mActionEncryptText.setVisibility(View.GONE);
-                        mActionNfc.setVisibility(View.GONE);
+                        mActionEncryptFile.setVisibility(View.INVISIBLE);
+                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        mActionNfc.setVisibility(View.INVISIBLE);
                         mFab.setVisibility(View.GONE);
                         mQrCodeLayout.setVisibility(View.GONE);
                     } else if (mIsSecret) {
@@ -822,15 +824,15 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         mQrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code
-                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
-                                mName.getLayoutParams();
-                        // remove right margin
-                        nameParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            nameParams.setMarginEnd(0);
-                        }
-                        nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
-                        mName.setLayoutParams(nameParams);
+//                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
+//                                mName.getLayoutParams();
+//                        // remove right margin
+//                        nameParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+//                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                            nameParams.setMarginEnd(0);
+//                        }
+//                        nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+//                        mName.setLayoutParams(nameParams);
 
                         RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
                                 mStatusText.getLayoutParams();
@@ -852,7 +854,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                         }
                         mFab.setVisibility(View.VISIBLE);
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
-                        mFab.setIconDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
+                        mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
                         mActionEncryptFile.setVisibility(View.VISIBLE);
                         mActionEncryptText.setVisibility(View.VISIBLE);
@@ -880,22 +882,17 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     }
 
                     if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mStatusBar.setBackgroundColor(getStatusBarBackgroundColor(color));
-                        mBigToolbar.setBackgroundColor(color);
+                        mAppBarLayout.setBackgroundColor(color);
+                        mCollapsingToolbarLayout.setContentScrimColor(color);
+                        mCollapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
                         mPreviousColor = color;
                     } else {
-                        ObjectAnimator colorFade1 =
-                                ObjectAnimator.ofObject(mStatusBar, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor,
-                                        getStatusBarBackgroundColor(color));
-                        ObjectAnimator colorFade2 =
-                                ObjectAnimator.ofObject(mBigToolbar, "backgroundColor",
+                        ObjectAnimator colorFade =
+                                ObjectAnimator.ofObject(mAppBarLayout, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
 
-                        colorFade1.setDuration(1200);
-                        colorFade2.setDuration(1200);
-                        colorFade1.start();
-                        colorFade2.start();
+                        colorFade.setDuration(1200);
+                        colorFade.start();
                         mPreviousColor = color;
                     }
 
