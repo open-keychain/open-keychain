@@ -82,6 +82,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -423,7 +424,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void backupToFile() {
         new ExportHelper(this).showExportKeysDialog(
-                mMasterKeyId, Constants.Path.APP_DIR_FILE, true);
+                mMasterKeyId, new File(Constants.Path.APP_DIR,
+                        KeyFormattingUtils.convertKeyIdToHex(mMasterKeyId) + ".sec.asc"), true);
     }
 
     private void deleteKey() {

@@ -83,11 +83,7 @@ public class EncryptDecryptOverviewFragment extends Fragment {
         mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    FileHelper.openDocument(EncryptDecryptOverviewFragment.this, "*/*", REQUEST_CODE_INPUT);
-                } else {
-                    FileHelper.openFile(EncryptDecryptOverviewFragment.this, null, "*/*", REQUEST_CODE_INPUT);
-                }
+                FileHelper.openDocument(EncryptDecryptOverviewFragment.this, null, "*/*", false, REQUEST_CODE_INPUT);
             }
         });
 

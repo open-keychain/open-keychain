@@ -252,7 +252,7 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
         String message = this.getString(R.string.specify_file_to_export_log_to);
 
-        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
+        FileHelper.saveDocumentDialog(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
                 writeToLogFile(mResult.getLog(), file);

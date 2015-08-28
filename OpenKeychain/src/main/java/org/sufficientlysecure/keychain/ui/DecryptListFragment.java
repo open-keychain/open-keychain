@@ -36,7 +36,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -219,18 +218,6 @@ public class DecryptListFragment
 
         if (mCurrentInputUri == null) {
             cryptoOperation();
-        }
-    }
-
-    private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(inputUri.getPath());
-            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            File targetFile = new File(parentDir, originalFilename);
-            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
-                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, mimeType, originalFilename, REQUEST_CODE_OUTPUT);
         }
     }
 
@@ -534,7 +521,8 @@ public class DecryptListFragment
                     return true;
                 }
                 mCurrentInputUri = model.mInputUri;
-                askForOutputFilename(model.mInputUri, metadata.getFilename(), metadata.getMimeType());
+                FileHelper.saveDocument(this, metadata.getFilename(), model.mInputUri, metadata.getMimeType(),
+                        R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
                 return true;
             case R.id.decrypt_delete:
                 deleteFile(activity, model.mInputUri);
