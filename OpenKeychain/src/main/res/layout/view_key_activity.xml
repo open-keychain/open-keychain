@@ -167,7 +167,6 @@
         android:layout_gravity="fill_vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- it is not scrolling far enough down thus adding padding -->
         <FrameLayout
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
