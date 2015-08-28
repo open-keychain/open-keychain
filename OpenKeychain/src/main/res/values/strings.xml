@@ -114,7 +114,7 @@
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
-    <string name="menu_certify_fingerprint">"Confirm via fingerprints"</string>
+    <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
     <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
     <string name="menu_export_log">"Export Log"</string>
 

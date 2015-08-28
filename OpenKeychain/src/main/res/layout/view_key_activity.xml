@@ -190,7 +190,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:src="@drawable/ic_qrcode_white_24dp"
+        android:visibility="invisible"
         app:layout_anchor="@id/app_bar_layout"
-        app:layout_anchorGravity="bottom|right|end" />
+        app:layout_anchorGravity="bottom|right|end"
+        tools:visibility="visible" />
 
 </android.support.design.widget.CoordinatorLayout>
