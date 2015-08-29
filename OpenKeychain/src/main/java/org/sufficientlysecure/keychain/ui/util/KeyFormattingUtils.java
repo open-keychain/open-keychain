@@ -34,6 +34,7 @@ import org.spongycastle.asn1.ASN1ObjectIdentifier;
 import org.spongycastle.asn1.nist.NISTNamedCurves;
 import org.spongycastle.asn1.teletrust.TeleTrusTNamedCurves;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -93,6 +94,13 @@ public class KeyFormattingUtils {
                 String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
                 return "ECDH (" + oidName + ")";
             }
+            case PublicKeyAlgorithmTags.EDDSA: {
+                if (oid == null) {
+                    return "EDDSA";
+                }
+                String oidName = KeyFormattingUtils.getCurveInfo(context, oid);
+                return "EDDSA (" + oidName + ")";
+            }
 
             default: {
                 if (context != null) {
@@ -148,6 +156,13 @@ public class KeyFormattingUtils {
                 }
                 return algorithmStr;
             }
+            case EDDSA: {
+                algorithmStr = "EDDSA";
+                if (curve != null) {
+                    algorithmStr += " (" + getCurveInfo(context, curve) + ")";
+                }
+                return algorithmStr;
+            }
 
             default: {
                 if (context != null) {
@@ -175,6 +190,8 @@ public class KeyFormattingUtils {
                 return "NIST P-384";
             case NIST_P521:
                 return "NIST P-521";
+            case ED25519:
+                return "ed25519";
 
             /* see SaveKeyringParcel
             case BRAINPOOL_P256:
@@ -201,6 +218,10 @@ public class KeyFormattingUtils {
             return name;
         }
         name = TeleTrusTNamedCurves.getName(oid);
+        if (name != null) {
+            return name;
+        }
+        name = CustomNamedCurves.getName(oid);
         if (name != null) {
             return name;
         }
