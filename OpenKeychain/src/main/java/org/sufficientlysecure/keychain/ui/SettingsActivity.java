@@ -615,11 +615,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static void initializeTheme(final ListPreference mTheme) {
         mTheme.setValue(sPreferences.getTheme());
-        mTheme.setSummary(mTheme.getEntry());
+        mTheme.setSummary(mTheme.getEntry() + "\n"
+                + mTheme.getContext().getString(R.string.label_experimental_settings_theme_summary));
         mTheme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mTheme.setValue((String) newValue);
-                mTheme.setSummary(mTheme.getEntry());
+                mTheme.setSummary(mTheme.getEntry() + "\n"
+                        + mTheme.getContext().getString(R.string.label_experimental_settings_theme_summary));
                 sPreferences.setTheme((String) newValue);
 
                 ((SettingsActivity) mTheme.getContext()).recreate();

@@ -2,6 +2,7 @@
     <Preference
         android:persistent="false"
         android:selectable="false"
+        android:title="@string/label_experimental_settings_desc_title"
         android:summary="@string/label_experimental_settings_desc_summary" />
 
     <SwitchPreference

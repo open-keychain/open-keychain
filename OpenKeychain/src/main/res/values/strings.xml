@@ -192,14 +192,16 @@
     <!-- label shown in Android settings under the OpenKeychain account -->
     <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
 
-    <string name="label_experimental_settings_desc_summary">"These features are mostly results of security/UX research. Don't rely on their security!"</string>
+    <string name="label_experimental_settings_desc_title">"Warning"</string>
+    <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't issues you encounter!"</string>
 
     <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
-    <string name="label_experimental_settings_word_confirm_summary">"Allows to compare fingerprints with words instead of hexadecimal representation."</string>
+    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with words instead of hexadecimal fingerprints"</string>
     <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
-    <string name="label_experimental_settings_linked_identities_summary">"Linked Identities"</string>
+    <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, Github, websites or DNS (similar to keybase.io but decentralized)"</string>
     <string name="label_experimental_settings_keybase_title">"Keybase.io Proofs"</string>
-    <string name="label_experimental_settings_keybase_summary">"Every time a key is displayed, this will contact keybase.io for key proofs"</string>
+    <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
+    <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
 
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
