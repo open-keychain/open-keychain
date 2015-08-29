@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:singleLine="true"
+    tools:showIn="@layout/linked_id_view_fragment">
+
+    <ImageView
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/linked_id_type_icon"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        tools:src="@drawable/linked_dns"
+        android:layout_gravity="center_vertical"
+        android:scaleType="fitCenter" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dip"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/linked_id_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+
+        <TextView
+            android:id="@+id/linked_id_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="comment"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            />
+
+    </LinearLayout>
+
+    <ViewAnimator
+        android:id="@+id/linked_id_certified"
+        android:layout_width="22dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:outAnimation="@anim/fade_out_down"
+        android:inAnimation="@anim/fade_in_up"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/linked_id_certified_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:src="@drawable/status_signature_unknown_cutout_24dp"
+            />
+
+        <Space
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content" />
+
+    </ViewAnimator>
+
+</LinearLayout>

@@ -70,9 +70,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     // particular helper. a request code looks as follows:
     // (id << 9) + (1<<8) + REQUEST_CODE_X
     // that is, starting from LSB, there are 8 bits request code, 1
-    // fixed bit set, then 7 bit operator-id code. the first two
-    // summands are stored in the mId for easy operation.
-    private final int mId;
+    // fixed bit set, then 7 bit helper-id code. the first two
+    // summands are stored in the mHelperId for easy operation.
+    private final int mHelperId;
+    // bitmask for helperId is everything except the least 8 bits
+    public static final int HELPER_ID_BITMASK = ~0xff;
 
     public static final int REQUEST_CODE_PASSPHRASE = 1;
     public static final int REQUEST_CODE_NFC = 2;
@@ -92,7 +94,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      */
     public CryptoOperationHelper(int id, FragmentActivity activity, Callback<T, S> callback,
             Integer progressMessageString) {
-        mId = (id << 9) + (1<<8);
+        mHelperId = (id << 9) + (1<<8);
         mActivity = activity;
         mUseFragment = false;
         mCallback = callback;
@@ -103,7 +105,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * if OperationHelper is being integrated into a fragment
      */
     public CryptoOperationHelper(int id, Fragment fragment, Callback<T, S> callback, Integer progressMessageString) {
-        mId = (id << 9) + (1<<8);
+        mHelperId = (id << 9) + (1<<8);
         mFragment = fragment;
         mUseFragment = true;
         mProgressMessageResource = progressMessageString;
@@ -162,9 +164,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
     protected void startActivityForResult(Intent intent, int requestCode) {
         if (mUseFragment) {
-            mFragment.startActivityForResult(intent, mId + requestCode);
+            mFragment.startActivityForResult(intent, mHelperId + requestCode);
         } else {
-            mActivity.startActivityForResult(intent, mId + requestCode);
+            mActivity.startActivityForResult(intent, mHelperId + requestCode);
         }
     }
 
@@ -176,13 +178,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(Constants.TAG, "received activity result in OperationHelper");
 
-        if ((requestCode & mId) != mId) {
+        if ((requestCode & HELPER_ID_BITMASK) != mHelperId) {
             // this wasn't meant for us to handle
             return false;
         }
         Log.d(Constants.TAG, "handling activity result in OperationHelper");
-        // filter out mId from requestCode
-        requestCode ^= mId;
+        // filter out mHelperId from requestCode
+        requestCode ^= mHelperId;
 
         if (resultCode == Activity.RESULT_CANCELED) {
             mCallback.onCryptoOperationCancelled();

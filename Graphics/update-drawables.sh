@@ -22,7 +22,7 @@ SRC_DIR=./drawables/
 #inkscape -w 512 -h 512 -e "$PLAY_DIR/$NAME.png" $NAME.svg
 
 
-for NAME in "ic_cloud_search" "ic_action_encrypt_file" "ic_action_encrypt_text" "ic_action_verified_cutout" "ic_action_encrypt_copy" "ic_action_encrypt_save" "ic_action_encrypt_share" "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign" "yubi_icon" "ic_stat_notify"
+for NAME in "ic_cloud_search" "ic_action_encrypt_file" "ic_action_encrypt_text" "ic_action_verified_cutout" "ic_action_encrypt_copy" "ic_action_encrypt_save" "ic_action_encrypt_share" "status_lock_closed" "status_lock_error" "status_lock_open" "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "key_flag_authenticate" "key_flag_certify" "key_flag_encrypt" "key_flag_sign" "yubi_icon" "ic_stat_notify" "status_signature_verified_inner"
 do
 echo $NAME
 inkscape -w 24 -h 24 -e "$MDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"
@@ -32,7 +32,7 @@ inkscape -w 72 -h 72 -e "$XXDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 96 -h 96 -e "$XXXDPI_DIR/${NAME}_24dp.png" "$SRC_DIR/$NAME.svg"
 done
 
-for NAME in "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout"
+for NAME in "status_signature_expired_cutout" "status_signature_invalid_cutout" "status_signature_revoked_cutout" "status_signature_unknown_cutout" "status_signature_unverified_cutout" "status_signature_verified_cutout" "status_signature_verified_inner"
 do
 echo $NAME
 inkscape -w 96 -h 96 -e "$MDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"
@@ -41,7 +41,7 @@ inkscape -w 192 -h 192 -e "$XDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 256 -h 256 -e "$XXDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"
 done
 
-for NAME in "create_key_robot"
+for NAME in "create_key_robot" "linked_dns" "linked_https" "linked_github" "linked_twitter"
 do
 echo $NAME
 inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"

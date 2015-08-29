@@ -8,11 +8,11 @@
 
     <LinearLayout
         android:visibility="gone"
-        tools:visibility="visible"
         android:id="@+id/decrypt_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:visibility="visible">
 
         <ScrollView
             android:fillViewport="true"
@@ -39,12 +39,12 @@
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/decrypt_error_overlay"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"

@@ -71,6 +71,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * internally and is NOT meant to be used by signing operations before adding a signature time
  */
 public class PassphraseDialogActivity extends FragmentActivity {
+
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
@@ -261,6 +262,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
                             break;
+                        // special case: empty passphrase just returns the empty passphrase
+                        case PASSPHRASE_EMPTY:
+                            finishCaching(new Passphrase(""));
                         default:
                             throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }

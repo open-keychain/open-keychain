@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/linked_select_1"
+            android:id="@+id/textView"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/linked_select_2"
+            android:layout_weight="1" />
+
+        <org.sufficientlysecure.keychain.ui.widget.FixedListView
+            android:id="@+id/view_key_user_ids"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/linked_create_https_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:id="@+id/certify_key_action_certify_image"
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:padding="8dp"
+                android:src="@drawable/linked_https"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/linked_title_https"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/linked_create_dns_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:padding="8dp"
+                android:src="@drawable/linked_dns"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/linked_title_dns"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/linked_create_twitter_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:padding="8dp"
+                android:src="@drawable/linked_twitter"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/linked_title_twitter"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:id="@+id/linked_create_github_button"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:clickable="true"
+            android:background="?android:selectableItemBackground"
+            android:orientation="horizontal">
+
+            <!-- separate ImageView required for recoloring -->
+            <ImageView
+                android:layout_width="60dip"
+                android:layout_height="60dip"
+                android:padding="8dp"
+                android:src="@drawable/linked_github"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:text="@string/linked_title_github"
+                android:layout_weight="1"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/listDivider" />
+
+    </LinearLayout>
+
+</ScrollView>

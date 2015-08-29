@@ -83,7 +83,9 @@ public class CertifyKeyFragment
     };
     private static final int INDEX_MASTER_KEY_ID = 1;
     private static final int INDEX_USER_ID = 2;
+    @SuppressWarnings("unused")
     private static final int INDEX_IS_PRIMARY = 3;
+    @SuppressWarnings("unused")
     private static final int INDEX_IS_REVOKED = 4;
 
     private MultiUserIdsAdapter mUserIdsAdapter;

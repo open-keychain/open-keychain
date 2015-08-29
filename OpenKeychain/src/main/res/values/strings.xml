@@ -14,6 +14,7 @@
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
+    <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
@@ -83,8 +84,8 @@
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
-    <string name="btn_share_encrypted_signed">"Encrypt and share text"</string>
-    <string name="btn_copy_encrypted_signed">"Encrypt and copy text"</string>
+    <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
+    <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
@@ -262,6 +263,7 @@
     <string name="choice_4hours">"4 hours"</string>
     <string name="choice_8hours">"8 hours"</string>
     <string name="choice_forever">"forever"</string>
+    <string name="choice_select_cert">"Select a Key"</string>
     <string name="dsa">"DSA"</string>
     <string name="elgamal">"ElGamal"</string>
     <string name="rsa">"RSA"</string>
@@ -510,11 +512,11 @@
 
     <!-- Import result toast -->
     <plurals name="import_keys_added_and_updated_1">
-        <item quantity="one">"Successfully imported key"</item>
+        <item quantity="one">"Successfully imported one key"</item>
         <item quantity="other">"Successfully imported %1$d keys"</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one">"and updated key%2$s."</item>
+        <item quantity="one">"and updated one key%2$s."</item>
         <item quantity="other">"and updated %1$d keys%2$s."</item>
     </plurals>
     <plurals name="import_keys_added">
@@ -1330,6 +1332,29 @@
     <string name="msg_revoke_key_fail">"Failed revoking key"</string>
     <string name="msg_revoke_ok">"Successfully revoked key"</string>
 
+    <!-- Linked Identity verification -->
+    <string name="msg_lv">"Verifying linked identity…"</string>
+    <string name="msg_lv_match">"Searching for token"</string>
+    <string name="msg_lv_match_error">"No token found in resource!"</string>
+    <string name="msg_lv_fp_ok">"Fingerprint OK."</string>
+    <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
+
+    <string name="msg_lv_error_twitter_auth">"Error obtaining Twitter auth token!"</string>
+    <string name="msg_lv_error_twitter_handle">"Twitter account handle mismatch in response!"</string>
+    <string name="msg_lv_error_twitter_response">"Unexpected response from Twitter API!"</string>
+    <string name="msg_lv_error_github_handle">"Github account handle mismatch in response!"</string>
+    <string name="msg_lv_error_github_not_found">"Gist contains no matching files!"</string>
+
+    <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
+    <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>
+    <string name="msg_lv_fetch_ok">"Successfully fetched (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error">"Server error (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error_url">"URL is malformed!"</string>
+    <string name="msg_lv_fetch_error_io">"IO Error!"</string>
+    <string name="msg_lv_fetch_error_format">"Format error!"</string>
+    <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
+
+
     <string name="msg_acc_saved">"Account saved"</string>
 
     <string name="msg_download_success">"Downloaded successfully!"</string>
@@ -1518,5 +1543,86 @@
     <string name="error_scan_fp">"Error scanning fingerprint!"</string>
     <string name="error_scan_match">"Fingerprints did not match!"</string>
     <string name="error_expiry_past">"Expiry date is in the past!"</string>
+
+    <string name="linked_create_https_1_1">"By creating a Linked Identity of this type, you can link your key to a website you control."</string>
+    <string name="linked_create_https_1_2">"To do this, you publish a text file on this website, then create a Linked Identity which links to it."</string>
+    <string name="linked_create_https_1_3">"Please enter a URL where you are able to place a text file for proof. Note that your server must support https and have a valid TLS certificate!"</string>
+    <string name="linked_create_https_1_4">"Example: https://example.com/pgpkey.txt"</string>
+    <string name="linked_create_https_created">"The proof file has been created. For the next step, you should save and upload it to the URI you indicated:"</string>
+    <string name="linked_create_https_2_1">"A proof file for this URI has been created:"</string>
+    <string name="linked_create_https_2_2">"For the next step, you should save and upload this file."</string>
+    <string name="linked_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
+    <string name="linked_create_https_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_twitter_1_1">"By creating a Linked Identity of this type, you can link your key to a Twitter account you control."</string>
+    <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this Tweet."</string>
+    <string name="linked_create_twitter_1_3">"Please enter your Twitter screen name to proceed."</string>
+    <string name="linked_create_twitter_handle">Twitter Handle</string>
+    <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
+    <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_github_1_1">"By creating a Linked Identity of this type, you can link your key to a Github account you control."</string>
+    <string name="linked_create_github_1_2">"To do this, you publish a specific Gist on your timeline, then create a Linked Identity which links to this Gist."</string>
+    <string name="linked_create_github_1_3">"Please enter your Twitter screen name to proceed."</string>
+    <string name="linked_create_github_handle">Github Handle</string>
+    <string name="linked_create_github_2_1">"Click either button to post the gist!"</string>
+    <string name="linked_create_github_2_2">"You can edit the Gist before posting it, so long as the text inside the brackets is unmodified."</string>
+    <string name="linked_create_github_2_3">"Once your Gist is published, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_github_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_dns_1_1">"By creating a Linked Identity of this type, you can link your key to a domain name you control."</string>
+    <string name="linked_create_dns_1_2">"To do this, you create a specific TXT record for the domain, then create a Linked Identity which links to this record."</string>
+    <!-- An Identity of this type is especially appropriate if your email address is at the same domain. -->
+    <string name="linked_create_dns_1_3">"Please enter a fully qualified domain name to proceed."</string>
+    <string name="linked_create_dns_1_4">"Example: subdomain.example.com"</string>
+    <string name="linked_create_dns_2_1">"Your proof text:"</string>
+    <string name="linked_create_dns_2_2">"For the next step, bla bla"</string>
+    <string name="linked_create_dns_2_3">"More bla:"</string>
+    <string name="linked_create_dns_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_verify">"Verify"</string>
+    <string name="linked_text_clipboard">Text has been copied to clipboard</string>
+    <string name="linked_verified_https">"The link between this Website and key was securely verified. <b>If you believe the Website is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_github">"The link between this Github account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_dns">"The link between this Domain Name and key was securely verified. <b>If you believe the Domain is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_twitter">"The link between this Twitter account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_secret_https">"The link between your Website and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_github">"The link between your Github account and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_dns">"The link between your Domain Name and key was securely verified. Everything looks in order."</string>
+    <string name="linked_verified_secret_twitter">"The link between this Twitter account and key was securely verified. Everything looks in order."</string>
+
+    <plurals name="linked_id_expand">
+        <item quantity="one">"There is one more unknown identity type"</item>
+        <item quantity="other">"There are %d more unknown identity types"</item>
+    </plurals>
+
+    <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
+    <string name="linked_select_2">"Please select a type:"</string>
+    <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this Github account.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_verifying">"Verifying…"</string>
+    <string name="linked_verify_success">"Verified!"</string>
+    <string name="linked_verify_error">"Verification error!"</string>
+    <string name="linked_verify_pending">"Not yet verified"</string>
+    <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
+    <string name="menu_linked_add_identity">"Add Linked Identity"</string>
+    <string name="section_linked_identities">"Linked Identities"</string>
+    <string name="btn_finish">"Finish"</string>
+    <string name="linked_title_https">Website (HTTPS)</string>
+    <string name="linked_title_dns">Domain Name (DNS)</string>
+    <string name="linked_title_github">Github</string>
+    <string name="linked_title_twitter">Twitter</string>
+    <string name="card_linked_identity">Linked Identity</string>
+    <string name="linked_button_verify">Verify</string>
+    <string name="linked_button_retry">Retry</string>
+    <string name="linked_button_confirm">Confirm</string>
+    <string name="linked_button_view">View</string>
+    <string name="linked_text_verifying">Verifying…</string>
+    <string name="linked_text_error">Error</string>
+    <string name="linked_text_confirming">Confirming…</string>
+    <string name="linked_ids_more_unknown">%d more unknown identity types</string>
+    <string name="title_linked_id_create">Create Linked Identity</string>
 
 </resources>

@@ -2,6 +2,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:paddingBottom="16dp"
     android:paddingLeft="16dp"
@@ -34,7 +35,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp" />
+
         </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_linked_ids"
+        android:transitionName="card_linked_ids"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        card_view:cardBackgroundColor="@android:color/white"
+        card_view:cardElevation="2dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/CardViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/section_linked_identities" />
+
+            <org.sufficientlysecure.keychain.ui.widget.FixedListView
+                android:id="@+id/view_key_linked_ids"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/view_key_linked_ids_expander"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical"
+                android:drawableTop="@drawable/divider"
+                android:drawableRight="@drawable/ic_expand_more_black_24dp"
+                android:drawableEnd="@drawable/ic_expand_more_black_24dp"
+                android:drawablePadding="3dp"
+                android:clickable="true"
+                android:text="@string/linked_ids_more_unknown"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:background="?android:selectableItemBackground"
+                android:visibility="gone"
+                tools:visibility="visible"
+                />
+
+        </LinearLayout>
+
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -83,7 +140,9 @@
                     android:text="@string/view_key_fragment_no_system_contact"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </LinearLayout>
+
         </LinearLayout>
+
     </android.support.v7.widget.CardView>
 
 </LinearLayout>

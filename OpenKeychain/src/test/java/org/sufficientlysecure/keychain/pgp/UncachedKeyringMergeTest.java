@@ -304,7 +304,7 @@ public class UncachedKeyringMergeTest {
                     ringB.getEncoded(), false, 0).getSecretKey();
             secretKey.unlock(new Passphrase());
             PgpCertifyOperation op = new PgpCertifyOperation();
-            CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds());
+            CertifyAction action = new CertifyAction(pubRing.getMasterKeyId(), publicRing.getPublicKey().getUnorderedUserIds(), null);
             // sign all user ids
             PgpCertifyResult result = op.certify(secretKey, publicRing, new OperationLog(), 0, action, null, new Date());
             Assert.assertTrue("certification must succeed", result.success());

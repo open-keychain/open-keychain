@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    tools:showIn="@layout/linked_create_https_fragment_step2">
+
+    <ViewAnimator
+        android:id="@+id/verify_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dip"
+        android:layout_marginStart="16dip"
+        android:layout_gravity="center_vertical"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        >
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:id="@+id/verify_image"
+            android:src="@drawable/status_signature_unverified_cutout_24dp"
+            />
+
+        <ProgressBar
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:indeterminateOnly="true" />
+
+    </ViewAnimator>
+
+    <TextView
+        android:id="@+id/verify_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/linked_verify_pending"
+        android:layout_marginLeft="16dip"
+        android:layout_marginStart="16dip"
+        android:layout_weight="1"
+        />
+
+    <ViewAnimator
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dip"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        android:id="@+id/verify_buttons"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:buttonBarButtonStyle"
+            android:text="@string/linked_button_verify"
+            android:id="@+id/button_verify"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:buttonBarButtonStyle"
+            android:text="@string/linked_button_retry"
+            android:id="@+id/button_retry"
+            />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </ViewAnimator>
+
+</LinearLayout>

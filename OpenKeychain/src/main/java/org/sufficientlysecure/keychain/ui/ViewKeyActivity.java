@@ -68,6 +68,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -357,6 +358,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 }
                 return true;
             }
+            case R.id.menu_key_view_add_linked_identity: {
+                Intent intent = new Intent(this, LinkedIdWizard.class);
+                intent.setData(mDataUri);
+                startActivity(intent);
+                return true;
+            }
             case R.id.menu_key_view_edit: {
                 editKey(mDataUri);
                 return true;
@@ -377,8 +384,13 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
+
         MenuItem exportKey = menu.findItem(R.id.menu_key_view_export_file);
         exportKey.setVisible(mIsSecret);
+
+        MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
+        addLinked.setVisible(mIsSecret);
+
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
         MenuItem certifyFingerprintWord = menu.findItem(R.id.menu_key_view_certify_fingerprint_word);
@@ -459,12 +471,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             return;
         }
 
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-
         switch (requestCode) {
             case REQUEST_QR_FINGERPRINT: {
+
+                if (resultCode != Activity.RESULT_OK) {
+                    return;
+                }
 
                 // If there is an EXTRA_RESULT, that's an error. Just show it.
                 if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
@@ -487,11 +499,19 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             }
 
             case REQUEST_BACKUP: {
+                if (resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
                 backupToFile();
                 return;
             }
 
             case REQUEST_CERTIFY: {
+                if (resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
                 if (data.hasExtra(OperationResult.EXTRA_RESULT)) {
                     OperationResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
                     result.createNotify(this).show();
@@ -500,6 +520,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             }
 
             case REQUEST_DELETE: {
+                if (resultCode != Activity.RESULT_OK) {
+                    return;
+                }
+
                 setResult(RESULT_OK, data);
                 finish();
                 return;
@@ -552,7 +576,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                             finish();
                         }
                     }, R.string.snack_yubikey_view).show();
-
             // and if it's not found, offer import
         } catch (PgpKeyNotFoundException e) {
             Notify.create(this, R.string.snack_yubi_other, Notify.LENGTH_LONG,
@@ -986,4 +1009,6 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return true;
     }
+
 }
+

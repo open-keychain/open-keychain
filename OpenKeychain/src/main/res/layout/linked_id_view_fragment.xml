@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_linked_ids"
+        android:transitionName="card_linked_ids"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@android:color/white"
+        card_view:cardElevation="2dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/CardViewHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/card_linked_identity" />
+
+            <include layout="@layout/linked_id_item" />
+
+            <ViewAnimator
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/linked_verify_container"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:measureAllChildren="false"
+                >
+
+                <include layout="@layout/cert_list_widget" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:animateLayoutChanges="true"
+                    >
+
+                    <TextSwitcher
+                        android:id="@+id/linked_cert_text"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dip"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:inAnimation="@anim/fade_in_quick"
+                        android:outAnimation="@anim/fade_out_quick"
+                        android:measureAllChildren="false"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    </TextSwitcher>
+
+                    <ViewAnimator
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_gravity="center"
+                        android:id="@+id/linked_cert_progress"
+                        android:inAnimation="@anim/fade_in"
+                        android:outAnimation="@anim/fade_out">
+
+                        <ProgressBar
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:indeterminate="true"
+                            />
+
+                        <ImageView
+                            android:id="@+id/status_icon_verified"
+                            android:layout_width="22dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/status_signature_verified_inner_24dp"
+                            />
+
+                        <ImageView
+                            android:id="@+id/status_icon_invalid"
+                            android:layout_width="22dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/status_signature_invalid_cutout_24dp"
+                            />
+
+                    </ViewAnimator>
+
+                </LinearLayout>
+
+            </ViewAnimator>
+
+            <!-- this layout is used for a highlight thing, so we use padding instead of margin -->
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:id="@+id/cert_key_spincontainer"
+                android:visibility="gone"
+                tools:visibility="visible"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="@string/add_keys_my_key" />
+
+                <org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cert_key_spinner">
+                </org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="right|end">
+
+                <Button
+                    android:id="@+id/button_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/linked_button_view"
+                    android:textColor="@color/link_text_material_light"
+                    style="?android:attr/borderlessButtonStyle"
+                    />
+
+                <ViewAnimator
+                    android:id="@+id/button_animator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inAnimation="@anim/fade_in"
+                    android:outAnimation="@anim/fade_out">
+                    <Button
+                        android:id="@+id/button_verify"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/linked_button_verify"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                    <Button
+                        android:id="@+id/button_retry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/linked_button_retry"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                    <Button
+                        android:id="@+id/button_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/linked_button_confirm"
+                        android:textColor="@color/link_text_material_light"
+                        style="?android:attr/borderlessButtonStyle" />
+                </ViewAnimator>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+
+</ScrollView>

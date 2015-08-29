@@ -208,7 +208,7 @@ public class CertifyOperationTest {
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
         CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
 
@@ -227,7 +227,7 @@ public class CertifyOperationTest {
             CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
             ArrayList<String> uids = new ArrayList<String>();
             uids.add("nonexistent");
-            actions.add(new CertifyAction(1234L, uids));
+            actions.add(new CertifyAction(1234L, uids, null));
 
             CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
                     mKeyPhrase1));
@@ -240,7 +240,7 @@ public class CertifyOperationTest {
         {
             CertifyActionsParcel actions = new CertifyActionsParcel(1234L);
             actions.add(new CertifyAction(mStaticRing1.getMasterKeyId(),
-                    mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                    mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
 
             CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(),
                     mKeyPhrase1));
