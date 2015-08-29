@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment.OnIdentityLoadedListener;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.util.List;
 
@@ -395,10 +396,12 @@ public class ViewKeyFragment extends LoaderFragment implements
                     mUserIds.setAdapter(mUserIdsAdapter);
                     getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
-                    mLinkedIdsAdapter =
-                            new LinkedIdsAdapter(getActivity(), null, 0, mIsSecret, mLinkedIdsExpander);
-                    mLinkedIds.setAdapter(mLinkedIdsAdapter);
-                    getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
+                    if (Preferences.getPreferences(getActivity()).getExperimentalEnableLinkedIdentities()) {
+                        mLinkedIdsAdapter =
+                                new LinkedIdsAdapter(getActivity(), null, 0, mIsSecret, mLinkedIdsExpander);
+                        mLinkedIds.setAdapter(mLinkedIdsAdapter);
+                        getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
+                    }
 
                     long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
                     // we need to load linked contact here to prevent lag introduced by loader

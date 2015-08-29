@@ -389,7 +389,8 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         exportKey.setVisible(mIsSecret);
 
         MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
-        addLinked.setVisible(mIsSecret);
+        addLinked.setVisible(mIsSecret
+                && Preferences.getPreferences(this).getExperimentalEnableLinkedIdentities());
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
         certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);

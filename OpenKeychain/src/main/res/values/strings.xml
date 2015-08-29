@@ -193,7 +193,7 @@
     <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
 
     <string name="label_experimental_settings_desc_title">"Warning"</string>
-    <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't issues you encounter!"</string>
+    <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
     <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
     <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with words instead of hexadecimal fingerprints"</string>
