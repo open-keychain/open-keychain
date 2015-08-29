@@ -4,12 +4,14 @@ package org.sufficientlysecure.keychain.util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-@RunWith(RobolectricTestRunner.class)
-@org.robolectric.annotation.Config(emulateSdk = 18) // Robolectric doesn't yet support 19
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = WorkaroundBuildConfig.class, sdk = 21, manifest = "src/main/AndroidManifest.xml")
 public class KeyFormattingUtilsTest {
 
     static final byte[] fp = new byte[] {
