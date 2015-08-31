@@ -313,11 +313,16 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] cardFingerprint = nfcGetFingerprint(idx);
+        byte[] cardFingerprint = nfcGetMasterKeyFingerprint(idx);
+
+        // Note: special case: This should not happen, but happens with
+        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
+        if (cardFingerprint == null) {
+            return true;
+        }
 
         // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (cardFingerprint == null ||
-                Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
+        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
                 Arrays.equals(cardFingerprint, fingerprint)) {
             return true;
         }

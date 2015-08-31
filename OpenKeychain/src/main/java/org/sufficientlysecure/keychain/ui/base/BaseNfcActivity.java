@@ -453,7 +453,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return The long key id of the requested key, or null if not found.
      */
     public Long nfcGetKeyId(int idx) throws IOException {
-        byte[] fp = nfcGetFingerprint(idx);
+        byte[] fp = nfcGetMasterKeyFingerprint(idx);
         if (fp == null) {
             return null;
         }
@@ -499,7 +499,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @param idx Index of the key to return the fingerprint from.
      * @return The fingerprint of the requested key, or null if not found.
      */
-    public byte[] nfcGetFingerprint(int idx) throws IOException {
+    public byte[] nfcGetMasterKeyFingerprint(int idx) throws IOException {
         byte[] data = nfcGetFingerprints();
         if (data == null) {
             return null;
@@ -952,8 +952,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
             name = (new String(Hex.decode(name))).replace('<', ' ');
             return name;
         } catch (IndexOutOfBoundsException e) {
-            Log.e(Constants.TAG, "couldn't get holder name", e);
             // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
+            // Note: This should not happen, but happens with
+            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
+
+            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
             return "";
         }
     }
