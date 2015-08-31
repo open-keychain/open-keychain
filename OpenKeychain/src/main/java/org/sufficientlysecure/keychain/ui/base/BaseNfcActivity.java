@@ -369,10 +369,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
-    protected void setYubiKeyPin(Passphrase pin) {
-        mPin = pin;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -478,7 +474,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         byte[] buf = mIsoDep.transceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfc tlv data:\n" + tlv.prettyPrint());
+        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
 
         Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
         if (fptlv == null) {
@@ -656,8 +652,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
         String second = nfcCommunicate(secondApdu + getHex(two) + le);
 
         String decryptedSessionKey = nfcGetDataField(second);
-
-        Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
 
         return Hex.decode(decryptedSessionKey);
     }
@@ -928,12 +922,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
         };
 
-        // https://code.google.com/p/android/issues/detail?id=62918
-        // maybe mNfcAdapter.enableReaderMode(); ?
         try {
             mNfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
         } catch (IllegalStateException e) {
-            Log.i(Constants.TAG, "NfcForegroundDispatch Error!", e);
+            Log.i(Constants.TAG, "NfcForegroundDispatch Exception: Activity is not currently in the foreground?", e);
         }
         Log.d(Constants.TAG, "NfcForegroundDispatch has been enabled!");
     }
