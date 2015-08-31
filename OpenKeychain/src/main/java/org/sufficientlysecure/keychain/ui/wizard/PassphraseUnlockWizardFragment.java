@@ -57,6 +57,8 @@ public class PassphraseUnlockWizardFragment extends WizardFragment {
         mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
         mShowPassphrase = (CheckBox) view.findViewById(R.id.create_key_show_passphrase);
 
+        mPassphraseEditAgain.setOnEditorActionListener(mOnEditorActionListener);
+
         // initial values
         // TODO: using String here is unsafe...
         if (mWizardFragmentListener.getPassphrase() != null) {

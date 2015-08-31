@@ -41,6 +41,7 @@
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/label_passphrase_again"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"/>
 
             <CheckBox

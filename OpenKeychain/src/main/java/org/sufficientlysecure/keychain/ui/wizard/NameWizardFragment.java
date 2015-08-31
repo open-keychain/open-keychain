@@ -47,6 +47,7 @@ public class NameWizardFragment extends WizardFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCreateKeyName = (NameEditText) view.findViewById(R.id.create_key_name);
+        mCreateKeyName.setOnEditorActionListener(mOnEditorActionListener);
 
         if (mWizardFragmentListener.getName() == null) {
             mCreateKeyName.requestFocus();

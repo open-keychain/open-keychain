@@ -83,6 +83,8 @@ public class EmailWizardFragment extends WizardFragment {
         mCreateKeyEmails.setLayoutManager(new LinearLayoutManager(getActivity()));
         mCreateKeyEmails.setItemAnimator(new DefaultItemAnimator());
 
+        mCreateKeyEmail.setOnEditorActionListener(mOnEditorActionListener);
+
         if (mWizardFragmentListener.getName() == null) {
             mCreateKeyEmail.requestFocus();
         }

@@ -17,6 +17,9 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 import android.app.Activity;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -28,6 +31,24 @@ import org.sufficientlysecure.keychain.ui.CreateKeyWizardActivity;
 public abstract class WizardFragment extends QueueingCryptoOperationFragment<ImportKeyringParcel,
         ImportKeyResult> implements CreateKeyWizardActivity.CreateKeyWizardListener {
     protected WizardFragmentListener mWizardFragmentListener;
+
+
+    /**
+     * Associate the "done" button on the soft keyboard with the Next button in the view.
+     */
+    protected TextView.OnEditorActionListener mOnEditorActionListener = new TextView.
+            OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                if (onNextClicked()) {
+                    mWizardFragmentListener.onAdvanceToNextWizardStep();
+                }
+            }
+
+            return false;
+        }
+    };
 
     @Override
     public boolean onNextClicked() {

@@ -49,6 +49,8 @@ public class YubiKeyPinRepeatWizardFragment extends WizardFragment {
         super.onViewCreated(view, savedInstanceState);
         mAdminPin = (EditText) view.findViewById(R.id.create_yubi_key_admin_pin_repeat);
         mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
+
+        mAdminPin.setOnEditorActionListener(mOnEditorActionListener);
     }
 
     /**

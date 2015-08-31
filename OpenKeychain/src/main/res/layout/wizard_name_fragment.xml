@@ -30,7 +30,7 @@
                 android:layout_marginTop="16dp"
                 android:ems="10"
                 android:hint="@string/create_key_hint_full_name"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textAutoCorrect|textPersonName|textCapWords"/>
         </LinearLayout>
     </ScrollView>
