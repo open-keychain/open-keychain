@@ -1567,7 +1567,7 @@
 
     <string name="linked_create_github_1_1">"By creating a Linked Identity of this type, you can link your key to a Github account you control."</string>
     <string name="linked_create_github_1_2">"To do this, you publish a specific Gist on your timeline, then create a Linked Identity which links to this Gist."</string>
-    <string name="linked_create_github_1_3">"Please enter your Twitter screen name to proceed."</string>
+    <string name="linked_create_github_1_3">"Please enter your Github screen name to proceed."</string>
     <string name="linked_create_github_handle">Github Handle</string>
     <string name="linked_create_github_2_1">"Click either button to post the gist!"</string>
     <string name="linked_create_github_2_2">"You can edit the Gist before posting it, so long as the text inside the brackets is unmodified."</string>
