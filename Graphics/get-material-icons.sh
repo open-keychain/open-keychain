@@ -47,6 +47,7 @@ python copy OpenKeychain communication grey email 24
 python copy OpenKeychain social black share 24
 python copy OpenKeychain content black content_copy 24
 python copy OpenKeychain communication black chat 24
+python copy OpenKeychain navigation black more_vert 24
 
 # navigation drawer sections
 python copy OpenKeychain communication black vpn_key 24
