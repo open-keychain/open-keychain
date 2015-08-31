@@ -451,7 +451,7 @@ public class ImportKeysActivity extends BaseNfcActivity
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         // either way, finish after NFC AsyncTask
         finish();
     }

@@ -208,7 +208,7 @@ public class CreateYubiKeyImportFragment
     }
 
     @Override
-    public void onNfcPostExecute() throws IOException {
+    public void onNfcPostExecute() {
 
         setData();
 

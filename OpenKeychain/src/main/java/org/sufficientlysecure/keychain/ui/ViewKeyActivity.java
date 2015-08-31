@@ -554,7 +554,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
 
         long yubiKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
