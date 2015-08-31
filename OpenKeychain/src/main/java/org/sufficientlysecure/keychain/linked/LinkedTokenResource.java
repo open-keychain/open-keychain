@@ -117,10 +117,10 @@ public abstract class LinkedTokenResource extends LinkedResource {
         if (res != null) {
             return res;
         }
-        res = DnsResource.create(flags, params, subUri);
-        if (res != null) {
-            return res;
-        }
+        // res = DnsResource.create(flags, params, subUri);
+        // if (res != null) {
+            // return res;
+        // }
         res = TwitterResource.create(flags, params, subUri);
         if (res != null) {
             return res;

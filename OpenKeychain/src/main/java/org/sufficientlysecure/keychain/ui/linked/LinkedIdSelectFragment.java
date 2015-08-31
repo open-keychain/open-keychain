@@ -56,6 +56,7 @@ public class LinkedIdSelectFragment extends Fragment {
                     }
                 });
 
+        /*
         view.findViewById(R.id.linked_create_dns_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -66,6 +67,7 @@ public class LinkedIdSelectFragment extends Fragment {
                         mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 });
+        */
 
         view.findViewById(R.id.linked_create_twitter_button)
                 .setOnClickListener(new View.OnClickListener() {
