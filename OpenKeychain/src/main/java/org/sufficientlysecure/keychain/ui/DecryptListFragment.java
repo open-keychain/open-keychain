@@ -326,6 +326,10 @@ public class DecryptListFragment
                     return new BitmapDrawable(context.getResources(), bitmap);
                 }
 
+                if (ClipDescription.compareMimeTypes(type, "text/plain")) {
+                    return getResources().getDrawable(R.drawable.ic_chat_black_24dp);
+                }
+
                 final Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setDataAndType(outputUri, type);
 
