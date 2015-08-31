@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -303,7 +304,7 @@ public class NFCUnlockDialog extends UnlockDialog
      * Notifies the user of any errors that may have occurred
      */
     public void onOperationStateError(String error) {
-        Notify.create(getActivity(), error, Notify.Style.WARN).show();
+        Notify.create(getActivity(), error, Notify.Style.WARN).show((ViewGroup)getDialog().getWindow().getDecorView());
     }
 
     /**
