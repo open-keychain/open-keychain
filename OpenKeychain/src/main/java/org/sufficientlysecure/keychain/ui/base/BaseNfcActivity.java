@@ -106,26 +106,27 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * Override to handle result of NFC operations (UI thread)
      */
     protected void onNfcPostExecute() throws IOException {
+        if (mNfcFingerprints != null) {
+            final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
+            try {
+                CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                long masterKeyId = ring.getMasterKeyId();
 
-        try {
-            CachedPublicKeyRing ring = new ProviderHelper(this).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-            long masterKeyId = ring.getMasterKeyId();
-
-            Intent intent = new Intent(this, ViewKeyActivity.class);
-            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-            startActivity(intent);
-        } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(this, CreateKeyWizardActivity.class);
-            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_AID, mNfcAid);
-            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_USER_ID, mNfcUserId);
-            intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
-            startActivity(intent);
+                Intent intent = new Intent(this, ViewKeyActivity.class);
+                intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_AID, mNfcAid);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+                intent.putExtra(ViewKeyActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+                startActivity(intent);
+            } catch (PgpKeyNotFoundException e) {
+                Intent intent = new Intent(this, CreateKeyWizardActivity.class);
+                intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_AID, mNfcAid);
+                intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_USER_ID, mNfcUserId);
+                intent.putExtra(CreateKeyWizardActivity.EXTRA_NFC_FINGERPRINTS, mNfcFingerprints);
+                startActivity(intent);
+            }
         }
     }
 
