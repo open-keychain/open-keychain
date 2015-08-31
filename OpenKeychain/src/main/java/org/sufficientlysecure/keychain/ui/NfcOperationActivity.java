@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -72,7 +73,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
 
-    private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     private CryptoInputParcel mInputParcel;
 
@@ -245,7 +246,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         if (mServiceIntent != null) {
             // if we're triggered by OpenPgpService
             // save updated cryptoInputParcel in cache
@@ -276,6 +277,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     }
                 }
             }
+
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
@@ -292,6 +294,24 @@ public class NfcOperationActivity extends BaseNfcActivity {
         vAnimator.setDisplayedChild(3);
     }
 
+    @Override
+    public void onPinError() {
+
+        // avoid a loop
+        Preferences prefs = Preferences.getPreferences(this);
+        if (prefs.useDefaultYubiKeyPin()) {
+            // use Toast because activity is finished afterwards
+            Toast.makeText(this, R.string.error_pin_nodefault, Toast.LENGTH_LONG).show();
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
+        // clear (invalid) passphrase
+        PassphraseCacheService.clearCachedPassphrase(
+                this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+    }
+
     private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
         byte[] cardFingerprint = nfcGetFingerprint(idx);
 
@@ -304,23 +324,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
 
         // Slot already contains a different key; don't overwrite it.
         return false;
-    }
-
-    @Override
-    public void handlePinError() {
-
-        // avoid a loop
-        Preferences prefs = Preferences.getPreferences(this);
-        if (prefs.useDefaultYubiKeyPin()) {
-            toast(getString(R.string.error_pin_nodefault));
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
-
-        // clear (invalid) passphrase
-        PassphraseCacheService.clearCachedPassphrase(
-                this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
     }
 
 }

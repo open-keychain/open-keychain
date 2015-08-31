@@ -155,7 +155,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         if (mCurrentFragment instanceof NfcListenerFragment) {
             ((NfcListenerFragment) mCurrentFragment).onNfcPostExecute();
             return;
@@ -257,7 +257,7 @@ public class CreateKeyActivity extends BaseNfcActivity {
 
     interface NfcListenerFragment {
         void doNfcInBackground() throws IOException;
-        void onNfcPostExecute() throws IOException;
+        void onNfcPostExecute();
     }
 
     @Override
