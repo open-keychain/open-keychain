@@ -324,7 +324,9 @@ public class DecryptListFragment
 
                     Drawable icon = null;
 
-                    if (ClipDescription.compareMimeTypes(type, "image/*")) {
+                    if (ClipDescription.compareMimeTypes(type, "text/plain")) {
+                        icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
+                    } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
                         int px = FormattingUtils.dpToPx(context, 48);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
                         icon = new BitmapDrawable(context.getResources(), bitmap);
