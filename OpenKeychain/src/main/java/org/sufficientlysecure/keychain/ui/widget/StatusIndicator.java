@@ -27,4 +27,10 @@ public class StatusIndicator extends ToolableViewAnimator {
         setOutAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out));
     }
 
+    @Override
+    public void setDisplayedChild(int whichChild) {
+        if (whichChild != getDisplayedChild()) {
+            super.setDisplayedChild(whichChild);
+        }
+    }
 }
