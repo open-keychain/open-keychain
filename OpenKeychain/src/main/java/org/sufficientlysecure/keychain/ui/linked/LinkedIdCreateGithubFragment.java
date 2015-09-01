@@ -26,12 +26,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.net.URL;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,18 +45,32 @@ import org.json.JSONObject;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.linked.LinkedAttribute;
+import org.sufficientlysecure.keychain.linked.resources.GithubResource;
+import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.util.Log;
 
 
-public class LinkedIdCreateGithubFragment extends Fragment {
+public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
 
     ViewAnimator mButtonContainer;
 
     StatusIndicator mStatus1, mStatus2, mStatus3;
 
+    byte[] mFingerprint;
+    long mMasterKeyId;
+    private SaveKeyringParcel mSaveKeyringParcel;
+
     public static LinkedIdCreateGithubFragment newInstance() {
         return new LinkedIdCreateGithubFragment();
+    }
+
+    public LinkedIdCreateGithubFragment() {
+        super(null);
     }
 
     @Override @NonNull
@@ -83,12 +98,17 @@ public class LinkedIdCreateGithubFragment extends Fragment {
         super.onResume();
 
         LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
+        mFingerprint = wizard.mFingerprint;
+        mMasterKeyId = wizard.mMasterKeyId;
+
         final String oAuthCode = wizard.oAuthGetCode();
         final String oAuthState = wizard.oAuthGetState();
         if (oAuthCode == null) {
             Log.d(Constants.TAG, "no code");
             return;
         }
+
+        final String gistText = GithubResource.generate(wizard, mFingerprint);
 
         Log.d(Constants.TAG, "got code: " + oAuthCode);
 
@@ -137,7 +157,7 @@ public class LinkedIdCreateGithubFragment extends Fragment {
                 }
 
                 mStatus1.setDisplayedChild(2);
-                step2PostGist(result.optString("access_token"));
+                step2PostGist(result.optString("access_token"), gistText);
 
             }
         }.execute();
@@ -177,7 +197,7 @@ public class LinkedIdCreateGithubFragment extends Fragment {
 
     }
 
-    private void step2PostGist(final String accessToken) {
+    private void step2PostGist(final String accessToken, final String gistText) {
 
         mStatus2.setDisplayedChild(1);
 
@@ -189,7 +209,7 @@ public class LinkedIdCreateGithubFragment extends Fragment {
                     long timer = System.currentTimeMillis();
 
                     JSONObject file = new JSONObject();
-                    file.put("content", "hello!");
+                    file.put("content", gistText);
 
                     JSONObject files = new JSONObject();
                     files.put("file1.txt", file);
@@ -230,10 +250,55 @@ public class LinkedIdCreateGithubFragment extends Fragment {
                     return;
                 }
 
-                mStatus2.setDisplayedChild(2);
+                try {
+                    String gistId = result.getString("id");
+                    JSONObject owner = result.getJSONObject("owner");
+                    String gistLogin = owner.getString("login");
+
+                    URI uri = URI.create("https://gist.github.com/" + gistLogin + "/" + gistId);
+                    GithubResource resource = GithubResource.create(uri);
+
+                    mStatus2.setDisplayedChild(2);
+                    step3EditKey(resource);
+
+                } catch (JSONException e) {
+                    mStatus2.setDisplayedChild(3);
+                    e.printStackTrace();
+                }
+
             }
         }.execute();
 
+    }
+
+    private void step3EditKey(GithubResource resource) {
+
+        mStatus3.setDisplayedChild(1);
+
+        WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
+        mSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
+        mSaveKeyringParcel.mAddUserAttribute.add(ua);
+
+        cryptoOperation();
+
+    }
+
+    @Nullable
+    @Override
+    public SaveKeyringParcel createOperationInput() {
+        // if this is null, the cryptoOperation silently aborts - which is what we want in that case
+        return mSaveKeyringParcel;
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(EditKeyResult result) {
+        mStatus3.setDisplayedChild(2);
+    }
+
+    @Override
+    public void onCryptoOperationError(EditKeyResult result) {
+        result.createNotify(getActivity()).show(this);
+        mStatus3.setDisplayedChild(3);
     }
 
     private static JSONObject jsonHttpRequest(String url, JSONObject params, String accessToken)

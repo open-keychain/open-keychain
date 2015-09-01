@@ -138,16 +138,14 @@ public class LinkedIdWizard extends BaseActivity {
         super.onNewIntent(intent);
 
         Uri uri = intent.getData();
-        if (uri != null) {
-            Log.d(Constants.TAG, "received oauth uri: " + uri);
+        Log.d(Constants.TAG, "received oauth uri: " + uri);
+        if (mOAuthState != null && uri != null) {
             String state = uri.getQueryParameter("state");
             if (!mOAuthState.equalsIgnoreCase(state)) {
-                Notify.create(this, "Authentication Error!", Style.ERROR).show();
+                Notify.create(this, "OAuth State Error!", Style.ERROR).show();
                 return;
             }
             mOAuthCode = uri.getQueryParameter("code");
-        } else {
-            Log.d(Constants.TAG, "received oauth uri: null");
         }
 
     }
