@@ -31,6 +31,7 @@ import java.net.URL;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -172,28 +173,18 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         mButtonContainer.setDisplayedChild(1);
 
-        new AsyncTask<Void,Void,Void>() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    Thread.sleep(250);
-                } catch (InterruptedException e) {
-                    // never mind
-                }
+            public void run() {
 
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
                 LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
                 if (wizard == null) {
                     return;
                 }
                 wizard.oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
+
             }
-        }.execute();
+        }, 250);
 
     }
 
@@ -271,15 +262,22 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     }
 
-    private void step3EditKey(GithubResource resource) {
+    private void step3EditKey(final GithubResource resource) {
 
         mStatus3.setDisplayedChild(1);
 
-        WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
-        mSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
-        mSaveKeyringParcel.mAddUserAttribute.add(ua);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
-        cryptoOperation();
+                WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
+                mSaveKeyringParcel = new SaveKeyringParcel(mMasterKeyId, mFingerprint);
+                mSaveKeyringParcel.mAddUserAttribute.add(ua);
+
+                cryptoOperation();
+
+            }
+        }, 250);
 
     }
 
@@ -298,6 +296,12 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public void onCryptoOperationError(EditKeyResult result) {
         result.createNotify(getActivity()).show(this);
+        mStatus3.setDisplayedChild(3);
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        super.onCryptoOperationCancelled();
         mStatus3.setDisplayedChild(3);
     }
 
