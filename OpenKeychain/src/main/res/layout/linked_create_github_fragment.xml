@@ -31,7 +31,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_margin="8dp"
-                    android:src="@drawable/link_24dp" />
+                    android:src="@drawable/octo_link_24dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
