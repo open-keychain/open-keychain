@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    tools:showIn="@layout/linked_create_https_fragment_step2">
+    tools:showIn="@layout/linked_create_github_fragment_step2">
 
     <ViewAnimator
         android:id="@+id/verify_progress"

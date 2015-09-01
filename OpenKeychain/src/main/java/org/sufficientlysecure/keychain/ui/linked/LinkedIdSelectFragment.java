@@ -84,8 +84,8 @@ public class LinkedIdSelectFragment extends Fragment {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        LinkedIdCreateGithubStep1Fragment frag =
-                                LinkedIdCreateGithubStep1Fragment.newInstance();
+                        LinkedIdCreateGithubFragment frag =
+                                LinkedIdCreateGithubFragment.newInstance();
 
                         mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }

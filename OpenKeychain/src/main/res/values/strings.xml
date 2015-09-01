@@ -82,6 +82,7 @@
     <string name="btn_export_to_server">"Upload To Keyserver"</string>
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
+    <string name="btn_cancel">"Cancel"</string>
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>

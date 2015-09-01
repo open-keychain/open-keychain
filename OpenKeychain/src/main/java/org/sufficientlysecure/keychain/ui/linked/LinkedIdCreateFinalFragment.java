@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,16 +49,19 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
 
     protected abstract View newView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
-    @Override
+    @Override @NonNull
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = newView(inflater, container, savedInstanceState);
 
-        view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cryptoOperation();
-            }
-        });
+        View nextButton = view.findViewById(R.id.next_button);
+        if (nextButton != null) {
+            nextButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    cryptoOperation();
+                }
+            });
+        }
 
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
