@@ -15,17 +15,37 @@
             android:padding="16dp"
             android:orientation="vertical">
 
-            <ImageView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="8dp"
-                android:src="@drawable/linked_github" />
+                android:layout_gravity="center_horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/linked_github" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/link_24dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/account_key" />
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="This operation links your key to your GitHub account."
                 style="?android:textAppearanceSmall"/>
@@ -111,8 +131,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     style="?android:buttonBarButtonStyle"
-                    android:drawableLeft="@drawable/ic_person_add_grey_24dp"
-                    android:drawableStart="@drawable/ic_person_add_grey_24dp"
+                    android:drawableLeft="@drawable/link_24dp"
+                    android:drawableStart="@drawable/link_24dp"
                     android:drawablePadding="12dp"
                     android:text="Link to Github Account"
                     android:id="@+id/button_send"
