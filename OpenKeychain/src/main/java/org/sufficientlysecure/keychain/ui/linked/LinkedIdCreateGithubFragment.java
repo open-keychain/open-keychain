@@ -36,7 +36,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ViewAnimator;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -51,8 +50,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class LinkedIdCreateGithubFragment extends Fragment {
 
-    ViewAnimator mProceedContainer;
-    EditText mGithubUsername, mGithubPassword;
+    ViewAnimator mButtonContainer;
 
     StatusIndicator mStatus1, mStatus2, mStatus3;
 
@@ -64,10 +62,7 @@ public class LinkedIdCreateGithubFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.linked_create_github_fragment, container, false);
 
-        mProceedContainer = (ViewAnimator) view.findViewById(R.id.proceed_container);
-
-        mGithubUsername = (EditText) view.findViewById(R.id.username);
-        mGithubPassword = (EditText) view.findViewById(R.id.password);
+        mButtonContainer = (ViewAnimator) view.findViewById(R.id.button_container);
 
         mStatus1 = (StatusIndicator) view.findViewById(R.id.linked_status_step1);
         mStatus2 = (StatusIndicator) view.findViewById(R.id.linked_status_step2);
@@ -102,13 +97,25 @@ public class LinkedIdCreateGithubFragment extends Fragment {
             protected JSONObject doInBackground(Void... dummy) {
                 try {
 
+                    long timer = System.currentTimeMillis();
+
                     JSONObject params = new JSONObject();
                     params.put("client_id", "7a011b66275f244d3f21");
                     params.put("client_secret", "eaced8a6655719d8c6848396de97b3f5d7a89fec");
                     params.put("code", oAuthCode);
                     params.put("state", oAuthState);
 
-                     return jsonHttpRequest("https://github.com/login/oauth/access_token", params, null);
+                    JSONObject result = jsonHttpRequest("https://github.com/login/oauth/access_token", params, null);
+
+                    // ux flow: this operation should take at last a second
+                    timer = System.currentTimeMillis() -timer;
+                    if (timer < 1000) try {
+                        Thread.sleep(1000 -timer);
+                    } catch (InterruptedException e) {
+                        // never mind
+                    }
+
+                    return result;
 
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error in request", e);
@@ -143,10 +150,30 @@ public class LinkedIdCreateGithubFragment extends Fragment {
         mStatus2.setDisplayedChild(0);
         mStatus3.setDisplayedChild(0);
 
-        mProceedContainer.setDisplayedChild(1);
+        mButtonContainer.setDisplayedChild(1);
 
-        LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
-        wizard.oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    // never mind
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
+                if (wizard == null) {
+                    return;
+                }
+                wizard.oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
+            }
+        }.execute();
 
     }
 
@@ -159,6 +186,8 @@ public class LinkedIdCreateGithubFragment extends Fragment {
             protected JSONObject doInBackground(Void... dummy) {
                 try {
 
+                    long timer = System.currentTimeMillis();
+
                     JSONObject file = new JSONObject();
                     file.put("content", "hello!");
 
@@ -170,7 +199,17 @@ public class LinkedIdCreateGithubFragment extends Fragment {
                     params.put("description", "OpenKeychain API Tests");
                     params.put("files", files);
 
-                    return jsonHttpRequest("https://api.github.com/gists", params, accessToken);
+                    JSONObject result = jsonHttpRequest("https://api.github.com/gists", params, accessToken);
+
+                    // ux flow: this operation should take at last a second
+                    timer = System.currentTimeMillis() -timer;
+                    if (timer < 1000) try {
+                        Thread.sleep(1000 -timer);
+                    } catch (InterruptedException e) {
+                        // never mind
+                    }
+
+                    return result;
 
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error in request", e);
