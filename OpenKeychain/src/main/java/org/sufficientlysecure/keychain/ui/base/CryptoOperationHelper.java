@@ -19,6 +19,8 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -315,7 +317,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void cryptoOperation() {
-        cryptoOperation(new CryptoInputParcel());
+        cryptoOperation(new CryptoInputParcel(new Date()));
     }
 
     public void onHandleResult(OperationResult result) {
