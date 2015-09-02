@@ -113,16 +113,7 @@
         <activity
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:launchMode="singleInstance"
             android:label="@string/title_linked_create">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="linked"
-                    android:scheme="oauth-openkeychain" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.QrCodeViewActivity"

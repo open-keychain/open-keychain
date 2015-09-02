@@ -17,10 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
-import java.util.Random;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -28,7 +26,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -36,8 +33,6 @@ import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class LinkedIdWizard extends BaseActivity {
@@ -129,55 +124,6 @@ public class LinkedIdWizard extends BaseActivity {
             return;
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-    }
-
-    private String mOAuthCode, mOAuthState;
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Uri uri = intent.getData();
-        Log.d(Constants.TAG, "received oauth uri: " + uri);
-        if (mOAuthState != null && uri != null) {
-            String state = uri.getQueryParameter("state");
-            if (!mOAuthState.equalsIgnoreCase(state)) {
-                Notify.create(this, "OAuth State Error!", Style.ERROR).show();
-                return;
-            }
-            mOAuthCode = uri.getQueryParameter("code");
-        }
-
-    }
-
-    public String oAuthGetCode() {
-        try {
-            return mOAuthCode;
-        } finally {
-            mOAuthCode = null;
-        }
-    }
-
-    public String oAuthGetState() {
-        return mOAuthState;
-    }
-
-    public void oAuthRequest(String hostAndPath, String clientId, String scope) {
-
-        byte[] buf = new byte[16];
-        new Random().nextBytes(buf);
-        mOAuthState = new String(Hex.encode(buf));
-
-        Intent intent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://" + hostAndPath +
-                        "?client_id=" + clientId +
-                        "&scope=" + scope +
-                        "&redirect_uri=oauth-openkeychain://linked/" +
-                        "&state=" + mOAuthState));
-
-        startActivity(intent);
-
     }
 
 }

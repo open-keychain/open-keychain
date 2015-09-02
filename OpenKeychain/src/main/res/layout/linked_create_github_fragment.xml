@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -122,14 +123,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/button_container"
-                android:outAnimation="@anim/fade_out">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:inAnimation="@anim/fade_in"
+                android:outAnimation="@anim/fade_out"
+                custom:initialView="2">
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"
                     style="?android:buttonBarButtonStyle"
                     android:drawableLeft="@drawable/link_24dp"
                     android:drawableStart="@drawable/link_24dp"
@@ -141,6 +144,8 @@
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
+                <include layout="@layout/linked_id_item" />
 
             </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 

@@ -28,8 +28,18 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URL;
+import java.util.Random;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -38,11 +48,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -50,7 +65,9 @@ import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -65,6 +82,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     byte[] mFingerprint;
     long mMasterKeyId;
     private SaveKeyringParcel mSaveKeyringParcel;
+    private TextView mLinkedIdTitle, mLinkedIdComment;
 
     public static LinkedIdCreateGithubFragment newInstance() {
         return new LinkedIdCreateGithubFragment();
@@ -84,10 +102,15 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         mStatus2 = (StatusIndicator) view.findViewById(R.id.linked_status_step2);
         mStatus3 = (StatusIndicator) view.findViewById(R.id.linked_status_step3);
 
+        ((ImageView) view.findViewById(R.id.linked_id_type_icon)).setImageResource(R.drawable.linked_github);
+        ((ImageView) view.findViewById(R.id.linked_id_certified_icon)).setImageResource(R.drawable.octo_link_24dp);
+        mLinkedIdTitle = (TextView) view.findViewById(R.id.linked_id_title);
+        mLinkedIdComment = (TextView) view.findViewById(R.id.linked_id_comment);
+
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                step1GetOAuthToken();
+                step1GetOAuthCode();
             }
         });
 
@@ -95,30 +118,54 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
         mFingerprint = wizard.mFingerprint;
         mMasterKeyId = wizard.mMasterKeyId;
+    }
 
-        final String oAuthCode = wizard.oAuthGetCode();
-        final String oAuthState = wizard.oAuthGetState();
-        if (oAuthCode == null) {
+    private void step1GetOAuthCode() {
+
+        mStatus1.setDisplayedChild(1);
+        mStatus2.setDisplayedChild(0);
+        mStatus3.setDisplayedChild(0);
+
+        mButtonContainer.setDisplayedChild(1);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
+            }
+        }, 300);
+
+    }
+
+    private void step1GetOAuthToken() {
+
+        if (mOAuthCode == null) {
             Log.d(Constants.TAG, "no code");
             return;
         }
 
-        final String gistText = GithubResource.generate(wizard, mFingerprint);
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
 
-        Log.d(Constants.TAG, "got code: " + oAuthCode);
+        // this is only good once!
+        final String oAuthCode = mOAuthCode, oAuthState = mOAuthState;
+        mOAuthCode = null;
+        mOAuthState = null;
+
+        final String gistText = GithubResource.generate(activity, mFingerprint);
 
         new AsyncTask<Void,Void,JSONObject>() {
             @Override
             protected JSONObject doInBackground(Void... dummy) {
                 try {
-
-                    long timer = System.currentTimeMillis();
 
                     JSONObject params = new JSONObject();
                     params.put("client_id", "7a011b66275f244d3f21");
@@ -126,17 +173,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     params.put("code", oAuthCode);
                     params.put("state", oAuthState);
 
-                    JSONObject result = jsonHttpRequest("https://github.com/login/oauth/access_token", params, null);
-
-                    // ux flow: this operation should take at last a second
-                    timer = System.currentTimeMillis() -timer;
-                    if (timer < 1000) try {
-                        Thread.sleep(1000 -timer);
-                    } catch (InterruptedException e) {
-                        // never mind
-                    }
-
-                    return result;
+                    return jsonHttpRequest("https://github.com/login/oauth/access_token", params, null);
 
                 } catch (IOException e) {
                     Log.e(Constants.TAG, "error in request", e);
@@ -162,29 +199,6 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
             }
         }.execute();
-
-    }
-
-    private void step1GetOAuthToken() {
-
-        mStatus1.setDisplayedChild(1);
-        mStatus2.setDisplayedChild(0);
-        mStatus3.setDisplayedChild(0);
-
-        mButtonContainer.setDisplayedChild(1);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
-                if (wizard == null) {
-                    return;
-                }
-                wizard.oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
-
-            }
-        }, 250);
 
     }
 
@@ -249,6 +263,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     URI uri = URI.create("https://gist.github.com/" + gistLogin + "/" + gistId);
                     GithubResource resource = GithubResource.create(uri);
 
+                    revokeToken(accessToken);
+
                     mStatus2.setDisplayedChild(2);
                     step3EditKey(resource);
 
@@ -262,7 +278,34 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     }
 
+    private void revokeToken(final String token) {
+
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... dummy) {
+                try {
+                    HttpsURLConnection nection = (HttpsURLConnection) new URL(
+                            "https://api.github.com/applications/7a011b66275f244d3f21/tokens/" + token)
+                            .openConnection();
+                    nection.setRequestMethod("DELETE");
+                    nection.connect();
+                } catch (IOException e) {
+                    // nvm
+                }
+                return null;
+            }
+        }.execute();
+
+    }
+
     private void step3EditKey(final GithubResource resource) {
+
+        // set item data while we're there
+        {
+            Context context = getActivity();
+            mLinkedIdTitle.setText(resource.getDisplayTitle(context));
+            mLinkedIdComment.setText(resource.getDisplayComment(context));
+        }
 
         mStatus3.setDisplayedChild(1);
 
@@ -291,6 +334,23 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public void onCryptoOperationSuccess(EditKeyResult result) {
         mStatus3.setDisplayedChild(2);
+        mButtonContainer.setDisplayedChild(2);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Activity activity = getActivity();
+                Intent intent = new Intent(activity, ViewKeyActivity.class);
+                intent.setData(KeyRings.buildGenericKeyRingUri(mMasterKeyId));
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mButtonContainer.getCurrentView().setTransitionName("linked_item");
+                    activity.finishAfterTransition();
+                } else {
+                    activity.finish();
+                }
+            }
+        }, 1000);
     }
 
     @Override
@@ -303,6 +363,72 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     public void onCryptoOperationCancelled() {
         super.onCryptoOperationCancelled();
         mStatus3.setDisplayedChild(3);
+    }
+
+
+    private String mOAuthCode, mOAuthState;
+
+    @SuppressLint("SetJavaScriptEnabled") // trusted https website, it's ok
+    public void oAuthRequest(String hostAndPath, String clientId, String scope) {
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        byte[] buf = new byte[16];
+        new Random().nextBytes(buf);
+        mOAuthState = new String(Hex.encode(buf));
+
+        final Dialog auth_dialog = new Dialog(activity);
+        auth_dialog.setContentView(R.layout.oauth_webview);
+        WebView web = (WebView) auth_dialog.findViewById(R.id.web_view);
+        web.getSettings().setJavaScriptEnabled(true);
+        web.setWebViewClient(new WebViewClient() {
+
+            boolean authComplete = false;
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Uri uri = Uri.parse(url);
+                if ("oauth-openkeychain".equals(uri.getScheme()) && !authComplete) {
+                    authComplete = true;
+
+                    if (uri.getQueryParameter("error") != null) {
+                        Log.i(Constants.TAG, "ACCESS_DENIED_HERE");
+                        auth_dialog.dismiss();
+                        return true;
+                    }
+
+                    // check if mOAuthState == queryParam[state]
+                    mOAuthCode = uri.getQueryParameter("code");
+
+                    Log.d(Constants.TAG, "got ok response, code is " + mOAuthCode);
+
+                    auth_dialog.dismiss();
+                    return true;
+                }
+                return false;
+            }
+
+        });
+
+        auth_dialog.setTitle("GitHub Authorization");
+        auth_dialog.setCancelable(true);
+        auth_dialog.setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                step1GetOAuthToken();
+            }
+        });
+        auth_dialog.show();
+
+        web.loadUrl("https://" + hostAndPath +
+                "?client_id=" + clientId +
+                "&scope=" + scope +
+                "&redirect_uri=oauth-openkeychain://linked/" +
+                "&state=" + mOAuthState);
+
     }
 
     private static JSONObject jsonHttpRequest(String url, JSONObject params, String accessToken)
