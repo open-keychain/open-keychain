@@ -448,7 +448,7 @@ public class DecryptListFragment
                             new Intent(intent)
                                     .setClass(activity, DisplayTextActivity.class)
                                     .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
-                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
+                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
 
                     Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,

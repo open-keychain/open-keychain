@@ -46,7 +46,7 @@
                 android:id="@+id/api_app_settings_app_icon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_launcher" />
+                android:src="@mipmap/ic_launcher" />
 
             <TextView
                 android:id="@+id/api_app_settings_app_name"

@@ -427,7 +427,7 @@ public class KeyserverSyncAdapterService extends Service {
     private Notification getOrbotNoification(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.drawable.ic_launcher, context))
+                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, context))
                 .setContentTitle(context.getString(R.string.keyserver_sync_orbot_notif_title))
                 .setContentText(context.getString(R.string.keyserver_sync_orbot_notif_msg))
                 .setAutoCancel(true);
