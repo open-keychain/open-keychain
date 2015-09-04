@@ -23,6 +23,7 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**
@@ -42,24 +43,23 @@ public class PgpSecurityConstants {
      * Whitelist of accepted symmetric encryption algorithms
      * all other algorithms are rejected with OpenPgpDecryptionResult.RESULT_INSECURE
      */
-    private static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>();
-    static {
-        // General remarks: We try to keep the whitelist short to reduce attack surface
-        // TODO: block IDEA?: Bad key schedule (weak keys), implementation difficulties (easy to make errors)
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.IDEA);
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.TRIPLE_DES); // a MUST in RFC
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.CAST5); // default in many gpg, pgp versions, 128 bit key
-        // BLOWFISH: Twofish is the successor
-        // SAFER: not used widely
-        // DES: < 128 bit security
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_128);
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_192);
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.AES_256);
-        sSymmetricAlgorithmsWhitelist.add(SymmetricKeyAlgorithmTags.TWOFISH); // 128 bit
-        // CAMELLIA_128: not used widely
-        // CAMELLIA_192: not used widely
-        // CAMELLIA_256: not used widely
-    }
+    private static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
+            // General remarks: We try to keep the whitelist short to reduce attack surface
+            // TODO: block IDEA?: Bad key schedule (weak keys), implementation difficulties (easy to make errors)
+            SymmetricKeyAlgorithmTags.IDEA,
+            SymmetricKeyAlgorithmTags.TRIPLE_DES, // a MUST in RFC
+            SymmetricKeyAlgorithmTags.CAST5, // default in many gpg, pgp versions, 128 bit key
+            // BLOWFISH: Twofish is the successor
+            // SAFER: not used widely
+            // DES: < 128 bit security
+            SymmetricKeyAlgorithmTags.AES_128,
+            SymmetricKeyAlgorithmTags.AES_192,
+            SymmetricKeyAlgorithmTags.AES_256,
+            SymmetricKeyAlgorithmTags.TWOFISH // 128 bit
+            // CAMELLIA_128: not used widely
+            // CAMELLIA_192: not used widely
+            // CAMELLIA_256: not used widely
+    ));
 
     public static boolean isSecureSymmetricAlgorithm(int id) {
         return sSymmetricAlgorithmsWhitelist.contains(id);
@@ -77,20 +77,19 @@ public class PgpSecurityConstants {
      * ((collision resistance of 112-bits))
      * Implementations SHOULD NOT sign SHA-256 hashes. They MUST NOT default to signing SHA-256 hashes.
      */
-    private static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>();
-    static {
-        // MD5: broken
-        // SHA1: broken
-        // RIPEMD160: same security properties as SHA1
-        // DOUBLE_SHA: not used widely
-        // MD2: not used widely
-        // TIGER_192: not used widely
-        // HAVAL_5_160: not used widely
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA256); // compatibility for old Mailvelope versions
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA384);
-        sHashAlgorithmsWhitelist.add(HashAlgorithmTags.SHA512);
-        // SHA224: Not used widely, Yahoo argues against it
-    }
+    private static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
+            // MD5: broken
+            // SHA1: broken
+            // RIPEMD160: same security properties as SHA1
+            // DOUBLE_SHA: not used widely
+            // MD2: not used widely
+            // TIGER_192: not used widely
+            // HAVAL_5_160: not used widely
+            HashAlgorithmTags.SHA256, // compatibility for old Mailvelope versions
+            HashAlgorithmTags.SHA384,
+            HashAlgorithmTags.SHA512
+            // SHA224: Not used widely, Yahoo argues against it
+    ));
 
     public static boolean isSecureHashAlgorithm(int id) {
         return sHashAlgorithmsWhitelist.contains(id);
@@ -106,12 +105,11 @@ public class PgpSecurityConstants {
      * bitlength less than 1023 bits.
      * Implementations MUST NOT accept any RSA keys with bitlength less than 2047 bits after January 1, 2016.
      */
-    private static HashSet<String> sCurveWhitelist = new HashSet<>();
-    static {
-        sCurveWhitelist.add(NISTNamedCurves.getOID("P-256").getId());
-        sCurveWhitelist.add(NISTNamedCurves.getOID("P-384").getId());
-        sCurveWhitelist.add(NISTNamedCurves.getOID("P-521").getId());
-    }
+    private static HashSet<String> sCurveWhitelist = new HashSet<>(Arrays.asList(
+            NISTNamedCurves.getOID("P-256").getId(),
+            NISTNamedCurves.getOID("P-384").getId(),
+            NISTNamedCurves.getOID("P-521").getId()
+    ));
 
     public static boolean isSecureKey(CanonicalizedPublicKey key) {
         switch (key.getAlgorithm()) {
