@@ -19,10 +19,14 @@ package org.sufficientlysecure.keychain.ui.linked;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -31,6 +35,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.util.Log;
@@ -124,6 +129,36 @@ public class LinkedIdWizard extends BaseActivity {
             return;
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!getFragmentManager().popBackStackImmediate()) {
+            navigateBack();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                navigateBack();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void navigateBack() {
+        Intent upIntent = NavUtils.getParentActivityIntent(this);
+        upIntent.setData(KeyRings.buildGenericKeyRingUri(mMasterKeyId));
+        // This activity is NOT part of this app's task, so create a new task
+        // when navigating up, with a synthesized back stack.
+        TaskStackBuilder.create(this)
+                // Add all of this activity's parents to the back stack
+                .addNextIntentWithParentStack(upIntent)
+                // Navigate up to the closest parent
+                .startActivities();
     }
 
 }

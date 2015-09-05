@@ -371,6 +371,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 Intent intent = new Intent(this, LinkedIdWizard.class);
                 intent.setData(mDataUri);
                 startActivity(intent);
+                finish();
                 return true;
             }
             case R.id.menu_key_view_edit: {
@@ -427,7 +428,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{mMasterKeyId});
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { mMasterKeyId });
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }

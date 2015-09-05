@@ -113,7 +113,9 @@
         <activity
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_linked_create">
+            android:label="@string/title_linked_create"
+            android:parentActivityName=".ui.ViewKeyActivity"
+            >
         </activity>
         <activity
             android:name=".ui.QrCodeViewActivity"

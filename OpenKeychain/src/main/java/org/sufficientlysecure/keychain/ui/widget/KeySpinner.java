@@ -119,8 +119,7 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         if (getContext() instanceof FragmentActivity) {
             ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
         } else {
-            throw new AssertionError("KeySpinner must be attached to FragmentActivity, this is "
-                    + getContext().getClass());
+            // ignore, this happens during preview! we use fragmentactivities everywhere either way
         }
     }
 
