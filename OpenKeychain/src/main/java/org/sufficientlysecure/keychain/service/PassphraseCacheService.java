@@ -509,7 +509,7 @@ public class PassphraseCacheService extends Service {
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
+                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, getBaseContext()))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
                 .setContentText(getString(R.string.passp_cache_notif_click_to_clear));
