@@ -158,7 +158,7 @@ public class CertifyOperationTest {
 
         CertifyActionsParcel actions = new CertifyActionsParcel(mStaticRing1.getMasterKeyId());
         actions.add(new CertifyAction(mStaticRing2.getMasterKeyId(),
-                mStaticRing2.getPublicKey().getUnorderedUserIds()));
+                mStaticRing2.getPublicKey().getUnorderedUserIds(), null));
         CertifyResult result = op.execute(actions, new CryptoInputParcel(new Date(), mKeyPhrase1));
 
         Assert.assertTrue("certification must succeed", result.success());
