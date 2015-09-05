@@ -423,7 +423,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         final Dialog auth_dialog = new Dialog(activity);
         auth_dialog.setContentView(R.layout.oauth_webview);
         WebView web = (WebView) auth_dialog.findViewById(R.id.web_view);
-        web.getSettings().setJavaScriptEnabled(true);
+        web.getSettings().setSaveFormData(false);
         web.setWebViewClient(new WebViewClient() {
 
             boolean authComplete = false;
@@ -444,6 +444,10 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     mOAuthCode = uri.getQueryParameter("code");
 
                     Log.d(Constants.TAG, "got ok response, code is " + mOAuthCode);
+
+                    CookieManager cookieManager = CookieManager.getInstance();
+                    // noinspection deprecation (replacement is api lvl 21)
+                    cookieManager.removeAllCookie();
 
                     auth_dialog.dismiss();
                     return true;
