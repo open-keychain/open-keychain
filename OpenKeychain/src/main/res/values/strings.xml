@@ -1565,15 +1565,6 @@
     <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
     <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
-    <string name="linked_create_github_1_1">"By creating a Linked Identity of this type, you can link your key to a GitHub account you control."</string>
-    <string name="linked_create_github_1_2">"To do this, you publish a specific Gist on your timeline, then create a Linked Identity which links to this Gist."</string>
-    <string name="linked_create_github_1_3">"Please enter your GitHub screen name to proceed."</string>
-    <string name="linked_create_github_handle">GitHub Handle</string>
-    <string name="linked_create_github_2_1">"Click either button to post the gist!"</string>
-    <string name="linked_create_github_2_2">"You can edit the Gist before posting it, so long as the text inside the brackets is unmodified."</string>
-    <string name="linked_create_github_2_3">"Once your Gist is published, click the Verify button to scan your timeline for it."</string>
-    <string name="linked_create_github_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
-
     <string name="linked_create_dns_1_1">"By creating a Linked Identity of this type, you can link your key to a domain name you control."</string>
     <string name="linked_create_dns_1_2">"To do this, you create a specific TXT record for the domain, then create a Linked Identity which links to this record."</string>
     <!-- An Identity of this type is especially appropriate if your email address is at the same domain. -->
@@ -1600,6 +1591,7 @@
         <item quantity="other">"There are %d more unknown identity types"</item>
     </plurals>
 
+    <!-- Other Linked Identity strings -->
     <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
     <string name="linked_select_2">"Please select a type:"</string>
     <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
@@ -1609,7 +1601,7 @@
     <string name="linked_verify_error">"Verification error!"</string>
     <string name="linked_verify_pending">"Not yet verified"</string>
     <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
-    <string name="menu_linked_add_identity">"Add Linked Identity"</string>
+    <string name="menu_linked_add_identity">"Link to Account"</string>
     <string name="section_linked_identities">"Linked Identities"</string>
     <string name="btn_finish">"Finish"</string>
     <string name="linked_title_https">Website (HTTPS)</string>

@@ -18,7 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.io.IOException;
+import java.util.List;
+
+import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +30,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
@@ -39,17 +44,20 @@ import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.*;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.adapter.LinkedIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdViewFragment;
@@ -58,22 +66,20 @@ import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.util.List;
-
 public class ViewKeyFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_POSTPONE_TYPE = "postpone_type";
 
     private ListView mUserIds;
     //private ListView mLinkedSystemContact;
 
-    boolean mIsSecret = false;
+    enum PostponeType {
+        NONE, LINKED;
+    }
 
-    CardView mSystemContactCard;
-    LinearLayout mSystemContactLayout;
-    ImageView mSystemContactPicture;
-    TextView mSystemContactName;
+    boolean mIsSecret = false;
 
     private static final int LOADER_ID_UNIFIED = 0;
     private static final int LOADER_ID_USER_IDS = 1;
@@ -89,6 +95,13 @@ public class ViewKeyFragment extends LoaderFragment implements
     private LinkedIdsAdapter mLinkedIdsAdapter;
 
     private Uri mDataUri;
+    private PostponeType mPostponeType;
+
+    private CardView mSystemContactCard;
+    private LinearLayout mSystemContactLayout;
+    private ImageView mSystemContactPicture;
+    private TextView mSystemContactName;
+
     private ListView mLinkedIds;
     private CardView mLinkedIdsCard;
     private byte[] mFingerprint;
@@ -97,10 +110,11 @@ public class ViewKeyFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyFragment newInstance(Uri dataUri) {
+    public static ViewKeyFragment newInstance(Uri dataUri, PostponeType postponeType) {
         ViewKeyFragment frag = new ViewKeyFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putInt(ARG_POSTPONE_TYPE, postponeType.ordinal());
 
         frag.setArguments(args);
 
@@ -271,6 +285,7 @@ public class ViewKeyFragment extends LoaderFragment implements
         super.onActivityCreated(savedInstanceState);
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
+        mPostponeType = PostponeType.values()[getArguments().getInt(ARG_POSTPONE_TYPE, 0)];
         if (dataUri == null) {
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();
@@ -325,10 +340,10 @@ public class ViewKeyFragment extends LoaderFragment implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
 
         switch (id) {
             case LOADER_ID_UNIFIED: {
+                setContentShown(false, false);
                 Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
                 return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
             }
@@ -390,6 +405,7 @@ public class ViewKeyFragment extends LoaderFragment implements
 
                     mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                     mFingerprint = data.getBlob(INDEX_FINGERPRINT);
+                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
 
                     // load user ids after we know if it's a secret key
                     mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0, !mIsSecret, null);
@@ -403,13 +419,6 @@ public class ViewKeyFragment extends LoaderFragment implements
                         getLoaderManager().initLoader(LOADER_ID_LINKED_IDS, null, this);
                     }
 
-                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    // we need to load linked contact here to prevent lag introduced by loader
-                    // for the linked contact
-                    long contactId = ContactHelper.findContactId(
-                            getActivity().getContentResolver(),
-                            masterKeyId);
-                    loadLinkedSystemContact(contactId);
 
                     Bundle linkedContactData = new Bundle();
                     linkedContactData.putLong(LOADER_EXTRA_LINKED_CONTACT_MASTER_KEY_ID, masterKeyId);
@@ -423,6 +432,7 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
             case LOADER_ID_USER_IDS: {
+                setContentShown(true, false);
                 mUserIdsAdapter.swapCursor(data);
                 break;
             }
@@ -430,6 +440,17 @@ public class ViewKeyFragment extends LoaderFragment implements
             case LOADER_ID_LINKED_IDS: {
                 mLinkedIdsAdapter.swapCursor(data);
                 mLinkedIdsCard.setVisibility(mLinkedIdsAdapter.getCount() > 0 ? View.VISIBLE : View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mPostponeType == PostponeType.LINKED) {
+                    mLinkedIdsCard.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
+                        @TargetApi(VERSION_CODES.LOLLIPOP)
+                        @Override
+                        public boolean onPreDraw() {
+                            mLinkedIdsCard.getViewTreeObserver().removeOnPreDrawListener(this);
+                            getActivity().startPostponedEnterTransition();
+                            return true;
+                        }
+                    });
+                }
                 break;
             }
 
@@ -442,7 +463,6 @@ public class ViewKeyFragment extends LoaderFragment implements
             }
 
         }
-        setContentShown(true);
     }
 
     /**

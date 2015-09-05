@@ -211,6 +211,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                             null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
+        } else {
+            mViewHolder.mLinkedIdHolder.vVerified.setImageResource(R.drawable.octo_link_24dp);
         }
 
         mViewHolder.mLinkedIdHolder.setData(mContext, mLinkedId);

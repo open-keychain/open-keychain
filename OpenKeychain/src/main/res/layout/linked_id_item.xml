@@ -6,6 +6,7 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:singleLine="true"
+    android:background="#ffffff"
     tools:showIn="@layout/linked_id_view_fragment">
 
     <ImageView

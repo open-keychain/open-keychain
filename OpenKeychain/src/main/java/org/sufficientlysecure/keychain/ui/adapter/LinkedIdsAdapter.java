@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.CursorLoader;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -134,6 +135,10 @@ public class LinkedIdsAdapter extends UserAttributesAdapter {
 
         UriAttribute id = getItemAtPosition(cursor);
         holder.setData(mContext, id);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setTransitionName(id.mUri.toString());
+        }
 
     }
 

@@ -18,6 +18,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -55,7 +60,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -68,9 +72,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -84,9 +89,6 @@ import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.NfcHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class ViewKeyActivity extends BaseNfcActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -102,6 +104,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     static final int REQUEST_DELETE = 4;
 
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
+    public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
     ProviderHelper mProviderHelper;
 
@@ -294,9 +297,15 @@ public class ViewKeyActivity extends BaseNfcActivity implements
             return;
         }
 
+        boolean linkedTransition = getIntent().getBooleanExtra(EXTRA_LINKED_TRANSITION, false);
+        if (linkedTransition && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+        }
+
         FragmentManager manager = getSupportFragmentManager();
         // Create an instance of the fragment
-        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri);
+        final ViewKeyFragment frag = ViewKeyFragment.newInstance(mDataUri,
+                linkedTransition ? PostponeType.LINKED : PostponeType.NONE);
         manager.beginTransaction()
                 .replace(R.id.view_key_fragment, frag)
                 .commit();

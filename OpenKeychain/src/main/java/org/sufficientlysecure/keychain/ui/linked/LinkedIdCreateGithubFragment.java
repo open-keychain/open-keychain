@@ -44,10 +44,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
@@ -83,6 +86,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     long mMasterKeyId;
     private SaveKeyringParcel mSaveKeyringParcel;
     private TextView mLinkedIdTitle, mLinkedIdComment;
+    private boolean mFinishOnStop;
 
     public static LinkedIdCreateGithubFragment newInstance() {
         return new LinkedIdCreateGithubFragment();
@@ -107,10 +111,23 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         mLinkedIdTitle = (TextView) view.findViewById(R.id.linked_id_title);
         mLinkedIdComment = (TextView) view.findViewById(R.id.linked_id_comment);
 
+        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinkedIdWizard activity = (LinkedIdWizard) getActivity();
+                if (activity == null) {
+                    return;
+                }
+                activity.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
+            }
+        });
+
         view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 step1GetOAuthCode();
+                // for animation testing
+                // onCryptoOperationSuccess(null);
             }
         });
 
@@ -263,6 +280,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     URI uri = URI.create("https://gist.github.com/" + gistLogin + "/" + gistId);
                     GithubResource resource = GithubResource.create(uri);
 
+                    View linkedItem = mButtonContainer.getChildAt(2);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        linkedItem.setTransitionName(resource.toUri().toString());
+                    }
+
                     revokeToken(accessToken);
 
                     mStatus2.setDisplayedChild(2);
@@ -334,23 +356,42 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public void onCryptoOperationSuccess(EditKeyResult result) {
         mStatus3.setDisplayedChild(2);
+
+        mButtonContainer.getInAnimation().setDuration(750);
         mButtonContainer.setDisplayedChild(2);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Activity activity = getActivity();
+                FragmentActivity activity = getActivity();
                 Intent intent = new Intent(activity, ViewKeyActivity.class);
                 intent.setData(KeyRings.buildGenericKeyRingUri(mMasterKeyId));
+                // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    mButtonContainer.getCurrentView().setTransitionName("linked_item");
-                    activity.finishAfterTransition();
+                    intent.putExtra(ViewKeyActivity.EXTRA_LINKED_TRANSITION, true);
+                    View linkedItem = mButtonContainer.getChildAt(2);
+
+                    Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            activity, linkedItem, linkedItem.getTransitionName()).toBundle();
+                    activity.startActivity(intent, options);
+                    mFinishOnStop = true;
                 } else {
+                    activity.startActivity(intent);
                     activity.finish();
                 }
             }
         }, 1000);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mFinishOnStop) {
+            Activity activity = getActivity();
+            activity.setResult(Activity.RESULT_OK);
+            activity.finish();
+        }
     }
 
     @Override
@@ -364,7 +405,6 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         super.onCryptoOperationCancelled();
         mStatus3.setDisplayedChild(3);
     }
-
 
     private String mOAuthCode, mOAuthState;
 
