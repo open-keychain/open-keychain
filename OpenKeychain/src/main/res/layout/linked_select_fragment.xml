@@ -35,13 +35,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
-            android:layout_marginBottom="4dp"
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/linked_create_github_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
@@ -70,13 +71,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
-            android:layout_marginBottom="4dp"
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/linked_create_twitter_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
@@ -142,13 +144,14 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
-            android:layout_marginBottom="4dp"
             android:background="?android:attr/listDivider" />
 
         <LinearLayout
             android:id="@+id/linked_create_https_button"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
             android:clickable="true"
             android:background="?android:selectableItemBackground"
             android:orientation="horizontal">
