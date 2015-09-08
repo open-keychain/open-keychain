@@ -78,6 +78,9 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
 
+    public static final String GITHUB_CLIENT_ID = "7a011b66275f244d3f21";
+    public static final String GITHUB_CLIENT_SECRET = "eaced8a6655719d8c6848396de97b3f5d7a89fec";
+
     ViewAnimator mButtonContainer;
 
     StatusIndicator mStatus1, mStatus2, mStatus3;
@@ -154,7 +157,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                oAuthRequest("github.com/login/oauth/authorize", "7a011b66275f244d3f21", "gist");
+                oAuthRequest("github.com/login/oauth/authorize", GITHUB_CLIENT_ID, "gist");
             }
         }, 300);
 
@@ -185,8 +188,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 try {
 
                     JSONObject params = new JSONObject();
-                    params.put("client_id", "7a011b66275f244d3f21");
-                    params.put("client_secret", "eaced8a6655719d8c6848396de97b3f5d7a89fec");
+                    params.put("client_id", GITHUB_CLIENT_ID);
+                    params.put("client_secret", GITHUB_CLIENT_SECRET);
                     params.put("code", oAuthCode);
                     params.put("state", oAuthState);
 
@@ -285,6 +288,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                         linkedItem.setTransitionName(resource.toUri().toString());
                     }
 
+                    // we only need authorization for this one operation, drop it afterwards
                     revokeToken(accessToken);
 
                     mStatus2.setDisplayedChild(2);
