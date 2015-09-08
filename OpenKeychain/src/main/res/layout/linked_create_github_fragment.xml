@@ -129,13 +129,13 @@
                 android:layout_marginLeft="4dp"
                 android:inAnimation="@anim/fade_in"
                 android:outAnimation="@anim/fade_out"
-                custom:initialView="2">
+                android:clipChildren="false"
+                custom:initialView="3">
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    style="?android:buttonBarButtonStyle"
                     android:drawableLeft="@drawable/link_24dp"
                     android:drawableStart="@drawable/link_24dp"
                     android:drawablePadding="12dp"
@@ -148,6 +148,17 @@
                     android:layout_height="wrap_content" />
 
                 <include layout="@layout/linked_id_item" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:drawableLeft="@drawable/ic_repeat_black_24dp"
+                    android:drawableStart="@drawable/ic_repeat_black_24dp"
+                    android:drawablePadding="12dp"
+                    android:text="Retry Last Step"
+                    android:id="@+id/button_retry"
+                    />
 
             </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 

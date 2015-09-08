@@ -53,6 +53,7 @@ import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
@@ -78,6 +79,8 @@ import org.sufficientlysecure.keychain.util.Log;
 
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
+
+    private Button mRetryButton;
 
     enum State {
         IDLE, AUTH_PROCESS, AUTH_ERROR, POST_PROCESS, POST_ERROR, LID_PROCESS, LID_ERROR, DONE
@@ -113,6 +116,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         mStatus1 = (StatusIndicator) view.findViewById(R.id.linked_status_step1);
         mStatus2 = (StatusIndicator) view.findViewById(R.id.linked_status_step2);
         mStatus3 = (StatusIndicator) view.findViewById(R.id.linked_status_step3);
+
+        mRetryButton = (Button) view.findViewById(R.id.button_retry);
 
         ((ImageView) view.findViewById(R.id.linked_id_type_icon)).setImageResource(R.drawable.linked_github);
         ((ImageView) view.findViewById(R.id.linked_id_certified_icon)).setImageResource(R.drawable.octo_link_24dp);
@@ -403,13 +408,22 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public void onCryptoOperationError(EditKeyResult result) {
         result.createNotify(getActivity()).show(this);
-        mStatus3.setDisplayedChild(3);
+        setState(State.LID_ERROR);
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-        super.onCryptoOperationCancelled();
-        mStatus3.setDisplayedChild(3);
+        mRetryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setOnClickListener(null);
+                mButtonContainer.setDisplayedChild(1);
+                setState(State.LID_PROCESS);
+                cryptoOperation();
+            }
+        });
+        mButtonContainer.setDisplayedChild(3);
+        setState(State.LID_ERROR);
     }
 
     private String mOAuthCode, mOAuthState;
