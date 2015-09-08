@@ -46,6 +46,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -317,9 +318,12 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             protected Void doInBackground(Void... dummy) {
                 try {
                     HttpsURLConnection nection = (HttpsURLConnection) new URL(
-                            "https://api.github.com/applications/7a011b66275f244d3f21/tokens/" + token)
+                            "https://api.github.com/applications/" + GITHUB_CLIENT_ID + "/tokens/" + token)
                             .openConnection();
                     nection.setRequestMethod("DELETE");
+                    String encoded = Base64.encodeToString(
+                            (GITHUB_CLIENT_ID + ":" + GITHUB_CLIENT_SECRET).getBytes(), Base64.DEFAULT);
+                    nection.setRequestProperty("Authorization", "Basic " + encoded);
                     nection.connect();
                 } catch (IOException e) {
                     // nvm
