@@ -73,10 +73,15 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
+import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
 import org.sufficientlysecure.keychain.util.Log;
 
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
+
+    enum State {
+        IDLE, AUTH_PROCESS, AUTH_ERROR, POST_PROCESS, POST_ERROR, LID_PROCESS, LID_ERROR, DONE
+    }
 
     public static final String GITHUB_CLIENT_ID = "7a011b66275f244d3f21";
     public static final String GITHUB_CLIENT_SECRET = "eaced8a6655719d8c6848396de97b3f5d7a89fec";
@@ -148,9 +153,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     private void step1GetOAuthCode() {
 
-        mStatus1.setDisplayedChild(1);
-        mStatus2.setDisplayedChild(0);
-        mStatus3.setDisplayedChild(0);
+        setState(State.AUTH_PROCESS);
 
         mButtonContainer.setDisplayedChild(1);
 
@@ -210,11 +213,10 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 Log.d(Constants.TAG, "response: " + result);
 
                 if (result == null || !result.has("access_token")) {
-                    mStatus1.setDisplayedChild(3);
+                    setState(State.AUTH_ERROR);
                     return;
                 }
 
-                mStatus1.setDisplayedChild(2);
                 step2PostGist(result.optString("access_token"), gistText);
 
             }
@@ -224,7 +226,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     private void step2PostGist(final String accessToken, final String gistText) {
 
-        mStatus2.setDisplayedChild(1);
+        setState(State.POST_PROCESS);
 
         new AsyncTask<Void,Void,JSONObject>() {
             @Override
@@ -291,11 +293,10 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     // we only need authorization for this one operation, drop it afterwards
                     revokeToken(accessToken);
 
-                    mStatus2.setDisplayedChild(2);
                     step3EditKey(resource);
 
                 } catch (JSONException e) {
-                    mStatus2.setDisplayedChild(3);
+                    setState(State.POST_ERROR);
                     e.printStackTrace();
                 }
 
@@ -333,7 +334,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             mLinkedIdComment.setText(resource.getDisplayComment(context));
         }
 
-        mStatus3.setDisplayedChild(1);
+        setState(State.LID_PROCESS);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -359,7 +360,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     @Override
     public void onCryptoOperationSuccess(EditKeyResult result) {
-        mStatus3.setDisplayedChild(2);
+
+        setState(State.DONE);
 
         mButtonContainer.getInAnimation().setDuration(750);
         mButtonContainer.setDisplayedChild(2);
@@ -477,6 +479,50 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 "&redirect_uri=oauth-openkeychain://linked/" +
                 "&state=" + mOAuthState);
 
+    }
+
+    public void setState(State state) {
+        switch (state) {
+            case IDLE:
+                mStatus1.setDisplayedChild(Status.IDLE);
+                mStatus2.setDisplayedChild(Status.IDLE);
+                mStatus3.setDisplayedChild(Status.IDLE);
+                break;
+            case AUTH_PROCESS:
+                mStatus1.setDisplayedChild(Status.PROGRESS);
+                mStatus2.setDisplayedChild(Status.IDLE);
+                mStatus3.setDisplayedChild(Status.IDLE);
+                break;
+            case AUTH_ERROR:
+                mStatus1.setDisplayedChild(Status.ERROR);
+                mStatus2.setDisplayedChild(Status.IDLE);
+                mStatus3.setDisplayedChild(Status.IDLE);
+                break;
+            case POST_PROCESS:
+                mStatus1.setDisplayedChild(Status.OK);
+                mStatus2.setDisplayedChild(Status.PROGRESS);
+                mStatus3.setDisplayedChild(Status.IDLE);
+                break;
+            case POST_ERROR:
+                mStatus1.setDisplayedChild(Status.OK);
+                mStatus2.setDisplayedChild(Status.ERROR);
+                mStatus3.setDisplayedChild(Status.IDLE);
+                break;
+            case LID_PROCESS:
+                mStatus1.setDisplayedChild(Status.OK);
+                mStatus2.setDisplayedChild(Status.OK);
+                mStatus3.setDisplayedChild(Status.PROGRESS);
+                break;
+            case LID_ERROR:
+                mStatus1.setDisplayedChild(Status.OK);
+                mStatus2.setDisplayedChild(Status.OK);
+                mStatus3.setDisplayedChild(Status.ERROR);
+                break;
+            case DONE:
+                mStatus1.setDisplayedChild(Status.OK);
+                mStatus2.setDisplayedChild(Status.OK);
+                mStatus3.setDisplayedChild(Status.OK);
+        }
     }
 
     private static JSONObject jsonHttpRequest(String url, JSONObject params, String accessToken)
