@@ -11,6 +11,10 @@ import org.sufficientlysecure.keychain.R;
 
 public class StatusIndicator extends ToolableViewAnimator {
 
+    public enum Status {
+        IDLE, PROGRESS, OK, ERROR
+    }
+
     public StatusIndicator(Context context) {
         super(context);
 
@@ -33,4 +37,9 @@ public class StatusIndicator extends ToolableViewAnimator {
             super.setDisplayedChild(whichChild);
         }
     }
+
+    public void setDisplayedChild(Status status) {
+        setDisplayedChild(status.ordinal());
+    }
+
 }
