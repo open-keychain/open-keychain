@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Random;
@@ -74,6 +75,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
 import org.sufficientlysecure.keychain.util.Log;
@@ -172,10 +175,24 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     }
 
+    private void showRetryForOAuth() {
+
+        mRetryButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setOnClickListener(null);
+                step1GetOAuthCode();
+            }
+        });
+        mButtonContainer.setDisplayedChild(3);
+
+    }
+
     private void step1GetOAuthToken() {
 
         if (mOAuthCode == null) {
-            Log.d(Constants.TAG, "no code");
+            setState(State.AUTH_ERROR);
+            showRetryForOAuth();
             return;
         }
 
@@ -184,14 +201,12 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             return;
         }
 
-        // this is only good once!
-        final String oAuthCode = mOAuthCode, oAuthState = mOAuthState;
-        mOAuthCode = null;
-        mOAuthState = null;
-
         final String gistText = GithubResource.generate(activity, mFingerprint);
 
         new AsyncTask<Void,Void,JSONObject>() {
+
+            Exception mException;
+
             @Override
             protected JSONObject doInBackground(Void... dummy) {
                 try {
@@ -199,13 +214,13 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     JSONObject params = new JSONObject();
                     params.put("client_id", GITHUB_CLIENT_ID);
                     params.put("client_secret", GITHUB_CLIENT_SECRET);
-                    params.put("code", oAuthCode);
-                    params.put("state", oAuthState);
+                    params.put("code", mOAuthCode);
+                    params.put("state", mOAuthState);
 
                     return jsonHttpRequest("https://github.com/login/oauth/access_token", params, null);
 
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "error in request", e);
+                } catch (IOException | HttpResultException e) {
+                    mException = e;
                 } catch (JSONException e) {
                     throw new AssertionError("json error, this is a bug!");
                 }
@@ -218,8 +233,31 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
                 Log.d(Constants.TAG, "response: " + result);
 
-                if (result == null || !result.has("access_token")) {
+                if (result == null || result.optString("access_token", null) == null) {
                     setState(State.AUTH_ERROR);
+                    showRetryForOAuth();
+
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        // we couldn't show an error anyways
+                        return;
+                    }
+
+                    if (result != null) {
+                        Notify.create(activity, "Authorization failed!", Style.ERROR);
+                        return;
+                    }
+
+                    if (mException instanceof SocketTimeoutException) {
+                        Notify.create(activity, "Connection timeout!", Style.ERROR);
+                    } else if (mException instanceof HttpResultException) {
+                        // we have the error code here.. should we use it?
+                        Notify.create(activity,
+                                "Communication error: " + ((HttpResultException) mException).mResponse, Style.ERROR);
+                    } else if (mException instanceof IOException) {
+                        Notify.create(activity, "Network error!", Style.ERROR);
+                    }
+
                     return;
                 }
 
@@ -235,6 +273,9 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         setState(State.POST_PROCESS);
 
         new AsyncTask<Void,Void,JSONObject>() {
+
+            Exception mException;
+
             @Override
             protected JSONObject doInBackground(Void... dummy) {
                 try {
@@ -264,8 +305,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
                     return result;
 
-                } catch (IOException e) {
-                    Log.e(Constants.TAG, "error in request", e);
+                } catch (IOException | HttpResultException e) {
+                    mException = e;
                 } catch (JSONException e) {
                     throw new AssertionError("json error, this is a bug!");
                 }
@@ -279,9 +320,29 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 Log.d(Constants.TAG, "response: " + result);
 
                 if (result == null) {
-                    mStatus2.setDisplayedChild(3);
+                    setState(State.POST_ERROR);
+                    showRetryForOAuth();
+
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        // we couldn't show an error anyways
+                        return;
+                    }
+
+                    if (mException instanceof SocketTimeoutException) {
+                        Notify.create(activity, "Connection timeout!", Style.ERROR);
+                    } else if (mException instanceof HttpResultException) {
+                        // we have the error code here.. should we use it?
+                        Notify.create(activity,
+                                "Communication error: " + ((HttpResultException) mException).mResponse, Style.ERROR);
+                    } else if (mException instanceof IOException) {
+                        Notify.create(activity, "Network error!", Style.ERROR);
+                    }
+
                     return;
                 }
+
+                GithubResource resource;
 
                 try {
                     String gistId = result.getString("id");
@@ -289,24 +350,23 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     String gistLogin = owner.getString("login");
 
                     URI uri = URI.create("https://gist.github.com/" + gistLogin + "/" + gistId);
-                    GithubResource resource = GithubResource.create(uri);
-
-                    View linkedItem = mButtonContainer.getChildAt(2);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        linkedItem.setTransitionName(resource.toUri().toString());
-                    }
-
-                    // we only need authorization for this one operation, drop it afterwards
-                    revokeToken(accessToken);
-
-                    step3EditKey(resource);
-
+                    resource = GithubResource.create(uri);
                 } catch (JSONException e) {
                     setState(State.POST_ERROR);
-                    e.printStackTrace();
+                    return;
                 }
 
+                View linkedItem = mButtonContainer.getChildAt(2);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    linkedItem.setTransitionName(resource.toUri().toString());
+                }
+
+                // we only need authorization for this one operation, drop it afterwards
+                revokeToken(accessToken);
+
+                step3EditKey(resource);
             }
+
         }.execute();
 
     }
@@ -402,6 +462,16 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     @Override
     public void onStop() {
         super.onStop();
+
+        try {
+            // cookies are automatically saved, we don't want that
+            CookieManager cookieManager = CookieManager.getInstance();
+            // noinspection deprecation (replacement is api lvl 21)
+            cookieManager.removeAllCookie();
+        } catch (Exception e) {
+            // no biggie if this fails
+        }
+
         if (mFinishOnStop) {
             Activity activity = getActivity();
             activity.setResult(Activity.RESULT_OK);
@@ -448,15 +518,13 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         auth_dialog.setContentView(R.layout.oauth_webview);
         WebView web = (WebView) auth_dialog.findViewById(R.id.web_view);
         web.getSettings().setSaveFormData(false);
+        web.getSettings().setUserAgentString("OpenKeychain " + BuildConfig.VERSION_NAME);
         web.setWebViewClient(new WebViewClient() {
-
-            boolean authComplete = false;
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Uri uri = Uri.parse(url);
-                if ("oauth-openkeychain".equals(uri.getScheme()) && !authComplete) {
-                    authComplete = true;
+                if ("oauth-openkeychain".equals(uri.getScheme())) {
 
                     if (uri.getQueryParameter("error") != null) {
                         Log.i(Constants.TAG, "ACCESS_DENIED_HERE");
@@ -467,12 +535,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     // check if mOAuthState == queryParam[state]
                     mOAuthCode = uri.getQueryParameter("code");
 
-                    Log.d(Constants.TAG, "got ok response, code is " + mOAuthCode);
-
-                    CookieManager cookieManager = CookieManager.getInstance();
-                    // noinspection deprecation (replacement is api lvl 21)
-                    cookieManager.removeAllCookie();
-
+                    auth_dialog.dismiss();
+                    return true;
+                }
+                // don't surf away from github!
+                if ( ! "github.com".equals(uri.getHost())) {
                     auth_dialog.dismiss();
                     return true;
                 }
@@ -543,12 +610,16 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         }
     }
 
+
+
     private static JSONObject jsonHttpRequest(String url, JSONObject params, String accessToken)
-            throws IOException {
+            throws IOException, HttpResultException {
 
         HttpsURLConnection nection = (HttpsURLConnection) new URL(url).openConnection();
         nection.setDoInput(true);
         nection.setDoOutput(true);
+        nection.setConnectTimeout(2000);
+        nection.setReadTimeout(1000);
         nection.setRequestProperty("Content-Type", "application/json");
         nection.setRequestProperty("Accept", "application/json");
         nection.setRequestProperty("User-Agent", "OpenKeychain " + BuildConfig.VERSION_NAME);
@@ -566,6 +637,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         try {
 
             nection.connect();
+
+            if (nection.getResponseCode() != 200) {
+                throw new HttpResultException(nection.getResponseCode(), nection.getResponseMessage());
+            }
+
             InputStream in = new BufferedInputStream(nection.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             StringBuilder response = new StringBuilder();
@@ -585,6 +661,17 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         } finally {
             nection.disconnect();
+        }
+
+    }
+
+    static class HttpResultException extends Exception {
+        final int mCode;
+        final String mResponse;
+
+        HttpResultException(int code, String response) {
+            mCode = code;
+            mResponse = response;
         }
 
     }
