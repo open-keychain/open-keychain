@@ -31,7 +31,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Random;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -41,6 +40,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -244,19 +245,18 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (result != null) {
-                        Notify.create(activity, "Authorization failed!", Style.ERROR).show();
+                        Notify.create(activity, R.string.linked_error_auth_failed, Style.ERROR).show();
                         return;
                     }
 
                     if (mException instanceof SocketTimeoutException) {
-                        Notify.create(activity, "Connection timeout!", Style.ERROR).show();
+                        Notify.create(activity, R.string.linked_error_timeout, Style.ERROR).show();
                     } else if (mException instanceof HttpResultException) {
-                        // we have the error code here.. should we use it?
-                        Notify.create(activity,
-                                "Communication error: " + ((HttpResultException) mException).mResponse,
+                        Notify.create(activity, activity.getString(R.string.linked_error_http,
+                                        ((HttpResultException) mException).mResponse),
                                 Style.ERROR).show();
                     } else if (mException instanceof IOException) {
-                        Notify.create(activity, "Network error!", Style.ERROR).show();
+                        Notify.create(activity, R.string.linked_error_network, Style.ERROR).show();
                     }
 
                     return;
@@ -287,11 +287,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     file.put("content", gistText);
 
                     JSONObject files = new JSONObject();
-                    files.put("file1.txt", file);
+                    files.put("openpgp.txt", file);
 
                     JSONObject params = new JSONObject();
                     params.put("public", true);
-                    params.put("description", "OpenKeychain API Tests");
+                    params.put("description", getString(R.string.linked_gist_description));
                     params.put("files", files);
 
                     JSONObject result = jsonHttpRequest("https://api.github.com/gists", params, accessToken);
@@ -331,14 +331,13 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (mException instanceof SocketTimeoutException) {
-                        Notify.create(activity, "Connection timeout!", Style.ERROR).show();
+                        Notify.create(activity, R.string.linked_error_timeout, Style.ERROR).show();
                     } else if (mException instanceof HttpResultException) {
-                        // we have the error code here.. should we use it?
-                        Notify.create(activity,
-                                "Communication error: " + ((HttpResultException) mException).mResponse,
+                        Notify.create(activity, activity.getString(R.string.linked_error_http,
+                                        ((HttpResultException) mException).mResponse),
                                 Style.ERROR).show();
                     } else if (mException instanceof IOException) {
-                        Notify.create(activity, "Network error!", Style.ERROR).show();
+                        Notify.create(activity, R.string.linked_error_network, Style.ERROR).show();
                     }
 
                     return;
@@ -359,7 +358,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 }
 
                 View linkedItem = mButtonContainer.getChildAt(2);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
                     linkedItem.setTransitionName(resource.toUri().toString());
                 }
 
@@ -533,7 +532,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (uri.getQueryParameter("error") != null) {
-                        Log.i(Constants.TAG, "ACCESS_DENIED_HERE");
+                        Log.i(Constants.TAG, "got oauth error: " + uri.getQueryParameter("error"));
                         auth_dialog.dismiss();
                         return true;
                     }
@@ -554,7 +553,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         });
 
-        auth_dialog.setTitle("GitHub Authorization");
+        auth_dialog.setTitle(R.string.linked_webview_title_github);
         auth_dialog.setCancelable(true);
         auth_dialog.setOnDismissListener(new OnDismissListener() {
             @Override
@@ -615,8 +614,6 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 mStatus3.setDisplayedChild(Status.OK);
         }
     }
-
-
 
     private static JSONObject jsonHttpRequest(String url, JSONObject params, String accessToken)
             throws IOException, HttpResultException {

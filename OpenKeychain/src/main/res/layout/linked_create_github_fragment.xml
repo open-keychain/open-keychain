@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="This operation links your key to your GitHub account."
+                android:text="@string/linked_github_text"
                 style="?android:textAppearanceSmall"/>
 
             <LinearLayout
@@ -72,7 +72,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Login at GitHub…"
+                        android:text="@string/linked_progress_auth_github"
                         style="?android:textAppearanceMedium"
                         />
 
@@ -92,7 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Post Gist…"
+                        android:text="@string/linked_progress_post_gist"
                         style="?android:textAppearanceMedium"
                         />
 
@@ -112,7 +112,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Update Key…"
+                        android:text="@string/linked_progress_update_key"
                         style="?android:textAppearanceMedium"
                         />
                 </LinearLayout>
@@ -139,7 +139,7 @@
                     android:drawableLeft="@drawable/link_24dp"
                     android:drawableStart="@drawable/link_24dp"
                     android:drawablePadding="12dp"
-                    android:text="Link to Github Account"
+                    android:text="@string/linked_button_start"
                     android:id="@+id/button_send"
                     />
 
@@ -156,7 +156,7 @@
                     android:drawableLeft="@drawable/ic_repeat_black_24dp"
                     android:drawableStart="@drawable/ic_repeat_black_24dp"
                     android:drawablePadding="12dp"
-                    android:text="Retry Last Step"
+                    android:text="@string/linked_button_retry"
                     android:id="@+id/button_retry"
                     />
 
