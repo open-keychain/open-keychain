@@ -79,7 +79,8 @@ public class GithubResource extends LinkedTokenResource {
 
     }
 
-    @SuppressWarnings("deprecation")
+    @Deprecated // not used for now, but could be used to pick up earlier posted gist if already present?
+    @SuppressWarnings({ "deprecation", "unused" })
     public static GithubResource searchInGithubStream(
             Context context, String screenName, String needle, OperationLog log) {
 
