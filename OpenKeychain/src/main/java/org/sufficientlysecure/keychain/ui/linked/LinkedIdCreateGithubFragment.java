@@ -244,18 +244,19 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (result != null) {
-                        Notify.create(activity, "Authorization failed!", Style.ERROR);
+                        Notify.create(activity, "Authorization failed!", Style.ERROR).show();
                         return;
                     }
 
                     if (mException instanceof SocketTimeoutException) {
-                        Notify.create(activity, "Connection timeout!", Style.ERROR);
+                        Notify.create(activity, "Connection timeout!", Style.ERROR).show();
                     } else if (mException instanceof HttpResultException) {
                         // we have the error code here.. should we use it?
                         Notify.create(activity,
-                                "Communication error: " + ((HttpResultException) mException).mResponse, Style.ERROR);
+                                "Communication error: " + ((HttpResultException) mException).mResponse,
+                                Style.ERROR).show();
                     } else if (mException instanceof IOException) {
-                        Notify.create(activity, "Network error!", Style.ERROR);
+                        Notify.create(activity, "Network error!", Style.ERROR).show();
                     }
 
                     return;
@@ -330,13 +331,14 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (mException instanceof SocketTimeoutException) {
-                        Notify.create(activity, "Connection timeout!", Style.ERROR);
+                        Notify.create(activity, "Connection timeout!", Style.ERROR).show();
                     } else if (mException instanceof HttpResultException) {
                         // we have the error code here.. should we use it?
                         Notify.create(activity,
-                                "Communication error: " + ((HttpResultException) mException).mResponse, Style.ERROR);
+                                "Communication error: " + ((HttpResultException) mException).mResponse,
+                                Style.ERROR).show();
                     } else if (mException instanceof IOException) {
-                        Notify.create(activity, "Network error!", Style.ERROR);
+                        Notify.create(activity, "Network error!", Style.ERROR).show();
                     }
 
                     return;
@@ -513,6 +515,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         byte[] buf = new byte[16];
         new Random().nextBytes(buf);
         mOAuthState = new String(Hex.encode(buf));
+        mOAuthCode = null;
 
         final Dialog auth_dialog = new Dialog(activity);
         auth_dialog.setContentView(R.layout.oauth_webview);
@@ -525,6 +528,10 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Uri uri = Uri.parse(url);
                 if ("oauth-openkeychain".equals(uri.getScheme())) {
+
+                    if (mOAuthCode != null) {
+                        return true;
+                    }
 
                     if (uri.getQueryParameter("error") != null) {
                         Log.i(Constants.TAG, "ACCESS_DENIED_HERE");
@@ -539,7 +546,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     return true;
                 }
                 // don't surf away from github!
-                if ( ! "github.com".equals(uri.getHost())) {
+                if (!"github.com".equals(uri.getHost())) {
                     auth_dialog.dismiss();
                     return true;
                 }
@@ -638,7 +645,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
             nection.connect();
 
-            if (nection.getResponseCode() != 200) {
+            int code = nection.getResponseCode();
+            if (code != HttpsURLConnection.HTTP_CREATED && code != HttpsURLConnection.HTTP_OK) {
                 throw new HttpResultException(nection.getResponseCode(), nection.getResponseMessage());
             }
 
