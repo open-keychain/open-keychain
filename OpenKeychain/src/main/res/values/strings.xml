@@ -1565,16 +1565,6 @@
     <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
     <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
 
-    <string name="linked_create_dns_1_1">"By creating a Linked Identity of this type, you can link your key to a domain name you control."</string>
-    <string name="linked_create_dns_1_2">"To do this, you create a specific TXT record for the domain, then create a Linked Identity which links to this record."</string>
-    <!-- An Identity of this type is especially appropriate if your email address is at the same domain. -->
-    <string name="linked_create_dns_1_3">"Please enter a fully qualified domain name to proceed."</string>
-    <string name="linked_create_dns_1_4">"Example: subdomain.example.com"</string>
-    <string name="linked_create_dns_2_1">"Your proof text:"</string>
-    <string name="linked_create_dns_2_2">"For the next step, bla bla"</string>
-    <string name="linked_create_dns_2_3">"More bla:"</string>
-    <string name="linked_create_dns_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
-
     <string name="linked_create_verify">"Verify"</string>
     <string name="linked_text_clipboard">Text has been copied to clipboard</string>
     <string name="linked_verified_https">"The link between this Website and key was securely verified. <b>If you believe the Website is genuine</b>, confirm this verification with your key."</string>
