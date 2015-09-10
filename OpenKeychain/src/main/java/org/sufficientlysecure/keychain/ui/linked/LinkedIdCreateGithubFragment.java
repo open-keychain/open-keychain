@@ -85,6 +85,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
 
+    public static final String ARG_GITHUB_COOKIE = "github_cookie";
     private Button mRetryButton;
 
     enum State {
@@ -229,17 +230,17 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             protected void onPostExecute(JSONObject result) {
                 super.onPostExecute(result);
 
+                Activity activity = getActivity();
+                if (activity == null) {
+                    // we couldn't show an error anyways
+                    return;
+                }
+
                 Log.d(Constants.TAG, "response: " + result);
 
                 if (result == null || result.optString("access_token", null) == null) {
                     setState(State.AUTH_ERROR);
                     showRetryForOAuth();
-
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        // we couldn't show an error anyways
-                        return;
-                    }
 
                     if (result != null) {
                         Notify.create(activity, R.string.linked_error_auth_failed, Style.ERROR).show();
@@ -317,15 +318,15 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
                 Log.d(Constants.TAG, "response: " + result);
 
+                Activity activity = getActivity();
+                if (activity == null) {
+                    // we couldn't show an error anyways
+                    return;
+                }
+
                 if (result == null) {
                     setState(State.POST_ERROR);
                     showRetryForOAuth();
-
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        // we couldn't show an error anyways
-                        return;
-                    }
 
                     if (mException instanceof SocketTimeoutException) {
                         Notify.create(activity, R.string.linked_error_timeout, Style.ERROR).show();
@@ -458,9 +459,29 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
+        // cookies are automatically saved, we don't want that
+        CookieManager cookieManager = CookieManager.getInstance();
+        String cookie = cookieManager.getCookie("https://github.com/");
+        outState.putString(ARG_GITHUB_COOKIE, cookie);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (savedInstanceState != null) {
+            String cookie = savedInstanceState.getString(ARG_GITHUB_COOKIE);
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.setCookie("https://github.com/", cookie);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         try {
             // cookies are automatically saved, we don't want that
             CookieManager cookieManager = CookieManager.getInstance();
@@ -469,6 +490,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         } catch (Exception e) {
             // no biggie if this fails
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
 
         if (mFinishOnStop) {
             Activity activity = getActivity();
