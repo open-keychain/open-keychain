@@ -382,12 +382,14 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 esResult = handleEncryptedPacket(
                         input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, currentProgress);
 
-                // if there is an error, there is nothing left to do here
+                // if there is an error, nothing left to do here
                 if (esResult.errorResult != null) {
                     return esResult.errorResult;
                 }
 
+                // if this worked out so far, the data is encrypted
                 decryptionResultBuilder.setEncrypted(true);
+
                 if (esResult.insecureEncryptionKey) {
                     log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
                     decryptionResultBuilder.setInsecure(true);
@@ -630,21 +632,20 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         indent -= 1;
 
-        if (esResult != null && esResult.encryptedData.isIntegrityProtected()) {
-            updateProgress(R.string.progress_verifying_integrity, 95, 100);
+        if (esResult != null) {
+            if (esResult.encryptedData.isIntegrityProtected()) {
+                updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
-            if (esResult.encryptedData.verify()) {
-                log.add(LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
-            } else {
-                log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-            }
-        } else {
-            // If no valid signature is present:
-            // Handle missing integrity protection like failed integrity protection!
-            // The MDC packet can be stripped by an attacker!
-            Log.d(Constants.TAG, "MDC fail");
-            if (!signatureResultBuilder.isValidSignature()) {
+                if (esResult.encryptedData.verify()) {
+                    log.add(LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
+                } else {
+                    log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
+                    return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+                }
+            } else if (signature == null) {
+                // If no signature is present, we *require* an MDC!
+                // Handle missing integrity protection like failed integrity protection!
+                // The MDC packet can be stripped by an attacker!
                 log.add(LogType.MSG_DC_INSECURE_MDC_MISSING, indent);
                 decryptionResultBuilder.setInsecure(true);
             }
