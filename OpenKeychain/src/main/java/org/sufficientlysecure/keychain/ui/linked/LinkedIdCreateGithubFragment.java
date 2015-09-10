@@ -91,9 +91,6 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         IDLE, AUTH_PROCESS, AUTH_ERROR, POST_PROCESS, POST_ERROR, LID_PROCESS, LID_ERROR, DONE
     }
 
-    public static final String GITHUB_CLIENT_ID = "7a011b66275f244d3f21";
-    public static final String GITHUB_CLIENT_SECRET = "eaced8a6655719d8c6848396de97b3f5d7a89fec";
-
     ViewAnimator mButtonContainer;
 
     StatusIndicator mStatus1, mStatus2, mStatus3;
@@ -170,7 +167,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                oAuthRequest("github.com/login/oauth/authorize", GITHUB_CLIENT_ID, "gist");
+                oAuthRequest("github.com/login/oauth/authorize", BuildConfig.GITHUB_CLIENT_ID, "gist");
             }
         }, 300);
 
@@ -213,8 +210,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                 try {
 
                     JSONObject params = new JSONObject();
-                    params.put("client_id", GITHUB_CLIENT_ID);
-                    params.put("client_secret", GITHUB_CLIENT_SECRET);
+                    params.put("client_id", BuildConfig.GITHUB_CLIENT_ID);
+                    params.put("client_secret", BuildConfig.GITHUB_CLIENT_SECRET);
                     params.put("code", mOAuthCode);
                     params.put("state", mOAuthState);
 
@@ -379,11 +376,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             protected Void doInBackground(Void... dummy) {
                 try {
                     HttpsURLConnection nection = (HttpsURLConnection) new URL(
-                            "https://api.github.com/applications/" + GITHUB_CLIENT_ID + "/tokens/" + token)
+                            "https://api.github.com/applications/" + BuildConfig.GITHUB_CLIENT_ID + "/tokens/" + token)
                             .openConnection();
                     nection.setRequestMethod("DELETE");
                     String encoded = Base64.encodeToString(
-                            (GITHUB_CLIENT_ID + ":" + GITHUB_CLIENT_SECRET).getBytes(), Base64.DEFAULT);
+                            (BuildConfig.GITHUB_CLIENT_ID + ":" + BuildConfig.GITHUB_CLIENT_SECRET).getBytes(), Base64.DEFAULT);
                     nection.setRequestProperty("Authorization", "Basic " + encoded);
                     nection.connect();
                 } catch (IOException e) {

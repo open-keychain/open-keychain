@@ -157,6 +157,10 @@ android {
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
             buildConfigField "String", "PROVIDER_CONTENT_AUTHORITY", "\"org.sufficientlysecure.keychain.debug.provider\""
 
+            // Github api for debug build only
+            buildConfigField "String", "GITHUB_CLIENT_ID", "\"7a011b66275f244d3f21\""
+            buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"ced8a6655719d8c6848396de97b3f5d7a89fec\""
+
             // Reference them in .xml files.
             resValue "string", "account_type", "org.sufficientlysecure.keychain.debug.account"
             resValue "string", "provider_content_authority", "org.sufficientlysecure.keychain.debug.provider"
