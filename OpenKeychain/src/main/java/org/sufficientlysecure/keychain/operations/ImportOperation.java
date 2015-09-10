@@ -254,17 +254,6 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     continue;
                 }
 
-                // If we have an expected fingerprint, make sure it matches
-                if (entry.mExpectedFingerprint != null) {
-                    if (!key.containsSubkey(entry.mExpectedFingerprint)) {
-                        log.add(LogType.MSG_IMPORT_FINGERPRINT_ERROR, 2);
-                        badKeys += 1;
-                        continue;
-                    } else {
-                        log.add(LogType.MSG_IMPORT_FINGERPRINT_OK, 2);
-                    }
-                }
-
                 // Another check if we have been cancelled
                 if (checkCancelled()) {
                     cancelled = true;
@@ -283,7 +272,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     } else {
                         result = mProviderHelper.savePublicKeyRing(key,
                                 new ProgressScaler(progressable, (int) (position * progSteps),
-                                        (int) ((position + 1) * progSteps), 100));
+                                        (int) ((position + 1) * progSteps), 100), entry.mExpectedFingerprint);
                     }
                 }
                 if (!result.success()) {

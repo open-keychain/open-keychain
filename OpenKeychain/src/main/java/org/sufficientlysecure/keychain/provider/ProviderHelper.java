@@ -878,7 +878,7 @@ public class ProviderHelper {
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, new ProgressScaler());
+        return savePublicKeyRing(keyRing, new ProgressScaler(), null);
     }
 
     /**
@@ -887,7 +887,7 @@ public class ProviderHelper {
      * This is a high level method, which takes care of merging all new information into the old and
      * keep public and secret keyrings in sync.
      */
-    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress) {
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, Progressable progress, String expectedFingerprint) {
 
         try {
             long masterKeyId = publicRing.getMasterKeyId();
@@ -958,6 +958,17 @@ public class ProviderHelper {
             } catch (NotFoundException e) {
                 // No secret key available (this is what happens most of the time)
                 canSecretRing = null;
+            }
+
+
+            // If we have an expected fingerprint, make sure it matches
+            if (expectedFingerprint != null) {
+                if (!canPublicRing.containsSubkey(expectedFingerprint)) {
+                    log(LogType.MSG_IP_FINGERPRINT_ERROR);
+                    return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
+                } else {
+                    log(LogType.MSG_IP_FINGERPRINT_OK);
+                }
             }
 
             int result = saveCanonicalizedPublicKeyRing(canPublicRing, progress, canSecretRing != null);

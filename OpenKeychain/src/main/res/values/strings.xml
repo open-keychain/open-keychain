@@ -826,6 +826,8 @@
     <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
     <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
+    <string name="msg_ip_fingerprint_error">"Fingerprint of importing key does not match expected!"</string>
+    <string name="msg_ip_fingerprint_ok">"Fingerprint check OK"</string>
     <string name="msg_ip_insert_keyring">"Encoding keyring data"</string>
     <string name="msg_ip_insert_keys">"Parsing keys"</string>
     <string name="msg_ip_prepare">"Preparing database operations"</string>
@@ -1281,8 +1283,6 @@
     <string name="msg_import_fetch_keyserver">"Retrieving from keyserver: %s"</string>
     <string name="msg_import_fetch_keyserver_ok">"Key retrieval successful"</string>
     <string name="msg_import_keyserver">"Using keyserver %s"</string>
-    <string name="msg_import_fingerprint_error">"Fingerprint of fetched key didn't match expected!"</string>
-    <string name="msg_import_fingerprint_ok">"Fingerprint check OK"</string>
     <string name="msg_import_merge">"Merging retrieved data"</string>
     <string name="msg_import_merge_error">"Error merging retrieved data!"</string>
     <string name="msg_import_error">"Import operation failed!"</string>

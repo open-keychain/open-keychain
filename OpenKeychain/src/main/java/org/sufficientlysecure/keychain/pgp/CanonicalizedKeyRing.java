@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 
@@ -150,6 +152,16 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
 
     public byte[] getEncoded() throws IOException {
         return getRing().getEncoded();
+    }
+
+    public boolean containsSubkey(String expectedFingerprint) {
+        for (CanonicalizedPublicKey key : publicKeyIterator()) {
+            if (KeyFormattingUtils.convertFingerprintToHex(
+                    key.getFingerprint()).equalsIgnoreCase(expectedFingerprint)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
