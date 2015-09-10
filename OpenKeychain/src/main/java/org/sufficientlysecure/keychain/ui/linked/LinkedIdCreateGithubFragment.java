@@ -504,7 +504,6 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     private String mOAuthCode, mOAuthState;
 
-    @SuppressLint("SetJavaScriptEnabled") // trusted https website, it's ok
     public void oAuthRequest(String hostAndPath, String clientId, String scope) {
 
         Activity activity = getActivity();
