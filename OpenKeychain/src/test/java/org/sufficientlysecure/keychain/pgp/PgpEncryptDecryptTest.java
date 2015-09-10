@@ -23,9 +23,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -282,6 +282,60 @@ public class PgpEncryptDecryptTest {
                     result.getDecryptionResult());
             Assert.assertNull("signatureResult should be null",
                     result.getSignatureResult());
+        }
+
+    }
+
+    @Test
+    public void testAsymmetricSign() {
+
+        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        byte[] ciphertext;
+
+        { // encrypt data with key
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
+                    new ProviderHelper(RuntimeEnvironment.application), null);
+
+            InputData data = new InputData(in, in.available());
+            PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel();
+
+            // only sign, and not as cleartext
+            input.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            input.setSignatureSubKeyId(KeyringTestingHelper.getSubkeyId(mStaticRing1, 1));
+            input.setCleartextSignature(false);
+            input.setDetachedSignature(false);
+
+            PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(mKeyPhrase1), data, out);
+            Assert.assertTrue("signing must succeed", result.success());
+
+            ciphertext = out.toByteArray();
+        }
+
+        { // verification should succeed
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel();
+            DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
+
+            Assert.assertTrue("verification must succeed", result.success());
+            Assert.assertArrayEquals("verification text should equal plaintext",
+                    out.toByteArray(), plaintext.getBytes());
+            Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
+                    OpenPgpSignatureResult.RESULT_VALID_CONFIRMED, result.getSignatureResult().getResult());
+
+            OpenPgpMetadata metadata = result.getDecryptionMetadata();
+            Assert.assertEquals("filesize must be correct",
+                    out.toByteArray().length, metadata.getOriginalSize());
+
         }
 
     }
