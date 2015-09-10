@@ -313,6 +313,27 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         return result;
     }
 
+    private static class EncryptStreamResult {
+
+        // this is non-null iff an error occured, return directly
+        DecryptVerifyResult errorResult;
+
+        // for verification
+        PGPEncryptedData encryptedData;
+        InputStream cleartextStream;
+
+        int symmetricEncryptionAlgo = 0;
+
+        boolean skippedDisallowedKey = false;
+        boolean insecureEncryptionKey = false;
+
+        // convenience method to return with error
+        public EncryptStreamResult with(DecryptVerifyResult result) {
+            errorResult = result;
+            return this;
+        }
+
+    }
 
     /** Decrypt and/or verify binary or ascii armored pgp data. */
     @NonNull
@@ -320,41 +341,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
             InputStream in, OutputStream out, int indent) throws IOException, PGPException {
 
-        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-        OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
         OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_DC, indent);
         indent += 1;
 
-        JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(in);
-        PGPEncryptedDataList enc;
-        Object o = pgpF.nextObject();
-
         int currentProgress = 0;
         updateProgress(R.string.progress_reading_data, currentProgress, 100);
-
-        if (o instanceof PGPEncryptedDataList) {
-            enc = (PGPEncryptedDataList) o;
-        } else {
-            enc = (PGPEncryptedDataList) pgpF.nextObject();
-        }
-
-        if (enc == null) {
-            log.add(LogType.MSG_DC_ERROR_INVALID_DATA, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        InputStream clear;
-        PGPEncryptedData encryptedData;
-
-        PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
-        PGPPBEEncryptedData encryptedDataSymmetric = null;
-        CanonicalizedSecretKey secretEncryptionKey = null;
-        Iterator<?> it = enc.getEncryptedDataObjects();
-        boolean asymmetricPacketFound = false;
-        boolean symmetricPacketFound = false;
-        boolean anyPacketFound = false;
 
         // If the input stream is armored, and there is a charset specified, take a note for later
         // https://tools.ietf.org/html/rfc4880#page56
@@ -375,261 +368,51 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
         }
 
-        Passphrase passphrase = null;
-        boolean skippedDisallowedKey = false;
+        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
+        OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
 
-        // go through all objects and find one we can decrypt
-        while (it.hasNext()) {
-            Object obj = it.next();
-            if (obj instanceof PGPPublicKeyEncryptedData) {
-                anyPacketFound = true;
+        JcaPGPObjectFactory plainFact;
+        Object dataChunk;
+        EncryptStreamResult esResult = null;
+        { // resolve encrypted (symmetric and asymmetric) packets
+            JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(in);
+            Object obj = pgpF.nextObject();
 
-                currentProgress += 2;
-                updateProgress(R.string.progress_finding_key, currentProgress, 100);
+            if (obj instanceof PGPEncryptedDataList) {
+                esResult = handleEncryptedPacket(
+                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, currentProgress);
 
-                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                long subKeyId = encData.getKeyID();
-
-                log.add(LogType.MSG_DC_ASYM, indent,
-                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
-
-                CanonicalizedSecretKeyRing secretKeyRing;
-                try {
-                    // get actual keyring object based on master key id
-                    secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
-                    );
-                } catch (ProviderHelper.NotFoundException e) {
-                    // continue with the next packet in the while loop
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
-                }
-                if (secretKeyRing == null) {
-                    // continue with the next packet in the while loop
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
+                // if there is an error, there is nothing left to do here
+                if (esResult.errorResult != null) {
+                    return esResult.errorResult;
                 }
 
-                // allow only specific keys for decryption?
-                if (input.getAllowedKeyIds() != null) {
-                    long masterKeyId = secretKeyRing.getMasterKeyId();
-                    Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
-                    Log.d(Constants.TAG, "mAllowedKeyIds: " + input.getAllowedKeyIds());
-                    Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
-
-                    if (!input.getAllowedKeyIds().contains(masterKeyId)) {
-                        // this key is in our db, but NOT allowed!
-                        // continue with the next packet in the while loop
-                        skippedDisallowedKey = true;
-                        log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
-                        continue;
-                    }
-                }
-
-                // get subkey which has been used for this encryption packet
-                secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
-                if (secretEncryptionKey == null) {
-                    // should actually never happen, so no need to be more specific.
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
-                }
-
-                /* secret key exists in database and is allowed! */
-                asymmetricPacketFound = true;
-
-                encryptedDataAsymmetric = encData;
-
-                if (secretEncryptionKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
-                    passphrase = null;
-                } else if (cryptoInput.hasPassphrase()) {
-                    passphrase = cryptoInput.getPassphrase();
-                } else {
-                    // if no passphrase was explicitly set try to get it from the cache service
-                    try {
-                        // returns "" if key has no passphrase
-                        passphrase = getCachedPassphrase(subKeyId);
-                        log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                        return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-                    }
-
-                    // if passphrase was not cached, return here indicating that a passphrase is missing!
-                    if (passphrase == null) {
-                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                        return new DecryptVerifyResult(log,
-                                RequiredInputParcel.createRequiredDecryptPassphrase(
-                                    secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()),
-                                cryptoInput);
-                    }
-                }
-
-                // check for insecure encryption key
-                if ( ! PgpSecurityConstants.isSecureKey(secretEncryptionKey)) {
-                    log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+                decryptionResultBuilder.setEncrypted(true);
+                if (esResult.insecureEncryptionKey) {
+                    log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
                     decryptionResultBuilder.setInsecure(true);
                 }
 
-                // break out of while, only decrypt the first packet where we have a key
-                break;
-
-            } else if (obj instanceof PGPPBEEncryptedData) {
-                anyPacketFound = true;
-
-                log.add(LogType.MSG_DC_SYM, indent);
-
-                if (!input.isAllowSymmetricDecryption()) {
-                    log.add(LogType.MSG_DC_SYM_SKIP, indent + 1);
-                    continue;
+                // Check for insecure encryption algorithms!
+                if (!PgpSecurityConstants.isSecureSymmetricAlgorithm(esResult.symmetricEncryptionAlgo)) {
+                    log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
+                    decryptionResultBuilder.setInsecure(true);
                 }
 
-                /*
-                 * When mAllowSymmetricDecryption == true and we find a data packet here,
-                 * we do not search for other available asymmetric packets!
-                 */
-                symmetricPacketFound = true;
+                plainFact = new JcaPGPObjectFactory(esResult.cleartextStream);
+                dataChunk = plainFact.nextObject();
 
-                encryptedDataSymmetric = (PGPPBEEncryptedData) obj;
-
-                // if no passphrase is given, return here
-                // indicating that a passphrase is missing!
-                if (!cryptoInput.hasPassphrase()) {
-
-                    try {
-                        passphrase = getCachedPassphrase(key.symmetric);
-                        log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                        // nvm
-                    }
-
-                    if (passphrase == null) {
-                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                        return new DecryptVerifyResult(log,
-                                RequiredInputParcel.createRequiredSymmetricPassphrase(),
-                                cryptoInput);
-                    }
-
-                } else {
-                    passphrase = cryptoInput.getPassphrase();
-                }
-
-                // break out of while, only decrypt the first packet
-                break;
-            }
-        }
-
-        // More data, just acknowledge and ignore.
-        while (it.hasNext()) {
-            Object obj = it.next();
-            if (obj instanceof PGPPublicKeyEncryptedData) {
-                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                long subKeyId = encData.getKeyID();
-                log.add(LogType.MSG_DC_TRAIL_ASYM, indent,
-                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
-            } else if (obj instanceof PGPPBEEncryptedData) {
-                log.add(LogType.MSG_DC_TRAIL_SYM, indent);
             } else {
-                log.add(LogType.MSG_DC_TRAIL_UNKNOWN, indent);
+                decryptionResultBuilder.setEncrypted(false);
+
+                plainFact = pgpF;
+                dataChunk = obj;
             }
+
         }
 
         log.add(LogType.MSG_DC_PREP_STREAMS, indent);
 
-        // we made sure above one of these two would be true
-        int symmetricEncryptionAlgo;
-        if (symmetricPacketFound) {
-            currentProgress += 2;
-            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
-
-            PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
-            PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
-                    digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                    passphrase.getCharArray());
-
-            try {
-                clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
-            } catch (PGPDataValidationException e) {
-                log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent +1);
-                return new DecryptVerifyResult(log,
-                        RequiredInputParcel.createRequiredSymmetricPassphrase(), cryptoInput);
-            }
-
-            encryptedData = encryptedDataSymmetric;
-
-            symmetricEncryptionAlgo = encryptedDataSymmetric.getSymmetricAlgorithm(decryptorFactory);
-        } else if (asymmetricPacketFound) {
-            currentProgress += 2;
-            updateProgress(R.string.progress_extracting_key, currentProgress, 100);
-
-            try {
-                log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
-                if (!secretEncryptionKey.unlock(passphrase)) {
-                    log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
-                    return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-                }
-            } catch (PgpGeneralException e) {
-                log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent + 1);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-            }
-
-            currentProgress += 2;
-            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
-
-            CachingDataDecryptorFactory decryptorFactory
-                    = secretEncryptionKey.getCachingDecryptorFactory(cryptoInput);
-
-            // special case: if the decryptor does not have a session key cached for this encrypted
-            // data, and can't actually decrypt on its own, return a pending intent
-            if (!decryptorFactory.canDecrypt()
-                    && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
-
-                log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
-                return new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
-                        secretEncryptionKey.getRing().getMasterKeyId(),
-                        secretEncryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
-                ),
-                        cryptoInput);
-
-            }
-
-            try {
-                clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
-            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
-                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-            }
-
-            symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
-
-            cryptoInput.addCryptoData(decryptorFactory.getCachedSessionKeys());
-
-            encryptedData = encryptedDataAsymmetric;
-        } else {
-            // there wasn't even any useful data
-            if (!anyPacketFound) {
-                log.add(LogType.MSG_DC_ERROR_NO_DATA, indent + 1);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_NO_DATA, log);
-            }
-            // there was data but key wasn't allowed
-            if (skippedDisallowedKey) {
-                log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_KEY_DISALLOWED, log);
-            }
-            // no packet has been found where we have the corresponding secret key in our db
-            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-        decryptionResultBuilder.setEncrypted(true);
-
-        // Check for insecure encryption algorithms!
-        if (!PgpSecurityConstants.isSecureSymmetricAlgorithm(symmetricEncryptionAlgo)) {
-            log.add(LogType.MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO, indent + 1);
-            decryptionResultBuilder.setInsecure(true);
-        }
-
-        JcaPGPObjectFactory plainFact = new JcaPGPObjectFactory(clear);
-        Object dataChunk = plainFact.nextObject();
         int signatureIndex = -1;
         CanonicalizedPublicKeyRing signingRing = null;
         CanonicalizedPublicKey signingKey = null;
@@ -637,6 +420,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         log.add(LogType.MSG_DC_CLEAR, indent);
         indent += 1;
 
+        // resolve compressed data
         if (dataChunk instanceof PGPCompressedData) {
             log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
             currentProgress += 2;
@@ -649,6 +433,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             plainFact = fact;
         }
 
+        // resolve leading signature data
         PGPOnePassSignature signature = null;
         if (dataChunk instanceof PGPOnePassSignatureList) {
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE, indent + 1);
@@ -710,148 +495,145 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         OpenPgpMetadata metadata;
 
-        if (dataChunk instanceof PGPLiteralData) {
-            log.add(LogType.MSG_DC_CLEAR_DATA, indent + 1);
-            indent += 2;
-            currentProgress += 4;
-            updateProgress(R.string.progress_decrypting, currentProgress, 100);
+        if ( ! (dataChunk instanceof PGPLiteralData)) {
 
-            PGPLiteralData literalData = (PGPLiteralData) dataChunk;
+            log.add(LogType.MSG_DC_ERROR_INVALID_DATA, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
 
-            String originalFilename = literalData.getFileName();
-            String mimeType = null;
-            if (literalData.getFormat() == PGPLiteralData.TEXT
-                    || literalData.getFormat() == PGPLiteralData.UTF8) {
-                mimeType = "text/plain";
+        }
+
+        log.add(LogType.MSG_DC_CLEAR_DATA, indent + 1);
+        indent += 2;
+        currentProgress += 4;
+        updateProgress(R.string.progress_decrypting, currentProgress, 100);
+
+        PGPLiteralData literalData = (PGPLiteralData) dataChunk;
+
+        String originalFilename = literalData.getFileName();
+        String mimeType = null;
+        if (literalData.getFormat() == PGPLiteralData.TEXT
+                || literalData.getFormat() == PGPLiteralData.UTF8) {
+            mimeType = "text/plain";
+        } else {
+            // try to guess from file ending
+            String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
+            if (extension != null) {
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                mimeType = mime.getMimeTypeFromExtension(extension);
+            }
+            if (mimeType == null) {
+                mimeType = "application/octet-stream";
+            }
+        }
+
+        if (!"".equals(originalFilename)) {
+            log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
+        }
+        log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1,
+                mimeType);
+        log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
+                new Date(literalData.getModificationTime().getTime()).toString());
+
+        // return here if we want to decrypt the metadata only
+        if (input.isDecryptMetadataOnly()) {
+
+            // this operation skips the entire stream to find the data length!
+            Long originalSize = literalData.findDataLength();
+
+            if (originalSize != null) {
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
+                        Long.toString(originalSize));
             } else {
-                // try to guess from file ending
-                String extension = MimeTypeMap.getFileExtensionFromUrl(originalFilename);
-                if (extension != null) {
-                    MimeTypeMap mime = MimeTypeMap.getSingleton();
-                    mimeType = mime.getMimeTypeFromExtension(extension);
-                }
-                if (mimeType == null) {
-                    mimeType = "application/octet-stream";
-                }
-            }
-
-            if (!"".equals(originalFilename)) {
-                log.add(LogType.MSG_DC_CLEAR_META_FILE, indent + 1, originalFilename);
-            }
-            log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1,
-                    mimeType);
-            log.add(LogType.MSG_DC_CLEAR_META_TIME, indent + 1,
-                    new Date(literalData.getModificationTime().getTime()).toString());
-
-            // return here if we want to decrypt the metadata only
-            if (input.isDecryptMetadataOnly()) {
-
-                // this operation skips the entire stream to find the data length!
-                Long originalSize = literalData.findDataLength();
-
-                if (originalSize != null) {
-                    log.add(LogType.MSG_DC_CLEAR_META_SIZE, indent + 1,
-                            Long.toString(originalSize));
-                } else {
-                    log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
-                }
-
-                metadata = new OpenPgpMetadata(
-                        originalFilename,
-                        mimeType,
-                        literalData.getModificationTime().getTime(),
-                        originalSize == null ? 0 : originalSize);
-
-                log.add(LogType.MSG_DC_OK_META_ONLY, indent);
-                DecryptVerifyResult result =
-                        new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-                result.setCharset(charset);
-                result.setDecryptionMetadata(metadata);
-                return result;
-            }
-
-            int endProgress;
-            if (signature != null) {
-                endProgress = 90;
-            } else if (encryptedData.isIntegrityProtected()) {
-                endProgress = 95;
-            } else {
-                endProgress = 100;
-            }
-            ProgressScaler progressScaler =
-                    new ProgressScaler(mProgressable, currentProgress, endProgress, 100);
-
-            InputStream dataIn = literalData.getInputStream();
-
-            long alreadyWritten = 0;
-            long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
-            int length;
-            byte[] buffer = new byte[1 << 16];
-            while ((length = dataIn.read(buffer)) > 0) {
-                // Log.d(Constants.TAG, "read bytes: " + length);
-                if (out != null) {
-                    out.write(buffer, 0, length);
-                }
-
-                // update signature buffer if signature is also present
-                if (signature != null) {
-                    signature.update(buffer, 0, length);
-                }
-
-                alreadyWritten += length;
-                if (wholeSize > 0) {
-                    long progress = 100 * alreadyWritten / wholeSize;
-                    // stop at 100% for wrong file sizes...
-                    if (progress > 100) {
-                        progress = 100;
-                    }
-                    progressScaler.setProgress((int) progress, 100);
-                }
-                // TODO: slow annealing to fake a progress?
+                log.add(LogType.MSG_DC_CLEAR_META_SIZE_UNKNOWN, indent + 1);
             }
 
             metadata = new OpenPgpMetadata(
                     originalFilename,
                     mimeType,
                     literalData.getModificationTime().getTime(),
-                    alreadyWritten);
+                    originalSize == null ? 0 : originalSize);
 
-            if (signature != null) {
-                updateProgress(R.string.progress_verifying_signature, 90, 100);
-                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
-
-                PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
-                PGPSignature messageSignature = signatureList.get(signatureIndex);
-
-                // TODO: what about binary signatures?
-
-                // Verify signature
-                boolean validSignature = signature.verify(messageSignature);
-                if (validSignature) {
-                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
-                } else {
-                    log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
-                }
-
-                // check for insecure hash algorithms
-                if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
-                    log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-                    signatureResultBuilder.setInsecure(true);
-                }
-
-                signatureResultBuilder.setValidSignature(validSignature);
-            }
-
-            indent -= 1;
-        } else {
-            // If there is no literalData, we don't have any metadata
-            metadata = null;
+            log.add(LogType.MSG_DC_OK_META_ONLY, indent);
+            DecryptVerifyResult result =
+                    new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+            result.setCharset(charset);
+            result.setDecryptionMetadata(metadata);
+            return result;
         }
 
-        if (encryptedData.isIntegrityProtected()) {
+        int endProgress;
+        if (signature != null) {
+            endProgress = 90;
+        } else if (esResult != null && esResult.encryptedData.isIntegrityProtected()) {
+            endProgress = 95;
+        } else {
+            endProgress = 100;
+        }
+        ProgressScaler progressScaler =
+                new ProgressScaler(mProgressable, currentProgress, endProgress, 100);
+
+        InputStream dataIn = literalData.getInputStream();
+
+        long alreadyWritten = 0;
+        long wholeSize = 0; // TODO inputData.getSize() - inputData.getStreamPosition();
+        int length;
+        byte[] buffer = new byte[1 << 16];
+        while ((length = dataIn.read(buffer)) > 0) {
+            // Log.d(Constants.TAG, "read bytes: " + length);
+            if (out != null) {
+                out.write(buffer, 0, length);
+            }
+
+            // update signature buffer if signature is also present
+            if (signature != null) {
+                signature.update(buffer, 0, length);
+            }
+
+            alreadyWritten += length;
+            if (wholeSize > 0) {
+                long progress = 100 * alreadyWritten / wholeSize;
+                // stop at 100% for wrong file sizes...
+                if (progress > 100) {
+                    progress = 100;
+                }
+                progressScaler.setProgress((int) progress, 100);
+            }
+            // TODO: slow annealing to fake a progress?
+        }
+
+        metadata = new OpenPgpMetadata(
+                originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten);
+
+        if (signature != null) {
+            updateProgress(R.string.progress_verifying_signature, 90, 100);
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
+
+            PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
+            PGPSignature messageSignature = signatureList.get(signatureIndex);
+
+            // Verify signature
+            boolean validSignature = signature.verify(messageSignature);
+            if (validSignature) {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
+            } else {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
+            }
+
+            // check for insecure hash algorithms
+            if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+                log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
+                signatureResultBuilder.setInsecure(true);
+            }
+
+            signatureResultBuilder.setValidSignature(validSignature);
+        }
+
+        indent -= 1;
+
+        if (esResult != null && esResult.encryptedData.isIntegrityProtected()) {
             updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
-            if (encryptedData.verify()) {
+            if (esResult.encryptedData.verify()) {
                 log.add(LogType.MSG_DC_INTEGRITY_CHECK_OK, indent);
             } else {
                 log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
@@ -874,11 +656,280 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         // Return a positive result, with metadata and verification info
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
+
         result.setCachedCryptoInputParcel(cryptoInput);
         result.setSignatureResult(signatureResultBuilder.build());
         result.setCharset(charset);
         result.setDecryptionResult(decryptionResultBuilder.build());
         result.setDecryptionMetadata(metadata);
+
+        return result;
+
+    }
+
+    private EncryptStreamResult handleEncryptedPacket(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
+            PGPEncryptedDataList enc, OperationLog log, int indent, int currentProgress) throws PGPException {
+
+        // TODO is this necessary?
+        /*
+        else if (obj instanceof PGPEncryptedDataList) {
+            enc = (PGPEncryptedDataList) pgpF.nextObject();
+        }
+        */
+
+        EncryptStreamResult result = new EncryptStreamResult();
+
+        boolean asymmetricPacketFound = false;
+        boolean symmetricPacketFound = false;
+        boolean anyPacketFound = false;
+
+        PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
+        PGPPBEEncryptedData encryptedDataSymmetric = null;
+        CanonicalizedSecretKey secretEncryptionKey = null;
+
+        Passphrase passphrase = null;
+
+        Iterator<?> it = enc.getEncryptedDataObjects();
+
+        // go through all objects and find one we can decrypt
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPublicKeyEncryptedData) {
+                anyPacketFound = true;
+
+                currentProgress += 2;
+                updateProgress(R.string.progress_finding_key, currentProgress, 100);
+
+                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
+                long subKeyId = encData.getKeyID();
+
+                log.add(LogType.MSG_DC_ASYM, indent,
+                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+
+                CanonicalizedSecretKeyRing secretKeyRing;
+                try {
+                    // get actual keyring object based on master key id
+                    secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
+                    );
+                } catch (ProviderHelper.NotFoundException e) {
+                    // continue with the next packet in the while loop
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                    continue;
+                }
+                if (secretKeyRing == null) {
+                    // continue with the next packet in the while loop
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                    continue;
+                }
+
+                // allow only specific keys for decryption?
+                if (input.getAllowedKeyIds() != null) {
+                    long masterKeyId = secretKeyRing.getMasterKeyId();
+                    Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
+                    Log.d(Constants.TAG, "mAllowedKeyIds: " + input.getAllowedKeyIds());
+                    Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+
+                    if (!input.getAllowedKeyIds().contains(masterKeyId)) {
+                        // this key is in our db, but NOT allowed!
+                        // continue with the next packet in the while loop
+                        result.skippedDisallowedKey = true;
+                        log.add(LogType.MSG_DC_ASKIP_NOT_ALLOWED, indent + 1);
+                        continue;
+                    }
+                }
+
+                // get subkey which has been used for this encryption packet
+                secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
+                if (secretEncryptionKey == null) {
+                    // should actually never happen, so no need to be more specific.
+                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                    continue;
+                }
+
+                /* secret key exists in database and is allowed! */
+                asymmetricPacketFound = true;
+
+                encryptedDataAsymmetric = encData;
+
+                if (secretEncryptionKey.getSecretKeyType() == SecretKeyType.DIVERT_TO_CARD) {
+                    passphrase = null;
+                } else if (cryptoInput.hasPassphrase()) {
+                    passphrase = cryptoInput.getPassphrase();
+                } else {
+                    // if no passphrase was explicitly set try to get it from the cache service
+                    try {
+                        // returns "" if key has no passphrase
+                        passphrase = getCachedPassphrase(subKeyId);
+                        log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
+                        log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                        return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+                    }
+
+                    // if passphrase was not cached, return here indicating that a passphrase is missing!
+                    if (passphrase == null) {
+                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                        return result.with(new DecryptVerifyResult(log,
+                                RequiredInputParcel.createRequiredDecryptPassphrase(
+                                        secretKeyRing.getMasterKeyId(), secretEncryptionKey.getKeyId()),
+                                cryptoInput));
+                    }
+                }
+
+                // check for insecure encryption key
+                if ( ! PgpSecurityConstants.isSecureKey(secretEncryptionKey)) {
+                    log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+                    result.insecureEncryptionKey = true;
+                }
+
+                // break out of while, only decrypt the first packet where we have a key
+                break;
+
+            } else if (obj instanceof PGPPBEEncryptedData) {
+                anyPacketFound = true;
+
+                log.add(LogType.MSG_DC_SYM, indent);
+
+                if (!input.isAllowSymmetricDecryption()) {
+                    log.add(LogType.MSG_DC_SYM_SKIP, indent + 1);
+                    continue;
+                }
+
+                /*
+                 * When mAllowSymmetricDecryption == true and we find a data packet here,
+                 * we do not search for other available asymmetric packets!
+                 */
+                symmetricPacketFound = true;
+
+                encryptedDataSymmetric = (PGPPBEEncryptedData) obj;
+
+                // if no passphrase is given, return here
+                // indicating that a passphrase is missing!
+                if (!cryptoInput.hasPassphrase()) {
+
+                    try {
+                        passphrase = getCachedPassphrase(key.symmetric);
+                        log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
+                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
+                        // nvm
+                    }
+
+                    if (passphrase == null) {
+                        log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
+                        return result.with(new DecryptVerifyResult(log,
+                                RequiredInputParcel.createRequiredSymmetricPassphrase(),
+                                cryptoInput));
+                    }
+
+                } else {
+                    passphrase = cryptoInput.getPassphrase();
+                }
+
+                // break out of while, only decrypt the first packet
+                break;
+            }
+        }
+
+        // More data, just acknowledge and ignore.
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPublicKeyEncryptedData) {
+                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
+                long subKeyId = encData.getKeyID();
+                log.add(LogType.MSG_DC_TRAIL_ASYM, indent,
+                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+            } else if (obj instanceof PGPPBEEncryptedData) {
+                log.add(LogType.MSG_DC_TRAIL_SYM, indent);
+            } else {
+                log.add(LogType.MSG_DC_TRAIL_UNKNOWN, indent);
+            }
+        }
+
+        // we made sure above one of these two would be true
+        if (symmetricPacketFound) {
+            currentProgress += 2;
+            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
+
+            PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
+            PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
+                    digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                    passphrase.getCharArray());
+
+            try {
+                result.cleartextStream = encryptedDataSymmetric.getDataStream(decryptorFactory);
+            } catch (PGPDataValidationException e) {
+                log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent + 1);
+                return result.with(new DecryptVerifyResult(log,
+                        RequiredInputParcel.createRequiredSymmetricPassphrase(), cryptoInput));
+            }
+
+            result.encryptedData = encryptedDataSymmetric;
+
+            result.symmetricEncryptionAlgo = encryptedDataSymmetric.getSymmetricAlgorithm(decryptorFactory);
+        } else if (asymmetricPacketFound) {
+            currentProgress += 2;
+            updateProgress(R.string.progress_extracting_key, currentProgress, 100);
+
+            try {
+                log.add(LogType.MSG_DC_UNLOCKING, indent + 1);
+                if (!secretEncryptionKey.unlock(passphrase)) {
+                    log.add(LogType.MSG_DC_ERROR_BAD_PASSPHRASE, indent + 1);
+                    return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+                }
+            } catch (PgpGeneralException e) {
+                log.add(LogType.MSG_DC_ERROR_EXTRACT_KEY, indent + 1);
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+            }
+
+            currentProgress += 2;
+            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
+
+            CachingDataDecryptorFactory decryptorFactory
+                    = secretEncryptionKey.getCachingDecryptorFactory(cryptoInput);
+
+            // special case: if the decryptor does not have a session key cached for this encrypted
+            // data, and can't actually decrypt on its own, return a pending intent
+            if (!decryptorFactory.canDecrypt()
+                    && !decryptorFactory.hasCachedSessionData(encryptedDataAsymmetric)) {
+
+                log.add(LogType.MSG_DC_PENDING_NFC, indent + 1);
+                return result.with(new DecryptVerifyResult(log, RequiredInputParcel.createNfcDecryptOperation(
+                        secretEncryptionKey.getRing().getMasterKeyId(),
+                        secretEncryptionKey.getKeyId(), encryptedDataAsymmetric.getSessionKey()[0]
+                ), cryptoInput));
+
+            }
+
+            try {
+                result.cleartextStream = encryptedDataAsymmetric.getDataStream(decryptorFactory);
+            } catch (PGPKeyValidationException | ArrayIndexOutOfBoundsException e) {
+                log.add(LogType.MSG_DC_ERROR_CORRUPT_DATA, indent + 1);
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+            }
+
+            result.symmetricEncryptionAlgo = encryptedDataAsymmetric.getSymmetricAlgorithm(decryptorFactory);
+            result.encryptedData = encryptedDataAsymmetric;
+
+            cryptoInput.addCryptoData(decryptorFactory.getCachedSessionKeys());
+
+        } else {
+            // there wasn't even any useful data
+            if (!anyPacketFound) {
+                log.add(LogType.MSG_DC_ERROR_NO_DATA, indent + 1);
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_NO_DATA, log));
+            }
+            // there was data but key wasn't allowed
+            if (result.skippedDisallowedKey) {
+                log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_KEY_DISALLOWED, log));
+            }
+            // no packet has been found where we have the corresponding secret key in our db
+            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
+            return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
+        }
+
         return result;
 
     }

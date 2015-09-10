@@ -1187,6 +1187,7 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+    <string name="msg_dc_insecure_encryption_key">"Insecure encryption key was used! This can happen because the key is old, or from an attack."</string>
     <string name="msg_dc_insecure_symmetric_encryption_algo">"Insecure encryption algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
     <string name="msg_dc_insecure_hash_algo">"Insecure hash algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
     <string name="msg_dc_insecure_mdc_missing">"Missing the Modification Detection Code (MDC) packet! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
