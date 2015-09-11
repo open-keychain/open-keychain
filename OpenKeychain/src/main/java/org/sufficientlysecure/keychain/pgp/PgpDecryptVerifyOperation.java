@@ -512,6 +512,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
         String originalFilename = literalData.getFileName();
+        if (originalFilename.contains("/")) {
+            originalFilename = originalFilename.substring(originalFilename.lastIndexOf('/'));
+        }
         String mimeType = null;
         if (literalData.getFormat() == PGPLiteralData.TEXT
                 || literalData.getFormat() == PGPLiteralData.UTF8) {
