@@ -28,7 +28,6 @@ import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -37,7 +36,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,7 +55,6 @@ import android.widget.ViewAnimator;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
@@ -435,21 +432,11 @@ public class DecryptListFragment
                 return;
             }
 
-            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Intent intent = new Intent(activity, DisplayTextActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(outputUri, metadata.getMimeType());
-
-            // for result so we can possibly get a snackbar error from internal viewer
-            LabeledIntent internalIntent = new LabeledIntent(
-                    new Intent(intent)
-                            .setClass(activity, DisplayTextActivity.class)
-                            .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
-                    BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
-
-            Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                    new Parcelable[] { internalIntent });
-
-            activity.startActivity(chooserIntent);
+            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+            activity.startActivity(intent);
 
         } else {
 
