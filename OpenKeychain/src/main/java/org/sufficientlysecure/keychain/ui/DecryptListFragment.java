@@ -375,7 +375,7 @@ public class DecryptListFragment
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    displayWithViewIntent(uri);
+                    displayWithViewIntent(uri, false);
                 }
             };
         }
@@ -400,7 +400,7 @@ public class DecryptListFragment
 
     }
 
-    public void displayWithViewIntent(final Uri uri) {
+    public void displayWithViewIntent(final Uri uri, boolean share) {
         Activity activity = getActivity();
         if (activity == null || mCurrentInputUri != null) {
             return;
@@ -419,49 +419,50 @@ public class DecryptListFragment
         // OpenKeychain's internal viewer
         if ("text/plain".equals(metadata.getMimeType())) {
 
-            // this is a significant i/o operation, use an asynctask
-            new AsyncTask<Void,Void,Intent>() {
+            if (share) {
+                try {
+                    String plaintext = FileHelper.readTextFromUri(activity, outputUri, result.getCharset());
 
-                @Override
-                protected Intent doInBackground(Void... params) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType(metadata.getMimeType());
+                    intent.putExtra(Intent.EXTRA_TEXT, plaintext);
+                    startActivity(intent);
 
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        return null;
-                    }
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(outputUri, "text/plain");
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    return intent;
+                } catch (IOException e) {
+                    Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
                 }
 
-                @Override
-                protected void onPostExecute(Intent intent) {
-                    // for result so we can possibly get a snackbar error from internal viewer
-                    Activity activity = getActivity();
-                    if (intent == null || activity == null) {
-                        return;
-                    }
+                return;
+            }
 
-                    LabeledIntent internalIntent = new LabeledIntent(
-                            new Intent(intent)
-                                    .setClass(activity, DisplayTextActivity.class)
-                                    .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
-                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
-
-                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                            new Parcelable[] { internalIntent });
-
-                    activity.startActivity(chooserIntent);
-                }
-
-            }.execute();
-
-        } else {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setDataAndType(outputUri, metadata.getMimeType());
+
+            // for result so we can possibly get a snackbar error from internal viewer
+            LabeledIntent internalIntent = new LabeledIntent(
+                    new Intent(intent)
+                            .setClass(activity, DisplayTextActivity.class)
+                            .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
+                    BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
+
+            Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                    new Parcelable[] { internalIntent });
+
+            activity.startActivity(chooserIntent);
+
+        } else {
+
+            Intent intent;
+            if (share) {
+                intent = new Intent(Intent.ACTION_SEND);
+                intent.setType(metadata.getMimeType());
+                intent.putExtra(Intent.EXTRA_STREAM, outputUri);
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(outputUri, metadata.getMimeType());
+            }
+
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
@@ -514,6 +515,9 @@ public class DecryptListFragment
                 Intent intent = new Intent(activity, LogDisplayActivity.class);
                 intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
                 activity.startActivity(intent);
+                return true;
+            case R.id.decrypt_share:
+                displayWithViewIntent(model.mInputUri, true);
                 return true;
             case R.id.decrypt_save:
                 OpenPgpMetadata metadata = result.getDecryptionMetadata();
