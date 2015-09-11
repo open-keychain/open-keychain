@@ -1060,7 +1060,7 @@
   <string name="msg_import_fetch_error_decode">Akatsa berreskuratutako giltza-uztai dekodeatzerakoan!</string>
   <string name="msg_import_fetch_error">Giltza ezin da berreskuratu! (Sare arazoak?)</string>
   <string name="msg_import_fetch_keybase">keybase.io-tik berreskuratzen: %s</string>
-  <string name="msg_import_fetch_keyserver_error">Ezin da giltza giltza-zerbitzarietatik berreskuratu: %s</string>
+  <string name="msg_import_fetch_error_keyserver">Ezin da giltza giltza-zerbitzarietatik berreskuratu: %s</string>
   <string name="msg_import_fetch_keyserver">Giltza-zerbitzaritik berreskuratzen: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Giltza ongi berreskuratu da</string>
   <string name="msg_import_keyserver">%s giltza-zerbitzaria erabiltzen</string>

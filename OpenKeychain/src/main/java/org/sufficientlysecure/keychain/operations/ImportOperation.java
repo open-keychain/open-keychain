@@ -211,7 +211,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                             }
                         } catch (Keyserver.QueryFailedException e) {
                             Log.d(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
                         }
                     }
 
@@ -243,13 +243,20 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
                         }
                     }
                 }
 
                 if (key == null) {
                     log.add(LogType.MSG_IMPORT_FETCH_ERROR, 2);
+                    badKeys += 1;
+                    continue;
+                }
+
+                // never import secret keys from keyserver!
+                if (entry.mBytes == null && key.isSecret()) {
+                    log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
                     badKeys += 1;
                     continue;
                 }

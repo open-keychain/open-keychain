@@ -1126,7 +1126,7 @@
   <string name="msg_import_fetch_error_decode">鍵輪のデコードエラー</string>
   <string name="msg_import_fetch_error">鍵の展開ができません! (ネットワークの問題?)</string>
   <string name="msg_import_fetch_keybase">keybase.ioから回収: %s</string>
-  <string name="msg_import_fetch_keyserver_error">鍵サーバからの展開: %s</string>
+  <string name="msg_import_fetch_error_keyserver">鍵サーバからの展開: %s</string>
   <string name="msg_import_fetch_keyserver">鍵サーバからの回収: %s</string>
   <string name="msg_import_fetch_keyserver_ok">鍵の展開に成功</string>
   <string name="msg_import_keyserver">鍵サーバ %s を使う</string>

@@ -1162,7 +1162,7 @@
   <string name="msg_import_fetch_error_decode">¡Error al descifrar juego de claves descargado!</string>
   <string name="msg_import_fetch_error">¡La clave no se pudo descargar! (¿problemas con la red?)</string>
   <string name="msg_import_fetch_keybase">Descargando desde keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">No se pudo obtener clave de los servidores de claves: %s</string>
+  <string name="msg_import_fetch_error_keyserver">No se pudo obtener clave de los servidores de claves: %s</string>
   <string name="msg_import_fetch_keyserver">Descargando desde el servidor de claves: %s</string>
   <string name="msg_import_fetch_keyserver_ok">La clave se descargó con éxito</string>
   <string name="msg_import_keyserver">Usando el servidor de claves %s</string>

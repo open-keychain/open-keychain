@@ -1163,7 +1163,7 @@
   <string name="msg_import_fetch_error_decode">Fehler beim Dekodieren des abgerufenen Schlüsselbundes!</string>
   <string name="msg_import_fetch_error">Schlüssel konnte nicht abgerufen werden! (Netzwerkprobleme?)</string>
   <string name="msg_import_fetch_keybase">Empfange von keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">Konnte Schlüssel nicht vom Schlüsselserver abrufen: %s</string>
+  <string name="msg_import_fetch_error_keyserver">Konnte Schlüssel nicht vom Schlüsselserver abrufen: %s</string>
   <string name="msg_import_fetch_keyserver">Empfange von Schlüsselserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Schlüssel erfolgreich heruntergeladen</string>
   <string name="msg_import_keyserver">Verwende Schlüsselserver %s</string>

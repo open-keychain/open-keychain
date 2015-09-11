@@ -707,10 +707,11 @@ public abstract class OperationResult implements Parcelable {
 
         MSG_IMPORT_FETCH_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_error),
         MSG_IMPORT_FETCH_ERROR_DECODE (LogLevel.ERROR, R.string.msg_import_fetch_error_decode),
+        MSG_IMPORT_FETCH_ERROR_KEYSERVER(LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver),
+        MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET (LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver_secret),
+        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
         MSG_IMPORT_FETCH_KEYSERVER (LogLevel.INFO, R.string.msg_import_fetch_keyserver),
         MSG_IMPORT_FETCH_KEYSERVER_OK (LogLevel.DEBUG, R.string.msg_import_fetch_keyserver_ok),
-        MSG_IMPORT_FETCH_KEYSERVER_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_keyserver_error),
-        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
         MSG_IMPORT_KEYSERVER (LogLevel.DEBUG, R.string.msg_import_keyserver),
         MSG_IMPORT_MERGE (LogLevel.DEBUG, R.string.msg_import_merge),
         MSG_IMPORT_MERGE_ERROR (LogLevel.ERROR, R.string.msg_import_merge_error),

@@ -1162,7 +1162,7 @@
   <string name="msg_import_fetch_error_decode">Erreur de décodage du trousseau récupéré !</string>
   <string name="msg_import_fetch_error">La clef n\'a pas pu être récupérée ! (problèmes réseau ?)</string>
   <string name="msg_import_fetch_keybase">Récupération en provenance du keybase.io : %s</string>
-  <string name="msg_import_fetch_keyserver_error">Impossible de récupérer la clef sur les serveurs de clefs : %s</string>
+  <string name="msg_import_fetch_error_keyserver">Impossible de récupérer la clef sur les serveurs de clefs : %s</string>
   <string name="msg_import_fetch_keyserver">Récupération en provenance du serveur de clefs : %s</string>
   <string name="msg_import_fetch_keyserver_ok">Récupération de la clef est réussie !</string>
   <string name="msg_import_keyserver">Utilisation du serveur de clefs %s</string>

@@ -1190,7 +1190,7 @@
   <string name="msg_import_fetch_error_decode">Грешка декодирања добављеног привеска!</string>
   <string name="msg_import_fetch_error">Не могу да добавим кључ! (Проблеми са мрежом?)</string>
   <string name="msg_import_fetch_keybase">Добављам са keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">Не могу да добавим кључ са сервера кључева: %s</string>
+  <string name="msg_import_fetch_error_keyserver">Не могу да добавим кључ са сервера кључева: %s</string>
   <string name="msg_import_fetch_keyserver">Добављам са сервера кључева: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Добављање кључева је успело</string>
   <string name="msg_import_keyserver">Користим сервер кључева %s</string>

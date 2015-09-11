@@ -1112,7 +1112,7 @@
   <string name="msg_import_fetch_error_decode">Fout bij decoderen van opgehaalde sleutelbos!</string>
   <string name="msg_import_fetch_error">Sleutel kon niet opgehaald worden! (Netwerkproblemen?)</string>
   <string name="msg_import_fetch_keybase">Bezig met ophalen van keybase.io: %s</string>
-  <string name="msg_import_fetch_keyserver_error">Kon sleutel niet ophalen van sleutelservers: %s</string>
+  <string name="msg_import_fetch_error_keyserver">Kon sleutel niet ophalen van sleutelservers: %s</string>
   <string name="msg_import_fetch_keyserver">Bezig met ophalen van sleutelserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Ophalen van sleutel geslaagd!</string>
   <string name="msg_import_keyserver">Sleutelserver %s wordt gebruikt</string>
