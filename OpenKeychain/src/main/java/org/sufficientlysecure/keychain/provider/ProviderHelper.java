@@ -771,6 +771,11 @@ public class ProviderHelper {
             if (type != o.type) {
                 return type == null ? -1 : 1;
             }
+            // if one is *trusted* but the other isn't, that one comes first
+            // this overrides the primary attribute, even!
+            if ( (trustedCerts.size() == 0) != (o.trustedCerts.size() == 0) ) {
+                return trustedCerts.size() > o.trustedCerts.size() ? -1 : 1;
+            }
             // if one key is primary but the other isn't, the primary one always comes first
             if (isPrimary != o.isPrimary) {
                 return isPrimary ? -1 : 1;
