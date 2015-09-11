@@ -77,7 +77,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         String action = getIntent().getAction();
 
-        if (action != null && action.equals(ACTION_PREFS_CLOUD)) {
+        if (ACTION_PREFS_CLOUD.equals(action)) {
             addPreferencesFromResource(R.xml.cloud_search_prefs);
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
@@ -100,7 +100,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
             );
 
-        } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
+        } else if (ACTION_PREFS_ADV.equals(action)) {
             addPreferencesFromResource(R.xml.passphrase_preferences);
 
             initializePassphraseCacheSubs(
@@ -115,7 +115,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
-        } else if (action != null && action.equals(ACTION_PREFS_GUI)) {
+        } else if (ACTION_PREFS_GUI.equals(action)) {
             addPreferencesFromResource(R.xml.gui_preferences);
 
             initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
