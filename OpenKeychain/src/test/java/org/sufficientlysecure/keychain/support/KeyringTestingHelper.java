@@ -59,7 +59,7 @@ public class KeyringTestingHelper {
         // Should throw an exception; key is not yet saved
         retrieveKeyAndExpectNotFound(providerHelper, masterKeyId);
 
-        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler());
+        SaveKeyringResult saveKeyringResult = providerHelper.savePublicKeyRing(ring, new ProgressScaler(), null);
 
         boolean saveSuccess = saveKeyringResult.success();
 

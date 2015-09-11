@@ -201,7 +201,7 @@ public class ProviderHelperSaveTest {
 
         SaveKeyringResult result;
 
-        result = mProviderHelper.savePublicKeyRing(key, new ProgressScaler());
+        result = mProviderHelper.savePublicKeyRing(key, new ProgressScaler(), null);
         Assert.assertTrue("import of keyring should succeed", result.success());
 
         CanonicalizedPublicKeyRing ring = mProviderHelper.getCanonicalizedPublicKeyRing(keyId);
