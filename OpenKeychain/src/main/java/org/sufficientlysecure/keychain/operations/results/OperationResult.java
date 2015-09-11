@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -51,6 +52,8 @@ import java.util.List;
  * to string resource ids.
  */
 public abstract class OperationResult implements Parcelable {
+
+    final static String INDENTATION_WHITESPACE = "                                                                ";
 
     public static final String EXTRA_RESULT = "operation_result";
 
@@ -166,6 +169,27 @@ public abstract class OperationResult implements Parcelable {
                     ", mIndent=" + mIndent +
                     '}';
         }
+
+        StringBuilder getPrintableLogEntry(Resources resources, int indent) {
+
+            StringBuilder result = new StringBuilder();
+            int padding = mIndent +indent;
+            if (padding > INDENTATION_WHITESPACE.length()) {
+                padding = INDENTATION_WHITESPACE.length();
+            }
+            result.append(INDENTATION_WHITESPACE, 0, padding);
+            result.append(LOG_LEVEL_NAME[mType.mLevel.ordinal()]).append(' ');
+
+            // special case: first parameter may be a quantity
+            if (mParameters != null && mParameters.length > 0 && mParameters[0] instanceof Integer) {
+                result.append(resources.getQuantityString(mType.getMsgId(), (Integer) mParameters[0], mParameters));
+            } else {
+                result.append(resources.getString(mType.getMsgId(), mParameters));
+            }
+
+            return result;
+        }
+
     }
 
     public static class SubLogEntryParcel extends LogEntryParcel {
@@ -200,6 +224,17 @@ public abstract class OperationResult implements Parcelable {
             dest.writeSerializable(mParameters);
             dest.writeInt(mIndent);
             dest.writeParcelable(mSubResult, 0);
+        }
+
+        @Override
+        StringBuilder getPrintableLogEntry(Resources resources, int indent) {
+
+            LogEntryParcel subEntry = mSubResult.getLog().getLast();
+            if (subEntry != null) {
+                return subEntry.getPrintableLogEntry(resources, mIndent +indent);
+            } else {
+                return super.getPrintableLogEntry(resources, indent);
+            }
         }
 
     }
@@ -245,15 +280,15 @@ public abstract class OperationResult implements Parcelable {
         }
 
         return Notify.create(activity, logText, Notify.LENGTH_LONG, style,
-            new ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intent = new Intent(
-                            activity, LogDisplayActivity.class);
-                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                    activity.startActivity(intent);
-                }
-            }, R.string.snackbar_details);
+                new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Intent intent = new Intent(
+                                activity, LogDisplayActivity.class);
+                        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                        activity.startActivity(intent);
+                    }
+                }, R.string.snackbar_details);
 
     }
 
@@ -803,14 +838,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
         MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
         MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
-        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing),
-
-        //export log
-        MSG_EXPORT_LOG(LogLevel.START,R.string.msg_export_log_start),
-        MSG_EXPORT_LOG_EXPORT_ERROR_NO_FILE(LogLevel.ERROR,R.string.msg_export_log_error_no_file),
-        MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
-        MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
-        MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success);
+        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing);
 
         public final int mMsgId;
         public final LogLevel mLevel;
@@ -833,6 +861,10 @@ public abstract class OperationResult implements Parcelable {
         OK, // should occur once at the end of a successful operation
         CANCELLED, // should occur once at the end of a cancelled operation
     }
+    // for print of debug log. keep those in sync with above!
+    static final String[] LOG_LEVEL_NAME = new String[] {
+            "[DEBUG]", "[INFO]", "[WARN]", "[ERROR]", "[START]", "[OK]", "[CANCEL]"
+    };
 
     @Override
     public int describeContents() {
@@ -931,6 +963,20 @@ public abstract class OperationResult implements Parcelable {
         public Iterator<LogEntryParcel> iterator() {
             return mParcels.iterator();
         }
+
+        /**
+         * returns an indented String of an entire OperationLog
+         * @param indent padding to add at the start of all log entries, made for use with SubLogs
+         * @return printable, indented version of passed operationLog
+         */
+        public String getPrintableOperationLog(Resources resources, int indent) {
+            StringBuilder log = new StringBuilder();
+            for (LogEntryParcel entry : this) {
+                log.append(entry.getPrintableLogEntry(resources, indent)).append("\n");
+            }
+            return log.toString().substring(0, log.length() -1); // get rid of extra new line
+        }
+
     }
 
 }

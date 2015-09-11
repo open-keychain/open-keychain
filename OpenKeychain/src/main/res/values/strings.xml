@@ -37,7 +37,6 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Extended Information"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
-    <string name="title_export_log">"Export Log"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
 
     <!-- section -->
@@ -117,7 +116,7 @@
     <string name="menu_advanced">"Extended information"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
     <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
-    <string name="menu_export_log">"Export Log"</string>
+    <string name="menu_share_log">"Share Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
@@ -321,8 +320,6 @@
     <string name="no_keys_exported">"No keys exported."</string>
     <string name="key_creation_el_gamal_info">"Note: only subkeys support ElGamal."</string>
     <string name="key_not_found">"Couldn't find key %08X."</string>
-
-    <string name="specify_file_to_export_log_to">"Please specify file to export to. \nWARNING: File will be overwritten if it exists."</string>
 
     <plurals name="bad_keys_encountered">"
         <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
@@ -1383,13 +1380,6 @@
     <string name="msg_keybase_error_specific">"%s"</string>
     <string name="msg_keybase_error_msg_payload_mismatch">"Decrypted proof post does not match expected value"</string>
 
-    <!-- Messages for Export Log operation -->
-    <string name="msg_export_log_start">"Exporting log"</string>
-    <string name="msg_export_log_error_fopen">"Error opening file"</string>
-    <string name="msg_export_log_error_no_file">"No file name specified!"</string>
-    <string name="msg_export_log_error_writing">"I/O error writing to file!"</string>
-    <string name="msg_export_log_success">"Log exported successfully!"</string>
-
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Touch to clear passwords."</string>
     <plurals name="passp_cache_notif_n_keys">
@@ -1452,6 +1442,7 @@
     <string name="error_multi_clipboard">"Encryption of multiple files to clipboard not supported."</string>
     <string name="error_detached_signature">"Sign-only operation of binary files is not supported, select at least one encryption key."</string>
     <string name="error_empty_text">"Type some text to encrypt!"</string>
+    <string name="error_log_share_internal">"Internal error while preparing log!"</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
     <string name="btn_start_exchange">"Start exchange"</string>
