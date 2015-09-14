@@ -20,8 +20,6 @@
   <string name="title_encrypt_to_file">Zaszyfruj do pliku</string>
   <string name="title_decrypt_to_file">Odszyfruj do pliku</string>
   <string name="title_import_keys">Importuj klucze</string>
-  <string name="title_export_key">Eksportuj klucz</string>
-  <string name="title_export_keys">Eksportuj klucze</string>
   <string name="title_key_not_found">Nie znaleziono klucza</string>
   <string name="title_send_key">Wyślij do serwera kluczy</string>
   <string name="title_key_details">Szczegóły klucza</string>
@@ -57,7 +55,6 @@
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>
-  <string name="menu_export_key">Eksportuj do pliku</string>
   <string name="menu_delete_key">Usuń klucz</string>
   <string name="menu_search">Szukaj</string>
   <string name="menu_beam_preferences">Ustawienia Beam</string>
@@ -96,6 +93,7 @@
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
   <string name="label_preferred">preferowany</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -341,6 +339,7 @@
   </plurals>
   <string name="delete_nothing">Nie ma nic do usunięcia.</string>
   <string name="delete_cancelled">Operacja usuwania anulowana.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Pomyślnie certyfikowano klucz%2$s.</item>
@@ -372,7 +371,6 @@
   <string name="api_settings_start">Uruchom aplikację</string>
   <string name="api_settings_delete_account">Usuń konto</string>
   <string name="api_settings_package_name">Nazwa paczki</string>
-  <string name="api_settings_package_certificate">Skrót SHA-256 podpisu paczki</string>
   <string name="api_settings_settings">Ustawienia</string>
   <string name="api_settings_key">Klucz konta:</string>
   <string name="api_settings_accounts_empty">Brak kont połączonych z tą aplikacją.</string>
@@ -384,14 +382,15 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="api_register_allow">Zezwól na dostęp</string>
   <string name="api_register_disallow">Odmów dostępu</string>
   <string name="api_register_error_select_key">Wybierz klucz!</string>
-  <string name="api_select_pub_keys_missing_text">Nie znaleziono kluczy dla następujących tożsamości:</string>
-  <string name="api_select_pub_keys_dublicates_text">Więcej niż jeden klucz istnieje dla następujących tożsamości:</string>
   <string name="api_select_pub_keys_text">Proszę przejrzeć listę adresatów!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Prosimy o wybranie odbiorców!</string>
   <string name="api_error_wrong_signature">Sprawdzanie podpisu zakończone niepowodzeniem! Czy zainstalowałeś tę aplikację z innego źródła? Jeżeli jesteś pewien, że nie jest to atak, odwołaj rejestrację teg aplikacji w OpenKeychain, a następnie zarejestruj ją ponownie.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Udostępnij przez kod QR</string>
   <string name="share_nfc_dialog">Udostępnij przez NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 klucz wybrany.</item>
@@ -565,6 +564,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
   <string name="first_time_skip">Pomiń ustawienia</string>
@@ -591,6 +591,7 @@ OSTRZEŻENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezw
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

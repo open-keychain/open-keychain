@@ -21,7 +21,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -50,15 +49,11 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * NFC devices.
- * <p/>
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
- * NOTE: If no CryptoInputParcel is passed via EXTRA_CRYPTO_INPUT, the CryptoInputParcel is created
- * internally and is NOT meant to be used by signing operations before adding signature time
  */
 public class NfcOperationActivity extends BaseNfcActivity {
 
@@ -84,8 +79,8 @@ public class NfcOperationActivity extends BaseNfcActivity {
     @Override
     protected void initTheme() {
         mThemeChanger = new ThemeChanger(this);
-        mThemeChanger.setThemes(R.style.Theme_Keychain_Light_Dialog_SecurityToken,
-                R.style.Theme_Keychain_Dark_Dialog_SecurityToken);
+        mThemeChanger.setThemes(R.style.Theme_Keychain_Light_Dialog,
+                R.style.Theme_Keychain_Dark_Dialog);
         mThemeChanger.changeTheme();
     }
 
@@ -100,13 +95,6 @@ public class NfcOperationActivity extends BaseNfcActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mInputParcel = getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT);
-
-        if (mInputParcel == null) {
-            // for compatibility when used from OpenPgpService
-            // (or any place other than CryptoOperationHelper)
-            // NOTE: This CryptoInputParcel cannot be used for signing without adding signature time
-            mInputParcel = new CryptoInputParcel();
-        }
 
         setTitle(R.string.nfc_text);
 
@@ -163,9 +151,8 @@ public class NfcOperationActivity extends BaseNfcActivity {
                 break;
             }
             case NFC_SIGN: {
-                if (mInputParcel.getSignatureTime() == null) {
-                    mInputParcel.addSignatureTime(new Date());
-                }
+                mInputParcel.addSignatureTime(mRequiredInput.mSignatureTime);
+
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
@@ -240,7 +227,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                         throw new IOException("Inappropriate key flags for smart card key.");
                     }
 
-                    // TODO: Is this really needed?
+                    // TODO: Is this really used anywhere?
                     mInputParcel.addCryptoData(subkeyBytes, cardSerialNumber);
                 }
 
@@ -261,15 +248,13 @@ public class NfcOperationActivity extends BaseNfcActivity {
     protected void onNfcPostExecute() throws IOException {
         if (mServiceIntent != null) {
             // if we're triggered by OpenPgpService
+            // save updated cryptoInputParcel in cache
             CryptoInputParcelCacheService.addCryptoInputParcel(this, mServiceIntent, mInputParcel);
-            mServiceIntent.putExtra(EXTRA_CRYPTO_INPUT,
-                    getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT));
             setResult(RESULT_OK, mServiceIntent);
         } else {
             Intent result = new Intent();
+            // send back the CryptoInputParcel we received
             result.putExtra(RESULT_CRYPTO_INPUT, mInputParcel);
-            // send back the CryptoInputParcel we receive, to conform with the pattern in
-            // CryptoOperationHelper
             setResult(RESULT_OK, result);
         }
 

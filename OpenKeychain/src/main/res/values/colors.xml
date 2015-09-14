@@ -29,4 +29,8 @@
     <color name="android_green_light">#7bad45</color>
     <color name="android_green_dark">#6c983d</color>
 
+    <!-- text protection scrim colors -->
+    <color name="translucent_scrim_bottom">#2A000000</color>
+    <color name="translucent_scrim_bottom_center">#2A000000</color>
+
 </resources>

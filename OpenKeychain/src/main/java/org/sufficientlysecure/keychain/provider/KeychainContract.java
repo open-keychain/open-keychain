@@ -51,6 +51,11 @@ public class KeychainContract {
         String EXPIRY = "expiry";
     }
 
+    interface UpdatedKeysColumns {
+        String MASTER_KEY_ID = "master_key_id"; // not a database id
+        String LAST_UPDATED = "last_updated"; // time since epoch in seconds
+    }
+
     interface UserPacketsColumns {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
         String TYPE = "type"; // not a database id
@@ -97,6 +102,8 @@ public class KeychainContract {
 
     public static final String BASE_KEY_RINGS = "key_rings";
 
+    public static final String BASE_UPDATED_KEYS = "updated_keys";
+
     public static final String PATH_UNIFIED = "unified";
 
     public static final String PATH_FIND = "find";
@@ -106,6 +113,7 @@ public class KeychainContract {
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
     public static final String PATH_USER_IDS = "user_ids";
+    public static final String PATH_LINKED_IDS = "linked_ids";
     public static final String PATH_KEYS = "keys";
     public static final String PATH_CERTS = "certs";
 
@@ -234,6 +242,16 @@ public class KeychainContract {
 
     }
 
+    public static class UpdatedKeys implements UpdatedKeysColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_UPDATED_KEYS).build();
+
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
+        public static final String CONTENT_ITEM_TYPE
+                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
+    }
+
     public static class UserPackets implements UserPacketsColumns, BaseColumns {
         public static final String VERIFIED = "verified";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
@@ -262,6 +280,11 @@ public class KeychainContract {
         public static Uri buildUserIdsUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_USER_IDS).build();
         }
+
+        public static Uri buildLinkedIdsUri(Uri uri) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_LINKED_IDS).build();
+        }
+
     }
 
     public static class ApiApps implements ApiAppsColumns, BaseColumns {
@@ -350,7 +373,14 @@ public class KeychainContract {
         }
 
         public static Uri buildCertsUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_CERTS).build();
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1))
+                    .appendPath(PATH_CERTS).build();
+        }
+
+        public static Uri buildLinkedIdCertsUri(Uri uri, int rank) {
+            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1))
+                    .appendPath(PATH_LINKED_IDS).appendPath(Integer.toString(rank))
+                    .appendPath(PATH_CERTS).build();
         }
 
     }

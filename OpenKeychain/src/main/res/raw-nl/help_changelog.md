@@ -1,10 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.5
+
+  * Sleutel intrekken bij verwijderen
+  * Verbeterde controles voor onveilige cryptografie
+  * Opgelost: Sluit OpenKeychain niet na eerste gebruik
+  * API: versie 8
+
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Anoniem sleutels downloaden via Tor
+  * Proxy-ondersteuning
+  * Beter verwerken van YubiKey-fouten
 
 ## 3.3
 

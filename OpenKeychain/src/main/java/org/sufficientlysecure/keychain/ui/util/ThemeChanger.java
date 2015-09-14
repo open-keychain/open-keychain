@@ -40,9 +40,9 @@ public class ThemeChanger {
         // hack to get holo design (which is not automatically applied due to activity's
         // Theme.NoDisplay)
         if (Constants.Pref.Theme.DARK.equals(preferences.getTheme())) {
-            return new ContextThemeWrapper(context, R.style.Theme_AppCompat_Dialog);
+            return new ContextThemeWrapper(context, R.style.Theme_Keychain_Dark);
         } else {
-            return new ContextThemeWrapper(context, R.style.Theme_AppCompat_Light_Dialog);
+            return new ContextThemeWrapper(context, R.style.Theme_Keychain_Light);
         }
     }
 

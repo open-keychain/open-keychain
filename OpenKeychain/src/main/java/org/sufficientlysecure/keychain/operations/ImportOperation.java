@@ -22,9 +22,8 @@ package org.sufficientlysecure.keychain.operations;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -99,29 +98,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         return serialKeyRingImport(entries, num, keyServerUri, mProgressable, proxy);
     }
 
-    public ImportKeyResult serialKeyRingImport(List<ParcelableKeyRing> entries,
-                                               String keyServerUri, Proxy proxy) {
-
-        Iterator<ParcelableKeyRing> it = entries.iterator();
-        int numEntries = entries.size();
-
-        return serialKeyRingImport(it, numEntries, keyServerUri, mProgressable, proxy);
-
-    }
-
-    public ImportKeyResult serialKeyRingImport(List<ParcelableKeyRing> entries, String keyServerUri,
-                                               Progressable progressable, Proxy proxy) {
-
-        Iterator<ParcelableKeyRing> it = entries.iterator();
-        int numEntries = entries.size();
-
-        return serialKeyRingImport(it, numEntries, keyServerUri, progressable, proxy);
-
-    }
-
     @NonNull
-    public ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                               String keyServerUri, Proxy proxy) {
+    private ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
+                                                String keyServerUri, Proxy proxy) {
 
         // get entries from cached file
         try {
@@ -143,7 +122,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     /**
      * Since the introduction of multithreaded import, we expect calling functions to handle the
-     * key sync i,eContactSyncAdapterService.requestSync()
+     * contact-to-key sync i.e ContactSyncAdapterService.requestSync()
      *
      * @param entries      keys to import
      * @param num          number of keys to import
@@ -152,9 +131,9 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
      *                     progress of a single key being imported
      */
     @NonNull
-    public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               String keyServerUri, Progressable progressable,
-                                               Proxy proxy) {
+    private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
+                                                String keyServerUri, Progressable progressable,
+                                                Proxy proxy) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -231,8 +210,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                                 log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
                             }
                         } catch (Keyserver.QueryFailedException e) {
-                            Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
+                            Log.d(Constants.TAG, "query failed", e);
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
                         }
                     }
 
@@ -264,7 +243,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         } catch (Keyserver.QueryFailedException e) {
                             // download failed, too bad. just proceed
                             Log.e(Constants.TAG, "query failed", e);
-                            log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_ERROR, 3, e.getMessage());
+                            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
                         }
                     }
                 }
@@ -275,15 +254,11 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                     continue;
                 }
 
-                // If we have an expected fingerprint, make sure it matches
-                if (entry.mExpectedFingerprint != null) {
-                    if (!key.containsSubkey(entry.mExpectedFingerprint)) {
-                        log.add(LogType.MSG_IMPORT_FINGERPRINT_ERROR, 2);
-                        badKeys += 1;
-                        continue;
-                    } else {
-                        log.add(LogType.MSG_IMPORT_FINGERPRINT_OK, 2);
-                    }
+                // never import secret keys from keyserver!
+                if (entry.mBytes == null && key.isSecret()) {
+                    log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET, 2);
+                    badKeys += 1;
+                    continue;
                 }
 
                 // Another check if we have been cancelled
@@ -293,31 +268,44 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                 }
 
                 SaveKeyringResult result;
-                mProviderHelper.clearLog();
-                if (key.isSecret()) {
-                    result = mProviderHelper.saveSecretKeyRing(key,
-                            new ProgressScaler(progressable, (int) (position * progSteps),
-                                    (int) ((position + 1) * progSteps), 100));
-                } else {
-                    result = mProviderHelper.savePublicKeyRing(key,
-                            new ProgressScaler(progressable, (int) (position * progSteps),
-                                    (int) ((position + 1) * progSteps), 100));
+                // synchronizing prevents https://github.com/open-keychain/open-keychain/issues/1221
+                // and https://github.com/open-keychain/open-keychain/issues/1480
+                synchronized (mProviderHelper) {
+                    mProviderHelper.clearLog();
+                    if (key.isSecret()) {
+                        result = mProviderHelper.saveSecretKeyRing(key,
+                                new ProgressScaler(progressable, (int) (position * progSteps),
+                                        (int) ((position + 1) * progSteps), 100));
+                    } else {
+                        result = mProviderHelper.savePublicKeyRing(key,
+                                new ProgressScaler(progressable, (int) (position * progSteps),
+                                        (int) ((position + 1) * progSteps), 100), entry.mExpectedFingerprint);
+                    }
                 }
                 if (!result.success()) {
                     badKeys += 1;
-                } else if (result.updated()) {
-                    updatedKeys += 1;
-                    importedMasterKeyIds.add(key.getMasterKeyId());
                 } else {
-                    newKeys += 1;
-                    if (key.isSecret()) {
-                        secret += 1;
+                    if (result.updated()) {
+                        updatedKeys += 1;
+                        importedMasterKeyIds.add(key.getMasterKeyId());
+                    } else {
+                        newKeys += 1;
+                        if (key.isSecret()) {
+                            secret += 1;
+                        }
+                        importedMasterKeyIds.add(key.getMasterKeyId());
                     }
-                    importedMasterKeyIds.add(key.getMasterKeyId());
+                    if (entry.mBytes == null) {
+                        // synonymous to isDownloadFromKeyserver.
+                        // If no byte data was supplied, import from keyserver took place
+                        // this prevents file imports being noted as keyserver imports
+                        mProviderHelper.renewKeyLastUpdatedTime(key.getMasterKeyId(),
+                                GregorianCalendar.getInstance().getTimeInMillis(),
+                                TimeUnit.MILLISECONDS);
+                    }
                 }
 
                 log.add(result, 2);
-
             } catch (IOException | PgpGeneralException e) {
                 Log.e(Constants.TAG, "Encountered bad key on import!", e);
                 ++badKeys;
@@ -327,9 +315,15 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         }
 
         // Special: consolidate on secret key import (cannot be cancelled!)
+        // synchronized on mProviderHelper to prevent
+        // https://github.com/open-keychain/open-keychain/issues/1221 since a consolidate deletes
+        // and re-inserts keys, which could conflict with a parallel db key update
         if (secret > 0) {
             setPreventCancel();
-            ConsolidateResult result = mProviderHelper.consolidateDatabaseStep1(progressable);
+            ConsolidateResult result;
+            synchronized (mProviderHelper) {
+                result = mProviderHelper.consolidateDatabaseStep1(progressable);
+            }
             log.add(result, 1);
         }
 
@@ -386,7 +380,7 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
 
     @NonNull
     @Override
-    public OperationResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
+    public ImportKeyResult execute(ImportKeyringParcel importInput, CryptoInputParcel cryptoInput) {
         ArrayList<ParcelableKeyRing> keyList = importInput.mKeyList;
         String keyServer = importInput.mKeyserver;
 
@@ -411,20 +405,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             } else {
                 proxy = cryptoInput.getParcelableProxy().getProxy();
             }
-            // if there is more than one key with the same fingerprint, we do a serial import to
-            // prevent
-            // https://github.com/open-keychain/open-keychain/issues/1221
-            HashSet<String> keyFingerprintSet = new HashSet<>();
-            for (int i = 0; i < keyList.size(); i++) {
-                keyFingerprintSet.add(keyList.get(i).mExpectedFingerprint);
-            }
-            if (keyFingerprintSet.size() == keyList.size()) {
-                // all keys have unique fingerprints
-                result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer,
-                        proxy);
-            } else {
-                result = serialKeyRingImport(keyList, keyServer, proxy);
-            }
+
+            result = multiThreadedKeyImport(keyList.iterator(), keyList.size(), keyServer, proxy);
         }
 
         ContactSyncAdapterService.requestSync();
@@ -462,7 +444,8 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
                         ArrayList<ParcelableKeyRing> list = new ArrayList<>();
                         list.add(pkRing);
 
-                        return serialKeyRingImport(list, keyServer, ignoreProgressable, proxy);
+                        return serialKeyRingImport(list.iterator(), 1, keyServer,
+                                ignoreProgressable, proxy);
                     }
                 };
 
@@ -486,18 +469,18 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
             }
             return accumulator.getConsolidatedResult();
         }
-        return null; // TODO: Decide if we should just crash instead of returning null
+        return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, new OperationLog());
     }
 
     /**
      * Used to accumulate the results of individual key imports
      */
-    private class KeyImportAccumulator {
+    public static class KeyImportAccumulator {
         private OperationResult.OperationLog mImportLog = new OperationResult.OperationLog();
         Progressable mProgressable;
         private int mTotalKeys;
         private int mImportedKeys = 0;
-        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<Long>();
+        ArrayList<Long> mImportedMasterKeyIds = new ArrayList<>();
         private int mBadKeys = 0;
         private int mNewKeys = 0;
         private int mUpdatedKeys = 0;
@@ -515,21 +498,17 @@ public class ImportOperation extends BaseOperation<ImportKeyringParcel> {
         public KeyImportAccumulator(int totalKeys, Progressable externalProgressable) {
             mTotalKeys = totalKeys;
             mProgressable = externalProgressable;
-            mProgressable.setProgress(0, totalKeys);
-        }
-
-        public int getTotalKeys() {
-            return mTotalKeys;
-        }
-
-        public int getImportedKeys() {
-            return mImportedKeys;
+            if (mProgressable != null) {
+                mProgressable.setProgress(0, totalKeys);
+            }
         }
 
         public synchronized void accumulateKeyImport(ImportKeyResult result) {
             mImportedKeys++;
 
-            mProgressable.setProgress(mImportedKeys, mTotalKeys);
+            if (mProgressable != null) {
+                mProgressable.setProgress(mImportedKeys, mTotalKeys);
+            }
 
             mImportLog.addAll(result.getLog().toList());//accumulates log
             mBadKeys += result.mBadKeys;

@@ -63,7 +63,7 @@
             fab:fab_icon="@drawable/ic_qrcode_white_24dp"
             fab:fab_colorNormal="?attr/colorPrimary"
             fab:fab_colorPressed="?attr/colorPrimaryDark"
-            fab:fab_title="Scan QR Code"
+            fab:fab_title="@string/key_list_fab_qr_code"
             fab:fab_size="mini" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -73,7 +73,7 @@
             fab:fab_icon="@drawable/ic_cloud_search_24dp"
             fab:fab_colorNormal="?attr/colorPrimary"
             fab:fab_colorPressed="?attr/colorPrimaryDark"
-            fab:fab_title="Search Cloud"
+            fab:fab_title="@string/key_list_fab_search"
             fab:fab_size="mini" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -83,7 +83,7 @@
             fab:fab_icon="@drawable/ic_folder_white_24dp"
             fab:fab_colorNormal="?attr/colorPrimary"
             fab:fab_colorPressed="?attr/colorPrimaryDark"
-            fab:fab_title="Import from File"
+            fab:fab_title="@string/key_list_fab_import"
             fab:fab_size="mini" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

@@ -40,13 +40,8 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
     private static final int REQUEST_CODE_CREATE_KEY = 0x00008884;
 
-    private Uri mAppUri;
     private String mPreferredUserId;
     private Intent mData;
-
-    private SelectSignKeyIdListFragment mListFragment;
-    private TextView mActionCreateKey;
-    private TextView mNone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +57,15 @@ public class SelectSignKeyIdActivity extends BaseActivity {
                     }
                 });
 
-        mActionCreateKey = (TextView) findViewById(R.id.api_select_sign_key_create_key);
-        mActionCreateKey.setOnClickListener(new View.OnClickListener() {
+        TextView createKeyButton = (TextView) findViewById(R.id.api_select_sign_key_create_key);
+        createKeyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createKey(mPreferredUserId);
             }
         });
-        mNone = (TextView) findViewById(R.id.api_select_sign_key_none);
-        mNone.setOnClickListener(new View.OnClickListener() {
+        TextView noneButton = (TextView) findViewById(R.id.api_select_sign_key_none);
+        noneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 0 is "none"
@@ -82,16 +77,16 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         });
 
         Intent intent = getIntent();
-        mAppUri = intent.getData();
+        Uri appUri = intent.getData();
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
         mData = intent.getParcelableExtra(EXTRA_DATA);
-        if (mAppUri == null) {
+        if (appUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
             finish();
             return;
         } else {
-            Log.d(Constants.TAG, "uri: " + mAppUri);
-            startListFragments(savedInstanceState, mAppUri, mData);
+            Log.d(Constants.TAG, "uri: " + appUri);
+            startListFragments(savedInstanceState, appUri, mData);
         }
     }
 
@@ -113,11 +108,11 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         }
 
         // Create an instance of the fragments
-        mListFragment = SelectSignKeyIdListFragment.newInstance(dataUri, data);
+        SelectSignKeyIdListFragment listFragment = SelectSignKeyIdListFragment.newInstance(dataUri, data);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.api_select_sign_key_list_fragment, mListFragment)
+                .replace(R.id.api_select_sign_key_list_fragment, listFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();

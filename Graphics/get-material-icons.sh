@@ -9,6 +9,7 @@ python copy OpenKeychain navigation black expand_more 24
 python copy OpenKeychain navigation white refresh 24
 python copy OpenKeychain av white repeat 24
 python copy OpenKeychain av grey repeat 24
+python copy OpenKeychain av black repeat 24
 python copy OpenKeychain editor white mode_edit 24
 python copy OpenKeychain content white save 24
 python copy OpenKeychain navigation black close 24
@@ -63,3 +64,10 @@ python copy OpenKeychain action white delete 24
 
 # yubikey dialog
 python copy OpenKeychain action black check_circle 48
+
+# preference header
+python copy OpenKeychain file black cloud 24 # cloud
+python copy OpenKeychain action black lock 24 # password settings
+python copy OpenKeychain action black settings_ethernet 24 # proxy
+python copy OpenKeychain notification black sync 24 # sync
+python copy OpenKeychain action black extension 24 # experimental

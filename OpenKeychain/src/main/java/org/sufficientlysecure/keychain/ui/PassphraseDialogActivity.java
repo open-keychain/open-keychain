@@ -71,6 +71,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
  * internally and is NOT meant to be used by signing operations before adding a signature time
  */
 public class PassphraseDialogActivity extends FragmentActivity {
+
     public static final String RESULT_CRYPTO_INPUT = "result_data";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
@@ -261,6 +262,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         case DIVERT_TO_CARD:
                             message = getString(R.string.yubikey_pin_for, userId);
                             break;
+                        // special case: empty passphrase just returns the empty passphrase
+                        case PASSPHRASE_EMPTY:
+                            finishCaching(new Passphrase(""));
                         default:
                             throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }
@@ -280,50 +284,41 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             mPassphraseText.setText(message);
 
-            if (keyType == CanonicalizedSecretKey.SecretKeyType.PATTERN) {
-                // start pattern dialog and show progress circle here...
-//                Intent patternActivity = new Intent(getActivity(), LockPatternActivity.class);
-//                patternActivity.putExtra(LockPatternActivity.EXTRA_PATTERN, "123");
-//                startActivityForResult(patternActivity, REQUEST_CODE_ENTER_PATTERN);
-                mInput.setVisibility(View.INVISIBLE);
-                mProgress.setVisibility(View.VISIBLE);
-            } else {
-                // Hack to open keyboard.
-                // This is the only method that I found to work across all Android versions
-                // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
-                // Notes: * onCreateView can't be used because we want to add buttons to the dialog
-                //        * opening in onActivityCreated does not work on Android 4.4
-                mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        mPassphraseEditText.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (getActivity() == null || mPassphraseEditText == null) {
-                                    return;
-                                }
-                                InputMethodManager imm = (InputMethodManager) getActivity()
-                                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+            // Hack to open keyboard.
+            // This is the only method that I found to work across all Android versions
+            // http://turbomanage.wordpress.com/2012/05/02/show-soft-keyboard-automatically-when-edittext-receives-focus/
+            // Notes: * onCreateView can't be used because we want to add buttons to the dialog
+            //        * opening in onActivityCreated does not work on Android 4.4
+            mPassphraseEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    mPassphraseEditText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (getActivity() == null || mPassphraseEditText == null) {
+                                return;
                             }
-                        });
-                    }
-                });
-                mPassphraseEditText.requestFocus();
-
-                mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
-                mPassphraseEditText.setOnEditorActionListener(this);
-
-                if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin())
-                        || keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
-                    mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                } else {
-                    mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                            InputMethodManager imm = (InputMethodManager) getActivity()
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.showSoftInput(mPassphraseEditText, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    });
                 }
+            });
+            mPassphraseEditText.requestFocus();
 
+            mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
+            mPassphraseEditText.setOnEditorActionListener(this);
+
+            if ((keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD && Preferences.getPreferences(activity).useNumKeypadForYubiKeyPin())
+                    || keyType == CanonicalizedSecretKey.SecretKeyType.PIN) {
+                mPassphraseEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
                 mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            } else {
+                mPassphraseEditText.setRawInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
+
+            mPassphraseEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
 
             AlertDialog dialog = alert.create();
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,

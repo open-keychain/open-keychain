@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -34,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -117,8 +119,7 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         if (getContext() instanceof FragmentActivity) {
             ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
         } else {
-            throw new AssertionError("KeySpinner must be attached to FragmentActivity, this is "
-                    + getContext().getClass());
+            // ignore, this happens during preview! we use fragmentactivities everywhere either way
         }
     }
 
@@ -226,9 +227,11 @@ public abstract class KeySpinner extends AppCompatSpinner implements
                 return inner.getView(position -1, convertView, parent);
             }
 
-            return convertView != null ? convertView :
+            View view = convertView != null ? convertView :
                     LayoutInflater.from(getContext()).inflate(
                             R.layout.keyspinner_item_none, parent, false);
+            ((TextView) view.findViewById(R.id.keyspinner_key_name)).setText(getNoneString());
+            return view;
         }
 
     }
@@ -259,4 +262,9 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         bundle.putLong(ARG_KEY_ID, getSelectedKeyId());
         return bundle;
     }
+
+    public @StringRes int getNoneString() {
+        return R.string.cert_none;
+    }
+
 }

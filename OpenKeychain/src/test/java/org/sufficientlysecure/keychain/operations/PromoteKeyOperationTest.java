@@ -98,7 +98,7 @@ public class PromoteKeyOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        providerHelper.savePublicKeyRing(mStaticRing.extractPublicKeyRing(), new ProgressScaler());
+        providerHelper.savePublicKeyRing(mStaticRing.extractPublicKeyRing(), new ProgressScaler(), null);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;

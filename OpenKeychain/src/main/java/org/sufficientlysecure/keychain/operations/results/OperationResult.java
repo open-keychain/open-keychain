@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations.results;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -51,6 +52,8 @@ import java.util.List;
  * to string resource ids.
  */
 public abstract class OperationResult implements Parcelable {
+
+    final static String INDENTATION_WHITESPACE = "                                                                ";
 
     public static final String EXTRA_RESULT = "operation_result";
 
@@ -166,6 +169,27 @@ public abstract class OperationResult implements Parcelable {
                     ", mIndent=" + mIndent +
                     '}';
         }
+
+        StringBuilder getPrintableLogEntry(Resources resources, int indent) {
+
+            StringBuilder result = new StringBuilder();
+            int padding = mIndent +indent;
+            if (padding > INDENTATION_WHITESPACE.length()) {
+                padding = INDENTATION_WHITESPACE.length();
+            }
+            result.append(INDENTATION_WHITESPACE, 0, padding);
+            result.append(LOG_LEVEL_NAME[mType.mLevel.ordinal()]).append(' ');
+
+            // special case: first parameter may be a quantity
+            if (mParameters != null && mParameters.length > 0 && mParameters[0] instanceof Integer) {
+                result.append(resources.getQuantityString(mType.getMsgId(), (Integer) mParameters[0], mParameters));
+            } else {
+                result.append(resources.getString(mType.getMsgId(), mParameters));
+            }
+
+            return result;
+        }
+
     }
 
     public static class SubLogEntryParcel extends LogEntryParcel {
@@ -200,6 +224,17 @@ public abstract class OperationResult implements Parcelable {
             dest.writeSerializable(mParameters);
             dest.writeInt(mIndent);
             dest.writeParcelable(mSubResult, 0);
+        }
+
+        @Override
+        StringBuilder getPrintableLogEntry(Resources resources, int indent) {
+
+            LogEntryParcel subEntry = mSubResult.getLog().getLast();
+            if (subEntry != null) {
+                return subEntry.getPrintableLogEntry(resources, mIndent +indent);
+            } else {
+                return super.getPrintableLogEntry(resources, indent);
+            }
         }
 
     }
@@ -245,15 +280,15 @@ public abstract class OperationResult implements Parcelable {
         }
 
         return Notify.create(activity, logText, Notify.LENGTH_LONG, style,
-            new ActionListener() {
-                @Override
-                public void onAction() {
-                    Intent intent = new Intent(
-                            activity, LogDisplayActivity.class);
-                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
-                    activity.startActivity(intent);
-                }
-            }, R.string.snackbar_details);
+                new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Intent intent = new Intent(
+                                activity, LogDisplayActivity.class);
+                        intent.putExtra(LogDisplayFragment.EXTRA_RESULT, OperationResult.this);
+                        activity.startActivity(intent);
+                    }
+                }, R.string.snackbar_details);
 
     }
 
@@ -289,6 +324,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_IP_ERROR_IO_EXC (LogLevel.ERROR, R.string.msg_ip_error_io_exc),
         MSG_IP_ERROR_OP_EXC (LogLevel.ERROR, R.string.msg_ip_error_op_exc),
         MSG_IP_ERROR_REMOTE_EX (LogLevel.ERROR, R.string.msg_ip_error_remote_ex),
+        MSG_IP_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_ip_fingerprint_error),
+        MSG_IP_FINGERPRINT_OK (LogLevel.INFO, R.string.msg_ip_fingerprint_ok),
         MSG_IP_INSERT_KEYRING (LogLevel.DEBUG, R.string.msg_ip_insert_keyring),
         MSG_IP_INSERT_SUBKEYS (LogLevel.DEBUG, R.string.msg_ip_insert_keys),
         MSG_IP_PREPARE (LogLevel.DEBUG, R.string.msg_ip_prepare),
@@ -631,6 +668,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_TRAIL_SYM (LogLevel.DEBUG, R.string.msg_dc_trail_sym),
         MSG_DC_TRAIL_UNKNOWN (LogLevel.DEBUG, R.string.msg_dc_trail_unknown),
         MSG_DC_UNLOCKING (LogLevel.INFO, R.string.msg_dc_unlocking),
+        MSG_DC_INSECURE_ENCRYPTION_KEY (LogLevel.WARN, R.string.msg_dc_insecure_encryption_key),
         MSG_DC_INSECURE_SYMMETRIC_ENCRYPTION_ALGO(LogLevel.WARN, R.string.msg_dc_insecure_symmetric_encryption_algo),
         MSG_DC_INSECURE_HASH_ALGO(LogLevel.ERROR, R.string.msg_dc_insecure_hash_algo),
         MSG_DC_INSECURE_MDC_MISSING(LogLevel.ERROR, R.string.msg_dc_insecure_mdc_missing),
@@ -704,21 +742,21 @@ public abstract class OperationResult implements Parcelable {
 
         MSG_IMPORT_FETCH_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_error),
         MSG_IMPORT_FETCH_ERROR_DECODE (LogLevel.ERROR, R.string.msg_import_fetch_error_decode),
+        MSG_IMPORT_FETCH_ERROR_KEYSERVER(LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver),
+        MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET (LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver_secret),
+        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
         MSG_IMPORT_FETCH_KEYSERVER (LogLevel.INFO, R.string.msg_import_fetch_keyserver),
         MSG_IMPORT_FETCH_KEYSERVER_OK (LogLevel.DEBUG, R.string.msg_import_fetch_keyserver_ok),
-        MSG_IMPORT_FETCH_KEYSERVER_ERROR (LogLevel.ERROR, R.string.msg_import_fetch_keyserver_error),
-        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
         MSG_IMPORT_KEYSERVER (LogLevel.DEBUG, R.string.msg_import_keyserver),
         MSG_IMPORT_MERGE (LogLevel.DEBUG, R.string.msg_import_merge),
         MSG_IMPORT_MERGE_ERROR (LogLevel.ERROR, R.string.msg_import_merge_error),
-        MSG_IMPORT_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_import_fingerprint_error),
-        MSG_IMPORT_FINGERPRINT_OK (LogLevel.DEBUG, R.string.msg_import_fingerprint_ok),
         MSG_IMPORT_ERROR (LogLevel.ERROR, R.string.msg_import_error),
         MSG_IMPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_import_error_io),
         MSG_IMPORT_PARTIAL (LogLevel.ERROR, R.string.msg_import_partial),
         MSG_IMPORT_SUCCESS (LogLevel.OK, R.string.msg_import_success),
 
         MSG_EXPORT (LogLevel.START, R.plurals.msg_export),
+        MSG_EXPORT_FILE_NAME (LogLevel.INFO, R.string.msg_export_file_name),
         MSG_EXPORT_UPLOAD_PUBLIC (LogLevel.START, R.string.msg_export_upload_public),
         MSG_EXPORT_PUBLIC (LogLevel.DEBUG, R.string.msg_export_public),
         MSG_EXPORT_SECRET (LogLevel.DEBUG, R.string.msg_export_secret),
@@ -763,10 +801,9 @@ public abstract class OperationResult implements Parcelable {
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
 
         MSG_REVOKE_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_revoke_error_empty),
-        MSG_REVOKE_ERROR_MULTI_SECRET (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
-        MSG_REVOKE_ERROR_NOT_FOUND (LogLevel.DEBUG, R.string.msg_revoke_error_multi_secret),
+        MSG_REVOKE_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_revoke_error_not_found),
         MSG_REVOKE (LogLevel.DEBUG, R.string.msg_revoke_key),
-        MSG_REVOKE_KEY_FAIL (LogLevel.ERROR, R.string.msg_revoke_key_fail),
+        MSG_REVOKE_ERROR_KEY_FAIL (LogLevel.ERROR, R.string.msg_revoke_key_fail),
         MSG_REVOKE_OK (LogLevel.OK, R.string.msg_revoke_ok),
 
         // keybase verification
@@ -781,17 +818,31 @@ public abstract class OperationResult implements Parcelable {
         MSG_KEYBASE_ERROR_PAYLOAD_MISMATCH(LogLevel.ERROR,
                 R.string.msg_keybase_error_msg_payload_mismatch),
 
-        // export log
-        MSG_EXPORT_LOG(LogLevel.START,R.string.msg_export_log_start),
-        MSG_EXPORT_LOG_EXPORT_ERROR_NO_FILE(LogLevel.ERROR,R.string.msg_export_log_error_no_file),
-        MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN(LogLevel.ERROR,R.string.msg_export_log_error_fopen),
-        MSG_EXPORT_LOG_EXPORT_ERROR_WRITING(LogLevel.ERROR,R.string.msg_export_log_error_writing),
-        MSG_EXPORT_LOG_EXPORT_SUCCESS (LogLevel.OK, R.string.msg_export_log_success),
-
-        // mim parsing
+        // mime parsing
         MSG_MIME_PARSING(LogLevel.START,R.string.msg_mime_parsing_start),
         MSG_MIME_PARSING_ERROR(LogLevel.ERROR,R.string.msg_mime_parsing_error),
         MSG_MIME_PARSING_SUCCESS(LogLevel.OK,R.string.msg_mime_parsing_success),
+
+        MSG_LV (LogLevel.START, R.string.msg_lv),
+        MSG_LV_MATCH (LogLevel.DEBUG, R.string.msg_lv_match),
+        MSG_LV_MATCH_ERROR (LogLevel.ERROR, R.string.msg_lv_match_error),
+        MSG_LV_FP_OK (LogLevel.DEBUG, R.string.msg_lv_fp_ok),
+        MSG_LV_FP_ERROR (LogLevel.ERROR, R.string.msg_lv_fp_error),
+
+        MSG_LV_ERROR_TWITTER_AUTH (LogLevel.ERROR, R.string.msg_lv_error_twitter_auth),
+        MSG_LV_ERROR_TWITTER_HANDLE (LogLevel.ERROR, R.string.msg_lv_error_twitter_handle),
+        MSG_LV_ERROR_TWITTER_RESPONSE (LogLevel.ERROR, R.string.msg_lv_error_twitter_response),
+        MSG_LV_ERROR_GITHUB_HANDLE (LogLevel.ERROR, R.string.msg_lv_error_github_handle),
+        MSG_LV_ERROR_GITHUB_NOT_FOUND (LogLevel.ERROR, R.string.msg_lv_error_github_not_found),
+
+        MSG_LV_FETCH (LogLevel.DEBUG, R.string.msg_lv_fetch),
+        MSG_LV_FETCH_REDIR (LogLevel.DEBUG, R.string.msg_lv_fetch_redir),
+        MSG_LV_FETCH_OK (LogLevel.DEBUG, R.string.msg_lv_fetch_ok),
+        MSG_LV_FETCH_ERROR (LogLevel.ERROR, R.string.msg_lv_fetch_error),
+        MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
+        MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
+        MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
+        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing),
         ;
 
         public final int mMsgId;
@@ -815,6 +866,10 @@ public abstract class OperationResult implements Parcelable {
         OK, // should occur once at the end of a successful operation
         CANCELLED, // should occur once at the end of a cancelled operation
     }
+    // for print of debug log. keep those in sync with above!
+    static final String[] LOG_LEVEL_NAME = new String[] {
+            "[DEBUG]", "[INFO]", "[WARN]", "[ERROR]", "[START]", "[OK]", "[CANCEL]"
+    };
 
     @Override
     public int describeContents() {
@@ -913,6 +968,20 @@ public abstract class OperationResult implements Parcelable {
         public Iterator<LogEntryParcel> iterator() {
             return mParcels.iterator();
         }
+
+        /**
+         * returns an indented String of an entire OperationLog
+         * @param indent padding to add at the start of all log entries, made for use with SubLogs
+         * @return printable, indented version of passed operationLog
+         */
+        public String getPrintableOperationLog(Resources resources, int indent) {
+            StringBuilder log = new StringBuilder();
+            for (LogEntryParcel entry : this) {
+                log.append(entry.getPrintableLogEntry(resources, indent)).append("\n");
+            }
+            return log.toString().substring(0, log.length() -1); // get rid of extra new line
+        }
+
     }
 
 }

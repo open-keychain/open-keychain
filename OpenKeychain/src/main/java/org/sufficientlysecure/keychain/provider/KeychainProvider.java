@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -38,6 +39,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -62,6 +64,8 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_SECRET = 204;
     private static final int KEY_RING_CERTS = 205;
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
+    private static final int KEY_RING_LINKED_IDS = 207;
+    private static final int KEY_RING_LINKED_ID_CERTS = 208;
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
@@ -71,6 +75,9 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
+
+    private static final int UPDATED_KEYS = 500;
+    private static final int UPDATED_KEYS_SPECIFIC = 501;
 
     protected UriMatcher mUriMatcher;
 
@@ -127,6 +134,9 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/_/unified
          * key_rings/_/keys
          * key_rings/_/user_ids
+         * key_rings/_/linked_ids
+         * key_rings/_/linked_ids/_
+         * key_rings/_/linked_ids/_/certs
          * key_rings/_/public
          * key_rings/_/secret
          * key_rings/_/certs
@@ -142,6 +152,13 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_USER_IDS,
                 KEY_RING_USER_IDS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_LINKED_IDS,
+                KEY_RING_LINKED_IDS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
+                        + KeychainContract.PATH_LINKED_IDS + "/*/"
+                        + KeychainContract.PATH_CERTS,
+                KEY_RING_LINKED_ID_CERTS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);
@@ -178,6 +195,12 @@ public class KeychainProvider extends ContentProvider {
 
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
+
+        /**
+         * to access table containing last updated dates of keys
+         */
+        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
+        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
 
         return matcher;
     }
@@ -217,6 +240,11 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RING_SECRET:
                 return KeyRings.CONTENT_ITEM_TYPE;
+
+            case UPDATED_KEYS:
+                return UpdatedKeys.CONTENT_TYPE;
+            case UPDATED_KEYS_SPECIFIC:
+                return UpdatedKeys.CONTENT_ITEM_TYPE;
 
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
@@ -477,7 +505,8 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RINGS_USER_IDS:
-            case KEY_RING_USER_IDS: {
+            case KEY_RING_USER_IDS:
+            case KEY_RING_LINKED_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
@@ -502,13 +531,15 @@ public class KeychainProvider extends ContentProvider {
                 groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
                         + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
 
-                // for now, we only respect user ids here, so TYPE must be NULL
-                // TODO expand with KEY_RING_USER_PACKETS query type which lifts this restriction
-                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                if (match == KEY_RING_LINKED_IDS) {
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = "
+                            + WrappedUserAttribute.UAT_URI_ATTRIBUTE);
+                } else {
+                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                }
 
                 // If we are searching for a particular keyring's ids, add where
-                if (match == KEY_RING_USER_IDS) {
-                    // TODO remove with the thing above
+                if (match == KEY_RING_USER_IDS || match == KEY_RING_LINKED_IDS) {
                     qb.appendWhere(" AND ");
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
@@ -559,7 +590,8 @@ public class KeychainProvider extends ContentProvider {
             }
 
             case KEY_RING_CERTS:
-            case KEY_RING_CERTS_SPECIFIC: {
+            case KEY_RING_CERTS_SPECIFIC:
+            case KEY_RING_LINKED_ID_CERTS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
                 projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
@@ -580,10 +612,6 @@ public class KeychainProvider extends ContentProvider {
                         + " AND "
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_PACKETS + "." + UserPackets.RANK
-                        // for now, we only return user ids here, so TYPE must be NULL
-                        // TODO at some point, we should lift this restriction
-                        + " AND "
-                            + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL"
                     + ") LEFT JOIN " + Tables.USER_PACKETS + " AS signer ON ("
                             + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
                             + "signer." + UserPackets.MASTER_KEY_ID
@@ -603,6 +631,33 @@ public class KeychainProvider extends ContentProvider {
                     qb.appendWhereEscapeString(uri.getPathSegments().get(4));
                 }
 
+                if (match == KEY_RING_LINKED_ID_CERTS) {
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
+                            + UserPackets.TYPE + " IS NOT NULL");
+
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
+                            + UserPackets.RANK + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+                } else {
+                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
+                }
+
+                break;
+            }
+
+            case UPDATED_KEYS:
+            case UPDATED_KEYS_SPECIFIC: {
+                HashMap<String, String> projectionMap = new HashMap<>();
+                qb.setTables(Tables.UPDATED_KEYS);
+                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "."
+                        + UpdatedKeys.MASTER_KEY_ID);
+                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "."
+                        + UpdatedKeys.LAST_UPDATED);
+                qb.setProjectionMap(projectionMap);
+                if (match == UPDATED_KEYS_SPECIFIC) {
+                    qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                }
                 break;
             }
 
@@ -724,6 +779,12 @@ public class KeychainProvider extends ContentProvider {
                     // TODO this would be better handled in savePublicKeyRing directly!
                     db.replaceOrThrow(Tables.CERTS, null, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
+                    break;
+                }
+                case UPDATED_KEYS: {
+                    long updatedKeyId = db.replace(Tables.UPDATED_KEYS, null, values);
+                    rowUri = UpdatedKeys.CONTENT_URI.buildUpon().appendPath("" + updatedKeyId)
+                            .build();
                     break;
                 }
                 case API_APPS: {

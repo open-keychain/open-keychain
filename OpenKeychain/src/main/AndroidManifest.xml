@@ -71,7 +71,7 @@
         android:name=".KeychainApplication"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
         <activity
@@ -110,6 +110,13 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <!-- NOTE: Dont use configChanges for QR Code view! We use a different layout for landscape -->
+        <activity
+            android:name=".ui.linked.LinkedIdWizard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_linked_create"
+            android:parentActivityName=".ui.ViewKeyActivity"
+            >
+        </activity>
         <activity
             android:name=".ui.QrCodeViewActivity"
             android:label="@string/share_qr_code_dialog_title" />
@@ -691,7 +698,6 @@
         <activity
             android:name=".ui.OrbotRequiredDialogActivity"
             android:theme="@android:style/Theme.NoDisplay" />
-        <activity android:name=".ui.PassphraseWizardActivity" />
         <!--
         NOTE: singleTop is set to get NFC foreground dispatch to work.
               Then, all NFC intents will be broadcasted to onNewIntent() of this activity!
@@ -701,7 +707,7 @@
          -->
         <activity
             android:name=".ui.NfcOperationActivity"
-            android:theme="@style/Theme.Keychain.Light.Dialog.SecurityToken"
+            android:theme="@style/Theme.Keychain.Light.Dialog"
             android:allowTaskReparenting="true"
             android:launchMode="singleTop"
             android:taskAffinity=":Nfc" />
@@ -723,10 +729,13 @@
             android:name=".service.KeychainService"
             android:exported="false" />
 
+        <!-- label is made to be "Keyserver Sync" since that is the only context in which
+        the user will see it-->
         <provider
             android:name=".provider.KeychainProvider"
             android:authorities="${applicationId}.provider"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/keyserver_sync_settings_title"/>
 
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity
@@ -758,8 +767,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
-        <!-- OpenPGP Remote API, this service has explicitly no permission requirements
-             because we are using our own package based allow/disallow system -->
+        <!-- DEPRECATED service,
+           using this service may lead to truncated data being returned to the caller
+         -->
         <service
             android:name=".remote.OpenPgpService"
             android:enabled="true"
@@ -768,6 +778,19 @@
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService" />
+            </intent-filter>
+        </service>
+
+        <!-- OpenPGP Remote API, this service has explicitly no permission requirements
+             because we are using our own package based allow/disallow system -->
+        <service
+            android:name=".remote.OpenPgpService2"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":remote_api_2"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="org.openintents.openpgp.IOpenPgpService2" />
             </intent-filter>
         </service>
 
@@ -798,6 +821,20 @@
             <meta-data
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/custom_pgp_contacts_structure" />
+        </service>
+
+        <service
+            android:name=".service.KeyserverSyncAdapterService"
+            android:exported="true"
+            android:process=":sync"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/keyserver_sync_adapter_desc" />
         </service>
 
         <!-- Storage Provider for temporary decrypted files -->

@@ -171,7 +171,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
                 CertifyAction action = actions.get(keyId);
                 if (actions.get(keyId) == null) {
-                    actions.put(keyId, new CertifyAction(keyId, uids));
+                    actions.put(keyId, new CertifyAction(keyId, uids, null));
                 } else {
                     action.mUserIds.addAll(uids);
                 }

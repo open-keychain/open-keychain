@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -116,32 +117,27 @@ public class PgpHelper {
         }
     }
 
-    public static String getPgpContent(CharSequence input) {
-        // only decrypt if clipboard content is available and a pgp message or cleartext signature
-        if (!TextUtils.isEmpty(input)) {
-            Log.dEscaped(Constants.TAG, "input: " + input);
+    public static String getPgpContent(@NonNull CharSequence input) {
+        Log.dEscaped(Constants.TAG, "input: " + input);
 
-            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
+        Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
+        if (matcher.matches()) {
+            String text = matcher.group(1);
+            text = fixPgpMessage(text);
+
+            Log.dEscaped(Constants.TAG, "input fixed: " + text);
+            return text;
+        } else {
+            matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
             if (matcher.matches()) {
                 String text = matcher.group(1);
-                text = fixPgpMessage(text);
+                text = fixPgpCleartextSignature(text);
 
                 Log.dEscaped(Constants.TAG, "input fixed: " + text);
                 return text;
             } else {
-                matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
-                if (matcher.matches()) {
-                    String text = matcher.group(1);
-                    text = fixPgpCleartextSignature(text);
-
-                    Log.dEscaped(Constants.TAG, "input fixed: " + text);
-                    return text;
-                } else {
-                    return null;
-                }
+                return null;
             }
-        } else {
-            return null;
         }
     }
 

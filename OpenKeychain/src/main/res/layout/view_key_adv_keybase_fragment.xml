@@ -1,126 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorButtonRow"
-        android:padding="8dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/key_trust_header_text"
-        android:gravity="center_horizontal" />
+        android:layout_gravity="center"
+        card_view:cardBackgroundColor="?attr/colorCardViewBackground"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="2dp"
+        card_view:cardUseCompatPadding="true">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!-- focusable and related properties to workaround http://stackoverflow.com/q/16182331-->
-        <LinearLayout
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:descendantFocusability="beforeDescendants"
-            android:orientation="vertical"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:orientation="vertical">
 
             <TextView
-                style="@style/SectionHeader"
+                style="@style/CardViewHeader"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/section_should_you_trust"
-                android:layout_weight="1" />
+                android:layout_height="wrap_content"
+                android:text="@string/section_keybase_proofs" />
 
             <TextView
-                android:id="@+id/view_key_trust_readout"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginLeft="8dp"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceMedium" />
+                android:layout_height="wrap_content"
+                android:background="?attr/colorButtonRow"
+                android:gravity="center_horizontal"
+                android:padding="8dp"
+                android:text="@string/key_trust_header_text"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="14dp"
-                android:text="@string/section_cloud_evidence"
-                android:layout_weight="1" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider" />
 
             <LinearLayout
-                android:id="@+id/view_key_trust_search_cloud"
                 android:layout_width="match_parent"
-                android:layout_height="?android:attr/listPreferredItemHeight"
-                android:clickable="true"
-                android:paddingRight="4dp"
-                style="?android:attr/borderlessButtonStyle"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp">
 
                 <TextView
-                    android:paddingLeft="8dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_width="0dip"
-                    android:layout_height="match_parent"
-                    android:text="@string/key_trust_start_cloud_search"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
+                    android:id="@+id/view_key_trust_cloud_narrative"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="14dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1" />
 
-                <ImageView
+                <TableLayout
+                    android:id="@+id/view_key_proof_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/view_key_proof_verify_header"
+                    style="@style/SectionHeader"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_action_search_cloud"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    android:text="@string/section_proof_details" />
+
+                <TextView
+                    android:id="@+id/view_key_proof_verify_detail"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/view_key_trust_cloud_narrative"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginBottom="14dp"
-                android:layout_marginLeft="8dp"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceMedium" />
-
-            <TableLayout
-                android:id="@+id/view_key_proof_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/view_key_proof_verify_header"
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/section_proof_details"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/view_key_proof_verify_detail"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginTop="14dp"
-                android:layout_marginLeft="8dp"
-                android:layout_weight="1"
-                style="?android:attr/textAppearanceMedium" />
-
-
         </LinearLayout>
 
-    </ScrollView>
+    </android.support.v7.widget.CardView>
+
 </LinearLayout>

@@ -145,6 +145,8 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             return new ExportResult(ExportResult.RESULT_ERROR, log);
         }
 
+        log.add(LogType.MSG_EXPORT_FILE_NAME, 1, outputFile);
+
         // check if storage is ready
         if (!FileHelper.isStorageMounted(outputFile)) {
             log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);

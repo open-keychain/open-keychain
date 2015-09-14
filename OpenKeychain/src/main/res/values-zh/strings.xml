@@ -29,22 +29,38 @@
   <string name="title_help">帮助</string>
   <string name="title_log_display">日志</string>
   <string name="title_exchange_keys">交换密钥</string>
+  <string name="title_advanced_key_info">更多信息</string>
+  <string name="title_delete_secret_key">删除你的密钥 \'%s\' ？</string>
   <string name="title_export_log">导出日志</string>
   <string name="title_manage_my_keys">管理我的密钥</string>
   <!--section-->
   <string name="section_user_ids">用户名</string>
   <string name="section_yubikey">YubiKey</string>
+  <string name="section_linked_system_contact">关联系统联系人</string>
   <string name="section_should_you_trust">应该相信此密钥?</string>
+  <string name="section_proof_details">验证</string>
+  <string name="section_cloud_evidence">云端验证</string>
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">在线搜索</string>
+  <string name="section_passphrase_cache">密码缓存</string>
+  <string name="section_proxy_settings">代理服务器设置</string>
+  <string name="section_gui">界面</string>
   <string name="section_certify">确认</string>
   <string name="section_actions">动作</string>
+  <string name="section_share_key">分享密钥</string>
   <string name="section_key_server">密钥服务器</string>
   <string name="section_fingerprint">签名</string>
   <string name="section_encrypt">加密</string>
+  <string name="section_decrypt">解密/验证</string>
+  <string name="section_current_expiry">当前有效期</string>
+  <string name="section_new_expiry">新有效期</string>
   <!--button-->
   <string name="btn_decrypt_verify_file">解密并验证文件</string>
   <string name="btn_encrypt_share_file">加密并分享文件</string>
+  <string name="btn_encrypt_save_file">加密至文件</string>
+  <string name="btn_save_file">保存文件</string>
+  <string name="btn_save">保存</string>
+  <string name="btn_view_log">查看日志</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">删除</string>
   <string name="btn_no_date">没有日期</string>
@@ -52,6 +68,8 @@
   <string name="btn_export_to_server">导出到服务器</string>
   <string name="btn_next">下一步</string>
   <string name="btn_back">返回</string>
+  <string name="btn_no">否</string>
+  <string name="btn_match">密钥指纹符合</string>
   <string name="btn_share_encrypted_signed">加密并分享</string>
   <string name="btn_copy_encrypted_signed">加密并复制</string>
   <string name="btn_view_cert_key">显示密钥</string>
@@ -59,16 +77,19 @@
   <string name="btn_add_files">添加密钥</string>
   <string name="btn_share_decrypted_text">分享解密文本</string>
   <string name="btn_copy_decrypted_text">复制解密文本</string>
+  <string name="btn_decrypt_clipboard">从剪贴板导入</string>
+  <string name="btn_decrypt_files">选择导入文件</string>
   <string name="btn_encrypt_files">加密文件</string>
   <string name="btn_encrypt_text">加密文本</string>
   <string name="btn_add_email">添加额外的邮件地址</string>
   <string name="btn_unlock">解锁</string>
   <string name="btn_add_keyserver">添加</string>
+  <string name="btn_save_default">保存为默认值</string>
   <string name="btn_saved">已保存</string>
   <!--menu-->
   <string name="menu_preferences">参数设置</string>
   <string name="menu_help">帮助</string>
-  <string name="menu_export_key">导出密钥</string>
+  <string name="menu_export_key">导出到文件</string>
   <string name="menu_delete_key">删除密钥</string>
   <string name="menu_manage_keys">管理我的密钥</string>
   <string name="menu_search">搜索</string>
@@ -79,10 +100,14 @@
   <string name="menu_export_all_keys">导出全部密钥</string>
   <string name="menu_update_all_keys">更新所有密钥</string>
   <string name="menu_advanced">更多信息</string>
+  <string name="menu_certify_fingerprint">通过密钥指纹比较确认</string>
   <string name="menu_export_log">导出日志</string>
+  <string name="menu_keyserver_add">添加</string>
   <!--label-->
+  <string name="label_message">文本</string>
   <string name="label_file">文件</string>
   <string name="label_files">多个文件</string>
+  <string name="label_file_colon">文件:</string>
   <string name="label_no_passphrase">没有密码</string>
   <string name="label_passphrase">密码</string>
   <string name="label_unlock">解锁中...</string>
@@ -92,7 +117,10 @@
   <string name="label_ascii_armor">文件ASCII文本化</string>
   <string name="label_file_ascii_armor">启用ASCII文本化</string>
   <string name="label_write_version_header">写入文件头信息</string>
+  <string name="label_write_version_header_summary">在OpenPGP签名、加密文本和导出密钥中写入 \'OpenKeychain v2.7\' 标记。</string>
   <string name="label_use_default_yubikey_pin">使用默认YubiKey PIN</string>
+  <string name="label_use_num_keypad_for_yubikey_pin">为YubiKey PIN使用数字键盘</string>
+  <string name="label_label_use_default_yubikey_pin_summary">使用默认PIN (123456)访问YubiKeys</string>
   <string name="label_message_compression">文本压缩</string>
   <string name="label_file_compression">文件压缩</string>
   <string name="label_keyservers">选择OpenPGP 密钥服务器</string>
@@ -108,8 +136,17 @@
   <string name="expiry_date_dialog_title">有效期</string>
   <string name="label_encrypt_filenames">加密文件名</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
+  <string name="pref_proxy_normal_title">启用其它代理服务器</string>
+  <string name="pref_proxy_host_title">服务器地址</string>
+  <string name="pref_proxy_host_err_invalid">服务器地址不能为空</string>
+  <string name="pref_proxy_port_title">端口</string>
+  <string name="pref_proxy_port_err_invalid">不正确的端口</string>
+  <string name="pref_proxy_type_title">类型</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
   <!--StartOrbotDialogFragment strings-->
@@ -218,6 +255,7 @@
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
@@ -231,6 +269,9 @@
   <string name="api_select_pub_keys_text">请重审收件人列表</string>
   <!--Share-->
   <string name="share_nfc_dialog">使用NFC分享</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
@@ -260,8 +301,10 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

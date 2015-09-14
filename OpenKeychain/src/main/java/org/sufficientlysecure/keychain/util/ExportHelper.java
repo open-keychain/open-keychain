@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.util;
 
 import java.io.File;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -67,7 +69,7 @@ public class ExportHelper
                     : R.string.specify_backup_dest_single);
         }
 
-        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
+        FileHelper.saveDocumentDialog(new FileHelper.FileDialogCallback() {
             @Override
             public void onFileSelected(File file, boolean checked) {
                 mExportFile = file;
@@ -98,7 +100,10 @@ public class ExportHelper
     }
 
     @Override
-    public void onCryptoOperationSuccess(ExportResult result) {
+    final public void onCryptoOperationSuccess(ExportResult result) {
+        // trigger scan of the created 'media' file so it shows up on MTP
+        // http://stackoverflow.com/questions/13737261/nexus-4-not-showing-files-via-mtp
+        mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(mExportFile)));
         result.createNotify(mActivity).show();
     }
 

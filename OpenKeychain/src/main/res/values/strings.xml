@@ -14,6 +14,7 @@
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_edit_key">"Edit Key"</string>
+    <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
@@ -36,21 +37,26 @@
     <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Extended Information"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
-    <string name="title_export_log">"Export Log"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
     <string name="section_yubikey">"YubiKey"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
+    <string name="section_keybase_proofs">"Keybase.io Proofs"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
-    <string name="section_cloud_evidence">"Proofs from the cloud"</string>
     <string name="section_keys">"Subkeys"</string>
-    <string name="section_cloud_search">"Cloud search"</string>
-    <string name="section_passphrase_cache">"Password/PIN Handling"</string>
-    <string name="section_proxy_settings">"Proxy Settings"</string>
+    <string name="section_cloud_search">"Key Search"</string>
+    <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
+    <string name="section_passphrase_cache">"Passwords and PINs"</string>
+    <string name="section_passphrase_cache_summary">"Handling, user interface, remember time"</string>
+    <string name="section_proxy_settings">"Network Anonymity"</string>
+    <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
+    <string name="section_sync_settings">"Synchronization"</string>
+    <string name="section_sync_settings_summary">"Automatic key updates, contact linking"</string>
+    <string name="section_experimental_features">"Experimental Features"</string>
     <string name="section_certify">"Confirm"</string>
     <string name="section_actions">"Actions"</string>
     <string name="section_share_key">"Key"</string>
@@ -77,12 +83,12 @@
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
-    <string name="btn_share_encrypted_signed">"Encrypt and share text"</string>
-    <string name="btn_copy_encrypted_signed">"Encrypt and copy text"</string>
+    <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
+    <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
-    <string name="btn_share_decrypted_text">"Share decrypted text"</string>
+    <string name="btn_share_decrypted_text">"Share"</string>
     <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
     <string name="btn_decrypt_clipboard">"Read from clipboard"</string>
     <string name="btn_decrypt_files">"Select input file"</string>
@@ -108,8 +114,9 @@
     <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
-    <string name="menu_certify_fingerprint">"Confirm via fingerprint comparison"</string>
-    <string name="menu_export_log">"Export Log"</string>
+    <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
+    <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
+    <string name="menu_share_log">"Share Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
 
@@ -154,7 +161,7 @@
     <string name="label_name">"Name"</string>
     <string name="label_comment">"Comment"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Synchronize with the cloud"</string>
+    <string name="label_send_key">"Synchronize with the Internet"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_keyservers_title">"Keyservers"</string>
@@ -175,6 +182,26 @@
     <string name="pref_keybase">"keybase.io"</string>
     <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
 
+    <string name="label_sync_settings_keyserver_title">"Automatically update keys"</string>
+    <string name="label_sync_settings_keyserver_summary_on">"Keys older than a week are updated from the preferred keyserver"</string>
+    <string name="label_sync_settings_keyserver_summary_off">"Keys not automatically updated"</string>
+    <string name="label_sync_settings_contacts_title">"Link keys to contacts"</string>
+    <string name="label_sync_settings_contacts_summary_on">"Link keys to contacts based on names and email addresses. This happens completely offline on your device."</string>
+    <string name="label_sync_settings_contacts_summary_off">"New keys will not be linked to contacts"</string>
+    <!-- label shown in Android settings under the OpenKeychain account -->
+    <string name="keyserver_sync_settings_title">"Automatically update keys"</string>
+
+    <string name="label_experimental_settings_desc_title">"Warning"</string>
+    <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
+
+    <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
+    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with words instead of hexadecimal fingerprints"</string>
+    <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
+    <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
+    <string name="label_experimental_settings_keybase_title">"Keybase.io Proofs"</string>
+    <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
+    <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
+
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
@@ -188,8 +215,6 @@
     <!-- proxy type choices and values -->
     <string name="pref_proxy_type_choice_http">"HTTP"</string>
     <string name="pref_proxy_type_choice_socks">"SOCKS"</string>
-    <string name="pref_proxy_type_value_http">"proxyHttp"</string>
-    <string name="pref_proxy_type_value_socks">"proxySocks"</string>
 
     <!-- OrbotHelper strings -->
     <string name="orbot_ignore_tor">"Don\'t use Tor"</string>
@@ -210,8 +235,8 @@
     <string name="orbot_start_dialog_ignore_tor">"Don\'t use Tor"</string>
 
 
-    <string name="user_id_no_name">"&lt;no name&gt;"</string>
-    <string name="none">"&lt;none&gt;"</string>
+    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+    <string name="none"><![CDATA[<none>]]></string>
 
     <plurals name="n_keys">
         <item quantity="one">"1 key"</item>
@@ -239,6 +264,7 @@
     <string name="choice_4hours">"4 hours"</string>
     <string name="choice_8hours">"8 hours"</string>
     <string name="choice_forever">"forever"</string>
+    <string name="choice_select_cert">"Select a Key"</string>
     <string name="dsa">"DSA"</string>
     <string name="elgamal">"ElGamal"</string>
     <string name="rsa">"RSA"</string>
@@ -294,8 +320,6 @@
     <string name="no_keys_exported">"No keys exported."</string>
     <string name="key_creation_el_gamal_info">"Note: only subkeys support ElGamal."</string>
     <string name="key_not_found">"Couldn't find key %08X."</string>
-
-    <string name="specify_file_to_export_log_to">"Please specify file to export to. \nWARNING: File will be overwritten if it exists."</string>
 
     <plurals name="bad_keys_encountered">"
         <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
@@ -467,7 +491,7 @@
 
     <!-- Import -->
     <string name="import_tab_keyserver">"Keyserver"</string>
-    <string name="import_tab_cloud">"Search Cloud"</string>
+    <string name="import_tab_cloud">"Key Search"</string>
     <string name="import_tab_direct">"File/Clipboard"</string>
     <string name="import_tab_qr_code">"QR Code/NFC"</string>
     <string name="import_import">"Import selected keys"</string>
@@ -487,11 +511,11 @@
 
     <!-- Import result toast -->
     <plurals name="import_keys_added_and_updated_1">
-        <item quantity="one">"Successfully imported key"</item>
+        <item quantity="one">"Successfully imported one key"</item>
         <item quantity="other">"Successfully imported %1$d keys"</item>
     </plurals>
     <plurals name="import_keys_added_and_updated_2">
-        <item quantity="one">"and updated key%2$s."</item>
+        <item quantity="one">"and updated one key%2$s."</item>
         <item quantity="other">"and updated %1$d keys%2$s."</item>
     </plurals>
     <plurals name="import_keys_added">
@@ -541,8 +565,8 @@
 
     <!-- Certify result toast -->
     <plurals name="certify_keys_ok">
-        <item quantity="one">"Successfully certified key%2$s."</item>
-        <item quantity="other">"Successfully certified %1$d keys%2$s."</item>
+        <item quantity="one">"Successfully confirmed key%2$s."</item>
+        <item quantity="other">"Successfully confirmed %1$d keys%2$s."</item>
     </plurals>
     <plurals name="certify_keys_with_errors">
         <item quantity="one">"Certification failed!"</item>
@@ -606,8 +630,8 @@
     <string name="retry_up_dialog_btn_cancel">"Cancel Operation"</string>
 
     <!-- Delete or revoke private key dialog -->
-    <string name="del_rev_dialog_message">"If you would no longer like to use this key, it should be revoked and uploaded. Select delete only if you wish to remove the key from OpenKeychain but continue to use it from somewhere else."</string>
-    <string name="del_rev_dialog_title">"Revoke/Delete key \"%s\""</string>
+    <string name="del_rev_dialog_message">"If you would no longer like to use this key, it should be revoked and uploaded. Select 'DELETE ONLY' if you wish to remove the key from OpenKeychain but continue to use it from somewhere else."</string>
+    <string name="del_rev_dialog_title">"Revoke/Delete key '%s'"</string>
     <string name="del_rev_dialog_btn_revoke">"Revoke and upload"</string>
     <string name="del_rev_dialog_btn_delete">"Delete only"</string>
 
@@ -624,7 +648,10 @@
 
     <string name="key_list_empty_text1">"No keys found!"</string>
     <string name="key_list_filter_show_all">"Show all keys"</string>
-    <string name="key_list_filter_show_certified">"Show certified keys only"</string>
+    <string name="key_list_filter_show_certified">"Show confirmed keys only"</string>
+    <string name="key_list_fab_qr_code">"Scan QR Code"</string>
+    <string name="key_list_fab_search">"Key Search"</string>
+    <string name="key_list_fab_import">"Import from File"</string>
 
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit key"</string>
@@ -642,21 +669,15 @@
     <string name="key_view_tab_keybase">"Keybase.io"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
-    <string name="user_id_info_certified_title">"Certified"</string>
-    <string name="user_id_info_certified_text">"This identity has been certified by you."</string>
-    <string name="user_id_info_uncertified_title">"Not certified"</string>
-    <string name="user_id_info_uncertified_text">"This identity has not been certified yet. You cannot be sure if the identity really corresponds to a specific person."</string>
+    <string name="user_id_info_certified_title">"Confirmed"</string>
+    <string name="user_id_info_certified_text">"This identity has been confirmed by you."</string>
+    <string name="user_id_info_uncertified_title">"Not confirmed"</string>
+    <string name="user_id_info_uncertified_text">"This identity has not been confirmed yet. You cannot be sure if the identity really corresponds to a specific person."</string>
     <string name="user_id_info_invalid_title">"Invalid"</string>
     <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 
     <!-- Key trust -->
-    <string name="key_trust_already_verified">"You have already confirmed this key!"</string>
-    <string name="key_trust_it_is_yours">"This is one of your keys!"</string>
-    <string name="key_trust_maybe">"This key is neither revoked nor expired.\nYou haven’t confirmed it, but you may choose to trust it."</string>
-    <string name="key_trust_revoked">"This key has been revoked by its owner. You should not trust it."</string>
-    <string name="key_trust_expired">"This key has expired. You should not trust it."</string>
-    <string name="key_trust_old_keys">"It may be OK to use this to decrypt an old message dating from the time when this key was valid."</string>
-    <string name="key_trust_no_cloud_evidence">"No proof from the cloud on this key’s trustworthiness."</string>
+    <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
     <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
     <string name="key_trust_header_text">"Note: Keybase.io proofs are an experimental feature of OpenKeychain. We encourage you to scan QR Codes or exchange keys via NFC in addition to confirming them."</string>
@@ -720,7 +741,7 @@
     <string name="edit_key_error_bad_nfc_stripped">"Cannot move key to smart card (either stripped or 'divert-to-card')!"</string>
 
     <!-- Create key -->
-    <string name="create_key_upload">"Synchronize with the cloud"</string>
+    <string name="create_key_upload">"Synchronize with the Internet"</string>
     <string name="create_key_empty">"This field is required"</string>
     <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
@@ -760,7 +781,7 @@
     <string name="add_keyserver_verified">"Keyserver verified!"</string>
     <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
     <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
-    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your internet connection."</string>
+    <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your Internet connection."</string>
     <string name="keyserver_preference_deleted">"%s deleted"</string>
     <string name="keyserver_preference_cannot_delete_last">"Cannot delete last keyserver. At least one is required!"</string>
 
@@ -802,6 +823,8 @@
     <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
     <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
+    <string name="msg_ip_fingerprint_error">"Fingerprint of importing key does not match expected!"</string>
+    <string name="msg_ip_fingerprint_ok">"Fingerprint check OK"</string>
     <string name="msg_ip_insert_keyring">"Encoding keyring data"</string>
     <string name="msg_ip_insert_keys">"Parsing keys"</string>
     <string name="msg_ip_prepare">"Preparing database operations"</string>
@@ -826,7 +849,7 @@
     <string name="msg_ip_master_flags_xxxa">"Master flags: authenticate"</string>
     <string name="msg_ip_master_flags_xxxx">"Master flags: none"</string>
     <string name="msg_ip_merge_public">"Merging imported data into existing public keyring"</string>
-    <string name="msg_ip_merge_secret">"Merging imported data into existing public keyring"</string>
+    <string name="msg_ip_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
@@ -895,7 +918,7 @@
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
-    <string name="msg_is_merge_secret">"Merging imported data into existing public keyring"</string>
+    <string name="msg_is_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_is_merge_special">"Merging in self-certificates data from public keyring"</string>
     <string name="msg_is_pubring_generate">"Generating public keyring from secret keyring"</string>
     <string name="msg_is_subkey_nonexistent">"Subkey %s unavailable in secret key"</string>
@@ -1163,6 +1186,7 @@
     <string name="msg_dc_trail_sym">"Encountered trailing, symmetrically encrypted data"</string>
     <string name="msg_dc_trail_unknown">"Encountered trailing data of unknown type"</string>
     <string name="msg_dc_unlocking">"Unlocking secret key"</string>
+    <string name="msg_dc_insecure_encryption_key">"Insecure encryption key was used! This can happen because the key is old, or from an attack."</string>
     <string name="msg_dc_insecure_symmetric_encryption_algo">"Insecure encryption algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
     <string name="msg_dc_insecure_hash_algo">"Insecure hash algorithm has been used! This can happen because the application is out of date, or from an attack."</string>
     <string name="msg_dc_insecure_mdc_missing">"Missing the Modification Detection Code (MDC) packet! This can happen because the encrypting application is out of date, or from a downgrade attack."</string>
@@ -1251,13 +1275,12 @@
     </plurals>
     <string name="msg_import_fetch_error_decode">"Error decoding retrieved keyring!"</string>
     <string name="msg_import_fetch_error">"Key could not be retrieved! (Network problems?)"</string>
+    <string name="msg_import_fetch_error_keyserver">"Could not retrieve key from keyservers: %s"</string>
+    <string name="msg_import_fetch_error_keyserver_secret">"Cannot import secret key from keyserver!"</string>
     <string name="msg_import_fetch_keybase">"Retrieving from keybase.io: %s"</string>
-    <string name="msg_import_fetch_keyserver_error">"Could not retrieve key from keyservers: %s"</string>
     <string name="msg_import_fetch_keyserver">"Retrieving from keyserver: %s"</string>
     <string name="msg_import_fetch_keyserver_ok">"Key retrieval successful"</string>
     <string name="msg_import_keyserver">"Using keyserver %s"</string>
-    <string name="msg_import_fingerprint_error">"Fingerprint of fetched key didn't match expected!"</string>
-    <string name="msg_import_fingerprint_ok">"Fingerprint check OK"</string>
     <string name="msg_import_merge">"Merging retrieved data"</string>
     <string name="msg_import_merge_error">"Error merging retrieved data!"</string>
     <string name="msg_import_error">"Import operation failed!"</string>
@@ -1269,6 +1292,7 @@
         <item quantity="one">"Exporting one key"</item>
         <item quantity="other">"Exporting %d keys"</item>
     </plurals>
+    <string name="msg_export_file_name">"Filename: %s"</string>
     <string name="msg_export_all">"Exporting all keys"</string>
     <string name="msg_export_public">"Exporting public key %s"</string>
     <string name="msg_export_upload_public">"Uploading public key %s"</string>
@@ -1281,7 +1305,7 @@
     <string name="msg_export_error_db">"Database error!"</string>
     <string name="msg_export_error_io">"Input/output error!"</string>
     <string name="msg_export_error_key">"Error preprocessing key data!"</string>
-    <string name="msg_export_error_upload">"Error uploading key to server! Please check your internet connection"</string>
+    <string name="msg_export_error_upload">"Error uploading key to server! Please check your Internet connection"</string>
     <string name="msg_export_success">"Export operation successful"</string>
     <string name="msg_export_upload_success">"Upload to keyserver successful"</string>
 
@@ -1304,11 +1328,33 @@
     </plurals>
 
     <string name="msg_revoke_error_empty">"Nothing to revoke!"</string>
-    <string name="msg_revoke_error_multi_secret">"Secret keys can only be revoked individually!"</string>
     <string name="msg_revoke_error_not_found">"Cannot find key to revoke!"</string>
     <string name="msg_revoke_key">"Revoking key %s"</string>
     <string name="msg_revoke_key_fail">"Failed revoking key"</string>
     <string name="msg_revoke_ok">"Successfully revoked key"</string>
+
+    <!-- Linked Identity verification -->
+    <string name="msg_lv">"Verifying linked identity…"</string>
+    <string name="msg_lv_match">"Searching for token"</string>
+    <string name="msg_lv_match_error">"No token found in resource!"</string>
+    <string name="msg_lv_fp_ok">"Fingerprint OK."</string>
+    <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
+
+    <string name="msg_lv_error_twitter_auth">"Error obtaining Twitter auth token!"</string>
+    <string name="msg_lv_error_twitter_handle">"Twitter account handle mismatch in response!"</string>
+    <string name="msg_lv_error_twitter_response">"Unexpected response from Twitter API!"</string>
+    <string name="msg_lv_error_github_handle">"GitHub account handle mismatch in response!"</string>
+    <string name="msg_lv_error_github_not_found">"Gist contains no matching files!"</string>
+
+    <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
+    <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>
+    <string name="msg_lv_fetch_ok">"Successfully fetched (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error">"Server error (HTTP %s)"</string>
+    <string name="msg_lv_fetch_error_url">"URL is malformed!"</string>
+    <string name="msg_lv_fetch_error_io">"IO Error!"</string>
+    <string name="msg_lv_fetch_error_format">"Format error!"</string>
+    <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
+
 
     <string name="msg_acc_saved">"Account saved"</string>
 
@@ -1334,13 +1380,6 @@
     <string name="msg_keybase_error_specific">"%s"</string>
     <string name="msg_keybase_error_msg_payload_mismatch">"Decrypted proof post does not match expected value"</string>
 
-    <!-- Messages for Export Log operation -->
-    <string name="msg_export_log_start">"Exporting log"</string>
-    <string name="msg_export_log_error_fopen">"Error opening file"</string>
-    <string name="msg_export_log_error_no_file">"No file name specified!"</string>
-    <string name="msg_export_log_error_writing">"I/O error writing to file!"</string>
-    <string name="msg_export_log_success">"Log exported successfully!"</string>
-
     <!-- Messages for Mime parsing operation -->
     <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>
     <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
@@ -1355,6 +1394,12 @@
     <string name="passp_cache_notif_keys">"Remembered passwords"</string>
     <string name="passp_cache_notif_clear">"Clear Passwords"</string>
     <string name="passp_cache_notif_pwd">"Password"</string>
+
+    <!-- Keyserver sync -->
+    <string name="keyserver_sync_orbot_notif_title">"Sync From Servers requires Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_msg">"Tap to start orbot"</string>
+    <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
+    <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
     <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
@@ -1374,13 +1419,14 @@
     <string name="section_certifier_id">"Certifier"</string>
     <string name="section_cert">"Certificate Details"</string>
     <string name="label_user_id">"Identity"</string>
-    <string name="unknown_uid">"&lt;unknown&gt;"</string>
+    <string name="unknown_uid"><![CDATA[<unknown>]]></string>
     <string name="empty_certs">"No certificates for this key"</string>
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
     <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text2">"Do the displayed fingerprints match?"</string>
+    <string name="certify_fingerprint_text_words">"Compare the displayed fingerprint, word by word, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text2">"Do the fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>
@@ -1401,6 +1447,7 @@
     <string name="error_multi_clipboard">"Encryption of multiple files to clipboard not supported."</string>
     <string name="error_detached_signature">"Sign-only operation of binary files is not supported, select at least one encryption key."</string>
     <string name="error_empty_text">"Type some text to encrypt!"</string>
+    <string name="error_log_share_internal">"Internal error while preparing log!"</string>
     <string name="key_colon">"Key:"</string>
     <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
     <string name="btn_start_exchange">"Start exchange"</string>
@@ -1442,7 +1489,7 @@
     <string name="button_bind_key">"Bind Key"</string>
     <string name="yubikey_serno">"Serial No: %s"</string>
     <string name="yubikey_key_holder">"Key holder: "</string>
-    <string name="yubikey_key_holder_not_set">"Key holder: &lt;not set&gt;"</string>
+    <string name="yubikey_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
     <string name="yubikey_status_bound">"YubiKey matches and is bound to key"</string>
     <string name="yubikey_status_unbound">"YubiKey matches, can be bound to key"</string>
     <string name="yubikey_status_partly">"YubiKey matches, partly bound to key"</string>
@@ -1479,8 +1526,8 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
-    <string name="filename_unknown">"&lt;no filename&gt;"</string>
-    <string name="filename_unknown_text">"&lt;plain text data&gt;"</string>
+    <string name="filename_unknown">Unknown filename (click to open)</string>
+    <string name="filename_unknown_text">Text (click to show)</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
@@ -1496,5 +1543,79 @@
     <string name="error_scan_fp">"Error scanning fingerprint!"</string>
     <string name="error_scan_match">"Fingerprints did not match!"</string>
     <string name="error_expiry_past">"Expiry date is in the past!"</string>
+
+    <string name="linked_create_https_1_1">"By creating a Linked Identity of this type, you can link your key to a website you control."</string>
+    <string name="linked_create_https_1_2">"To do this, you publish a text file on this website, then create a Linked Identity which links to it."</string>
+    <string name="linked_create_https_1_3">"Please enter a URL where you are able to place a text file for proof. Note that your server must support https and have a valid TLS certificate!"</string>
+    <string name="linked_create_https_1_4">"Example: https://example.com/pgpkey.txt"</string>
+    <string name="linked_create_https_created">"The proof file has been created. For the next step, you should save and upload it to the URI you indicated:"</string>
+    <string name="linked_create_https_2_1">"A proof file for this URI has been created:"</string>
+    <string name="linked_create_https_2_2">"For the next step, you should save and upload this file."</string>
+    <string name="linked_create_https_2_3">"Make sure the file is reachable at the correct URI, then verify your setup."</string>
+    <string name="linked_create_https_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_twitter_1_1">"By creating a Linked Identity of this type, you can link your key to a Twitter account you control."</string>
+    <string name="linked_create_twitter_1_2">"To do this, you publish a specific Tweet on your timeline, then create a Linked Identity which links to this Tweet."</string>
+    <string name="linked_create_twitter_1_3">"Please enter your Twitter screen name to proceed."</string>
+    <string name="linked_create_twitter_handle">Twitter Handle</string>
+    <string name="linked_create_twitter_2_1">"Click either button to tweet the message!"</string>
+    <string name="linked_create_twitter_2_2">"You can edit the Tweet before posting it, so long as the text inside the brackets is unmodified."</string>
+    <string name="linked_create_twitter_2_3">"Once your Tweet is published as &lt;b&gt;@%s&lt;/b&gt;, click the Verify button to scan your timeline for it."</string>
+    <string name="linked_create_twitter_2_4">"After successful verification, press the Finish button to add the Linked Identity to your keyring and finish the process."</string>
+
+    <string name="linked_create_verify">"Verify"</string>
+    <string name="linked_text_clipboard">Text has been copied to clipboard</string>
+    <string name="linked_verified_https">"The link between this Website and key was securely verified. <b>If you believe the Website is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_github">"The link between this GitHub account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_dns">"The link between this Domain Name and key was securely verified. <b>If you believe the Domain is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_twitter">"The link between this Twitter account and key was securely verified. <b>If you believe the account is genuine</b>, confirm this verification with your key."</string>
+    <string name="linked_verified_secret_https">"Everything looks in order."</string>
+    <string name="linked_verified_secret_github">"Everything looks in order."</string>
+    <string name="linked_verified_secret_dns">"Everything looks in order."</string>
+    <string name="linked_verified_secret_twitter">"Everything looks in order."</string>
+
+    <plurals name="linked_id_expand">
+        <item quantity="one">"There is one more unknown identity type"</item>
+        <item quantity="other">"There are %d more unknown identity types"</item>
+    </plurals>
+
+    <!-- Other Linked Identity strings -->
+    <string name="linked_select_1">"A \'linked identity\' connects your pgp key to a resource on the web."</string>
+    <string name="linked_select_2">"Please select a type:"</string>
+    <string name="linked_id_generic_text">"This file claims ownership of the OpenPGP key with long id %2$s.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_id_github_text">"This Gist confirms the Linked Identity in my OpenPGP key, and links it to this GitHub account.\n\nToken for proof:\n%1$s"</string>
+    <string name="linked_verifying">"Verifying…"</string>
+    <string name="linked_verify_success">"Verified!"</string>
+    <string name="linked_verify_error">"Verification error!"</string>
+    <string name="linked_verify_pending">"Not yet verified"</string>
+    <string name="linked_need_verify">The resource needs to be verified before you can proceed!</string>
+    <string name="menu_linked_add_identity">"Link to Account"</string>
+    <string name="section_linked_identities">"Linked Identities"</string>
+    <string name="btn_finish">"Finish"</string>
+    <string name="linked_title_https">"Website (HTTPS)"</string>
+    <string name="linked_title_dns">"Domain Name (DNS)"</string>
+    <string name="linked_title_github">"GitHub"</string>
+    <string name="linked_title_twitter">"Twitter"</string>
+    <string name="card_linked_identity">"Linked Identity"</string>
+    <string name="linked_button_verify">"Verify"</string>
+    <string name="linked_button_retry">"Retry last step"</string>
+    <string name="linked_button_confirm">"Confirm"</string>
+    <string name="linked_button_view">"View"</string>
+    <string name="linked_text_verifying">"Verifying…"</string>
+    <string name="linked_text_error">"Error"</string>
+    <string name="linked_text_confirming">"Confirming…"</string>
+    <string name="linked_ids_more_unknown">"%d more unknown identity types"</string>
+    <string name="title_linked_id_create">"Create Linked Identity"</string>
+    <string name="linked_github_text">"This operation links your key to your GitHub account.\nJust press the button to continue."</string>
+    <string name="linked_progress_auth_github">"Authorize with GitHub…"</string>
+    <string name="linked_progress_post_gist">"Post Gist…"</string>
+    <string name="linked_progress_update_key">"Update Key…"</string>
+    <string name="linked_button_start">"Link to Github Account"</string>
+    <string name="linked_error_auth_failed">"Authorization failed!"</string>
+    <string name="linked_error_timeout">"Connection timeout!"</string>
+    <string name="linked_error_network">"Network error!"</string>
+    <string name="linked_error_http">"Communication error: %s"</string>
+    <string name="linked_webview_title_github">"GitHub Authorization"</string>
+    <string name="linked_gist_description">"OpenKeychain API Tests"</string>
 
 </resources>

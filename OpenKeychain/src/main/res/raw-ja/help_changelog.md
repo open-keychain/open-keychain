@@ -1,10 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 3.5
+
+  * 鍵削除時の鍵の破棄
+  * セキュアではない暗号についてのチェックの改善
+  * 修正: OpenKeychainの初回ウィザード成功後クローズされない問題
+  * API: Version 8
+
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Tor経由での匿名鍵ダウンロード
+  * プロキシのサポート
+  * よりよりYubiKeyのエラーの扱い
 
 ## 3.3
 

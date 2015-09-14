@@ -18,7 +18,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -47,7 +51,20 @@ public class BackupFragment extends Fragment {
     private int mIndex;
 
     static final int REQUEST_REPEAT_PASSPHRASE = 1;
+    private ExportHelper mExportHelper;
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // we won't get attached to a non-fragment activity, so the cast should be safe
+        mExportHelper = new ExportHelper((FragmentActivity) activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mExportHelper = null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,8 +97,7 @@ public class BackupFragment extends Fragment {
         }
 
         if (!includeSecretKeys) {
-            ExportHelper exportHelper = new ExportHelper(activity);
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, false);
+            startBackup(false);
             return;
         }
 
@@ -136,8 +152,7 @@ public class BackupFragment extends Fragment {
                     return;
                 }
 
-                ExportHelper exportHelper = new ExportHelper(activity);
-                exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+                startBackup(true);
             }
 
         }.execute(activity.getContentResolver());
@@ -167,8 +182,19 @@ public class BackupFragment extends Fragment {
                 return;
             }
 
-            ExportHelper exportHelper = new ExportHelper(getActivity());
-            exportHelper.showExportKeysDialog(null, Constants.Path.APP_DIR_FILE, true);
+            startBackup(true);
         }
     }
+
+    private void startBackup(boolean exportSecret) {
+        File filename;
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        if (exportSecret) {
+            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".asc");
+        } else {
+            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".pub.asc");
+        }
+        mExportHelper.showExportKeysDialog(null, filename, exportSecret);
+    }
+
 }

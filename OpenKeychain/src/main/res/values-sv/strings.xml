@@ -20,8 +20,6 @@
   <string name="title_encrypt_to_file">Kryptera till fil</string>
   <string name="title_decrypt_to_file">Dekryptera till fil</string>
   <string name="title_import_keys">Importera nycklar</string>
-  <string name="title_export_key">Exportera nyckel</string>
-  <string name="title_export_keys">Exportera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
   <string name="title_send_key">Ladda upp till nyckelserver</string>
   <string name="title_certify_key">Bekräfta nyckel</string>
@@ -80,7 +78,6 @@
   <!--menu-->
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
-  <string name="menu_export_key">Exportera till fil</string>
   <string name="menu_delete_key">Radera nyckel</string>
   <string name="menu_manage_keys">Hantera mina nycklar</string>
   <string name="menu_search">Sök</string>
@@ -144,6 +141,7 @@
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -204,7 +202,6 @@
   <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
   <string name="specify_file_to_encrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
-  <string name="specify_backup_dest">Ange vilken fil du vill exportera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte kunna läsa meddelande krypterade med den här nyckeln samt förlora alla nyckelbekräftningar som gjorts med den!</string>
   <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>
@@ -411,6 +408,7 @@
   </plurals>
   <string name="delete_nothing">Inget att radera.</string>
   <string name="delete_cancelled">Raderingsoperation avbruten.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Certifierade nyckel%2$s.</item>
@@ -444,7 +442,6 @@
   <string name="api_settings_start">Starta app</string>
   <string name="api_settings_delete_account">Radera konto</string>
   <string name="api_settings_package_name">Paketnamn</string>
-  <string name="api_settings_package_certificate">SHA-256 för paketsignatur</string>
   <string name="api_settings_accounts">Konton (gamla API:t)</string>
   <string name="api_settings_advanced">Utökad information</string>
   <string name="api_settings_allowed_keys">Tillåtna nycklar</string>
@@ -457,8 +454,6 @@
   <string name="api_register_allow">Tillåt åtkomst</string>
   <string name="api_register_disallow">Tillåt inte åtkomst</string>
   <string name="api_register_error_select_key">Välj en nyckel!</string>
-  <string name="api_select_pub_keys_missing_text">Inga nycklar hittades för dessa identiteter:</string>
-  <string name="api_select_pub_keys_dublicates_text">Mer än en nyckel finns för dessa identiteter:</string>
   <string name="api_select_pub_keys_text">Se över listan med mottagare!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Välj mottagare!</string>
   <string name="api_error_wrong_signature">Signaturkontroll misslyckades! Har du installerat appen från en annan källa? Om du är säker på att det här inte är en attack, återkalla den här appens registrering i OpenKeychain och registrera sen om appen igen.</string>
@@ -467,6 +462,9 @@
   <!--Share-->
   <string name="share_qr_code_dialog_title">Dela med QR-kod</string>
   <string name="share_nfc_dialog">Dela med NFC</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 nyckel vald.</item>
@@ -509,13 +507,6 @@
   <string name="key_trust_results_prefix">Keybase.io erbjuder \"bevis\" som hävdar att ägaren av den här nyckeln:</string>
   <string name="key_trust_header_text">Observera: Keybase.io bevis är en experimentell funktion i OpenKeychain. Vi uppmanar dig att skanna QR-koder eller utbyta nycklar via NFC utöver att bekräfta dem.</string>
   <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Postar på Twitter som</string>
-  <string name="keybase_narrative_github">Är känd på GitHub som</string>
-  <string name="keybase_narrative_dns">Kontrollerar domännamne(t|s)</string>
-  <string name="keybase_narrative_reddit">Postar på Reddit som</string>
-  <string name="keybase_narrative_coinbase">Är känd på Coinbase som</string>
-  <string name="keybase_narrative_hackernews">Postar på Hacker News som</string>
-  <string name="keybase_narrative_unknown">Okänd bevistyp</string>
   <string name="keybase_proof_failure">Tyvärr kan detta bevis inte verifieras.</string>
   <string name="keybase_problem_fetching_evidence">Problem med bevis</string>
   <string name="keybase_dns_query_failure">Hämtning av DNS TXT-post misslyckades</string>
@@ -884,6 +875,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
   <string name="first_time_create_key">Skapa min nyckel</string>
@@ -907,12 +899,12 @@
   <string name="unknown_algorithm">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
-  <string name="account_no_manual_account_creation">Skapa inte OpenKeychain-konton manuellt. \nFör mer information, se Hjälp.</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>
   <string name="swipe_to_update">Dra nedåt för att uppdatera från nyckelserver</string>
   <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
   <string name="key_colon">Nyckel:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

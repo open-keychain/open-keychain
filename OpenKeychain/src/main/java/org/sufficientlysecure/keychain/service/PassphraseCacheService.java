@@ -101,8 +101,6 @@ public class PassphraseCacheService extends Service {
 
     private static final long DEFAULT_TTL = 15;
 
-    private static final int NOTIFICATION_ID = 1;
-
     private static final int MSG_PASSPHRASE_CACHE_GET_OKAY = 1;
     private static final int MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND = 2;
 
@@ -477,7 +475,7 @@ public class PassphraseCacheService extends Service {
 
     private void updateService() {
         if (mPassphraseCache.size() > 0) {
-            startForeground(NOTIFICATION_ID, getNotification());
+            startForeground(Constants.Notification.PASSPHRASE_CACHE, getNotification());
         } else {
             // stop whole service if no cached passphrases remaining
             Log.d(Constants.TAG, "PassphraseCacheService: No passphrases remaining in memory, stopping service!");
@@ -511,7 +509,7 @@ public class PassphraseCacheService extends Service {
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.drawable.ic_launcher, getBaseContext()))
+                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, getBaseContext()))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
                 .setContentText(getString(R.string.passp_cache_notif_click_to_clear));

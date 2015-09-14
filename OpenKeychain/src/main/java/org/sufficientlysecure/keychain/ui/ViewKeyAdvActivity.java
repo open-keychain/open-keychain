@@ -57,7 +57,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     public static final int TAB_IDENTITIES = 1;
     public static final int TAB_SUBKEYS = 2;
     public static final int TAB_CERTS = 3;
-    public static final int TAB_KEYBASE = 4;
 
     // view
     private ViewPager mViewPager;
@@ -139,11 +138,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
         adapter.addTab(ViewKeyAdvCertsFragment.class,
                 certsBundle, getString(R.string.key_view_tab_certs));
-
-        Bundle trustBundle = new Bundle();
-        trustBundle.putParcelable(ViewKeyTrustFragment.ARG_DATA_URI, dataUri);
-        adapter.addTab(ViewKeyTrustFragment.class,
-                trustBundle, getString(R.string.key_view_tab_keybase));
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);

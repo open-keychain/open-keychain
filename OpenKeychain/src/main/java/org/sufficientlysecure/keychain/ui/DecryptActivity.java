@@ -29,13 +29,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.intents.OpenKeychainIntents;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
@@ -93,7 +94,9 @@ public class DecryptActivity extends BaseActivity {
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
                         String text = intent.getStringExtra(Intent.EXTRA_TEXT);
                         Uri uri = readToTempFile(text);
-                        uris.add(uri);
+                        if (uri != null) {
+                            uris.add(uri);
+                        }
                     }
 
                     break;
@@ -105,7 +108,9 @@ public class DecryptActivity extends BaseActivity {
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
                         for (String text : intent.getStringArrayListExtra(Intent.EXTRA_TEXT)) {
                             Uri uri = readToTempFile(text);
-                            uris.add(uri);
+                            if (uri != null) {
+                                uris.add(uri);
+                            }
                         }
                     }
 
@@ -139,7 +144,9 @@ public class DecryptActivity extends BaseActivity {
                         String text = clip.getItemAt(0).coerceToText(this).toString();
                         uri = readToTempFile(text);
                     }
-                    uris.add(uri);
+                    if (uri != null) {
+                        uris.add(uri);
+                    }
 
                     break;
                 }
@@ -170,9 +177,17 @@ public class DecryptActivity extends BaseActivity {
 
     }
 
-    public Uri readToTempFile(String text) throws IOException {
+    @Nullable public Uri readToTempFile(String text) throws IOException {
         Uri tempFile = TemporaryStorageProvider.createFile(this);
         OutputStream outStream = getContentResolver().openOutputStream(tempFile);
+
+        // clean up ascii armored message, fixing newlines and stuff
+        String cleanedText = PgpHelper.getPgpContent(text);
+        if (cleanedText == null) {
+            return null;
+        }
+
+        // if cleanup didn't work, just try the raw data
         outStream.write(text.getBytes());
         outStream.close();
         return tempFile;

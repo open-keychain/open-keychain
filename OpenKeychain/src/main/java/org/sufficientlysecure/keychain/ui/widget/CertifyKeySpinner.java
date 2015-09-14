@@ -17,25 +17,24 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-
-import java.util.Arrays;
-import java.util.List;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.AttributeSet;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 
 public class CertifyKeySpinner extends KeySpinner {
     private long mHiddenMasterKeyId = Constants.key.none;
+    private boolean mIsSingle;
 
     public CertifyKeySpinner(Context context) {
         super(context);
@@ -94,9 +93,11 @@ public class CertifyKeySpinner extends KeySpinner {
                     if (!data.isNull(mIndexHasCertify)) {
                         if (selection == -1) {
                             selection = data.getPosition() + 1;
+                            mIsSingle = true;
                         } else {
                             // if selection is already set, we have more than one certify key!
                             // get back to "none"!
+                            mIsSingle = false;
                             selection = 0;
                         }
                     }
@@ -106,6 +107,9 @@ public class CertifyKeySpinner extends KeySpinner {
         }
     }
 
+    public boolean isSingleEntry() {
+        return mIsSingle && getSelectedItemPosition() != 0;
+    }
 
     @Override
     boolean isItemEnabled(Cursor cursor) {
@@ -127,5 +131,11 @@ public class CertifyKeySpinner extends KeySpinner {
         // valid key
         return true;
     }
+
+    @Override
+    public @StringRes int getNoneString() {
+        return R.string.choice_select_cert;
+    }
+
 
 }

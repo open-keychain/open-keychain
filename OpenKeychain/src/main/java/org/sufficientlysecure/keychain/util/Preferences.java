@@ -25,7 +25,7 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
-import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -285,16 +285,19 @@ public class Preferences {
     }
 
     public Proxy.Type getProxyType() {
-        final String typeHttp = mResources.getString(R.string.pref_proxy_type_value_http);
-        final String typeSocks = mResources.getString(R.string.pref_proxy_type_value_socks);
+        final String typeHttp = Pref.ProxyType.TYPE_HTTP;
+        final String typeSocks = Pref.ProxyType.TYPE_SOCKS;
 
         String type = mSharedPreferences.getString(Pref.PROXY_TYPE, typeHttp);
 
-        if (type.equals(typeHttp)) return Proxy.Type.HTTP;
-        else if (type.equals(typeSocks)) return Proxy.Type.SOCKS;
-        else { // shouldn't happen
-            Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
-            return null;
+        switch (type) {
+            case typeHttp:
+                return Proxy.Type.HTTP;
+            case typeSocks:
+                return Proxy.Type.SOCKS;
+            default:  // shouldn't happen
+                Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
+                return null;
         }
     }
 
@@ -306,7 +309,7 @@ public class Preferences {
             return new ProxyPrefs(true, false, Constants.Orbot.PROXY_HOST, Constants.Orbot.PROXY_PORT,
                     Constants.Orbot.PROXY_TYPE);
         } else if (useNormalProxy) {
-            return new ProxyPrefs(useTor, useNormalProxy, getProxyHost(), getProxyPort(), getProxyType());
+            return new ProxyPrefs(false, true, getProxyHost(), getProxyPort(), getProxyType());
         } else {
             return new ProxyPrefs(false, false, null, -1, null);
         }
@@ -331,7 +334,7 @@ public class Preferences {
         }
     }
 
-    // proxy preference functions ends here
+    // cloud prefs
 
     public CloudSearchPrefs getCloudSearchPrefs() {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
@@ -356,7 +359,39 @@ public class Preferences {
         }
     }
 
-    public void upgradePreferences() {
+    // experimental prefs
+
+    public void setExperimentalEnableWordConfirm(boolean enableWordConfirm) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM, enableWordConfirm);
+        editor.commit();
+    }
+
+    public boolean getExperimentalEnableWordConfirm() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM, false);
+    }
+
+    public void setExperimentalEnableLinkedIdentities(boolean enableLinkedIdentities) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, enableLinkedIdentities);
+        editor.commit();
+    }
+
+    public boolean getExperimentalEnableLinkedIdentities() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, false);
+    }
+
+    public void setExperimentalEnableKeybase(boolean enableKeybase) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, enableKeybase);
+        editor.commit();
+    }
+
+    public boolean getExperimentalEnableKeybase() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
+    }
+
+    public void upgradePreferences(Context context) {
         if (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0) !=
                 Constants.Defaults.PREF_VERSION) {
             switch (mSharedPreferences.getInt(Constants.Pref.PREF_DEFAULT_VERSION, 0)) {
@@ -394,6 +429,10 @@ public class Preferences {
                 }
                 // fall through
                 case 5: {
+                    KeyserverSyncAdapterService.enableKeyserverSync(context);
+                }
+                // fall through
+                case 6: {
                 }
             }
 

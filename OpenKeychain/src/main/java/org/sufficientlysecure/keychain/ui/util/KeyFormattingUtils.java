@@ -269,6 +269,10 @@ public class KeyFormattingUtils {
         return hexString;
     }
 
+    public static long convertFingerprintToKeyId(byte[] fingerprint) {
+        return ByteBuffer.wrap(fingerprint, 12, 8).getLong();
+    }
+
     /**
      * Makes a human-readable version of a key ID, which is usually 64 bits: lower-case, no
      * leading 0x, space-separated quartets (for keys whose length in hex is divisible by 4)

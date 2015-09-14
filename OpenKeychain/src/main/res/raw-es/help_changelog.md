@@ -1,10 +1,17 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 3.5
+
+  * Revocación de clave al borrar clave
+  * Comprobaciones mejoradas de criptografía no segura
+  * Reparacion: No cierra OpenKeychain tras completar el asistente de primera ejecución
+  * API: Versión 8
+
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Descarga de clave anónima sobre Tor
+  * Soporte para proxy
+  * Manejo de errores de YubiKey mejorado
 
 ## 3.3
 

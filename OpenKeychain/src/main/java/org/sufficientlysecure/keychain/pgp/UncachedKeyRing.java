@@ -216,17 +216,6 @@ public class UncachedKeyRing implements Serializable {
 
     }
 
-    public boolean containsSubkey(String expectedFingerprint) {
-        Iterator<PGPPublicKey> it = mRing.getPublicKeys();
-        while (it.hasNext()) {
-            if (KeyFormattingUtils.convertFingerprintToHex(
-                    it.next().getFingerprint()).equalsIgnoreCase(expectedFingerprint)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public interface IteratorWithIOThrow<E> {
         public boolean hasNext() throws IOException;
         public E next() throws IOException;

@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -196,13 +195,9 @@ public class EncryptFilesFragment
     }
 
     private void addInputUri() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
-        } else {
-            FileHelper.openFile(EncryptFilesFragment.this, mFilesAdapter.getModelCount() == 0 ?
-                            null : mFilesAdapter.getModelItem(mFilesAdapter.getModelCount() - 1).inputUri,
-                    "*/*", REQUEST_CODE_INPUT);
-        }
+        FileHelper.openDocument(EncryptFilesFragment.this, mFilesAdapter.getModelCount() == 0 ?
+                        null : mFilesAdapter.getModelItem(mFilesAdapter.getModelCount() - 1).inputUri,
+                "*/*", true, REQUEST_CODE_INPUT);
     }
 
     private void addInputUri(Uri inputUri) {
@@ -230,19 +225,8 @@ public class EncryptFilesFragment
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
         Uri inputUri = model.inputUri;
-        saveDocumentIntent(targetName, inputUri);
-    }
-
-    private void saveDocumentIntent(String targetName, Uri inputUri) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(inputUri.getPath());
-            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            File targetFile = new File(parentDir, targetName);
-            FileHelper.saveFile(this, getString(R.string.title_encrypt_to_file),
-                    getString(R.string.specify_file_to_encrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, "*/*", targetName, REQUEST_CODE_OUTPUT);
-        }
+        FileHelper.saveDocument(this, targetName, inputUri,
+                R.string.title_encrypt_to_file, R.string.specify_file_to_encrypt_to, REQUEST_CODE_OUTPUT);
     }
 
     public void addFile(Intent data) {

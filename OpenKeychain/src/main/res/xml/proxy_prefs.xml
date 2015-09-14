@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference
+    <SwitchPreference
             android:key="useTorProxy"
             android:persistent="true"
             android:title="@string/pref_proxy_tor_title"
             android:summary="@string/pref_proxy_tor_summary" />
-    <CheckBoxPreference
+    <SwitchPreference
             android:key="useNormalProxy"
             android:persistent="true"
             android:title="@string/pref_proxy_normal_title" />
@@ -27,7 +27,7 @@
     <ListPreference
             android:entries="@array/pref_proxy_type_entries"
             android:entryValues="@array/pref_proxy_type_values"
-            android:defaultValue="@string/pref_proxy_type_value_http"
+            android:defaultValue="proxyHttp"
             android:key="proxyType"
             android:persistent="true"
             android:title="@string/pref_proxy_type_title" />

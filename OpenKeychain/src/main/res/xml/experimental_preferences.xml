@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:persistent="false"
+        android:selectable="false"
+        android:title="@string/label_experimental_settings_desc_title"
+        android:summary="@string/label_experimental_settings_desc_summary" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalEnableWordConfirm"
+        android:persistent="false"
+        android:summary="@string/label_experimental_settings_word_confirm_summary"
+        android:title="@string/label_experimental_settings_word_confirm_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalEnableLinkedIdentities"
+        android:persistent="false"
+        android:summary="@string/label_experimental_settings_linked_identities_summary"
+        android:title="@string/label_experimental_settings_linked_identities_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalEnableKeybase"
+        android:persistent="false"
+        android:summary="@string/label_experimental_settings_keybase_summary"
+        android:title="@string/label_experimental_settings_keybase_title" />
+
+    <ListPreference
+        android:dialogTitle="@string/label_theme"
+        android:entries="@array/theme_entries"
+        android:entryValues="@array/theme_values"
+        android:key="theme"
+        android:persistent="false"
+        android:title="@string/label_theme" />
+
+</PreferenceScreen>

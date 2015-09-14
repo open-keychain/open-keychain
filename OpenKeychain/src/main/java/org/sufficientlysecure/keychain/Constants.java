@@ -19,14 +19,9 @@ package org.sufficientlysecure.keychain;
 
 import android.os.Environment;
 
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
-import org.sufficientlysecure.keychain.BuildConfig;
-
 import java.io.File;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 public final class Constants {
@@ -34,6 +29,7 @@ public final class Constants {
     public static final boolean DEBUG = BuildConfig.DEBUG;
     public static final boolean DEBUG_LOG_DB_QUERIES = false;
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
+    public static final boolean DEBUG_KEYSERVER_SYNC = false;
 
     public static final String TAG = DEBUG ? "Keychain D" : "Keychain";
 
@@ -43,7 +39,7 @@ public final class Constants {
     public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static final String PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_CONTENT_AUTHORITY;
     public static final String TEMPSTORAGE_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
     public static final String CLIPBOARD_LABEL = "Keychain";
@@ -81,6 +77,11 @@ public final class Constants {
         public static final File APP_DIR_FILE = new File(APP_DIR, "export.asc");
     }
 
+    public static final class Notification {
+        public static final int PASSPHRASE_CACHE = 1;
+        public static final int KEYSERVER_SYNC_FAIL_ORBOT = 2;
+    }
+
     public static final class Pref {
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
@@ -104,11 +105,23 @@ public final class Constants {
         public static final String PROXY_PORT = "proxyPort";
         public static final String PROXY_TYPE = "proxyType";
         public static final String THEME = "theme";
+        // keyserver sync settings
+        public static final String SYNC_CONTACTS = "syncContacts";
+        public static final String SYNC_KEYSERVER = "syncKeyserver";
+        // other settings
+        public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
+        public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
+        public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
 
         public static final class Theme {
             public static final String LIGHT = "light";
             public static final String DARK = "dark";
             public static final String DEFAULT = Constants.Pref.Theme.LIGHT;
+        }
+
+        public static final class ProxyType {
+            public static final String TYPE_HTTP = "proxyHttp";
+            public static final String TYPE_SOCKS = "proxySocks";
         }
     }
 
@@ -123,7 +136,7 @@ public final class Constants {
 
     public static final class Defaults {
         public static final String KEY_SERVERS = "hkps://hkps.pool.sks-keyservers.net, hkps://pgp.mit.edu";
-        public static final int PREF_VERSION = 5;
+        public static final int PREF_VERSION = 6;
     }
 
     public static final class key {

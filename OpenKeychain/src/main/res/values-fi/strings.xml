@@ -14,8 +14,6 @@
   <string name="title_encrypt_to_file">Salaa Tiedostoon</string>
   <string name="title_decrypt_to_file">Pura Tiedostoon</string>
   <string name="title_import_keys">Tuo Avaimia</string>
-  <string name="title_export_key">Vie Avain</string>
-  <string name="title_export_keys">Vie Avaimia</string>
   <string name="title_key_not_found">Avainta Ei Löydy</string>
   <string name="title_send_key">Lähetä Avainpalvelimelle</string>
   <string name="title_key_details">Avaimen Tiedot</string>
@@ -46,7 +44,6 @@
   <!--menu-->
   <string name="menu_preferences">Asetukset</string>
   <string name="menu_help">Apua</string>
-  <string name="menu_export_key">Vie tiedostoon</string>
   <string name="menu_delete_key">Poista avain</string>
   <string name="menu_search">Etsi</string>
   <string name="menu_beam_preferences">Beam asetukset</string>
@@ -85,6 +82,7 @@
   <string name="label_fingerprint">Sormenjälki</string>
   <string name="expiry_date_dialog_title">Aseta umpeutumispäivämäärä</string>
   <string name="label_preferred">ensisijainen</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -153,10 +151,14 @@
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
   <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
   <!--Key trust-->
@@ -186,8 +188,10 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

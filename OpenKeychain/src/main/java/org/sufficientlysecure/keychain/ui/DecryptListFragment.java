@@ -35,7 +35,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -222,18 +221,6 @@ public class DecryptListFragment
         }
     }
 
-    private void askForOutputFilename(Uri inputUri, String originalFilename, String mimeType) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            File file = new File(inputUri.getPath());
-            File parentDir = file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-            File targetFile = new File(parentDir, originalFilename);
-            FileHelper.saveFile(this, getString(R.string.title_decrypt_to_file),
-                    getString(R.string.specify_file_to_decrypt_to), targetFile, REQUEST_CODE_OUTPUT);
-        } else {
-            FileHelper.saveDocument(this, mimeType, originalFilename, REQUEST_CODE_OUTPUT);
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -388,7 +375,7 @@ public class DecryptListFragment
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    displayWithViewIntent(uri);
+                    displayWithViewIntent(uri, false);
                 }
             };
         }
@@ -413,7 +400,7 @@ public class DecryptListFragment
 
     }
 
-    public void displayWithViewIntent(final Uri uri) {
+    public void displayWithViewIntent(final Uri uri, boolean share) {
         Activity activity = getActivity();
         if (activity == null || mCurrentInputUri != null) {
             return;
@@ -432,51 +419,40 @@ public class DecryptListFragment
         // OpenKeychain's internal viewer
         if ("text/plain".equals(metadata.getMimeType())) {
 
-            parseMime(outputUri);
+            if (share) {
+                try {
+                    String plaintext = FileHelper.readTextFromUri(activity, outputUri, result.getCharset());
 
-            // this is a significant i/o operation, use an asynctask
-//            new AsyncTask<Void,Void,Intent>() {
-//
-//                @Override
-//                protected Intent doInBackground(Void... params) {
-//
-//                    Activity activity = getActivity();
-//                    if (activity == null) {
-//                        return null;
-//                    }
-//
-//                    Intent intent = new Intent(Intent.ACTION_VIEW);
-//                    intent.setDataAndType(outputUri, "text/plain");
-//                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                    return intent;
-//                }
-//
-//                @Override
-//                protected void onPostExecute(Intent intent) {
-//                    // for result so we can possibly get a snackbar error from internal viewer
-//                    Activity activity = getActivity();
-//                    if (intent == null || activity == null) {
-//                        return;
-//                    }
-//
-//                    LabeledIntent internalIntent = new LabeledIntent(
-//                            new Intent(intent)
-//                                    .setClass(activity, DisplayTextActivity.class)
-//                                    .putExtra(DisplayTextActivity.EXTRA_METADATA, result),
-//                            BuildConfig.APPLICATION_ID, R.string.view_internal, R.drawable.ic_launcher);
-//
-//                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
-//                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-//                            new Parcelable[] { internalIntent });
-//
-//                    activity.startActivity(chooserIntent);
-//                }
-//
-//            }.execute();
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType(metadata.getMimeType());
+                    intent.putExtra(Intent.EXTRA_TEXT, plaintext);
+                    startActivity(intent);
+
+                } catch (IOException e) {
+                    Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
+                }
+
+                return;
+            }
+
+            Intent intent = new Intent(activity, DisplayTextActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(outputUri, metadata.getMimeType());
+            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+            activity.startActivity(intent);
 
         } else {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(outputUri, metadata.getMimeType());
+
+            Intent intent;
+            if (share) {
+                intent = new Intent(Intent.ACTION_SEND);
+                intent.setType(metadata.getMimeType());
+                intent.putExtra(Intent.EXTRA_STREAM, outputUri);
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(outputUri, metadata.getMimeType());
+            }
+
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
@@ -484,52 +460,6 @@ public class DecryptListFragment
             activity.startActivity(chooserIntent);
         }
 
-    }
-
-    private void parseMime(final Uri inputUri) {
-
-        CryptoOperationHelper.Callback<MimeParsingParcel, MimeParsingResult> callback
-                = new CryptoOperationHelper.Callback<MimeParsingParcel, MimeParsingResult>() {
-
-            @Override
-            public MimeParsingParcel createOperationInput() {
-                return new MimeParsingParcel(inputUri, null);
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(MimeParsingResult result) {
-                handleResult(result);
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-
-            }
-
-            @Override
-            public void onCryptoOperationError(MimeParsingResult result) {
-                handleResult(result);
-            }
-
-            public void handleResult(MimeParsingResult result) {
-                // TODO: merge with other log
-//                saveKeyResult.getLog().add(result, 0);
-
-                mOutputUris = new HashMap<>(result.getTemporaryUris().size());
-                for (Uri tempUri : result.getTemporaryUris()) {
-                    // TODO: use same inputUri for all?
-                    mOutputUris.put(inputUri, tempUri);
-                }
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return false;
-            }
-        };
-
-        CryptoOperationHelper mimeParsingHelper = new CryptoOperationHelper<>(3, this, callback, R.string.progress_uploading);
-        mimeParsingHelper.cryptoOperation();
     }
 
     @Override
@@ -576,13 +506,17 @@ public class DecryptListFragment
                 intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
                 activity.startActivity(intent);
                 return true;
+            case R.id.decrypt_share:
+                displayWithViewIntent(model.mInputUri, true);
+                return true;
             case R.id.decrypt_save:
                 OpenPgpMetadata metadata = result.getDecryptionMetadata();
                 if (metadata == null) {
                     return true;
                 }
                 mCurrentInputUri = model.mInputUri;
-                askForOutputFilename(model.mInputUri, metadata.getFilename(), metadata.getMimeType());
+                FileHelper.saveDocument(this, metadata.getFilename(), model.mInputUri, metadata.getMimeType(),
+                        R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
                 return true;
             case R.id.decrypt_delete:
                 deleteFile(activity, model.mInputUri);

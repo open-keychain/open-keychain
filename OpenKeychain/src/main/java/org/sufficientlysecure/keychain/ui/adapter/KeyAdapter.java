@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -193,9 +194,9 @@ public class KeyAdapter extends CursorAdapter {
                     String dateTime = DateUtils.formatDateTime(context,
                             item.mCreation.getTime(),
                             DateUtils.FORMAT_SHOW_DATE
+                                    | DateUtils.FORMAT_SHOW_TIME
                                     | DateUtils.FORMAT_SHOW_YEAR
                                     | DateUtils.FORMAT_ABBREV_MONTH);
-
                     mCreationDate.setText(context.getString(R.string.label_key_created,
                             dateTime));
                     mCreationDate.setTextColor(textColor);

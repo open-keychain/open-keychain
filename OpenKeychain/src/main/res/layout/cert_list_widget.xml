@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.sufficientlysecure.keychain.ui.widget.CertListWidget
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/linked_id_certs"
+    tools:showIn="@layout/linked_id_view_fragment">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:ignore="UseCompoundDrawables">
+
+        <TextView
+            android:id="@+id/cert_collapsed_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            tools:text="The identity is not yet verified or confirmed."
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_expand_more_black_24dp"
+            android:id="@+id/cert_expand_button"
+            android:padding="4dp"
+            />
+
+        </LinearLayout>
+
+    <ListView
+        android:id="@+id/cert_expanded_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
+</org.sufficientlysecure.keychain.ui.widget.CertListWidget>

@@ -243,7 +243,7 @@ public class AppsListFragment extends ListFragment implements
                                 null,
                                 isInstalled(packageName),
                                 1, // registered!
-                                R.drawable.ic_launcher // icon is retrieved later
+                                R.mipmap.ic_launcher // icon is retrieved later
                         });
                         break;
                     }
@@ -265,7 +265,7 @@ public class AppsListFragment extends ListFragment implements
                                 name,
                                 isInstalled(packageName),
                                 1, // registered!
-                                R.drawable.ic_launcher // icon is retrieved later
+                                R.mipmap.ic_launcher // icon is retrieved later
                         });
                         break;
                     }

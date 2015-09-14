@@ -18,11 +18,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.v4.app.ListFragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -37,19 +38,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+
 
 public class LogDisplayFragment extends ListFragment implements OnItemClickListener {
 
@@ -59,6 +60,8 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
 
     public static final String EXTRA_RESULT = "log";
     protected int mTextColor;
+
+    private Uri mLogTempFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,170 +121,40 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_log_display_export_log:
-                exportLog();
+                shareLog();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void exportLog() {
-        showExportLogDialog(new File(Constants.Path.APP_DIR, "export.log"));
-    }
+    private void shareLog() {
 
-    private void writeToLogFile(final OperationResult.OperationLog operationLog, final File f) {
-        OperationResult.OperationLog currLog = new OperationResult.OperationLog();
-        currLog.add(OperationResult.LogType.MSG_EXPORT_LOG, 0);
-
-        boolean error = false;
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(f);
-            pw.print(getPrintableOperationLog(operationLog, ""));
-            if (pw.checkError()) {//IOException
-                Log.e(Constants.TAG, "Log Export I/O Exception " + f.getAbsolutePath());
-                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING, 1);
-                error = true;
-            }
-        } catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "File not found for exporting log " + f.getAbsolutePath());
-            currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_FOPEN, 1);
-            error = true;
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
         }
-        if (pw != null) {
-            pw.close();
-            if (!error && pw.checkError()) {//check if it is only pw.close() which generated error
-                currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_ERROR_WRITING, 1);
-                error = true;
+
+        String log = mResult.getLog().getPrintableOperationLog(getResources(), 0);
+
+        // if there is no log temp file yet, create one
+        if (mLogTempFile == null) {
+            mLogTempFile = TemporaryStorageProvider.createFile(getActivity(), "openkeychain_log.txt", "text/plain");
+            try {
+                OutputStream outputStream = activity.getContentResolver().openOutputStream(mLogTempFile);
+                outputStream.write(log.getBytes());
+            } catch (IOException e) {
+                Notify.create(activity, R.string.error_log_share_internal, Style.ERROR).show();
+                return;
             }
         }
 
-        if (!error) {
-            currLog.add(OperationResult.LogType.MSG_EXPORT_LOG_EXPORT_SUCCESS, 1);
-        }
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, mLogTempFile);
+        intent.setType("text/plain");
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
 
-        int opResultCode = error ? OperationResult.RESULT_ERROR : OperationResult.RESULT_OK;
-        OperationResult opResult = new LogExportResult(opResultCode, currLog);
-        opResult.createNotify(getActivity()).show();
-    }
-
-    /**
-     * returns an indented String of an entire OperationLog
-     *
-     * @param opLog       log to be converted to indented, printable format
-     * @param basePadding padding to add at the start of all log entries, made for use with SubLogs
-     * @return printable, indented version of passed operationLog
-     */
-    private String getPrintableOperationLog(OperationResult.OperationLog opLog, String basePadding) {
-        String log = "";
-        for (LogEntryParcel anOpLog : opLog) {
-            log += getPrintableLogEntry(anOpLog, basePadding) + "\n";
-        }
-        log = log.substring(0, log.length() - 1);//gets rid of extra new line
-        return log;
-    }
-
-    /**
-     * returns an indented String of a LogEntryParcel including any sub-logs it may contain
-     *
-     * @param entryParcel log entryParcel whose String representation is to be obtained
-     * @return indented version of passed log entryParcel in a readable format
-     */
-    private String getPrintableLogEntry(OperationResult.LogEntryParcel entryParcel,
-                                        String basePadding) {
-
-        final String indent = "    ";//4 spaces = 1 Indent level
-
-        String padding = basePadding;
-        for (int i = 0; i < entryParcel.mIndent; i++) {
-            padding += indent;
-        }
-        String logText = padding;
-
-        switch (entryParcel.mType.mLevel) {
-            case DEBUG:
-                logText += "[DEBUG]";
-                break;
-            case INFO:
-                logText += "[INFO]";
-                break;
-            case WARN:
-                logText += "[WARN]";
-                break;
-            case ERROR:
-                logText += "[ERROR]";
-                break;
-            case START:
-                logText += "[START]";
-                break;
-            case OK:
-                logText += "[OK]";
-                break;
-            case CANCELLED:
-                logText += "[CANCELLED]";
-                break;
-        }
-
-        // special case: first parameter may be a quantity
-        if (entryParcel.mParameters != null && entryParcel.mParameters.length > 0
-                && entryParcel.mParameters[0] instanceof Integer) {
-            logText += getResources().getQuantityString(entryParcel.mType.getMsgId(),
-                    (Integer) entryParcel.mParameters[0],
-                    entryParcel.mParameters);
-        } else {
-            logText += getResources().getString(entryParcel.mType.getMsgId(),
-                    entryParcel.mParameters);
-        }
-
-        if (entryParcel instanceof SubLogEntryParcel) {
-            OperationResult subResult = ((SubLogEntryParcel) entryParcel).getSubResult();
-            LogEntryParcel subEntry = subResult.getLog().getLast();
-            if (subEntry != null) {
-                //the first line of log of subResult is same as entryParcel, so replace logText
-                logText = getPrintableOperationLog(subResult.getLog(), padding);
-            }
-        }
-
-        return logText;
-    }
-
-    private void showExportLogDialog(final File exportFile) {
-
-        String title = this.getString(R.string.title_export_log);
-
-        String message = this.getString(R.string.specify_file_to_export_log_to);
-
-        FileHelper.saveFile(new FileHelper.FileDialogCallback() {
-            @Override
-            public void onFileSelected(File file, boolean checked) {
-                writeToLogFile(mResult.getLog(), file);
-            }
-        }, this.getActivity().getSupportFragmentManager(), title, message, exportFile, null);
-    }
-
-    private static class LogExportResult extends OperationResult {
-
-        public static Creator<LogExportResult> CREATOR = new Creator<LogExportResult>() {
-            public LogExportResult createFromParcel(final Parcel source) {
-                return new LogExportResult(source);
-            }
-
-            public LogExportResult[] newArray(final int size) {
-                return new LogExportResult[size];
-            }
-        };
-
-        public LogExportResult(int result, OperationLog log) {
-            super(result, log);
-        }
-
-        /**
-         * trivial but necessary to implement the Parcelable protocol.
-         */
-        public LogExportResult(Parcel source) {
-            super(source);
-        }
     }
 
     @Override

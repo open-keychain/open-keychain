@@ -14,8 +14,6 @@
   <string name="title_encrypt_to_file">Dosyaya Şifrele</string>
   <string name="title_decrypt_to_file">Dosyaya Çözümle</string>
   <string name="title_import_keys">Anahtarları Al</string>
-  <string name="title_export_key">Anahtarı Ver</string>
-  <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_send_key">Anahtar Sunucusuna Yükle</string>
   <string name="title_key_details">Anahtar Detayları</string>
@@ -46,7 +44,6 @@
   <!--menu-->
   <string name="menu_preferences">Ayarlar</string>
   <string name="menu_help">Yardım</string>
-  <string name="menu_export_key">Dosyaya ver</string>
   <string name="menu_delete_key">Anahtar sil</string>
   <string name="menu_search">Ara</string>
   <string name="menu_beam_preferences">NFC ayarları</string>
@@ -85,6 +82,7 @@
   <string name="label_fingerprint">Parmak izi</string>
   <string name="expiry_date_dialog_title">Zaman aşımı tarihini ayarla</string>
   <string name="label_preferred">tercih edilen</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
@@ -284,6 +282,7 @@
   <!--Delete result toast-->
   <string name="delete_nothing">Silinecek bir şey yok.</string>
   <string name="delete_cancelled">Silme işlemi iptal edildi.</string>
+  <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenKeychain ile Dosya Çözümle</string>
@@ -304,13 +303,14 @@
   <string name="api_register_allow">Erişime izin ver</string>
   <string name="api_register_disallow">Erişime izin verme</string>
   <string name="api_register_error_select_key">Lütfen bir anahtar seçin!</string>
-  <string name="api_select_pub_keys_missing_text">Bu kimlikler için anahtar bulunamadı:</string>
-  <string name="api_select_pub_keys_dublicates_text">Bu kimlikler için birden fazla anahtar var:</string>
   <string name="api_select_pub_keys_text">Lütfen alıcıların listesini gözden geçirin!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Lütfen alıcıları seçin!</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">QR Kod ile Paylaş</string>
   <string name="share_nfc_dialog">NFC ile Paylaş</string>
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 anahtar seçildi.</item>
@@ -420,6 +420,7 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Export Log operation-->
   <!--PassphraseCache-->
+  <!--Keyserver sync-->
   <!--First Time-->
   <string name="first_time_text1">Gizliliğinizi OpenKeychain ile geri alın!</string>
   <string name="first_time_skip">Kurulumu Atla</string>
@@ -439,12 +440,12 @@
   <string name="unknown_algorithm">bilinmeyen</string>
   <string name="can_sign_not">imzalanamadı</string>
   <string name="error_no_encrypt_subkey">Şifreleme için kullanılabilecek altanahtar mevcut değil!</string>
-  <string name="account_no_manual_account_creation">OpenKeychain-hesaplarını kendiniz oluşturmayın.\nDaha fazla bilgi için Yardım bölümüne bakın.</string>
   <string name="contact_show_key">Anahtarı göster (%s)</string>
   <string name="swipe_to_update">Anahtar sunucudan güncelleme almak için parmağınızı aşağıya doğru kaydırın</string>
   <string name="error_no_file_selected">Şifrelemek için en az bir dosya seçin!</string>
   <string name="key_colon">Anahtar:</string>
   <string name="exchange_description">Anahtar değiş tokuşu başlatmak için sağ taraftan katılımcıların sayısını seçin ve \"Değiş tokuşu başlat\" tuşuna tıklayın.\n\nSadece istenilen katılımcıların değişim işleminde olduğundan ve parmak izlerinin doğruluğundan emin olmak için size iki soru daha sorulacak.</string>
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->

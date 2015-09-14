@@ -18,11 +18,12 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.TargetApi;
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -31,6 +32,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
+import android.provider.ContactsContract;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -74,7 +77,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         String action = getIntent().getAction();
 
-        if (action != null && action.equals(ACTION_PREFS_CLOUD)) {
+        if (ACTION_PREFS_CLOUD.equals(action)) {
             addPreferencesFromResource(R.xml.cloud_search_prefs);
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
@@ -91,14 +94,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                     });
             initializeSearchKeyserver(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
             );
             initializeSearchKeybase(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
             );
 
-        } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
-            addPreferencesFromResource(R.xml.adv_preferences);
+        } else if (ACTION_PREFS_ADV.equals(action)) {
+            addPreferencesFromResource(R.xml.passphrase_preferences);
 
             initializePassphraseCacheSubs(
                     (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
@@ -112,7 +115,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             initializeUseNumKeypadForYubiKeyPin(
                     (CheckBoxPreference) findPreference(Constants.Pref.USE_NUMKEYPAD_FOR_YUBIKEY_PIN));
 
-        } else if (action != null && action.equals(ACTION_PREFS_GUI)) {
+        } else if (ACTION_PREFS_GUI.equals(action)) {
             addPreferencesFromResource(R.xml.gui_preferences);
 
             initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
@@ -192,10 +195,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                     });
             initializeSearchKeyserver(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYSERVER)
             );
             initializeSearchKeybase(
-                    (CheckBoxPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
+                    (SwitchPreference) findPreference(Constants.Pref.SEARCH_KEYBASE)
             );
         }
 
@@ -219,14 +222,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     /**
      * This fragment shows the PIN/password preferences
      */
-    public static class AdvancedPrefsFragment extends PreferenceFragment {
+    public static class PassphrasePrefsFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
             // Load the preferences from an XML resource
-            addPreferencesFromResource(R.xml.adv_preferences);
+            addPreferencesFromResource(R.xml.passphrase_preferences);
 
             initializePassphraseCacheSubs(
                     (CheckBoxPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_SUBS));
@@ -253,8 +256,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         public static class Initializer {
-            private CheckBoxPreference mUseTor;
-            private CheckBoxPreference mUseNormalProxy;
+            private SwitchPreference mUseTor;
+            private SwitchPreference mUseNormalProxy;
             private EditTextPreference mProxyHost;
             private EditTextPreference mProxyPort;
             private ListPreference mProxyType;
@@ -290,8 +293,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     mActivity.addPreferencesFromResource(R.xml.proxy_prefs);
                 }
 
-                mUseTor = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
-                mUseNormalProxy = (CheckBoxPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
+                mUseTor = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_TOR_PROXY);
+                mUseNormalProxy = (SwitchPreference) automaticallyFindPreference(Constants.Pref.USE_NORMAL_PROXY);
                 mProxyHost = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_HOST);
                 mProxyPort = (EditTextPreference) automaticallyFindPreference(Constants.Pref.PROXY_PORT);
                 mProxyType = (ListPreference) automaticallyFindPreference(Constants.Pref.PROXY_TYPE);
@@ -467,11 +470,121 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
+    /**
+     * This fragment shows the keyserver/contacts sync preferences
+     */
+    public static class SyncPrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.sync_preferences);
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // this needs to be done in onResume since the user can change sync values from Android
+            // settings and we need to reflect that change when the user navigates back
+            AccountManager manager = AccountManager.get(getActivity());
+            final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
+            // for keyserver sync
+            initializeSyncCheckBox(
+                    (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
+                    account,
+                    Constants.PROVIDER_AUTHORITY
+            );
+            // for contacts sync
+            initializeSyncCheckBox(
+                    (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS),
+                    account,
+                    ContactsContract.AUTHORITY
+            );
+        }
+
+        private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
+                                            final Account account,
+                                            final String authority) {
+            boolean syncEnabled = ContentResolver.getSyncAutomatically(account, authority);
+            syncCheckBox.setChecked(syncEnabled);
+            setSummary(syncCheckBox, authority, syncEnabled);
+
+            syncCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean syncEnabled = (Boolean) newValue;
+                    if (syncEnabled) {
+                        ContentResolver.setSyncAutomatically(account, authority, true);
+                    } else {
+                        // disable syncs
+                        ContentResolver.setSyncAutomatically(account, authority, false);
+                        // cancel any ongoing/pending syncs
+                        ContentResolver.cancelSync(account, authority);
+                    }
+                    setSummary(syncCheckBox, authority, syncEnabled);
+                    return true;
+                }
+            });
+        }
+
+        private void setSummary(SwitchPreference syncCheckBox, String authority,
+                                boolean checked) {
+            switch (authority) {
+                case Constants.PROVIDER_AUTHORITY: {
+                    if (checked) {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_on);
+                    } else {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_off);
+                    }
+                    break;
+                }
+                case ContactsContract.AUTHORITY: {
+                    if (checked) {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_on);
+                    } else {
+                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_off);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * This fragment shows experimental features
+     */
+    public static class ExperimentalPrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.experimental_preferences);
+
+            initializeExperimentalEnableWordConfirm(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM));
+
+            initializeExperimentalEnableLinkedIdentities(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES));
+
+            initializeExperimentalEnableKeybase(
+                    (SwitchPreference) findPreference(Constants.Pref.EXPERIMENTAL_ENABLE_KEYBASE));
+
+            initializeTheme((ListPreference) findPreference(Constants.Pref.THEME));
+
+        }
+    }
+
     protected boolean isValidFragment(String fragmentName) {
-        return AdvancedPrefsFragment.class.getName().equals(fragmentName)
+        return PassphrasePrefsFragment.class.getName().equals(fragmentName)
                 || CloudSearchPrefsFragment.class.getName().equals(fragmentName)
                 || ProxyPrefsFragment.class.getName().equals(fragmentName)
                 || GuiPrefsFragment.class.getName().equals(fragmentName)
+                || SyncPrefsFragment.class.getName().equals(fragmentName)
+                || ExperimentalPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
     }
 
@@ -502,11 +615,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static void initializeTheme(final ListPreference mTheme) {
         mTheme.setValue(sPreferences.getTheme());
-        mTheme.setSummary(mTheme.getEntry());
+        mTheme.setSummary(mTheme.getEntry() + "\n"
+                + mTheme.getContext().getString(R.string.label_experimental_settings_theme_summary));
         mTheme.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mTheme.setValue((String) newValue);
-                mTheme.setSummary(mTheme.getEntry());
+                mTheme.setSummary(mTheme.getEntry() + "\n"
+                        + mTheme.getContext().getString(R.string.label_experimental_settings_theme_summary));
                 sPreferences.setTheme((String) newValue);
 
                 ((SettingsActivity) mTheme.getContext()).recreate();
@@ -516,7 +631,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         });
     }
 
-    private static void initializeSearchKeyserver(final CheckBoxPreference mSearchKeyserver) {
+    private static void initializeSearchKeyserver(final SwitchPreference mSearchKeyserver) {
         Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
         mSearchKeyserver.setChecked(prefs.searchKeyserver);
         mSearchKeyserver.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -529,7 +644,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         });
     }
 
-    private static void initializeSearchKeybase(final CheckBoxPreference mSearchKeybase) {
+    private static void initializeSearchKeybase(final SwitchPreference mSearchKeybase) {
         Preferences.CloudSearchPrefs prefs = sPreferences.getCloudSearchPrefs();
         mSearchKeybase.setChecked(prefs.searchKeybase);
         mSearchKeybase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -567,6 +682,39 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 mUseNumKeypadForYubiKeyPin.setChecked((Boolean) newValue);
                 sPreferences.setUseNumKeypadForYubiKeyPin((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeExperimentalEnableWordConfirm(final SwitchPreference mExperimentalEnableWordConfirm) {
+        mExperimentalEnableWordConfirm.setChecked(sPreferences.getExperimentalEnableWordConfirm());
+        mExperimentalEnableWordConfirm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mExperimentalEnableWordConfirm.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableWordConfirm((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeExperimentalEnableLinkedIdentities(final SwitchPreference mExperimentalEnableLinkedIdentities) {
+        mExperimentalEnableLinkedIdentities.setChecked(sPreferences.getExperimentalEnableLinkedIdentities());
+        mExperimentalEnableLinkedIdentities.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mExperimentalEnableLinkedIdentities.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableLinkedIdentities((Boolean) newValue);
+                return false;
+            }
+        });
+    }
+
+    private static void initializeExperimentalEnableKeybase(final SwitchPreference mExperimentalKeybase) {
+        mExperimentalKeybase.setChecked(sPreferences.getExperimentalEnableKeybase());
+        mExperimentalKeybase.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                mExperimentalKeybase.setChecked((Boolean) newValue);
+                sPreferences.setExperimentalEnableKeybase((Boolean) newValue);
                 return false;
             }
         });
