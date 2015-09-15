@@ -57,19 +57,16 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
-// this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.service.InputDataParcel;
-import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
+import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -306,17 +303,13 @@ public class DecryptListFragment
                 InputDataResult result = mInputDataResults.get(uri);
 
                 Context context = getActivity();
-                if (result.mDecryptVerifyResult.getDecryptionMetadata() == null || context == null) {
-                    return null;
-                }
-
-                String type = result.mDecryptVerifyResult.getDecryptionMetadata().getMimeType();
+                OpenPgpMetadata metadata = result.mMetadata.get(0);
                 Uri outputUri = result.getOutputUris().get(0);
-                if (type == null || outputUri == null) {
+                if (metadata == null || context == null || outputUri == null) {
                     return null;
                 }
 
-                TemporaryStorageProvider.setMimeType(context, outputUri, type);
+                String type = metadata.getMimeType();
 
                 if (ClipDescription.compareMimeTypes(type, "image/*")) {
                     int px = FormattingUtils.dpToPx(context, 48);
@@ -369,19 +362,14 @@ public class DecryptListFragment
 
     }
 
-    public void displayWithViewIntent(final Uri uri, boolean share) {
+    public void displayWithViewIntent(InputDataResult result, int index, boolean share) {
         Activity activity = getActivity();
-        if (activity == null || mCurrentInputUri != null) {
+        if (activity == null) {
             return;
         }
 
-        final Uri outputUri = mInputDataResults.get(uri).getOutputUris().get(0);
-        final DecryptVerifyResult result = mAdapter.getItemResult(uri).mDecryptVerifyResult;
-        if (outputUri == null || result == null) {
-            return;
-        }
-
-        final OpenPgpMetadata metadata = result.getDecryptionMetadata();
+        Uri outputUri = result.getOutputUris().get(index);
+        OpenPgpMetadata metadata = result.mMetadata.get(index);
 
         // text/plain is a special case where we extract the uri content into
         // the EXTRA_TEXT extra ourselves, and display a chooser which includes
@@ -390,7 +378,7 @@ public class DecryptListFragment
 
             if (share) {
                 try {
-                    String plaintext = FileHelper.readTextFromUri(activity, outputUri, result.getCharset());
+                    String plaintext = FileHelper.readTextFromUri(activity, outputUri, null);
 
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType(metadata.getMimeType());
@@ -468,18 +456,17 @@ public class DecryptListFragment
         }
 
         ViewModel model = mAdapter.mMenuClickedModel;
-        DecryptVerifyResult result = model.mResult.mDecryptVerifyResult;
         switch (menuItem.getItemId()) {
             case R.id.view_log:
                 Intent intent = new Intent(activity, LogDisplayActivity.class);
-                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);
+                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
                 activity.startActivity(intent);
                 return true;
             case R.id.decrypt_share:
-                displayWithViewIntent(model.mInputUri, true);
+                displayWithViewIntent(model.mResult, 0, true);
                 return true;
             case R.id.decrypt_save:
-                OpenPgpMetadata metadata = result.getDecryptionMetadata();
+                OpenPgpMetadata metadata = model.mResult.mDecryptVerifyResult.getDecryptionMetadata();
                 if (metadata == null) {
                     return true;
                 }
@@ -663,7 +650,7 @@ public class DecryptListFragment
 
             KeyFormattingUtils.setStatus(getResources(), holder, model.mResult.mDecryptVerifyResult);
 
-            final OpenPgpMetadata metadata = model.mResult.mDecryptVerifyResult.getDecryptionMetadata();
+            final OpenPgpMetadata metadata = model.mResult.mMetadata.get(0);
 
             String filename;
             if (metadata == null) {
@@ -692,8 +679,8 @@ public class DecryptListFragment
             holder.vFile.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (model.mResult.success() && model.mResult.mDecryptVerifyResult.getDecryptionMetadata() != null) {
-                        displayWithViewIntent(model.mInputUri, false);
+                    if (model.mResult.success()) {
+                        displayWithViewIntent(model.mResult, 0, false);
                     }
                 }
             });
