@@ -27,14 +27,14 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 
 ### For bigger changes
 
-1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
+1. Join the development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 2. Propose bigger changes and discuss the consequences
 
 I am happy about every code contribution and appreciate your effort to help us developing OpenKeychain!
 
 ## Development
 
-Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
+Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 
 ### Build with Gradle
 
