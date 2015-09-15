@@ -131,7 +131,7 @@ public class DecryptListFragment
         vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         vFilesList.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter = new DecryptFilesAdapter(getActivity(), this);
+        mAdapter = new DecryptFilesAdapter(this);
         vFilesList.setAdapter(mAdapter);
 
         return view;
@@ -526,13 +526,11 @@ public class DecryptListFragment
     }
 
     public class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
-        private Context mContext;
         private ArrayList<ViewModel> mDataset;
         private OnMenuItemClickListener mMenuItemClickListener;
         private ViewModel mMenuClickedModel;
 
         public class ViewModel {
-            Context mContext;
             Uri mInputUri;
             InputDataResult mResult;
             Drawable mIcon;
@@ -541,8 +539,7 @@ public class DecryptListFragment
             String mProgressMsg;
             OnClickListener mCancelled;
 
-            ViewModel(Context context, Uri uri) {
-                mContext = context;
+            ViewModel(Uri uri) {
                 mInputUri = uri;
                 mProgress = 0;
                 mMax = 100;
@@ -600,8 +597,7 @@ public class DecryptListFragment
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public DecryptFilesAdapter(Context context, OnMenuItemClickListener menuItemClickListener) {
-            mContext = context;
+        public DecryptFilesAdapter(OnMenuItemClickListener menuItemClickListener) {
             mMenuItemClickListener = menuItemClickListener;
             mDataset = new ArrayList<>();
         }
@@ -665,15 +661,15 @@ public class DecryptListFragment
                 holder.vAnimator.setDisplayedChild(1);
             }
 
-            KeyFormattingUtils.setStatus(mContext, holder, model.mResult.mDecryptVerifyResult);
+            KeyFormattingUtils.setStatus(getResources(), holder, model.mResult.mDecryptVerifyResult);
 
             final OpenPgpMetadata metadata = model.mResult.mDecryptVerifyResult.getDecryptionMetadata();
 
             String filename;
             if (metadata == null) {
-                filename = mContext.getString(R.string.filename_unknown);
+                filename = getString(R.string.filename_unknown);
             } else if (TextUtils.isEmpty(metadata.getFilename())) {
-                filename = mContext.getString("text/plain".equals(metadata.getMimeType())
+                filename = getString("text/plain".equals(metadata.getMimeType())
                         ? R.string.filename_unknown_text : R.string.filename_unknown);
             } else {
                 filename = metadata.getFilename();
@@ -709,9 +705,13 @@ public class DecryptListFragment
                     holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(mContext, ViewKeyActivity.class);
+                            Activity activity = getActivity();
+                            if (activity == null) {
+                                return;
+                            }
+                            Intent intent = new Intent(activity, ViewKeyActivity.class);
                             intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
-                            mContext.startActivity(intent);
+                            activity.startActivity(intent);
                         }
                     });
                 }
@@ -721,8 +721,12 @@ public class DecryptListFragment
             holder.vContextMenu.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
                     mMenuClickedModel = model;
-                    PopupMenu menu = new PopupMenu(mContext, view);
+                    PopupMenu menu = new PopupMenu(activity, view);
                     menu.inflate(R.menu.decrypt_item_context_menu);
                     menu.setOnMenuItemClickListener(mMenuItemClickListener);
                     menu.setOnDismissListener(new OnDismissListener() {
@@ -746,9 +750,13 @@ public class DecryptListFragment
             holder.vErrorViewLog.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, LogDisplayActivity.class);
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+                    Intent intent = new Intent(activity, LogDisplayActivity.class);
                     intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
-                    mContext.startActivity(intent);
+                    activity.startActivity(intent);
                 }
             });
 
@@ -761,7 +769,7 @@ public class DecryptListFragment
         }
 
         public InputDataResult getItemResult(Uri uri) {
-            ViewModel model = new ViewModel(mContext, uri);
+            ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             if (pos == -1) {
                 return null;
@@ -772,20 +780,20 @@ public class DecryptListFragment
         }
 
         public void add(Uri uri) {
-            ViewModel newModel = new ViewModel(mContext, uri);
+            ViewModel newModel = new ViewModel(uri);
             mDataset.add(newModel);
             notifyItemInserted(mDataset.size());
         }
 
         public void setProgress(Uri uri, int progress, int max, String msg) {
-            ViewModel newModel = new ViewModel(mContext, uri);
+            ViewModel newModel = new ViewModel(uri);
             int pos = mDataset.indexOf(newModel);
             mDataset.get(pos).setProgress(progress, max, msg);
             notifyItemChanged(pos);
         }
 
         public void setCancelled(Uri uri, OnClickListener retryListener) {
-            ViewModel newModel = new ViewModel(mContext, uri);
+            ViewModel newModel = new ViewModel(uri);
             int pos = mDataset.indexOf(newModel);
             mDataset.get(pos).setCancelled(retryListener);
             notifyItemChanged(pos);
@@ -793,7 +801,7 @@ public class DecryptListFragment
 
         public void addResult(Uri uri, InputDataResult result, Drawable icon) {
 
-            ViewModel model = new ViewModel(mContext, uri);
+            ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             model = mDataset.get(pos);
 

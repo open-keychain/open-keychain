@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.text.Spannable;
@@ -446,7 +447,7 @@ public class KeyFormattingUtils {
     }
 
     @SuppressWarnings("deprecation") // context.getDrawable is api lvl 21, need to use deprecated
-    public static void setStatus(Context context, StatusHolder holder, DecryptVerifyResult result) {
+    public static void setStatus(Resources resources, StatusHolder holder, DecryptVerifyResult result) {
 
         if (holder.hasEncrypt()) {
             OpenPgpDecryptionResult decryptionResult = result.getDecryptionResult();
@@ -477,9 +478,9 @@ public class KeyFormattingUtils {
                 }
             }
 
-            int encColorRes = context.getResources().getColor(encColor);
+            int encColorRes = resources.getColor(encColor);
             holder.getEncryptionStatusIcon().setColorFilter(encColorRes, PorterDuff.Mode.SRC_IN);
-            holder.getEncryptionStatusIcon().setImageDrawable(context.getResources().getDrawable(encIcon));
+            holder.getEncryptionStatusIcon().setImageDrawable(resources.getDrawable(encIcon));
             holder.getEncryptionStatusText().setText(encText);
             holder.getEncryptionStatusText().setTextColor(encColorRes);
         }
@@ -577,9 +578,9 @@ public class KeyFormattingUtils {
 
         }
 
-        int sigColorRes = context.getResources().getColor(sigColor);
+        int sigColorRes = resources.getColor(sigColor);
         holder.getSignatureStatusIcon().setColorFilter(sigColorRes, PorterDuff.Mode.SRC_IN);
-        holder.getSignatureStatusIcon().setImageDrawable(context.getResources().getDrawable(sigIcon));
+        holder.getSignatureStatusIcon().setImageDrawable(resources.getDrawable(sigIcon));
         holder.getSignatureStatusText().setText(sigText);
         holder.getSignatureStatusText().setTextColor(sigColorRes);
 
