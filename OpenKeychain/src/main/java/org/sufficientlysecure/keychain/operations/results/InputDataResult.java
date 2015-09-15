@@ -25,21 +25,30 @@ import java.util.ArrayList;
 public class InputDataResult extends InputPendingResult {
 
     public final ArrayList<Uri> mOutputUris;
-    public DecryptVerifyResult mDecryptVerifyResult;
+    final public DecryptVerifyResult mDecryptVerifyResult;
 
     public InputDataResult(OperationLog log, InputPendingResult result) {
         super(log, result);
         mOutputUris = null;
+        mDecryptVerifyResult = null;
     }
 
-    public InputDataResult(int result, OperationLog log, ArrayList<Uri> temporaryUris) {
+    public InputDataResult(int result, OperationLog log, DecryptVerifyResult decryptResult, ArrayList<Uri> temporaryUris) {
         super(result, log);
         mOutputUris = temporaryUris;
+        mDecryptVerifyResult = decryptResult;
+    }
+
+    public InputDataResult(int result, OperationLog log) {
+        super(result, log);
+        mOutputUris = null;
+        mDecryptVerifyResult = null;
     }
 
     protected InputDataResult(Parcel in) {
         super(in);
         mOutputUris = in.createTypedArrayList(Uri.CREATOR);
+        mDecryptVerifyResult = in.readParcelable(DecryptVerifyResult.class.getClassLoader());
     }
 
     public ArrayList<Uri> getOutputUris() {
@@ -55,6 +64,7 @@ public class InputDataResult extends InputPendingResult {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeTypedList(mOutputUris);
+        dest.writeParcelable(mDecryptVerifyResult, 0);
     }
 
     public static final Creator<InputDataResult> CREATOR = new Creator<InputDataResult>() {

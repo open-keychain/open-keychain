@@ -70,6 +70,8 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
         Uri currentUri;
 
+        DecryptVerifyResult decryptResult = null;
+
         PgpDecryptVerifyInputParcel decryptInput = input.getDecryptInput();
         if (decryptInput != null) {
 
@@ -83,11 +85,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             currentUri = TemporaryStorageProvider.createFile(mContext);
             decryptInput.setOutputUri(currentUri);
 
-            DecryptVerifyResult result = op.execute(decryptInput, cryptoInput);
-            if (result.isPending()) {
-                return new InputDataResult(log, result);
+            decryptResult = op.execute(decryptInput, cryptoInput);
+            if (decryptResult.isPending()) {
+                return new InputDataResult(log, decryptResult);
             }
-            log.addByMerge(result, 2);
+            log.addByMerge(decryptResult, 2);
 
         } else {
             currentUri = input.getInputUri();
@@ -106,7 +108,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             uris.add(currentUri);
 
             log.add(LogType.MSG_DATA_OK, 1);
-            return new InputDataResult(InputDataResult.RESULT_OK, log, uris);
+            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, uris);
 
         }
 
@@ -117,7 +119,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             in = mContext.getContentResolver().openInputStream(currentUri);
         } catch (FileNotFoundException e) {
             log.add(LogType.MSG_DATA_ERROR_IO, 2);
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         }
         MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
 
@@ -176,16 +178,16 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.add(LogType.MSG_DATA_MIME_OK, 2);
 
             log.add(LogType.MSG_DATA_OK, 1);
-            return new InputDataResult(InputDataResult.RESULT_OK, log, outputUris);
+            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris);
 
         } catch (IOException e) {
             e.printStackTrace();
             log.add(LogType.MSG_DATA_MIME_ERROR, 2);
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         } catch (MimeException e) {
             e.printStackTrace();
             log.add(LogType.MSG_DATA_MIME_ERROR, 2);
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log, outputUris);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         }
 
     }

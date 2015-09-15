@@ -33,6 +33,7 @@ public class InputDataParcel implements Parcelable {
 
     public InputDataParcel(Uri inputUri, PgpDecryptVerifyInputParcel decryptInput) {
         mInputUri = inputUri;
+        mDecryptInput = decryptInput;
     }
 
     InputDataParcel(Parcel source) {

@@ -58,10 +58,12 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
@@ -76,7 +78,7 @@ import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 
 
 public class DecryptListFragment
-        extends QueueingCryptoOperationFragment<PgpDecryptVerifyInputParcel,DecryptVerifyResult>
+        extends QueueingCryptoOperationFragment<InputDataParcel,InputDataResult>
         implements OnMenuItemClickListener {
 
     public static final String ARG_INPUT_URIS = "input_uris";
@@ -88,7 +90,7 @@ public class DecryptListFragment
     public static final String ARG_CURRENT_URI = "current_uri";
 
     private ArrayList<Uri> mInputUris;
-    private HashMap<Uri, Uri> mOutputUris;
+    private HashMap<Uri, InputDataResult> mInputDataResults;
     private ArrayList<Uri> mPendingInputUris;
     private ArrayList<Uri> mCancelledInputUris;
 
@@ -141,19 +143,19 @@ public class DecryptListFragment
 
         outState.putParcelableArrayList(ARG_INPUT_URIS, mInputUris);
 
-        HashMap<Uri,DecryptVerifyResult> results = new HashMap<>(mInputUris.size());
+        HashMap<Uri,InputDataResult> results = new HashMap<>(mInputUris.size());
         for (Uri uri : mInputUris) {
             if (mPendingInputUris.contains(uri)) {
                 continue;
             }
-            DecryptVerifyResult result = mAdapter.getItemResult(uri);
+            InputDataResult result = mAdapter.getItemResult(uri);
             if (result != null) {
                 results.put(uri, result);
             }
         }
 
         outState.putParcelable(ARG_RESULTS, new ParcelableHashMap<>(results));
-        outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mOutputUris));
+        outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mInputDataResults));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
         outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
 
@@ -167,23 +169,20 @@ public class DecryptListFragment
 
         ArrayList<Uri> inputUris = getArguments().getParcelableArrayList(ARG_INPUT_URIS);
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
-        ParcelableHashMap<Uri,Uri> outputUris = args.getParcelable(ARG_OUTPUT_URIS);
-        ParcelableHashMap<Uri,DecryptVerifyResult> results = args.getParcelable(ARG_RESULTS);
+        ParcelableHashMap<Uri,InputDataResult> results = args.getParcelable(ARG_RESULTS);
         Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
 
         displayInputUris(inputUris, currentInputUri, cancelledUris,
-                outputUris != null ? outputUris.getMap() : null,
                 results != null ? results.getMap() : null
         );
     }
 
     private void displayInputUris(ArrayList<Uri> inputUris, Uri currentInputUri,
-            ArrayList<Uri> cancelledUris, HashMap<Uri,Uri> outputUris,
-            HashMap<Uri,DecryptVerifyResult> results) {
+            ArrayList<Uri> cancelledUris, HashMap<Uri,InputDataResult> results) {
 
         mInputUris = inputUris;
         mCurrentInputUri = currentInputUri;
-        mOutputUris = outputUris != null ? outputUris : new HashMap<Uri,Uri>(inputUris.size());
+        mInputDataResults = results != null ? results : new HashMap<Uri,InputDataResult>(inputUris.size());
         mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
 
         mPendingInputUris = new ArrayList<>();
@@ -206,9 +205,8 @@ public class DecryptListFragment
             }
 
             if (results != null && results.containsKey(uri)) {
-                processResult(uri, results.get(uri));
+                processResult(uri);
             } else {
-                mOutputUris.put(uri, TemporaryStorageProvider.createFile(getActivity()));
                 mPendingInputUris.add(uri);
             }
         }
@@ -224,7 +222,7 @@ public class DecryptListFragment
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Uri decryptedFileUri = mOutputUris.get(mCurrentInputUri);
+                    Uri decryptedFileUri = mInputDataResults.get(mCurrentInputUri).getOutputUris().get(0);
                     Uri saveUri = data.getData();
                     saveFile(decryptedFileUri, saveUri);
                     mCurrentInputUri = null;
@@ -260,7 +258,7 @@ public class DecryptListFragment
     }
 
     @Override
-    public void onQueuedOperationError(DecryptVerifyResult result) {
+    public void onQueuedOperationError(InputDataResult result) {
         final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
@@ -270,11 +268,12 @@ public class DecryptListFragment
     }
 
     @Override
-    public void onQueuedOperationSuccess(DecryptVerifyResult result) {
+    public void onQueuedOperationSuccess(InputDataResult result) {
         Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
-        processResult(uri, result);
+        mInputDataResults.put(uri, result);
+        processResult(uri);
 
         cryptoOperation();
     }
@@ -298,19 +297,21 @@ public class DecryptListFragment
 
     }
 
-    private void processResult(final Uri uri, final DecryptVerifyResult result) {
+    private void processResult(final Uri uri) {
 
         new AsyncTask<Void, Void, Drawable>() {
             @Override
             protected Drawable doInBackground(Void... params) {
 
+                InputDataResult result = mInputDataResults.get(uri);
+
                 Context context = getActivity();
-                if (result.getDecryptionMetadata() == null || context == null) {
+                if (result.mDecryptVerifyResult.getDecryptionMetadata() == null || context == null) {
                     return null;
                 }
 
-                String type = result.getDecryptionMetadata().getMimeType();
-                Uri outputUri = mOutputUris.get(uri);
+                String type = result.mDecryptVerifyResult.getDecryptionMetadata().getMimeType();
+                Uri outputUri = result.getOutputUris().get(0);
                 if (type == null || outputUri == null) {
                     return null;
                 }
@@ -339,17 +340,19 @@ public class DecryptListFragment
 
             @Override
             protected void onPostExecute(Drawable icon) {
-                processResult(uri, result, icon);
+                processResult(uri, icon);
             }
         }.execute();
 
     }
 
-    private void processResult(final Uri uri, DecryptVerifyResult result, Drawable icon) {
+    private void processResult(final Uri uri, Drawable icon) {
+
+        InputDataResult result = mInputDataResults.get(uri);
 
         OnClickListener onFileClick = null, onKeyClick = null;
 
-        OpenPgpSignatureResult sigResult = result.getSignatureResult();
+        OpenPgpSignatureResult sigResult = result.mDecryptVerifyResult.getSignatureResult();
         if (sigResult != null) {
             final long keyId = sigResult.getKeyId();
             if (sigResult.getResult() != OpenPgpSignatureResult.RESULT_KEY_MISSING) {
@@ -368,7 +371,7 @@ public class DecryptListFragment
             }
         }
 
-        if (result.success() && result.getDecryptionMetadata() != null) {
+        if (result.success() && result.mDecryptVerifyResult.getDecryptionMetadata() != null) {
             onFileClick = new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -403,8 +406,8 @@ public class DecryptListFragment
             return;
         }
 
-        final Uri outputUri = mOutputUris.get(uri);
-        final DecryptVerifyResult result = mAdapter.getItemResult(uri);
+        final Uri outputUri = mInputDataResults.get(uri).getOutputUris().get(0);
+        final DecryptVerifyResult result = mAdapter.getItemResult(uri).mDecryptVerifyResult;
         if (outputUri == null || result == null) {
             return;
         }
@@ -460,7 +463,7 @@ public class DecryptListFragment
     }
 
     @Override
-    public PgpDecryptVerifyInputParcel createOperationInput() {
+    public InputDataParcel createOperationInput() {
 
         if (mCurrentInputUri == null) {
             if (mPendingInputUris.isEmpty()) {
@@ -471,11 +474,11 @@ public class DecryptListFragment
             mCurrentInputUri = mPendingInputUris.remove(0);
         }
 
-        Uri currentOutputUri = mOutputUris.get(mCurrentInputUri);
-        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri + ", mOutputUri=" + currentOutputUri);
+        Log.d(Constants.TAG, "mInputUri=" + mCurrentInputUri);
 
-        return new PgpDecryptVerifyInputParcel(mCurrentInputUri, currentOutputUri)
+        PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel()
                 .setAllowSymmetricDecryption(true);
+        return new InputDataParcel(mCurrentInputUri, decryptInput);
 
     }
 
@@ -496,7 +499,7 @@ public class DecryptListFragment
         }
 
         ViewModel model = mAdapter.mMenuClickedModel;
-        DecryptVerifyResult result = model.mResult;
+        DecryptVerifyResult result = model.mResult.mDecryptVerifyResult;
         switch (menuItem.getItemId()) {
             case R.id.view_log:
                 Intent intent = new Intent(activity, LogDisplayActivity.class);
@@ -553,7 +556,7 @@ public class DecryptListFragment
 
     }
 
-    public static class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
+    public class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
         private Context mContext;
         private ArrayList<ViewModel> mDataset;
         private OnMenuItemClickListener mMenuItemClickListener;
@@ -562,7 +565,7 @@ public class DecryptListFragment
         public class ViewModel {
             Context mContext;
             Uri mInputUri;
-            DecryptVerifyResult mResult;
+            InputDataResult mResult;
             Drawable mIcon;
 
             OnClickListener mOnFileClickListener;
@@ -580,7 +583,7 @@ public class DecryptListFragment
                 mCancelled = null;
             }
 
-            void addResult(DecryptVerifyResult result) {
+            void addResult(InputDataResult result) {
                 mResult = result;
             }
 
@@ -701,9 +704,9 @@ public class DecryptListFragment
                 holder.vAnimator.setDisplayedChild(1);
             }
 
-            KeyFormattingUtils.setStatus(mContext, holder, model.mResult);
+            KeyFormattingUtils.setStatus(mContext, holder, model.mResult.mDecryptVerifyResult);
 
-            final OpenPgpMetadata metadata = model.mResult.getDecryptionMetadata();
+            final OpenPgpMetadata metadata = model.mResult.mDecryptVerifyResult.getDecryptionMetadata();
 
             String filename;
             if (metadata == null) {
@@ -775,7 +778,7 @@ public class DecryptListFragment
             return mDataset.size();
         }
 
-        public DecryptVerifyResult getItemResult(Uri uri) {
+        public InputDataResult getItemResult(Uri uri) {
             ViewModel model = new ViewModel(mContext, uri);
             int pos = mDataset.indexOf(model);
             if (pos == -1) {
@@ -806,7 +809,7 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void addResult(Uri uri, DecryptVerifyResult result, Drawable icon,
+        public void addResult(Uri uri, InputDataResult result, Drawable icon,
                 OnClickListener onFileClick, OnClickListener onKeyClick) {
 
             ViewModel model = new ViewModel(mContext, uri);
