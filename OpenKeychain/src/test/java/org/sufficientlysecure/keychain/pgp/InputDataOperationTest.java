@@ -37,8 +37,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowContentProvider;
-import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
@@ -50,7 +48,6 @@ import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;

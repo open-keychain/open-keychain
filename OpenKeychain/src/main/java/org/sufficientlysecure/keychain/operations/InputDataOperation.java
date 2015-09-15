@@ -30,7 +30,6 @@ import android.support.annotation.NonNull;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.DecodeMonitor;
-import org.apache.james.mime4j.dom.FieldParser;
 import org.apache.james.mime4j.dom.field.ContentDispositionField;
 import org.apache.james.mime4j.field.DefaultFieldParser;
 import org.apache.james.mime4j.parser.AbstractContentHandler;
@@ -38,7 +37,6 @@ import org.apache.james.mime4j.parser.MimeStreamParser;
 import org.apache.james.mime4j.stream.BodyDescriptor;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.MimeConfig;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -50,7 +48,6 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
 
 
 /** This operation deals with input data, trying to determine its type as it goes. */
@@ -69,12 +66,14 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
         final OperationLog log = new OperationLog();
 
-        log.add(LogType.MSG_MIME_PARSING, 0);
+        log.add(LogType.MSG_DATA, 0);
 
         Uri currentUri;
 
         PgpDecryptVerifyInputParcel decryptInput = input.getDecryptInput();
         if (decryptInput != null) {
+
+            log.add(LogType.MSG_DATA_DECRYPT, 1);
 
             PgpDecryptVerifyOperation op =
                     new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
@@ -88,6 +87,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             if (result.isPending()) {
                 return new InputDataResult(log, result);
             }
+            log.addByMerge(result, 2);
 
         } else {
             currentUri = input.getInputUri();
@@ -96,76 +96,96 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         // If we aren't supposed to attempt mime decode, we are done here
         if (!input.getMimeDecode()) {
 
+            if (decryptInput == null) {
+                throw new AssertionError("no decryption or mime decoding, this is probably a bug");
+            }
+
+            log.add(LogType.MSG_DATA_SKIP_MIME, 1);
+
             ArrayList<Uri> uris = new ArrayList<>();
             uris.add(currentUri);
+
+            log.add(LogType.MSG_DATA_OK, 1);
             return new InputDataResult(InputDataResult.RESULT_OK, log, uris);
 
         }
 
+        log.add(LogType.MSG_DATA_MIME, 1);
+
+        InputStream in;
         try {
-            InputStream in = mContext.getContentResolver().openInputStream(currentUri);
+            in = mContext.getContentResolver().openInputStream(currentUri);
+        } catch (FileNotFoundException e) {
+            log.add(LogType.MSG_DATA_ERROR_IO, 2);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
+        }
+        MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
 
-            MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
+        final ArrayList<Uri> outputUris = new ArrayList<>();
 
-            final ArrayList<Uri> outputUris = new ArrayList<>();
+        parser.setContentDecoding(true);
+        parser.setRecurse();
+        parser.setContentHandler(new AbstractContentHandler() {
+            String mFilename;
 
-            parser.setContentDecoding(true);
-            parser.setRecurse();
-            parser.setContentHandler(new AbstractContentHandler() {
-                String mFilename;
+            @Override
+            public void startHeader() throws MimeException {
+                mFilename = null;
+            }
 
-                @Override
-                public void startHeader() throws MimeException {
-                    mFilename = null;
+            @Override
+            public void field(Field field) throws MimeException {
+                field = DefaultFieldParser.getParser().parse(field, DecodeMonitor.SILENT);
+                if (field instanceof ContentDispositionField) {
+                    mFilename = ((ContentDispositionField) field).getFilename();
+                }
+            }
+
+            @Override
+            public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
+
+                log.add(LogType.MSG_DATA_MIME_PART, 2);
+
+                log.add(LogType.MSG_DATA_MIME_TYPE, 3, bd.getMimeType());
+                if (mFilename != null) {
+                    log.add(LogType.MSG_DATA_MIME_FILENAME, 3, mFilename);
+                }
+                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, bd.getContentLength());
+
+                Uri uri = TemporaryStorageProvider.createFile(mContext, mFilename, bd.getMimeType());
+                OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
+
+                if (out == null) {
+                    throw new IOException("Error getting file for writing!");
                 }
 
-                @Override
-                public void field(Field field) throws MimeException {
-                    field = DefaultFieldParser.getParser().parse(field, DecodeMonitor.SILENT);
-                    if (field instanceof ContentDispositionField) {
-                        mFilename = ((ContentDispositionField) field).getFilename();
-                    }
+                int len;
+                while ((len = is.read(buf)) > 0) {
+                    out.write(buf, 0, len);
                 }
 
-                @Override
-                public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
+                out.close();
+                outputUris.add(uri);
 
-                    // log.add(LogType.MSG_MIME_PART, 0, bd.getMimeType());
+            }
+        });
 
-                    Uri uri = TemporaryStorageProvider.createFile(mContext, mFilename, bd.getMimeType());
-                    OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
-
-                    if (out == null) {
-                        Log.e(Constants.TAG, "error!");
-                        return;
-                    }
-
-                    int len;
-                    while ( (len = is.read(buf)) > 0) {
-                        out.write(buf, 0, len);
-                    }
-
-                    out.close();
-                    outputUris.add(uri);
-
-                }
-            });
+        try {
 
             parser.parse(in);
+            log.add(LogType.MSG_DATA_MIME_OK, 2);
 
-            log.add(LogType.MSG_MIME_PARSING_SUCCESS, 1);
-
+            log.add(LogType.MSG_DATA_OK, 1);
             return new InputDataResult(InputDataResult.RESULT_OK, log, outputUris);
 
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            log.add(LogType.MSG_DATA_MIME_ERROR, 2);
             return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
         } catch (MimeException e) {
             e.printStackTrace();
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log, null);
+            log.add(LogType.MSG_DATA_MIME_ERROR, 2);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log, outputUris);
         }
 
     }

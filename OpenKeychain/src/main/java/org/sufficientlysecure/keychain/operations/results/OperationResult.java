@@ -126,6 +126,13 @@ public abstract class OperationResult implements Parcelable {
             Log.v(Constants.TAG, "log: " + this);
         }
 
+        /** Clones this LogEntryParcel, adding extra indent. Note that the parameter array is NOT cloned! */
+        public LogEntryParcel (LogEntryParcel original, int extraIndent) {
+            mType = original.mType;
+            mParameters = original.mParameters;
+            mIndent = original.mIndent +extraIndent;
+        }
+
         public LogEntryParcel(Parcel source) {
             mType = LogType.values()[source.readInt()];
             mParameters = (Object[]) source.readSerializable();
@@ -818,10 +825,19 @@ public abstract class OperationResult implements Parcelable {
         MSG_KEYBASE_ERROR_PAYLOAD_MISMATCH(LogLevel.ERROR,
                 R.string.msg_keybase_error_msg_payload_mismatch),
 
-        // mime parsing
-        MSG_MIME_PARSING(LogLevel.START,R.string.msg_mime_parsing_start),
-        MSG_MIME_PARSING_ERROR(LogLevel.ERROR,R.string.msg_mime_parsing_error),
-        MSG_MIME_PARSING_SUCCESS(LogLevel.OK,R.string.msg_mime_parsing_success),
+        // InputData Operation
+        MSG_DATA (LogLevel.START, R.string.msg_data),
+        MSG_DATA_DECRYPT (LogLevel.DEBUG, R.string.msg_data_decrypt),
+        MSG_DATA_ERROR_IO (LogLevel.ERROR, R.string.msg_data_error_io),
+        MSG_DATA_MIME_ERROR (LogLevel.ERROR, R.string.msg_data_mime_error),
+        MSG_DATA_MIME_FILENAME (LogLevel.DEBUG, R.string.msg_data_mime_filename),
+        MSG_DATA_MIME_LENGTH (LogLevel.DEBUG, R.string.msg_data_mime_length),
+        MSG_DATA_MIME (LogLevel.DEBUG, R.string.msg_data_mime),
+        MSG_DATA_MIME_OK (LogLevel.INFO, R.string.msg_data_mime_ok),
+        MSG_DATA_MIME_PART (LogLevel.DEBUG, R.string.msg_data_mime_part),
+        MSG_DATA_MIME_TYPE (LogLevel.DEBUG, R.string.msg_data_mime_type),
+        MSG_DATA_OK (LogLevel.OK, R.string.msg_data_ok),
+        MSG_DATA_SKIP_MIME (LogLevel.DEBUG, R.string.msg_data_skip_mime),
 
         MSG_LV (LogLevel.START, R.string.msg_lv),
         MSG_LV_MATCH (LogLevel.DEBUG, R.string.msg_lv_match),
@@ -899,6 +915,13 @@ public abstract class OperationResult implements Parcelable {
         public void add(OperationResult subResult, int indent) {
             OperationLog subLog = subResult.getLog();
             mParcels.add(new SubLogEntryParcel(subResult, subLog.getFirst().mType, indent, subLog.getFirst().mParameters));
+        }
+
+        public void addByMerge(OperationResult subResult, int indent) {
+            OperationLog subLog = subResult.getLog();
+            for (LogEntryParcel entry : subLog) {
+                mParcels.add(new LogEntryParcel(entry, indent));
+            }
         }
 
         public SubLogEntryParcel getSubResultIfSingle() {

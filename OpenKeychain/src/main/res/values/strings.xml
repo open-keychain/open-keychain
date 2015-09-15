@@ -1355,6 +1355,18 @@
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
     <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
 
+    <string name="msg_data">""</string>
+    <string name="msg_data_decrypt">""</string>
+    <string name="msg_data_error_io">""</string>
+    <string name="msg_data_mime_error">""</string>
+    <string name="msg_data_mime_filename">""</string>
+    <string name="msg_data_mime_length">""</string>
+    <string name="msg_data_mime">""</string>
+    <string name="msg_data_mime_ok">""</string>
+    <string name="msg_data_mime_part">""</string>
+    <string name="msg_data_mime_type">""</string>
+    <string name="msg_data_ok">""</string>
+    <string name="msg_data_skip_mime">""</string>
 
     <string name="msg_acc_saved">"Account saved"</string>
 
