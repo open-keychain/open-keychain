@@ -262,7 +262,7 @@ public class DecryptListFragment
         final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
 
-        mAdapter.addResult(uri, result, null, null, null);
+        mAdapter.addResult(uri, result, null);
 
         cryptoOperation();
     }
@@ -349,38 +349,7 @@ public class DecryptListFragment
     private void processResult(final Uri uri, Drawable icon) {
 
         InputDataResult result = mInputDataResults.get(uri);
-
-        OnClickListener onFileClick = null, onKeyClick = null;
-
-        OpenPgpSignatureResult sigResult = result.mDecryptVerifyResult.getSignatureResult();
-        if (sigResult != null) {
-            final long keyId = sigResult.getKeyId();
-            if (sigResult.getResult() != OpenPgpSignatureResult.RESULT_KEY_MISSING) {
-                onKeyClick = new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Activity activity = getActivity();
-                        if (activity == null) {
-                            return;
-                        }
-                        Intent intent = new Intent(activity, ViewKeyActivity.class);
-                        intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
-                        activity.startActivity(intent);
-                    }
-                };
-            }
-        }
-
-        if (result.success() && result.mDecryptVerifyResult.getDecryptionMetadata() != null) {
-            onFileClick = new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    displayWithViewIntent(uri, false);
-                }
-            };
-        }
-
-        mAdapter.addResult(uri, result, icon, onFileClick, onKeyClick);
+        mAdapter.addResult(uri, result, icon);
 
     }
 
@@ -568,9 +537,6 @@ public class DecryptListFragment
             InputDataResult mResult;
             Drawable mIcon;
 
-            OnClickListener mOnFileClickListener;
-            OnClickListener mOnKeyClickListener;
-
             int mProgress, mMax;
             String mProgressMsg;
             OnClickListener mCancelled;
@@ -589,11 +555,6 @@ public class DecryptListFragment
 
             void addIcon(Drawable icon) {
                 mIcon = icon;
-            }
-
-            void setOnClickListeners(OnClickListener onFileClick, OnClickListener onKeyClick) {
-                mOnFileClickListener = onFileClick;
-                mOnKeyClickListener = onKeyClick;
             }
 
             boolean hasResult() {
@@ -732,8 +693,29 @@ public class DecryptListFragment
                 holder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
             }
 
-            holder.vFile.setOnClickListener(model.mOnFileClickListener);
-            holder.vSignatureLayout.setOnClickListener(model.mOnKeyClickListener);
+            holder.vFile.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (model.mResult.success() && model.mResult.mDecryptVerifyResult.getDecryptionMetadata() != null) {
+                        displayWithViewIntent(model.mInputUri, false);
+                    }
+                }
+            });
+
+            OpenPgpSignatureResult sigResult = model.mResult.mDecryptVerifyResult.getSignatureResult();
+            if (sigResult != null) {
+                final long keyId = sigResult.getKeyId();
+                if (sigResult.getResult() != OpenPgpSignatureResult.RESULT_KEY_MISSING) {
+                    holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(mContext, ViewKeyActivity.class);
+                            intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
+                            mContext.startActivity(intent);
+                        }
+                    });
+                }
+            }
 
             holder.vContextMenu.setTag(model);
             holder.vContextMenu.setOnClickListener(new OnClickListener() {
@@ -809,8 +791,7 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void addResult(Uri uri, InputDataResult result, Drawable icon,
-                OnClickListener onFileClick, OnClickListener onKeyClick) {
+        public void addResult(Uri uri, InputDataResult result, Drawable icon) {
 
             ViewModel model = new ViewModel(mContext, uri);
             int pos = mDataset.indexOf(model);
@@ -820,7 +801,6 @@ public class DecryptListFragment
             if (icon != null) {
                 model.addIcon(icon);
             }
-            model.setOnClickListeners(onFileClick, onKeyClick);
 
             notifyItemChanged(pos);
         }
