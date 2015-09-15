@@ -17,38 +17,52 @@
 
 package org.sufficientlysecure.keychain.operations.results;
 
-import android.net.Uri;
-import android.os.Parcel;
 
 import java.util.ArrayList;
+
+import android.net.Uri;
+import android.os.Parcel;
+import android.support.annotation.NonNull;
+
+import org.openintents.openpgp.OpenPgpMetadata;
+
 
 public class InputDataResult extends InputPendingResult {
 
     public final ArrayList<Uri> mOutputUris;
     final public DecryptVerifyResult mDecryptVerifyResult;
+    public final ArrayList<OpenPgpMetadata> mMetadata;
 
-    public InputDataResult(OperationLog log, InputPendingResult result) {
+    public InputDataResult(OperationLog log, @NonNull InputPendingResult result) {
         super(log, result);
         mOutputUris = null;
         mDecryptVerifyResult = null;
-    }
-
-    public InputDataResult(int result, OperationLog log, DecryptVerifyResult decryptResult, ArrayList<Uri> temporaryUris) {
-        super(result, log);
-        mOutputUris = temporaryUris;
-        mDecryptVerifyResult = decryptResult;
+        mMetadata = null;
     }
 
     public InputDataResult(int result, OperationLog log) {
         super(result, log);
         mOutputUris = null;
         mDecryptVerifyResult = null;
+        mMetadata = null;
+    }
+
+    public InputDataResult(int result, OperationLog log, DecryptVerifyResult decryptResult,
+            @NonNull ArrayList<Uri> outputUris, @NonNull ArrayList<OpenPgpMetadata> metadata) {
+        super(result, log);
+        mDecryptVerifyResult = decryptResult;
+        if (outputUris.size() == metadata.size()) {
+            throw new AssertionError("number of output URIs must match metadata!");
+        }
+        mOutputUris = outputUris;
+        mMetadata = metadata;
     }
 
     protected InputDataResult(Parcel in) {
         super(in);
         mOutputUris = in.createTypedArrayList(Uri.CREATOR);
         mDecryptVerifyResult = in.readParcelable(DecryptVerifyResult.class.getClassLoader());
+        mMetadata = in.createTypedArrayList(OpenPgpMetadata.CREATOR);
     }
 
     public ArrayList<Uri> getOutputUris() {
@@ -65,6 +79,7 @@ public class InputDataResult extends InputPendingResult {
         super.writeToParcel(dest, flags);
         dest.writeTypedList(mOutputUris);
         dest.writeParcelable(mDecryptVerifyResult, 0);
+        dest.writeTypedList(mMetadata);
     }
 
     public static final Creator<InputDataResult> CREATOR = new Creator<InputDataResult>() {

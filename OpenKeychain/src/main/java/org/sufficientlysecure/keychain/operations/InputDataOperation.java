@@ -37,6 +37,7 @@ import org.apache.james.mime4j.parser.MimeStreamParser;
 import org.apache.james.mime4j.stream.BodyDescriptor;
 import org.apache.james.mime4j.stream.Field;
 import org.apache.james.mime4j.stream.MimeConfig;
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -106,9 +107,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             ArrayList<Uri> uris = new ArrayList<>();
             uris.add(currentUri);
+            ArrayList<OpenPgpMetadata> metadatas = new ArrayList<>();
+            metadatas.add(decryptResult.getDecryptionMetadata());
 
             log.add(LogType.MSG_DATA_OK, 1);
-            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, uris);
+            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, uris, metadatas);
 
         }
 
@@ -124,6 +127,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
 
         final ArrayList<Uri> outputUris = new ArrayList<>();
+        final ArrayList<OpenPgpMetadata> metadatas = new ArrayList<>();
 
         parser.setContentDecoding(true);
         parser.setRecurse();
@@ -166,8 +170,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     out.write(buf, 0, len);
                 }
 
+                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, bd.getContentLength());
+
                 out.close();
                 outputUris.add(uri);
+                metadatas.add(metadata);
 
             }
         });
@@ -178,7 +185,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.add(LogType.MSG_DATA_MIME_OK, 2);
 
             log.add(LogType.MSG_DATA_OK, 1);
-            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris);
+            return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
 
         } catch (IOException e) {
             e.printStackTrace();
