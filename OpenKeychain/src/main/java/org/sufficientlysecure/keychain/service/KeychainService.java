@@ -36,7 +36,7 @@ import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.ExportOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
-import org.sufficientlysecure.keychain.operations.MimeParsingOperation;
+import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.RevokeOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
@@ -109,38 +109,29 @@ public class KeychainService extends Service implements Progressable {
                 // just for brevity
                 KeychainService outerThis = KeychainService.this;
                 if (inputParcel instanceof SignEncryptParcel) {
-                    op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis),
-                            outerThis, mActionCanceled);
+                    op = new SignEncryptOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
                     op = new PgpDecryptVerifyOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof SaveKeyringParcel) {
-                    op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
-                            mActionCanceled);
+                    op = new EditKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof RevokeKeyringParcel) {
                     op = new RevokeOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof CertifyActionsParcel) {
-                    op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis,
-                            mActionCanceled);
+                    op = new CertifyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof DeleteKeyringParcel) {
                     op = new DeleteOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof PromoteKeyringParcel) {
-                    op = new PromoteKeyOperation(outerThis, new ProviderHelper(outerThis),
-                            outerThis, mActionCanceled);
+                    op = new PromoteKeyOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ImportKeyringParcel) {
-                    op = new ImportOperation(outerThis, new ProviderHelper(outerThis), outerThis,
-                            mActionCanceled);
+                    op = new ImportOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ExportKeyringParcel) {
-                    op = new ExportOperation(outerThis, new ProviderHelper(outerThis), outerThis,
-                            mActionCanceled);
+                    op = new ExportOperation(outerThis, new ProviderHelper(outerThis), outerThis, mActionCanceled);
                 } else if (inputParcel instanceof ConsolidateInputParcel) {
-                    op = new ConsolidateOperation(outerThis, new ProviderHelper(outerThis),
-                            outerThis);
+                    op = new ConsolidateOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else if (inputParcel instanceof KeybaseVerificationParcel) {
-                    op = new KeybaseVerificationOperation(outerThis, new ProviderHelper(outerThis),
-                            outerThis);
-                } else if (inputParcel instanceof MimeParsingParcel) {
-                    op = new MimeParsingOperation(outerThis, new ProviderHelper(outerThis),
-                            outerThis);
+                    op = new KeybaseVerificationOperation(outerThis, new ProviderHelper(outerThis), outerThis);
+                } else if (inputParcel instanceof InputDataParcel) {
+                    op = new InputDataOperation(outerThis, new ProviderHelper(outerThis), outerThis);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }

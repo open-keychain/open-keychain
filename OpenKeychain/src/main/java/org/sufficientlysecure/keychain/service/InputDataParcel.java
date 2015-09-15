@@ -21,31 +21,37 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class MimeParsingParcel implements Parcelable {
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+
+
+public class InputDataParcel implements Parcelable {
 
     private Uri mInputUri;
-    private Uri mOutputUri;
 
-    public MimeParsingParcel() {
-    }
+    private PgpDecryptVerifyInputParcel mDecryptInput;
+    private boolean mMimeDecode = true; // TODO default to false
 
-    public MimeParsingParcel(Uri inputUri, Uri outputUri) {
+    public InputDataParcel(Uri inputUri, PgpDecryptVerifyInputParcel decryptInput) {
         mInputUri = inputUri;
-        mOutputUri = outputUri;
     }
 
-    MimeParsingParcel(Parcel source) {
+    InputDataParcel(Parcel source) {
         // we do all of those here, so the PgpSignEncryptInput class doesn't have to be parcelable
         mInputUri = source.readParcelable(getClass().getClassLoader());
-        mOutputUri = source.readParcelable(getClass().getClassLoader());
+        mDecryptInput = source.readParcelable(getClass().getClassLoader());
+        mMimeDecode = source.readInt() != 0;
     }
 
     public Uri getInputUri() {
         return mInputUri;
     }
 
-    public Uri getOutputUri() {
-        return mOutputUri;
+    public PgpDecryptVerifyInputParcel getDecryptInput() {
+        return mDecryptInput;
+    }
+
+    public boolean getMimeDecode() {
+        return mMimeDecode;
     }
 
     @Override
@@ -56,16 +62,17 @@ public class MimeParsingParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(mInputUri, 0);
-        dest.writeParcelable(mOutputUri, 0);
+        dest.writeParcelable(mDecryptInput, 0);
+        dest.writeInt(mMimeDecode ? 1 : 0);
     }
 
-    public static final Creator<MimeParsingParcel> CREATOR = new Creator<MimeParsingParcel>() {
-        public MimeParsingParcel createFromParcel(final Parcel source) {
-            return new MimeParsingParcel(source);
+    public static final Creator<InputDataParcel> CREATOR = new Creator<InputDataParcel>() {
+        public InputDataParcel createFromParcel(final Parcel source) {
+            return new InputDataParcel(source);
         }
 
-        public MimeParsingParcel[] newArray(final int size) {
-            return new MimeParsingParcel[size];
+        public InputDataParcel[] newArray(final int size) {
+            return new InputDataParcel[size];
         }
     };
 

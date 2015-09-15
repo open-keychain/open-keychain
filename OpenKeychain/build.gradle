@@ -20,6 +20,7 @@ dependencies {
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.mockito:mockito-core:1.+'
 
     // UI testing with Espresso
     androidTestCompile 'com.android.support.test:runner:0.3'

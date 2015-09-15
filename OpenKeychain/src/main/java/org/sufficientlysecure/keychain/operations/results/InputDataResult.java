@@ -22,22 +22,28 @@ import android.os.Parcel;
 
 import java.util.ArrayList;
 
-public class MimeParsingResult extends OperationResult {
+public class InputDataResult extends InputPendingResult {
 
-    public final ArrayList<Uri> mTemporaryUris;
+    public final ArrayList<Uri> mOutputUris;
+    public DecryptVerifyResult mDecryptVerifyResult;
 
-    public ArrayList<Uri> getTemporaryUris() {
-        return mTemporaryUris;
+    public InputDataResult(OperationLog log, InputPendingResult result) {
+        super(log, result);
+        mOutputUris = null;
     }
 
-    public MimeParsingResult(int result, OperationLog log, ArrayList<Uri> temporaryUris) {
+    public InputDataResult(int result, OperationLog log, ArrayList<Uri> temporaryUris) {
         super(result, log);
-        mTemporaryUris = temporaryUris;
+        mOutputUris = temporaryUris;
     }
 
-    protected MimeParsingResult(Parcel in) {
+    protected InputDataResult(Parcel in) {
         super(in);
-        mTemporaryUris = in.createTypedArrayList(Uri.CREATOR);
+        mOutputUris = in.createTypedArrayList(Uri.CREATOR);
+    }
+
+    public ArrayList<Uri> getOutputUris() {
+        return mOutputUris;
     }
 
     @Override
@@ -48,18 +54,18 @@ public class MimeParsingResult extends OperationResult {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeTypedList(mTemporaryUris);
+        dest.writeTypedList(mOutputUris);
     }
 
-    public static final Creator<MimeParsingResult> CREATOR = new Creator<MimeParsingResult>() {
+    public static final Creator<InputDataResult> CREATOR = new Creator<InputDataResult>() {
         @Override
-        public MimeParsingResult createFromParcel(Parcel in) {
-            return new MimeParsingResult(in);
+        public InputDataResult createFromParcel(Parcel in) {
+            return new InputDataResult(in);
         }
 
         @Override
-        public MimeParsingResult[] newArray(int size) {
-            return new MimeParsingResult[size];
+        public InputDataResult[] newArray(int size) {
+            return new InputDataResult[size];
         }
     };
 }

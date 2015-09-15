@@ -86,8 +86,18 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
         return mInputBytes;
     }
 
+    public PgpDecryptVerifyInputParcel setInputUri(Uri uri) {
+        mInputUri = uri;
+        return this;
+    }
+
     Uri getInputUri() {
         return mInputUri;
+    }
+
+    public PgpDecryptVerifyInputParcel setOutputUri(Uri uri) {
+        mOutputUri = uri;
+        return this;
     }
 
     Uri getOutputUri() {
