@@ -106,6 +106,16 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return result;
     }
 
+    public Set<Long> getSubkeyIds(long pubKeyId) {
+        HashSet<Long> result = new HashSet<>();
+        for(CanonicalizedPublicKey key : publicKeyIterator()) {
+            long keyId = key.getKeyId();
+            if (keyId != pubKeyId)
+                result.add(keyId);
+        }
+        return result;
+    }
+
     public long getEncryptId() throws PgpKeyNotFoundException {
         for(CanonicalizedPublicKey key : publicKeyIterator()) {
             if (key.canEncrypt() && key.isValid()) {
