@@ -22,6 +22,7 @@ import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -124,7 +125,8 @@ public class PgpSecurityConstants {
                 return (key.getBitStrength() >= 2048);
             }
             case PublicKeyAlgorithmTags.ECDH:
-            case PublicKeyAlgorithmTags.ECDSA: {
+            case PublicKeyAlgorithmTags.ECDSA:
+            case PublicKeyAlgorithmTags.EDDSA: {
                 return PgpSecurityConstants.sCurveWhitelist.contains(key.getCurveOid());
             }
             // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT

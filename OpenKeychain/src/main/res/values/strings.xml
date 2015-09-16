@@ -270,6 +270,7 @@
     <string name="rsa">"RSA"</string>
     <string name="ecdh">"ECDH"</string>
     <string name="ecdsa">"ECDSA"</string>
+    <string name="eddsa">"EDDSA"</string>
     <string name="filemanager_title_open">"Open…"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>

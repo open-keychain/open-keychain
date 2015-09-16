@@ -345,6 +345,7 @@
   <string name="progress_generating_dsa">新しいDSA鍵を生成中...</string>
   <string name="progress_generating_elgamal">新しいElGamal鍵を生成中...</string>
   <string name="progress_generating_ecdsa">新しい楕円曲線DSA鍵を生成中...</string>
+  <string name="progress_generating_eddsa">新しいEDDSA鍵を生成中...</string>
   <string name="progress_generating_ecdh">新しい楕円曲線DH鍵を生成中...</string>
   <string name="progress_modify">鍵輪を変更中...</string>
   <string name="progress_modify_unlock">鍵輪のロック解除中...</string>
@@ -907,6 +908,7 @@
   <string name="msg_cr_error_flags_elgamal">問題のある鍵フラグが選択されています、ElGamalは署名に使えません!</string>
   <string name="msg_cr_error_flags_ecdsa">問題のある鍵フラグが選択されています、楕円曲線DSAは暗号化に使えません!</string>
   <string name="msg_cr_error_flags_ecdh">問題のある鍵フラグが選択されています、楕円曲線DHは署名に使えません!</string>
+  <string name="msg_cr_error_flags_eddsa">問題のある鍵フラグが選択されています、楕円曲線EDDSAは暗号化に使えません!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">鍵輪 %s を変更中</string>
   <string name="msg_mf_divert">カードでの暗号化操作に切り替えられます</string>
