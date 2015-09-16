@@ -75,7 +75,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         PgpDecryptVerifyInputParcel decryptInput = input.getDecryptInput();
         if (decryptInput != null) {
 
-            log.add(LogType.MSG_DATA_DECRYPT, 1);
+            log.add(LogType.MSG_DATA_OPENPGP, 1);
 
             PgpDecryptVerifyOperation op =
                     new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
@@ -175,7 +175,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     out.write(buf, 0, len);
                 } while ((len = is.read(buf)) > 0);
 
-                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, totalLength);
+                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, Long.toString(totalLength));
 
                 String charset = bd.getCharset();
                 // the charset defaults to us-ascii, but we want to default to utf-8
@@ -199,27 +199,26 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             parser.parse(in);
 
             // if no mime data parsed, just return the raw data as fallback
-            if (outputUris.isEmpty()) {
-
-                log.add(LogType.MSG_DATA_MIME_NONE, 2);
-
-                OpenPgpMetadata metadata;
-                if (decryptResult != null) {
-                    metadata = decryptResult.getDecryptionMetadata();
-                } else {
-                    // if we neither decrypted nor mime-decoded, should this be treated as an error?
-                    // either way, we know nothing about the data
-                    metadata = new OpenPgpMetadata();
-                }
-
-                outputUris.add(currentInputUri);
-                metadatas.add(metadata);
+            if (!outputUris.isEmpty()) {
+                log.add(LogType.MSG_DATA_MIME_OK, 2);
 
                 log.add(LogType.MSG_DATA_OK, 1);
                 return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
             }
 
-            log.add(LogType.MSG_DATA_MIME_OK, 2);
+            log.add(LogType.MSG_DATA_MIME_NONE, 2);
+
+            OpenPgpMetadata metadata;
+            if (decryptResult != null) {
+                metadata = decryptResult.getDecryptionMetadata();
+            } else {
+                // if we neither decrypted nor mime-decoded, should this be treated as an error?
+                // either way, we know nothing about the data
+                metadata = new OpenPgpMetadata();
+            }
+
+            outputUris.add(currentInputUri);
+            metadatas.add(metadata);
 
             log.add(LogType.MSG_DATA_OK, 1);
             return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
