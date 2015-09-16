@@ -127,8 +127,7 @@ public class InputDataOperationTest {
         InputDataOperation op = new InputDataOperation(spyApplication,
                 new ProviderHelper(RuntimeEnvironment.application), null);
 
-        PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel();
-        InputDataParcel input = new InputDataParcel(fakeInputUri, decryptInput);
+        InputDataParcel input = new InputDataParcel(fakeInputUri, null);
 
         InputDataResult result = op.execute(input, new CryptoInputParcel());
 
