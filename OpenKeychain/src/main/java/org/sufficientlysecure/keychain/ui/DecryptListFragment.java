@@ -555,6 +555,9 @@ public class DecryptListFragment
 
     private void deleteFile(Activity activity, Uri uri) {
 
+        // we can only ever delete a file once, if we got this far either it's gone or it will never work
+        mCanDelete = false;
+
         if ("file".equals(uri.getScheme())) {
             File file = new File(uri.getPath());
             if (file.delete()) {
