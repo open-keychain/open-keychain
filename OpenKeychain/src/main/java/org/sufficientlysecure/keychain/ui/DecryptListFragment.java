@@ -46,6 +46,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
@@ -61,6 +62,7 @@ import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
+import org.sufficientlysecure.keychain.ui.DecryptListFragment.ViewHolder.SubViewHolder;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
 // this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
@@ -659,38 +661,43 @@ public class DecryptListFragment
 
             final OpenPgpMetadata metadata = model.mResult.mMetadata.get(0);
 
-            String filename;
-            if (metadata == null) {
-                filename = getString(R.string.filename_unknown);
-            } else if (TextUtils.isEmpty(metadata.getFilename())) {
-                filename = getString("text/plain".equals(metadata.getMimeType())
-                        ? R.string.filename_unknown_text : R.string.filename_unknown);
-            } else {
-                filename = metadata.getFilename();
-            }
-            holder.vFilename.setText(filename);
+            {
+                SubViewHolder fileHolder = holder.mFileHolderList.get(0);
 
-            long size = metadata == null ? 0 : metadata.getOriginalSize();
-            if (size == -1 || size == 0) {
-                holder.vFilesize.setText("");
-            } else {
-                holder.vFilesize.setText(FileHelper.readableFileSize(size));
-            }
-
-            // if (model.mIcon != null) {
-               // holder.vThumbnail.setImageDrawable(model.mIcon);
-            //} else {
-                holder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
-            //}
-
-            holder.vFile.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (model.mResult.success()) {
-                        displayWithViewIntent(model.mResult, 0, false);
-                    }
+                String filename;
+                if (metadata == null) {
+                    filename = getString(R.string.filename_unknown);
+                } else if (TextUtils.isEmpty(metadata.getFilename())) {
+                    filename = getString("text/plain".equals(metadata.getMimeType())
+                            ? R.string.filename_unknown_text : R.string.filename_unknown);
+                } else {
+                    filename = metadata.getFilename();
                 }
-            });
+                fileHolder.vFilename.setText(filename);
+
+                long size = metadata == null ? 0 : metadata.getOriginalSize();
+                if (size == -1 || size == 0) {
+                    fileHolder.vFilesize.setText("");
+                } else {
+                    fileHolder.vFilesize.setText(FileHelper.readableFileSize(size));
+                }
+
+                // if (model.mIcon != null) {
+                // holder.vThumbnail.setImageDrawable(model.mIcon);
+                //} else {
+                fileHolder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+                //}
+
+                fileHolder.vFile.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (model.mResult.success()) {
+                            displayWithViewIntent(model.mResult, 0, false);
+                        }
+                    }
+                });
+
+            }
 
             OpenPgpSignatureResult sigResult = model.mResult.mDecryptVerifyResult.getSignatureResult();
             if (sigResult != null) {
@@ -816,11 +823,6 @@ public class DecryptListFragment
         public ProgressBar vProgress;
         public TextView vProgressMsg;
 
-        public View vFile;
-        public TextView vFilename;
-        public TextView vFilesize;
-        public ImageView vThumbnail;
-
         public ImageView vEncStatusIcon;
         public TextView vEncStatusText;
 
@@ -837,6 +839,24 @@ public class DecryptListFragment
 
         public ImageView vCancelledRetry;
 
+        public LinearLayout vFileList;
+
+        public static class SubViewHolder {
+            public View vFile;
+            public TextView vFilename;
+            public TextView vFilesize;
+            public ImageView vThumbnail;
+
+            public SubViewHolder(View itemView) {
+                vFile = itemView.findViewById(R.id.file);
+                vFilename = (TextView) itemView.findViewById(R.id.filename);
+                vFilesize = (TextView) itemView.findViewById(R.id.filesize);
+                vThumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+            }
+        }
+
+        public ArrayList<SubViewHolder> mFileHolderList = new ArrayList<>();
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -844,11 +864,6 @@ public class DecryptListFragment
 
             vProgress = (ProgressBar) itemView.findViewById(R.id.progress);
             vProgressMsg = (TextView) itemView.findViewById(R.id.progress_msg);
-
-            vFile = itemView.findViewById(R.id.file);
-            vFilename = (TextView) itemView.findViewById(R.id.filename);
-            vFilesize = (TextView) itemView.findViewById(R.id.filesize);
-            vThumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
 
             vEncStatusIcon = (ImageView) itemView.findViewById(R.id.result_encryption_icon);
             vEncStatusText = (TextView) itemView.findViewById(R.id.result_encryption_text);
@@ -859,6 +874,11 @@ public class DecryptListFragment
             vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
             vSignatureMail= (TextView) itemView.findViewById(R.id.result_signature_email);
             vSignatureAction = (TextView) itemView.findViewById(R.id.result_signature_action);
+
+            vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);
+            for (int i = 0; i < vFileList.getChildCount(); i++) {
+                mFileHolderList.add(new SubViewHolder(vFileList.getChildAt(i)));
+            }
 
             vContextMenu = itemView.findViewById(R.id.context_menu);
 
