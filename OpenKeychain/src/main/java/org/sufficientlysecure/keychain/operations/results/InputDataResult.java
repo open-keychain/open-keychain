@@ -51,7 +51,7 @@ public class InputDataResult extends InputPendingResult {
             @NonNull ArrayList<Uri> outputUris, @NonNull ArrayList<OpenPgpMetadata> metadata) {
         super(result, log);
         mDecryptVerifyResult = decryptResult;
-        if (outputUris.size() == metadata.size()) {
+        if (outputUris.size() != metadata.size()) {
             throw new AssertionError("number of output URIs must match metadata!");
         }
         mOutputUris = outputUris;

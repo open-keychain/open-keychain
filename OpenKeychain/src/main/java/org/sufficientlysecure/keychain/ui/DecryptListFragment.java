@@ -62,10 +62,10 @@ import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
-import org.sufficientlysecure.keychain.ui.DecryptListFragment.ViewHolder.SubViewHolder;
 import org.sufficientlysecure.keychain.ui.base.QueueingCryptoOperationFragment;
-// this import NEEDS to be above the ViewModel one, or it won't compile! (as of 06/06/15)
+// this import NEEDS to be above the ViewModel AND SubViewHolder one, or it won't compile! (as of 16.09.15)
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.StatusHolder;
+import org.sufficientlysecure.keychain.ui.DecryptListFragment.ViewHolder.SubViewHolder;
 import org.sufficientlysecure.keychain.ui.DecryptListFragment.DecryptFilesAdapter.ViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SpacesItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -395,7 +395,7 @@ public class DecryptListFragment
                     String plaintext = FileHelper.readTextFromUri(activity, outputUri, null);
 
                     Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.setType(metadata.getMimeType());
+                    intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, plaintext);
                     startActivity(intent);
 
@@ -408,8 +408,8 @@ public class DecryptListFragment
 
             Intent intent = new Intent(activity, DisplayTextActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
-            intent.setDataAndType(outputUri, metadata.getMimeType());
-            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result);
+            intent.setDataAndType(outputUri, "text/plain");
+            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result.mDecryptVerifyResult);
             activity.startActivity(intent);
 
         } else {
@@ -659,10 +659,13 @@ public class DecryptListFragment
 
             KeyFormattingUtils.setStatus(getResources(), holder, model.mResult.mDecryptVerifyResult);
 
-            final OpenPgpMetadata metadata = model.mResult.mMetadata.get(0);
+            int numFiles = model.mResult.getOutputUris().size();
+            holder.resizeFileList(numFiles, LayoutInflater.from(getActivity()));
+            for (int i = 0; i < numFiles; i++) {
 
-            {
-                SubViewHolder fileHolder = holder.mFileHolderList.get(0);
+                Uri outputUri = model.mResult.getOutputUris().get(i);
+                OpenPgpMetadata metadata = model.mResult.mMetadata.get(i);
+                SubViewHolder fileHolder = holder.mFileHolderList.get(i);
 
                 String filename;
                 if (metadata == null) {
@@ -682,17 +685,19 @@ public class DecryptListFragment
                     fileHolder.vFilesize.setText(FileHelper.readableFileSize(size));
                 }
 
-                // if (model.mIcon != null) {
-                // holder.vThumbnail.setImageDrawable(model.mIcon);
-                //} else {
-                fileHolder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
-                //}
+                if (mIconCache.containsKey(outputUri)) {
+                    fileHolder.vThumbnail.setImageDrawable(mIconCache.get(outputUri));
+                } else {
+                    fileHolder.vThumbnail.setImageResource(R.drawable.ic_doc_generic_am);
+                }
 
+                // save index closure-style :)
+                final int idx = i;
                 fileHolder.vFile.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (model.mResult.success()) {
-                            displayWithViewIntent(model.mResult, 0, false);
+                            displayWithViewIntent(model.mResult, idx, false);
                         }
                     }
                 });
@@ -856,6 +861,7 @@ public class DecryptListFragment
         }
 
         public ArrayList<SubViewHolder> mFileHolderList = new ArrayList<>();
+        private int mCurrentFileListSize = 0;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -878,6 +884,7 @@ public class DecryptListFragment
             vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);
             for (int i = 0; i < vFileList.getChildCount(); i++) {
                 mFileHolderList.add(new SubViewHolder(vFileList.getChildAt(i)));
+                mCurrentFileListSize += 1;
             }
 
             vContextMenu = itemView.findViewById(R.id.context_menu);
@@ -886,6 +893,27 @@ public class DecryptListFragment
             vErrorViewLog = (ImageView) itemView.findViewById(R.id.result_error_log);
 
             vCancelledRetry = (ImageView) itemView.findViewById(R.id.cancel_retry);
+
+        }
+
+        public void resizeFileList(int size, LayoutInflater inflater) {
+            int childCount = vFileList.getChildCount();
+            // if we require more children, create them
+            while (childCount < size) {
+                View v = inflater.inflate(R.layout.decrypt_list_file_item, null);
+                vFileList.addView(v);
+                mFileHolderList.add(new SubViewHolder(v));
+                childCount += 1;
+            }
+
+            while (size < mCurrentFileListSize) {
+                mCurrentFileListSize -= 1;
+                vFileList.getChildAt(mCurrentFileListSize).setVisibility(View.GONE);
+            }
+            while (size > mCurrentFileListSize) {
+                vFileList.getChildAt(mCurrentFileListSize).setVisibility(View.VISIBLE);
+                mCurrentFileListSize += 1;
+            }
 
         }
 
