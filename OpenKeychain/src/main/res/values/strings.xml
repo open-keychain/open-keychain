@@ -1363,6 +1363,7 @@
     <string name="msg_data_mime_length">""</string>
     <string name="msg_data_mime">""</string>
     <string name="msg_data_mime_ok">""</string>
+    <string name="msg_data_mime_none">""</string>
     <string name="msg_data_mime_part">""</string>
     <string name="msg_data_mime_type">""</string>
     <string name="msg_data_ok">""</string>

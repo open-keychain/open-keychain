@@ -62,14 +62,13 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
     @NonNull
     @Override
-    public InputDataResult execute(InputDataParcel input,
-                                     CryptoInputParcel cryptoInput) {
+    public InputDataResult execute(InputDataParcel input, CryptoInputParcel cryptoInput) {
 
         final OperationLog log = new OperationLog();
 
         log.add(LogType.MSG_DATA, 0);
 
-        Uri currentUri;
+        Uri currentInputUri;
 
         DecryptVerifyResult decryptResult = null;
 
@@ -83,8 +82,8 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             decryptInput.setInputUri(input.getInputUri());
 
-            currentUri = TemporaryStorageProvider.createFile(mContext);
-            decryptInput.setOutputUri(currentUri);
+            currentInputUri = TemporaryStorageProvider.createFile(mContext);
+            decryptInput.setOutputUri(currentInputUri);
 
             decryptResult = op.execute(decryptInput, cryptoInput);
             if (decryptResult.isPending()) {
@@ -93,7 +92,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.addByMerge(decryptResult, 2);
 
         } else {
-            currentUri = input.getInputUri();
+            currentInputUri = input.getInputUri();
         }
 
         // If we aren't supposed to attempt mime decode, we are done here
@@ -106,7 +105,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.add(LogType.MSG_DATA_SKIP_MIME, 1);
 
             ArrayList<Uri> uris = new ArrayList<>();
-            uris.add(currentUri);
+            uris.add(currentInputUri);
             ArrayList<OpenPgpMetadata> metadatas = new ArrayList<>();
             metadatas.add(decryptResult.getDecryptionMetadata());
 
@@ -119,7 +118,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
         InputStream in;
         try {
-            in = mContext.getContentResolver().openInputStream(currentUri);
+            in = mContext.getContentResolver().openInputStream(currentInputUri);
         } catch (FileNotFoundException e) {
             log.add(LogType.MSG_DATA_ERROR_IO, 2);
             return new InputDataResult(InputDataResult.RESULT_ERROR, log);
@@ -150,6 +149,12 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             @Override
             public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
 
+                // we read first, no need to create an output file if nothing was read!
+                int len = is.read(buf);
+                if (len < 0) {
+                    return;
+                }
+
                 log.add(LogType.MSG_DATA_MIME_PART, 2);
 
                 log.add(LogType.MSG_DATA_MIME_TYPE, 3, bd.getMimeType());
@@ -164,11 +169,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     throw new IOException("Error getting file for writing!");
                 }
 
-                int len, totalLength = 0;
-                while ((len = is.read(buf)) > 0) {
+                int totalLength = 0;
+                do {
                     totalLength += len;
                     out.write(buf, 0, len);
-                }
+                } while ((len = is.read(buf)) > 0);
 
                 log.add(LogType.MSG_DATA_MIME_LENGTH, 3, totalLength);
 
@@ -185,11 +190,35 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 metadatas.add(metadata);
 
             }
+
+
         });
 
         try {
 
             parser.parse(in);
+
+            // if no mime data parsed, just return the raw data as fallback
+            if (outputUris.isEmpty()) {
+
+                log.add(LogType.MSG_DATA_MIME_NONE, 2);
+
+                OpenPgpMetadata metadata;
+                if (decryptResult != null) {
+                    metadata = decryptResult.getDecryptionMetadata();
+                } else {
+                    // if we neither decrypted nor mime-decoded, should this be treated as an error?
+                    // either way, we know nothing about the data
+                    metadata = new OpenPgpMetadata();
+                }
+
+                outputUris.add(currentInputUri);
+                metadatas.add(metadata);
+
+                log.add(LogType.MSG_DATA_OK, 1);
+                return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
+            }
+
             log.add(LogType.MSG_DATA_MIME_OK, 2);
 
             log.add(LogType.MSG_DATA_OK, 1);
