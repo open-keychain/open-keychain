@@ -181,9 +181,13 @@ public class DecryptActivity extends BaseActivity {
 
     }
 
-    @Nullable public Uri readToTempFile(String text) throws IOException {
+    @Nullable
+    public Uri readToTempFile(String text) throws IOException {
         Uri tempFile = TemporaryStorageProvider.createFile(this);
         OutputStream outStream = getContentResolver().openOutputStream(tempFile);
+        if (outStream == null) {
+            return null;
+        }
 
         // clean up ascii armored message, fixing newlines and stuff
         String cleanedText = PgpHelper.getPgpContent(text);
@@ -192,7 +196,7 @@ public class DecryptActivity extends BaseActivity {
         }
 
         // if cleanup didn't work, just try the raw data
-        outStream.write(text.getBytes());
+        outStream.write(cleanedText.getBytes());
         outStream.close();
         return tempFile;
     }
