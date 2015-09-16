@@ -78,6 +78,8 @@ import java.io.OutputStream;
 import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
@@ -706,20 +708,66 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                 long subKeyId = encData.getKeyID();
 
-                log.add(LogType.MSG_DC_ASYM, indent,
-                        KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+                CanonicalizedSecretKeyRing secretKeyRing = null;
+                if (subKeyId != 0) {
+                    log.add(LogType.MSG_DC_ASYM, indent,
+                            KeyFormattingUtils.convertKeyIdToHex(subKeyId));
 
-                CanonicalizedSecretKeyRing secretKeyRing;
-                try {
-                    // get actual keyring object based on master key id
-                    secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
+                    try {
+                        // get actual keyring object based on master key id
+                        secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
-                    );
-                } catch (ProviderHelper.NotFoundException e) {
-                    // continue with the next packet in the while loop
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
+                        );
+                    } catch (ProviderHelper.NotFoundException e) {
+                        // continue with the next packet in the while loop
+                        log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                        continue;
+                    }
                 }
+                else {
+                    // hidden recipient - try all subkeys
+                    HashSet<Long> allowedKeyIds = input.getAllowedKeyIds();
+                    if (allowedKeyIds != null) {
+                        for (int i = 0; i < allowedKeyIds.size(); i++) {
+                            // get the encryption subkeys for this keyId
+                            long currKeyId = (long)allowedKeyIds.toArray()[i];
+                            CanonicalizedKeyRing keyRing = null;
+                            try {
+                                keyRing =
+                                    mProviderHelper.getCanonicalizedPublicKeyRing(currKeyId);
+                            } catch (ProviderHelper.NotFoundException e) {
+                                Log.d(Constants.TAG, "getCanonicalizedPublicKeyRing failed");
+                            }
+                            if (keyRing != null) {
+                                Set<Long> subKeyIds = keyRing.getKeyIds();
+                                for (int j = 0; j < subKeyIds.size(); j++) {
+                                    subKeyId = (long)subKeyIds.toArray()[j];
+                                    Log.d(Constants.TAG, "Hidden recipient try subkey: " +
+                                          KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+
+                                    log.add(LogType.MSG_DC_ASYM, indent,
+                                            KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+
+                                    try {
+                                        // get actual keyring object based on master key id
+                                        secretKeyRing = mProviderHelper.getCanonicalizedSecretKeyRing(
+                                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
+                                        );
+                                    } catch (ProviderHelper.NotFoundException e) {
+                                        // continue with the next packet in the while loop
+                                        log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                                        continue;
+                                    }
+                                    if (secretKeyRing != null) {
+                                        i = allowedKeyIds.size();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (secretKeyRing == null) {
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
