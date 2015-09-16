@@ -829,6 +829,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DATA (LogLevel.START, R.string.msg_data),
         MSG_DATA_OPENPGP (LogLevel.DEBUG, R.string.msg_data_openpgp),
         MSG_DATA_ERROR_IO (LogLevel.ERROR, R.string.msg_data_error_io),
+        MSG_DATA_ERROR_OPENPGP (LogLevel.ERROR, R.string.msg_data_error_openpgp),
         MSG_DATA_MIME_ERROR (LogLevel.ERROR, R.string.msg_data_mime_error),
         MSG_DATA_MIME_FILENAME (LogLevel.DEBUG, R.string.msg_data_mime_filename),
         MSG_DATA_MIME_LENGTH (LogLevel.DEBUG, R.string.msg_data_mime_length),

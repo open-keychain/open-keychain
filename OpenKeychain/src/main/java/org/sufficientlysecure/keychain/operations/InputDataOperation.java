@@ -91,6 +91,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             }
             log.addByMerge(decryptResult, 2);
 
+            if (!decryptResult.success()) {
+                log.add(LogType.MSG_DATA_ERROR_OPENPGP, 1);
+                return new InputDataResult(InputDataResult.RESULT_ERROR, log);
+            }
+
         } else {
             currentInputUri = input.getInputUri();
         }

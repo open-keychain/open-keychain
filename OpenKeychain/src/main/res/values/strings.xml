@@ -1358,6 +1358,7 @@
     <string name="msg_data">"Processing input data"</string>
     <string name="msg_data_openpgp">"Attempting to process OpenPGP data"</string>
     <string name="msg_data_error_io">"Error reading input data!"</string>
+    <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>
     <string name="msg_data_mime_error">"Error parsing MIME data!"</string>
     <string name="msg_data_mime_filename">"Filename: '%s'"</string>
     <string name="msg_data_mime_length">"Content-Length: %s"</string>
