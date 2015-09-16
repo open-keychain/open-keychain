@@ -325,6 +325,7 @@ public class DecryptListFragment
                     Drawable icon = null;
 
                     if (ClipDescription.compareMimeTypes(type, "text/plain")) {
+                        // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
                         int px = FormattingUtils.dpToPx(context, 48);
@@ -478,6 +479,10 @@ public class DecryptListFragment
                 intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
                 activity.startActivity(intent);
                 return true;
+            case R.id.decrypt_delete:
+                deleteFile(activity, model.mInputUri);
+                return true;
+            /*
             case R.id.decrypt_share:
                 displayWithViewIntent(model.mResult, 0, true);
                 return true;
@@ -490,9 +495,7 @@ public class DecryptListFragment
                 FileHelper.saveDocument(this, metadata.getFilename(), model.mInputUri, metadata.getMimeType(),
                         R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
                 return true;
-            case R.id.decrypt_delete:
-                deleteFile(activity, model.mInputUri);
-                return true;
+            */
         }
         return false;
     }

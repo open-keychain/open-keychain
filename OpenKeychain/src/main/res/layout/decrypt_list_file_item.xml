@@ -6,6 +6,7 @@
     android:id="@+id/file"
     android:clickable="true"
     android:background="?android:selectableItemBackground"
+    android:minHeight="?listPreferredItemHeight"
     >
 
     <ImageView
@@ -50,14 +51,5 @@
             tools:text="14kb" />
 
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/context_menu"
-        android:scaleType="center"
-        android:layout_width="36dip"
-        android:layout_height="48dip"
-        android:clickable="true"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
 
 </LinearLayout>
