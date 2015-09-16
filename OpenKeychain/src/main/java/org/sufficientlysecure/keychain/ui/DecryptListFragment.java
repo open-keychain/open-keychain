@@ -472,7 +472,8 @@ public class DecryptListFragment
             Intent intent = new Intent(activity, DisplayTextActivity.class);
             intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(outputUri, "text/plain");
-            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, result.mDecryptVerifyResult);
+            intent.putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult);
+            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, metadata);
             activity.startActivity(intent);
 
         } else {

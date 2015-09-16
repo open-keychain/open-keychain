@@ -172,7 +172,13 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_MIME_LENGTH, 3, totalLength);
 
-                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, totalLength);
+                String charset = bd.getCharset();
+                // the charset defaults to us-ascii, but we want to default to utf-8
+                if ("us-ascii".equals(charset)) {
+                    charset = "utf-8";
+                }
+
+                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, totalLength, charset);
 
                 out.close();
                 outputUris.add(uri);
