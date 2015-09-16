@@ -61,6 +61,7 @@ dependencies {
     compile 'org.apache.james:apache-mime4j-core:0.7.2'
     compile 'org.apache.james:apache-mime4j-dom:0.7.2'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
+    compile 'com.cocosw:bottomsheet:1.1.1@aar'
 
     // libs as submodules
     compile project(':extern:openpgp-api-lib:openpgp-api')

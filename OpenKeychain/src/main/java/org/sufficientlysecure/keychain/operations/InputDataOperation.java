@@ -156,7 +156,6 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 if (mFilename != null) {
                     log.add(LogType.MSG_DATA_MIME_FILENAME, 3, mFilename);
                 }
-                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, bd.getContentLength());
 
                 Uri uri = TemporaryStorageProvider.createFile(mContext, mFilename, bd.getMimeType());
                 OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
@@ -165,12 +164,15 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     throw new IOException("Error getting file for writing!");
                 }
 
-                int len;
+                int len, totalLength = 0;
                 while ((len = is.read(buf)) > 0) {
+                    totalLength += len;
                     out.write(buf, 0, len);
                 }
 
-                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, bd.getContentLength());
+                log.add(LogType.MSG_DATA_MIME_LENGTH, 3, totalLength);
+
+                OpenPgpMetadata metadata = new OpenPgpMetadata(mFilename, bd.getMimeType(), 0L, totalLength);
 
                 out.close();
                 outputUris.add(uri);

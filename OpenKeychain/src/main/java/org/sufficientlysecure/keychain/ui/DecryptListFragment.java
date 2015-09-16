@@ -44,7 +44,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -54,6 +56,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
@@ -97,6 +100,7 @@ public class DecryptListFragment
     private Uri mCurrentInputUri;
 
     private DecryptFilesAdapter mAdapter;
+    private Uri mCurrentSaveFileUri;
 
     /**
      * Creates new instance of this fragment
@@ -222,9 +226,8 @@ public class DecryptListFragment
             case REQUEST_CODE_OUTPUT: {
                 // This happens after output file was selected, so start our operation
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    Uri decryptedFileUri = mInputDataResults.get(mCurrentInputUri).getOutputUris().get(0);
                     Uri saveUri = data.getData();
-                    saveFile(decryptedFileUri, saveUri);
+                    saveFile(saveUri);
                     mCurrentInputUri = null;
                 }
                 return;
@@ -236,7 +239,37 @@ public class DecryptListFragment
         }
     }
 
-    private void saveFile(Uri decryptedFileUri, Uri saveUri) {
+    private void saveFileDialog(InputDataResult result, int index) {
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        OpenPgpMetadata metadata = result.mMetadata.get(index);
+        Uri saveUri = Uri.fromFile(activity.getExternalFilesDir(metadata.getMimeType()));
+        mCurrentSaveFileUri = result.getOutputUris().get(index);
+
+        String filename = metadata.getFilename();
+        if (filename == null) {
+            String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(metadata.getMimeType());
+            filename = "decrypted" + (ext != null ? "."+ext : "");
+        }
+
+        FileHelper.saveDocument(this, filename, saveUri, metadata.getMimeType(),
+                R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
+    }
+
+    private void saveFile(Uri saveUri) {
+        if (mCurrentSaveFileUri == null) {
+            return;
+        }
+
+        Uri decryptedFileUri = mCurrentSaveFileUri;
+        mCurrentInputUri = null;
+
+        hideKeyboard();
+
         Activity activity = getActivity();
         if (activity == null) {
             return;
@@ -376,6 +409,33 @@ public class DecryptListFragment
         mAdapter.setCancelled(uri, null);
 
         cryptoOperation();
+
+    }
+
+    public void displayBottomSheet(final InputDataResult result, final int index) {
+
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        new BottomSheet.Builder(activity).sheet(R.menu.decrypt_bottom_sheet).listener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.decrypt_open:
+                        displayWithViewIntent(result, index, false);
+                        break;
+                    case R.id.decrypt_share:
+                        displayWithViewIntent(result, index, true);
+                        break;
+                    case R.id.decrypt_save:
+                        saveFileDialog(result, index);
+                        break;
+                }
+                return false;
+            }
+        }).grid().show();
 
     }
 
@@ -698,6 +758,18 @@ public class DecryptListFragment
 
                 // save index closure-style :)
                 final int idx = i;
+
+                fileHolder.vFile.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        if (model.mResult.success()) {
+                            displayBottomSheet(model.mResult, idx);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
                 fileHolder.vFile.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {

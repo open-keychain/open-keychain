@@ -131,7 +131,9 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                style="?listPreferredItemHeight"
+                >
 
                 <LinearLayout
                     android:layout_width="0dp"

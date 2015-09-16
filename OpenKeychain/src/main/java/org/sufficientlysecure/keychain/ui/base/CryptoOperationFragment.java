@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.ui.base;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
@@ -116,14 +117,15 @@ public abstract class CryptoOperationFragment<T extends Parcelable, S extends Op
     }
 
     public void hideKeyboard() {
-        if (getActivity() == null) {
+        Activity activity = getActivity();
+        if (activity == null) {
             return;
         }
-        InputMethodManager inputManager = (InputMethodManager) getActivity()
+        InputMethodManager inputManager = (InputMethodManager) activity
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // check if no view has focus
-        View v = getActivity().getCurrentFocus();
+        View v = activity.getCurrentFocus();
         if (v == null)
             return;
 
