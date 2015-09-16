@@ -88,6 +88,7 @@ public class DecryptListFragment
     public static final String ARG_OUTPUT_URIS = "output_uris";
     public static final String ARG_CANCELLED_URIS = "cancelled_uris";
     public static final String ARG_RESULTS = "results";
+    public static final String ARG_CAN_DELETE = "can_delete";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
     public static final String ARG_CURRENT_URI = "current_uri";
@@ -98,6 +99,7 @@ public class DecryptListFragment
     private ArrayList<Uri> mCancelledInputUris;
 
     private Uri mCurrentInputUri;
+    private boolean mCanDelete;
 
     private DecryptFilesAdapter mAdapter;
     private Uri mCurrentSaveFileUri;
@@ -105,11 +107,12 @@ public class DecryptListFragment
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptListFragment newInstance(ArrayList<Uri> uris) {
+    public static DecryptListFragment newInstance(ArrayList<Uri> uris, boolean canDelete) {
         DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_INPUT_URIS, uris);
+        args.putBoolean(ARG_CAN_DELETE, canDelete);
         frag.setArguments(args);
 
         return frag;
@@ -135,7 +138,7 @@ public class DecryptListFragment
         vFilesList.setLayoutManager(new LinearLayoutManager(getActivity()));
         vFilesList.setItemAnimator(new DefaultItemAnimator());
 
-        mAdapter = new DecryptFilesAdapter(this);
+        mAdapter = new DecryptFilesAdapter();
         vFilesList.setAdapter(mAdapter);
 
         return view;
@@ -162,6 +165,7 @@ public class DecryptListFragment
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mInputDataResults));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
         outState.putParcelable(ARG_CURRENT_URI, mCurrentInputUri);
+        outState.putBoolean(ARG_CAN_DELETE, mCanDelete);
 
     }
 
@@ -175,6 +179,8 @@ public class DecryptListFragment
         ArrayList<Uri> cancelledUris = args.getParcelableArrayList(ARG_CANCELLED_URIS);
         ParcelableHashMap<Uri,InputDataResult> results = args.getParcelable(ARG_RESULTS);
         Uri currentInputUri = args.getParcelable(ARG_CURRENT_URI);
+
+        mCanDelete = args.getBoolean(ARG_CAN_DELETE, false);
 
         displayInputUris(inputUris, currentInputUri, cancelledUris,
                 results != null ? results.getMap() : null
@@ -543,20 +549,6 @@ public class DecryptListFragment
             case R.id.decrypt_delete:
                 deleteFile(activity, model.mInputUri);
                 return true;
-            /*
-            case R.id.decrypt_share:
-                displayWithViewIntent(model.mResult, 0, true);
-                return true;
-            case R.id.decrypt_save:
-                OpenPgpMetadata metadata = model.mResult.mDecryptVerifyResult.getDecryptionMetadata();
-                if (metadata == null) {
-                    return true;
-                }
-                mCurrentInputUri = model.mInputUri;
-                FileHelper.saveDocument(this, metadata.getFilename(), model.mInputUri, metadata.getMimeType(),
-                        R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
-                return true;
-            */
         }
         return false;
     }
@@ -594,7 +586,6 @@ public class DecryptListFragment
 
     public class DecryptFilesAdapter extends RecyclerView.Adapter<ViewHolder> {
         private ArrayList<ViewModel> mDataset;
-        private OnMenuItemClickListener mMenuItemClickListener;
         private ViewModel mMenuClickedModel;
 
         public class ViewModel {
@@ -659,8 +650,7 @@ public class DecryptListFragment
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public DecryptFilesAdapter(OnMenuItemClickListener menuItemClickListener) {
-            mMenuItemClickListener = menuItemClickListener;
+        public DecryptFilesAdapter() {
             mDataset = new ArrayList<>();
         }
 
@@ -812,13 +802,14 @@ public class DecryptListFragment
                     mMenuClickedModel = model;
                     PopupMenu menu = new PopupMenu(activity, view);
                     menu.inflate(R.menu.decrypt_item_context_menu);
-                    menu.setOnMenuItemClickListener(mMenuItemClickListener);
+                    menu.setOnMenuItemClickListener(DecryptListFragment.this);
                     menu.setOnDismissListener(new OnDismissListener() {
                         @Override
                         public void onDismiss(PopupMenu popupMenu) {
                             mMenuClickedModel = null;
                         }
                     });
+                    menu.getMenu().findItem(R.id.decrypt_delete).setEnabled(mCanDelete);
                     menu.show();
                 }
             });

@@ -82,6 +82,9 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
+        // depending on the data source, we may or may not be able to delete the original file
+        boolean canDelete = false;
+
         try {
 
             switch (action) {
@@ -152,8 +155,9 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 // for everything else, just work on the intent data
-                case OpenKeychainIntents.DECRYPT_DATA:
                 case Intent.ACTION_VIEW:
+                    canDelete = true;
+                case OpenKeychainIntents.DECRYPT_DATA:
                 default:
                     uris.add(intent.getData());
 
@@ -173,7 +177,7 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
-        displayListFragment(uris);
+        displayListFragment(uris, canDelete);
 
     }
 
@@ -193,9 +197,9 @@ public class DecryptActivity extends BaseActivity {
         return tempFile;
     }
 
-    public void displayListFragment(ArrayList<Uri> inputUris) {
+    public void displayListFragment(ArrayList<Uri> inputUris, boolean canDelete) {
 
-        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris);
+        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris, canDelete);
 
         FragmentManager fragMan = getSupportFragmentManager();
 
