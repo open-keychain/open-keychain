@@ -162,10 +162,6 @@ public class DecryptActivity extends BaseActivity {
                     Uri uri = intent.getData();
                     if (uri != null) {
 
-                        if ("com.fsck.k9.attachmentprovider".equals(uri.getHost())) {
-                            Toast.makeText(this, R.string.error_reading_k9, Toast.LENGTH_LONG).show();
-                        }
-
                         if ("com.android.email.attachmentprovider".equals(uri.getHost())) {
                             Toast.makeText(this, R.string.error_reading_aosp, Toast.LENGTH_LONG).show();
                             finish();

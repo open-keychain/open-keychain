@@ -56,6 +56,7 @@ import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import com.cocosw.bottomsheet.BottomSheet;
@@ -303,6 +304,11 @@ public class DecryptListFragment
     public void onQueuedOperationError(InputDataResult result) {
         final Uri uri = mCurrentInputUri;
         mCurrentInputUri = null;
+
+        Activity activity = getActivity();
+        if (activity != null && "com.fsck.k9.attachmentprovider".equals(uri.getHost())) {
+            Toast.makeText(getActivity(), R.string.error_reading_k9, Toast.LENGTH_LONG).show();
+        }
 
         mAdapter.addResult(uri, result);
 
