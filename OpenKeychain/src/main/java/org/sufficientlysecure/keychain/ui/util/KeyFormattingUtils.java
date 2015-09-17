@@ -570,8 +570,9 @@ public class KeyFormattingUtils {
                 sigIcon = R.drawable.status_signature_invalid_cutout_24dp;
                 sigColor = R.color.key_flag_red;
 
-                sigActionText = R.string.decrypt_result_action_show;
-                sigActionIcon = R.drawable.ic_vpn_key_grey_24dp;
+                // won't be used, but makes compiler happy
+                sigActionText = 0;
+                sigActionIcon = 0;
                 break;
             }
 
@@ -583,7 +584,8 @@ public class KeyFormattingUtils {
         holder.getSignatureStatusText().setText(sigText);
         holder.getSignatureStatusText().setTextColor(sigColorRes);
 
-        if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+        if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE
+                && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE) {
             // has a signature, thus display layouts
 
             holder.getSignatureLayout().setVisibility(View.VISIBLE);

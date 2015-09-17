@@ -208,7 +208,7 @@ public class PgpSecurityConstants {
      * TODO: Ed25519
      * CITE: zooko's hash function table CITE: distinguishers on SHA-256
      */
-    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA256;
+    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA512;
 
     public interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
         int USE_DEFAULT = -1;
