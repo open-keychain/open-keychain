@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -36,6 +37,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -59,6 +61,7 @@ import android.widget.ViewAnimator;
 import com.cocosw.bottomsheet.BottomSheet;
 import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
@@ -430,10 +433,10 @@ public class DecryptListFragment
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.decrypt_open:
-                        displayWithViewIntent(result, index, false);
+                        displayWithViewIntent(result, index, false, true);
                         break;
                     case R.id.decrypt_share:
-                        displayWithViewIntent(result, index, true);
+                        displayWithViewIntent(result, index, true, true);
                         break;
                     case R.id.decrypt_save:
                         saveFileDialog(result, index);
@@ -445,7 +448,7 @@ public class DecryptListFragment
 
     }
 
-    public void displayWithViewIntent(InputDataResult result, int index, boolean share) {
+    public void displayWithViewIntent(InputDataResult result, int index, boolean share, boolean forceChooser) {
         Activity activity = getActivity();
         if (activity == null) {
             return;
@@ -466,7 +469,9 @@ public class DecryptListFragment
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, plaintext);
-                    startActivity(intent);
+
+                    Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_share));
+                    startActivity(chooserIntent);
 
                 } catch (IOException e) {
                     Notify.create(activity, R.string.error_preparing_data, Style.ERROR).show();
@@ -475,12 +480,34 @@ public class DecryptListFragment
                 return;
             }
 
-            Intent intent = new Intent(activity, DisplayTextActivity.class);
+            Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             intent.setDataAndType(outputUri, "text/plain");
-            intent.putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult);
-            intent.putExtra(DisplayTextActivity.EXTRA_METADATA, metadata);
-            activity.startActivity(intent);
+
+            if (forceChooser) {
+
+                LabeledIntent internalIntent = new LabeledIntent(
+                        new Intent(intent)
+                                .setClass(activity, DisplayTextActivity.class)
+                                .putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult)
+                                .putExtra(DisplayTextActivity.EXTRA_METADATA, metadata),
+                        BuildConfig.APPLICATION_ID, R.string.view_internal, R.mipmap.ic_launcher);
+
+                Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                        new Parcelable[] { internalIntent });
+
+                startActivity(chooserIntent);
+
+            } else {
+
+                intent.setClass(activity, DisplayTextActivity.class);
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                intent.putExtra(DisplayTextActivity.EXTRA_RESULT, result.mDecryptVerifyResult);
+                intent.putExtra(DisplayTextActivity.EXTRA_METADATA, metadata);
+                startActivity(intent);
+
+            }
 
         } else {
 
@@ -498,7 +525,7 @@ public class DecryptListFragment
 
             Intent chooserIntent = Intent.createChooser(intent, getString(R.string.intent_show));
             chooserIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            activity.startActivity(chooserIntent);
+            startActivity(chooserIntent);
         }
 
     }
@@ -768,7 +795,7 @@ public class DecryptListFragment
                     @Override
                     public void onClick(View view) {
                         if (model.mResult.success()) {
-                            displayWithViewIntent(model.mResult, idx, false);
+                            displayWithViewIntent(model.mResult, idx, false, false);
                         }
                     }
                 });

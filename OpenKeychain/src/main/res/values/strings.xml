@@ -1544,6 +1544,7 @@
     <string name="filename_unknown">Unknown filename (click to open)</string>
     <string name="filename_unknown_text">Text (click to show)</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
+    <string name="intent_share">Share Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
     <string name="label_clip_title">"Encrypted Data"</string>
