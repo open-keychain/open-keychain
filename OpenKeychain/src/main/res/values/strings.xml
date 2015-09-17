@@ -1540,7 +1540,8 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
-    <string name="error_reading_aosp">"Failed reading data, this is a bug in the Android E-Mail client!"</string>
+    <string name="error_reading_aosp">"Failed reading data, this is a bug in the Android E-Mail client! (Issue #290)"</string>
+    <string name="error_reading_k9">"If decryption fails, press 'Download complete message' in K-9 Mail!"</string>
     <string name="filename_unknown">Unknown filename (click to open)</string>
     <string name="filename_unknown_text">Text (click to show)</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
