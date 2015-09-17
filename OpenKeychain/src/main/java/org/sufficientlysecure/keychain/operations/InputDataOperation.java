@@ -146,8 +146,8 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             @Override
             public void startMultipart(BodyDescriptor bd) throws MimeException {
                 if ("signed".equals(bd.getSubType())) {
-                    if (mSignedDataResult != null) {
-                        // recursive signed data is not supported!
+                    if (mSignedDataUri != null) {
+                        // recursive signed data is not supported, and will just be parsed as-is
                         log.add(LogType.MSG_DATA_DETACHED_NESTED, 2);
                         return;
                     }
@@ -185,6 +185,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 }
 
                 out.close();
+                // continue to next body part the usual way
                 parser.setFlat();
 
             }
@@ -259,6 +260,13 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     return;
                 }
 
+                // If mSignedDataUri is non-null, we already parsed a signature. If mSignedDataResult is non-null
+                // too, we are still in the same parsing stage, so this is trailing data - skip it!
+                if (mSignedDataUri != null && mSignedDataResult != null) {
+                    log.add(LogType.MSG_DATA_DETACHED_TRAILING, 2);
+                    return;
+                }
+
                 log.add(LogType.MSG_DATA_MIME_PART, 2);
 
                 log.add(LogType.MSG_DATA_MIME_TYPE, 3, bd.getMimeType());
@@ -313,8 +321,13 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                     decryptResult = mSignedDataResult;
                 }
 
-                in = mContext.getContentResolver().openInputStream(mSignedDataUri);
+                // the actual content is the signed data now (and will be passed verbatim, if parsing fails)
+                currentInputUri = mSignedDataUri;
+                in = mContext.getContentResolver().openInputStream(currentInputUri);
+                // reset signed data result, to indicate to the parser that it is in the inner part
+                mSignedDataResult = null;
                 parser.parse(in);
+
             }
 
             // if we found data, return success

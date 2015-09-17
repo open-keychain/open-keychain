@@ -1362,6 +1362,7 @@
     <string name="msg_data_detached_sig">"Processing detached signature"</string>
     <string name="msg_data_detached_raw">"Processing signed data"</string>
     <string name="msg_data_detached_nested">"Skipping nested signed data!"</string>
+    <string name="msg_data_detached_trailing">"Skipping trailing data after signed part!"</string>
     <string name="msg_data_detached_unsupported">"Unsupported type of detached signature!"</string>
     <string name="msg_data_error_io">"Error reading input data!"</string>
     <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>

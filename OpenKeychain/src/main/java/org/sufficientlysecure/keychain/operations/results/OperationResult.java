@@ -835,6 +835,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DATA_DETACHED_SIG (LogLevel.DEBUG, R.string.msg_data_detached_sig),
         MSG_DATA_DETACHED_RAW (LogLevel.DEBUG, R.string.msg_data_detached_raw),
         MSG_DATA_DETACHED_NESTED(LogLevel.WARN, R.string.msg_data_detached_nested),
+        MSG_DATA_DETACHED_TRAILING (LogLevel.WARN, R.string.msg_data_detached_trailing),
         MSG_DATA_DETACHED_UNSUPPORTED (LogLevel.WARN, R.string.msg_data_detached_unsupported),
         MSG_DATA_MIME_ERROR (LogLevel.ERROR, R.string.msg_data_mime_error),
         MSG_DATA_MIME_FILENAME (LogLevel.DEBUG, R.string.msg_data_mime_filename),
