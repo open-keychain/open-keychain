@@ -830,6 +830,12 @@ public abstract class OperationResult implements Parcelable {
         MSG_DATA_OPENPGP (LogLevel.DEBUG, R.string.msg_data_openpgp),
         MSG_DATA_ERROR_IO (LogLevel.ERROR, R.string.msg_data_error_io),
         MSG_DATA_ERROR_OPENPGP (LogLevel.ERROR, R.string.msg_data_error_openpgp),
+        MSG_DATA_DETACHED (LogLevel.INFO, R.string.msg_data_detached),
+        MSG_DATA_DETACHED_CLEAR (LogLevel.WARN, R.string.msg_data_detached_clear),
+        MSG_DATA_DETACHED_SIG (LogLevel.DEBUG, R.string.msg_data_detached_sig),
+        MSG_DATA_DETACHED_RAW (LogLevel.DEBUG, R.string.msg_data_detached_raw),
+        MSG_DATA_DETACHED_NESTED(LogLevel.WARN, R.string.msg_data_detached_nested),
+        MSG_DATA_DETACHED_UNSUPPORTED (LogLevel.WARN, R.string.msg_data_detached_unsupported),
         MSG_DATA_MIME_ERROR (LogLevel.ERROR, R.string.msg_data_mime_error),
         MSG_DATA_MIME_FILENAME (LogLevel.DEBUG, R.string.msg_data_mime_filename),
         MSG_DATA_MIME_LENGTH (LogLevel.DEBUG, R.string.msg_data_mime_length),
@@ -1004,7 +1010,7 @@ public abstract class OperationResult implements Parcelable {
             for (LogEntryParcel entry : this) {
                 log.append(entry.getPrintableLogEntry(resources, indent)).append("\n");
             }
-            return log.toString().substring(0, log.length() -1); // get rid of extra new line
+            return log.toString().substring(0, log.length() - 1); // get rid of extra new line
         }
 
     }

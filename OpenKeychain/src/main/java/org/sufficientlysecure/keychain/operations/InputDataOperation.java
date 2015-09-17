@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +52,16 @@ import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
-/** This operation deals with input data, trying to determine its type as it goes. */
+/** This operation deals with input data, trying to determine its type as it goes.
+ *
+ * We deal with four types of structures:
+ *
+ * - signed/encrypted non-mime data
+ * - signed/encrypted mime data
+ * - encrypted multipart/signed mime data
+ * - multipart/signed mime data (WIP)
+ *
+ */
 public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
     final private byte[] buf = new byte[256];
@@ -60,9 +70,12 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         super(context, providerHelper, progressable);
     }
 
+    Uri mSignedDataUri;
+    DecryptVerifyResult mSignedDataResult;
+
     @NonNull
     @Override
-    public InputDataResult execute(InputDataParcel input, CryptoInputParcel cryptoInput) {
+    public InputDataResult execute(InputDataParcel input, final CryptoInputParcel cryptoInput) {
 
         final OperationLog log = new OperationLog();
 
@@ -119,16 +132,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
         }
 
-        log.add(LogType.MSG_DATA_MIME, 1);
-
-        InputStream in;
-        try {
-            in = mContext.getContentResolver().openInputStream(currentInputUri);
-        } catch (FileNotFoundException e) {
-            log.add(LogType.MSG_DATA_ERROR_IO, 2);
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
-        }
-        MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
+        final MimeStreamParser parser = new MimeStreamParser((MimeConfig) null);
 
         final ArrayList<Uri> outputUris = new ArrayList<>();
         final ArrayList<OpenPgpMetadata> metadatas = new ArrayList<>();
@@ -136,7 +140,54 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         parser.setContentDecoding(true);
         parser.setRecurse();
         parser.setContentHandler(new AbstractContentHandler() {
+            private Uri uncheckedSignedDataUri;
             String mFilename;
+
+            @Override
+            public void startMultipart(BodyDescriptor bd) throws MimeException {
+                if ("signed".equals(bd.getSubType())) {
+                    if (mSignedDataResult != null) {
+                        // recursive signed data is not supported!
+                        log.add(LogType.MSG_DATA_DETACHED_NESTED, 2);
+                        return;
+                    }
+                    log.add(LogType.MSG_DATA_DETACHED, 2);
+                    if (!outputUris.isEmpty()) {
+                        // we can't have previous data if we parse a detached signature!
+                        log.add(LogType.MSG_DATA_DETACHED_CLEAR, 3);
+                        outputUris.clear();
+                        metadatas.clear();
+                    }
+                    // this is signed data, we require the next part raw
+                    parser.setRaw();
+                }
+            }
+
+            @Override
+            public void raw(InputStream is) throws MimeException, IOException {
+
+                if (uncheckedSignedDataUri != null) {
+                    throw new AssertionError("raw parts must only be received as first part of multipart/signed!");
+                }
+
+                log.add(LogType.MSG_DATA_DETACHED_RAW, 3);
+
+                uncheckedSignedDataUri = TemporaryStorageProvider.createFile(mContext, mFilename, "text/plain");
+                OutputStream out = mContext.getContentResolver().openOutputStream(uncheckedSignedDataUri, "w");
+
+                if (out == null) {
+                    throw new IOException("Error getting file for writing!");
+                }
+
+                int len;
+                while ((len = is.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+                out.close();
+                parser.setFlat();
+
+            }
 
             @Override
             public void startHeader() throws MimeException {
@@ -151,8 +202,56 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 }
             }
 
+            private void bodySignature(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
+
+                if (!"application/pgp-signature".equals(bd.getMimeType())) {
+                    log.add(LogType.MSG_DATA_DETACHED_UNSUPPORTED, 3);
+                    uncheckedSignedDataUri = null;
+                    parser.setRecurse();
+                    return;
+                }
+
+                log.add(LogType.MSG_DATA_DETACHED_SIG, 3);
+
+                ByteArrayOutputStream detachedSig = new ByteArrayOutputStream();
+
+                int len, totalLength = 0;
+                while ((len = is.read(buf)) > 0) {
+                    totalLength += len;
+                    detachedSig.write(buf, 0, len);
+                    if (totalLength > 4096) {
+                        throw new IOException("detached signature is unreasonably large!");
+                    }
+                }
+                detachedSig.close();
+
+                PgpDecryptVerifyInputParcel decryptInput = new PgpDecryptVerifyInputParcel();
+                decryptInput.setInputUri(uncheckedSignedDataUri);
+                decryptInput.setDetachedSignature(detachedSig.toByteArray());
+
+                PgpDecryptVerifyOperation op =
+                        new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
+                DecryptVerifyResult verifyResult = op.execute(decryptInput, cryptoInput);
+
+                log.addByMerge(verifyResult, 4);
+
+                mSignedDataUri = uncheckedSignedDataUri;
+                mSignedDataResult = verifyResult;
+
+                // reset parser state
+                uncheckedSignedDataUri = null;
+                parser.setRecurse();
+
+            }
+
             @Override
             public void body(BodyDescriptor bd, InputStream is) throws MimeException, IOException {
+
+                // if we have signed data waiting, we expect a signature for checking
+                if (uncheckedSignedDataUri != null) {
+                    bodySignature(bd, is);
+                    return;
+                }
 
                 // we read first, no need to create an output file if nothing was read!
                 int len = is.read(buf);
@@ -196,14 +295,29 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             }
 
-
         });
 
         try {
 
+            log.add(LogType.MSG_DATA_MIME, 1);
+
+            // open current uri for input
+            InputStream in = mContext.getContentResolver().openInputStream(currentInputUri);
             parser.parse(in);
 
-            // if no mime data parsed, just return the raw data as fallback
+            if (mSignedDataUri != null) {
+
+                if (decryptResult != null) {
+                    decryptResult.setSignatureResult(mSignedDataResult.getSignatureResult());
+                } else {
+                    decryptResult = mSignedDataResult;
+                }
+
+                in = mContext.getContentResolver().openInputStream(mSignedDataUri);
+                parser.parse(in);
+            }
+
+            // if we found data, return success
             if (!outputUris.isEmpty()) {
                 log.add(LogType.MSG_DATA_MIME_OK, 2);
 
@@ -211,6 +325,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
             }
 
+            // if no mime data parsed, just return the raw data as fallback
             log.add(LogType.MSG_DATA_MIME_NONE, 2);
 
             OpenPgpMetadata metadata;
@@ -228,9 +343,12 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             log.add(LogType.MSG_DATA_OK, 1);
             return new InputDataResult(InputDataResult.RESULT_OK, log, decryptResult, outputUris, metadatas);
 
+        } catch (FileNotFoundException e) {
+            log.add(LogType.MSG_DATA_ERROR_IO, 2);
+            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         } catch (IOException e) {
             e.printStackTrace();
-            log.add(LogType.MSG_DATA_MIME_ERROR, 2);
+            log.add(LogType.MSG_DATA_ERROR_IO, 2);
             return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         } catch (MimeException e) {
             e.printStackTrace();

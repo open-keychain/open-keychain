@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.io.InputStream;
 import java.util.HashSet;
 
 import android.net.Uri;
