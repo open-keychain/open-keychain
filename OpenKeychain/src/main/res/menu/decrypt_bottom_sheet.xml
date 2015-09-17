@@ -14,6 +14,6 @@
     <item
         android:id="@+id/decrypt_save"
         android:title="@string/btn_save"
-        android:icon="@drawable/ic_save_grey_24dp" />
+        android:icon="@drawable/ic_save_black_24dp" />
 
 </menu>

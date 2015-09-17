@@ -27,6 +27,7 @@ python copy OpenKeychain communication grey import_export 24
 python copy OpenKeychain content grey content_copy 24
 python copy OpenKeychain content grey content_paste 24
 python copy OpenKeychain content grey save 24
+python copy OpenKeychain content black save 24
 python copy OpenKeychain content grey select_all 24
 python copy OpenKeychain editor grey mode_edit 24
 python copy OpenKeychain file grey cloud 24
