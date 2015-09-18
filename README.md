@@ -46,7 +46,7 @@ Expand the Tools directory and select "Android SDK Build-tools (Version 21.1.2)"
 Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK Platform, API 22, and also API 21
 5. Export ANDROID_HOME pointing to your Android SDK
-6. Execute ``./gradlew build``
+6. Execute ``./ gradlew assembleDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug-unaligned.apk``
 
 ### Run Tests
