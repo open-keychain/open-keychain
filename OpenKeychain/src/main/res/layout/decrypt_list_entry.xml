@@ -24,7 +24,7 @@
         android:outAnimation="@anim/fade_out"
         android:id="@+id/view_animator"
         android:measureAllChildren="false"
-        custom:initialView="0"
+        custom:initialView="1"
         android:minHeight="?listPreferredItemHeightSmall"
         android:animateLayoutChanges="true"
         >
@@ -78,14 +78,25 @@
 
                 <TextView
                     android:id="@+id/result_encryption_text"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:text=""
                     tools:text="Encryption status text" />
+
+                <ImageView
+                    android:id="@+id/context_menu"
+                    android:scaleType="center"
+                    android:layout_width="36dip"
+                    android:layout_height="48dip"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_more_vert_black_24dp" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -121,7 +132,9 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                style="?listPreferredItemHeight"
+                >
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -184,62 +197,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/file"
-                android:clickable="true"
-                android:background="?android:selectableItemBackground"
-                >
+                android:id="@+id/file_list"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/thumbnail"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:scaleType="center"
-                    android:padding="6dp"
-                    android:src="@drawable/ic_doc_generic_am" />
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
-                    android:layout_weight="1">
-
-                    <TextView
-                        android:id="@+id/filename"
-                        android:maxLines="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:ellipsize="end"
-                        android:text=""
-                        tools:text="filename.jpg" />
-
-                    <TextView
-                        android:id="@+id/filesize"
-                        android:maxLines="1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="?android:attr/textColorTertiary"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textSize="12sp"
-                        android:ellipsize="end"
-                        android:text=""
-                        tools:text="14kb" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/context_menu"
-                    android:scaleType="center"
-                    android:layout_width="36dip"
-                    android:layout_height="48dip"
-                    android:clickable="true"
-                    android:background="?android:selectableItemBackground"
-                    android:src="@drawable/ic_menu_moreoverflow_normal_holo_light" />
+                <include layout="@layout/decrypt_list_file_item" />
 
             </LinearLayout>
 

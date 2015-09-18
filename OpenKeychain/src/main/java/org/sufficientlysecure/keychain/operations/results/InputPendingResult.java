@@ -38,6 +38,15 @@ public class InputPendingResult extends OperationResult {
         mCryptoInputParcel = null;
     }
 
+    public InputPendingResult(OperationLog log, InputPendingResult result) {
+        super(RESULT_PENDING, log);
+        if (!result.isPending()) {
+            throw new AssertionError("sub result must be pending!");
+        }
+        mRequiredInput = result.mRequiredInput;
+        mCryptoInputParcel = result.mCryptoInputParcel;
+    }
+
     public InputPendingResult(OperationLog log, RequiredInputParcel requiredInput,
                               CryptoInputParcel cryptoInputParcel) {
         super(RESULT_PENDING, log);

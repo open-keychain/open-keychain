@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import java.io.InputStream;
 import java.util.HashSet;
 
 import android.net.Uri;
@@ -86,8 +87,18 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
         return mInputBytes;
     }
 
+    public PgpDecryptVerifyInputParcel setInputUri(Uri uri) {
+        mInputUri = uri;
+        return this;
+    }
+
     Uri getInputUri() {
         return mInputUri;
+    }
+
+    public PgpDecryptVerifyInputParcel setOutputUri(Uri uri) {
+        mOutputUri = uri;
+        return this;
     }
 
     Uri getOutputUri() {

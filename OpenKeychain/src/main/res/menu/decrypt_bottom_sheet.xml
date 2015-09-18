@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/decrypt_open"
+        android:title="Open with…"
+        android:icon="@drawable/ic_apps_black_24dp" />
+
+    <item
+        android:id="@+id/decrypt_share"
+        android:title="@string/btn_share_decrypted_text"
+        android:icon="@drawable/ic_share_black_24dp" />
+
+    <item
+        android:id="@+id/decrypt_save"
+        android:title="@string/btn_save"
+        android:icon="@drawable/ic_save_black_24dp" />
+
+</menu>

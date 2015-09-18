@@ -792,9 +792,9 @@ public class PgpEncryptDecryptTest {
             Assert.assertArrayEquals("decrypted ciphertext should equal plaintext bytes",
                     out.toByteArray(), plaindata);
             Assert.assertEquals("charset should be read correctly",
-                    "iso-2022-jp", result.getCharset());
+                    "iso-2022-jp", result.getDecryptionMetadata().getCharset());
             Assert.assertEquals("decrypted ciphertext should equal plaintext",
-                    new String(out.toByteArray(), result.getCharset()), plaintext);
+                    new String(out.toByteArray(), result.getDecryptionMetadata().getCharset()), plaintext);
             Assert.assertEquals("decryptionResult should be RESULT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_NO_SIGNATURE",

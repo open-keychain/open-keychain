@@ -256,7 +256,7 @@
                   This links to attached asc files in AOSP mail. It is deactivated because of
                   https://github.com/open-keychain/open-keychain/issues/290
                 -->
-                <!--<data android:mimeType="text/plain" />-->
+                <data android:mimeType="text/plain" />
             </intent-filter>
             <!-- DECRYPT_DATA with data Uri -->
             <intent-filter>

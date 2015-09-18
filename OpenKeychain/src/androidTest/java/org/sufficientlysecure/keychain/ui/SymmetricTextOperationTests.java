@@ -133,7 +133,7 @@ public class SymmetricTextOperationTests {
                     hasExtra(equalTo(Intent.EXTRA_INTENT), allOf(
                             hasAction(Intent.ACTION_VIEW),
                             hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            hasData(allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.CONTENT_AUTHORITY))),
+                            hasData(allOf(hasScheme("content"), hasHost(TemporaryStorageProvider.AUTHORITY))),
                             hasType("text/plain")
                     ))
             )).respondWith(new ActivityResult(Activity.RESULT_OK, null));

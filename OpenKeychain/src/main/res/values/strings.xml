@@ -1355,6 +1355,27 @@
     <string name="msg_lv_fetch_error_format">"Format error!"</string>
     <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
 
+    <string name="msg_data">"Processing input data"</string>
+    <string name="msg_data_openpgp">"Attempting to process OpenPGP data"</string>
+    <string name="msg_data_detached">"Encountered detached signature"</string>
+    <string name="msg_data_detached_clear">"Clearing earlier, unsigned data!"</string>
+    <string name="msg_data_detached_sig">"Processing detached signature"</string>
+    <string name="msg_data_detached_raw">"Processing signed data"</string>
+    <string name="msg_data_detached_nested">"Skipping nested signed data!"</string>
+    <string name="msg_data_detached_trailing">"Skipping trailing data after signed part!"</string>
+    <string name="msg_data_detached_unsupported">"Unsupported type of detached signature!"</string>
+    <string name="msg_data_error_io">"Error reading input data!"</string>
+    <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>
+    <string name="msg_data_mime_error">"Error parsing MIME data!"</string>
+    <string name="msg_data_mime_filename">"Filename: '%s'"</string>
+    <string name="msg_data_mime_length">"Content-Length: %s"</string>
+    <string name="msg_data_mime">"Parsing MIME data structure"</string>
+    <string name="msg_data_mime_ok">"Finished parsing</string>
+    <string name="msg_data_mime_none">"No MIME structure found"</string>
+    <string name="msg_data_mime_part">"Processing MIME part"</string>
+    <string name="msg_data_mime_type">"Content-Type: %s"</string>
+    <string name="msg_data_ok">"Data processing successful"</string>
+    <string name="msg_data_skip_mime">"Skipping MIME parsing"</string>
 
     <string name="msg_acc_saved">"Account saved"</string>
 
@@ -1379,6 +1400,11 @@
     <string name="msg_keybase_error_dns_fail">"DNS TXT Record retrieval failed"</string>
     <string name="msg_keybase_error_specific">"%s"</string>
     <string name="msg_keybase_error_msg_payload_mismatch">"Decrypted proof post does not match expected value"</string>
+
+    <!-- Messages for Mime parsing operation -->
+    <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>
+    <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
+    <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_click_to_clear">"Touch to clear passwords."</string>
@@ -1521,9 +1547,12 @@
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
+    <string name="error_reading_aosp">"Failed reading data, this is a bug in the Android E-Mail client! (Issue #290)"</string>
+    <string name="error_reading_k9">"Received incomplete data, try pressing 'Download complete message' in K-9 Mail!"</string>
     <string name="filename_unknown">Unknown filename (click to open)</string>
     <string name="filename_unknown_text">Text (click to show)</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
+    <string name="intent_share">Share Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
     <string name="error_preparing_data">"Error preparing data!"</string>
     <string name="label_clip_title">"Encrypted Data"</string>

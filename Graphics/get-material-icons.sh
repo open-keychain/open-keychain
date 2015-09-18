@@ -27,6 +27,7 @@ python copy OpenKeychain communication grey import_export 24
 python copy OpenKeychain content grey content_copy 24
 python copy OpenKeychain content grey content_paste 24
 python copy OpenKeychain content grey save 24
+python copy OpenKeychain content black save 24
 python copy OpenKeychain content grey select_all 24
 python copy OpenKeychain editor grey mode_edit 24
 python copy OpenKeychain file grey cloud 24
@@ -37,6 +38,7 @@ python copy OpenKeychain navigation grey close 24
 python copy OpenKeychain social grey person 24
 python copy OpenKeychain social grey person_add 24
 python copy OpenKeychain social grey share 24
+python copy OpenKeychain social white share 24
 python copy OpenKeychain communication grey vpn_key 24
 python copy OpenKeychain navigation grey chevron_left 24
 python copy OpenKeychain navigation grey chevron_right 24
@@ -44,6 +46,8 @@ python copy OpenKeychain social grey person 48
 python copy OpenKeychain communication grey email 24
 python copy OpenKeychain social black share 24
 python copy OpenKeychain content black content_copy 24
+python copy OpenKeychain communication black chat 24
+python copy OpenKeychain navigation black more_vert 24
 
 # navigation drawer sections
 python copy OpenKeychain communication black vpn_key 24

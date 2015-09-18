@@ -628,15 +628,14 @@ public class OpenPgpService extends RemoteService {
                     }
                 }
 
-
+                OpenPgpMetadata metadata = pgpResult.getDecryptionMetadata();
                 if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) >= 4) {
-                    OpenPgpMetadata metadata = pgpResult.getDecryptionMetadata();
                     if (metadata != null) {
                         result.putExtra(OpenPgpApi.RESULT_METADATA, metadata);
                     }
                 }
 
-                String charset = pgpResult.getCharset();
+                String charset = metadata != null ? metadata.getCharset() : null;
                 if (charset != null) {
                     result.putExtra(OpenPgpApi.RESULT_CHARSET, charset);
                 }

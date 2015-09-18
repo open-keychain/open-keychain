@@ -556,12 +556,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     originalFilename,
                     mimeType,
                     literalData.getModificationTime().getTime(),
-                    originalSize == null ? 0 : originalSize);
+                    originalSize == null ? 0 : originalSize,
+                    charset);
 
             log.add(LogType.MSG_DC_OK_META_ONLY, indent);
             DecryptVerifyResult result =
                     new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-            result.setCharset(charset);
             result.setDecryptionMetadata(metadata);
             return result;
         }
@@ -607,7 +607,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         metadata = new OpenPgpMetadata(
-                originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten);
+                originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
 
         if (signature != null) {
             updateProgress(R.string.progress_verifying_signature, 90, 100);
@@ -663,7 +663,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         result.setCachedCryptoInputParcel(cryptoInput);
         result.setSignatureResult(signatureResultBuilder.build());
-        result.setCharset(charset);
         result.setDecryptionResult(decryptionResultBuilder.build());
         result.setDecryptionMetadata(metadata);
 

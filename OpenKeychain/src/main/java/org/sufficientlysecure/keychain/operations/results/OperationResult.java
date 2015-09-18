@@ -126,6 +126,13 @@ public abstract class OperationResult implements Parcelable {
             Log.v(Constants.TAG, "log: " + this);
         }
 
+        /** Clones this LogEntryParcel, adding extra indent. Note that the parameter array is NOT cloned! */
+        public LogEntryParcel (LogEntryParcel original, int extraIndent) {
+            mType = original.mType;
+            mParameters = original.mParameters;
+            mIndent = original.mIndent +extraIndent;
+        }
+
         public LogEntryParcel(Parcel source) {
             mType = LogType.values()[source.readInt()];
             mParameters = (Object[]) source.readSerializable();
@@ -818,7 +825,29 @@ public abstract class OperationResult implements Parcelable {
         MSG_KEYBASE_ERROR_PAYLOAD_MISMATCH(LogLevel.ERROR,
                 R.string.msg_keybase_error_msg_payload_mismatch),
 
-        // export log
+        // InputData Operation
+        MSG_DATA (LogLevel.START, R.string.msg_data),
+        MSG_DATA_OPENPGP (LogLevel.DEBUG, R.string.msg_data_openpgp),
+        MSG_DATA_ERROR_IO (LogLevel.ERROR, R.string.msg_data_error_io),
+        MSG_DATA_ERROR_OPENPGP (LogLevel.ERROR, R.string.msg_data_error_openpgp),
+        MSG_DATA_DETACHED (LogLevel.INFO, R.string.msg_data_detached),
+        MSG_DATA_DETACHED_CLEAR (LogLevel.WARN, R.string.msg_data_detached_clear),
+        MSG_DATA_DETACHED_SIG (LogLevel.DEBUG, R.string.msg_data_detached_sig),
+        MSG_DATA_DETACHED_RAW (LogLevel.DEBUG, R.string.msg_data_detached_raw),
+        MSG_DATA_DETACHED_NESTED(LogLevel.WARN, R.string.msg_data_detached_nested),
+        MSG_DATA_DETACHED_TRAILING (LogLevel.WARN, R.string.msg_data_detached_trailing),
+        MSG_DATA_DETACHED_UNSUPPORTED (LogLevel.WARN, R.string.msg_data_detached_unsupported),
+        MSG_DATA_MIME_ERROR (LogLevel.ERROR, R.string.msg_data_mime_error),
+        MSG_DATA_MIME_FILENAME (LogLevel.DEBUG, R.string.msg_data_mime_filename),
+        MSG_DATA_MIME_LENGTH (LogLevel.DEBUG, R.string.msg_data_mime_length),
+        MSG_DATA_MIME (LogLevel.DEBUG, R.string.msg_data_mime),
+        MSG_DATA_MIME_OK (LogLevel.INFO, R.string.msg_data_mime_ok),
+        MSG_DATA_MIME_NONE (LogLevel.DEBUG, R.string.msg_data_mime_none),
+        MSG_DATA_MIME_PART (LogLevel.DEBUG, R.string.msg_data_mime_part),
+        MSG_DATA_MIME_TYPE (LogLevel.DEBUG, R.string.msg_data_mime_type),
+        MSG_DATA_OK (LogLevel.OK, R.string.msg_data_ok),
+        MSG_DATA_SKIP_MIME (LogLevel.DEBUG, R.string.msg_data_skip_mime),
+
         MSG_LV (LogLevel.START, R.string.msg_lv),
         MSG_LV_MATCH (LogLevel.DEBUG, R.string.msg_lv_match),
         MSG_LV_MATCH_ERROR (LogLevel.ERROR, R.string.msg_lv_match_error),
@@ -838,7 +867,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
         MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
         MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
-        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing);
+        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing),
+        ;
 
         public final int mMsgId;
         public final LogLevel mLevel;
@@ -894,6 +924,13 @@ public abstract class OperationResult implements Parcelable {
         public void add(OperationResult subResult, int indent) {
             OperationLog subLog = subResult.getLog();
             mParcels.add(new SubLogEntryParcel(subResult, subLog.getFirst().mType, indent, subLog.getFirst().mParameters));
+        }
+
+        public void addByMerge(OperationResult subResult, int indent) {
+            OperationLog subLog = subResult.getLog();
+            for (LogEntryParcel entry : subLog) {
+                mParcels.add(new LogEntryParcel(entry, indent));
+            }
         }
 
         public SubLogEntryParcel getSubResultIfSingle() {
@@ -974,7 +1011,7 @@ public abstract class OperationResult implements Parcelable {
             for (LogEntryParcel entry : this) {
                 log.append(entry.getPrintableLogEntry(resources, indent)).append("\n");
             }
-            return log.toString().substring(0, log.length() -1); // get rid of extra new line
+            return log.toString().substring(0, log.length() - 1); // get rid of extra new line
         }
 
     }

@@ -82,6 +82,9 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
+        // depending on the data source, we may or may not be able to delete the original file
+        boolean canDelete = false;
+
         try {
 
             switch (action) {
@@ -152,10 +155,21 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 // for everything else, just work on the intent data
-                case OpenKeychainIntents.DECRYPT_DATA:
                 case Intent.ACTION_VIEW:
+                    canDelete = true;
+                case OpenKeychainIntents.DECRYPT_DATA:
                 default:
-                    uris.add(intent.getData());
+                    Uri uri = intent.getData();
+                    if (uri != null) {
+
+                        if ("com.android.email.attachmentprovider".equals(uri.getHost())) {
+                            Toast.makeText(this, R.string.error_reading_aosp, Toast.LENGTH_LONG).show();
+                            finish();
+                            return;
+                        }
+
+                        uris.add(intent.getData());
+                    }
 
             }
 
@@ -173,13 +187,17 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
-        displayListFragment(uris);
+        displayListFragment(uris, canDelete);
 
     }
 
-    @Nullable public Uri readToTempFile(String text) throws IOException {
+    @Nullable
+    public Uri readToTempFile(String text) throws IOException {
         Uri tempFile = TemporaryStorageProvider.createFile(this);
         OutputStream outStream = getContentResolver().openOutputStream(tempFile);
+        if (outStream == null) {
+            return null;
+        }
 
         // clean up ascii armored message, fixing newlines and stuff
         String cleanedText = PgpHelper.getPgpContent(text);
@@ -188,14 +206,14 @@ public class DecryptActivity extends BaseActivity {
         }
 
         // if cleanup didn't work, just try the raw data
-        outStream.write(text.getBytes());
+        outStream.write(cleanedText.getBytes());
         outStream.close();
         return tempFile;
     }
 
-    public void displayListFragment(ArrayList<Uri> inputUris) {
+    public void displayListFragment(ArrayList<Uri> inputUris, boolean canDelete) {
 
-        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris);
+        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris, canDelete);
 
         FragmentManager fragMan = getSupportFragmentManager();
 

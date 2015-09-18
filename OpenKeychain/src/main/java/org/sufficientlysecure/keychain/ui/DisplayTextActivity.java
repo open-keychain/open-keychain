@@ -25,9 +25,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.View;
 import android.widget.Toast;
 
+import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 
 public class DisplayTextActivity extends BaseActivity {
 
+    public static final String EXTRA_RESULT = "result";
     public static final String EXTRA_METADATA = "metadata";
 
     @Override
@@ -60,11 +61,12 @@ public class DisplayTextActivity extends BaseActivity {
             return;
         }
 
-        DecryptVerifyResult result = intent.getParcelableExtra(EXTRA_METADATA);
+        DecryptVerifyResult result = intent.getParcelableExtra(EXTRA_RESULT);
+        OpenPgpMetadata metadata = intent.getParcelableExtra(EXTRA_METADATA);
 
         String plaintext;
         try {
-            plaintext = FileHelper.readTextFromUri(this, intent.getData(), result.getCharset());
+            plaintext = FileHelper.readTextFromUri(this, intent.getData(), metadata.getCharset());
         } catch (IOException e) {
             Toast.makeText(this, R.string.error_preparing_data, Toast.LENGTH_LONG).show();
             return;

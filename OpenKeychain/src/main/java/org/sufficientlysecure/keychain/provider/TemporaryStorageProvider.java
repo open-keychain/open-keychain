@@ -67,8 +67,8 @@ public class TemporaryStorageProvider extends ContentProvider {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_TIME = "time";
     private static final String COLUMN_TYPE = "mimetype";
-    public static final String CONTENT_AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
-    private static final Uri BASE_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String AUTHORITY = Constants.TEMPSTORAGE_AUTHORITY;
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     private static final int DB_VERSION = 3;
 
     private static File cacheDir;
@@ -77,18 +77,18 @@ public class TemporaryStorageProvider extends ContentProvider {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NAME, targetName);
         contentValues.put(COLUMN_TYPE, mimeType);
-        return context.getContentResolver().insert(BASE_URI, contentValues);
+        return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
     public static Uri createFile(Context context, String targetName) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_NAME, targetName);
-        return context.getContentResolver().insert(BASE_URI, contentValues);
+        return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
     public static Uri createFile(Context context) {
         ContentValues contentValues = new ContentValues();
-        return context.getContentResolver().insert(BASE_URI, contentValues);
+        return context.getContentResolver().insert(CONTENT_URI, contentValues);
     }
 
     public static int setMimeType(Context context, Uri uri, String mimetype) {
@@ -98,7 +98,7 @@ public class TemporaryStorageProvider extends ContentProvider {
     }
 
     public static int cleanUp(Context context) {
-        return context.getContentResolver().delete(BASE_URI, COLUMN_TIME + "< ?",
+        return context.getContentResolver().delete(CONTENT_URI, COLUMN_TIME + "< ?",
                 new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)});
     }
 
@@ -163,12 +163,19 @@ public class TemporaryStorageProvider extends ContentProvider {
             throw new SecurityException("Listing temporary files is not allowed, only querying single files.");
         }
 
+        Log.d(Constants.TAG, "being asked for file " + uri);
+
         File file;
         try {
             file = getFile(uri);
+            if (file.exists()) {
+                Log.e(Constants.TAG, "already exists");
+            }
         } catch (FileNotFoundException e) {
+            Log.e(Constants.TAG, "file not found!");
             return null;
         }
+
         Cursor fileName = db.getReadableDatabase().query(TABLE_FILES, new String[]{COLUMN_NAME}, COLUMN_ID + "=?",
                 new String[]{uri.getLastPathSegment()}, null, null, null);
         if (fileName != null) {
@@ -236,7 +243,7 @@ public class TemporaryStorageProvider extends ContentProvider {
             Log.e(Constants.TAG, "File creation failed!");
             return null;
         }
-        return Uri.withAppendedPath(BASE_URI, uuid);
+        return Uri.withAppendedPath(CONTENT_URI, uuid);
     }
 
     @Override
@@ -274,6 +281,7 @@ public class TemporaryStorageProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        Log.d(Constants.TAG, "openFile");
         return openFileHelper(uri, mode);
     }
 

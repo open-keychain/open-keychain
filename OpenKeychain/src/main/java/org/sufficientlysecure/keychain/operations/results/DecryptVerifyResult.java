@@ -34,9 +34,6 @@ public class DecryptVerifyResult extends InputPendingResult {
     OpenPgpSignatureResult mSignatureResult;
     OpenPgpDecryptionResult mDecryptionResult;
     OpenPgpMetadata mDecryptionMetadata;
-    // This holds the charset which was specified in the ascii armor, if specified
-    // https://tools.ietf.org/html/rfc4880#page56
-    String mCharset;
 
     CryptoInputParcel mCachedCryptoInputParcel;
 
@@ -94,14 +91,6 @@ public class DecryptVerifyResult extends InputPendingResult {
 
     public void setDecryptionMetadata(OpenPgpMetadata decryptMetadata) {
         mDecryptionMetadata = decryptMetadata;
-    }
-
-    public String getCharset () {
-        return mCharset;
-    }
-
-    public void setCharset(String charset) {
-        mCharset = charset;
     }
 
     public void setOutputBytes(byte[] outputBytes) {
