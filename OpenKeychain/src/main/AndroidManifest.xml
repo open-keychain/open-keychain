@@ -263,9 +263,7 @@
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_DATA" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="file" />
-                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
             </intent-filter>
 
             <!-- DECRYPT_TEXT -->
