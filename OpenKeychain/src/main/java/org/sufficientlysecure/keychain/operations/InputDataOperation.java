@@ -86,6 +86,11 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         DecryptVerifyResult decryptResult = null;
 
         PgpDecryptVerifyInputParcel decryptInput = input.getDecryptInput();
+
+        if (!input.getMimeDecode() && decryptInput == null) {
+            throw new AssertionError("no decryption or mime decoding, this is probably a bug");
+        }
+
         if (decryptInput != null) {
 
             log.add(LogType.MSG_DATA_OPENPGP, 1);
@@ -113,12 +118,20 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             currentInputUri = input.getInputUri();
         }
 
-        // If we aren't supposed to attempt mime decode, we are done here
-        if (!input.getMimeDecode()) {
-
-            if (decryptInput == null) {
-                throw new AssertionError("no decryption or mime decoding, this is probably a bug");
+        // don't even attempt if we know the data isn't suitable for mime content
+        boolean skipMimeParsing = false;
+        if (decryptResult != null && decryptResult.getDecryptionMetadata() != null) {
+            String contentType = decryptResult.getDecryptionMetadata().getMimeType();
+            if (contentType != null
+                    && !contentType.startsWith("multipart/")
+                    && !contentType.startsWith("text/")
+                    && !contentType.startsWith("application/")) {
+                skipMimeParsing = true;
             }
+        }
+
+        // If we aren't supposed to attempt mime decode after decryption, we are done here
+        if (skipMimeParsing || !input.getMimeDecode()) {
 
             log.add(LogType.MSG_DATA_SKIP_MIME, 1);
 
