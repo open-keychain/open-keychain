@@ -376,10 +376,12 @@ public class DecryptListFragment
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
-                        int px = FormattingUtils.dpToPx(context, 48);
+                        int px = FormattingUtils.dpToPx(context, 32);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
                         icon = new BitmapDrawable(context.getResources(), bitmap);
-                    } else {
+                    }
+
+                    if (icon == null) {
                         final Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(outputUri, type);
 
