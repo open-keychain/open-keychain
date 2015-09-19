@@ -114,6 +114,12 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 return new InputDataResult(InputDataResult.RESULT_ERROR, log);
             }
 
+            // inform the storage provider about the mime type for this uri
+            if (decryptResult.getDecryptionMetadata() != null) {
+                TemporaryStorageProvider.setMimeType(mContext, currentInputUri,
+                        decryptResult.getDecryptionMetadata().getMimeType());
+            }
+
         } else {
             currentInputUri = input.getInputUri();
         }
