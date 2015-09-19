@@ -36,6 +36,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -43,7 +44,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 
-public class BackupFragment extends Fragment {
+
+public class BackupCodeEntryFragment extends Fragment {
 
     // This ids for multiple key export.
     private ArrayList<Long> mIdsForRepeatAskPassphrase;
@@ -68,7 +70,9 @@ public class BackupFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.backup_fragment, container, false);
+        View view = inflater.inflate(R.layout.drawer_backup_fragment, container, false);
+
+        TextView backupCode = (TextView) view.findViewById(R.id.backup_code);
 
         View backupAll = view.findViewById(R.id.backup_all);
         View backupPublicKeys = view.findViewById(R.id.backup_public_keys);

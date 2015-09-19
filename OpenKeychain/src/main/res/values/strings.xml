@@ -30,6 +30,7 @@
     <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
+    <string name="title_backup">"Backup Key"</string>
     <string name="title_certify_key">"Confirm Key"</string>
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
