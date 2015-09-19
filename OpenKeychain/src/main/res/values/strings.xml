@@ -1366,7 +1366,7 @@
     <string name="msg_data_detached_unsupported">"Unsupported type of detached signature!"</string>
     <string name="msg_data_error_io">"Error reading input data!"</string>
     <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>
-    <string name="msg_data_mime_error">"Error parsing MIME data!"</string>
+    <string name="msg_data_mime_bad">"Could not parse as MIME data"</string>
     <string name="msg_data_mime_filename">"Filename: '%s'"</string>
     <string name="msg_data_mime_length">"Content-Length: %s"</string>
     <string name="msg_data_mime">"Parsing MIME data structure"</string>

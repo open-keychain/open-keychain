@@ -309,25 +309,32 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
             log.add(LogType.MSG_DATA_MIME, 1);
 
-            // open current uri for input
-            InputStream in = mContext.getContentResolver().openInputStream(currentInputUri);
-            parser.parse(in);
+            try {
 
-            if (mSignedDataUri != null) {
-
-                if (decryptResult != null) {
-                    decryptResult.setSignatureResult(mSignedDataResult.getSignatureResult());
-                } else {
-                    decryptResult = mSignedDataResult;
-                }
-
-                // the actual content is the signed data now (and will be passed verbatim, if parsing fails)
-                currentInputUri = mSignedDataUri;
-                in = mContext.getContentResolver().openInputStream(currentInputUri);
-                // reset signed data result, to indicate to the parser that it is in the inner part
-                mSignedDataResult = null;
+                // open current uri for input
+                InputStream in = mContext.getContentResolver().openInputStream(currentInputUri);
                 parser.parse(in);
 
+                if (mSignedDataUri != null) {
+
+                    if (decryptResult != null) {
+                        decryptResult.setSignatureResult(mSignedDataResult.getSignatureResult());
+                    } else {
+                        decryptResult = mSignedDataResult;
+                    }
+
+                    // the actual content is the signed data now (and will be passed verbatim, if parsing fails)
+                    currentInputUri = mSignedDataUri;
+                    in = mContext.getContentResolver().openInputStream(currentInputUri);
+                    // reset signed data result, to indicate to the parser that it is in the inner part
+                    mSignedDataResult = null;
+                    parser.parse(in);
+
+                }
+            } catch (MimeException e) {
+                // a mime error likely means that this wasn't mime data, after all
+                e.printStackTrace();
+                log.add(LogType.MSG_DATA_MIME_BAD, 2);
             }
 
             // if we found data, return success
@@ -362,10 +369,6 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         } catch (IOException e) {
             e.printStackTrace();
             log.add(LogType.MSG_DATA_ERROR_IO, 2);
-            return new InputDataResult(InputDataResult.RESULT_ERROR, log);
-        } catch (MimeException e) {
-            e.printStackTrace();
-            log.add(LogType.MSG_DATA_MIME_ERROR, 2);
             return new InputDataResult(InputDataResult.RESULT_ERROR, log);
         }
 
