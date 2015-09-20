@@ -99,6 +99,10 @@
     <string name="btn_add_keyserver">"Add"</string>
     <string name="btn_save_default">"Save as default"</string>
     <string name="btn_saved">"Saved!"</string>
+    <string name="exchange_keys">"Exchange Keys"</string>
+    <string name="encrypt_files">"Encrypt Files"</string>
+    <string name="encrypt_text">"Encrypt Text"</string>
+    <string name="share_nfc">"Share Via NFC"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>

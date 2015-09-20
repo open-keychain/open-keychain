@@ -79,6 +79,7 @@ import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.LongClick;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -180,6 +181,15 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
 
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
+
+        //Long Click Listeners implemented
+
+        LongClick.setup(mActionEncryptFile,getString(R.string.encrypt_files));
+        LongClick.setup(mActionEncryptText,getString(R.string.encrypt_text));
+        LongClick.setup(mActionNfc,getString(R.string.share_nfc));
+        LongClick.setup(mFab,getString(R.string.exchange_keys));
+
+
         mRotateSpin.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
