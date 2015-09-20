@@ -708,7 +708,7 @@ public class KeyListFragment extends LoaderFragment
 
             holder.mSlinger.setVisibility(View.VISIBLE);
 
-            LongClick.setup(holder.mSlingerButton,getString(R.string.exchange_keys));
+            LongClick.setup(holder.mSlingerButton);
             holder.mSlingerButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {

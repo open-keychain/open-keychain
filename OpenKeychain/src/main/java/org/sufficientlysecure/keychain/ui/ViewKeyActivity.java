@@ -184,10 +184,10 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         //Long Click Listeners implemented
 
-        LongClick.setup(mActionEncryptFile,getString(R.string.encrypt_files));
-        LongClick.setup(mActionEncryptText,getString(R.string.encrypt_text));
-        LongClick.setup(mActionNfc,getString(R.string.share_nfc));
-        LongClick.setup(mFab,getString(R.string.exchange_keys));
+        LongClick.setup(mActionEncryptFile);
+        LongClick.setup(mActionEncryptText);
+        LongClick.setup(mActionNfc);
+        LongClick.setup(mFab);
 
 
         mRotateSpin.setAnimationListener(new AnimationListener() {

@@ -123,7 +123,8 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_repeat_grey_24dp"
             android:padding="12dp"
-            android:background="?android:selectableItemBackground" />
+            android:background="?android:selectableItemBackground"
+            android:contentDescription="@string/exchange_keys"/>
 
     </LinearLayout>
 
