@@ -135,7 +135,7 @@
   <string name="label_enable_compression">Aktivera kompression</string>
   <string name="label_encrypt_filenames">Kryptera filnamn</string>
   <string name="label_hidden_recipients">Dölj mottagare</string>
-  <string name="label_verify_keyserver">Verifiera nyckelserver</string>
+  <string name="label_verify_keyserver_connection">Verifiera nyckelserver</string>
   <string name="label_enter_keyserver_url">Ange nyckelserver-URL</string>
   <string name="pref_keyserver">OpenPGP nyckelservrar</string>
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP nyckelservrar (HKP-protokollet)</string>
@@ -313,7 +313,7 @@
   <string name="progress_deleting">raderar nycklar…</string>
   <string name="progress_con_saving">konsolidera: sparar till cache…</string>
   <string name="progress_con_reimport">konsolidera: återimporterar…</string>
-  <string name="progress_verifying_keyserver_url">verifierar nyckelserver...</string>
+  <string name="progress_verifying_keyserver_connection">verifierar nyckelserver...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Söker via Namn, E-post...</string>
   <!--key bit length selections-->
@@ -565,7 +565,7 @@
   <string name="view_key_fragment_no_system_contact">&lt;ingen&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Lägg till nyckelserver</string>
-  <string name="add_keyserver_verified">Nyckelserver verifierad!</string>
+  <string name="add_keyserver_connection_verified">Nyckelserver verifierad!</string>
   <string name="add_keyserver_without_verification">Nyckelserver tillagd utan verifiering.</string>
   <string name="add_keyserver_invalid_url">Ogiltig URL!</string>
   <string name="add_keyserver_connection_failed">Misslyckades med att ansluta till nyckelserver. Kontrollera URL:en och din internetanslutning.</string>

@@ -135,7 +135,7 @@
   <string name="label_enable_compression">Zapnout kompresi</string>
   <string name="label_encrypt_filenames">Zašifrovat jména souborů</string>
   <string name="label_hidden_recipients">Skrýt příjemce</string>
-  <string name="label_verify_keyserver">Ověřit keyserver</string>
+  <string name="label_verify_keyserver_connection">Ověřit keyserver</string>
   <string name="label_enter_keyserver_url">Zadejte URL keyserveru</string>
   <string name="pref_keyserver">OpenPGP keyserver</string>
   <string name="pref_keyserver_summary">Vyhledat klíče na vybraném OpenPGP keyserveru (protokol HKP)</string>
@@ -496,7 +496,7 @@
   <string name="view_key_fragment_no_system_contact">&lt;žádný&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Přidat keyserver</string>
-  <string name="add_keyserver_verified">Keyserver ověřen!</string>
+  <string name="add_keyserver_connection_verified">Keyserver ověřen!</string>
   <string name="add_keyserver_without_verification">Keyserver přidán bez verifikace.</string>
   <string name="add_keyserver_invalid_url">Neplatná URL!</string>
   <string name="add_keyserver_connection_failed">Nepodařilo se připojit ke key severu. Prosím ověřte URL a vaše připojení k internetu.</string>

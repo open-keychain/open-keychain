@@ -155,7 +155,7 @@
   <string name="label_enable_compression">Activer la compression</string>
   <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
   <string name="label_hidden_recipients">Cacher les destinataires</string>
-  <string name="label_verify_keyserver">Vérifier le serveur de clefs</string>
+  <string name="label_verify_keyserver_connection">Vérifier le serveur de clefs</string>
   <string name="label_enter_keyserver_url">Saisir l\'URL du serveur de clefs</string>
   <string name="label_keyserver_dialog_delete">Supprimer le serveur de clefs</string>
   <string name="label_theme">Thème</string>
@@ -386,7 +386,7 @@
   <string name="progress_deleting">suppression des clefs...</string>
   <string name="progress_con_saving">consolider : enregistrement dans le cache...</string>
   <string name="progress_con_reimport">consolider : réimportation...</string>
-  <string name="progress_verifying_keyserver_url">vérification du serveur de clefs...</string>
+  <string name="progress_verifying_keyserver_connection">vérification du serveur de clefs...</string>
   <string name="progress_starting_orbot">Démarrage d\'Orbot...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Chercher par nom, adresse courriel...</string>
@@ -691,7 +691,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Ajouter un serveur de clefs</string>
   <string name="edit_keyserver_dialog_title">Modifier le serveur de clefs</string>
-  <string name="add_keyserver_verified">Le serveur de clefs a été vérifié !</string>
+  <string name="add_keyserver_connection_verified">Le serveur de clefs a été vérifié !</string>
   <string name="add_keyserver_without_verification">Le serveur de clefs a été ajouté sans vérification.</string>
   <string name="add_keyserver_invalid_url">URL invalide !</string>
   <string name="add_keyserver_connection_failed">Échec de connexion au serveur de clefs. Veuillez vérifier l\'URL et votre connexion Internet.</string>

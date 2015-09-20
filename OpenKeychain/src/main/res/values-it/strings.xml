@@ -149,7 +149,7 @@
   <string name="label_enable_compression">Abilitare compressione</string>
   <string name="label_encrypt_filenames">Codifica nome dei file</string>
   <string name="label_hidden_recipients">Nascondi destinatari</string>
-  <string name="label_verify_keyserver">Verificare server chiavi</string>
+  <string name="label_verify_keyserver_connection">Verificare server chiavi</string>
   <string name="label_enter_keyserver_url">Inserisci URL server chiavi</string>
   <string name="label_keyserver_dialog_delete">Cancella server chiavi</string>
   <string name="pref_keyserver">Server chiavi OpenPGP</string>
