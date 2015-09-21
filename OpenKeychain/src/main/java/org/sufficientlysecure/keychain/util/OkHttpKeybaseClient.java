@@ -1,7 +1,3 @@
-package org.sufficientlysecure.keychain.util;
-
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.OkUrlFactory;
 /*
  * Copyright (C) 2015 Dominik Schürmann <dominik@dominikschuermann.de>
  *
@@ -19,7 +15,13 @@ import com.squareup.okhttp.OkUrlFactory;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package org.sufficientlysecure.keychain.util;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.OkUrlFactory;
 import com.textuality.keybase.lib.KeybaseUrlConnectionClient;
+
+import org.sufficientlysecure.keychain.Constants;
 
 import java.io.IOException;
 import java.net.Proxy;
@@ -33,25 +35,14 @@ import java.util.concurrent.TimeUnit;
 public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
     private final OkUrlFactory factory;
-    private final OkUrlFactory proxyFactory;
 
     private static OkUrlFactory generateUrlFactory() {
         OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(5000, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(25000, TimeUnit.MILLISECONDS);
-        return new OkUrlFactory(client);
-    }
-
-    private static OkUrlFactory generateProxyUrlFactory() {
-        OkHttpClient client = new OkHttpClient();
-        client.setConnectTimeout(30000, TimeUnit.MILLISECONDS);
-        client.setReadTimeout(40000, TimeUnit.MILLISECONDS);
         return new OkUrlFactory(client);
     }
 
     public OkHttpKeybaseClient() {
         factory = generateUrlFactory();
-        proxyFactory = generateProxyUrlFactory();
     }
 
     @Override
@@ -61,14 +52,28 @@ public class OkHttpKeybaseClient implements KeybaseUrlConnectionClient {
 
     @Override
     public URLConnection openConnection(URL url, Proxy proxy) throws IOException {
-        URLConnection conn;
         if (proxy != null) {
-            proxyFactory.client().setProxy(proxy);
-            conn = proxyFactory.open(url);
+            factory.client().setProxy(proxy);
+            factory.client().setConnectTimeout(30000, TimeUnit.MILLISECONDS);
+            factory.client().setReadTimeout(40000, TimeUnit.MILLISECONDS);
         } else {
-            conn = factory.open(url);
+            factory.client().setConnectTimeout(5000, TimeUnit.MILLISECONDS);
+            factory.client().setReadTimeout(25000, TimeUnit.MILLISECONDS);
         }
-        return conn;
+
+        factory.client().setFollowSslRedirects(false);
+
+        // forced the usage of keybase.io pinned certificate
+        try {
+            if (!TlsHelper.usePinnedCertificateIfAvailable(factory.client(), url)) {
+                throw new IOException("no pinned certificate found for URL!");
+            }
+        } catch (TlsHelper.TlsHelperException e) {
+            Log.e(Constants.TAG, "TlsHelper failed", e);
+            throw new IOException("TlsHelper failed");
+        }
+
+        return factory.open(url);
     }
 
 }
