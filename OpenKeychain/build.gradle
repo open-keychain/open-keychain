@@ -116,7 +116,7 @@ dependencyVerification {
 //            'OpenKeychain.extern.spongycastle:prov:85c9ed6e24c5c7e5f7ff7c22d367bb553d020693350bd1c75555e6895311bb69',
 //            'OpenKeychain.extern.safeslinger-exchange:safeslinger-exchange:274b71f8a1c383fb506342fd0f614b4a0cdb25517b5b2a1dfef9a4a2575477ed',
             'com.android.support:support-annotations:beac5cae60bdb597df9af9c916f785c2f71f8c8ae4be9a32d4298dea85496a42',
-            'OpenKeychain.extern:minidns:25e351fa4145e2a9b0a76658c48619b307f71432db7492e9e8a6b34aa2e9bdcf',
+//            'OpenKeychain.extern:minidns:25e351fa4145e2a9b0a76658c48619b307f71432db7492e9e8a6b34aa2e9bdcf',
 //            'OpenKeychain.extern.KeybaseLib:Lib:79c78c1054b58200028211e21f2c89012dc4a1eafdb00cc99a5ce1f61ad16937',
             'com.squareup.okio:okio:114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266',
     ]
