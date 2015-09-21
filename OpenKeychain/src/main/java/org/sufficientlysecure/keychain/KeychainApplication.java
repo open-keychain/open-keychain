@@ -100,6 +100,12 @@ public class KeychainApplication extends Application {
 
         TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
+        // NOTE:
+        // keybase.io.CA.cer only holds the CA issuing the actual keybase.io certificate, but this
+        // is better than no pinning!
+        // We are not using https://github.com/keybase/node-client/blob/master/src/ca.iced
+        // because it is only valid for api.keybase.io (https://github.com/keybase/keybase-issues/issues/964)
+        TlsHelper.addPinnedCertificate("keybase.io", getAssets(), "keybase.io.CA.cer");
 
         TemporaryStorageProvider.cleanUp(this);
 

@@ -40,6 +40,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.textuality.keybase.lib.KeybaseException;
+import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.User;
 
@@ -51,6 +52,7 @@ import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -240,7 +242,9 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             final ArrayList<CharSequence> proofList = new ArrayList<CharSequence>();
             final Hashtable<Integer, ArrayList<Proof>> proofs = new Hashtable<Integer, ArrayList<Proof>>();
             try {
-                User keybaseUser = User.findByFingerprint(fingerprint, mParcelableProxy.getProxy());
+                KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
+                keybaseQuery.setProxy(mParcelableProxy.getProxy());
+                User keybaseUser = User.findByFingerprint(keybaseQuery, fingerprint);
                 for (Proof proof : keybaseUser.getProofs()) {
                     Integer proofType = proof.getType();
                     appendIfOK(proofs, proofType, proof);

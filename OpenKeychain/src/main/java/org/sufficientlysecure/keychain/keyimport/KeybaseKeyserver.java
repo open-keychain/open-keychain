@@ -19,12 +19,13 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import com.textuality.keybase.lib.KeybaseException;
 import com.textuality.keybase.lib.Match;
-import com.textuality.keybase.lib.Search;
+import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.User;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
 
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -49,7 +50,9 @@ public class KeybaseKeyserver extends Keyserver {
         mQuery = query;
 
         try {
-            Iterable<Match> matches = Search.search(query, proxy);
+            KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
+            keybaseQuery.setProxy(proxy);
+            Iterable<Match> matches = keybaseQuery.search(query);
             for (Match match : matches) {
                 results.add(makeEntry(match));
             }
@@ -101,7 +104,9 @@ public class KeybaseKeyserver extends Keyserver {
     @Override
     public String get(String id, Proxy proxy) throws QueryFailedException {
         try {
-            return User.keyForUsername(id, proxy);
+            KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
+            keybaseQuery.setProxy(proxy);
+            return User.keyForUsername(keybaseQuery, id);
         } catch (KeybaseException e) {
             throw new QueryFailedException(e.getMessage());
         }
