@@ -28,6 +28,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -79,7 +81,7 @@ import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.LongClick;
+import org.sufficientlysecure.keychain.ui.util.NFCNotSupportedException;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -182,12 +184,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
 
-        //Long Click Listeners implemented
 
-        LongClick.setup(mActionEncryptFile,getString(R.string.encrypt_files));
-        LongClick.setup(mActionEncryptText,getString(R.string.encrypt_text));
-        LongClick.setup(mActionNfc,getString(R.string.share_nfc));
-        LongClick.setup(mFab,getString(R.string.exchange_keys));
 
 
         mRotateSpin.setAnimationListener(new AnimationListener() {
@@ -286,7 +283,26 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         mActionNfc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mNfcHelper.invokeNfcBeam();
+                try
+                {
+                    boolean mNFCNotSupported = mNfcHelper.invokeNfcBeam();
+                    if(!mNFCNotSupported)
+                        throw new NFCNotSupportedException(getString(R.string.error_nfc_not_supported));
+                }
+                catch(NFCNotSupportedException nf)
+                {
+                    AlertDialog malertDialog = new AlertDialog.Builder(ViewKeyActivity.this).create();
+                    malertDialog.setTitle("Feature Not Supported");
+                    malertDialog.setMessage(nf.error_msg);
+                    malertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    malertDialog.show();
+                }
             }
         });
 
