@@ -20,38 +20,42 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
-import de.measite.minidns.Client;
-import de.measite.minidns.DNSMessage;
-import de.measite.minidns.Question;
-import de.measite.minidns.Record;
-import de.measite.minidns.record.Data;
-import de.measite.minidns.record.TXT;
+
 import org.json.JSONObject;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.util.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.measite.minidns.Client;
+import de.measite.minidns.DNSMessage;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.Data;
+import de.measite.minidns.record.TXT;
 
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
@@ -83,6 +87,9 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
         log.add(OperationResult.LogType.MSG_KEYBASE_VERIFICATION, 0, requiredFingerprint);
 
         try {
+            KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
+            keybaseQuery.setProxy(proxy);
+
             String keybaseProof = keybaseInput.mKeybaseProof;
             Proof proof = new Proof(new JSONObject(keybaseProof));
             mProgressable.setProgress(R.string.keybase_message_fetching_data, 0, 100);
@@ -95,7 +102,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
 
-            if (!prover.fetchProofData(proxy)) {
+            if (!prover.fetchProofData(keybaseQuery)) {
                 log.add(OperationResult.LogType.MSG_KEYBASE_ERROR_FETCH_PROOF, 1);
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);
             }
