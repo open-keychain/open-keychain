@@ -149,7 +149,7 @@
   <string name="label_enable_compression">啓用壓縮</string>
   <string name="label_encrypt_filenames">加密檔名</string>
   <string name="label_hidden_recipients">隱藏收件人</string>
-  <string name="label_verify_keyserver">驗證金鑰伺服器</string>
+  <string name="label_verify_keyserver_connection">驗證金鑰伺服器</string>
   <string name="label_enter_keyserver_url">輸入金鑰伺服器網址</string>
   <string name="label_keyserver_dialog_delete">刪除金鑰伺服器</string>
   <string name="label_theme">主題</string>
@@ -362,7 +362,7 @@
   <string name="progress_verifying_integrity">正在驗證完整性…</string>
   <string name="progress_deleting_securely">正在安全地刪除 \'%s\'...</string>
   <string name="progress_deleting">正在刪除金鑰…</string>
-  <string name="progress_verifying_keyserver_url">正在驗證金鑰伺服器...</string>
+  <string name="progress_verifying_keyserver_connection">正在驗證金鑰伺服器...</string>
   <string name="progress_starting_orbot">正在啟動Orbot...</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">使用姓名，電子郵件尋找...</string>
@@ -625,7 +625,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">新增金鑰伺服器</string>
   <string name="edit_keyserver_dialog_title">編輯金鑰伺服器</string>
-  <string name="add_keyserver_verified">已驗證金鑰伺服器！</string>
+  <string name="add_keyserver_connection_verified">已驗證金鑰伺服器！</string>
   <string name="add_keyserver_without_verification">已新增金鑰伺服器但並未進行驗證。</string>
   <string name="add_keyserver_invalid_url">URL無效！</string>
   <string name="add_keyserver_connection_failed">連線到金鑰伺服器失敗。請確認金鑰伺服器網址及網路連線。</string>

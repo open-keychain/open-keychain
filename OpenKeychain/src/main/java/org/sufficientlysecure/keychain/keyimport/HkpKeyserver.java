@@ -204,10 +204,14 @@ public class HkpKeyserver extends Keyserver {
         OkHttpClient client = new OkHttpClient();
 
         try {
-            TlsHelper.pinCertificateIfNecessary(client, url);
+            TlsHelper.usePinnedCertificateIfAvailable(client, url);
         } catch (TlsHelper.TlsHelperException e) {
             Log.w(Constants.TAG, e);
         }
+
+        // don't follow any redirects
+        client.setFollowRedirects(false);
+        client.setFollowSslRedirects(false);
 
         if (proxy != null) {
             client.setProxy(proxy);

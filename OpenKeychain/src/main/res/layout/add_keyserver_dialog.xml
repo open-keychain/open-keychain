@@ -9,21 +9,37 @@
     android:paddingRight="24dp"
     android:paddingTop="16dp">
 
-    <EditText
-        android:id="@+id/keyserver_url_edit_text"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/keyserver_url_edit_text_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:hint="@string/label_enter_keyserver_url"
-        android:imeOptions="actionDone" />
+        android:layout_marginBottom="8dp">
+
+        <EditText
+            android:id="@+id/keyserver_url_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:hint="@string/label_enter_keyserver_url"
+            android:imeOptions="actionDone"
+            android:inputType="textUri" />
+
+    </android.support.design.widget.TextInputLayout>
+
 
     <CheckBox
-        android:id="@+id/verify_keyserver_checkbox"
+        android:id="@+id/verify_connection_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/label_verify_keyserver"
-        android:checked="true"/>
+        android:checked="true"
+        android:text="@string/label_verify_keyserver_connection" />
+
+    <CheckBox
+        android:id="@+id/only_trusted_keyserver_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/label_only_trusted_keyserver" />
 
 </LinearLayout>
