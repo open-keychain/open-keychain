@@ -706,6 +706,8 @@ public class KeyListFragment extends LoaderFragment
             final KeyItemViewHolder holder = (KeyItemViewHolder) view.getTag();
 
             holder.mSlinger.setVisibility(View.VISIBLE);
+
+
             holder.mSlingerButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
