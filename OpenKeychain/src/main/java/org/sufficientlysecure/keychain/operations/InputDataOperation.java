@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.codec.DecodeMonitor;
@@ -124,14 +125,17 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             currentInputUri = input.getInputUri();
         }
 
-        // don't even attempt if we know the data isn't suitable for mime content
+        // don't even attempt if we know the data isn't suitable for mime content, or if we have a filename
         boolean skipMimeParsing = false;
         if (decryptResult != null && decryptResult.getDecryptionMetadata() != null) {
-            String contentType = decryptResult.getDecryptionMetadata().getMimeType();
-            if (contentType != null
-                    && !contentType.startsWith("multipart/")
-                    && !contentType.startsWith("text/")
-                    && !contentType.startsWith("application/")) {
+            OpenPgpMetadata metadata = decryptResult.getDecryptionMetadata();
+            String fileName = metadata.getFilename();
+            String contentType = metadata.getMimeType();
+            if (!TextUtils.isEmpty(fileName)
+                    || contentType != null
+                        && !contentType.startsWith("multipart/")
+                        && !contentType.startsWith("text/")
+                        && !contentType.startsWith("application/")) {
                 skipMimeParsing = true;
             }
         }
