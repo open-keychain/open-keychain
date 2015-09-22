@@ -25,7 +25,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
-public class LongClick {
+public class ContentDescriptionHint {
     private static final int ESTIMATED_TOAST_HEIGHT_DIPS = 48;
     public static void setup(View view) {
         view.setOnLongClickListener(new View.OnLongClickListener() {

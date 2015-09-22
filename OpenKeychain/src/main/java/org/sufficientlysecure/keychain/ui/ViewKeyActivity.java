@@ -79,7 +79,7 @@ import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-import org.sufficientlysecure.keychain.ui.util.LongClick;
+import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -182,12 +182,12 @@ public class ViewKeyActivity extends BaseNfcActivity implements
 
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
 
-        //Long Click Listeners implemented
+        //ContentDescriptionHint Listeners implemented
 
-        LongClick.setup(mActionEncryptFile);
-        LongClick.setup(mActionEncryptText);
-        LongClick.setup(mActionNfc);
-        LongClick.setup(mFab);
+        ContentDescriptionHint.setup(mActionEncryptFile);
+        ContentDescriptionHint.setup(mActionEncryptText);
+        ContentDescriptionHint.setup(mActionNfc);
+        ContentDescriptionHint.setup(mFab);
 
 
         mRotateSpin.setAnimationListener(new AnimationListener() {

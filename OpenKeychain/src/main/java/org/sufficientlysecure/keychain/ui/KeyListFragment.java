@@ -67,7 +67,7 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.LongClick;
+import org.sufficientlysecure.keychain.ui.util.ContentDescriptionHint;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
@@ -708,7 +708,7 @@ public class KeyListFragment extends LoaderFragment
 
             holder.mSlinger.setVisibility(View.VISIBLE);
 
-            LongClick.setup(holder.mSlingerButton);
+            ContentDescriptionHint.setup(holder.mSlingerButton);
             holder.mSlingerButton.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
