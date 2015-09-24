@@ -995,6 +995,7 @@
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user ID '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user ID '%s'"</string>
     <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The keyring contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_too_many">"Removing user ID '%s'. More than 100 User IDs are not imported!"</string>
     <string name="msg_kc_uid_warn_encoding">"User ID does not verify as UTF-8!"</string>
     <string name="msg_kc_uat_jpeg">"Processing user attribute of type JPEG"</string>
     <string name="msg_kc_uat_unknown">"Processing user attribute of unknown type"</string>

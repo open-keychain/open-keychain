@@ -474,6 +474,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_UID_BAD (LogLevel.WARN, R.string.msg_kc_uid_bad),
         MSG_KC_UID_CERT_DUP (LogLevel.DEBUG, R.string.msg_kc_uid_cert_dup),
         MSG_KC_UID_DUP (LogLevel.DEBUG, R.string.msg_kc_uid_dup),
+        MSG_KC_UID_TOO_MANY (LogLevel.DEBUG, R.string.msg_kc_uid_too_many),
         MSG_KC_UID_FOREIGN (LogLevel.DEBUG, R.string.msg_kc_uid_foreign),
         MSG_KC_UID_NO_CERT (LogLevel.DEBUG, R.string.msg_kc_uid_no_cert),
         MSG_KC_UID_REVOKE_DUP (LogLevel.DEBUG, R.string.msg_kc_uid_revoke_dup),

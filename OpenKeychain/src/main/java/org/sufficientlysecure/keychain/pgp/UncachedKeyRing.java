@@ -457,9 +457,13 @@ public class UncachedKeyRing implements Serializable {
 
                 // check for duplicate user ids
                 if (processedUserIds.contains(userId)) {
-                    log.add(LogType.MSG_KC_UID_DUP,
-                            indent, userId);
+                    log.add(LogType.MSG_KC_UID_DUP, indent, userId);
                     // strip out the first found user id with this name
+                    modified = PGPPublicKey.removeCertification(modified, rawUserId);
+                }
+                if (processedUserIds.size() > 100) {
+                    log.add(LogType.MSG_KC_UID_TOO_MANY, indent, userId);
+                    // strip out the user id
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
                 }
                 processedUserIds.add(userId);
