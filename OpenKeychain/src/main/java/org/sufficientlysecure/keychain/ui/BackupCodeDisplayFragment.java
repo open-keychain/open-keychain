@@ -45,7 +45,13 @@ public class BackupCodeDisplayFragment extends Fragment {
     private Button vOkButton;
 
     public static BackupCodeDisplayFragment newInstance() {
-        return new BackupCodeDisplayFragment();
+        BackupCodeDisplayFragment frag = new BackupCodeDisplayFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_BACKUP_CODE, generateRandomCode());
+        frag.setArguments(args);
+
+        return frag;
     }
 
     @Override
@@ -68,7 +74,7 @@ public class BackupCodeDisplayFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            mBackupCode = generateRandomCode();
+            mBackupCode = getArguments().getString(ARG_BACKUP_CODE);
         } else {
             mBackupCode = savedInstanceState.getString(ARG_BACKUP_CODE);
         }
