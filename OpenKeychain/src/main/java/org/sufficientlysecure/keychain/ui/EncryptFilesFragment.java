@@ -224,9 +224,8 @@ public class EncryptFilesFragment
         String targetName =
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-        Uri inputUri = model.inputUri;
-        FileHelper.saveDocument(this, targetName, inputUri,
-                R.string.title_encrypt_to_file, R.string.specify_file_to_encrypt_to, REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, targetName,
+                REQUEST_CODE_OUTPUT);
     }
 
     public void addFile(Intent data) {

@@ -265,8 +265,8 @@ public class DecryptListFragment
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, null, metadata.getMimeType(),
-                R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, filename, metadata.getMimeType(),
+                REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {

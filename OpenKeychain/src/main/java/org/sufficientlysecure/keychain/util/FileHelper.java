@@ -74,24 +74,23 @@ import java.text.DecimalFormat;
 public class FileHelper {
 
     public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
-        } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             openDocumentKitKat(fragment, mimeType, multiple, requestCode);
+        } else {
+            openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
         }
     }
 
-    public static void saveDocument(Fragment fragment, String targetName, Uri inputUri,
-            @StringRes int title, @StringRes int message, int requestCode) {
-        saveDocument(fragment, targetName, inputUri, "*/*", title, message, requestCode);
+    public static void saveDocument(Fragment fragment, String targetName, int requestCode) {
+        saveDocument(fragment, targetName, "*/*", requestCode);
     }
 
-    public static void saveDocument(Fragment fragment, String targetName, Uri inputUri, String mimeType,
-            @StringRes int title, @StringRes int message, int requestCode) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            throw new RuntimeException("saveDocument does not support Android < 4.4!");
-        } else {
+    public static void saveDocument(Fragment fragment, String targetName, String mimeType,
+                                    int requestCode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             saveDocumentKitKat(fragment, mimeType, targetName, requestCode);
+        } else {
+            throw new RuntimeException("saveDocument does not support Android < 4.4!");
         }
     }
 

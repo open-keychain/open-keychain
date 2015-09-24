@@ -27,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
@@ -35,7 +34,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -136,8 +134,8 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
 
         // TODO: not supported on Android < 4.4
         FileHelper.saveDocument(this,
-                targetName, Uri.fromFile(new File(Constants.Path.APP_DIR, targetName)),
-                "text/plain", R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to,
+                targetName,
+                "text/plain",
                 REQUEST_CODE_OUTPUT);
     }
 
