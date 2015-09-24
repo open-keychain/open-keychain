@@ -1450,8 +1450,8 @@
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
-    <string name="certify_fingerprint_text">"Compare the fingerprint, character by character, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text_phrases">"Compare the phrases with the ones displayed on your partners device."</string>
+    <string name="certify_fingerprint_text">"Compare the fingerprint, character by character, with the one displayed on your partner’s device."</string>
+    <string name="certify_fingerprint_text_phrases">"Compare these phrases with the ones displayed on your partner’s device."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>
