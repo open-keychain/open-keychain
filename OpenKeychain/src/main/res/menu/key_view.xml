@@ -41,7 +41,7 @@
         android:id="@+id/menu_key_view_certify_fingerprint_word"
         app:showAsAction="never"
         android:visible="false"
-        android:title="@string/menu_certify_fingerprint_word" />
+        android:title="@string/menu_certify_fingerprint_phrases" />
 
     <item
         android:id="@+id/menu_key_view_add_linked_identity"
