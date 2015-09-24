@@ -28,6 +28,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -53,7 +54,7 @@ public class BackupCodeEntryFragment extends Fragment {
 
     private ExportHelper mExportHelper;
     private EditText[] mCodeEditText;
-    private ViewAnimator mStatusAnimator;
+    private ViewAnimator mStatusAnimator, mTitleAnimator;
 
     public static BackupCodeEntryFragment newInstance(String backupCode) {
         BackupCodeEntryFragment frag = new BackupCodeEntryFragment();
@@ -96,21 +97,15 @@ public class BackupCodeEntryFragment extends Fragment {
         setupEditTextSuccessListener(mCodeEditText);
 
         mStatusAnimator = (ViewAnimator) view.findViewById(R.id.status_animator);
+        mTitleAnimator = (ViewAnimator) view.findViewById(R.id.title_animator);
 
-        View backupAll = view.findViewById(R.id.backup_all);
-        View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
+        View backupSave = view.findViewById(R.id.button_backup_save);
+        View backupShare = view.findViewById(R.id.button_backup_share);
 
-        backupAll.setOnClickListener(new View.OnClickListener() {
+        backupSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startBackup(true);
-            }
-        });
-
-        backupPublicKeys.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startBackup(false);
             }
         });
 
@@ -140,7 +135,9 @@ public class BackupCodeEntryFragment extends Fragment {
                     }
                     // we could do this in better granularity in onTextChanged, but it's not worth it
                     mCurrentCodeInput.replace(index, index +s.length(), s.toString());
-                    checkIfMatchingCode();
+                    // if (s.length() == 6) {
+                        checkIfMatchingCode();
+                    // }
                 }
             });
 
@@ -149,15 +146,30 @@ public class BackupCodeEntryFragment extends Fragment {
 
     private void checkIfMatchingCode() {
 
+        for (EditText editText : mCodeEditText) {
+            if (editText.getText().length() < 6) {
+                return;
+            }
+        }
+
         // if they don't match, do nothing
         if (mCurrentCodeInput.toString().equals(mBackupCode)) {
             codeInputSuccessful();
+            return;
         }
 
         if (mCurrentCodeInput.toString().startsWith("ABC")) {
             codeInputSuccessful();
+            return;
         }
 
+        // we know all fields are filled, so if it's not the *right* one it's a *wrong* one!
+        @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+        @ColorInt int red = getResources().getColor(R.color.android_red_dark);
+        for (EditText editText : mCodeEditText) {
+            animateFlashText(editText, black, red, false);
+        }
+        mStatusAnimator.setDisplayedChild(1);
 
     }
 
@@ -170,21 +182,33 @@ public class BackupCodeEntryFragment extends Fragment {
 
         hideKeyboard();
 
+        mTitleAnimator.setDisplayedChild(1);
+        mStatusAnimator.setDisplayedChild(2);
+
         @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
         @ColorInt int green = getResources().getColor(R.color.android_green_dark);
         for (EditText editText : mCodeEditText) {
-
-            ObjectAnimator anim = ObjectAnimator.ofArgb(editText, "textColor",
-                    black, green, black, green, black, green)
-                    .setDuration(1000);
-            anim.setInterpolator(new LinearInterpolator());
-            anim.start();
-
+            animateFlashText(editText, black, green, true);
             editText.setEnabled(false);
         }
 
-        mStatusAnimator.setDisplayedChild(2);
+    }
 
+    private void animateFlashText(EditText editText, int color1, int color2, boolean staySecondColor) {
+
+        ObjectAnimator anim;
+        if (staySecondColor) {
+            anim = ObjectAnimator.ofArgb(editText, "textColor",
+                    color1, color2, color1, color2, color1, color2);
+        } else {
+            anim = ObjectAnimator.ofArgb(editText, "textColor",
+                    color1, color2, color1, color2, color1);
+        }
+
+        anim.setDuration(1000);
+        anim.setStartDelay(200);
+        anim.setInterpolator(new LinearInterpolator());
+        anim.start();
     }
 
     private void setupEditTextFocusNext(final EditText[] backupCodes) {
