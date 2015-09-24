@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="50dp">
+
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/title_animator"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="Please enter the backup code:"
+            style="?android:textAppearanceMedium"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="Code accepted!"
+            style="?android:textAppearanceMedium"
+            />
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        >
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/backup_code_1"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:hint="ABCDEF"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions|textCapCharacters"
+            android:maxLength="6"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:text="-"
+            />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/backup_code_2"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:hint="GHIJKL"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions|textCapCharacters"
+            android:maxLength="6"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:text="-"
+            />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/backup_code_3"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:hint="MNOPQR"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions|textCapCharacters"
+            android:maxLength="6"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:text="-"
+            />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/backup_code_4"
+            android:textStyle="bold"
+            android:typeface="monospace"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:hint="STUVWX"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions|textCapCharacters"
+            android:maxLength="6"
+            />
+
+    </LinearLayout>
+
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/status_animator"
+        android:inAnimation="@anim/fade_in_delayed"
+        android:outAnimation="@anim/fade_out_delayed"
+        custom:initialView="2">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="The backup code you entered is wrong!\nDid you write it down correctly?"
+            style="?android:textAppearanceMedium"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:buttonBarStyle">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:padding="12dp"
+                    android:text="Share backup…"
+                    android:drawableLeft="@drawable/ic_share_grey_24dp"
+                    android:drawablePadding="8dp"
+                    android:id="@+id/button_backup_share"
+                    style="?android:buttonBarButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:padding="12dp"
+                    android:text="Save backup…"
+                    android:drawableLeft="@drawable/ic_save_grey_24dp"
+                    android:drawablePadding="8dp"
+                    android:id="@+id/button_backup_save"
+                    style="?android:buttonBarButtonStyle"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+
+</LinearLayout>

@@ -18,6 +18,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
@@ -28,7 +32,22 @@ public class BackupActivity extends BaseActivity {
 
     @Override
     protected void initLayout() {
-        setContentView(R.layout.drawer_backup_activity);
+        setContentView(R.layout.backup_activity);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            BackupCodeDisplayFragment frag = BackupCodeDisplayFragment.newInstance();
+
+            FragmentManager fragMan = getSupportFragmentManager();
+            fragMan.beginTransaction()
+                .setCustomAnimations(0, 0)
+                .replace(R.id.content_frame, frag)
+                .commit();
+        }
+
+    }
 }

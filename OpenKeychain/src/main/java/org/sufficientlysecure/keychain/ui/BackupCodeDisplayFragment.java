@@ -27,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,6 +44,10 @@ public class BackupCodeDisplayFragment extends Fragment {
     private TextView vBackupCode;
     private Button vOkButton;
 
+    public static BackupCodeDisplayFragment newInstance() {
+        return new BackupCodeDisplayFragment();
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -50,7 +55,7 @@ public class BackupCodeDisplayFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.drawer_backup_fragment, container, false);
+        View view = inflater.inflate(R.layout.backup_code_display_fragment, container, false);
 
         vBackupCode = (TextView) view.findViewById(R.id.backup_code);
         vOkButton = (Button) view.findViewById(R.id.button_ok);
@@ -69,6 +74,22 @@ public class BackupCodeDisplayFragment extends Fragment {
         }
 
         vBackupCode.setText(mBackupCode);
+
+        vOkButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveToCodeEntryFragment();
+            }
+        });
+
+    }
+
+    private void moveToCodeEntryFragment() {
+        Fragment frag = BackupCodeEntryFragment.newInstance(mBackupCode);
+        getFragmentManager().beginTransaction()
+                .addToBackStack("backup_code_display")
+                .replace(R.id.content_frame, frag)
+                .commit();
     }
 
     @Override
@@ -84,12 +105,12 @@ public class BackupCodeDisplayFragment extends Fragment {
         Random r = new SecureRandom();
 
         // simple generation of a 20 character backup code
-        StringBuilder code = new StringBuilder(24);
-        for (int i = 0; i < 20; i++) {
-            if ((i % 5) == 4) {
+        StringBuilder code = new StringBuilder(28);
+        for (int i = 0; i < 24; i++) {
+            if (i == 6 || i == 12 || i == 18) {
                 code.append('-');
             }
-            code.append('a' + r.nextInt(26));
+            code.append((char) ('A' + r.nextInt(26)));
         }
 
         return code.toString();
