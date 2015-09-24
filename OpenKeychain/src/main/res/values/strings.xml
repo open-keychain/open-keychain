@@ -115,7 +115,7 @@
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
-    <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
+    <string name="menu_certify_fingerprint_word">"Confirm via phrases"</string>
     <string name="menu_share_log">"Share Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
@@ -195,8 +195,8 @@
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
-    <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
-    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with words instead of hexadecimal fingerprints"</string>
+    <string name="label_experimental_settings_word_confirm_title">"Phrase Confirmation"</string>
+    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with phrases instead of hexadecimal fingerprints"</string>
     <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
     <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
     <string name="label_experimental_settings_keybase_title">"Keybase.io Proofs"</string>
@@ -1447,8 +1447,8 @@
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
-    <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text_words">"Compare the displayed fingerprint, word by word, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text">"Compare the fingerprint, character by character, with the one displayed on your partners device."</string>
+    <string name="certify_fingerprint_text_words">"Compare the phrases with the ones displayed on your partners device."</string>
     <string name="certify_fingerprint_text2">"Do the fingerprints match?"</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_cert_type">"Type"</string>

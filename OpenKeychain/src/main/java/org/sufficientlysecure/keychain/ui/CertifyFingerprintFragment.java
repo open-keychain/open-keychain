@@ -33,11 +33,13 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.experimental.SentenceConfirm;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.util.ExperimentalWordConfirm;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.IOException;
 
 
 public class CertifyFingerprintFragment extends LoaderFragment implements
@@ -180,9 +182,16 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     }
 
     private void displayWordConfirm(byte[] fingerprintBlob) {
-        String fingerprint = ExperimentalWordConfirm.getWords(getActivity(), fingerprintBlob);
+//        String fingerprint = ExperimentalWordConfirm.getWords(getActivity(), fingerprintBlob);
 
-        mFingerprint.setTextSize(24);
+        String fingerprint;
+        try {
+            fingerprint = new SentenceConfirm(getActivity()).fromBytes(fingerprintBlob, 16);
+        } catch (IOException ioe) {
+            fingerprint = "-";
+        }
+
+        mFingerprint.setTextSize(18);
         mFingerprint.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         mFingerprint.setText(fingerprint);
     }

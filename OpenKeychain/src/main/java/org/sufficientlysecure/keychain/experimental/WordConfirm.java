@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.util;
+package org.sufficientlysecure.keychain.experimental;
 
 import android.content.Context;
 
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.BufferedReader;
@@ -29,7 +30,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.BitSet;
 
-public class ExperimentalWordConfirm {
+public class WordConfirm {
 
     public static String getWords(Context context, byte[] fingerprintBlob) {
         ArrayList<String> words = new ArrayList<>();
@@ -37,7 +38,7 @@ public class ExperimentalWordConfirm {
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(
-                    context.getAssets().open("word_confirm_list.txt"),
+                    context.getResources().openRawResource(R.raw.fp_word_list),
                     "UTF-8"
             ));
 
