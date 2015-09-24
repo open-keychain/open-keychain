@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -451,9 +452,29 @@ public class EncryptFilesFragment
 
     }
 
-    // prepares mOutputUris, either directly and returns false, or indirectly
-    // which returns true and will call cryptoOperation after mOutputUris has
-    // been set at a later point.
+    /**
+     * Checks that the input uris are not linked to our own internal storage.
+     * This prevents the encryption of our own database (-> export of whole database)
+     */
+    private void securityCheckInternalStorage() {
+        for (FilesAdapter.ViewModel model : mFilesAdapter.mDataset) {
+            File fileInput = new File(model.inputUri.getPath());
+            try {
+                // the canonical path of the file must not start with /data/data/org.sufficientlysecure.keychain/
+                if (fileInput.getCanonicalPath().startsWith(getActivity().getApplicationInfo().dataDir)) {
+                    throw new RuntimeException("Encrypting OpenKeychain's private files is not allowed!");
+                }
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Getting canonical path failed!", e);
+            }
+        }
+    }
+
+    /**
+     * Prepares mOutputUris, either directly and returns false, or indirectly
+     * which returns true and will call cryptoOperation after mOutputUris has
+     * been set at a later point.
+     */
     private boolean prepareOutputStreams() {
 
         switch (mAfterEncryptAction) {
@@ -528,6 +549,8 @@ public class EncryptFilesFragment
             cacheActionsParcel(actionsParcel);
 
         }
+
+        securityCheckInternalStorage();
 
         return actionsParcel;
 
