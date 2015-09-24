@@ -91,6 +91,7 @@
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_share_decrypted_text">"Share"</string>
+    <string name="btn_open_with">"Open with…"</string>
     <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
     <string name="btn_decrypt_clipboard">"Read from clipboard"</string>
     <string name="btn_decrypt_files">"Select input file"</string>

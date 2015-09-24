@@ -257,7 +257,6 @@ public class DecryptListFragment
         }
 
         OpenPgpMetadata metadata = result.mMetadata.get(index);
-        Uri saveUri = Uri.fromFile(activity.getExternalFilesDir(metadata.getMimeType()));
         mCurrentSaveFileUri = result.getOutputUris().get(index);
 
         String filename = metadata.getFilename();
@@ -266,7 +265,7 @@ public class DecryptListFragment
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, saveUri, metadata.getMimeType(),
+        FileHelper.saveDocument(this, filename, null, metadata.getMimeType(),
                 R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
     }
 
@@ -447,6 +446,7 @@ public class DecryptListFragment
                         displayWithViewIntent(result, index, true, true);
                         break;
                     case R.id.decrypt_save:
+                        // only inside the menu xml for Android >= 4.4
                         saveFileDialog(result, index);
                         break;
                 }

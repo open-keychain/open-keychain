@@ -134,6 +134,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
 
         String targetName = "pgpkey.txt";
 
+        // TODO: not supported on Android < 4.4
         FileHelper.saveDocument(this,
                 targetName, Uri.fromFile(new File(Constants.Path.APP_DIR, targetName)),
                 "text/plain", R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to,

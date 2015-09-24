@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.util;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -30,20 +29,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -97,35 +89,10 @@ public class FileHelper {
     public static void saveDocument(Fragment fragment, String targetName, Uri inputUri, String mimeType,
             @StringRes int title, @StringRes int message, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            saveDocumentDialog(fragment, targetName, inputUri, title, message, requestCode);
+            throw new RuntimeException("saveDocument does not support Android < 4.4!");
         } else {
             saveDocumentKitKat(fragment, mimeType, targetName, requestCode);
         }
-    }
-
-    public static void saveDocumentDialog(final Fragment fragment, String targetName, Uri inputUri,
-            @StringRes int title, @StringRes int message, final int requestCode) {
-
-        saveDocumentDialog(fragment, targetName, inputUri, title, message, new FileDialogCallback() {
-            // is this a good idea? seems hacky...
-            @Override
-            public void onFileSelected(File file, boolean checked) {
-                Intent intent = new Intent();
-                intent.setData(Uri.fromFile(file));
-                fragment.onActivityResult(requestCode, Activity.RESULT_OK, intent);
-            }
-        });
-    }
-
-    public static void saveDocumentDialog(final Fragment fragment, String targetName, Uri inputUri,
-            @StringRes int title, @StringRes int message, FileDialogCallback callback) {
-
-        File file = inputUri == null ? null : new File(inputUri.getPath());
-        File parentDir = file != null && file.exists() ? file.getParentFile() : Constants.Path.APP_DIR;
-        File targetFile = new File(parentDir, targetName);
-        saveDocumentDialog(callback, fragment.getActivity().getSupportFragmentManager(),
-                fragment.getString(title), fragment.getString(message), targetFile, null);
-
     }
 
     /** Opens the preferred installed file manager on Android and shows a toast
@@ -170,36 +137,6 @@ public class FileHelper {
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
         intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
         fragment.startActivityForResult(intent, requestCode);
-    }
-
-    public static void saveDocumentDialog(
-            final FileDialogCallback callback, final FragmentManager fragmentManager,
-            final String title, final String message, final File defaultFile,
-            final String checkMsg) {
-        // Message is received after file is selected
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    callback.onFileSelected(
-                            new File(message.getData().getString(FileDialogFragment.MESSAGE_DATA_FILE)),
-                            message.getData().getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED));
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FileDialogFragment fileDialog = FileDialogFragment.newInstance(messenger, title, message,
-                        defaultFile, checkMsg);
-
-                fileDialog.show(fragmentManager, "fileDialog");
-            }
-        });
     }
 
     public static String getFilename(Context context, Uri uri) {

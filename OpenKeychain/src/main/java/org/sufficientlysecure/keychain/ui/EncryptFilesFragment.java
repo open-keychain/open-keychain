@@ -308,6 +308,17 @@ public class EncryptFilesFragment
         return true;
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        // Show save only on Android >= 4.4 (Document Provider)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            MenuItem save = menu.findItem(R.id.encrypt_save);
+            save.setVisible(false);
+        }
+    }
+
     public void toggleUseArmor(MenuItem item, final boolean useArmor) {
 
         mUseArmor = useArmor;

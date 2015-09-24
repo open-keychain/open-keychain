@@ -107,7 +107,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
-        View vKeySafeButton = view.findViewById(R.id.view_key_action_key_export);
+        View vKeySaveButton = view.findViewById(R.id.view_key_action_key_export);
         View vKeyNfcButton = view.findViewById(R.id.view_key_action_key_nfc);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
@@ -133,7 +133,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 share(false, false);
             }
         });
-        vKeySafeButton.setOnClickListener(new View.OnClickListener() {
+        // Show save only on Android >= 4.4 (Document Provider)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            vKeySaveButton.setVisibility(View.GONE);
+        }
+        vKeySaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 exportToFile();

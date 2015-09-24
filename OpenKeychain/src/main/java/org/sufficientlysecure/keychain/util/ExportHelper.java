@@ -69,13 +69,14 @@ public class ExportHelper
                     : R.string.specify_backup_dest_single);
         }
 
-        FileHelper.saveDocumentDialog(new FileHelper.FileDialogCallback() {
-            @Override
-            public void onFileSelected(File file, boolean checked) {
-                mExportFile = file;
-                exportKeys(masterKeyId == null ? null : new long[] { masterKeyId }, exportSecret);
-            }
-        }, mActivity.getSupportFragmentManager(), title, message, exportFile, null);
+        // TODO: for valodim
+//        FileHelper.saveDocumentDialog(new FileHelper.FileDialogCallback() {
+//            @Override
+//            public void onFileSelected(File file, boolean checked) {
+//                mExportFile = file;
+//                exportKeys(masterKeyId == null ? null : new long[] { masterKeyId }, exportSecret);
+//            }
+//        }, mActivity.getSupportFragmentManager(), title, message, exportFile, null);
     }
 
     // TODO: If ExportHelper requires pending data (see CryptoOPerationHelper), activities using
