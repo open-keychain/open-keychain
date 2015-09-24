@@ -54,7 +54,7 @@ import java.io.IOException;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 12;
+    private static final int DATABASE_VERSION = 13;
     static Boolean apgHack = false;
     private Context mContext;
 
@@ -296,6 +296,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // the api_accounts fix and the new update keys table
                     return;
                 }
+            case 13:
+                // do nothing here, just consolidate
 
         }
 
@@ -304,6 +306,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
         consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.getApplicationContext().startActivity(consolidateIntent);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // NOTE: downgrading the database is explicitly not allowed to prevent
+        // someone from exploiting old bugs to export the database
+        throw new RuntimeException("Downgrading the database is not allowed!");
     }
 
     /** This method tries to import data from a provided database.
