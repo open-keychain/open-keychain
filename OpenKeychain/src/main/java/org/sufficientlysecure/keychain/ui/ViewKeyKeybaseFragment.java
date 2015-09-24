@@ -226,8 +226,9 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         }
     }
 
-    // look for evidence from keybase in the background, make tabular version of result
-    //
+    /**
+     * look for evidence from keybase in the background, make tabular version of result
+     */
     private class DescribeKey extends AsyncTask<String, Void, ResultPage> {
         ParcelableProxy mParcelableProxy;
 
@@ -270,7 +271,12 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             } catch (KeybaseException ignored) {
             }
 
-            return new ResultPage(getString(R.string.key_trust_results_prefix), proofList);
+            String prefix = "";
+            if (isAdded()) {
+                prefix = getString(R.string.key_trust_results_prefix);
+            }
+
+            return new ResultPage(prefix, proofList);
         }
 
         private SpannableStringBuilder formatSpannableString(SpannableStringBuilder proofLinks, String proofType) {
@@ -295,7 +301,10 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             if (haveProofFor(proof.getType())) {
                 ssb.append("\u00a0[");
                 startAt = ssb.length();
-                String verify = getString(R.string.keybase_verify);
+                String verify = "";
+                if (isAdded()) {
+                    verify = getString(R.string.keybase_verify);
+                }
                 ssb.append(verify);
                 ClickableSpan clicker = new ClickableSpan() {
                     @Override
@@ -312,6 +321,11 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         @Override
         protected void onPostExecute(ResultPage result) {
             super.onPostExecute(result);
+            // stop if fragment is no longer added to an activity
+            if(!isAdded()) {
+                return;
+            }
+
             if (result.mProofs.isEmpty()) {
                 result.mHeader = getActivity().getString(R.string.key_trust_no_cloud_evidence);
             }
@@ -360,7 +374,12 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             default:
                 stringIndex = R.string.keybase_narrative_unknown;
         }
-        return getActivity().getString(stringIndex);
+
+        if (isAdded()) {
+            return getString(stringIndex);
+        } else {
+            return "";
+        }
     }
 
     private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) throws KeybaseException {
