@@ -25,27 +25,18 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -53,8 +44,6 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 
 
@@ -62,12 +51,6 @@ public class BackupCodeEntryFragment extends Fragment {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
 
-    // This ids for multiple key export.
-    private ArrayList<Long> mIdsForRepeatAskPassphrase;
-    // This index for remembering the number of master key.
-    private int mIndex;
-
-    static final int REQUEST_REPEAT_PASSPHRASE = 1;
     private ExportHelper mExportHelper;
     private EditText[] mCodeEditText;
     private ViewAnimator mStatusAnimator;
@@ -117,21 +100,19 @@ public class BackupCodeEntryFragment extends Fragment {
         View backupAll = view.findViewById(R.id.backup_all);
         View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
 
-        /*
         backupAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exportToFile(true);
+                startBackup(true);
             }
         });
 
         backupPublicKeys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                exportToFile(false);
+                startBackup(false);
             }
         });
-        */
 
         return view;
     }
@@ -231,102 +212,6 @@ public class BackupCodeEntryFragment extends Fragment {
                 }
             });
 
-        }
-    }
-
-    private void exportToFile(boolean includeSecretKeys) {
-        FragmentActivity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-
-        if (!includeSecretKeys) {
-            startBackup(false);
-            return;
-        }
-
-        new AsyncTask<ContentResolver,Void,ArrayList<Long>>() {
-            @Override
-            protected ArrayList<Long> doInBackground(ContentResolver... resolver) {
-                ArrayList<Long> askPassphraseIds = new ArrayList<>();
-                Cursor cursor = resolver[0].query(
-                        KeyRings.buildUnifiedKeyRingsUri(), new String[] {
-                                KeyRings.MASTER_KEY_ID,
-                                KeyRings.HAS_SECRET,
-                        }, KeyRings.HAS_SECRET + " != 0", null, null);
-                try {
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            SecretKeyType secretKeyType = SecretKeyType.fromNum(cursor.getInt(1));
-                            switch (secretKeyType) {
-                                // all of these make no sense to ask
-                                case PASSPHRASE_EMPTY:
-                                case GNU_DUMMY:
-                                case DIVERT_TO_CARD:
-                                case UNAVAILABLE:
-                                    continue;
-                                default: {
-                                    long keyId = cursor.getLong(0);
-                                    askPassphraseIds.add(keyId);
-                                }
-                            }
-                        }
-                    }
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-                return askPassphraseIds;
-            }
-
-            @Override
-            protected void onPostExecute(ArrayList<Long> askPassphraseIds) {
-                super.onPostExecute(askPassphraseIds);
-                FragmentActivity activity = getActivity();
-                if (activity == null) {
-                    return;
-                }
-
-                mIdsForRepeatAskPassphrase = askPassphraseIds;
-                mIndex = 0;
-
-                if (mIdsForRepeatAskPassphrase.size() != 0) {
-                    startPassphraseActivity();
-                    return;
-                }
-
-                startBackup(true);
-            }
-
-        }.execute(activity.getContentResolver());
-
-    }
-
-    private void startPassphraseActivity() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-
-        Intent intent = new Intent(activity, PassphraseDialogActivity.class);
-        long masterKeyId = mIdsForRepeatAskPassphrase.get(mIndex++);
-        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, masterKeyId);
-        startActivityForResult(intent, REQUEST_REPEAT_PASSPHRASE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_REPEAT_PASSPHRASE) {
-            if (resultCode != Activity.RESULT_OK) {
-                return;
-            }
-            if (mIndex < mIdsForRepeatAskPassphrase.size()) {
-                startPassphraseActivity();
-                return;
-            }
-
-            startBackup(true);
         }
     }
 
