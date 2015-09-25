@@ -25,12 +25,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
-import android.animation.ObjectAnimator;
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -45,7 +44,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -63,7 +61,6 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
     private ExportHelper mExportHelper;
     private EditText[] mCodeEditText;
-    private TextView[] mCodeDisplayText;
     private ViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private int mBackStackLevel;
 
@@ -127,9 +124,7 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
                 // we know all fields are filled, so if it's not the *right* one it's a *wrong* one!
                 @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
                 @ColorInt int red = getResources().getColor(R.color.android_red_dark);
-                for (EditText editText : mCodeEditText) {
-                    animateFlashText(editText, black, red, false);
-                }
+                animateFlashText(mCodeEditText, black, red, false);
 
                 break;
             }
@@ -144,8 +139,8 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
                 @ColorInt int green = getResources().getColor(R.color.android_green_dark);
                 for (EditText editText : mCodeEditText) {
                     editText.setEnabled(false);
-                    animateFlashText(editText, black, green, true);
                 }
+                animateFlashText(mCodeEditText, black, green, true);
 
                 popFromBackStackNoAction();
 
@@ -170,21 +165,21 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
         mCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
         mCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
 
-        mCodeDisplayText = new TextView[4];
-        mCodeDisplayText[0] = (TextView) view.findViewById(R.id.backup_code_display_1);
-        mCodeDisplayText[1] = (TextView) view.findViewById(R.id.backup_code_display_2);
-        mCodeDisplayText[2] = (TextView) view.findViewById(R.id.backup_code_display_3);
-        mCodeDisplayText[3] = (TextView) view.findViewById(R.id.backup_code_display_4);
+        {
+            TextView[] codeDisplayText = new TextView[4];
+            codeDisplayText[0] = (TextView) view.findViewById(R.id.backup_code_display_1);
+            codeDisplayText[1] = (TextView) view.findViewById(R.id.backup_code_display_2);
+            codeDisplayText[2] = (TextView) view.findViewById(R.id.backup_code_display_3);
+            codeDisplayText[3] = (TextView) view.findViewById(R.id.backup_code_display_4);
 
-        { // set backup code in code TextViews
+            // set backup code in code TextViews
             char[] backupCode = mBackupCode.toCharArray();
-            for (int i = 0; i < mCodeDisplayText.length; i++) {
-                mCodeDisplayText[i].setText(backupCode, i * 7, 6);
+            for (int i = 0; i < codeDisplayText.length; i++) {
+                codeDisplayText[i].setText(backupCode, i * 7, 6);
             }
-        }
 
-        { // set background to null in TextViews - this will retain padding from EditText style!
-            for (TextView textView : mCodeDisplayText) {
+            // set background to null in TextViews - this will retain padding from EditText style!
+            for (TextView textView : codeDisplayText) {
                 // noinspection deprecation, setBackground(Drawable) is API level >=16
                 textView.setBackgroundDrawable(null);
             }
@@ -287,21 +282,22 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
     }
 
-    private void animateFlashText(EditText editText, int color1, int color2, boolean staySecondColor) {
+    private void animateFlashText(final TextView[] textViews, int color1, int color2, boolean staySecondColor) {
 
-        ObjectAnimator anim;
-        if (staySecondColor) {
-            anim = ObjectAnimator.ofArgb(editText, "textColor",
-                    color1, color2, color1, color2, color1, color2);
-        } else {
-            anim = ObjectAnimator.ofArgb(editText, "textColor",
-                    color1, color2, color1, color2, color1);
-        }
-
-        anim.setDuration(1000);
-        anim.setStartDelay(200);
-        anim.setInterpolator(new LinearInterpolator());
+        ValueAnimator anim = ValueAnimator.ofObject(new ArgbEvaluator(), color1, color2);
+        anim.addUpdateListener(new AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                for (TextView textView : textViews) {
+                    textView.setTextColor((Integer) animator.getAnimatedValue());
+                }
+            }
+        });
+        anim.setRepeatMode(ValueAnimator.REVERSE);
+        anim.setRepeatCount(staySecondColor ? 4 : 5);
+        anim.setDuration(180);
         anim.start();
+
     }
 
     private void setupEditTextFocusNext(final EditText[] backupCodes) {
