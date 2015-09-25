@@ -114,7 +114,7 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
                     editText.setText("");
                 }
 
-                pushOntoBackStack();
+                pushBackStackEntry();
 
                 break;
 
@@ -135,14 +135,15 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
                 hideKeyboard();
 
-                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-                @ColorInt int green = getResources().getColor(R.color.android_green_dark);
                 for (EditText editText : mCodeEditText) {
                     editText.setEnabled(false);
                 }
+
+                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                @ColorInt int green = getResources().getColor(R.color.android_green_dark);
                 animateFlashText(mCodeEditText, black, green, true);
 
-                popFromBackStackNoAction();
+                popBackStackNoAction();
 
                 break;
             }
@@ -328,14 +329,14 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
         }
     }
 
-    private void pushOntoBackStack() {
+    private void pushBackStackEntry() {
         FragmentManager fragMan = getFragmentManager();
         mBackStackLevel = fragMan.getBackStackEntryCount();
         fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
         fragMan.addOnBackStackChangedListener(this);
     }
 
-    private void popFromBackStackNoAction() {
+    private void popBackStackNoAction() {
         FragmentManager fragMan = getFragmentManager();
         fragMan.removeOnBackStackChangedListener(this);
         fragMan.popBackStack(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -348,6 +349,13 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
             fragMan.removeOnBackStackChangedListener(this);
             switchState(BackupCodeState.STATE_DISPLAY);
         }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        // we don't really save our state, so at least clean this bit up!
+        popBackStackNoAction();
     }
 
     private void startBackup(boolean exportSecret) {
