@@ -251,16 +251,14 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
                     // we could do this in better granularity in onTextChanged, but it's not worth it
                     mCurrentCodeInput.replace(index, index +s.length(), s.toString());
-                    // if (s.length() == 6) {
-                        checkIfMatchingCode();
-                    // }
+                    checkIfCodeIsCorrect();
                 }
             });
 
         }
     }
 
-    private void checkIfMatchingCode() {
+    private void checkIfCodeIsCorrect() {
 
         for (EditText editText : mCodeEditText) {
             if (editText.getText().length() < 6) {
