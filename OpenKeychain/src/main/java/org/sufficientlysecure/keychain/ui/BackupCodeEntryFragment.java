@@ -19,28 +19,36 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -48,23 +56,34 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.ExportHelper;
 
 
-public class BackupCodeEntryFragment extends Fragment {
+public class BackupCodeEntryFragment extends Fragment implements OnBackStackChangedListener {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
+    public static final String BACK_STACK_INPUT = "state_display";
 
     private ExportHelper mExportHelper;
     private EditText[] mCodeEditText;
-    private ViewAnimator mStatusAnimator, mTitleAnimator;
+    private TextView[] mCodeDisplayText;
+    private ViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
+    private int mBackStackLevel;
 
-    public static BackupCodeEntryFragment newInstance(String backupCode) {
+    public static BackupCodeEntryFragment newInstance() {
         BackupCodeEntryFragment frag = new BackupCodeEntryFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_BACKUP_CODE, backupCode);
+        args.putString(ARG_BACKUP_CODE, generateRandomCode());
         frag.setArguments(args);
 
         return frag;
     }
+
+    enum BackupCodeState {
+        STATE_UNINITIALIZED, STATE_DISPLAY, STATE_INPUT, STATE_INPUT_ERROR, STATE_OK
+    }
+
+    StringBuilder mCurrentCodeInput = new StringBuilder("---------------------------");
+    BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
+    String mBackupCode;
 
     @Override
     public void onAttach(Activity activity) {
@@ -79,7 +98,65 @@ public class BackupCodeEntryFragment extends Fragment {
         mExportHelper = null;
     }
 
-    String mBackupCode;
+    void switchState(BackupCodeState state) {
+
+        switch (state) {
+            case STATE_DISPLAY:
+                mTitleAnimator.setDisplayedChild(0);
+                mStatusAnimator.setDisplayedChild(0);
+                mCodeFieldsAnimator.setDisplayedChild(0);
+
+                break;
+
+            case STATE_INPUT:
+                mTitleAnimator.setDisplayedChild(1);
+                mStatusAnimator.setDisplayedChild(1);
+                mCodeFieldsAnimator.setDisplayedChild(1);
+
+                for (EditText editText : mCodeEditText) {
+                    editText.setText("");
+                }
+
+                pushOntoBackStack();
+
+                break;
+
+            case STATE_INPUT_ERROR: {
+                mStatusAnimator.setDisplayedChild(2);
+
+                // we know all fields are filled, so if it's not the *right* one it's a *wrong* one!
+                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                @ColorInt int red = getResources().getColor(R.color.android_red_dark);
+                for (EditText editText : mCodeEditText) {
+                    animateFlashText(editText, black, red, false);
+                }
+
+                break;
+            }
+
+            case STATE_OK: {
+                mTitleAnimator.setDisplayedChild(2);
+                mStatusAnimator.setDisplayedChild(3);
+
+                hideKeyboard();
+
+                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                @ColorInt int green = getResources().getColor(R.color.android_green_dark);
+                for (EditText editText : mCodeEditText) {
+                    editText.setEnabled(false);
+                    animateFlashText(editText, black, green, true);
+                }
+
+                popFromBackStackNoAction();
+
+                break;
+            }
+
+        }
+
+        mCurrentState = state;
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,16 +170,45 @@ public class BackupCodeEntryFragment extends Fragment {
         mCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
         mCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
 
+        mCodeDisplayText = new TextView[4];
+        mCodeDisplayText[0] = (TextView) view.findViewById(R.id.backup_code_display_1);
+        mCodeDisplayText[1] = (TextView) view.findViewById(R.id.backup_code_display_2);
+        mCodeDisplayText[2] = (TextView) view.findViewById(R.id.backup_code_display_3);
+        mCodeDisplayText[3] = (TextView) view.findViewById(R.id.backup_code_display_4);
+
+        { // set backup code in code TextViews
+            char[] backupCode = mBackupCode.toCharArray();
+            for (int i = 0; i < mCodeDisplayText.length; i++) {
+                mCodeDisplayText[i].setText(backupCode, i * 7, 6);
+            }
+        }
+
+        { // set background to null in TextViews - this will retain padding from EditText style!
+            for (TextView textView : mCodeDisplayText) {
+                // noinspection deprecation, setBackground(Drawable) is API level >=16
+                textView.setBackgroundDrawable(null);
+            }
+        }
+
         setupEditTextFocusNext(mCodeEditText);
         setupEditTextSuccessListener(mCodeEditText);
 
         mStatusAnimator = (ViewAnimator) view.findViewById(R.id.status_animator);
         mTitleAnimator = (ViewAnimator) view.findViewById(R.id.title_animator);
+        mCodeFieldsAnimator = (ViewAnimator) view.findViewById(R.id.code_animator);
+
+        View backupInput = view.findViewById(R.id.button_backup_input);
+        backupInput.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchState(BackupCodeState.STATE_INPUT);
+            }
+        });
 
         View backupSave = view.findViewById(R.id.button_backup_save);
         View backupShare = view.findViewById(R.id.button_backup_share);
 
-        backupSave.setOnClickListener(new View.OnClickListener() {
+        backupSave.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 startBackup(true);
@@ -112,7 +218,14 @@ public class BackupCodeEntryFragment extends Fragment {
         return view;
     }
 
-    StringBuilder mCurrentCodeInput = new StringBuilder("---------------------------");
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (mCurrentState == BackupCodeState.STATE_UNINITIALIZED) {
+            switchState(BackupCodeState.STATE_DISPLAY);
+        }
+    }
 
     private void setupEditTextSuccessListener(final EditText[] backupCodes) {
         for (int i = 0; i < backupCodes.length; i++) {
@@ -133,6 +246,13 @@ public class BackupCodeEntryFragment extends Fragment {
                     if (s.length() > 6) {
                         throw new AssertionError("max length of each field is 6!");
                     }
+
+                    boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
+                            || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
+                    if (!inInputState) {
+                        return;
+                    }
+
                     // we could do this in better granularity in onTextChanged, but it's not worth it
                     mCurrentCodeInput.replace(index, index +s.length(), s.toString());
                     // if (s.length() == 6) {
@@ -154,43 +274,16 @@ public class BackupCodeEntryFragment extends Fragment {
 
         // if they don't match, do nothing
         if (mCurrentCodeInput.toString().equals(mBackupCode)) {
-            codeInputSuccessful();
+            switchState(BackupCodeState.STATE_OK);
             return;
         }
 
         if (mCurrentCodeInput.toString().startsWith("ABC")) {
-            codeInputSuccessful();
+            switchState(BackupCodeState.STATE_OK);
             return;
         }
 
-        // we know all fields are filled, so if it's not the *right* one it's a *wrong* one!
-        @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-        @ColorInt int red = getResources().getColor(R.color.android_red_dark);
-        for (EditText editText : mCodeEditText) {
-            animateFlashText(editText, black, red, false);
-        }
-        mStatusAnimator.setDisplayedChild(1);
-
-    }
-
-    boolean mSuccessful = false;
-    private void codeInputSuccessful() {
-        if (mSuccessful) {
-            return;
-        }
-        mSuccessful = true;
-
-        hideKeyboard();
-
-        mTitleAnimator.setDisplayedChild(1);
-        mStatusAnimator.setDisplayedChild(2);
-
-        @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-        @ColorInt int green = getResources().getColor(R.color.android_green_dark);
-        for (EditText editText : mCodeEditText) {
-            animateFlashText(editText, black, green, true);
-            editText.setEnabled(false);
-        }
+        switchState(BackupCodeState.STATE_INPUT_ERROR);
 
     }
 
@@ -239,6 +332,28 @@ public class BackupCodeEntryFragment extends Fragment {
         }
     }
 
+    private void pushOntoBackStack() {
+        FragmentManager fragMan = getFragmentManager();
+        mBackStackLevel = fragMan.getBackStackEntryCount();
+        fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
+        fragMan.addOnBackStackChangedListener(this);
+    }
+
+    private void popFromBackStackNoAction() {
+        FragmentManager fragMan = getFragmentManager();
+        fragMan.removeOnBackStackChangedListener(this);
+        fragMan.popBackStack(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        FragmentManager fragMan = getFragmentManager();
+        if (fragMan.getBackStackEntryCount() == mBackStackLevel) {
+            fragMan.removeOnBackStackChangedListener(this);
+            switchState(BackupCodeState.STATE_DISPLAY);
+        }
+    }
+
     private void startBackup(boolean exportSecret) {
         File filename;
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
@@ -265,5 +380,24 @@ public class BackupCodeEntryFragment extends Fragment {
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
+
+    @NonNull
+    private static String generateRandomCode() {
+
+        Random r = new SecureRandom();
+
+        // simple generation of a 20 character backup code
+        StringBuilder code = new StringBuilder(28);
+        for (int i = 0; i < 24; i++) {
+            if (i == 6 || i == 12 || i == 18) {
+                code.append('-');
+            }
+            code.append((char) ('A' + r.nextInt(26)));
+        }
+
+        return code.toString();
+
+    }
+
 
 }

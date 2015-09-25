@@ -73,4 +73,11 @@ public class ToolableViewAnimator extends ViewAnimator {
         }
         super.addView(child, index, params);
     }
+
+    @Override
+    public void setDisplayedChild(int whichChild) {
+        if (whichChild != getDisplayedChild()) {
+            super.setDisplayedChild(whichChild);
+        }
+    }
 }

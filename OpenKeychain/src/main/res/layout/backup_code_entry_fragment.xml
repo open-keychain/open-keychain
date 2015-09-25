@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:paddingTop="50dp">
 
-
     <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -15,7 +14,17 @@
         android:id="@+id/title_animator"
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
-        custom:initialView="1">
+        custom:initialView="0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="The backup will be secured with a backup code. Write it down before you proceed!"
+            style="?android:textAppearanceMedium"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,100 +48,210 @@
 
     </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        >
+        android:id="@+id/code_animator"
+        android:inAnimation="@anim/fade_in"
+        android:outAnimation="@anim/fade_out"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        custom:initialView="0">
 
-        <EditText
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/backup_code_1"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:hint="ABCDEF"
-            android:singleLine="true"
-            android:inputType="textNoSuggestions|textCapCharacters"
-            android:maxLength="6"
-            />
+            >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:text="-"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_1"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="ABCDEF"
+                />
 
-        <EditText
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_2"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="GHIJKL"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_3"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="MNOPQR"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_display_4"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:singleLine="true"
+                style="@android:style/Widget.EditText"
+                android:clickable="false"
+                android:focusable="false"
+                tools:text="STUVWX"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/backup_code_2"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:hint="GHIJKL"
-            android:singleLine="true"
-            android:inputType="textNoSuggestions|textCapCharacters"
-            android:maxLength="6"
-            />
+            >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:text="-"
-            />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_1"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="ABCDEF"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/backup_code_3"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:hint="MNOPQR"
-            android:singleLine="true"
-            android:inputType="textNoSuggestions|textCapCharacters"
-            android:maxLength="6"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:text="-"
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/backup_code_4"
-            android:textStyle="bold"
-            android:typeface="monospace"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:hint="STUVWX"
-            android:singleLine="true"
-            android:inputType="textNoSuggestions|textCapCharacters"
-            android:maxLength="6"
-            />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_2"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="ABCDEF"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_3"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="ABCDEF"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:text="-"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/backup_code_4"
+                android:textStyle="bold"
+                android:typeface="monospace"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:singleLine="true"
+                android:inputType="textNoSuggestions|textCapCharacters"
+                android:hint="ABCDEF"
+                android:textColorHint="@android:color/transparent"
+                android:maxLength="6"
+                />
+
+        </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
     <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_height="wrap_content"
@@ -140,8 +259,21 @@
         android:layout_gravity="center_horizontal"
         android:id="@+id/status_animator"
         android:inAnimation="@anim/fade_in_delayed"
-        android:outAnimation="@anim/fade_out_delayed"
-        custom:initialView="2">
+        android:outAnimation="@anim/fade_out"
+        custom:initialView="0">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:text="Ok, I wrote it down!"
+            android:drawableLeft="@drawable/ic_check_white_24dp"
+            android:drawablePadding="8dp"
+            android:padding="12dp"
+            android:id="@+id/button_backup_input"
+            style="?android:buttonBarButtonStyle"
+            />
 
         <Space
             android:layout_width="wrap_content"
@@ -170,7 +302,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:padding="12dp"
-                    android:text="Share backup…"
+                    android:text="Share backup"
                     android:drawableLeft="@drawable/ic_share_grey_24dp"
                     android:drawablePadding="8dp"
                     android:id="@+id/button_backup_share"
@@ -182,7 +314,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:padding="12dp"
-                    android:text="Save backup…"
+                    android:text="Save backup"
                     android:drawableLeft="@drawable/ic_save_grey_24dp"
                     android:drawablePadding="8dp"
                     android:id="@+id/button_backup_save"

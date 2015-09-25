@@ -20,7 +20,9 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.MenuItem;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -39,8 +41,10 @@ public class BackupActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         if (savedInstanceState == null) {
-            BackupCodeDisplayFragment frag = BackupCodeDisplayFragment.newInstance();
+            Fragment frag = BackupCodeEntryFragment.newInstance();
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()
@@ -50,4 +54,19 @@ public class BackupActivity extends BaseActivity {
         }
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                FragmentManager fragMan = getSupportFragmentManager();
+                // pop from back stack, or if nothing was on there finish activity
+                if ( ! fragMan.popBackStackImmediate()) {
+                    finish();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
