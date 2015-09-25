@@ -268,8 +268,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:text="Ok, I wrote it down!"
-            android:drawableLeft="@drawable/ic_check_black_24dp"
-            android:drawablePadding="8dp"
             android:padding="12dp"
             android:id="@+id/button_backup_input"
             style="?android:buttonBarButtonStyle"
