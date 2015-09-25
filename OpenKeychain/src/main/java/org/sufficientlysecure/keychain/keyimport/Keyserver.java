@@ -62,15 +62,15 @@ public abstract class Keyserver {
      * query too short _or_ too many responses
      */
     public static class QueryTooShortOrTooManyResponsesException extends QueryNeedsRepairException {
-        private static final long serialVersionUID = 2703768928624654514L;
+        private static final long serialVersionUID = 2703768928624654518L;
     }
 
     public static class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
-    public abstract List<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
-            QueryNeedsRepairException;
+    public abstract List<ImportKeysListEntry> search(String query, Proxy proxy)
+            throws QueryFailedException, QueryNeedsRepairException;
 
     public abstract String get(String keyIdHex, Proxy proxy) throws QueryFailedException;
 

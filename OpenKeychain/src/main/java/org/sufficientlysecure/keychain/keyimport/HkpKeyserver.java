@@ -23,6 +23,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -196,9 +197,9 @@ public class HkpKeyserver extends Keyserver {
     /**
      * returns a client with pinned certificate if necessary
      *
-     * @param url url to be queried by client
+     * @param url   url to be queried by client
      * @param proxy proxy to be used by client
-     * @return client with a pinned certificate if necesary
+     * @return client with a pinned certificate if necessary
      */
     public static OkHttpClient getClient(URL url, Proxy proxy) throws IOException {
         OkHttpClient client = new OkHttpClient();
@@ -232,7 +233,7 @@ public class HkpKeyserver extends Keyserver {
             OkHttpClient client = getClient(url, proxy);
             Response response = client.newCall(new Request.Builder().url(url).build()).execute();
 
-            String responseBody = response.body().string();// contains body both in case of success or failure
+            String responseBody = response.body().string(); // contains body both in case of success or failure
 
             if (response.isSuccessful()) {
                 return responseBody;
@@ -242,17 +243,12 @@ public class HkpKeyserver extends Keyserver {
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
             throw new QueryFailedException("Keyserver '" + mHost + "' is unavailable. Check your Internet connection!" +
-            proxy == null?"":" Using proxy " + proxy);
+                    (proxy == null ? "" : " Using proxy " + proxy));
         }
     }
 
     /**
      * Results are sorted by creation date of key!
-     *
-     * @param query
-     * @return
-     * @throws QueryFailedException
-     * @throws QueryNeedsRepairException
      */
     @Override
     public ArrayList<ImportKeysListEntry> search(String query, Proxy proxy) throws QueryFailedException,
@@ -303,30 +299,46 @@ public class HkpKeyserver extends Keyserver {
             entry.setQuery(query);
             entry.addOrigin(getUrlPrefix() + mHost + ":" + mPort);
 
-            int bitSize = Integer.parseInt(matcher.group(3));
-            entry.setBitStrength(bitSize);
-            int algorithmId = Integer.decode(matcher.group(2));
-            entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
-
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
             String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.ENGLISH);
-            if (fingerprintOrKeyId.length() > 16) {
+            if (fingerprintOrKeyId.length() == 40) {
                 entry.setFingerprintHex(fingerprintOrKeyId);
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
                         - 16, fingerprintOrKeyId.length()));
-            } else {
+            } else if (fingerprintOrKeyId.length() == 16) {
                 // set key id only
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId);
+            } else {
+                Log.e(Constants.TAG, "Wrong length for fingerprint/long key id.");
+                // skip this key
+                continue;
             }
 
-            final long creationDate = Long.parseLong(matcher.group(4));
-            final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-            tmpGreg.setTimeInMillis(creationDate * 1000);
-            entry.setDate(tmpGreg.getTime());
+            try {
+                int bitSize = Integer.parseInt(matcher.group(3));
+                entry.setBitStrength(bitSize);
+                int algorithmId = Integer.decode(matcher.group(2));
+                entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
 
-            entry.setRevoked(matcher.group(6).contains("r"));
-            entry.setExpired(matcher.group(6).contains("e"));
+                final long creationDate = Long.parseLong(matcher.group(4));
+                final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                tmpGreg.setTimeInMillis(creationDate * 1000);
+                entry.setDate(tmpGreg.getTime());
+            } catch (NumberFormatException e) {
+                Log.e(Constants.TAG, "Conversation for bit size, algorithm, or creation date failed.", e);
+                // skip this key
+                continue;
+            }
+
+            try {
+                entry.setRevoked(matcher.group(6).contains("r"));
+                entry.setExpired(matcher.group(6).contains("e"));
+            } catch (NullPointerException e) {
+                Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
+                // skip this key
+                continue;
+            }
 
             ArrayList<String> userIds = new ArrayList<>();
             final String uidLines = matcher.group(7);
@@ -344,6 +356,10 @@ public class HkpKeyserver extends Keyserver {
                         tmp = URLDecoder.decode(tmp, "UTF8");
                     } catch (UnsupportedEncodingException ignored) {
                         // will never happen, because "UTF8" is supported
+                    } catch (IllegalArgumentException e) {
+                        Log.e(Constants.TAG, "User ID encoding broken", e);
+                        // skip this user id
+                        continue;
                     }
                 }
                 userIds.add(tmp);
@@ -367,11 +383,14 @@ public class HkpKeyserver extends Keyserver {
             Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
             throw new QueryFailedException("not found");
         }
+        if (data == null) {
+            throw new QueryFailedException("data is null");
+        }
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);
         }
-        return null;
+        throw new QueryFailedException("data is null");
     }
 
     @Override
@@ -422,7 +441,7 @@ public class HkpKeyserver extends Keyserver {
      * Tries to find a server responsible for a given domain
      *
      * @return A responsible Keyserver or null if not found.
-     * TODO: PHILIP Add proxy functionality
+     * TODO: Add proxy functionality
      */
     public static HkpKeyserver resolve(String domain) {
         try {

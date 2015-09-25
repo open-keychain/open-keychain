@@ -77,7 +77,7 @@ public class CloudSearch {
                     // kill threads that haven't returned yet
                     thread.interrupt();
 		}
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
 
