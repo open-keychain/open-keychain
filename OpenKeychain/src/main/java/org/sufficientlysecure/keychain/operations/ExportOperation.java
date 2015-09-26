@@ -18,11 +18,10 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
@@ -55,7 +54,6 @@ import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
@@ -80,11 +78,6 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
     public ExportOperation(Context context, ProviderHelper providerHelper,
                            Progressable progressable, AtomicBoolean cancelled) {
         super(context, providerHelper, progressable, cancelled);
-    }
-
-    public ExportResult uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring,
-                                      Proxy proxy) {
-        return uploadKeyRingToServer(server, keyring.getUncachedKeyRing(), proxy);
     }
 
     public ExportResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
@@ -130,48 +123,6 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         }
     }
 
-    public ExportResult exportToFile(long[] masterKeyIds, boolean exportSecret, String outputFile) {
-
-        OperationLog log = new OperationLog();
-        if (masterKeyIds != null) {
-            log.add(LogType.MSG_EXPORT, 0, masterKeyIds.length);
-        } else {
-            log.add(LogType.MSG_EXPORT_ALL, 0);
-        }
-
-        // do we have a file name?
-        if (outputFile == null) {
-            log.add(LogType.MSG_EXPORT_ERROR_NO_FILE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-        log.add(LogType.MSG_EXPORT_FILE_NAME, 1, outputFile);
-
-        // check if storage is ready
-        if (!FileHelper.isStorageMounted(outputFile)) {
-            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-        try {
-            OutputStream outStream = new FileOutputStream(outputFile);
-            try {
-                ExportResult result = exportKeyRings(log, masterKeyIds, exportSecret, outStream);
-                if (result.cancelled()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    new File(outputFile).delete();
-                }
-                return result;
-            } finally {
-                outStream.close();
-            }
-        } catch (IOException e) {
-            log.add(LogType.MSG_EXPORT_ERROR_FOPEN, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
-    }
-
     public ExportResult exportToUri(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
 
         OperationLog log = new OperationLog();
@@ -188,8 +139,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         }
 
         try {
-            OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream
-                    (outputUri);
+            OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream(outputUri);
             return exportKeyRings(log, masterKeyIds, exportSecret, outStream);
         } catch (FileNotFoundException e) {
             log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
@@ -359,23 +309,17 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                         CanonicalizedPublicKeyRing keyring
                                 = mProviderHelper.getCanonicalizedPublicKeyRing(
                                 exportInput.mCanonicalizedPublicKeyringUri);
-                        return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
+                        return uploadKeyRingToServer(hkpKeyserver, keyring.getUncachedKeyRing(), proxy);
                     } else {
-                        return uploadKeyRingToServer(hkpKeyserver, exportInput.mUncachedKeyRing,
-                                proxy);
+                        return uploadKeyRingToServer(hkpKeyserver, exportInput.mUncachedKeyRing, proxy);
                     }
                 } catch (ProviderHelper.NotFoundException e) {
                     Log.e(Constants.TAG, "error uploading key", e);
                     return new ExportResult(ExportResult.RESULT_ERROR, new OperationLog());
                 }
             }
-            case EXPORT_FILE: {
-                return exportToFile(exportInput.mMasterKeyIds, exportInput.mExportSecret,
-                        exportInput.mOutputFile);
-            }
             case EXPORT_URI: {
-                return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret,
-                        exportInput.mOutputUri);
+                return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret, exportInput.mOutputUri);
             }
             default: { // can never happen, all enum types must be handled above
                 throw new AssertionError("must not happen, this is a bug!");

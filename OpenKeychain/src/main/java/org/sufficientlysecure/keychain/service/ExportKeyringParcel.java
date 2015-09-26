@@ -38,7 +38,6 @@ public class ExportKeyringParcel implements Parcelable {
 
     public enum ExportType {
         UPLOAD_KEYSERVER,
-        EXPORT_FILE,
         EXPORT_URI
     }
 
@@ -52,13 +51,6 @@ public class ExportKeyringParcel implements Parcelable {
         mExportType = ExportType.UPLOAD_KEYSERVER;
         mKeyserver = keyserver;
         mUncachedKeyRing = uncachedKeyRing;
-    }
-
-    public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, String outputFile) {
-        mExportType = ExportType.EXPORT_FILE;
-        mMasterKeyIds = masterKeyIds;
-        mExportSecret = exportSecret;
-        mOutputFile = outputFile;
     }
 
     @SuppressWarnings("unused") // TODO: is it used?
