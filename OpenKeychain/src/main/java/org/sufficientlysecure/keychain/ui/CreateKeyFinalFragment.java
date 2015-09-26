@@ -407,7 +407,7 @@ public class CreateKeyFinalFragment extends Fragment {
         }
 
         // set data uri as path to keyring
-        final Uri blobUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(saveKeyResult.mMasterKeyId);
+        final long masterKeyId = saveKeyResult.mMasterKeyId;
         // upload to favorite keyserver
         final String keyserver = Preferences.getPreferences(activity).getPreferredKeyserver();
 
@@ -416,7 +416,7 @@ public class CreateKeyFinalFragment extends Fragment {
 
             @Override
             public UploadKeyringParcel createOperationInput() {
-                return new UploadKeyringParcel(keyserver, blobUri);
+                return new UploadKeyringParcel(keyserver, masterKeyId);
             }
 
             @Override

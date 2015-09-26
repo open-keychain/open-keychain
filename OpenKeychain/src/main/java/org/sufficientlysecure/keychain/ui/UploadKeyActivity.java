@@ -31,8 +31,10 @@ import android.widget.Spinner;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -51,7 +53,7 @@ public class UploadKeyActivity extends BaseActivity
 
     // CryptoOperationHelper.Callback vars
     private String mKeyserver;
-    private Uri mUnifiedKeyringUri;
+    private long mMasterKeyId;
     private CryptoOperationHelper<UploadKeyringParcel, UploadResult> mUploadOpHelper;
 
     @Override
@@ -86,6 +88,16 @@ public class UploadKeyActivity extends BaseActivity
             finish();
             return;
         }
+
+        try {
+            mMasterKeyId = new ProviderHelper(this).getCachedPublicKeyRing(
+                    KeyRings.buildUnifiedKeyRingUri(mDataUri)).getMasterKeyId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "Intent data pointed to bad key!");
+            finish();
+            return;
+        }
+
     }
 
     @Override
@@ -102,9 +114,6 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     private void uploadKey() {
-        Uri blobUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-        mUnifiedKeyringUri = blobUri;
-
         String server = (String) mKeyServerSpinner.getSelectedItem();
         mKeyserver = server;
 
@@ -127,7 +136,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public UploadKeyringParcel createOperationInput() {
-        return new UploadKeyringParcel(mKeyserver, mUnifiedKeyringUri);
+        return new UploadKeyringParcel(mKeyserver, mMasterKeyId);
     }
 
     @Override

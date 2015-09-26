@@ -17,17 +17,21 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -35,16 +39,13 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
-
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation which implements a high level key edit operation.
@@ -133,6 +134,16 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
+        // Save the new keyring.
+        SaveKeyringResult saveResult = mProviderHelper
+                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
+        log.add(saveResult, 1);
+
+        // If the save operation didn't succeed, exit here
+        if (!saveResult.success()) {
+            return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
+        }
+
         if (saveParcel.isUpload()) {
             UncachedKeyRing publicKeyRing;
             try {
@@ -142,12 +153,11 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
-            ExportKeyringParcel exportKeyringParcel =
-                    new ExportKeyringParcel(saveParcel.getUploadKeyserver(),
-                            publicKeyRing);
+            UploadKeyringParcel exportKeyringParcel =
+                    new UploadKeyringParcel(saveParcel.getUploadKeyserver(), ring.getMasterKeyId());
 
-            ExportResult uploadResult =
-                    new ExportOperation(mContext, mProviderHelper, mProgressable)
+            UploadResult uploadResult =
+                    new UploadOperation(mContext, mProviderHelper, mProgressable)
                             .execute(exportKeyringParcel, cryptoInput);
 
             if (uploadResult.isPending()) {
@@ -161,16 +171,6 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 // upload succeeded or not atomic so we continue
                 log.add(uploadResult, 2);
             }
-        }
-
-        // Save the new keyring.
-        SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
-        log.add(saveResult, 1);
-
-        // If the save operation didn't succeed, exit here
-        if (!saveResult.success()) {
-            return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
         // There is a new passphrase - cache it

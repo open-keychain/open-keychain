@@ -20,23 +20,22 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 
 public class UploadKeyringParcel implements Parcelable {
     public String mKeyserver;
-    public Uri mCanonicalizedPublicKeyringUri;
+    public long mMasterKeyId;
 
-    public UploadKeyringParcel(String keyserver, Uri keyringUri) {
+    public UploadKeyringParcel(String keyserver, long masterKeyId) {
         mKeyserver = keyserver;
-        mCanonicalizedPublicKeyringUri = keyringUri;
+        mMasterKeyId = masterKeyId;
     }
 
     protected UploadKeyringParcel(Parcel in) {
         mKeyserver = in.readString();
-        mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
+        mMasterKeyId = in.readLong();
     }
 
     @Override
@@ -47,7 +46,7 @@ public class UploadKeyringParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mKeyserver);
-        dest.writeValue(mCanonicalizedPublicKeyringUri);
+        dest.writeValue(mMasterKeyId);
     }
 
     public static final Creator<UploadKeyringParcel> CREATOR = new Creator<UploadKeyringParcel>() {

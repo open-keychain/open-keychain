@@ -86,7 +86,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
         HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
         try {
             CanonicalizedPublicKeyRing keyring = mProviderHelper.getCanonicalizedPublicKeyRing(
-                    exportInput.mCanonicalizedPublicKeyringUri);
+                    exportInput.mMasterKeyId);
             return uploadKeyRingToServer(hkpKeyserver, keyring.getUncachedKeyRing(), proxy);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "error uploading key", e);
