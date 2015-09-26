@@ -19,40 +19,24 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 
-public class ExportKeyringParcel implements Parcelable {
+public class UploadKeyringParcel implements Parcelable {
     public String mKeyserver;
     public Uri mCanonicalizedPublicKeyringUri;
-    public UncachedKeyRing mUncachedKeyRing;
 
-    public boolean mExportSecret;
-    public long mMasterKeyIds[];
-    public Uri mOutputUri;
-
-    public ExportKeyringParcel(String keyserver, UncachedKeyRing uncachedKeyRing) {
+    public UploadKeyringParcel(String keyserver, Uri keyringUri) {
         mKeyserver = keyserver;
-        mUncachedKeyRing = uncachedKeyRing;
+        mCanonicalizedPublicKeyringUri = keyringUri;
     }
 
-    @SuppressWarnings("unused") // TODO: is it used?
-    public ExportKeyringParcel(long[] masterKeyIds, boolean exportSecret, Uri outputUri) {
-        mMasterKeyIds = masterKeyIds;
-        mExportSecret = exportSecret;
-        mOutputUri = outputUri;
-    }
-
-    protected ExportKeyringParcel(Parcel in) {
+    protected UploadKeyringParcel(Parcel in) {
         mKeyserver = in.readString();
         mCanonicalizedPublicKeyringUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mUncachedKeyRing = (UncachedKeyRing) in.readValue(UncachedKeyRing.class.getClassLoader());
-        mExportSecret = in.readByte() != 0x00;
-        mOutputUri = (Uri) in.readValue(Uri.class.getClassLoader());
-        mMasterKeyIds = in.createLongArray();
     }
 
     @Override
@@ -64,21 +48,17 @@ public class ExportKeyringParcel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mKeyserver);
         dest.writeValue(mCanonicalizedPublicKeyringUri);
-        dest.writeValue(mUncachedKeyRing);
-        dest.writeByte((byte) (mExportSecret ? 0x01 : 0x00));
-        dest.writeValue(mOutputUri);
-        dest.writeLongArray(mMasterKeyIds);
     }
 
-    public static final Parcelable.Creator<ExportKeyringParcel> CREATOR = new Parcelable.Creator<ExportKeyringParcel>() {
+    public static final Creator<UploadKeyringParcel> CREATOR = new Creator<UploadKeyringParcel>() {
         @Override
-        public ExportKeyringParcel createFromParcel(Parcel in) {
-            return new ExportKeyringParcel(in);
+        public UploadKeyringParcel createFromParcel(Parcel in) {
+            return new UploadKeyringParcel(in);
         }
 
         @Override
-        public ExportKeyringParcel[] newArray(int size) {
-            return new ExportKeyringParcel[size];
+        public UploadKeyringParcel[] newArray(int size) {
+            return new UploadKeyringParcel[size];
         }
     };
 }

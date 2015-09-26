@@ -17,15 +17,20 @@
 
 package org.sufficientlysecure.keychain.operations;
 
+
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserver;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
-import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
@@ -47,10 +52,6 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
-
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An operation which implements a high level user id certification operation.
@@ -205,11 +206,11 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
 
         // these variables are used inside the following loop, but they need to be created only once
         HkpKeyserver keyServer = null;
-        ExportOperation exportOperation = null;
+        UploadOperation uploadOperation = null;
         Proxy proxy = null;
         if (parcel.keyServerUri != null) {
             keyServer = new HkpKeyserver(parcel.keyServerUri);
-            exportOperation = new ExportOperation(mContext, mProviderHelper, mProgressable);
+            uploadOperation = new UploadOperation(mContext, mProviderHelper, mProgressable);
             if (cryptoInput.getParcelableProxy() == null) {
                 // explicit proxy not set
                 if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
@@ -239,8 +240,8 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             mProviderHelper.clearLog();
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
-            if (exportOperation != null) {
-                ExportResult uploadResult = exportOperation.uploadKeyRingToServer(
+            if (uploadOperation != null) {
+                UploadResult uploadResult = uploadOperation.uploadKeyRingToServer(
                         keyServer,
                         certifiedKey,
                         proxy);
