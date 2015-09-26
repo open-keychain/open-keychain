@@ -70,7 +70,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
     };
     private static final int INDEX_MASTER_KEY_ID = 0;
     private static final int INDEX_PUBKEY_DATA = 1;
-    private static final int INDEX_PRIVKEY_DATA = 2;
+    private static final int INDEX_SECKEY_DATA = 2;
     private static final int INDEX_HAS_ANY_SECRET = 3;
 
     public ExportOperation(Context context, ProviderHelper providerHelper, Progressable
@@ -93,16 +93,10 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             log.add(LogType.MSG_EXPORT_ALL, 0);
         }
 
-        // do we have a file name?
-        if (exportInput.mOutputUri == null) {
-            log.add(LogType.MSG_EXPORT_ERROR_NO_URI, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
         try {
             OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream(exportInput.mOutputUri);
             outStream = new BufferedOutputStream(outStream);
-            return exportKeyRings(log, exportInput.mMasterKeyIds, exportInput.mExportSecret, outStream);
+            return exportKeysToStream(log, exportInput.mMasterKeyIds, exportInput.mExportSecret, outStream);
         } catch (FileNotFoundException e) {
             log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
             return new ExportResult(ExportResult.RESULT_ERROR, log);
@@ -110,8 +104,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
     }
 
-    ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
-                                OutputStream outStream) {
+    ExportResult exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {
 
         int okSecret = 0, okPublic = 0, progress = 0;
 
@@ -133,50 +126,21 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             while (!cursor.isAfterLast()) {
 
                 long keyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                ArmoredOutputStream arOutStream = null;
+                log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
-                // Create an output stream
-                try {
-                    arOutStream = new ArmoredOutputStream(outStream);
-
-                    log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
-
-                    byte[] data = cursor.getBlob(INDEX_PUBKEY_DATA);
-                    CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
-                    ring.encode(arOutStream);
-
+                if (writePublicKeyToStream(log, outStream, cursor)) {
                     okPublic += 1;
-                } catch (PgpGeneralException e) {
-                    log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                } finally {
-                    if (arOutStream != null) {
-                        arOutStream.close();
-                    }
-                    arOutStream = null;
-                }
 
-                if (exportSecret && cursor.getInt(INDEX_HAS_ANY_SECRET) > 0) {
-                    try {
-                        arOutStream = new ArmoredOutputStream(outStream);
-
-                        // export secret key part
+                    boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
+                    if (exportSecret && hasSecret) {
                         log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
-                        byte[] data = cursor.getBlob(INDEX_PRIVKEY_DATA);
-                        CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
-                        ring.encode(arOutStream);
-
-                        okSecret += 1;
-                    } catch (PgpGeneralException e) {
-                        log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                    } finally {
-                        if (arOutStream != null) {
-                            arOutStream.close();
+                        if (writeSecretKeyToStream(log, outStream, cursor)) {
+                            okSecret += 1;
                         }
                     }
                 }
 
                 updateProgress(progress++, numKeys);
-
                 cursor.moveToNext();
             }
 
@@ -192,14 +156,54 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             } catch (Exception e) {
                 Log.e(Constants.TAG, "error closing stream", e);
             }
-            if (cursor != null) {
-                cursor.close();
-            }
+            cursor.close();
         }
 
         log.add(LogType.MSG_EXPORT_SUCCESS, 1);
         return new ExportResult(ExportResult.RESULT_OK, log, okPublic, okSecret);
 
+    }
+
+    private boolean writePublicKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
+            throws IOException {
+
+        ArmoredOutputStream arOutStream = null;
+
+        try {
+            arOutStream = new ArmoredOutputStream(outStream);
+            byte[] data = cursor.getBlob(INDEX_PUBKEY_DATA);
+            CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+            ring.encode(arOutStream);
+
+        } catch (PgpGeneralException e) {
+            log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+        } finally {
+            if (arOutStream != null) {
+                arOutStream.close();
+            }
+        }
+        return true;
+    }
+
+    private boolean writeSecretKeyToStream(OperationLog log, OutputStream outStream, Cursor cursor)
+            throws IOException {
+
+        ArmoredOutputStream arOutStream = null;
+
+        try {
+            arOutStream = new ArmoredOutputStream(outStream);
+            byte[] data = cursor.getBlob(INDEX_SECKEY_DATA);
+            CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+            ring.encode(arOutStream);
+
+        } catch (PgpGeneralException e) {
+            log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
+        } finally {
+            if (arOutStream != null) {
+                arOutStream.close();
+            }
+        }
+        return true;
     }
 
     private Cursor queryForKeys(long[] masterKeyIds) {

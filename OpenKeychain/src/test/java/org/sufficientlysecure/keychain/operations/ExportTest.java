@@ -22,9 +22,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -133,7 +131,7 @@ public class ExportTest {
         Assert.assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ExportResult result = op.exportKeyRings(new OperationLog(), null, false, out);
+        ExportResult result = op.exportKeysToStream(new OperationLog(), null, false, out);
 
         Assert.assertTrue("export must be a success", result.success());
 
@@ -170,7 +168,7 @@ public class ExportTest {
         }
 
         out = new ByteArrayOutputStream();
-        result = op.exportKeyRings(new OperationLog(), null, true, out);
+        result = op.exportKeysToStream(new OperationLog(), null, true, out);
 
         Assert.assertTrue("export must be a success", result.success());
 

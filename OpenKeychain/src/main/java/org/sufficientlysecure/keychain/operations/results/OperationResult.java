@@ -767,7 +767,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_EXPORT_PUBLIC (LogLevel.DEBUG, R.string.msg_export_public),
         MSG_EXPORT_SECRET (LogLevel.DEBUG, R.string.msg_export_secret),
         MSG_EXPORT_ALL (LogLevel.START, R.string.msg_export_all),
-        MSG_EXPORT_ERROR_NO_URI (LogLevel.ERROR, R.string.msg_export_error_no_uri),
         MSG_EXPORT_ERROR_URI_OPEN (LogLevel.ERROR, R.string.msg_export_error_uri_open),
         MSG_EXPORT_ERROR_DB (LogLevel.ERROR, R.string.msg_export_error_db),
         MSG_EXPORT_ERROR_IO (LogLevel.ERROR, R.string.msg_export_error_io),
