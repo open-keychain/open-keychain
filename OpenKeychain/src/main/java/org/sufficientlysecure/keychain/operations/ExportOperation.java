@@ -80,6 +80,47 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
+    @NonNull
+    public ExportResult execute(ExportKeyringParcel exportInput, CryptoInputParcel cryptoInput) {
+        switch (exportInput.mExportType) {
+            case UPLOAD_KEYSERVER: {
+                Proxy proxy;
+                if (cryptoInput.getParcelableProxy() == null) {
+                    // explicit proxy not set
+                    if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
+                        return new ExportResult(null,
+                                RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
+                    }
+                    proxy = Preferences.getPreferences(mContext).getProxyPrefs()
+                            .parcelableProxy.getProxy();
+                } else {
+                    proxy = cryptoInput.getParcelableProxy().getProxy();
+                }
+
+                HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
+                try {
+                    if (exportInput.mCanonicalizedPublicKeyringUri != null) {
+                        CanonicalizedPublicKeyRing keyring
+                                = mProviderHelper.getCanonicalizedPublicKeyRing(
+                                exportInput.mCanonicalizedPublicKeyringUri);
+                        return uploadKeyRingToServer(hkpKeyserver, keyring.getUncachedKeyRing(), proxy);
+                    } else {
+                        return uploadKeyRingToServer(hkpKeyserver, exportInput.mUncachedKeyRing, proxy);
+                    }
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.e(Constants.TAG, "error uploading key", e);
+                    return new ExportResult(ExportResult.RESULT_ERROR, new OperationLog());
+                }
+            }
+            case EXPORT_URI: {
+                return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret, exportInput.mOutputUri);
+            }
+            default: { // can never happen, all enum types must be handled above
+                throw new AssertionError("must not happen, this is a bug!");
+            }
+        }
+    }
+
     public ExportResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
         mProgressable.setProgress(R.string.progress_uploading, 0, 1);
 
@@ -286,44 +327,4 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
     }
 
-    @NonNull
-    public ExportResult execute(ExportKeyringParcel exportInput, CryptoInputParcel cryptoInput) {
-        switch (exportInput.mExportType) {
-            case UPLOAD_KEYSERVER: {
-                Proxy proxy;
-                if (cryptoInput.getParcelableProxy() == null) {
-                    // explicit proxy not set
-                    if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
-                        return new ExportResult(null,
-                                RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
-                    }
-                    proxy = Preferences.getPreferences(mContext).getProxyPrefs()
-                            .parcelableProxy.getProxy();
-                } else {
-                    proxy = cryptoInput.getParcelableProxy().getProxy();
-                }
-
-                HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
-                try {
-                    if (exportInput.mCanonicalizedPublicKeyringUri != null) {
-                        CanonicalizedPublicKeyRing keyring
-                                = mProviderHelper.getCanonicalizedPublicKeyRing(
-                                exportInput.mCanonicalizedPublicKeyringUri);
-                        return uploadKeyRingToServer(hkpKeyserver, keyring.getUncachedKeyRing(), proxy);
-                    } else {
-                        return uploadKeyRingToServer(hkpKeyserver, exportInput.mUncachedKeyRing, proxy);
-                    }
-                } catch (ProviderHelper.NotFoundException e) {
-                    Log.e(Constants.TAG, "error uploading key", e);
-                    return new ExportResult(ExportResult.RESULT_ERROR, new OperationLog());
-                }
-            }
-            case EXPORT_URI: {
-                return exportToUri(exportInput.mMasterKeyIds, exportInput.mExportSecret, exportInput.mOutputUri);
-            }
-            default: { // can never happen, all enum types must be handled above
-                throw new AssertionError("must not happen, this is a bug!");
-            }
-        }
-    }
 }
