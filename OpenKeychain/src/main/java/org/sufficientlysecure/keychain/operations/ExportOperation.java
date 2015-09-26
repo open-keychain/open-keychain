@@ -70,6 +70,17 @@ import org.sufficientlysecure.keychain.util.orbot.OrbotHelper;
  */
 public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
+    private static final String[] PROJECTION = new String[] {
+            KeyRings.MASTER_KEY_ID,
+            KeyRings.PUBKEY_DATA,
+            KeyRings.PRIVKEY_DATA,
+            KeyRings.HAS_ANY_SECRET
+    };
+    private static final int INDEX_MASTER_KEY_ID = 0;
+    private static final int INDEX_PUBKEY_DATA = 1;
+    private static final int INDEX_PRIVKEY_DATA = 2;
+    private static final int INDEX_HAS_ANY_SECRET = 3;
+
     public ExportOperation(Context context, ProviderHelper providerHelper, Progressable
             progressable) {
         super(context, providerHelper, progressable);
@@ -181,6 +192,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
         try {
             OutputStream outStream = mProviderHelper.getContentResolver().openOutputStream(outputUri);
+            outStream = new BufferedOutputStream(outStream);
             return exportKeyRings(log, masterKeyIds, exportSecret, outStream);
         } catch (FileNotFoundException e) {
             log.add(LogType.MSG_EXPORT_ERROR_URI_OPEN, 1);
@@ -192,62 +204,26 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
     ExportResult exportKeyRings(OperationLog log, long[] masterKeyIds, boolean exportSecret,
                                 OutputStream outStream) {
 
-        /* TODO isn't this checked above, with the isStorageMounted call?
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            log.add(LogType.MSG_EXPORT_ERROR_STORAGE, 1);
-            return new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-        */
-
-        if (!BufferedOutputStream.class.isInstance(outStream)) {
-            outStream = new BufferedOutputStream(outStream);
-        }
-
         int okSecret = 0, okPublic = 0, progress = 0;
 
-        Cursor cursor = null;
+        Cursor cursor = queryForKeys(masterKeyIds);
+
+        if (cursor == null || !cursor.moveToFirst()) {
+            log.add(LogType.MSG_EXPORT_ERROR_DB, 1);
+            return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
+        }
+
         try {
-
-            String selection = null, selectionArgs[] = null;
-
-            if (masterKeyIds != null) {
-                // convert long[] to String[]
-                selectionArgs = new String[masterKeyIds.length];
-                for (int i = 0; i < masterKeyIds.length; i++) {
-                    selectionArgs[i] = Long.toString(masterKeyIds[i]);
-                }
-
-                // generates ?,?,? as placeholders for selectionArgs
-                String placeholders = TextUtils.join(",",
-                        Collections.nCopies(masterKeyIds.length, "?"));
-
-                // put together selection string
-                selection = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-                        + " IN (" + placeholders + ")";
-            }
-
-            cursor = mProviderHelper.getContentResolver().query(
-                    KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                            KeyRings.MASTER_KEY_ID, KeyRings.PUBKEY_DATA,
-                            KeyRings.PRIVKEY_DATA, KeyRings.HAS_ANY_SECRET
-                    }, selection, selectionArgs, Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-            );
-
-            if (cursor == null || !cursor.moveToFirst()) {
-                log.add(LogType.MSG_EXPORT_ERROR_DB, 1);
-                return new ExportResult(ExportResult.RESULT_ERROR, log, okPublic, okSecret);
-            }
 
             int numKeys = cursor.getCount();
 
-            updateProgress(
-                    mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
-                            numKeys), 0, numKeys);
+            updateProgress(mContext.getResources().getQuantityString(R.plurals.progress_exporting_key, numKeys),
+                    0, numKeys);
 
             // For each public masterKey id
             while (!cursor.isAfterLast()) {
 
-                long keyId = cursor.getLong(0);
+                long keyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 ArmoredOutputStream arOutStream = null;
 
                 // Create an output stream
@@ -256,43 +232,34 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
 
                     log.add(LogType.MSG_EXPORT_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyId));
 
-                    byte[] data = cursor.getBlob(1);
-                    CanonicalizedKeyRing ring =
-                            UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+                    byte[] data = cursor.getBlob(INDEX_PUBKEY_DATA);
+                    CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
                     ring.encode(arOutStream);
 
                     okPublic += 1;
                 } catch (PgpGeneralException e) {
                     log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                    updateProgress(progress++, numKeys);
-                    continue;
                 } finally {
-                    // make sure this is closed
                     if (arOutStream != null) {
                         arOutStream.close();
                     }
                     arOutStream = null;
                 }
 
-                if (exportSecret && cursor.getInt(3) > 0) {
+                if (exportSecret && cursor.getInt(INDEX_HAS_ANY_SECRET) > 0) {
                     try {
                         arOutStream = new ArmoredOutputStream(outStream);
 
                         // export secret key part
-                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId
-                                (keyId));
-                        byte[] data = cursor.getBlob(2);
-                        CanonicalizedKeyRing ring =
-                                UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
+                        log.add(LogType.MSG_EXPORT_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyId));
+                        byte[] data = cursor.getBlob(INDEX_PRIVKEY_DATA);
+                        CanonicalizedKeyRing ring = UncachedKeyRing.decodeFromData(data).canonicalize(log, 2, true);
                         ring.encode(arOutStream);
 
                         okSecret += 1;
                     } catch (PgpGeneralException e) {
                         log.add(LogType.MSG_EXPORT_ERROR_KEY, 2);
-                        updateProgress(progress++, numKeys);
-                        continue;
                     } finally {
-                        // make sure this is closed
                         if (arOutStream != null) {
                             arOutStream.close();
                         }
@@ -321,9 +288,35 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             }
         }
 
-
         log.add(LogType.MSG_EXPORT_SUCCESS, 1);
         return new ExportResult(ExportResult.RESULT_OK, log, okPublic, okSecret);
+
+    }
+
+    private Cursor queryForKeys(long[] masterKeyIds) {
+
+        String selection = null, selectionArgs[] = null;
+
+        if (masterKeyIds != null) {
+            // convert long[] to String[]
+            selectionArgs = new String[masterKeyIds.length];
+            for (int i = 0; i < masterKeyIds.length; i++) {
+                selectionArgs[i] = Long.toString(masterKeyIds[i]);
+            }
+
+            // generates ?,?,? as placeholders for selectionArgs
+            String placeholders = TextUtils.join(",",
+                    Collections.nCopies(masterKeyIds.length, "?"));
+
+            // put together selection string
+            selection = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
+                    + " IN (" + placeholders + ")";
+        }
+
+        return mProviderHelper.getContentResolver().query(
+                KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, selection, selectionArgs,
+                Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
+        );
 
     }
 
