@@ -98,6 +98,9 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
     void switchState(BackupCodeState state) {
 
         switch (state) {
+            case STATE_UNINITIALIZED:
+                throw new AssertionError("can't switch to uninitialized state, this is a bug!");
+
             case STATE_DISPLAY:
                 mTitleAnimator.setDisplayedChild(0);
                 mStatusAnimator.setDisplayedChild(0);
@@ -281,7 +284,8 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
     }
 
-    private void animateFlashText(final TextView[] textViews, int color1, int color2, boolean staySecondColor) {
+    private static void animateFlashText(
+            final TextView[] textViews, int color1, int color2, boolean staySecondColor) {
 
         ValueAnimator anim = ValueAnimator.ofObject(new ArgbEvaluator(), color1, color2);
         anim.addUpdateListener(new AnimatorUpdateListener() {
@@ -299,7 +303,7 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
     }
 
-    private void setupEditTextFocusNext(final EditText[] backupCodes) {
+    private static void setupEditTextFocusNext(final EditText[] backupCodes) {
         for (int i = 0; i < backupCodes.length -1; i++) {
 
             final int next = i+1;

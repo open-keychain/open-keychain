@@ -24,39 +24,18 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
 public class ExportResult extends InputPendingResult {
 
-    final int mOkPublic, mOkSecret;
-
     public ExportResult(int result, OperationLog log) {
-        this(result, log, 0, 0);
-    }
-
-    public ExportResult(int result, OperationLog log, int okPublic, int okSecret) {
         super(result, log);
-        mOkPublic = okPublic;
-        mOkSecret = okSecret;
-    }
-
-
-    public ExportResult(OperationLog log, RequiredInputParcel requiredInputParcel,
-                        CryptoInputParcel cryptoInputParcel) {
-        super(log, requiredInputParcel, cryptoInputParcel);
-        // we won't use these values
-        mOkPublic = -1;
-        mOkSecret = -1;
     }
 
     /** Construct from a parcel - trivial because we have no extra data. */
     public ExportResult(Parcel source) {
         super(source);
-        mOkPublic = source.readInt();
-        mOkSecret = source.readInt();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeInt(mOkPublic);
-        dest.writeInt(mOkSecret);
     }
 
     public static Creator<ExportResult> CREATOR = new Creator<ExportResult>() {

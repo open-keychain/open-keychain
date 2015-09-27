@@ -96,7 +96,7 @@ public class ExportHelper
 
     @Override
     public ExportKeyringParcel createOperationInput() {
-        return new ExportKeyringParcel(mMasterKeyIds, mExportSecret, Uri.fromFile(mExportFile));
+        return new ExportKeyringParcel(null, mMasterKeyIds, mExportSecret, Uri.fromFile(mExportFile));
     }
 
     @Override
