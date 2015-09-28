@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
+import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.NfcSignOperationsBuilder;
@@ -205,23 +206,9 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
         }
 
         // these variables are used inside the following loop, but they need to be created only once
-        HkpKeyserver keyServer = null;
         UploadOperation uploadOperation = null;
-        Proxy proxy = null;
         if (parcel.keyServerUri != null) {
-            keyServer = new HkpKeyserver(parcel.keyServerUri);
             uploadOperation = new UploadOperation(mContext, mProviderHelper, mProgressable);
-            if (cryptoInput.getParcelableProxy() == null) {
-                // explicit proxy not set
-                if (!OrbotHelper.isOrbotInRequiredState(mContext)) {
-                    return new CertifyResult(null,
-                            RequiredInputParcel.createOrbotRequiredOperation(), cryptoInput);
-                }
-                proxy = Preferences.getPreferences(mContext).getProxyPrefs()
-                        .parcelableProxy.getProxy();
-            } else {
-                proxy = cryptoInput.getParcelableProxy().getProxy();
-            }
         }
 
         // Write all certified keys into the database
@@ -241,10 +228,9 @@ public class CertifyOperation extends BaseOperation<CertifyActionsParcel> {
             SaveKeyringResult result = mProviderHelper.savePublicKeyRing(certifiedKey);
 
             if (uploadOperation != null) {
-                UploadResult uploadResult = uploadOperation.uploadKeyRingToServer(
-                        keyServer,
-                        certifiedKey,
-                        proxy);
+                UploadKeyringParcel uploadInput =
+                        new UploadKeyringParcel(parcel.keyServerUri, certifiedKey.getMasterKeyId());
+                UploadResult uploadResult = uploadOperation.execute(uploadInput, cryptoInput);
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {

@@ -26,16 +26,26 @@ import android.os.Parcelable;
 
 public class UploadKeyringParcel implements Parcelable {
     public String mKeyserver;
-    public long mMasterKeyId;
+
+    public final Long mMasterKeyId;
+    public final byte[] mUncachedKeyringBytes;
 
     public UploadKeyringParcel(String keyserver, long masterKeyId) {
         mKeyserver = keyserver;
         mMasterKeyId = masterKeyId;
+        mUncachedKeyringBytes = null;
+    }
+
+    public UploadKeyringParcel(String keyserver, byte[] uncachedKeyringBytes) {
+        mKeyserver = keyserver;
+        mMasterKeyId = null;
+        mUncachedKeyringBytes = uncachedKeyringBytes;
     }
 
     protected UploadKeyringParcel(Parcel in) {
         mKeyserver = in.readString();
-        mMasterKeyId = in.readLong();
+        mMasterKeyId = in.readInt() != 0 ? in.readLong() : null;
+        mUncachedKeyringBytes = in.createByteArray();
     }
 
     @Override
@@ -46,7 +56,13 @@ public class UploadKeyringParcel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mKeyserver);
-        dest.writeValue(mMasterKeyId);
+        if (mMasterKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(mMasterKeyId);
+        } else {
+            dest.writeInt(0);
+        }
+        dest.writeByteArray(mUncachedKeyringBytes);
     }
 
     public static final Creator<UploadKeyringParcel> CREATOR = new Creator<UploadKeyringParcel>() {

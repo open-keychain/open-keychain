@@ -36,9 +36,11 @@ import org.sufficientlysecure.keychain.keyimport.Keyserver.AddKeyException;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -71,7 +73,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
     }
 
     @NonNull
-    public UploadResult execute(UploadKeyringParcel exportInput, CryptoInputParcel cryptoInput) {
+    public UploadResult execute(UploadKeyringParcel uploadInput, CryptoInputParcel cryptoInput) {
         Proxy proxy;
         if (cryptoInput.getParcelableProxy() == null) {
             // explicit proxy not set
@@ -83,18 +85,37 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             proxy = cryptoInput.getParcelableProxy().getProxy();
         }
 
-        HkpKeyserver hkpKeyserver = new HkpKeyserver(exportInput.mKeyserver);
+        HkpKeyserver hkpKeyserver = new HkpKeyserver(uploadInput.mKeyserver);
         try {
-            CanonicalizedPublicKeyRing keyring = mProviderHelper.getCanonicalizedPublicKeyRing(
-                    exportInput.mMasterKeyId);
-            return uploadKeyRingToServer(hkpKeyserver, keyring.getUncachedKeyRing(), proxy);
+            CanonicalizedPublicKeyRing keyring;
+            if (uploadInput.mMasterKeyId != null) {
+                keyring = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        uploadInput.mMasterKeyId);
+            } else if (uploadInput.mUncachedKeyringBytes != null) {
+                CanonicalizedKeyRing canonicalizedRing =
+                        UncachedKeyRing.decodeFromData(uploadInput.mUncachedKeyringBytes)
+                                .canonicalize(new OperationLog(), 0, true);
+                if ( ! CanonicalizedPublicKeyRing.class.isInstance(canonicalizedRing)) {
+                    throw new AssertionError("keyring bytes must contain public key ring!");
+                }
+                keyring = (CanonicalizedPublicKeyRing) canonicalizedRing;
+            } else {
+                throw new AssertionError("key id or bytes must be non-null!");
+            }
+            return uploadKeyRingToServer(hkpKeyserver, keyring, proxy);
         } catch (ProviderHelper.NotFoundException e) {
             Log.e(Constants.TAG, "error uploading key", e);
+            return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
+        } catch (PgpGeneralException e) {
+            e.printStackTrace();
             return new UploadResult(UploadResult.RESULT_ERROR, new OperationLog());
         }
     }
 
-    public UploadResult uploadKeyRingToServer(HkpKeyserver server, UncachedKeyRing keyring, Proxy proxy) {
+    UploadResult uploadKeyRingToServer(HkpKeyserver server, CanonicalizedPublicKeyRing keyring, Proxy proxy) {
 
         mProgressable.setProgress(R.string.progress_uploading, 0, 1);
 

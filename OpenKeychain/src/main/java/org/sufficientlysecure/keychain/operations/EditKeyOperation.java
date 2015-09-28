@@ -134,27 +134,18 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
         // It's a success, so this must be non-null now
         UncachedKeyRing ring = modifyResult.getRing();
 
-        // Save the new keyring.
-        SaveKeyringResult saveResult = mProviderHelper
-                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
-        log.add(saveResult, 1);
-
-        // If the save operation didn't succeed, exit here
-        if (!saveResult.success()) {
-            return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
-        }
-
         if (saveParcel.isUpload()) {
-            UncachedKeyRing publicKeyRing;
+            byte[] keyringBytes;
             try {
-                publicKeyRing = ring.extractPublicKeyRing();
+                UncachedKeyRing publicKeyRing = ring.extractPublicKeyRing();
+                keyringBytes = publicKeyRing.getEncoded();
             } catch (IOException e) {
                 log.add(LogType.MSG_ED_ERROR_EXTRACTING_PUBLIC_UPLOAD, 1);
                 return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
             }
 
             UploadKeyringParcel exportKeyringParcel =
-                    new UploadKeyringParcel(saveParcel.getUploadKeyserver(), ring.getMasterKeyId());
+                    new UploadKeyringParcel(saveParcel.getUploadKeyserver(), keyringBytes);
 
             UploadResult uploadResult =
                     new UploadOperation(mContext, mProviderHelper, mProgressable)
@@ -171,6 +162,16 @@ public class EditKeyOperation extends BaseOperation<SaveKeyringParcel> {
                 // upload succeeded or not atomic so we continue
                 log.add(uploadResult, 2);
             }
+        }
+
+        // Save the new keyring.
+        SaveKeyringResult saveResult = mProviderHelper
+                .saveSecretKeyRing(ring, new ProgressScaler(mProgressable, 60, 95, 100));
+        log.add(saveResult, 1);
+
+        // If the save operation didn't succeed, exit here
+        if (!saveResult.success()) {
+            return new EditKeyResult(EditKeyResult.RESULT_ERROR, log, null);
         }
 
         // There is a new passphrase - cache it
