@@ -18,7 +18,12 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 import android.animation.ArgbEvaluator;
@@ -30,6 +35,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
@@ -43,11 +49,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
@@ -369,8 +379,9 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
 
     private void startBackup() {
 
+        FragmentActivity activity = getActivity();
         if (mCachedExportUri == null) {
-            mCachedExportUri = TemporaryStorageProvider.createFile(getActivity());
+            mCachedExportUri = TemporaryStorageProvider.createFile(activity);
             cryptoOperation();
             return;
         }
@@ -381,17 +392,19 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
             intent.putExtra(Intent.EXTRA_STREAM, mCachedExportUri);
             startActivity(intent);
         } else {
-            // TODO
-            /*
-            String filename;
+            File file;
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            if (exportSecret) {
-                filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".asc");
+            if (mExportSecret) {
+                file = new File(Constants.Path.APP_DIR, "backup_" + date + ".gpg");
             } else {
-                filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".pub.asc");
+                file = new File(Constants.Path.APP_DIR, "backup_" + date + ".pub.gpg");
             }
-            */
 
+            try {
+                FileHelper.copyUriData(activity, mCachedExportUri, Uri.fromFile(file));
+            } catch (IOException e) {
+                Notify.create(activity, "Error saving file", Style.ERROR).show();
+            }
         }
 
     }
