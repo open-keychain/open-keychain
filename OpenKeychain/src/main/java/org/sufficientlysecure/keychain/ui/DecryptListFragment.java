@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.Context;
@@ -36,6 +37,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -249,6 +251,7 @@ public class DecryptListFragment
         }
     }
 
+    @TargetApi(VERSION_CODES.KITKAT)
     private void saveFileDialog(InputDataResult result, int index) {
 
         Activity activity = getActivity();
@@ -265,8 +268,8 @@ public class DecryptListFragment
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, metadata.getMimeType(),
-                REQUEST_CODE_OUTPUT);
+        // requires >=kitkat
+        FileHelper.saveDocument(this, filename, metadata.getMimeType(), REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {

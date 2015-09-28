@@ -17,6 +17,16 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+
 import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -31,20 +41,10 @@ import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
 
 
 /** This class offers a number of helper functions for saving documents.
@@ -73,24 +73,27 @@ import java.text.DecimalFormat;
  */
 public class FileHelper {
 
+    @TargetApi(VERSION_CODES.KITKAT)
+    public static void saveDocument(Fragment fragment, String targetName, int requestCode) {
+        saveDocument(fragment, targetName, "*/*", requestCode);
+    }
+
+    /** Opens the storage browser on Android 4.4 or later for saving a file. */
+    @TargetApi(VERSION_CODES.KITKAT)
+    public static void saveDocument(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType(mimeType);
+        intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
+        intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
     public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             openDocumentKitKat(fragment, mimeType, multiple, requestCode);
         } else {
             openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
-        }
-    }
-
-    public static void saveDocument(Fragment fragment, String targetName, int requestCode) {
-        saveDocument(fragment, targetName, "*/*", requestCode);
-    }
-
-    public static void saveDocument(Fragment fragment, String targetName, String mimeType,
-                                    int requestCode) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            saveDocumentKitKat(fragment, mimeType, targetName, requestCode);
-        } else {
-            throw new RuntimeException("saveDocument does not support Android < 4.4!");
         }
     }
 
@@ -124,17 +127,6 @@ public class FileHelper {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType(mimeType);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
-        fragment.startActivityForResult(intent, requestCode);
-    }
-
-    /** Opens the storage browser on Android 4.4 or later for saving a file. */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void saveDocumentKitKat(Fragment fragment, String mimeType, String suggestedName, int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType(mimeType);
-        intent.putExtra("android.content.extra.SHOW_ADVANCED", true); // Note: This is not documented, but works
-        intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
         fragment.startActivityForResult(intent, requestCode);
     }
 
