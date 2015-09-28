@@ -18,24 +18,18 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.File;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
-import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.text.Editable;
@@ -44,31 +38,45 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.ExportHelper;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class BackupCodeEntryFragment extends Fragment implements OnBackStackChangedListener {
+public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyringParcel,ExportResult>
+        implements OnBackStackChangedListener {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
     public static final String BACK_STACK_INPUT = "state_display";
+    public static final String ARG_EXPORT_SECRET = "export_secret";
+    public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
 
-    private ExportHelper mExportHelper;
+    // argument variables
+    private boolean mExportSecret;
+    private long[] mMasterKeyIds;
+    String mBackupCode;
+
     private EditText[] mCodeEditText;
     private ViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private int mBackStackLevel;
+    private Uri mCachedExportUri;
+    private boolean mShareNotSave;
 
-    public static BackupCodeEntryFragment newInstance() {
+    public static BackupCodeEntryFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
         BackupCodeEntryFragment frag = new BackupCodeEntryFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_BACKUP_CODE, generateRandomCode());
+        args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
+        args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         frag.setArguments(args);
 
         return frag;
@@ -80,20 +88,6 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
 
     StringBuilder mCurrentCodeInput = new StringBuilder("---------------------------");
     BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
-    String mBackupCode;
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // we won't get attached to a non-fragment activity, so the cast should be safe
-        mExportHelper = new ExportHelper((FragmentActivity) activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mExportHelper = null;
-    }
 
     void switchState(BackupCodeState state) {
 
@@ -161,7 +155,10 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.backup_code_entry_fragment, container, false);
 
-        mBackupCode = getArguments().getString(ARG_BACKUP_CODE);
+        Bundle args = getArguments();
+        mBackupCode = args.getString(ARG_BACKUP_CODE);
+        mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
+        mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
 
         mCodeEditText = new EditText[4];
         mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
@@ -210,7 +207,16 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
         backupSave.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startBackup(true);
+                mShareNotSave = false;
+                startBackup();
+            }
+        });
+
+        backupShare.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mShareNotSave = true;
+                startBackup();
             }
         });
 
@@ -299,6 +305,7 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
         anim.setRepeatMode(ValueAnimator.REVERSE);
         anim.setRepeatCount(staySecondColor ? 4 : 5);
         anim.setDuration(180);
+        anim.setInterpolator(new AccelerateInterpolator());
         anim.start();
 
     }
@@ -360,31 +367,55 @@ public class BackupCodeEntryFragment extends Fragment implements OnBackStackChan
         popBackStackNoAction();
     }
 
-    private void startBackup(boolean exportSecret) {
-        File filename;
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        if (exportSecret) {
-            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".asc");
-        } else {
-            filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".pub.asc");
+    private void startBackup() {
+
+        if (mCachedExportUri == null) {
+            mCachedExportUri = TemporaryStorageProvider.createFile(getActivity());
+            cryptoOperation();
+            return;
         }
-        mExportHelper.showExportKeysDialog(null, filename, exportSecret);
+
+        if (mShareNotSave) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("application/octet-stream");
+            intent.putExtra(Intent.EXTRA_STREAM, mCachedExportUri);
+            startActivity(intent);
+        } else {
+            // TODO
+            /*
+            String filename;
+            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            if (exportSecret) {
+                filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".asc");
+            } else {
+                filename = new File(Constants.Path.APP_DIR, "keys_" + date + ".pub.asc");
+            }
+            */
+
+        }
+
     }
 
-    public void hideKeyboard() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-        InputMethodManager inputManager = (InputMethodManager) activity
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
+    @Nullable
+    @Override
+    public ExportKeyringParcel createOperationInput() {
+        return new ExportKeyringParcel(new Passphrase("abc"), mMasterKeyIds, mExportSecret, mCachedExportUri);
+    }
 
-        // check if no view has focus
-        View v = activity.getCurrentFocus();
-        if (v == null)
-            return;
+    @Override
+    public void onCryptoOperationSuccess(ExportResult result) {
+        startBackup();
+    }
 
-        inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+    @Override
+    public void onCryptoOperationError(ExportResult result) {
+        result.createNotify(getActivity()).show();
+        mCachedExportUri = null;
+    }
+
+    @Override
+    public void onCryptoOperationCancelled() {
+        mCachedExportUri = null;
     }
 
     @NonNull

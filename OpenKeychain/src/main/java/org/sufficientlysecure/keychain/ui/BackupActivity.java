@@ -42,7 +42,8 @@ public class BackupActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            Fragment frag = BackupCodeEntryFragment.newInstance();
+            boolean exportSecret = getIntent().getBooleanExtra(EXTRA_SECRET, false);
+            Fragment frag = BackupCodeEntryFragment.newInstance(null, exportSecret);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()
