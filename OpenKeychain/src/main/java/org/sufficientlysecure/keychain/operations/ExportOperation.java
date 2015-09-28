@@ -19,6 +19,8 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,11 +113,17 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                     ? exportInput.mOutputUri
                     : TemporaryStorageProvider.createFile(mContext);
 
+            int exportedDataSize;
+
             { // export key data, and possibly return if we don't encrypt
 
-                OutputStream outStream = mContext.getContentResolver().openOutputStream(exportOutputUri);
+                DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(
+                        mContext.getContentResolver().openOutputStream(exportOutputUri)));
+
                 boolean exportSuccess = exportKeysToStream(
                         log, exportInput.mMasterKeyIds, exportInput.mExportSecret, outStream);
+
+                exportedDataSize = outStream.size();
 
                 if (!exportSuccess) {
                     // if there was an error, it will be in the log so we just have to return
@@ -138,7 +146,7 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
             InputStream inStream = mContext.getContentResolver().openInputStream(exportOutputUri);
 
             String filename;
-            if (exportInput.mMasterKeyIds.length == 1) {
+            if (exportInput.mMasterKeyIds != null && exportInput.mMasterKeyIds.length == 1) {
                 filename = "backup_" + KeyFormattingUtils.convertKeyIdToHex(exportInput.mMasterKeyIds[0]);
                 filename += exportInput.mExportSecret ? ".sec.asc" : ".pub.asc";
             } else {
@@ -146,9 +154,10 @@ public class ExportOperation extends BaseOperation<ExportKeyringParcel> {
                 filename += exportInput.mExportSecret ? ".asc" : ".pub.asc";
             }
 
-            InputData inputData = new InputData(inStream, 0L, filename);
+            InputData inputData = new InputData(inStream, exportedDataSize, filename);
 
             OutputStream outStream = mContext.getContentResolver().openOutputStream(exportInput.mOutputUri);
+            outStream = new BufferedOutputStream(outStream);
 
             PgpSignEncryptResult encryptResult = pseOp.execute(inputParcel, new CryptoInputParcel(), inputData, outStream);
             if (!encryptResult.success()) {

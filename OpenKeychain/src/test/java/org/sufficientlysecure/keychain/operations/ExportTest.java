@@ -354,6 +354,22 @@ public class ExportTest {
                     "backup_" + KeyFormattingUtils.convertKeyIdToHex(mStaticRing1.getMasterKeyId()) + ".pub.asc",
                     result.getDecryptionMetadata().getFilename());
 
+            TestingUtils.assertArrayEqualsPrefix("exported data must start with ascii armor header",
+                    "-----BEGIN PGP PUBLIC KEY BLOCK-----\n".getBytes(), result.getOutputBytes());
+            TestingUtils.assertArrayEqualsSuffix("exported data must end with ascii armor header",
+                    "-----END PGP PUBLIC KEY BLOCK-----\n".getBytes(), result.getOutputBytes());
+
+            {
+                IteratorWithIOThrow<UncachedKeyRing> unc
+                        = UncachedKeyRing.fromStream(new ByteArrayInputStream(result.getOutputBytes()));
+
+                assertTrue("export must have one key", unc.hasNext());
+                UncachedKeyRing ring = unc.next();
+                Assert.assertEquals("exported key has correct masterkeyid",
+                        mStaticRing1.getMasterKeyId(), ring.getMasterKeyId());
+                assertFalse("export must have exactly one key", unc.hasNext());
+            }
+
         }
 
     }
