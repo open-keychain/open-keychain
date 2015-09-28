@@ -151,7 +151,7 @@
   <string name="label_enable_compression">Compressie aanzetten</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
-  <string name="label_verify_keyserver">Sleutelserver verifiëren</string>
+  <string name="label_verify_keyserver_connection">Sleutelserver verifiëren</string>
   <string name="label_enter_keyserver_url">Voer sleutelserver-URL in</string>
   <string name="label_keyserver_dialog_delete">Sleutelserver verwijderen</string>
   <string name="label_theme">Thema</string>
@@ -366,7 +366,7 @@
   <string name="progress_deleting">bezig met verwijderen van sleutels…</string>
   <string name="progress_con_saving">consolidatie: bezig met opslaan naar cache…</string>
   <string name="progress_con_reimport">consolidatie: bezig met opnieuw importeren…</string>
-  <string name="progress_verifying_keyserver_url">bezig met verifiëren van sleutelserver…</string>
+  <string name="progress_verifying_keyserver_connection">bezig met verifiëren van sleutelserver…</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Zoeken via naam, e-mail, ...</string>
   <!--key bit length selections-->
@@ -648,7 +648,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Sleutelserver toevoegen</string>
   <string name="edit_keyserver_dialog_title">Sleutelserver bewerken</string>
-  <string name="add_keyserver_verified">Sleutelserver geverifieerd!</string>
+  <string name="add_keyserver_connection_verified">Sleutelserver geverifieerd!</string>
   <string name="add_keyserver_without_verification">Sleutelserver toegevoegd zonder verificatie.</string>
   <string name="add_keyserver_invalid_url">Ongeldige URL!</string>
   <string name="add_keyserver_connection_failed">Kon niet verbinden met sleutelserver. Controleer de URL en je internetverbinding.</string>

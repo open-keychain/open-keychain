@@ -257,7 +257,6 @@ public class DecryptListFragment
         }
 
         OpenPgpMetadata metadata = result.mMetadata.get(index);
-        Uri saveUri = Uri.fromFile(activity.getExternalFilesDir(metadata.getMimeType()));
         mCurrentSaveFileUri = result.getOutputUris().get(index);
 
         String filename = metadata.getFilename();
@@ -266,8 +265,8 @@ public class DecryptListFragment
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
-        FileHelper.saveDocument(this, filename, saveUri, metadata.getMimeType(),
-                R.string.title_decrypt_to_file, R.string.specify_file_to_decrypt_to, REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, filename, metadata.getMimeType(),
+                REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {
@@ -376,10 +375,12 @@ public class DecryptListFragment
                         // noinspection deprecation, this should be called from Context, but not available in minSdk
                         icon = getResources().getDrawable(R.drawable.ic_chat_black_24dp);
                     } else if (ClipDescription.compareMimeTypes(type, "image/*")) {
-                        int px = FormattingUtils.dpToPx(context, 48);
+                        int px = FormattingUtils.dpToPx(context, 32);
                         Bitmap bitmap = FileHelper.getThumbnail(context, outputUri, new Point(px, px));
                         icon = new BitmapDrawable(context.getResources(), bitmap);
-                    } else {
+                    }
+
+                    if (icon == null) {
                         final Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(outputUri, type);
 
@@ -445,6 +446,7 @@ public class DecryptListFragment
                         displayWithViewIntent(result, index, true, true);
                         break;
                     case R.id.decrypt_save:
+                        // only inside the menu xml for Android >= 4.4
                         saveFileDialog(result, index);
                         break;
                 }

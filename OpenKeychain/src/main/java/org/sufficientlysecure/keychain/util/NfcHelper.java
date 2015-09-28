@@ -141,6 +141,10 @@ public class NfcHelper {
                             }
 
                             protected void onPostExecute(Void unused) {
+                                if (mActivity.isFinishing()) {
+                                    return;
+                                }
+
                                 // Register callback to set NDEF message
                                 mNfcAdapter.setNdefPushMessageCallback(mNdefCallback,
                                         mActivity);

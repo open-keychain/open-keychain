@@ -52,13 +52,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
+import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -512,8 +512,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         PGPLiteralData literalData = (PGPLiteralData) dataChunk;
 
         String originalFilename = literalData.getFileName();
+        // reject filenames with slashes completely (path traversal issue)
         if (originalFilename.contains("/")) {
-            originalFilename = originalFilename.substring(originalFilename.lastIndexOf('/'));
+            originalFilename = "";
         }
         String mimeType = null;
         if (literalData.getFormat() == PGPLiteralData.TEXT

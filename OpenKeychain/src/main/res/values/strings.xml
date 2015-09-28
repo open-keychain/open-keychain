@@ -63,6 +63,7 @@
     <string name="section_share_key">"Key"</string>
     <string name="section_key_server">"Keyserver"</string>
     <string name="section_fingerprint">"Fingerprint"</string>
+    <string name="section_phrases">"Phrases"</string>
     <string name="section_encrypt">"Encrypt"</string>
     <string name="section_decrypt">"Decrypt / Verify"</string>
     <string name="section_current_expiry">"Current expiry"</string>
@@ -84,12 +85,14 @@
     <string name="btn_back">"Back"</string>
     <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
+    <string name="btn_match_phrases">"Phrases match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
     <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
     <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_share_decrypted_text">"Share"</string>
+    <string name="btn_open_with">"Open with…"</string>
     <string name="btn_copy_decrypted_text">"Copy decrypted text"</string>
     <string name="btn_decrypt_clipboard">"Read from clipboard"</string>
     <string name="btn_decrypt_files">"Select input file"</string>
@@ -100,6 +103,7 @@
     <string name="btn_add_keyserver">"Add"</string>
     <string name="btn_save_default">"Save as default"</string>
     <string name="btn_saved">"Saved!"</string>
+    <string name="btn_not_matching">"Doesn't match"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
@@ -116,7 +120,7 @@
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_advanced">"Extended information"</string>
     <string name="menu_certify_fingerprint">"Confirm via fingerprint"</string>
-    <string name="menu_certify_fingerprint_word">"Confirm via words"</string>
+    <string name="menu_certify_fingerprint_phrases">"Confirm via phrases"</string>
     <string name="menu_share_log">"Share Log"</string>
 
     <string name="menu_keyserver_add">"Add"</string>
@@ -173,8 +177,9 @@
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
 
-    <string name="label_verify_keyserver">"Verify keyserver"</string>
-    <string name="label_enter_keyserver_url">"Enter keyserver URL"</string>
+    <string name="label_verify_keyserver_connection">"Test connection"</string>
+    <string name="label_only_trusted_keyserver">"Only trusted keyserver"</string>
+    <string name="label_enter_keyserver_url">"URL"</string>
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
     <string name="label_theme">"Theme"</string>
 
@@ -195,8 +200,8 @@
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
-    <string name="label_experimental_settings_word_confirm_title">"Word Confirm"</string>
-    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with words instead of hexadecimal fingerprints"</string>
+    <string name="label_experimental_settings_word_confirm_title">"Phrase Confirmation"</string>
+    <string name="label_experimental_settings_word_confirm_summary">"Confirm keys with phrases instead of hexadecimal fingerprints"</string>
     <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
     <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
     <string name="label_experimental_settings_keybase_title">"Keybase.io Proofs"</string>
@@ -446,7 +451,7 @@
     <string name="progress_con_saving">"consolidate: saving to cache…"</string>
     <string name="progress_con_reimport">"consolidate: reimporting…"</string>
 
-    <string name="progress_verifying_keyserver_url">"verifying keyserver…"</string>
+    <string name="progress_verifying_keyserver_connection">"verifying connection…"</string>
 
     <string name="progress_starting_orbot">"Starting Orbot…"</string>
 
@@ -779,9 +784,10 @@
     <!-- Add/Edit keyserver -->
     <string name="add_keyserver_dialog_title">"Add keyserver"</string>
     <string name="edit_keyserver_dialog_title">"Edit keyserver"</string>
-    <string name="add_keyserver_verified">"Keyserver verified!"</string>
+    <string name="add_keyserver_connection_verified">"Connection verified!"</string>
     <string name="add_keyserver_without_verification">"Keyserver added without verification."</string>
     <string name="add_keyserver_invalid_url">"Invalid URL!"</string>
+    <string name="add_keyserver_keyserver_not_trusted">"Keyserver is not one of the trusted ones (no pinned certificate available)!"</string>
     <string name="add_keyserver_connection_failed">"Failed to connect to keyserver. Please check the URL and your Internet connection."</string>
     <string name="keyserver_preference_deleted">"%s deleted"</string>
     <string name="keyserver_preference_cannot_delete_last">"Cannot delete last keyserver. At least one is required!"</string>
@@ -990,6 +996,7 @@
     <string name="msg_kc_uid_no_cert">"No valid self-certificate found for user ID '%s', removing from ring"</string>
     <string name="msg_kc_uid_remove">"Removing invalid user ID '%s'"</string>
     <string name="msg_kc_uid_dup">"Removing duplicate user ID '%s'. The keyring contained two of them. This may result in missing certificates!"</string>
+    <string name="msg_kc_uid_too_many">"Removing user ID '%s'. More than 100 User IDs are not imported!"</string>
     <string name="msg_kc_uid_warn_encoding">"User ID does not verify as UTF-8!"</string>
     <string name="msg_kc_uat_jpeg">"Processing user attribute of type JPEG"</string>
     <string name="msg_kc_uat_unknown">"Processing user attribute of unknown type"</string>
@@ -1362,7 +1369,7 @@
     <string name="msg_data_detached_unsupported">"Unsupported type of detached signature!"</string>
     <string name="msg_data_error_io">"Error reading input data!"</string>
     <string name="msg_data_error_openpgp">"Error processing OpenPGP data!"</string>
-    <string name="msg_data_mime_error">"Error parsing MIME data!"</string>
+    <string name="msg_data_mime_bad">"Could not parse as MIME data"</string>
     <string name="msg_data_mime_filename">"Filename: '%s'"</string>
     <string name="msg_data_mime_length">"Content-Length: %s"</string>
     <string name="msg_data_mime">"Parsing MIME data structure"</string>
@@ -1441,9 +1448,8 @@
     <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
-    <string name="certify_fingerprint_text">"Compare the displayed fingerprint, character by character, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text_words">"Compare the displayed fingerprint, word by word, with the one displayed on your partners device."</string>
-    <string name="certify_fingerprint_text2">"Do the fingerprints match?"</string>
+    <string name="certify_fingerprint_text">"Compare the fingerprint, character by character, with the one displayed on your partner’s device."</string>
+    <string name="certify_fingerprint_text_phrases">"Compare these phrases with the ones displayed on your partner’s device."</string>
     <string name="label_revocation">"Revocation Reason"</string>
     <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>

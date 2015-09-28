@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_share_black_24dp"
         android:title="@string/btn_share_decrypted_text" />
 
+    <item
+        android:id="@+id/decrypt_save"
+        android:icon="@drawable/ic_save_black_24dp"
+        android:title="@string/btn_save" />
+
 </menu>

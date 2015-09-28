@@ -103,8 +103,7 @@ public class EmailKeyHelper {
                     }
                 }
             }
-        } catch (Keyserver.QueryFailedException ignored) {
-        } catch (Keyserver.QueryNeedsRepairException ignored) {
+        } catch (Keyserver.CloudSearchFailureException ignored) {
         }
         return new ArrayList<>(keys);
     }

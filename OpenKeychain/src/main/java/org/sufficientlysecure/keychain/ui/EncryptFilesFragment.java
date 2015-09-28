@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -224,9 +225,8 @@ public class EncryptFilesFragment
         String targetName =
                 (mEncryptFilenames ? "1" : FileHelper.getFilename(getActivity(), model.inputUri))
                         + (mUseArmor ? Constants.FILE_EXTENSION_ASC : Constants.FILE_EXTENSION_PGP_MAIN);
-        Uri inputUri = model.inputUri;
-        FileHelper.saveDocument(this, targetName, inputUri,
-                R.string.title_encrypt_to_file, R.string.specify_file_to_encrypt_to, REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, targetName,
+                REQUEST_CODE_OUTPUT);
     }
 
     public void addFile(Intent data) {
@@ -306,6 +306,17 @@ public class EncryptFilesFragment
             }
         }
         return true;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        // Show save only on Android >= 4.4 (Document Provider)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            MenuItem save = menu.findItem(R.id.encrypt_save);
+            save.setVisible(false);
+        }
     }
 
     public void toggleUseArmor(MenuItem item, final boolean useArmor) {
@@ -441,9 +452,29 @@ public class EncryptFilesFragment
 
     }
 
-    // prepares mOutputUris, either directly and returns false, or indirectly
-    // which returns true and will call cryptoOperation after mOutputUris has
-    // been set at a later point.
+    /**
+     * Checks that the input uris are not linked to our own internal storage.
+     * This prevents the encryption of our own database (-> export of whole database)
+     */
+    private void securityCheckInternalStorage() {
+        for (FilesAdapter.ViewModel model : mFilesAdapter.mDataset) {
+            File fileInput = new File(model.inputUri.getPath());
+            try {
+                // the canonical path of the file must not start with /data/data/org.sufficientlysecure.keychain/
+                if (fileInput.getCanonicalPath().startsWith(getActivity().getApplicationInfo().dataDir)) {
+                    throw new RuntimeException("Encrypting OpenKeychain's private files is not allowed!");
+                }
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Getting canonical path failed!", e);
+            }
+        }
+    }
+
+    /**
+     * Prepares mOutputUris, either directly and returns false, or indirectly
+     * which returns true and will call cryptoOperation after mOutputUris has
+     * been set at a later point.
+     */
     private boolean prepareOutputStreams() {
 
         switch (mAfterEncryptAction) {
@@ -518,6 +549,8 @@ public class EncryptFilesFragment
             cacheActionsParcel(actionsParcel);
 
         }
+
+        securityCheckInternalStorage();
 
         return actionsParcel;
 

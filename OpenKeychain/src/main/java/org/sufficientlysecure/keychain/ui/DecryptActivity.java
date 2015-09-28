@@ -168,7 +168,7 @@ public class DecryptActivity extends BaseActivity {
                             return;
                         }
 
-                        uris.add(intent.getData());
+                        uris.add(uri);
                     }
 
             }

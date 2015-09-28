@@ -91,14 +91,16 @@ public class KeychainApplication extends Application {
         }
 
         brandGlowEffect(getApplicationContext(),
-            FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
+                FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 
         setupAccountAsNeeded(this);
 
         // Update keyserver list as needed
         Preferences.getPreferences(this).upgradePreferences(this);
 
-        TlsHelper.addStaticCA("pool.sks-keyservers.net", getAssets(), "sks-keyservers.netCA.cer");
+        TlsHelper.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
+        TlsHelper.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
+        TlsHelper.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
         TemporaryStorageProvider.cleanUp(this);
 
