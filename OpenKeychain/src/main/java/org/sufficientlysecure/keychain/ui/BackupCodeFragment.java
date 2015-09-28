@@ -61,7 +61,7 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyringParcel,ExportResult>
+public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringParcel,ExportResult>
         implements OnBackStackChangedListener {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
@@ -80,8 +80,8 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
     private Uri mCachedExportUri;
     private boolean mShareNotSave;
 
-    public static BackupCodeEntryFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
-        BackupCodeEntryFragment frag = new BackupCodeEntryFragment();
+    public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret) {
+        BackupCodeFragment frag = new BackupCodeFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_BACKUP_CODE, generateRandomCode());

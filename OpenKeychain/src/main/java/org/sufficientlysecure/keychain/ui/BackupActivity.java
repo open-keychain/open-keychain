@@ -44,7 +44,7 @@ public class BackupActivity extends BaseActivity {
 
         if (savedInstanceState == null) {
             boolean exportSecret = getIntent().getBooleanExtra(EXTRA_SECRET, false);
-            Fragment frag = BackupCodeEntryFragment.newInstance(null, exportSecret);
+            Fragment frag = BackupCodeFragment.newInstance(null, exportSecret);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()
