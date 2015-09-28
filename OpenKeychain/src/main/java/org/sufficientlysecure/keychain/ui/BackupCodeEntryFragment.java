@@ -96,7 +96,6 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
         STATE_UNINITIALIZED, STATE_DISPLAY, STATE_INPUT, STATE_INPUT_ERROR, STATE_OK
     }
 
-    StringBuilder mCurrentCodeInput = new StringBuilder("---------------------------");
     BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
 
     void switchState(BackupCodeState state) {
@@ -245,7 +244,6 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
     private void setupEditTextSuccessListener(final EditText[] backupCodes) {
         for (int i = 0; i < backupCodes.length; i++) {
 
-            final int index = i*7;
             backupCodes[i].addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -264,12 +262,11 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
 
                     boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
                             || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                    if (!inInputState) {
+                    boolean partIsComplete = s.length() == 6;
+                    if (!inInputState || !partIsComplete) {
                         return;
                     }
 
-                    // we could do this in better granularity in onTextChanged, but it's not worth it
-                    mCurrentCodeInput.replace(index, index +s.length(), s.toString());
                     checkIfCodeIsCorrect();
                 }
             });
@@ -279,19 +276,23 @@ public class BackupCodeEntryFragment extends CryptoOperationFragment<ExportKeyri
 
     private void checkIfCodeIsCorrect() {
 
+        StringBuilder backupCodeInput = new StringBuilder(26);
         for (EditText editText : mCodeEditText) {
             if (editText.getText().length() < 6) {
                 return;
             }
+            backupCodeInput.append(editText.getText());
+            backupCodeInput.append('-');
         }
+        backupCodeInput.deleteCharAt(backupCodeInput.length() -1);
 
         // if they don't match, do nothing
-        if (mCurrentCodeInput.toString().equals(mBackupCode)) {
+        if (backupCodeInput.toString().equals(mBackupCode)) {
             switchState(BackupCodeState.STATE_OK);
             return;
         }
 
-        if (mCurrentCodeInput.toString().startsWith("ABC")) {
+        if (backupCodeInput.toString().startsWith("ABC")) {
             switchState(BackupCodeState.STATE_OK);
             return;
         }
