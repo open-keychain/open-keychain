@@ -354,6 +354,9 @@ public class ExportTest {
                     "backup_" + KeyFormattingUtils.convertKeyIdToHex(mStaticRing1.getMasterKeyId()) + ".pub.asc",
                     result.getDecryptionMetadata().getFilename());
 
+            assertEquals("mime type for pgp keys must be correctly detected",
+                    "application/pgp-keys", result.getDecryptionMetadata().getMimeType());
+
             TestingUtils.assertArrayEqualsPrefix("exported data must start with ascii armor header",
                     "-----BEGIN PGP PUBLIC KEY BLOCK-----\n".getBytes(), result.getOutputBytes());
             TestingUtils.assertArrayEqualsSuffix("exported data must end with ascii armor header",
