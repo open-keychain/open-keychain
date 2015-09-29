@@ -165,7 +165,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.backup_code_entry_fragment, container, false);
+        View view = inflater.inflate(R.layout.backup_code_fragment, container, false);
 
         Bundle args = getArguments();
         mBackupCode = args.getString(ARG_BACKUP_CODE);
