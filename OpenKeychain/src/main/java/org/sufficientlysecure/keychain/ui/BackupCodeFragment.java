@@ -423,7 +423,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         File file = new File(Constants.Path.APP_DIR, "backup_" + date + (mExportSecret ? ".gpg" : ".pub.gpg"));
 
         if (!overwrite && file.exists()) {
-            Notify.create(activity, "Backup already exists!", Style.WARN, new ActionListener() {
+            Notify.create(activity, R.string.snack_backup_exists, Style.WARN, new ActionListener() {
                 @Override
                 public void onAction() {
                     saveFile(true);
@@ -434,9 +434,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
         try {
             FileHelper.copyUriData(activity, mCachedExportUri, Uri.fromFile(file));
-            Notify.create(activity, "Saved to /sdcard/OpenKeychain", Style.OK).show();
+            Notify.create(activity, R.string.snack_backup_saved_dir, Style.OK).show();
         } catch (IOException e) {
-            Notify.create(activity, "Error saving backup", Style.ERROR).show();
+            Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
         }
     }
 
@@ -458,9 +458,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         try {
             Uri outputUri = data.getData();
             FileHelper.copyUriData(activity, mCachedExportUri, outputUri);
-            Notify.create(activity, "Backup saved", Style.OK).show();
+            Notify.create(activity, R.string.snack_backup_saved, Style.OK).show();
         } catch (IOException e) {
-            Notify.create(activity, "Error saving backup!", Style.ERROR).show();
+            Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
         }
     }
 

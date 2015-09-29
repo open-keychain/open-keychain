@@ -142,9 +142,9 @@ public class Notify {
         return create(activity, text, LENGTH_LONG, style);
     }
 
-    public static Showable create(Activity activity, String text, Style style,
+    public static Showable create(Activity activity, int textResId, Style style,
             ActionListener actionListener, int actionResId) {
-        return create(activity, text, LENGTH_LONG, style, actionListener, actionResId);
+        return create(activity, textResId, LENGTH_LONG, style, actionListener, actionResId);
     }
 
     public static Showable create(Activity activity, int textResId, int duration, Style style,

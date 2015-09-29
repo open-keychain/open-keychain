@@ -1651,5 +1651,9 @@
     <string name="backup_code_wrong">"The backup code you entered is wrong!\nDid you write it down correctly?"</string>
     <string name="btn_backup_share">"Share backup"</string>
     <string name="btn_backup_save">"Save backup"</string>
+    <string name="snack_backup_error_saving">"Error saving backup!"</string>
+    <string name="snack_backup_saved">"Backup saved"</string>
+    <string name="snack_backup_exists">"Backup already exists!"</string>
+    <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
 
 </resources>
