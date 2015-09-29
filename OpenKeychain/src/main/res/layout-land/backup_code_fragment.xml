@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="50dp">
+    android:paddingTop="20dp">
 
     <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
         android:outAnimation="@anim/fade_out"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        custom:initialView="0">
+        custom:initialView="1">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -179,7 +179,7 @@
                 android:textSize="18dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
-                android:hint="ABCDEF"
+                android:hint="______"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
                 tools:ignore="HardcodedText,SpUsage"
@@ -206,7 +206,7 @@
                 android:textSize="18dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
-                android:hint="ABCDEF"
+                android:hint="______"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
                 tools:ignore="HardcodedText,SpUsage"
@@ -233,7 +233,7 @@
                 android:textSize="18dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
-                android:hint="ABCDEF"
+                android:hint="______"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
                 tools:ignore="HardcodedText,SpUsage"
@@ -259,7 +259,7 @@
                 android:textSize="18dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
-                android:hint="ABCDEF"
+                android:hint="______"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
                 tools:ignore="HardcodedText,SpUsage"

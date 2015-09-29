@@ -31,6 +31,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
@@ -80,4 +81,22 @@ public class ToolableViewAnimator extends ViewAnimator {
             super.setDisplayedChild(whichChild);
         }
     }
+
+    public void setDisplayedChild(int whichChild, boolean animate) {
+        if (animate) {
+            setDisplayedChild(whichChild);
+            return;
+        }
+
+        Animation savedInAnim = getInAnimation();
+        Animation savedOutAnim = getOutAnimation();
+        setInAnimation(null);
+        setOutAnimation(null);
+
+        setDisplayedChild(whichChild);
+
+        setInAnimation(savedInAnim);
+        setOutAnimation(savedOutAnim);
+    }
+
 }

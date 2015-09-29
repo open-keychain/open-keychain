@@ -48,7 +48,6 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -59,6 +58,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -70,7 +70,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     public static final String BACK_STACK_INPUT = "state_display";
     public static final String ARG_EXPORT_SECRET = "export_secret";
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
-    public static final int REQUEST_SAVE = 0;
+
+    public static final String ARG_CURRENT_STATE = "current_state";
+
+    public static final int REQUEST_SAVE = 1;
+    public static final String ARG_BACK_STACK = "back_stack";
 
     // argument variables
     private boolean mExportSecret;
@@ -78,9 +82,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     String mBackupCode;
 
     private EditText[] mCodeEditText;
-    private ViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
+    private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
 
-    private int mBackStackLevel;
+    private Integer mBackStackLevel;
 
     private Uri mCachedExportUri;
     private boolean mShareNotSave;
@@ -103,23 +107,23 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
     BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
 
-    void switchState(BackupCodeState state) {
+    void switchState(BackupCodeState state, boolean animate) {
 
         switch (state) {
             case STATE_UNINITIALIZED:
                 throw new AssertionError("can't switch to uninitialized state, this is a bug!");
 
             case STATE_DISPLAY:
-                mTitleAnimator.setDisplayedChild(0);
-                mStatusAnimator.setDisplayedChild(0);
-                mCodeFieldsAnimator.setDisplayedChild(0);
+                mTitleAnimator.setDisplayedChild(0, animate);
+                mStatusAnimator.setDisplayedChild(0, animate);
+                mCodeFieldsAnimator.setDisplayedChild(0, animate);
 
                 break;
 
             case STATE_INPUT:
-                mTitleAnimator.setDisplayedChild(1);
-                mStatusAnimator.setDisplayedChild(1);
-                mCodeFieldsAnimator.setDisplayedChild(1);
+                mTitleAnimator.setDisplayedChild(1, animate);
+                mStatusAnimator.setDisplayedChild(1, animate);
+                mCodeFieldsAnimator.setDisplayedChild(1, animate);
 
                 for (EditText editText : mCodeEditText) {
                     editText.setText("");
@@ -130,20 +134,25 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
                 break;
 
             case STATE_INPUT_ERROR: {
-                mStatusAnimator.setDisplayedChild(2);
+                mTitleAnimator.setDisplayedChild(1, false);
+                mStatusAnimator.setDisplayedChild(2, animate);
+                mCodeFieldsAnimator.setDisplayedChild(1, false);
 
                 hideKeyboard();
 
-                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-                @ColorInt int red = getResources().getColor(R.color.android_red_dark);
-                animateFlashText(mCodeEditText, black, red, false);
+                if (animate) {
+                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                    @ColorInt int red = getResources().getColor(R.color.android_red_dark);
+                    animateFlashText(mCodeEditText, black, red, false);
+                }
 
                 break;
             }
 
             case STATE_OK: {
-                mTitleAnimator.setDisplayedChild(2);
-                mStatusAnimator.setDisplayedChild(3);
+                mTitleAnimator.setDisplayedChild(2, animate);
+                mStatusAnimator.setDisplayedChild(3, animate);
+                mCodeFieldsAnimator.setDisplayedChild(1, false);
 
                 hideKeyboard();
 
@@ -151,9 +160,15 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
                     editText.setEnabled(false);
                 }
 
-                @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
                 @ColorInt int green = getResources().getColor(R.color.android_green_dark);
-                animateFlashText(mCodeEditText, black, green, true);
+                if (animate) {
+                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
+                    animateFlashText(mCodeEditText, black, green, true);
+                } else {
+                    for (TextView textView : mCodeEditText) {
+                        textView.setTextColor(green);
+                    }
+                }
 
                 popBackStackNoAction();
 
@@ -204,15 +219,15 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
         setupEditTextFocusNext(mCodeEditText);
         setupEditTextSuccessListener(mCodeEditText);
 
-        mStatusAnimator = (ViewAnimator) view.findViewById(R.id.status_animator);
-        mTitleAnimator = (ViewAnimator) view.findViewById(R.id.title_animator);
-        mCodeFieldsAnimator = (ViewAnimator) view.findViewById(R.id.code_animator);
+        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.status_animator);
+        mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
+        mCodeFieldsAnimator = (ToolableViewAnimator) view.findViewById(R.id.code_animator);
 
         View backupInput = view.findViewById(R.id.button_backup_input);
         backupInput.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                switchState(BackupCodeState.STATE_INPUT);
+                switchState(BackupCodeState.STATE_INPUT, true);
             }
         });
 
@@ -249,9 +264,25 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (mCurrentState == BackupCodeState.STATE_UNINITIALIZED) {
-            switchState(BackupCodeState.STATE_DISPLAY);
+        if (savedInstanceState != null) {
+            int savedBackStack = savedInstanceState.getInt(ARG_BACK_STACK);
+            if (savedBackStack >= 0) {
+                mBackStackLevel = savedBackStack;
+                // unchecked use, we know that this one is available in onViewCreated
+                getFragmentManager().addOnBackStackChangedListener(this);
+            }
+            BackupCodeState savedState = BackupCodeState.values()[savedInstanceState.getInt(ARG_CURRENT_STATE)];
+            switchState(savedState, false);
+        } else if (mCurrentState == BackupCodeState.STATE_UNINITIALIZED) {
+            switchState(BackupCodeState.STATE_DISPLAY, true);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
+        outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
     }
 
     private void setupEditTextSuccessListener(final EditText[] backupCodes) {
@@ -301,17 +332,17 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
         // if they don't match, do nothing
         if (backupCodeInput.toString().equals(mBackupCode)) {
-            switchState(BackupCodeState.STATE_OK);
+            switchState(BackupCodeState.STATE_OK, true);
             return;
         }
 
         // TODO remove debug code
         if (backupCodeInput.toString().startsWith("ABC")) {
-            switchState(BackupCodeState.STATE_OK);
+            switchState(BackupCodeState.STATE_OK, true);
             return;
         }
 
-        switchState(BackupCodeState.STATE_INPUT_ERROR);
+        switchState(BackupCodeState.STATE_INPUT_ERROR, true);
 
     }
 
@@ -364,6 +395,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     }
 
     private void pushBackStackEntry() {
+        if (mBackStackLevel != null) {
+            return;
+        }
         FragmentManager fragMan = getFragmentManager();
         mBackStackLevel = fragMan.getBackStackEntryCount();
         fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
@@ -373,23 +407,18 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     private void popBackStackNoAction() {
         FragmentManager fragMan = getFragmentManager();
         fragMan.removeOnBackStackChangedListener(this);
-        fragMan.popBackStack(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragMan.popBackStackImmediate(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mBackStackLevel = null;
     }
 
     @Override
     public void onBackStackChanged() {
         FragmentManager fragMan = getFragmentManager();
-        if (fragMan.getBackStackEntryCount() == mBackStackLevel) {
+        if (mBackStackLevel != null && fragMan.getBackStackEntryCount() == mBackStackLevel) {
             fragMan.removeOnBackStackChangedListener(this);
-            switchState(BackupCodeState.STATE_DISPLAY);
+            switchState(BackupCodeState.STATE_DISPLAY, true);
+            mBackStackLevel = null;
         }
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        // we don't really save our state, so at least clean this bit up!
-        popBackStackNoAction();
     }
 
     private void startBackup() {

@@ -440,7 +440,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.BackupActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_backup">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
