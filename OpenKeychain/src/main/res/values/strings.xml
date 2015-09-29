@@ -1644,5 +1644,12 @@
     <string name="linked_webview_title_github">"GitHub Authorization"</string>
     <string name="linked_gist_description">"OpenKeychain API Tests"</string>
     <string name="snack_btn_overwrite">"Overwrite"</string>
+    <string name="backup_code_explanation">The backup will be secured with a backup code. Write it down before you proceed!</string>
+    <string name="backup_code_enter">Please enter the backup code:</string>
+    <string name="backup_code_ok">Code accepted!</string>
+    <string name="btn_code_wrotedown">Ok, I wrote it down!</string>
+    <string name="backup_code_wrong">The backup code you entered is wrong!\nDid you write it down correctly?</string>
+    <string name="btn_backup_share">Share backup</string>
+    <string name="btn_backup_save">Save backup</string>
 
 </resources>

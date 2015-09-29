@@ -22,7 +22,7 @@
             android:padding="10dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:text="The backup will be secured with a backup code. Write it down before you proceed!"
+            android:text="@string/backup_code_explanation"
             style="?android:textAppearanceMedium"
             />
 
@@ -32,7 +32,7 @@
             android:padding="10dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:text="Please enter the backup code:"
+            android:text="@string/backup_code_enter"
             style="?android:textAppearanceMedium"
             />
 
@@ -42,7 +42,7 @@
             android:padding="10dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:text="Code accepted!"
+            android:text="@string/backup_code_ok"
             style="?android:textAppearanceMedium"
             />
 
@@ -72,11 +72,12 @@
                 android:id="@+id/backup_code_display_1"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 style="@android:style/Widget.EditText"
                 android:clickable="false"
                 android:focusable="false"
                 tools:text="ABCDEF"
+                tools:ignore="SpUsage"
                 />
 
             <TextView
@@ -85,9 +86,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
-                />
+                tools:ignore="HardcodedText,SpUsage" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -96,11 +97,12 @@
                 android:id="@+id/backup_code_display_2"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 style="@android:style/Widget.EditText"
                 android:clickable="false"
                 android:focusable="false"
                 tools:text="GHIJKL"
+                tools:ignore="SpUsage"
                 />
 
             <TextView
@@ -109,8 +111,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <TextView
@@ -120,11 +123,12 @@
                 android:id="@+id/backup_code_display_3"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 style="@android:style/Widget.EditText"
                 android:clickable="false"
                 android:focusable="false"
                 tools:text="MNOPQR"
+                tools:ignore="SpUsage"
                 />
 
             <TextView
@@ -133,8 +137,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <TextView
@@ -144,12 +149,13 @@
                 android:id="@+id/backup_code_display_4"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:singleLine="true"
                 style="@android:style/Widget.EditText"
                 android:clickable="false"
                 android:focusable="false"
                 tools:text="STUVWX"
+                tools:ignore="SpUsage"
                 />
 
         </LinearLayout>
@@ -160,6 +166,10 @@
             android:layout_gravity="center_horizontal"
             >
 
+            <!--
+            The most reliable way to correctly size these I found was to put a transparent hint on them.
+             Theoretically, this should be what the android:ems attribute is for - didn't work for me.
+            -->
             <EditText
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -167,12 +177,13 @@
                 android:id="@+id/backup_code_1"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
                 android:hint="ABCDEF"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <TextView
@@ -181,8 +192,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <EditText
@@ -192,12 +204,13 @@
                 android:id="@+id/backup_code_2"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
                 android:hint="ABCDEF"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <TextView
@@ -206,8 +219,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <EditText
@@ -217,12 +231,13 @@
                 android:id="@+id/backup_code_3"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
                 android:hint="ABCDEF"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -230,8 +245,9 @@
                 android:gravity="center_vertical"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:text="-"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
             <EditText
@@ -241,12 +257,13 @@
                 android:id="@+id/backup_code_4"
                 android:textStyle="bold"
                 android:typeface="monospace"
-                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textSize="16dp"
                 android:singleLine="true"
                 android:inputType="textNoSuggestions|textCapCharacters"
                 android:hint="ABCDEF"
                 android:textColorHint="@android:color/transparent"
                 android:maxLength="6"
+                tools:ignore="HardcodedText,SpUsage"
                 />
 
         </LinearLayout>
@@ -260,14 +277,14 @@
         android:id="@+id/status_animator"
         android:inAnimation="@anim/fade_in_delayed"
         android:outAnimation="@anim/fade_out"
-        custom:initialView="0">
+        custom:initialView="3">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
-            android:text="Ok, I wrote it down!"
+            android:text="@string/btn_code_wrotedown"
             android:padding="12dp"
             android:id="@+id/button_backup_input"
             style="?android:buttonBarButtonStyle"
@@ -281,26 +298,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text="The backup code you entered is wrong!\nDid you write it down correctly?"
+            android:text="@string/backup_code_wrong"
             style="?android:textAppearanceMedium"
             />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:buttonBarStyle">
+            android:layout_gravity="center_horizontal"
+            style="?android:buttonBarStyle">
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_margin="10dp"
                     android:padding="12dp"
-                    android:text="Share backup"
+                    android:text="@string/btn_backup_share"
                     android:drawableLeft="@drawable/ic_share_grey_24dp"
                     android:drawablePadding="8dp"
                     android:id="@+id/button_backup_share"
@@ -308,18 +322,17 @@
                     />
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_margin="10dp"
                     android:padding="12dp"
-                    android:text="Save backup"
+                    android:text="@string/btn_backup_save"
                     android:drawableLeft="@drawable/ic_save_grey_24dp"
                     android:drawablePadding="8dp"
                     android:id="@+id/button_backup_save"
                     style="?android:buttonBarButtonStyle"
                     />
-
-            </LinearLayout>
 
         </LinearLayout>
 
