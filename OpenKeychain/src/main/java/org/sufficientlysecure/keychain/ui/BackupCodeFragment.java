@@ -31,6 +31,7 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
@@ -56,6 +57,7 @@ import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
 import org.sufficientlysecure.keychain.service.ExportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -68,6 +70,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     public static final String BACK_STACK_INPUT = "state_display";
     public static final String ARG_EXPORT_SECRET = "export_secret";
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
+    public static final int REQUEST_SAVE = 0;
 
     // argument variables
     private boolean mExportSecret;
@@ -242,9 +245,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     }
 
     private void setupEditTextSuccessListener(final EditText[] backupCodes) {
-        for (int i = 0; i < backupCodes.length; i++) {
+        for (EditText backupCode : backupCodes) {
 
-            backupCodes[i].addTextChangedListener(new TextWatcher() {
+            backupCode.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -284,7 +287,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             backupCodeInput.append(editText.getText());
             backupCodeInput.append('-');
         }
-        backupCodeInput.deleteCharAt(backupCodeInput.length() -1);
+        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
 
         // if they don't match, do nothing
         if (backupCodeInput.toString().equals(mBackupCode)) {
@@ -381,6 +384,10 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
     private void startBackup() {
 
         FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
         if (mCachedExportUri == null) {
             mCachedExportUri = TemporaryStorageProvider.createFile(activity);
             cryptoOperation();
@@ -393,21 +400,68 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             intent.putExtra(Intent.EXTRA_STREAM, mCachedExportUri);
             startActivity(intent);
         } else {
-            File file;
-            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            if (mExportSecret) {
-                file = new File(Constants.Path.APP_DIR, "backup_" + date + ".gpg");
-            } else {
-                file = new File(Constants.Path.APP_DIR, "backup_" + date + ".pub.gpg");
-            }
-
-            try {
-                FileHelper.copyUriData(activity, mCachedExportUri, Uri.fromFile(file));
-            } catch (IOException e) {
-                Notify.create(activity, "Error saving file", Style.ERROR).show();
-            }
+            saveFile(false);
         }
 
+    }
+
+    private void saveFile(boolean overwrite) {
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+        // for kitkat and above, we have the document api
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            String filename = "openkeychain_backup_" + date + (mExportSecret ? ".gpg" : ".pub.gpg");
+            FileHelper.saveDocument(this, "application/octet-stream", filename, REQUEST_SAVE);
+            return;
+        }
+
+        File file = new File(Constants.Path.APP_DIR, "backup_" + date + (mExportSecret ? ".gpg" : ".pub.gpg"));
+
+        if (!overwrite && file.exists()) {
+            Notify.create(activity, "Backup already exists!", Style.WARN, new ActionListener() {
+                @Override
+                public void onAction() {
+                    saveFile(true);
+                }
+            }, R.string.snack_btn_overwrite).show();
+            return;
+        }
+
+        try {
+            FileHelper.copyUriData(activity, mCachedExportUri, Uri.fromFile(file));
+            Notify.create(activity, "Saved to /sdcard/OpenKeychain", Style.OK).show();
+        } catch (IOException e) {
+            Notify.create(activity, "Error saving backup", Style.ERROR).show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != REQUEST_SAVE) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+
+        if (resultCode != FragmentActivity.RESULT_OK) {
+            return;
+        }
+
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        try {
+            Uri outputUri = data.getData();
+            FileHelper.copyUriData(activity, mCachedExportUri, outputUri);
+            Notify.create(activity, "Backup saved", Style.OK).show();
+        } catch (IOException e) {
+            Notify.create(activity, "Error saving backup!", Style.ERROR).show();
+        }
     }
 
     @Nullable
