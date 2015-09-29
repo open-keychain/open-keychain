@@ -17,6 +17,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +29,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 public class BackupActivity extends BaseActivity {
 
+    public static final String EXTRA_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_SECRET = "export_secret";
 
     @Override
@@ -43,8 +45,11 @@ public class BackupActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
-            boolean exportSecret = getIntent().getBooleanExtra(EXTRA_SECRET, false);
-            Fragment frag = BackupCodeFragment.newInstance(null, exportSecret);
+            Intent intent = getIntent();
+            boolean exportSecret = intent.getBooleanExtra(EXTRA_SECRET, false);
+            long[] masterKeyIds = intent.getLongArrayExtra(EXTRA_MASTER_KEY_IDS);
+
+            Fragment frag = BackupCodeFragment.newInstance(masterKeyIds, exportSecret);
 
             FragmentManager fragMan = getSupportFragmentManager();
             fragMan.beginTransaction()

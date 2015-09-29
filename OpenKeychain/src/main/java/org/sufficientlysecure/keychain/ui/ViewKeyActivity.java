@@ -345,7 +345,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                 startActivity(homeIntent);
                 return true;
             }
-            case R.id.menu_key_view_export_file: {
+            case R.id.menu_key_view_backup: {
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
@@ -395,7 +395,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         MenuItem editKey = menu.findItem(R.id.menu_key_view_edit);
         editKey.setVisible(mIsSecret);
 
-        MenuItem exportKey = menu.findItem(R.id.menu_key_view_export_file);
+        MenuItem exportKey = menu.findItem(R.id.menu_key_view_backup);
         exportKey.setVisible(mIsSecret);
 
         MenuItem addLinked = menu.findItem(R.id.menu_key_view_add_linked_identity);
@@ -455,10 +455,11 @@ public class ViewKeyActivity extends BaseNfcActivity implements
         startActivityForResult(intent, requestCode);
     }
 
-    private void backupToFile() {
-        new ExportHelper(this).showExportKeysDialog(
-                mMasterKeyId, new File(Constants.Path.APP_DIR,
-                        KeyFormattingUtils.convertKeyIdToHex(mMasterKeyId) + ".sec.asc"), true);
+    private void startBackupActivity() {
+        Intent intent = new Intent(this, BackupActivity.class);
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_SECRET, true);
+        startActivity(intent);
     }
 
     private void deleteKey() {
@@ -514,7 +515,7 @@ public class ViewKeyActivity extends BaseNfcActivity implements
                     return;
                 }
 
-                backupToFile();
+                startBackupActivity();
                 return;
             }
 
