@@ -191,9 +191,10 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
 
         String fingerprint;
         try {
-            fingerprint = new SentenceConfirm(getActivity()).fromBytes(fingerprintBlob, 16);
-        } catch (IOException ioe) {
+            fingerprint = new SentenceConfirm(getActivity()).fromBytes(fingerprintBlob, 20);
+        } catch (IOException e) {
             fingerprint = "-";
+            Log.e(Constants.TAG, "Problem when creating sentence!", e);
         }
 
         mFingerprint.setTextSize(18);

@@ -26,7 +26,7 @@ import java.io.InputStream;
  * general Java InputStream.
  * Like the various Stream-classes from Java, the BitInputStream
  * has to be created based on another Input stream. It provides
- * a function to read the next bit from the sream, as well as to read multiple
+ * a function to read the next bit from the stream, as well as to read multiple
  * bits at once and write the resulting data into an integer value.
  * <p/>
  * source: http://developer.nokia.com/Community/Wiki/Bit_Input/Output_Stream_utility_classes_for_efficient_data_transfer
@@ -69,11 +69,11 @@ public class BitInputStream {
      * @return integer value containing the bits read from the stream.
      * @throws IOException
      */
-    synchronized public int readBits(final int aNumberOfBits)
+    synchronized public int readBits(final int aNumberOfBits, boolean stuffIfEnd)
             throws IOException {
         int value = 0;
         for (int i = aNumberOfBits - 1; i >= 0; i--) {
-            value |= (readBit() << i);
+            value |= (readBit(stuffIfEnd) << i);
         }
         return value;
     }
@@ -92,15 +92,20 @@ public class BitInputStream {
      * @return 0 if the bit is 0, 1 if the bit is 1.
      * @throws IOException
      */
-    synchronized public int readBit() throws IOException {
+    synchronized public int readBit(boolean stuffIfEnd) throws IOException {
         if (iIs == null)
             throw new IOException("Already closed");
 
         if (iNextBit == 8) {
             iBuffer = iIs.read();
 
-            if (iBuffer == -1)
-                throw new EOFException();
+            if (iBuffer == -1) {
+                if (stuffIfEnd) {
+                    return 1;
+                } else {
+                    throw new EOFException();
+                }
+            }
 
             iNextBit = 0;
         }
