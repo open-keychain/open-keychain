@@ -1655,5 +1655,6 @@
     <string name="snack_backup_saved">"Backup saved"</string>
     <string name="snack_backup_exists">"Backup already exists!"</string>
     <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
+    <string name="btn_backup_back">Go back to check</string>
 
 </resources>

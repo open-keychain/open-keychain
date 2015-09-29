@@ -79,7 +79,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
 
     private EditText[] mCodeEditText;
     private ViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
+
     private int mBackStackLevel;
+
     private Uri mCachedExportUri;
     private boolean mShareNotSave;
 
@@ -130,7 +132,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             case STATE_INPUT_ERROR: {
                 mStatusAnimator.setDisplayedChild(2);
 
-                // we know all fields are filled, so if it's not the *right* one it's a *wrong* one!
+                hideKeyboard();
+
                 @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
                 @ColorInt int red = getResources().getColor(R.color.android_red_dark);
                 animateFlashText(mCodeEditText, black, red, false);
@@ -213,10 +216,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             }
         });
 
-        View backupSave = view.findViewById(R.id.button_backup_save);
-        View backupShare = view.findViewById(R.id.button_backup_share);
-
-        backupSave.setOnClickListener(new OnClickListener() {
+        view.findViewById(R.id.button_backup_save).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mShareNotSave = false;
@@ -224,11 +224,21 @@ public class BackupCodeFragment extends CryptoOperationFragment<ExportKeyringPar
             }
         });
 
-        backupShare.setOnClickListener(new OnClickListener() {
+        view.findViewById(R.id.button_backup_share).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 mShareNotSave = true;
                 startBackup();
+            }
+        });
+
+        view.findViewById(R.id.button_backup_back).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragMan = getFragmentManager();
+                if (fragMan != null) {
+                    fragMan.popBackStack();
+                }
             }
         });
 
