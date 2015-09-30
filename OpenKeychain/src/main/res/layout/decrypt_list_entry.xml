@@ -65,34 +65,35 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingRight="4dp"
-                android:paddingLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical"
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/result_encryption_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="4dp"
                     android:src="@drawable/status_lock_open_24dp"
-                    android:layout_gravity="center_vertical" />
+                    />
 
                 <TextView
                     android:id="@+id/result_encryption_text"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="6dp"
                     android:text=""
                     tools:text="Encryption status text" />
 
                 <ImageView
                     android:id="@+id/context_menu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
                     android:scaleType="center"
-                    android:layout_width="36dip"
-                    android:layout_height="48dip"
                     android:clickable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_more_vert_black_24dp" />
@@ -103,25 +104,25 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingRight="4dp"
-                android:paddingLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:gravity="center_vertical"
                 tools:ignore="UseCompoundDrawables">
 
                 <ImageView
                     android:id="@+id/result_signature_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="4dp"
                     android:src="@drawable/status_signature_unverified_cutout_24dp"
-                    android:layout_gravity="center_vertical" />
+                    />
 
                 <TextView
                     android:id="@+id/result_signature_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="6dp"
                     android:text=""
                     tools:text="Signature status text" />
             </LinearLayout>
@@ -130,10 +131,11 @@
                 android:id="@+id/result_signature_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
                 android:clickable="true"
                 android:background="?android:selectableItemBackground"
                 android:orientation="horizontal"
-                style="?listPreferredItemHeight"
                 >
 
                 <LinearLayout
