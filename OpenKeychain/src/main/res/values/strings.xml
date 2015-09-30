@@ -1553,6 +1553,7 @@
     <string name="error_reading_k9">"Received incomplete data, try pressing 'Download complete message' in K-9 Mail!"</string>
     <string name="filename_unknown">Unknown filename (click to open)</string>
     <string name="filename_unknown_text">Text (click to show)</string>
+    <string name="filename_keys">"Key Backup (click to import)"</string>
     <string name="intent_show">Show Signed/Encrypted Content</string>
     <string name="intent_share">Share Signed/Encrypted Content</string>
     <string name="view_internal">"View in OpenKeychain"</string>
