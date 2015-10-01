@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -72,7 +73,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     private RequiredInputParcel mRequiredInput;
     private Intent mServiceIntent;
 
-    private static final byte[] BLANK_FINGERPRINT = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     private CryptoInputParcel mInputParcel;
 
@@ -245,7 +246,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
     }
 
     @Override
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
         if (mServiceIntent != null) {
             // if we're triggered by OpenPgpService
             // save updated cryptoInputParcel in cache
@@ -276,6 +277,7 @@ public class NfcOperationActivity extends BaseNfcActivity {
                     }
                 }
             }
+
             @Override
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
@@ -292,25 +294,14 @@ public class NfcOperationActivity extends BaseNfcActivity {
         vAnimator.setDisplayedChild(3);
     }
 
-    private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
-        byte[] cardFingerprint = nfcGetFingerprint(idx);
-        // Slot is empty, or contains this key already. PUT KEY operation is safe
-        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
-            Arrays.equals(cardFingerprint, fingerprint)) {
-            return true;
-        }
-
-        // Slot already contains a different key; don't overwrite it.
-        return false;
-    }
-
     @Override
-    public void handlePinError() {
+    public void onPinError() {
 
         // avoid a loop
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.useDefaultYubiKeyPin()) {
-            toast(getString(R.string.error_pin_nodefault));
+            // use Toast because activity is finished afterwards
+            Toast.makeText(this, R.string.error_pin_nodefault, Toast.LENGTH_LONG).show();
             setResult(RESULT_CANCELED);
             finish();
             return;
@@ -319,6 +310,25 @@ public class NfcOperationActivity extends BaseNfcActivity {
         // clear (invalid) passphrase
         PassphraseCacheService.clearCachedPassphrase(
                 this, mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId());
+    }
+
+    private boolean shouldPutKey(byte[] fingerprint, int idx) throws IOException {
+        byte[] cardFingerprint = nfcGetMasterKeyFingerprint(idx);
+
+        // Note: special case: This should not happen, but happens with
+        // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
+        if (cardFingerprint == null) {
+            return true;
+        }
+
+        // Slot is empty, or contains this key already. PUT KEY operation is safe
+        if (Arrays.equals(cardFingerprint, BLANK_FINGERPRINT) ||
+                Arrays.equals(cardFingerprint, fingerprint)) {
+            return true;
+        }
+
+        // Slot already contains a different key; don't overwrite it.
+        return false;
     }
 
 }

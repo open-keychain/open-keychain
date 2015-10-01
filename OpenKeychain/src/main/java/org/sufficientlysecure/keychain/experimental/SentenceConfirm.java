@@ -99,8 +99,12 @@ public class SentenceConfirm {
      */
     private EntropyString getWord(List<String> words, BitInputStream bin) throws IOException {
         final int neededBits = log(words.size(), 2);
-        Log.d(Constants.TAG, "need " + neededBits + " bits of entropy");
-        int bits = bin.readBits(neededBits);
+        Log.d(Constants.TAG, "need: " + neededBits + " bits of entropy");
+        Log.d(Constants.TAG, "available: " + bin.available() + " bits");
+        if (neededBits > bin.available()) {
+            Log.d(Constants.TAG, "stuffed with " + (neededBits - bin.available()) + " ones!");
+        }
+        int bits = bin.readBits(neededBits, true);
         Log.d(Constants.TAG, "got word " + words.get(bits) + " with " + neededBits + " bits of entropy");
         return new EntropyString(words.get(bits), neededBits);
     }
@@ -108,7 +112,7 @@ public class SentenceConfirm {
     private EntropyString getNounPhrase(BitInputStream bits) throws IOException {
         final EntropyString phrase = new EntropyString();
         phrase.append(getWord(art, bits)).append(" ");
-        if (bits.readBit() != 0) {
+        if (bits.readBit(true) != 0) {
             phrase.append(getWord(adj, bits)).append(" ");
         }
         phrase.incBits();
@@ -121,7 +125,7 @@ public class SentenceConfirm {
     EntropyString getSentence(BitInputStream bits) throws IOException {
         final EntropyString sentence = new EntropyString();
         sentence.append(getNounPhrase(bits));   // Subject
-        if (bits.readBit() != 0) {
+        if (bits.readBit(true) != 0) {
             sentence.append(" ").append(getWord(vt, bits));   // Transitive verb
             sentence.append(" ").append(getNounPhrase(bits)); // Object of transitive verb
         } else {
@@ -129,17 +133,17 @@ public class SentenceConfirm {
         }
         sentence.incBits();
 
-        if (bits.readBit() != 0) {
+        if (bits.readBit(true) != 0) {
             sentence.append(" ").append(getWord(adv, bits)); // Adverb
         }
 
         sentence.incBits();
-        if (bits.readBit() != 0) {
+        if (bits.readBit(true) != 0) {
             sentence.append(" ").append(getWord(p, bits));    // Preposition
             sentence.append(" ").append(getNounPhrase(bits)); // Object of preposition
         }
         sentence.incBits();
-        Log.d(Constants.TAG, "got sentence " + sentence + " with " + sentence.getBits() + " bits of entropy");
+        Log.d(Constants.TAG, "got sentence '" + sentence + "' with " + sentence.getBits() + " bits of entropy");
 
         // uppercase first character, end with dot (without increasing the bits)
         sentence.getBuilder().replace(0, 1,

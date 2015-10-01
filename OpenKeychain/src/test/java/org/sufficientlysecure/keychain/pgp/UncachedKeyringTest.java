@@ -28,6 +28,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.WorkaroundBuildConfig;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
@@ -41,6 +42,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.Security;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -53,6 +55,7 @@ public class UncachedKeyringTest {
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();

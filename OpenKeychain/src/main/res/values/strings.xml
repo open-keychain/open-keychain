@@ -1535,8 +1535,10 @@
     <string name="error_nfc_chaining_error">"YubiKey expected last command in a chain."</string>
     <string name="error_nfc_header">"YubiKey reported invalid %s byte."</string>
     <string name="error_nfc_tag_lost">"YubiKey has been taken off too early. Keep the YubiKey at the back until the operation finishes."</string>
+    <string name="error_nfc_iso_dep_not_supported">"Tag does not support ISO-DEP (ISO 14443-4)"</string>
     <string name="error_nfc_try_again">"Try again"</string>
     <string name="error_pin_nodefault">Default PIN was rejected!</string>
+    <string name="error_pin_wrong">PIN is wrong!</string>
     <string name="error_temp_file">Error creating temporary file.</string>
     <string name="btn_delete_original">Delete original file</string>
 

@@ -103,7 +103,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
     /**
      * Override to handle result of NFC operations (UI thread)
      */
-    protected void onNfcPostExecute() throws IOException {
+    protected void onNfcPostExecute() {
 
         final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mNfcFingerprints);
 
@@ -134,9 +134,19 @@ public abstract class BaseNfcActivity extends BaseActivity {
         Notify.create(this, error, Style.WARN).show();
     }
 
+    /**
+     * Override to do something when PIN is wrong, e.g., clear passphrases (UI thread)
+     */
+    protected void onPinError() {
+        // use Toast because activity is finished afterwards
+        Toast.makeText(this, R.string.error_pin_wrong, Toast.LENGTH_LONG).show();
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
     public void handleIntentInBackground(final Intent intent) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
-        new AsyncTask<Void, Void, Exception>() {
+        new AsyncTask<Void, Void, IOException>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -144,11 +154,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
             }
 
             @Override
-            protected Exception doInBackground(Void... params) {
+            protected IOException doInBackground(Void... params) {
                 try {
                     handleTagDiscoveredIntent(intent);
-                } catch (CardException e) {
-                    return e;
                 } catch (IOException e) {
                     return e;
                 }
@@ -157,7 +165,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
             }
 
             @Override
-            protected void onPostExecute(Exception exception) {
+            protected void onPostExecute(IOException exception) {
                 super.onPostExecute(exception);
 
                 if (exception != null) {
@@ -165,11 +173,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
                     return;
                 }
 
-                try {
-                    onNfcPostExecute();
-                } catch (IOException e) {
-                    handleNfcError(e);
-                }
+                onNfcPostExecute();
             }
         }.execute();
     }
@@ -221,11 +225,15 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
     }
 
-    private void handleNfcError(Exception e) {
-        Log.e(Constants.TAG, "nfc error", e);
+    private void handleNfcError(IOException e) {
 
         if (e instanceof TagLostException) {
             onNfcError(getString(R.string.error_nfc_tag_lost));
+            return;
+        }
+
+        if (e instanceof IsoDepNotSupportedException) {
+            onNfcError(getString(R.string.error_nfc_iso_dep_not_supported));
             return;
         }
 
@@ -235,8 +243,12 @@ public abstract class BaseNfcActivity extends BaseActivity {
         } else {
             status = -1;
         }
-        // When entering a PIN, a status of 63CX indicates X attempts remaining.
-        if ((status & (short)0xFFF0) == 0x63C0) {
+
+        // Wrong PIN, a status of 63CX indicates X attempts remaining.
+        if ((status & (short) 0xFFF0) == 0x63C0) {
+            // hook to do something different when PIN is wrong
+            onPinError();
+
             int tries = status & 0x000F;
             onNfcError(getResources().getQuantityString(R.plurals.error_pin, tries, tries));
             return;
@@ -307,12 +319,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     }
 
-    public void handlePinError() {
-        toast("Wrong PIN!");
-        setResult(RESULT_CANCELED);
-        finish();
-    }
-
     /**
      * Called when the system is about to start resuming a previous activity,
      * disables NFC Foreground Dispatch
@@ -337,7 +343,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     protected void obtainYubiKeyPin(RequiredInputParcel requiredInput) {
 
-        // shortcut if we only use the default yubikey pin
+        // shortcut if we only use the default YubiKey pin
         Preferences prefs = Preferences.getPreferences(this);
         if (prefs.useDefaultYubiKeyPin()) {
             mPin = new Passphrase("123456");
@@ -345,10 +351,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
         }
 
         try {
-            Passphrase phrase = PassphraseCacheService.getCachedPassphrase(this,
+            Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
-            if (phrase != null) {
-                mPin = phrase;
+            if (passphrase != null) {
+                mPin = passphrase;
                 return;
             }
 
@@ -361,10 +367,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
                     "tried to find passphrase for non-existing key. this is a programming error!");
         }
 
-    }
-
-    protected void setYubiKeyPin(Passphrase pin) {
-        mPin = pin;
     }
 
     @Override
@@ -406,6 +408,9 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         // Connect to the detected tag, setting a couple of settings
         mIsoDep = IsoDep.get(detectedTag);
+        if (mIsoDep == null) {
+            throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
+        }
         mIsoDep.setTimeout(TIMEOUT); // timeout is set to 100 seconds to avoid cancellation during calculation
         mIsoDep.connect();
 
@@ -448,7 +453,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @return The long key id of the requested key, or null if not found.
      */
     public Long nfcGetKeyId(int idx) throws IOException {
-        byte[] fp = nfcGetFingerprint(idx);
+        byte[] fp = nfcGetMasterKeyFingerprint(idx);
         if (fp == null) {
             return null;
         }
@@ -469,7 +474,7 @@ public abstract class BaseNfcActivity extends BaseActivity {
         byte[] buf = mIsoDep.transceive(Hex.decode(data));
 
         Iso7816TLV tlv = Iso7816TLV.readSingle(buf, true);
-        Log.d(Constants.TAG, "nfc tlv data:\n" + tlv.prettyPrint());
+        Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
 
         Iso7816TLV fptlv = Iso7816TLV.findRecursive(tlv, 0xc5);
         if (fptlv == null) {
@@ -494,8 +499,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
      * @param idx Index of the key to return the fingerprint from.
      * @return The fingerprint of the requested key, or null if not found.
      */
-    public byte[] nfcGetFingerprint(int idx) throws IOException {
+    public byte[] nfcGetMasterKeyFingerprint(int idx) throws IOException {
         byte[] data = nfcGetFingerprints();
+        if (data == null) {
+            return null;
+        }
 
         // return the master key fingerprint
         ByteBuffer fpbuf = ByteBuffer.wrap(data);
@@ -507,14 +515,11 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     public byte[] nfcGetAid() throws IOException {
-
         String info = "00CA004F00";
         return mIsoDep.transceive(Hex.decode(info));
-
     }
 
     public String nfcGetUserId() throws IOException {
-
         String info = "00CA006500";
         return nfcGetHolderName(nfcCommunicate(info));
     }
@@ -648,8 +653,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
         String decryptedSessionKey = nfcGetDataField(second);
 
-        Log.d(Constants.TAG, "decryptedSessionKey: " + decryptedSessionKey);
-
         return Hex.decode(decryptedSessionKey);
     }
 
@@ -682,7 +685,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
                         + Hex.toHexString(pin);
             String response = nfcCommunicate(login); // login
             if (!response.equals(accepted)) {
-                handlePinError();
                 throw new CardException("Bad PIN!", parseCardStatus(response));
             }
 
@@ -737,7 +739,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 + getHex(newPin);
         String response = nfcCommunicate(changeReferenceDataApdu); // change PIN
         if (!response.equals("9000")) {
-            handlePinError();
             throw new CardException("Failed to change PIN", parseCardStatus(response));
         }
     }
@@ -906,15 +907,6 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     /**
-     * Prints a message to the screen
-     *
-     * @param text the text which should be contained within the toast
-     */
-    protected void toast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
-    /**
      * Receive new NFC Intents to this activity only by enabling foreground dispatch.
      * This can only be done in onResume!
      */
@@ -930,12 +922,10 @@ public abstract class BaseNfcActivity extends BaseActivity {
                 new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
         };
 
-        // https://code.google.com/p/android/issues/detail?id=62918
-        // maybe mNfcAdapter.enableReaderMode(); ?
         try {
             mNfcAdapter.enableForegroundDispatch(this, nfcPendingIntent, writeTagFilters, null);
         } catch (IllegalStateException e) {
-            Log.i(Constants.TAG, "NfcForegroundDispatch Error!", e);
+            Log.i(Constants.TAG, "NfcForegroundDispatch Exception: Activity is not currently in the foreground?", e);
         }
         Log.d(Constants.TAG, "NfcForegroundDispatch has been enabled!");
     }
@@ -952,14 +942,23 @@ public abstract class BaseNfcActivity extends BaseActivity {
     }
 
     public String nfcGetHolderName(String name) {
-        String slength;
-        int ilength;
-        name = name.substring(6);
-        slength = name.substring(0, 2);
-        ilength = Integer.parseInt(slength, 16) * 2;
-        name = name.substring(2, ilength + 2);
-        name = (new String(Hex.decode(name))).replace('<', ' ');
-        return (name);
+        try {
+            String slength;
+            int ilength;
+            name = name.substring(6);
+            slength = name.substring(0, 2);
+            ilength = Integer.parseInt(slength, 16) * 2;
+            name = name.substring(2, ilength + 2);
+            name = (new String(Hex.decode(name))).replace('<', ' ');
+            return name;
+        } catch (IndexOutOfBoundsException e) {
+            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
+            // Note: This should not happen, but happens with
+            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
+
+            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
+            return "";
+        }
     }
 
     private String nfcGetDataField(String output) {
@@ -972,6 +971,14 @@ public abstract class BaseNfcActivity extends BaseActivity {
 
     public static String getHex(byte[] raw) {
         return new String(Hex.encode(raw));
+    }
+
+    public class IsoDepNotSupportedException extends IOException {
+
+        public IsoDepNotSupportedException(String detailMessage) {
+            super(detailMessage);
+        }
+
     }
 
     public class CardException extends IOException {
