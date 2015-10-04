@@ -1650,4 +1650,9 @@
     <string name="linked_webview_title_github">"GitHub Authorization"</string>
     <string name="linked_gist_description">"OpenKeychain API Tests"</string>
 
+    <string name="share_log_dialog_title">"Share log?"</string>
+    <string name="share_log_dialog_message">"While logs can be super helpful for developers to find bugs in OpenKeychain, they can contain potential sensitive information such as data about the updated keys. Please make sure you are okay with sharing this information."</string>
+    <string name="share_log_dialog_share_button">"Share"</string>
+    <string name="share_log_dialog_cancel_button">"Cancel"</string>
+
 </resources>
