@@ -358,7 +358,7 @@ public class UncachedKeyringCanonicalizeTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddUserIds.add("trix");
         PgpKeyOperation op = new PgpKeyOperation(null);
 

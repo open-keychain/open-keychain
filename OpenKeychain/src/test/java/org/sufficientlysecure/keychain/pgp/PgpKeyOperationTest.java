@@ -94,11 +94,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.DSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.DSA, 3072, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.RSA, 3072, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -159,7 +159,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.ELGAMAL, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.ELGAMAL, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
@@ -170,7 +170,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, null));
+                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, null));
             parcel.mAddUserIds.add("lotus");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
@@ -181,7 +181,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddUserIds.add("shy");
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
@@ -192,7 +192,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring without user ids should fail", parcel,
@@ -216,7 +216,7 @@ public class PgpKeyOperationTest {
     public void testMasterFlags() throws Exception {
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
+                Algorithm.RSA, 4096, null, KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, 0L));
         parcel.mAddUserIds.add("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", parcel);
 
@@ -256,8 +256,8 @@ public class PgpKeyOperationTest {
         List<UncachedPublicKey> subkeys = KeyringTestingHelper.itToList(ring.getPublicKeys());
         Assert.assertEquals("number of subkeys must be three", 3, subkeys.size());
 
-        Assert.assertTrue("key ring should have been created in the last 120 seconds",
-                ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*120)));
+        Assert.assertTrue("key ring should have been created in the last 360 seconds",
+                ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*360)));
 
         Assert.assertNull("key ring should not expire",
                 ring.getPublicKey().getUnsafeExpiryTimeForTesting());
@@ -347,7 +347,7 @@ public class PgpKeyOperationTest {
 
         long expiry = new Date().getTime() / 1000 + 159;
         int flags = KeyFlags.SIGN_DATA;
-        int bits = 1024 + new Random().nextInt(8);
+        int bits = 2048 + new Random().nextInt(8);
         parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, bits, null, flags, expiry));
 
         UncachedKeyRing modified = applyModificationWithChecks(parcel, ring, onlyA, onlyB);
@@ -398,7 +398,7 @@ public class PgpKeyOperationTest {
         {
             parcel.reset();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, null));
+                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, null));
 
             assertModifyFailure("creating master key with null expiry should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_NULL_EXPIRY);
@@ -406,7 +406,7 @@ public class PgpKeyOperationTest {
 
         { // a past expiry should fail
             parcel.reset();
-            parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA,
+            parcel.mAddSubKeys.add(new SubkeyAdd(Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA,
                     new Date().getTime()/1000-10));
             assertModifyFailure("creating subkey with past expiry date should fail", ring, parcel,
                     LogType.MSG_MF_ERROR_PAST_EXPIRY);
@@ -837,7 +837,7 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified;
 
-        { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-1024 key
+        { // keytocard should fail with BAD_NFC_SIZE when presented with the RSA-3072 key
             long keyId = KeyringTestingHelper.getSubkeyId(ring, 2);
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
@@ -846,7 +846,7 @@ public class PgpKeyOperationTest {
                     parcel, cryptoInput, LogType.MSG_MF_ERROR_BAD_NFC_SIZE);
         }
 
-        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-1024 key
+        { // keytocard should fail with BAD_NFC_ALGO when presented with the DSA-3072 key
             long keyId = KeyringTestingHelper.getSubkeyId(ring, 0);
             parcel.reset();
             parcel.mChangeSubKeys.add(new SubkeyChange(keyId, false, true));
