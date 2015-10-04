@@ -82,8 +82,8 @@ public class PgpKeyOperationTest {
     UncachedKeyRing ring;
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
-    ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-    ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+    ArrayList<RawPacket> onlyA = new ArrayList<>();
+    ArrayList<RawPacket> onlyB = new ArrayList<>();
 
     static CryptoInputParcel cryptoInput;
 
@@ -94,11 +94,11 @@ public class PgpKeyOperationTest {
 
         SaveKeyringParcel parcel = new SaveKeyringParcel();
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.DSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                Algorithm.DSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
                 Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
         parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                Algorithm.RSA, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
 
         parcel.mAddUserIds.add("twi");
         parcel.mAddUserIds.add("pink");
@@ -153,7 +153,7 @@ public class PgpKeyOperationTest {
             parcel.mNewUnlock = new ChangeUnlockParcel(passphrase);
 
             assertFailure("creating ring with < 512 bytes keysize should fail", parcel,
-                    LogType.MSG_CR_ERROR_KEYSIZE_512);
+                    LogType.MSG_CR_ERROR_KEYSIZE_2048);
         }
 
         {
@@ -391,7 +391,7 @@ public class PgpKeyOperationTest {
             parcel.mAddSubKeys.add(new SubkeyAdd(
                     Algorithm.RSA, new Random().nextInt(512), null, KeyFlags.SIGN_DATA, 0L));
             assertModifyFailure("creating a subkey with keysize < 512 should fail", ring, parcel,
-                    LogType.MSG_CR_ERROR_KEYSIZE_512);
+                    LogType.MSG_CR_ERROR_KEYSIZE_2048);
 
         }
 

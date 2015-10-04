@@ -514,7 +514,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_CR_ERROR_NO_USER_ID (LogLevel.ERROR, R.string.msg_cr_error_no_user_id),
         MSG_CR_ERROR_NO_CERTIFY (LogLevel.ERROR, R.string.msg_cr_error_no_certify),
         MSG_CR_ERROR_NULL_EXPIRY(LogLevel.ERROR, R.string.msg_cr_error_null_expiry),
-        MSG_CR_ERROR_KEYSIZE_512 (LogLevel.ERROR, R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_KEYSIZE_2048(LogLevel.ERROR, R.string.msg_cr_error_keysize_2048),
         MSG_CR_ERROR_NO_KEYSIZE (LogLevel.ERROR, R.string.msg_cr_error_no_keysize),
         MSG_CR_ERROR_NO_CURVE (LogLevel.ERROR, R.string.msg_cr_error_no_curve),
         MSG_CR_ERROR_UNKNOWN_ALGO (LogLevel.ERROR, R.string.msg_cr_error_unknown_algo),

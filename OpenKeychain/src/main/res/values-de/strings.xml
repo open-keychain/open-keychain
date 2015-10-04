@@ -922,7 +922,7 @@
   <string name="msg_cr_error_no_user_id">Schlüsselbünde müssen mindestens eine User-ID enthalten!</string>
   <string name="msg_cr_error_no_certify">Hauptschlüssel benötigt das Attribut beglaubigen!</string>
   <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerstellung nicht \'gleiche wie vorher\' sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
-  <string name="msg_cr_error_keysize_512">Schlüssellänge muss größer/gleich 512 sein!</string>
+  <string name="msg_cr_error_keysize_2048">Schlüssellänge muss größer/gleich 512 sein!</string>
   <string name="msg_cr_error_no_curve">Keine Schlüssellänge spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_no_keysize">Keine Elliptische Kurve spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_internal_pgp">Interner OpenPGP Fehler!</string>

@@ -131,11 +131,11 @@ public class PgpEncryptDecryptTest {
             // insecure (1024 bit) RSA key
             SaveKeyringParcel parcel = new SaveKeyringParcel();
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.CERTIFY_OTHER, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.SIGN_DATA, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.SIGN_DATA, 0L));
             parcel.mAddSubKeys.add(new SaveKeyringParcel.SubkeyAdd(
-                    Algorithm.RSA, 1024, null, KeyFlags.ENCRYPT_COMMS, 0L));
+                    Algorithm.RSA, 2048, null, KeyFlags.ENCRYPT_COMMS, 0L));
             parcel.mAddUserIds.add("eve");
             parcel.mNewUnlock = new ChangeUnlockParcel(mKeyPhraseInsecure);
 

@@ -454,7 +454,7 @@
   <string name="msg_cr">Генерується новий основний ключ</string>
   <string name="msg_cr_error_no_master">Не вказано параметрів основного ключа!</string>
   <string name="msg_cr_error_no_certify">Основний ключ повинен мати прапорець certify!</string>
-  <string name="msg_cr_error_keysize_512">Розмір ключа має бути більшим або рівним 512!</string>
+  <string name="msg_cr_error_keysize_2048">Розмір ключа має бути більшим або рівним 512!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Змінюється в\'язка %s</string>
   <string name="msg_mf_error_encode">Виняток шифрування!</string>

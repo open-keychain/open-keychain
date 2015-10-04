@@ -768,7 +768,7 @@
   <string name="msg_cr_error_no_user_id">Связки должны создаваться с хотя бы одним ID пользователя!</string>
   <string name="msg_cr_error_no_certify">Основной ключ должен иметь флаг сертификата!</string>
   <string name="msg_cr_error_null_expiry">Срок годности не может быть \'такой же как раньше\' при создании ключа. Это программная ошибка, пожалуйста, сообщите об этом!</string>
-  <string name="msg_cr_error_keysize_512">Размер ключа должен быть больше или равен 512!</string>
+  <string name="msg_cr_error_keysize_2048">Размер ключа должен быть больше или равен 512!</string>
   <string name="msg_cr_error_no_curve">Не задан размер ключа! Это программная ошибка, пожалуйста, сообщите об этом!</string>
   <string name="msg_cr_error_no_keysize">Не задана эллиптическая кривая! Это программная ошибка, пожалуйста, сообщите об этом!</string>
   <string name="msg_cr_error_internal_pgp">Внутренняя ошибка OpenPGP!</string>

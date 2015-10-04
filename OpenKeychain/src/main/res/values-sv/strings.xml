@@ -727,7 +727,7 @@
   <string name="msg_cr">Genererar ny huvudnyckel</string>
   <string name="msg_cr_error_no_user_id">Nyckelringar måste skapas med minst ett användar-ID!</string>
   <string name="msg_cr_error_no_certify">Huvudnyckel måste ha en certifieringsflagga!</string>
-  <string name="msg_cr_error_keysize_512">Nyckelstorlek måste vara större eller lika med 512!</string>
+  <string name="msg_cr_error_keysize_2048">Nyckelstorlek måste vara större eller lika med 512!</string>
   <string name="msg_cr_error_internal_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_cr_error_unknown_algo">Okänd algoritm vald. Detta är ett programmeringsfel, skicka en buggrapport!</string>
   <string name="msg_cr_error_flags_dsa">Dåliga nyckelflaggor valda, DSA kan inte användas för kryptering!</string>

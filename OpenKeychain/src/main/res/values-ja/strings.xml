@@ -898,7 +898,7 @@
   <string name="msg_cr_error_no_user_id">鍵輪は最低でも1つのユーザIDの生成が必要です!</string>
   <string name="msg_cr_error_no_certify">主鍵は検証フラグが必須です!</string>
   <string name="msg_cr_error_null_expiry">鍵の生成時に期限を\'過去\'とすることはできません。これはプログラムエラーで、バグレポートでファイルを送ってください!</string>
-  <string name="msg_cr_error_keysize_512">鍵サイズは512かそれ以上が必須です!</string>
+  <string name="msg_cr_error_keysize_2048">鍵サイズは512かそれ以上が必須です!</string>
   <string name="msg_cr_error_no_curve">鍵サイズが不明です! これはプログラムエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_cr_error_no_keysize">楕円暗号が不明です! これはプログラムエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_cr_error_internal_pgp">PGP内部エラー!</string>

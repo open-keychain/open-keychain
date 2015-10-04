@@ -87,8 +87,8 @@ public class UncachedKeyringMergeTest {
 
     static UncachedKeyRing staticRingA, staticRingB;
     UncachedKeyRing ringA, ringB;
-    ArrayList<RawPacket> onlyA = new ArrayList<RawPacket>();
-    ArrayList<RawPacket> onlyB = new ArrayList<RawPacket>();
+    ArrayList<RawPacket> onlyA = new ArrayList<>();
+    ArrayList<RawPacket> onlyB = new ArrayList<>();
     OperationResult.OperationLog log = new OperationResult.OperationLog();
     PgpKeyOperation op;
     SaveKeyringParcel parcel;
