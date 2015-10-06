@@ -49,7 +49,7 @@ public class CreateYubiKeyImportFragment
         extends QueueingCryptoOperationFragment<ImportKeyringParcel, ImportKeyResult>
         implements NfcListenerFragment {
 
-    private static final String ARG_FINGERPRINT = "fingerprint";
+    private static final String ARG_FINGERPRINTS = "fingerprint";
     public static final String ARG_AID = "aid";
     public static final String ARG_USER_ID = "user_ids";
 
@@ -72,7 +72,7 @@ public class CreateYubiKeyImportFragment
         CreateYubiKeyImportFragment frag = new CreateYubiKeyImportFragment();
 
         Bundle args = new Bundle();
-        args.putByteArray(ARG_FINGERPRINT, scannedFingerprints);
+        args.putByteArray(ARG_FINGERPRINTS, scannedFingerprints);
         args.putByteArray(ARG_AID, nfcAid);
         args.putString(ARG_USER_ID, userId);
         frag.setArguments(args);
@@ -86,7 +86,7 @@ public class CreateYubiKeyImportFragment
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
 
-        mNfcFingerprints = args.getByteArray(ARG_FINGERPRINT);
+        mNfcFingerprints = args.getByteArray(ARG_FINGERPRINTS);
         mNfcAid = args.getByteArray(ARG_AID);
         mNfcUserId = args.getString(ARG_USER_ID);
 
@@ -149,7 +149,7 @@ public class CreateYubiKeyImportFragment
     public void onSaveInstanceState(Bundle args) {
         super.onSaveInstanceState(args);
 
-        args.putByteArray(ARG_FINGERPRINT, mNfcFingerprints);
+        args.putByteArray(ARG_FINGERPRINTS, mNfcFingerprints);
         args.putByteArray(ARG_AID, mNfcAid);
         args.putString(ARG_USER_ID, mNfcUserId);
     }
