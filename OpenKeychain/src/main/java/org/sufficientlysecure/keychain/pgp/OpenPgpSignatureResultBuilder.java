@@ -91,10 +91,11 @@ public class OpenPgpSignatureResultBuilder {
         return mInsecure;
     }
 
-    public void initValid(CanonicalizedPublicKeyRing signingRing,
-                          CanonicalizedPublicKey signingKey) {
+    public void initValid(CanonicalizedPublicKey signingKey) {
         setSignatureAvailable(true);
         setKnownKey(true);
+
+        CanonicalizedKeyRing signingRing = signingKey.getKeyRing();
 
         // from RING
         setKeyId(signingRing.getMasterKeyId());

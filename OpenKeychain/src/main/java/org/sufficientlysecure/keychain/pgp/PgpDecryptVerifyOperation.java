@@ -214,32 +214,15 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
         PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) o;
 
-        // go through all signatures (should be just one), make sure we have
-        //  the key and it matches the one we’re looking for
-        CanonicalizedPublicKeyRing signingRing = null;
-        CanonicalizedPublicKey signingKey = null;
-        int signatureIndex = -1;
-        for (int i = 0; i < sigList.size(); ++i) {
-            try {
-                long sigKeyId = sigList.get(i).getKeyID();
-                signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
-                signingKey = signingRing.getPublicKey(sigKeyId);
-                signatureIndex = i;
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found, trying next signature...");
-            }
-        }
+        SignatureData signatureData = findAvailableSignature(sigList);
 
-        // there has to be a key, and it has to be the right one
-        if (signingKey == null) {
+        if (signatureData == null) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            Log.d(Constants.TAG, "Failed to find key in signed-literal message");
+            Log.d(Constants.TAG, "Failed to find signature with available key in signed-literal message");
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signingRing.getFingerprint());
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signatureData.signingKey.getFingerprint());
         if (!(input.getRequiredSignerFingerprint().equals(fingerprint))) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
             Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + input.getRequiredSignerFingerprint() +
@@ -249,13 +232,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
 
-        PGPOnePassSignature signature = sigList.get(signatureIndex);
-        signatureResultBuilder.initValid(signingRing, signingKey);
+        PGPOnePassSignature signature = sigList.get(signatureData.signatureIndex);
+        signatureResultBuilder.initValid(signatureData.signingKey);
 
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                 new JcaPGPContentVerifierBuilderProvider()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
+        signature.init(contentVerifierBuilderProvider, signatureData.signingKey.getPublicKey());
 
         o = pgpF.nextObject();
 
@@ -282,7 +265,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         log.add(LogType.MSG_VL_CLEAR_SIGNATURE_CHECK, indent + 1);
 
         PGPSignatureList signatureList = (PGPSignatureList) pgpF.nextObject();
-        PGPSignature messageSignature = signatureList.get(signatureIndex);
+        PGPSignature messageSignature = signatureList.get(signatureData.signatureIndex);
 
         // Verify signature and check binding signatures
         boolean validSignature = signature.verify(messageSignature);
@@ -415,9 +398,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_PREP_STREAMS, indent);
 
-        int signatureIndex = -1;
-        CanonicalizedPublicKeyRing signingRing = null;
-        CanonicalizedPublicKey signingKey = null;
+        SignatureData signatureData = null;
 
         log.add(LogType.MSG_DC_CLEAR, indent);
         indent += 1;
@@ -443,34 +424,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
+            signatureData = findAvailableSignature(sigList);
 
-            // NOTE: following code is similar to processSignature, but for PGPOnePassSignature
-
-            // go through all signatures
-            // and find out for which signature we have a key in our database
-            for (int i = 0; i < sigList.size(); ++i) {
-                try {
-                    long sigKeyId = sigList.get(i).getKeyID();
-                    signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                    );
-                    signingKey = signingRing.getPublicKey(sigKeyId);
-                    signatureIndex = i;
-                } catch (ProviderHelper.NotFoundException e) {
-                    Log.d(Constants.TAG, "key not found, trying next signature...");
-                }
-            }
-
-            if (signingKey != null) {
+            if (signatureData != null) {
                 // key found in our database!
-                signature = sigList.get(signatureIndex);
-
-                signatureResultBuilder.initValid(signingRing, signingKey);
+                signature = sigList.get(signatureData.signatureIndex);
+                signatureResultBuilder.initValid(signatureData.signingKey);
 
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
                                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
+                signature.init(contentVerifierBuilderProvider, signatureData.signingKey.getPublicKey());
             } else {
                 // no key in our database -> return "unknown pub key" status including the first key id
                 if (!sigList.isEmpty()) {
@@ -482,7 +446,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             // check for insecure signing key
             // TODO: checks on signingRing ?
-            if (signingKey != null && ! PgpSecurityConstants.isSecureKey(signingKey)) {
+            if (signatureData != null && ! PgpSecurityConstants.isSecureKey(signatureData.signingKey)) {
                 log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
                 signatureResultBuilder.setInsecure(true);
             }
@@ -610,12 +574,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         metadata = new OpenPgpMetadata(
                 originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
 
-        if (signature != null) {
+        if (signatureData != null) {
             updateProgress(R.string.progress_verifying_signature, 90, 100);
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
             PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
-            PGPSignature messageSignature = signatureList.get(signatureIndex);
+            PGPSignature messageSignature = signatureList.get(signatureData.signatureIndex);
 
             // Verify signature
             boolean validSignature = signature.verify(messageSignature);
@@ -1147,37 +1111,21 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             PGPSignatureList sigList, OpenPgpSignatureResultBuilder signatureResultBuilder,
             OperationLog log, int indent)
             throws PGPException {
-        CanonicalizedPublicKeyRing signingRing = null;
-        CanonicalizedPublicKey signingKey = null;
-        int signatureIndex = -1;
 
-        // go through all signatures
-        // and find out for which signature we have a key in our database
-        for (int i = 0; i < sigList.size(); ++i) {
-            try {
-                long sigKeyId = sigList.get(i).getKeyID();
-                signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
-                signingKey = signingRing.getPublicKey(sigKeyId);
-                signatureIndex = i;
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found, trying next signature...");
-            }
-        }
+        SignatureData signatureData = findAvailableSignature(sigList);
 
         PGPSignature signature = null;
 
-        if (signingKey != null) {
+        if (signatureData != null) {
             // key found in our database!
-            signature = sigList.get(signatureIndex);
+            signature = sigList.get(signatureData.signatureIndex);
 
-            signatureResultBuilder.initValid(signingRing, signingKey);
+            signatureResultBuilder.initValid(signatureData.signingKey);
 
             JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                     new JcaPGPContentVerifierBuilderProvider()
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-            signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
+            signature.init(contentVerifierBuilderProvider, signatureData.signingKey.getPublicKey());
         } else {
             // no key in our database -> return "unknown pub key" status including the first key id
             if (!sigList.isEmpty()) {
@@ -1189,7 +1137,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         // check for insecure signing key
         // TODO: checks on signingRing ?
-        if (signingKey != null && ! PgpSecurityConstants.isSecureKey(signingKey)) {
+        if (signatureData != null && ! PgpSecurityConstants.isSecureKey(signatureData.signingKey)) {
             log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
             signatureResultBuilder.setInsecure(true);
         }
@@ -1291,4 +1239,54 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         String nl = System.getProperty("line.separator");
         return nl.getBytes();
     }
+
+    private static class SignatureData {
+        final private CanonicalizedPublicKey signingKey;
+        // we use the signatureIndex instead of the signature itself here for two reasons:
+        // 1) the signature may be either of type PGPSignature or PGPOnePassSignature (which have no common ancestor)
+        // 2) in case of the latter, we need the signatureIndex to know which PGPSignature to use later on
+        final private int signatureIndex;
+
+        SignatureData(CanonicalizedPublicKey signingKey, int signatureIndex) {
+            this.signingKey = signingKey;
+            this.signatureIndex = signatureIndex;
+        }
+
+    }
+
+    public SignatureData findAvailableSignature(PGPOnePassSignatureList sigList) {
+        // go through all signatures (should be just one), make sure we have
+        //  the key and it matches the one we’re looking for
+        for (int i = 0; i < sigList.size(); ++i) {
+            try {
+                long sigKeyId = sigList.get(i).getKeyID();
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
+                );
+                return new SignatureData(signingRing.getPublicKey(sigKeyId), i);
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.d(Constants.TAG, "key not found, trying next signature...");
+            }
+        }
+        return null;
+    }
+
+    public SignatureData findAvailableSignature(PGPSignatureList sigList) {
+        // go through all signatures (should be just one), make sure we have
+        //  the key and it matches the one we’re looking for
+        for (int i = 0; i < sigList.size(); ++i) {
+            try {
+                long sigKeyId = sigList.get(i).getKeyID();
+                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
+                );
+                return new SignatureData(signingRing.getPublicKey(sigKeyId), i);
+            } catch (ProviderHelper.NotFoundException e) {
+                Log.d(Constants.TAG, "key not found, trying next signature...");
+            }
+        }
+        return null;
+    }
+
+
 }
