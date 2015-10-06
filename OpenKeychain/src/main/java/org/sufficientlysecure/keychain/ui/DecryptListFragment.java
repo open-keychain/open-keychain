@@ -263,13 +263,13 @@ public class DecryptListFragment
         mCurrentSaveFileUri = result.getOutputUris().get(index);
 
         String filename = metadata.getFilename();
-        if (filename == null) {
+        if (TextUtils.isEmpty(filename)) {
             String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(metadata.getMimeType());
             filename = "decrypted" + (ext != null ? "."+ext : "");
         }
 
         // requires >=kitkat
-        FileHelper.saveDocument(this, filename, metadata.getMimeType(), REQUEST_CODE_OUTPUT);
+        FileHelper.saveDocument(this, metadata.getMimeType(), filename, REQUEST_CODE_OUTPUT);
     }
 
     private void saveFile(Uri saveUri) {
