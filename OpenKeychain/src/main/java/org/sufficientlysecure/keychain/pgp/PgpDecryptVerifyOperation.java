@@ -264,8 +264,20 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         updateProgress(R.string.progress_verifying_signature, 95, 100);
         log.add(LogType.MSG_VL_CLEAR_SIGNATURE_CHECK, indent + 1);
 
-        PGPSignatureList signatureList = (PGPSignatureList) pgpF.nextObject();
-        PGPSignature messageSignature = signatureList.get(signatureData.signatureIndex);
+        o = pgpF.nextObject();
+        if ( ! (o instanceof PGPSignatureList) ) {
+            log.add(LogType.MSG_VL_ERROR_NO_SIGNATURE, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+        PGPSignatureList signatureList = (PGPSignatureList) o;
+        if (signatureList.size() <= signatureData.signatureIndex) {
+            log.add(LogType.MSG_VL_ERROR_NO_SIGNATURE, indent);
+            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+        }
+
+        // PGPOnePassSignature and PGPSignature packets are "bracketed",
+        // so we need to take the last-minus-index'th element here
+        PGPSignature messageSignature = signatureList.get(signatureList.size() -1 -signatureData.signatureIndex);
 
         // Verify signature and check binding signatures
         boolean validSignature = signature.verify(messageSignature);
@@ -274,6 +286,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         } else {
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
         }
+
         signatureResultBuilder.setValidSignature(validSignature);
 
         OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
@@ -578,8 +591,20 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             updateProgress(R.string.progress_verifying_signature, 90, 100);
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
 
-            PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
-            PGPSignature messageSignature = signatureList.get(signatureData.signatureIndex);
+            Object o = plainFact.nextObject();
+            if ( ! (o instanceof PGPSignatureList) ) {
+                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+            }
+            PGPSignatureList signatureList = (PGPSignatureList) o;
+            if (signatureList.size() <= signatureData.signatureIndex) {
+                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
+            }
+
+            // PGPOnePassSignature and PGPSignature packets are "bracketed",
+            // so we need to take the last-minus-index'th element here
+            PGPSignature messageSignature = signatureList.get(signatureList.size() -1 - signatureData.signatureIndex);
 
             // Verify signature
             boolean validSignature = signature.verify(messageSignature);
