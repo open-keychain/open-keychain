@@ -17,17 +17,19 @@
 
 package org.sufficientlysecure.keychain.operations;
 
-import android.annotation.TargetApi;
-import android.content.ContentResolver;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
-import android.system.ErrnoException;
-import android.system.Os;
-import android.system.StructStat;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -48,19 +50,6 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static android.system.OsConstants.S_IFMT;
-import static android.system.OsConstants.S_IROTH;
 
 /**
  * This is a high-level operation, which encapsulates one or more sign/encrypt
@@ -76,62 +65,6 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
         super(context, providerHelper, progressable, cancelled);
     }
 
-
-    /**
-     * Tests whether a file is readable by others
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static boolean S_IROTH(int mode) {
-        return (mode & S_IROTH) == S_IROTH;
-    }
-
-    /**
-     * A replacement for ContentResolver.openInputStream() that does not allow the usage of
-     * "file" Uris that point to private files owned by the application only.
-     *
-     * This is not allowed:
-     * am start -a android.intent.action.SEND -t text/plain -n
-     * "org.sufficientlysecure.keychain.debug/org.sufficientlysecure.keychain.ui.EncryptFilesActivity" --eu
-     * android.intent.extra.STREAM
-     * file:///data/data/org.sufficientlysecure.keychain.debug/databases/openkeychain.db
-     *
-     * @throws FileNotFoundException
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private InputStream openInputStreamSafe(ContentResolver resolver, Uri uri)
-            throws FileNotFoundException {
-
-        // Not supported on Android < 5
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return resolver.openInputStream(uri);
-        }
-
-        String scheme = uri.getScheme();
-        if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-            ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
-                    new File(uri.getPath()), ParcelFileDescriptor.parseMode("r"));
-
-            try {
-                final StructStat st = Os.fstat(pfd.getFileDescriptor());
-                if (!S_IROTH(st.st_mode)) {
-                    Log.e(Constants.TAG, "File is not readable by others, aborting!");
-                    throw new FileNotFoundException("Unable to create stream");
-                }
-            } catch (ErrnoException e) {
-                Log.e(Constants.TAG, "fstat() failed: " + e);
-                throw new FileNotFoundException("fstat() failed");
-            }
-
-            AssetFileDescriptor fd = new AssetFileDescriptor(pfd, 0, -1);
-            try {
-                return fd.createInputStream();
-            } catch (IOException e) {
-                throw new FileNotFoundException("Unable to create stream");
-            }
-        } else {
-            return resolver.openInputStream(uri);
-        }
-    }
 
     @NonNull
     public SignEncryptResult execute(SignEncryptParcel input, CryptoInputParcel cryptoInput) {
@@ -185,7 +118,7 @@ public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
                     log.add(LogType.MSG_SE_INPUT_URI, 1);
                     Uri uri = inputUris.removeFirst();
                     try {
-                        InputStream is = openInputStreamSafe(mContext.getContentResolver(), uri);
+                        InputStream is = FileHelper.openInputStreamSafe(mContext.getContentResolver(), uri);
                         long fileSize = FileHelper.getFileSize(mContext, uri, 0);
                         String filename = FileHelper.getFilename(mContext, uri);
                         inputData = new InputData(is, fileSize, filename);
