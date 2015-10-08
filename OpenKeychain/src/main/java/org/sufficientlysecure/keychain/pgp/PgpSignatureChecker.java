@@ -203,7 +203,7 @@ class PgpSignatureChecker {
         }
 
         // check for insecure hash algorithms
-        if (!PgpSecurityConstants.isSecureHashAlgorithm(onePassSignature.getHashAlgorithm())) {
+        if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
             log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
             signatureResultBuilder.setInsecure(true);
         }

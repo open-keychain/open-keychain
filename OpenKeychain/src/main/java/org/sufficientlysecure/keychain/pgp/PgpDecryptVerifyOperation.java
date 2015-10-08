@@ -963,6 +963,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_OK, indent);
 
+        // TODO return metadata object?
+
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
         result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(
