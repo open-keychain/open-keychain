@@ -35,7 +35,6 @@ import android.webkit.MimeTypeMap;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpMetadata;
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPDataValidationException;
@@ -149,9 +148,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     // it is ascii armored
                     Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
 
-                    if (input.isSignedLiteralData()) {
-                        return verifySignedLiteralData(input, aIn, outputStream, 0);
-                    } else if (aIn.isClearText()) {
+                    if (aIn.isClearText()) {
                         // a cleartext signature, verify it with the other method
                         return verifyCleartextSignature(aIn, outputStream, 0);
                     } else {
@@ -180,95 +177,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
-    }
-
-    /**Verify signed plaintext data (PGP/INLINE). */
-    @NonNull
-    private DecryptVerifyResult verifySignedLiteralData(
-            PgpDecryptVerifyInputParcel input, InputStream in, OutputStream out, int indent)
-            throws IOException, PGPException {
-        OperationLog log = new OperationLog();
-        log.add(LogType.MSG_VL, indent);
-
-        // thinking that the proof-fetching operation is going to take most of the time
-        updateProgress(R.string.progress_reading_data, 75, 100);
-
-        JcaPGPObjectFactory pgpF = new JcaPGPObjectFactory(in);
-        Object o = pgpF.nextObject();
-        if (o instanceof PGPCompressedData) {
-            log.add(LogType.MSG_DC_CLEAR_DECOMPRESS, indent + 1);
-
-            pgpF = new JcaPGPObjectFactory(((PGPCompressedData) o).getDataStream());
-            o = pgpF.nextObject();
-            updateProgress(R.string.progress_decompressing_data, 80, 100);
-        }
-
-        PgpSignatureChecker signatureChecker = new PgpSignatureChecker(mProviderHelper);
-        if ( ! signatureChecker.initializeOnePassSignature(o, log, indent)) {
-            log.add(LogType.MSG_VL_ERROR_MISSING_SIGLIST, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        if ( ! signatureChecker.isInitialized()) {
-            log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signatureChecker.getSigningFingerprint());
-        if (!(input.getRequiredSignerFingerprint().equals(fingerprint))) {
-            log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + input.getRequiredSignerFingerprint() +
-                    " got " + fingerprint + "!");
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        o = pgpF.nextObject();
-
-        if (!(o instanceof PGPLiteralData)) {
-            log.add(LogType.MSG_VL_ERROR_MISSING_LITERAL, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        PGPLiteralData literalData = (PGPLiteralData) o;
-
-        log.add(LogType.MSG_DC_CLEAR_DATA, indent + 1);
-        updateProgress(R.string.progress_decrypting, 85, 100);
-
-        InputStream dataIn = literalData.getInputStream();
-
-        int length;
-        byte[] buffer = new byte[1 << 16];
-        while ((length = dataIn.read(buffer)) > 0) {
-            out.write(buffer, 0, length);
-            signatureChecker.updateSignatureData(buffer, 0, length);
-        }
-
-        updateProgress(R.string.progress_verifying_signature, 95, 100);
-        log.add(LogType.MSG_VL_CLEAR_SIGNATURE_CHECK, indent + 1);
-
-        o = pgpF.nextObject();
-        if ( ! signatureChecker.verifySignatureOnePass(o, log, indent) ) {
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        OpenPgpSignatureResult signatureResult = signatureChecker.getSignatureResult();
-
-        if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_CONFIRMED
-                && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED) {
-            log.add(LogType.MSG_VL_ERROR_INTEGRITY_CHECK, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-
-        updateProgress(R.string.progress_done, 100, 100);
-
-        log.add(LogType.MSG_VL_OK, indent);
-
-        // Return a positive result, with metadata and verification info
-        DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
-        result.setSignatureResult(signatureResult);
-        result.setDecryptionResult(
-                new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED));
-        return result;
     }
 
     private static class EncryptStreamResult {

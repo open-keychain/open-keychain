@@ -288,7 +288,7 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
-    public void testAsymmetricSignBinary() {
+    public void testAsymmetricSignLiteral() {
 
         String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
         byte[] ciphertext;
