@@ -705,7 +705,6 @@ public abstract class OperationResult implements Parcelable {
 
         // pgpsignencrypt
         MSG_PSE_ASYMMETRIC (LogLevel.INFO, R.string.msg_pse_asymmetric),
-        MSG_PSE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_pse_clearsign_only),
         MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
         MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),
         MSG_PSE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pse_error_bad_passphrase),

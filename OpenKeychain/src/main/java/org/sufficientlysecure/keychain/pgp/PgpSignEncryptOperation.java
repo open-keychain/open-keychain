@@ -491,9 +491,7 @@ public class PgpSignEncryptOperation extends BaseOperation {
 
                 literalGen.close();
             } else {
-                pOut = null;
-                // TODO: Is this log right?
-                log.add(LogType.MSG_PSE_CLEARSIGN_ONLY, indent);
+                throw new AssertionError("cannot clearsign in non-ascii armored text, this is a bug!");
             }
 
             if (enableSignature) {

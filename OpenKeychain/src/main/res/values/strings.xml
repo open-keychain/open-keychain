@@ -1221,7 +1221,6 @@
 
     <!-- Messages for PgpSignEncrypt operation -->
     <string name="msg_pse_asymmetric">"Preparing public keys for encryption"</string>
-    <string name="msg_pse_clearsign_only">"Signing of cleartext input not supported!"</string>
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
     <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>
