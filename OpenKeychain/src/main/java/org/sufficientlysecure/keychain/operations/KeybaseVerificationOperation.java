@@ -151,7 +151,6 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mProviderHelper, mProgressable);
 
             PgpDecryptVerifyInputParcel input = new PgpDecryptVerifyInputParcel(messageBytes)
-                    .setSignedLiteralData(true)
                     .setRequiredSignerFingerprint(requiredFingerprint);
 
             DecryptVerifyResult decryptVerifyResult = op.execute(input, new CryptoInputParcel());

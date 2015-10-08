@@ -18,7 +18,7 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import java.io.InputStream;
+
 import java.util.HashSet;
 
 import android.net.Uri;
@@ -36,7 +36,6 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
     private boolean mDecryptMetadataOnly;
     private byte[] mDetachedSignature;
     private String mRequiredSignerFingerprint;
-    private boolean mSignedLiteralData;
 
     public PgpDecryptVerifyInputParcel() {
     }
@@ -61,7 +60,6 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
         mDecryptMetadataOnly = source.readInt() != 0;
         mDetachedSignature = source.createByteArray();
         mRequiredSignerFingerprint = source.readString();
-        mSignedLiteralData = source.readInt() != 0;
     }
 
     @Override
@@ -80,7 +78,6 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
         dest.writeInt(mDecryptMetadataOnly ? 1 : 0);
         dest.writeByteArray(mDetachedSignature);
         dest.writeString(mRequiredSignerFingerprint);
-        dest.writeInt(mSignedLiteralData ? 1 : 0);
     }
 
     byte[] getInputBytes() {
@@ -147,15 +144,6 @@ public class PgpDecryptVerifyInputParcel implements Parcelable {
 
     public PgpDecryptVerifyInputParcel setRequiredSignerFingerprint(String requiredSignerFingerprint) {
         mRequiredSignerFingerprint = requiredSignerFingerprint;
-        return this;
-    }
-
-    boolean isSignedLiteralData() {
-        return mSignedLiteralData;
-    }
-
-    public PgpDecryptVerifyInputParcel setSignedLiteralData(boolean signedLiteralData) {
-        mSignedLiteralData = signedLiteralData;
         return this;
     }
 

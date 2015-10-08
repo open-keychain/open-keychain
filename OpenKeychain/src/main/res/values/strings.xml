@@ -436,7 +436,6 @@
     <string name="progress_decrypting">"decrypting data…"</string>
     <string name="progress_preparing_signature">"preparing signature…"</string>
     <string name="progress_generating_signature">"generating signature…"</string>
-    <string name="progress_processing_signature">"processing signature…"</string>
     <string name="progress_verifying_signature">"verifying signature…"</string>
     <string name="progress_signing">"signing…"</string>
     <string name="progress_certifying">"certifying…"</string>
@@ -1174,6 +1173,7 @@
     <string name="msg_dc_error_input">"Error opening input data stream!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
+    <string name="msg_dc_error_no_signature">"Missing signature data!"</string>
     <string name="msg_dc_error_pgp_exception">"Encountered OpenPGP Exception during operation!"</string>
     <string name="msg_dc_integrity_check_ok">"Integrity check OK!"</string>
     <string name="msg_dc_ok_meta_only">"Only metadata was requested, skipping decryption"</string>
@@ -1197,8 +1197,9 @@
 
     <!-- Messages for VerifySignedLiteralData operation -->
     <string name="msg_vl">"Starting signature check"</string>
-    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data"</string>
-    <string name="msg_vl_error_wrong_key">"Message not signed with right key"</string>
+    <string name="msg_vl_error_no_siglist">"No signature list in signed literal data!"</string>
+    <string name="msg_vl_error_wrong_key">"Message not signed with expected key!"</string>
+    <string name="msg_vl_error_no_signature">"Missing signature data!"</string>
     <string name="msg_vl_error_missing_literal">"No payload in signed literal data"</string>
     <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
     <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
@@ -1220,7 +1221,6 @@
 
     <!-- Messages for PgpSignEncrypt operation -->
     <string name="msg_pse_asymmetric">"Preparing public keys for encryption"</string>
-    <string name="msg_pse_clearsign_only">"Signing of cleartext input not supported!"</string>
     <string name="msg_pse_compressing">"Preparing compression"</string>
     <string name="msg_pse_encrypting">"Encrypting data"</string>
     <string name="msg_pse_error_bad_passphrase">"Bad password!"</string>

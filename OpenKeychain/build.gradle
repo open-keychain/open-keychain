@@ -242,7 +242,7 @@ android {
 
 // apply plugin: 'spoon'
 
-task jacocoTestReport(type:JacocoReport) {
+task jacocoTestReport(type:JacocoReport, dependsOn: "testDebugUnitTest") {
     group = "Reporting"
     description = "Generate Jacoco coverage reports"
 
@@ -252,7 +252,9 @@ task jacocoTestReport(type:JacocoReport) {
                        '**/R$*.class',
                        '**/*$ViewInjector*.*',
                        '**/BuildConfig.*',
-                       '**/Manifest*.*']
+                       '**/Manifest*.*',
+                       '**/*Activity*.*',
+                       '**/*Fragment*.*']
     )
 
     sourceDirectories = files("${buildDir.parent}/src/main/java")
@@ -260,10 +262,7 @@ task jacocoTestReport(type:JacocoReport) {
             "${buildDir}/generated/source/buildConfig/debug",
             "${buildDir}/generated/source/r/debug"
     ])
-    executionData = files([
-        "${buildDir}/jacoco/testDebug.exec",
-        "${buildDir}/outputs/code-coverage/connected/coverage.ec"
-    ])
+    executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
 
     reports {
         xml.enabled = true
