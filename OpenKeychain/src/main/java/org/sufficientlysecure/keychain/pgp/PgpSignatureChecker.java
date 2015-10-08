@@ -132,8 +132,12 @@ class PgpSignatureChecker {
                 CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
+                CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
+                if ( ! signingKey.canSign()) {
+                    continue;
+                }
                 signatureIndex = i;
-                signingKey = signingRing.getPublicKey(sigKeyId);
+                signingKey = keyCandidate;
                 onePassSignature = sigList.get(i);
                 return;
             } catch (ProviderHelper.NotFoundException e) {
@@ -151,8 +155,12 @@ class PgpSignatureChecker {
                 CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
+                CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
+                if ( ! signingKey.canSign()) {
+                    continue;
+                }
                 signatureIndex = i;
-                signingKey = signingRing.getPublicKey(sigKeyId);
+                signingKey = keyCandidate;
                 signature = sigList.get(i);
                 return;
             } catch (ProviderHelper.NotFoundException e) {
