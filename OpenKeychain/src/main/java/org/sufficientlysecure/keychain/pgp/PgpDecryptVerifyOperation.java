@@ -502,11 +502,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;
                 }
-                if (secretKeyRing == null) {
-                    // continue with the next packet in the while loop
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
-                }
 
                 // allow only specific keys for decryption?
                 if (input.getAllowedKeyIds() != null) {
@@ -526,11 +521,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // get subkey which has been used for this encryption packet
                 secretEncryptionKey = secretKeyRing.getSecretKey(subKeyId);
-                if (secretEncryptionKey == null) {
-                    // should actually never happen, so no need to be more specific.
-                    log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
-                    continue;
-                }
 
                 /* secret key exists in database and is allowed! */
                 asymmetricPacketFound = true;

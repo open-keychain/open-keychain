@@ -344,7 +344,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testAsymmetricSignCleartext() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein\r\nplaintext\n ☭" + TestingUtils.genPassphrase(true);
         byte[] ciphertext;
 
         { // encrypt data with key
@@ -370,7 +370,8 @@ public class PgpEncryptDecryptTest {
             ciphertext = out.toByteArray();
         }
 
-        Assert.assertTrue("clearsigned text must contain plaintext", new String(ciphertext).contains(plaintext));
+        Assert.assertTrue("clearsigned text must contain plaintext (ignoring newlines)",
+                new String(ciphertext).replace("\r\n", "").contains(plaintext.replace("\r", "").replace("\n", "")));
 
         { // verification should succeed
 
@@ -383,8 +384,10 @@ public class PgpEncryptDecryptTest {
             DecryptVerifyResult result = op.execute(input, new CryptoInputParcel(), data, out);
 
             Assert.assertTrue("verification must succeed", result.success());
-            Assert.assertArrayEquals("verification text should equal plaintext (save for a newline)",
-                    (plaintext + StringUtils.LINE_SEP).getBytes(), out.toByteArray());
+
+            Assert.assertTrue("verification text should equal plaintext (ignoring newlines)",
+                    new String(out.toByteArray()).replace(StringUtils.LINE_SEP, "")
+                            .equals(plaintext.replace("\r", "").replace("\n", "")));
             Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
