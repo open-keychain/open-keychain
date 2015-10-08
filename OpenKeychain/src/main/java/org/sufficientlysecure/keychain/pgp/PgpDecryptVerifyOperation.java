@@ -207,38 +207,24 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             updateProgress(R.string.progress_decompressing_data, 80, 100);
         }
 
-        // all we want to see is a OnePassSignatureList followed by LiteralData
-        if (!(o instanceof PGPOnePassSignatureList)) {
+        SignatureChecker signatureChecker = new SignatureChecker();
+        if ( ! signatureChecker.initializeOnePassSignature(o, log, indent)) {
             log.add(LogType.MSG_VL_ERROR_MISSING_SIGLIST, indent);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
-        PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) o;
 
-        SignatureData signatureData = findAvailableSignature(sigList);
-
-        if (signatureData == null) {
+        if ( ! signatureChecker.isInitialized()) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
-            Log.d(Constants.TAG, "Failed to find signature with available key in signed-literal message");
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signatureData.signingKey.getFingerprint());
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(signatureChecker.getSigningFingerprint());
         if (!(input.getRequiredSignerFingerprint().equals(fingerprint))) {
             log.add(LogType.MSG_VL_ERROR_MISSING_KEY, indent);
             Log.d(Constants.TAG, "Fingerprint mismatch; wanted " + input.getRequiredSignerFingerprint() +
                     " got " + fingerprint + "!");
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
-
-        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
-
-        PGPOnePassSignature signature = sigList.get(signatureData.signatureIndex);
-        signatureResultBuilder.initValid(signatureData.signingKey);
-
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        signature.init(contentVerifierBuilderProvider, signatureData.signingKey.getPublicKey());
 
         o = pgpF.nextObject();
 
@@ -258,38 +244,18 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         byte[] buffer = new byte[1 << 16];
         while ((length = dataIn.read(buffer)) > 0) {
             out.write(buffer, 0, length);
-            signature.update(buffer, 0, length);
+            signatureChecker.updateSignatureData(buffer, 0, length);
         }
 
         updateProgress(R.string.progress_verifying_signature, 95, 100);
         log.add(LogType.MSG_VL_CLEAR_SIGNATURE_CHECK, indent + 1);
 
         o = pgpF.nextObject();
-        if ( ! (o instanceof PGPSignatureList) ) {
-            log.add(LogType.MSG_VL_ERROR_NO_SIGNATURE, indent);
-            return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-        }
-        PGPSignatureList signatureList = (PGPSignatureList) o;
-        if (signatureList.size() <= signatureData.signatureIndex) {
-            log.add(LogType.MSG_VL_ERROR_NO_SIGNATURE, indent);
+        if ( ! signatureChecker.verifySignature(o, log, indent) ) {
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         }
 
-        // PGPOnePassSignature and PGPSignature packets are "bracketed",
-        // so we need to take the last-minus-index'th element here
-        PGPSignature messageSignature = signatureList.get(signatureList.size() -1 -signatureData.signatureIndex);
-
-        // Verify signature and check binding signatures
-        boolean validSignature = signature.verify(messageSignature);
-        if (validSignature) {
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
-        } else {
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
-        }
-
-        signatureResultBuilder.setValidSignature(validSignature);
-
-        OpenPgpSignatureResult signatureResult = signatureResultBuilder.build();
+        OpenPgpSignatureResult signatureResult = signatureChecker.getSignatureResult();
 
         if (signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_CONFIRMED
                 && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_VALID_UNCONFIRMED) {
@@ -364,7 +330,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
         }
 
-        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
         OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
 
         JcaPGPObjectFactory plainFact;
@@ -411,8 +376,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         log.add(LogType.MSG_DC_PREP_STREAMS, indent);
 
-        SignatureData signatureData = null;
-
         log.add(LogType.MSG_DC_CLEAR, indent);
         indent += 1;
 
@@ -429,41 +392,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             plainFact = fact;
         }
 
-        // resolve leading signature data
-        PGPOnePassSignature signature = null;
-        if (dataChunk instanceof PGPOnePassSignatureList) {
-            log.add(LogType.MSG_DC_CLEAR_SIGNATURE, indent + 1);
-            currentProgress += 2;
-            updateProgress(R.string.progress_processing_signature, currentProgress, 100);
-
-            PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
-            signatureData = findAvailableSignature(sigList);
-
-            if (signatureData != null) {
-                // key found in our database!
-                signature = sigList.get(signatureData.signatureIndex);
-                signatureResultBuilder.initValid(signatureData.signingKey);
-
-                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
-                        new JcaPGPContentVerifierBuilderProvider()
-                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                signature.init(contentVerifierBuilderProvider, signatureData.signingKey.getPublicKey());
-            } else {
-                // no key in our database -> return "unknown pub key" status including the first key id
-                if (!sigList.isEmpty()) {
-                    signatureResultBuilder.setSignatureAvailable(true);
-                    signatureResultBuilder.setKnownKey(false);
-                    signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
-                }
-            }
-
-            // check for insecure signing key
-            // TODO: checks on signingRing ?
-            if (signatureData != null && ! PgpSecurityConstants.isSecureKey(signatureData.signingKey)) {
-                log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
-                signatureResultBuilder.setInsecure(true);
-            }
-
+        SignatureChecker signatureChecker = new SignatureChecker();
+        if (signatureChecker.initializeOnePassSignature(dataChunk, log, indent +1)) {
             dataChunk = plainFact.nextObject();
         }
 
@@ -544,16 +474,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             return result;
         }
 
-        int endProgress;
-        if (signature != null) {
-            endProgress = 90;
-        } else if (esResult != null && esResult.encryptedData.isIntegrityProtected()) {
-            endProgress = 95;
-        } else {
-            endProgress = 100;
-        }
         ProgressScaler progressScaler =
-                new ProgressScaler(mProgressable, currentProgress, endProgress, 100);
+                new ProgressScaler(mProgressable, currentProgress, 95, 100);
 
         InputStream dataIn = literalData.getInputStream();
 
@@ -568,9 +490,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             }
 
             // update signature buffer if signature is also present
-            if (signature != null) {
-                signature.update(buffer, 0, length);
-            }
+            signatureChecker.updateSignatureData(buffer, 0, length);
 
             alreadyWritten += length;
             if (wholeSize > 0) {
@@ -587,40 +507,17 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         metadata = new OpenPgpMetadata(
                 originalFilename, mimeType, literalData.getModificationTime().getTime(), alreadyWritten, charset);
 
-        if (signatureData != null) {
-            updateProgress(R.string.progress_verifying_signature, 90, 100);
+        if (signatureChecker.isInitialized()) {
+
             log.add(LogType.MSG_DC_CLEAR_SIGNATURE_CHECK, indent);
-
             Object o = plainFact.nextObject();
-            if ( ! (o instanceof PGPSignatureList) ) {
-                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
-                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
-            }
-            PGPSignatureList signatureList = (PGPSignatureList) o;
-            if (signatureList.size() <= signatureData.signatureIndex) {
-                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
+
+            boolean signatureCheckOk = signatureChecker.verifySignature(o, log, indent+1);
+
+            if (!signatureCheckOk) {
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
 
-            // PGPOnePassSignature and PGPSignature packets are "bracketed",
-            // so we need to take the last-minus-index'th element here
-            PGPSignature messageSignature = signatureList.get(signatureList.size() -1 - signatureData.signatureIndex);
-
-            // Verify signature
-            boolean validSignature = signature.verify(messageSignature);
-            if (validSignature) {
-                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
-            } else {
-                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
-            }
-
-            // check for insecure hash algorithms
-            if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
-                log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
-                signatureResultBuilder.setInsecure(true);
-            }
-
-            signatureResultBuilder.setValidSignature(validSignature);
         }
 
         indent -= 1;
@@ -635,7 +532,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     log.add(LogType.MSG_DC_ERROR_INTEGRITY_CHECK, indent);
                     return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
                 }
-            } else if (signature == null) {
+            } else if ( ! signatureChecker.isInitialized() ) {
                 // If no signature is present, we *require* an MDC!
                 // Handle missing integrity protection like failed integrity protection!
                 // The MDC packet can be stripped by an attacker!
@@ -652,7 +549,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         DecryptVerifyResult result = new DecryptVerifyResult(DecryptVerifyResult.RESULT_OK, log);
 
         result.setCachedCryptoInputParcel(cryptoInput);
-        result.setSignatureResult(signatureResultBuilder.build());
+        result.setSignatureResult(signatureChecker.getSignatureResult());
         result.setDecryptionResult(decryptionResultBuilder.build());
         result.setDecryptionMetadata(metadata);
 
@@ -1279,21 +1176,131 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
     }
 
-    public SignatureData findAvailableSignature(PGPOnePassSignatureList sigList) {
-        // go through all signatures (should be just one), make sure we have
-        //  the key and it matches the one we’re looking for
-        for (int i = 0; i < sigList.size(); ++i) {
-            try {
-                long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
-                return new SignatureData(signingRing.getPublicKey(sigKeyId), i);
-            } catch (ProviderHelper.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found, trying next signature...");
+    private class SignatureChecker {
+
+        OpenPgpSignatureResultBuilder signatureResultBuilder = new OpenPgpSignatureResultBuilder();
+
+        private CanonicalizedPublicKey signingKey;
+        // we use the signatureIndex instead of the signature itself here for two reasons:
+        // 1) the signature may be either of type PGPSignature or PGPOnePassSignature (which have no common ancestor)
+        // 2) in case of the latter, we need the signatureIndex to know which PGPSignature to use later on
+        private int signatureIndex;
+
+        PGPOnePassSignature signature;
+
+        boolean initializeOnePassSignature(Object dataChunk, OperationLog log, int indent) throws PGPException {
+
+            if ( ! (dataChunk instanceof PGPOnePassSignatureList) ) {
+                return false;
+            }
+
+            // resolve leading signature data
+            log.add(LogType.MSG_DC_CLEAR_SIGNATURE, indent +1);
+
+            PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
+            findAvailableSignature(sigList);
+
+            if (signingKey != null) {
+
+                // key found in our database!
+                signature = sigList.get(signatureIndex);
+                signatureResultBuilder.initValid(signingKey);
+
+                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                        new JcaPGPContentVerifierBuilderProvider()
+                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
+
+                // TODO: checks on signingRing ?
+                if ( ! PgpSecurityConstants.isSecureKey(signingKey)) {
+                    log.add(LogType.MSG_DC_INSECURE_KEY, indent + 1);
+                    signatureResultBuilder.setInsecure(true);
+                }
+
+            } else if (!sigList.isEmpty()) {
+
+                signatureResultBuilder.setSignatureAvailable(true);
+                signatureResultBuilder.setKnownKey(false);
+                signatureResultBuilder.setKeyId(sigList.get(0).getKeyID());
+
+            }
+
+            return true;
+
+        }
+
+        public boolean isInitialized() {
+            return signingKey != null;
+        }
+
+        private void findAvailableSignature(PGPOnePassSignatureList sigList) {
+            // go through all signatures (should be just one), make sure we have
+            //  the key and it matches the one we’re looking for
+            for (int i = 0; i < sigList.size(); ++i) {
+                try {
+                    long sigKeyId = sigList.get(i).getKeyID();
+                    CanonicalizedPublicKeyRing signingRing = mProviderHelper.getCanonicalizedPublicKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
+                    );
+                    signatureIndex = i;
+                    signingKey = signingRing.getPublicKey(sigKeyId);
+                    return;
+                } catch (ProviderHelper.NotFoundException e) {
+                    Log.d(Constants.TAG, "key not found, trying next signature...");
+                }
             }
         }
-        return null;
+
+        public void updateSignatureData(byte[] buf, int off, int len) {
+            if (signature != null) {
+                signature.update(buf, off, len);
+            }
+        }
+
+        boolean verifySignature(Object o, OperationLog log, int indent) throws PGPException {
+
+            if ( ! (o instanceof PGPSignatureList) ) {
+                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
+                return false;
+            }
+            PGPSignatureList signatureList = (PGPSignatureList) o;
+            if (signatureList.size() <= signatureIndex) {
+                log.add(LogType.MSG_DC_ERROR_NO_SIGNATURE, indent);
+                return false;
+            }
+
+            // PGPOnePassSignature and PGPSignature packets are "bracketed",
+            // so we need to take the last-minus-index'th element here
+            PGPSignature messageSignature = signatureList.get(signatureList.size() -1 - signatureIndex);
+
+            // Verify signature
+            boolean validSignature = signature.verify(messageSignature);
+            if (validSignature) {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_OK, indent + 1);
+            } else {
+                log.add(LogType.MSG_DC_CLEAR_SIGNATURE_BAD, indent + 1);
+            }
+
+            // check for insecure hash algorithms
+            if (!PgpSecurityConstants.isSecureHashAlgorithm(signature.getHashAlgorithm())) {
+                log.add(LogType.MSG_DC_INSECURE_HASH_ALGO, indent + 1);
+                signatureResultBuilder.setInsecure(true);
+            }
+
+            signatureResultBuilder.setValidSignature(validSignature);
+
+            return true;
+
+        }
+
+        public byte[] getSigningFingerprint() {
+            return signingKey.getFingerprint();
+        }
+
+        public OpenPgpSignatureResult getSignatureResult() {
+            return signatureResultBuilder.build();
+        }
+
     }
 
     public SignatureData findAvailableSignature(PGPSignatureList sigList) {
