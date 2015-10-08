@@ -71,7 +71,6 @@ import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.ShareHelper;
 
 public class EncryptFilesFragment
         extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
@@ -406,7 +405,7 @@ public class EncryptFilesFragment
                 public void onDeleted() {
                     if (mAfterEncryptAction == AfterEncryptAction.SHARE) {
                         // Share encrypted message/file
-                        startActivity(sendWithChooserExcludingEncrypt());
+                        startActivity(Intent.createChooser(createSendIntent(), getString(R.string.title_share_file)));
                     } else {
                         Activity activity = getActivity();
                         if (activity == null) {
@@ -426,7 +425,7 @@ public class EncryptFilesFragment
 
                 case SHARE:
                     // Share encrypted message/file
-                    startActivity(sendWithChooserExcludingEncrypt());
+                    startActivity(Intent.createChooser(createSendIntent(), getString(R.string.title_share_file)));
                     break;
 
                 case COPY:
@@ -620,22 +619,6 @@ public class EncryptFilesFragment
         }
 
         return data;
-    }
-
-    /**
-     * Create Intent Chooser but exclude OK's EncryptActivity.
-     */
-    private Intent sendWithChooserExcludingEncrypt() {
-        Intent prototype = createSendIntent();
-        String title = getString(R.string.title_share_file);
-
-        // we don't want to encrypt the encrypted, no inception ;)
-        String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.EncryptFilesActivity",
-                "org.thialfihar.android.apg.ui.EncryptActivity"
-        };
-
-        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
     }
 
     private Intent createSendIntent() {

@@ -921,7 +921,7 @@
   <string name="msg_cr_error_no_user_id">Les trousseaux doivent être créés avec au moins un ID utilisateur !</string>
   <string name="msg_cr_error_no_certify">La clef maîtresse doit avoir le drapeau « certifié » !</string>
   <string name="msg_cr_error_null_expiry">L\'expiration ne peut pas être « pareille qu\'avant » à la création de la clef. C\'est une erreur du programme, veuillez remplir un rapport de bogue !</string>
-  <string name="msg_cr_error_keysize_512">La taille de la clef doit être supérieure ou égale à 512 !</string>
+  <string name="msg_cr_error_keysize_2048">La taille de la clef doit être supérieure ou égale à 512 !</string>
   <string name="msg_cr_error_no_curve">Aucune taille de clef n\'a été spécifiée ! C\'est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_no_keysize">Aucune courbe elliptique n\'a été spécifiée ! C\'est une erreur de programmation, veuillez remplir un rapport de bogue !</string>
   <string name="msg_cr_error_internal_pgp">Erreur interne OpenPGP !</string>

@@ -850,7 +850,7 @@
   <string name="msg_cr_error_no_user_id">Giltza-uztaiak gutxienez erabiltzaile ID batekin sortu behar dira!</string>
   <string name="msg_cr_error_no_certify">Maisu giltzak egiaztagiri ikurra izan behar du!</string>
   <string name="msg_cr_error_null_expiry">Epemuga ezin daiteke giltza sortzea baino \'lehenago\' izan. Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
-  <string name="msg_cr_error_keysize_512">Giltza neurria 512 edo handiagoa izan behar da!</string>
+  <string name="msg_cr_error_keysize_2048">Giltza neurria 512 edo handiagoa izan behar da!</string>
   <string name="msg_cr_error_no_curve">Ez da giltzaren neurria adierazi! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_cr_error_internal_pgp">Barneko OpenPGP akatsa!</string>
   <string name="msg_cr_error_unknown_algo">Algoritmo ezezaguna hautatu da! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>

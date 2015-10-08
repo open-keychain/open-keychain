@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEnt
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogLevel;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryStorageProvider;
+import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -149,11 +150,9 @@ public class LogDisplayFragment extends ListFragment implements OnItemClickListe
             }
         }
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, mLogTempFile);
-        intent.setType("text/plain");
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(intent);
+
+        ShareLogDialogFragment shareLogDialog = ShareLogDialogFragment.newInstance(mLogTempFile);
+        shareLogDialog.show(getActivity().getSupportFragmentManager(), "shareLogDialog");
 
     }
 

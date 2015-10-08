@@ -921,7 +921,7 @@
   <string name="msg_cr_error_no_user_id">¡Los juegos de claves tienen que crearse con al menos una identificación de usuario!</string>
   <string name="msg_cr_error_no_certify">¡La clave maestra debe tener el indicador de certificado!</string>
   <string name="msg_cr_error_null_expiry">El periodo hasta la expiración no puede ser \'el mismo que antes\' al crear clave. Esto es un error de programación, ¡por favor consigne un informe de error!</string>
-  <string name="msg_cr_error_keysize_512">¡El tamaño de la clave debe ser mayor o igual de 512!</string>
+  <string name="msg_cr_error_keysize_2048">¡El tamaño de la clave debe ser mayor o igual de 512!</string>
   <string name="msg_cr_error_no_curve">¡No se especificó tamaño de clave! ¡Esto es un error de programación, por favor consigne un informe de fallo!</string>
   <string name="msg_cr_error_no_keysize">¡No se especificó curva elíptica! ¡Esto es un error de programación, por favor consigne un informe de fallo!</string>
   <string name="msg_cr_error_internal_pgp">¡Error OpenPGP interno!</string>

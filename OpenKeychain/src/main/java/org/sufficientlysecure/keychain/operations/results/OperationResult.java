@@ -514,7 +514,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_CR_ERROR_NO_USER_ID (LogLevel.ERROR, R.string.msg_cr_error_no_user_id),
         MSG_CR_ERROR_NO_CERTIFY (LogLevel.ERROR, R.string.msg_cr_error_no_certify),
         MSG_CR_ERROR_NULL_EXPIRY(LogLevel.ERROR, R.string.msg_cr_error_null_expiry),
-        MSG_CR_ERROR_KEYSIZE_512 (LogLevel.ERROR, R.string.msg_cr_error_keysize_512),
+        MSG_CR_ERROR_KEYSIZE_2048(LogLevel.ERROR, R.string.msg_cr_error_keysize_2048),
         MSG_CR_ERROR_NO_KEYSIZE (LogLevel.ERROR, R.string.msg_cr_error_no_keysize),
         MSG_CR_ERROR_NO_CURVE (LogLevel.ERROR, R.string.msg_cr_error_no_curve),
         MSG_CR_ERROR_UNKNOWN_ALGO (LogLevel.ERROR, R.string.msg_cr_error_unknown_algo),
@@ -661,6 +661,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_DC_ERROR_INPUT (LogLevel.ERROR, R.string.msg_dc_error_input),
         MSG_DC_ERROR_NO_DATA (LogLevel.ERROR, R.string.msg_dc_error_no_data),
         MSG_DC_ERROR_NO_KEY (LogLevel.ERROR, R.string.msg_dc_error_no_key),
+        MSG_DC_ERROR_NO_SIGNATURE (LogLevel.ERROR, R.string.msg_dc_error_no_signature),
         MSG_DC_ERROR_PGP_EXCEPTION (LogLevel.ERROR, R.string.msg_dc_error_pgp_exception),
         MSG_DC_INTEGRITY_CHECK_OK (LogLevel.INFO, R.string.msg_dc_integrity_check_ok),
         MSG_DC_OK_META_ONLY (LogLevel.OK, R.string.msg_dc_ok_meta_only),
@@ -687,6 +688,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_VL_ERROR_MISSING_SIGLIST (LogLevel.ERROR, R.string.msg_vl_error_no_siglist),
         MSG_VL_ERROR_MISSING_LITERAL (LogLevel.ERROR, R.string.msg_vl_error_missing_literal),
         MSG_VL_ERROR_MISSING_KEY (LogLevel.ERROR, R.string.msg_vl_error_wrong_key),
+        MSG_VL_ERROR_NO_SIGNATURE (LogLevel.ERROR, R.string.msg_vl_error_no_signature),
         MSG_VL_CLEAR_SIGNATURE_CHECK (LogLevel.DEBUG, R.string.msg_vl_clear_signature_check),
         MSG_VL_ERROR_INTEGRITY_CHECK (LogLevel.ERROR, R.string.msg_vl_error_integrity_check),
         MSG_VL_OK (LogLevel.OK, R.string.msg_vl_ok),
@@ -703,7 +705,6 @@ public abstract class OperationResult implements Parcelable {
 
         // pgpsignencrypt
         MSG_PSE_ASYMMETRIC (LogLevel.INFO, R.string.msg_pse_asymmetric),
-        MSG_PSE_CLEARSIGN_ONLY (LogLevel.DEBUG, R.string.msg_pse_clearsign_only),
         MSG_PSE_COMPRESSING (LogLevel.DEBUG, R.string.msg_pse_compressing),
         MSG_PSE_ENCRYPTING (LogLevel.DEBUG, R.string.msg_pse_encrypting),
         MSG_PSE_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_pse_error_bad_passphrase),

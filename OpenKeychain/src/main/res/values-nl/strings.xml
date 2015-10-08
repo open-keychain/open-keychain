@@ -877,7 +877,7 @@
   <string name="msg_cr_error_no_user_id">Sleutelbossen moeten met minstens een gebruikers-ID aangemaakt worden!</string>
   <string name="msg_cr_error_no_certify">Hoofdsleutel moet certificeer-vlag hebben!</string>
   <string name="msg_cr_error_null_expiry">Verloopdatum kan niet hetzelfde als voordien zijn bij aanmaken van een sleutel. Dit is een bug, gelieve een verslag in te dienen!</string>
-  <string name="msg_cr_error_keysize_512">Sleutelgrootte moet groter dan of gelijk zijn aan 512!</string>
+  <string name="msg_cr_error_keysize_2048">Sleutelgrootte moet groter dan of gelijk zijn aan 512!</string>
   <string name="msg_cr_error_no_curve">Geen sleutelgrootte opgegeven! Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_cr_error_no_keysize">Geen elliptische curve opgegeven! Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_cr_error_internal_pgp">Interne OpenPGP-fout!</string>

@@ -944,7 +944,7 @@
   <string name="msg_cr_error_no_user_id">Привесци морају садржати бар један кориснички ИД!</string>
   <string name="msg_cr_error_no_certify">Главни кључ мора имати заставицу овере!</string>
   <string name="msg_cr_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању кључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
-  <string name="msg_cr_error_keysize_512">Величина кључа мора бити већа или једнака 512!</string>
+  <string name="msg_cr_error_keysize_2048">Величина кључа мора бити већа или једнака 512!</string>
   <string name="msg_cr_error_no_curve">Није наведена величина кључа! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_no_keysize">Није наведена елиптичка крива! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_internal_pgp">Унутрашња ОпенПГП грешка!</string>

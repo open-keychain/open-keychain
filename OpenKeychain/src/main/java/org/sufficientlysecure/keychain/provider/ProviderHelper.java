@@ -62,7 +62,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
@@ -968,7 +967,7 @@ public class ProviderHelper {
 
             // If we have an expected fingerprint, make sure it matches
             if (expectedFingerprint != null) {
-                if (!canPublicRing.containsSubkey(expectedFingerprint)) {
+                if (!canPublicRing.containsBoundSubkey(expectedFingerprint)) {
                     log(LogType.MSG_IP_FINGERPRINT_ERROR);
                     return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
                 } else {

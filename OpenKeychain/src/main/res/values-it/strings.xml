@@ -658,7 +658,7 @@ Permetti accesso?\n\nATTENZIONE: Se non sai perche\' questo schermata e\' appars
   <string name="msg_cr_error_no_master">Nessuna opzione della chiave principale specificata!</string>
   <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
   <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \'come prima\' sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
-  <string name="msg_cr_error_keysize_512">La grandezza della chiave deve essere di 512bit o maggiore</string>
+  <string name="msg_cr_error_keysize_2048">La grandezza della chiave deve essere di 512bit o maggiore</string>
   <string name="msg_cr_error_no_keysize">Nessuna curva ellittica specificata! Questo è un errore di programmazione, per favore invia una segnalazione!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modifica del portachiavi %s</string>

@@ -48,17 +48,15 @@
         <item>@string/key_size_custom</item>
     </string-array>
     <string-array name="elgamal_key_size_spinner_values" translatable="false">
-        <item>@string/key_size_1536</item>
         <item>@string/key_size_2048</item>
         <item>@string/key_size_3072</item>
         <item>@string/key_size_4096</item>
         <item>@string/key_size_8192</item>
     </string-array>
     <string-array name="dsa_key_size_spinner_values" translatable="false">
-        <item>@string/key_size_512</item>
-        <item>@string/key_size_768</item>
-        <item>@string/key_size_1024</item>
-        <item>@string/key_size_custom</item>
+        <item>@string/key_size_2048</item>
+        <item>@string/key_size_3072</item>
+        <item>@string/key_size_4096</item>
     </string-array>
 
     <string-array name="theme_entries" translatable="false">

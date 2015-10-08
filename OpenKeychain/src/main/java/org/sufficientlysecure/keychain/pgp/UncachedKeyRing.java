@@ -83,6 +83,8 @@ public class UncachedKeyRing {
     final PGPKeyRing mRing;
     final boolean mIsSecret;
 
+    private static final int CANONICALIZE_MAX_USER_IDS = 100;
+
     UncachedKeyRing(PGPKeyRing ring) {
         mRing = ring;
         mIsSecret = ring instanceof PGPSecretKeyRing;
@@ -460,7 +462,7 @@ public class UncachedKeyRing {
                     // strip out the first found user id with this name
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
                 }
-                if (processedUserIds.size() > 100) {
+                if (processedUserIds.size() > CANONICALIZE_MAX_USER_IDS) {
                     log.add(LogType.MSG_KC_UID_TOO_MANY, indent, userId);
                     // strip out the user id
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
