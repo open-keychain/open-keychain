@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.ShareHelper;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -289,22 +288,6 @@ public class EncryptTextFragment
         result.createNotify(activity).show();
     }
 
-    /**
-     * Create Intent Chooser but exclude OK's EncryptActivity.
-     */
-    private Intent sendWithChooserExcludingEncrypt(byte[] resultBytes) {
-        Intent prototype = createSendIntent(resultBytes);
-        String title = getString(R.string.title_share_message);
-
-        // we don't want to encrypt the encrypted, no inception ;)
-        String[] blacklist = new String[]{
-                Constants.PACKAGE_NAME + ".ui.EncryptTextActivity",
-                "org.thialfihar.android.apg.ui.EncryptActivity"
-        };
-
-        return new ShareHelper(getActivity()).createChooserExcluding(prototype, title, blacklist);
-    }
-
     private Intent createSendIntent(byte[] resultBytes) {
         Intent sendIntent;
         sendIntent = new Intent(Intent.ACTION_SEND);
@@ -343,7 +326,8 @@ public class EncryptTextFragment
 
         if (mShareAfterEncrypt) {
             // Share encrypted message/file
-            startActivity(sendWithChooserExcludingEncrypt(result.getResultBytes()));
+            startActivity(Intent.createChooser(createSendIntent(result.getResultBytes()),
+                    getString(R.string.title_share_message)));
         } else {
             // Copy to clipboard
             copyToClipboard(result);
