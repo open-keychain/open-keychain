@@ -65,14 +65,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyFragment.PostponeType;
 import org.sufficientlysecure.keychain.ui.base.BaseNfcActivity;
@@ -452,33 +450,9 @@ public class ViewKeyActivity extends BaseNfcActivity implements
     }
 
     private void startPassphraseActivity(int requestCode) {
-
-        if (keyHasPassphrase()) {
-            Intent intent = new Intent(this, PassphraseDialogActivity.class);
-            intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
-            startActivityForResult(intent, requestCode);
-        } else {
-            startBackupActivity();
-        }
-    }
-
-    private boolean keyHasPassphrase() {
-        try {
-            SecretKeyType secretKeyType =
-                    mProviderHelper.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
-            switch (secretKeyType) {
-                // all of these make no sense to ask
-                case PASSPHRASE_EMPTY:
-                case GNU_DUMMY:
-                case DIVERT_TO_CARD:
-                case UNAVAILABLE:
-                    return false;
-                default:
-                    return true;
-            }
-        } catch (NotFoundException e) {
-            return false;
-        }
+        Intent intent = new Intent(this, PassphraseDialogActivity.class);
+        intent.putExtra(PassphraseDialogActivity.EXTRA_SUBKEY_ID, mMasterKeyId);
+        startActivityForResult(intent, requestCode);
     }
 
     private void backupToFile() {
