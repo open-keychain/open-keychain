@@ -133,7 +133,7 @@ class PgpSignatureChecker {
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
-                if ( ! signingKey.canSign()) {
+                if ( ! keyCandidate.canSign()) {
                     continue;
                 }
                 signatureIndex = i;
@@ -156,7 +156,7 @@ class PgpSignatureChecker {
                         KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
                 );
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
-                if ( ! signingKey.canSign()) {
+                if ( ! keyCandidate.canSign()) {
                     continue;
                 }
                 signatureIndex = i;
